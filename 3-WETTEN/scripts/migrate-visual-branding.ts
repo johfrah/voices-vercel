@@ -183,6 +183,13 @@ async function main() {
         }
 
         const fileName = path.basename(fullLocalPath);
+        const ext = path.extname(fileName).toLowerCase();
+        let contentType = 'application/octet-stream';
+        if (ext === '.png') contentType = 'image/png';
+        else if (ext === '.jpg' || ext === '.jpeg') contentType = 'image/jpeg';
+        else if (ext === '.webp') contentType = 'image/webp';
+        else if (ext === '.svg') contentType = 'image/svg+xml';
+
         const category = assetType.toLowerCase().includes('logo') ? 'logo' : 'header';
         const storagePath = `actor-assets/${supabaseId}/${category}/${fileName}`;
 
@@ -191,6 +198,7 @@ async function main() {
         const { error: uploadError } = await supabase.storage
           .from(BUCKET_NAME)
           .upload(storagePath, fileBuffer, {
+            contentType: contentType,
             upsert: true
           });
 

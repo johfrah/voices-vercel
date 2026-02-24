@@ -102,9 +102,9 @@ export async function POST(request: NextRequest) {
         Vertaling:
       `;
 
-      //  NUCLEAR TIMEOUT: Max 4s voor AI vertaling
+      //  NUCLEAR TIMEOUT: Max 8s voor AI vertaling (verhoogd voor stabiliteit)
       const aiPromise = OpenAIService.generateText(prompt);
-      const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('AI Timeout')), 4000));
+      const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('AI Timeout')), 8000));
       
       cleanTranslation = await Promise.race([aiPromise, timeoutPromise]) as string;
       cleanTranslation = cleanTranslation.trim().replace(/^"|"$/g, '');

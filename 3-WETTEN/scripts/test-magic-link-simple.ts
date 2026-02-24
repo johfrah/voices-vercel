@@ -46,6 +46,26 @@ async function testMagicLink() {
     console.log(`   [Error] ${error.message}`);
   });
   
+  // Monitor network requests
+  let apiCalled = false;
+  let apiResponse: any = null;
+  
+  page.on('response', async response => {
+    const url = response.url();
+    if (url.includes('/api/auth/send-magic-link')) {
+      apiCalled = true;
+      const status = response.status();
+      console.log(`   [Network] API called: ${url} (Status: ${status})`);
+      
+      try {
+        apiResponse = await response.json();
+        console.log(`   [Network] Response:`, JSON.stringify(apiResponse, null, 2));
+      } catch (e) {
+        console.log(`   [Network] Could not parse response`);
+      }
+    }
+  });
+  
   console.log('📍 STEP 1: Navigating to https://www.voices.be/account/...');
   await page.goto('https://www.voices.be/account/', { 
     waitUntil: 'domcontentloaded',
@@ -120,10 +140,19 @@ async function testMagicLink() {
     
     await page.screenshot({ path: '/tmp/magic-link-failed.png', fullPage: true });
     console.log(`\n📸 Screenshot saved: /tmp/magic-link-failed.png`);
+    
+    // Print recent console logs for debugging
+    console.log('\n📝 Recent Console Logs:');
+    consoleLogs.slice(-10).forEach(log => console.log(`   ${log}`));
+    
+    console.log(`\n🌐 API Called: ${apiCalled ? 'YES' : 'NO'}`);
+    if (apiResponse) {
+      console.log(`   Response:`, apiResponse);
+    }
   }
   
-  console.log('\n🔍 Keeping browser open for 10 seconds for inspection...');
-  await page.waitForTimeout(10000);
+  console.log('\n🔍 Keeping browser open for 15 seconds for inspection...');
+  await page.waitForTimeout(15000);
   
   await browser.close();
   console.log('\n✅ Test complete!');

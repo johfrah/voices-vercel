@@ -120,13 +120,18 @@ export async function POST(req: Request) {
     console.log(`[Auth API] Voices link created: ${voicesLink}`);
 
     // 🛡️ CHRIS-PROTOCOL: Log the link to the Watchdog for automated Trinity Validation
-    await ServerWatchdog.report({
-      error: `Magic link generated for ${email}`,
-      component: 'AuthAPI',
-      url: req.url,
-      level: 'info',
-      payload: { email, link: voicesLink }
-    });
+    // We wrap this in a try-catch to ensure the mail is ALWAYS sent even if logging fails
+    try {
+      await ServerWatchdog.report({
+        error: `Magic link generated for ${email}`,
+        component: 'AuthAPI',
+        url: req.url,
+        level: 'info',
+        payload: { email, link: voicesLink }
+      });
+    } catch (logErr) {
+      console.warn('[Auth API] Watchdog logging failed, continuing with mail:', logErr);
+    }
 
     // 4. Verstuur de mail via onze eigen VoicesMailEngine
     // 🛡️ CHRIS-PROTOCOL: Dynamic import to ensure Node.js runtime compatibility for nodemailer

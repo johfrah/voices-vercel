@@ -32,6 +32,17 @@ export async function GET(request: Request) {
     if (!error) {
       console.log(' NUCLEAR AUTH: Session confirmed via verifyOtp.')
       
+      // 🛡️ CHRIS-PROTOCOL: Log success to Watchdog
+      try {
+        await ServerWatchdog.report({
+          error: `Auth success for ${type}`,
+          component: 'AuthConfirm',
+          url: request.url,
+          level: 'info',
+          payload: { type, success: true }
+        });
+      } catch (e) {}
+
       // Voorkom open redirects
       const isLocalRedirect = redirectPath.startsWith('/')
       let finalPath = isLocalRedirect ? redirectPath : '/account'
@@ -46,13 +57,15 @@ export async function GET(request: Request) {
     }
 
     console.error(' NUCLEAR AUTH ERROR:', error.message)
-    await ServerWatchdog.report({
-      error: `Auth confirmation failed: ${error.message}`,
-      component: 'AuthConfirm',
-      url: request.url,
-      level: 'error',
-      payload: { type, token: token.substring(0, 10) + '...' }
-    })
+    try {
+      await ServerWatchdog.report({
+        error: `Auth confirmation failed: ${error.message} (Type: ${type})`,
+        component: 'AuthConfirm',
+        url: request.url,
+        level: 'error',
+        payload: { type, error: error.message, token: token.substring(0, 10) + '...' }
+      });
+    } catch (e) {}
   }
 
   // Bij een fout sturen we de gebruiker terug naar de login met de specifieke Supabase error
