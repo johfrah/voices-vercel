@@ -1,12 +1,6 @@
 "use client";
 
 import React, { useRef, useState, useEffect, forwardRef, HTMLAttributes, ElementType } from 'react';
-import {
-    ButtonInstrument,
-    InputInstrument,
-    LabelInstrument,
-} from '@/components/ui/LayoutInstruments';
-
 /**
  * CLIENT-SIDE LAYOUT INSTRUMENTS
  * To avoid server component boundary issues in StudioLaunchpad
@@ -33,6 +27,12 @@ const HeadingInstrument = ({ children, level = 2, className = '', ...props }: an
 const TextInstrument = ({ children, className = '', ...props }: React.HTMLAttributes<HTMLElement>) => (
   <p className={cn("va-text", className)} {...props}>{children}</p>
 );
+
+import {
+    ButtonInstrument,
+    InputInstrument,
+    LabelInstrument,
+} from '@/components/ui/LayoutInstruments';
 
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useTranslation } from '@/contexts/TranslationContext';
