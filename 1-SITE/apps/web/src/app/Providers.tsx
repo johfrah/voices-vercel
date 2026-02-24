@@ -31,19 +31,14 @@ export function Providers({
   //  CHRIS-PROTOCOL: Initialize Client Logger for real-time error reporting
       React.useEffect(() => {
     ClientLogger.init();
-    console.log('🚀 [Voices] Nuclear Version: v2.14.192 (Godmode Zero)');
+    console.log('🚀 [Voices] Nuclear Version: v2.14.195 (Godmode Zero)');
   }, []);
   
   //  CHRIS-PROTOCOL: Language is now strictly passed from Server (Source of Truth)
   // to prevent Hydration Mismatch errors (#419, #425).
-  
-  //  BOB'S MANDATE: Admin/Dashboard routes altijd in het Nederlands (NL)
-  // We checken zowel de URL prefix als de ruwe route om leaks te voorkomen.
-  const isAdminPath = pathname?.includes('/admin') || 
-                      pathname?.includes('/backoffice') || 
-                      pathname?.includes('/studio/beheer');
-                      
-  const activeLang = isAdminPath ? 'nl' : (lang || 'nl');
+  // We use the 'lang' prop directly instead of calculating it from pathname
+  // to ensure consistency between SSR and Client.
+  const activeLang = lang || 'nl';
 
   return (
     <WatchdogProvider>

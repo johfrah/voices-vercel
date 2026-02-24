@@ -216,22 +216,54 @@ export async function PATCH(
     console.log(` ADMIN: Executing Nuclear Update for actor ${id}:`, JSON.stringify(cleanUpdateData, null, 2));
 
     // Update the actor in the database
-    const result = await db.update(actors)
-      .set(cleanUpdateData)
-      .where(or(eq(actors.id, id), eq(actors.wpProductId, id)))
-      .returning({
-        id: actors.id,
-        wpProductId: actors.wpProductId,
-        slug: actors.slug,
-        firstName: actors.firstName,
-        lastName: actors.lastName,
-        email: actors.email,
-        status: actors.status,
-        photoId: actors.photoId,
-        photo_url: actors.dropboxUrl,
-        native_lang: actors.nativeLang,
-        updatedAt: actors.updatedAt
+    let result;
+    try {
+      result = await db.update(actors)
+        .set(cleanUpdateData)
+        .where(or(eq(actors.id, id), eq(actors.wpProductId, id)))
+        .returning({
+          id: actors.id,
+          wpProductId: actors.wpProductId,
+          slug: actors.slug,
+          firstName: actors.firstName,
+          lastName: actors.lastName,
+          email: actors.email,
+          status: actors.status,
+          photoId: actors.photoId,
+          photo_url: actors.dropboxUrl,
+          native_lang: actors.nativeLang,
+          updatedAt: actors.updatedAt
+        });
+    } catch (updateErr: any) {
+      console.error(` [Admin Actor PATCH] Database update failed for actor ${id}:`, updateErr);
+      
+      // 🛡️ CHRIS-PROTOCOL: Fallback to Supabase SDK if Drizzle fails
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+      const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+      const { createClient } = await import('@supabase/supabase-js');
+      const supabase = createClient(supabaseUrl, supabaseKey);
+      
+      // Map CamelCase back to snake_case for Supabase SDK
+      const sdkData: any = {};
+      Object.entries(cleanUpdateData).forEach(([key, val]) => {
+        const snakeKey = key.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
+        sdkData[snakeKey] = val;
       });
+
+      const { data, error: sdkErr } = await supabase
+        .from('actors')
+        .update(sdkData)
+        .or(`id.eq.${id},wp_product_id.eq.${id}`)
+        .select()
+        .single();
+
+      if (sdkErr) {
+        console.error(` [Admin Actor PATCH] Supabase SDK fallback also failed:`, sdkErr);
+        throw new Error(`Database update failed: ${updateErr.message}`);
+      }
+
+      result = [data];
+    }
 
     if (!result || result.length === 0) {
       console.error(` ADMIN: Actor ${id} not found in database`);
