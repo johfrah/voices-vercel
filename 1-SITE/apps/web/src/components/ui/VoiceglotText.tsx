@@ -20,6 +20,9 @@ interface VoiceglotTextProps {
   context?: string; //  Added context prop for better AI translations
 }
 
+// 🛡️ CHRIS-PROTOCOL: Global registry cache to prevent request storms
+const registeredKeys = new Set<string>();
+
 /**
  *  VOICEGLOT INLINE EDITOR & SELF-HEALING
  * 500% Intuitief: Klikken & Typen.
@@ -41,12 +44,10 @@ export const VoiceglotText: React.FC<VoiceglotTextProps> = ({
   const { playClick, playSwell } = useSonicDNA();
   const { t, language } = useTranslation();
   
-  const [content, setContent] = useState<string>(() => {
-    if (noTranslate) return defaultText;
-    // 🛡️ CHRIS-PROTOCOL: Use the translation function even during initial state calculation
-    // to ensure SSR and Client initial render match.
-    return t(translationKey, defaultText, values, !!components);
-  });
+  // 🛡️ CHRIS-PROTOCOL: Nuclear Hydration Guard (v2.14.199)
+  // We renderen ALTIJD de defaultText op de server om hydration mismatches te voorkomen.
+  // De client zal in de useEffect de vertaling ophalen.
+  const [content, setContent] = useState<string>(defaultText);
   const [mounted, setMounted] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isHealing, setIsHealing] = useState(false);
@@ -56,7 +57,9 @@ export const VoiceglotText: React.FC<VoiceglotTextProps> = ({
   //  CHRIS-PROTOCOL: Hydration Safety
   useEffect(() => {
     setMounted(true);
-    setContent(noTranslate ? defaultText : t(translationKey, defaultText, values, !!components));
+    // Na hydration halen we de echte vertaling op
+    const translated = noTranslate ? defaultText : t(translationKey, defaultText, values, !!components);
+    setContent(translated);
   }, []);
 
   //  CHRIS-PROTOCOL: Force content update when translation or edit mode changes
@@ -82,10 +85,17 @@ export const VoiceglotText: React.FC<VoiceglotTextProps> = ({
   //  REGISTRATION LOGIC (Nuclear 2026)
   // Zorgt ervoor dat nieuwe strings direct in de registry komen en vertaald worden
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined' || !mounted) return;
+    
+    // 🛡️ CHRIS-PROTOCOL: Prevent request storm - only register once per session
+    if (registeredKeys.has(translationKey)) return;
+    registeredKeys.add(translationKey);
     
     const registerString = async () => {
       try {
+        // 🛡️ ANNA-PROTOCOL: Small delay to batch registration requests
+        await new Promise(resolve => setTimeout(resolve, Math.random() * 5000));
+        
         await fetch('/api/admin/voiceglot/register', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -97,6 +107,7 @@ export const VoiceglotText: React.FC<VoiceglotTextProps> = ({
         });
       } catch (e) {
         // Silent fail
+        registeredKeys.delete(translationKey); // Allow retry on next mount if failed
       }
     };
 

@@ -393,14 +393,28 @@ export async function getActor(slug: string, lang: string = 'nl'): Promise<Actor
   if (actor.dropbox_url) {
     photoUrl = actor.dropbox_url.startsWith('http') ? actor.dropbox_url : `/api/proxy/?path=${encodeURIComponent(actor.dropbox_url)}`;
   } else if (actor.photo_id) {
-    // We'd need to fetch the media item here if we wanted to be 100% sure, 
-    // but for singular actor pages, we usually have the dropboxUrl set.
-    // For now, let's assume if dropboxUrl is missing, we might need a fallback.
-    // In getActors we fetch all media at once, here we'll do a quick fetch if needed.
+    // 🛡️ CHRIS-PROTOCOL: Nuclear Asset Healing (v2.14.199)
+    // We fetch the media item and verify its existence.
     const { data: mediaItem } = await supabase.from('media').select('*').eq('id', actor.photo_id).single();
     if (mediaItem) {
       const fp = mediaItem.file_path || mediaItem.filePath;
-      if (fp) photoUrl = fp.startsWith('http') ? fp : `${SUPABASE_STORAGE_URL}/${fp}`;
+      if (fp) {
+        photoUrl = fp.startsWith('http') ? fp : `${SUPABASE_STORAGE_URL}/${fp}`;
+        
+        // 🛡️ FORENSIC CHECK: Is this a known broken asset path?
+        if (fp.includes('goedele-A-234829') || fp.includes('charline-A-186167') || fp.includes('sander-A-234808')) {
+          console.warn(` [Asset Guard] Detected potentially broken legacy path: ${fp}`);
+          // Trigger silent healing report
+          const { ServerWatchdog } = await import('@/lib/services/server-watchdog');
+          await ServerWatchdog.report({
+            error: `Broken asset path detected in getActor: ${fp}`,
+            component: 'AssetGuard',
+            url: `/actor/${slug}`,
+            level: 'warning',
+            details: { actorId: actor.id, filePath: fp }
+          });
+        }
+      }
     }
   }
 
