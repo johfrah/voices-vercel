@@ -158,24 +158,54 @@ export async function PATCH(
       }
     }
 
-    console.log(` ADMIN: Update data for actor ${id}:`, JSON.stringify(updateData, null, 2));
-      // Update the actor in the database
-      const result = await db.update(actors)
-      .set(updateData)
-        .where(or(eq(actors.id, id), eq(actors.wpProductId, id)))
-        .returning({
-          id: actors.id,
-          wpProductId: actors.wpProductId,
-          slug: actors.slug,
-          firstName: actors.firstName,
-          lastName: actors.lastName,
-          email: actors.email,
-          status: actors.status,
-          photoId: actors.photoId,
-          photo_url: actors.dropboxUrl, // Return the latest photo_url/dropboxUrl
-          native_lang: actors.nativeLang,
-          updatedAt: actors.updatedAt
-        });
+    // 🛡️ CHRIS-PROTOCOL: Nuclear Force Fix (v2.14.185)
+    // We bypass ALL non-essential field validation to ensure the profile SAVES.
+    // Non-existent columns or relational mismatches are caught and neutralized.
+    const cleanUpdateData: any = {};
+    const allowedColumns = [
+      'firstName', 'lastName', 'email', 'gender', 'experienceLevel', 
+      'toneOfVoice', 'clients', 'voiceScore', 'menuOrder', 'status', 
+      'isPublic', 'deliveryDaysMin', 'deliveryDaysMax', 'samedayDelivery', 
+      'cutoffTime', 'nativeLang', 'extraLangs', 'dropboxUrl', 'photoId',
+      'studioSpecs', 'connectivity', 'website', 'youtubeUrl', 'linkedin',
+      'allowFreeTrial', 'isManuallyEdited', 'updatedAt', 'bio', 'tagline',
+      'pendingBio', 'pendingTagline', 'rates', 'priceLiveRegie', 
+      'priceOnline', 'priceIvr', 'priceUnpaid'
+    ];
+
+    // Map incoming body to allowed columns only, with strict type safety
+    for (const col of allowedColumns) {
+      if (updateData[col] !== undefined) {
+        // Special case for photoId: never allow 0 or non-numeric
+        if (col === 'photoId') {
+          const pid = parseInt(updateData[col]);
+          if (!isNaN(pid) && pid > 0) cleanUpdateData[col] = pid;
+          else cleanUpdateData[col] = null; // Force null if invalid
+          continue;
+        }
+        cleanUpdateData[col] = updateData[col];
+      }
+    }
+
+    console.log(` ADMIN: Executing Nuclear Update for actor ${id}:`, JSON.stringify(cleanUpdateData, null, 2));
+
+    // Update the actor in the database
+    const result = await db.update(actors)
+      .set(cleanUpdateData)
+      .where(or(eq(actors.id, id), eq(actors.wpProductId, id)))
+      .returning({
+        id: actors.id,
+        wpProductId: actors.wpProductId,
+        slug: actors.slug,
+        firstName: actors.firstName,
+        lastName: actors.lastName,
+        email: actors.email,
+        status: actors.status,
+        photoId: actors.photoId,
+        photo_url: actors.dropboxUrl,
+        native_lang: actors.nativeLang,
+        updatedAt: actors.updatedAt
+      });
 
     if (!result || result.length === 0) {
       console.error(` ADMIN: Actor ${id} not found in database`);
