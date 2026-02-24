@@ -11,12 +11,12 @@ import {
  * CLIENT-SIDE LAYOUT INSTRUMENTS
  * To avoid server component boundary issues in StudioLaunchpad
  */
-const SectionInstrument = ({ children, className = '', ...props }: HTMLAttributes<HTMLElement>) => (
+const SectionInstrument = ({ children, className = '', ...props }: React.HTMLAttributes<HTMLElement>) => (
   <section className={cn("va-section", className)} {...props}>{children}</section>
 );
 
-interface ContainerInstrumentProps extends HTMLAttributes<HTMLElement> {
-  as?: ElementType;
+interface ContainerInstrumentProps extends React.HTMLAttributes<HTMLElement> {
+  as?: React.ElementType;
   plain?: boolean;
 }
 const ContainerInstrument = forwardRef<HTMLElement, ContainerInstrumentProps>(({ 
@@ -30,7 +30,7 @@ const HeadingInstrument = ({ children, level = 2, className = '', ...props }: an
   return <Tag className={cn("va-heading", className)} {...props}>{children}</Tag>;
 };
 
-const TextInstrument = ({ children, className = '', ...props }: HTMLAttributes<HTMLElement>) => (
+const TextInstrument = ({ children, className = '', ...props }: React.HTMLAttributes<HTMLElement>) => (
   <p className={cn("va-text", className)} {...props}>{children}</p>
 );
 
