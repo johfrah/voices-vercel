@@ -166,8 +166,8 @@ export const PricingSummary: React.FC<{
           }
 
           const redirectUrl = data.token 
-            ? `/api/auth/magic-login?token=${data.token}&redirect=/account/orders?orderId=${data.orderId}${state.isQuoteRequest ? '&type=quote' : ''}`
-            : `/account/orders?orderId=${data.orderId}${state.isQuoteRequest ? '&type=quote' : ''}`;
+            ? `/api/auth/magic-login?token=${data.token}&redirect=/account/orders?orderId=${data.orderId}${state.isQuoteRequest ? '&type=quote' : ''}${data.deliveryTime ? `&delivery=${encodeURIComponent(data.deliveryTime)}` : ''}`
+            : `/account/orders?orderId=${data.orderId}${state.isQuoteRequest ? '&type=quote' : ''}${data.deliveryTime ? `&delivery=${encodeURIComponent(data.deliveryTime)}` : ''}`;
           
           window.location.href = redirectUrl;
         } else if (data.checkoutUrl) {

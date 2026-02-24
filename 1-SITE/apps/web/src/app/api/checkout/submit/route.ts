@@ -452,6 +452,7 @@ export async function POST(request: Request) {
         requiresVerification: isExistingUnauthenticatedUser,
         isBankTransfer: isInvoiceActual,
         isQuote,
+        deliveryTime: validatedItems[0]?.actor?.delivery_time || null, // 🛡️ Pass delivery time to success page (v2.14.315)
         message: isInvoiceActual ? 'Bestelling ontvangen.' : 'Offerte aangemaakt.'
       });
     }
