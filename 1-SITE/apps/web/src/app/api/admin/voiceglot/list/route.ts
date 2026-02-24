@@ -69,7 +69,10 @@ export async function GET(request: Request) {
         if (isFr && !isNl) detectedLang = 'fr';
         else if (isEn && !isNl) detectedLang = 'en';
 
+        console.log(`[Voiceglot List] Mapping item: ${item.string_hash}, translations found: ${itemTranslations.length}`);
+
         return {
+          id: item.id, // Voeg ID toe voor React keys
           translationKey: item.string_hash,
           originalText: item.original_text,
           context: item.context,
@@ -79,7 +82,7 @@ export async function GET(request: Request) {
             lang: t.lang,
             translatedText: t.translated_text || '',
             status: t.status,
-            isLocked: t.is_manually_edited || false,
+            isLocked: t.is_locked || t.is_manually_edited || false, // Check beide velden
             updatedAt: t.updated_at
           }))
         };
