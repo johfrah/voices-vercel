@@ -116,7 +116,7 @@ export function VoiceDetailClient({
 
     syncFromUrl();
 
-    return () => selectActor(null); // Cleanup on unmount
+    // 🛡️ CHRIS-PROTOCOL: No cleanup here to prevent race conditions during hydration
   }, [actor, initialJourney, initialMedium, selectActor, updateUsage, updateMedia, updateBriefing, updateJourney]);
 
   return (

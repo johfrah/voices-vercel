@@ -1079,6 +1079,13 @@ export default function ConfiguratorPageClient({
     );
   };
 
+  if (!isHydrated) return (
+    <ContainerInstrument className="min-h-[400px] flex items-center justify-center">
+      <Loader2 className="animate-spin text-primary/20" size={32} />
+      <span className="ml-3 text-va-black/20 font-light tracking-widest uppercase text-sm">Configurator laden...</span>
+    </ContainerInstrument>
+  );
+
   return (
     <ContainerInstrument className={cn(
       "relative overflow-hidden",
