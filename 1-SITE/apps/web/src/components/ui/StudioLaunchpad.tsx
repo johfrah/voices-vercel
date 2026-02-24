@@ -94,6 +94,13 @@ export const StudioLaunchpad = ({ initialActors = [], initialJourney }: StudioLa
   const [pricingConfig, setPricingConfig] = useState<any>(null);
   const [calcWords, setCalcWords] = useState(200);
   
+  const mediaOptions = React.useMemo(() => [
+    { id: 'online', label: t('common.media.online', 'Online & Socials'), sub: t('common.media.online.desc', 'YouTube, Meta, LinkedIn'), icon: Globe },
+    { id: 'podcast', label: t('common.media.podcast', 'Podcast'), sub: t('common.media.podcast.desc', 'Pre-roll, Mid-roll'), icon: Mic2 },
+    { id: 'radio_national', label: t('common.media.radio', 'Radio'), sub: t('common.media.radio.desc', 'Landelijke Radio'), icon: Radio },
+    { id: 'tv_national', label: t('common.media.tv', 'TV'), sub: t('common.media.tv.desc', 'Landelijke TV'), icon: Tv }
+  ], [t]);
+  
   useEffect(() => {
     const fetchConfig = async () => {
       try {
@@ -194,12 +201,6 @@ export const StudioLaunchpad = ({ initialActors = [], initialJourney }: StudioLa
     }
   };
 
-  const mediaOptions = [
-    { id: 'online', label: t('common.media.online', 'Online & Socials'), sub: t('common.media.online.desc', 'YouTube, Meta, LinkedIn'), icon: Globe },
-    { id: 'podcast', label: t('common.media.podcast', 'Podcast'), sub: t('common.media.podcast.desc', 'Pre-roll, Mid-roll'), icon: Mic2 },
-    { id: 'radio_national', label: t('common.media.radio', 'Radio'), sub: t('common.media.radio.desc', 'Landelijke Radio'), icon: Radio },
-    { id: 'tv_national', label: t('common.media.tv', 'TV'), sub: t('common.media.tv.desc', 'Landelijke TV'), icon: Tv }
-  ];
 
   return (
     <SectionInstrument className="bg-va-off-white min-h-screen pb-32 overflow-hidden">

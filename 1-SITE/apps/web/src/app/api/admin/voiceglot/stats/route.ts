@@ -70,18 +70,6 @@ export async function GET(request: NextRequest) {
       };
     });
 
-    // Bereken percentages
-    const targetLanguages = ['en', 'fr', 'de', 'es', 'pt', 'it'];
-    const coverage = targetLanguages.map(lang => {
-      const found = statsByLang.find((s: any) => s.lang === lang);
-      const count = parseInt(String(found?.count || '0'), 10);
-      return {
-        lang,
-        count,
-        percentage: totalStrings > 0 ? Math.min(100, Math.round((count / totalStrings) * 100)) : 0
-      };
-    });
-
     const freshData = {
       totalStrings,
       coverage,
