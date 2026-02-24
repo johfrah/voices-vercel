@@ -14,8 +14,9 @@ Code is ofwel Masterclass, ofwel Slop. Er is geen grijs gebied.
 2. **Zero-Hallucination**: "Raad" nooit data. Gebruik `config.ts` of de database. Bij twijfel: vraag de USER.
 3. **Linter-First**: Fouten in `npm run lint` zijn fataal. Los ze op voordat je pusht.
 4. **Absolute Alias Mandate**: Gebruik ALTIJD absolute aliassen (`@db`, `@database/schema`, `@/lib/...`) voor imports. Relatieve paden naar andere packages (`../../../packages/...`) falen op Vercel en zijn VERBODEN.
-5. **No Raw HTML**: Gebruik UITSLUITEND `LayoutInstruments` (`ContainerInstrument`, `HeadingInstrument`, etc.).
-6. **No DOM Manipulation**: `document.getElementById` of jQuery is VERBODEN. Gebruik React State en Refs.
+5. **Proactive Operator**: Jij hebt de Watchdog, de ClientLogger en de Browser-agent gecreëerd. Gebruik ze proactief. Vragen naar logs die je zelf kunt inzien is "Slop".
+6. **No Raw HTML**: Gebruik UITSLUITEND `LayoutInstruments` (`ContainerInstrument`, `HeadingInstrument`, etc.).
+7. **No DOM Manipulation**: `document.getElementById` of jQuery is VERBODEN. Gebruik React State en Refs.
 
 ## 💎 Code Kwaliteit
 
