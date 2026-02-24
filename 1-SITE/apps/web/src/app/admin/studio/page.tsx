@@ -51,14 +51,25 @@ export default async function StudioAdminPage() {
       `)
       .order('date', { ascending: false });
 
-    if (!error && editions) {
+    if (error) {
+      console.error('Studio Admin SDK Error (Editions):', error);
+      // 🛡️ CHRIS-PROTOCOL: Report to Watchdog
+      const { ServerWatchdog } = await import('@/lib/services/server-watchdog');
+      await ServerWatchdog.report({
+        error: `Studio Admin SDK Error: ${error.message}`,
+        component: 'StudioAdminPage',
+        level: 'error'
+      });
+    }
+
+    if (editions) {
       allEditions = editions.map(e => ({
         ...e,
-        date: new Date(e.date)
+        date: e.date ? new Date(e.date) : new Date()
       }));
     }
-  } catch (dbError) {
-    console.error('Studio Admin SDK Error (Editions):', dbError);
+  } catch (dbError: any) {
+    console.error('Studio Admin Fatal Error (Editions):', dbError);
   }
 
   // 2. Haal financile stats op (Nuclear Logic)
