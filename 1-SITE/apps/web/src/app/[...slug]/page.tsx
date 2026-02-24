@@ -10,7 +10,7 @@ import { Metadata } from 'next';
 import Image from 'next/image';
 import { notFound, redirect } from 'next/navigation';
 import { Suspense } from "react";
-import { getActor, getArtist, getActors } from "@/lib/services/api-server";
+import { getActor, getArtist, getActors, getWorkshops } from "@/lib/services/api-server";
 import { MarketManagerServer as MarketManager } from "@/lib/system/market-manager-server";
 import { headers } from "next/headers";
 import { VoiceDetailClient } from "@/components/legacy/VoiceDetailClient";
@@ -39,6 +39,12 @@ const LiquidBackground = nextDynamic(() => import("@/components/ui/LiquidBackgro
 const VideoPlayer = nextDynamic(() => import("@/components/academy/VideoPlayer").then(mod => mod.VideoPlayer), { ssr: false });
 
 const AgencyCalculator = nextDynamic(() => import("@/components/ui/AgencyCalculator").then(mod => mod.AgencyCalculator), { ssr: false });
+
+// Workshop Components
+const WorkshopCarousel = nextDynamic(() => import("@/components/studio/WorkshopCarousel").then(mod => mod.WorkshopCarousel), { ssr: false });
+const WorkshopCalendar = nextDynamic(() => import("@/components/studio/WorkshopCalendar").then(mod => mod.WorkshopCalendar), { ssr: false });
+const StudioVideoPlayer = nextDynamic(() => import("@/components/ui/StudioVideoPlayer").then(mod => mod.StudioVideoPlayer), { ssr: false });
+const JourneyCta = nextDynamic(() => import("@/components/ui/JourneyCta").then(mod => mod.JourneyCta), { ssr: false });
 
 /**
  *  SUZY-MANDATE: Generate Structured Data (JSON-LD) for Voice Actors
@@ -586,7 +592,28 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
           }
 
           console.log(` [SmartRouter] Successfully loaded CMS page: ${firstSegment} with ${blocks?.length || 0} blocks.`);
-          return <CmsPageContent page={{ ...page, blocks: blocks || [] }} slug={firstSegment} />;
+          
+          // Fetch extra data based on slug
+          let extraData: any = {};
+          if (firstSegment === 'studio') {
+            try {
+              const workshops = await getWorkshops();
+              // Sort workshops: next edition first, then alphabetical
+              workshops.sort((a, b) => {
+                const nextA = a.editions?.[0]?.date;
+                const nextB = b.editions?.[0]?.date;
+                if (nextA && nextB) return new Date(nextA).getTime() - new Date(nextB).getTime();
+                if (nextA) return -1;
+                if (nextB) return 1;
+                return (a.title || '').localeCompare(b.title || '');
+              });
+              extraData.workshops = workshops;
+            } catch (err) {
+              console.error("[SmartRouter] Failed to fetch workshops for studio page:", err);
+            }
+          }
+
+          return <CmsPageContent page={{ ...page, blocks: blocks || [] }} slug={firstSegment} extraData={extraData} />;
         }
       } catch (e: any) {
         console.error("[SmartRouter] CMS check failed:", e.message);
@@ -611,7 +638,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
 /**
  *  CMS Page Renderer (Gekopieerd uit de originele [slug]/page.tsx)
  */
-function CmsPageContent({ page, slug }: { page: any, slug: string }) {
+function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: string, extraData?: any }) {
   const iapContext = page.iapContext as { journey?: string; lang?: string } | null;
   const journey = iapContext?.journey || 'agency';
 
@@ -635,6 +662,117 @@ function CmsPageContent({ page, slug }: { page: any, slug: string }) {
     const { title, body } = extractTitle(block.content || '');
 
     switch (block.type) {
+      case 'workshop_hero':
+        const videoUrl = body.match(/video:\s*([^\n]+)/)?.[1]?.trim();
+        const posterUrl = body.match(/poster:\s*([^\n]+)/)?.[1]?.trim();
+        const subtitleUrl = body.match(/subtitles:\s*([^\n]+)/)?.[1]?.trim();
+        
+        return (
+          <section key={block.id} className="voices-hero">
+            <ContainerInstrument plain className="voices-video-hero-grid">
+              <ContainerInstrument plain className="voices-hero-right group lg:order-1">
+                <ContainerInstrument plain className="voices-hero-visual-container">
+                  <Suspense fallback={<div className="w-full h-full bg-va-black/5 animate-pulse rounded-[32px]" />}>
+                    <StudioVideoPlayer 
+                      url={videoUrl || "/assets/studio/workshops/videos/workshop_studio_teaser.mp4"} 
+                      subtitles={subtitleUrl || "/assets/studio/workshops/subtitles/workshop_studio_teaser-nl.vtt"}
+                      poster={posterUrl || "/assets/visuals/branding/branding-branding-photo-horizontal-1.webp"}
+                      aspect="portrait"
+                      className="shadow-aura-lg border-none w-full h-full"
+                    />
+                  </Suspense>
+                </ContainerInstrument>
+                <ContainerInstrument plain className="absolute -top-10 -right-10 w-40 h-40 bg-primary/10 rounded-full blur-[80px] -z-10 animate-pulse" />
+              </ContainerInstrument>
+
+              <ContainerInstrument plain className="voices-hero-left lg:order-2">
+                <HeadingInstrument level={1} className="voices-hero-title font-light">
+                  {title}
+                </HeadingInstrument>
+                <TextInstrument className="voices-hero-subtitle font-light">
+                  {body.replace(/video:\s*[^\n]+/, '').replace(/poster:\s*[^\n]+/, '').replace(/subtitles:\s*[^\n]+/, '').trim()}
+                </TextInstrument>
+                <ContainerInstrument plain className="pt-4">
+                  <Link href="#workshops">
+                    <ButtonInstrument className="va-btn-pro !bg-va-black !text-white px-12 py-6 !rounded-[10px] font-light tracking-widest hover:bg-primary transition-all duration-500 flex items-center gap-3 shadow-aura-lg uppercase">
+                      <VoiceglotText translationKey="studio.hero.cta" defaultText="Bekijk workshops" />
+                      <ArrowRight size={18} strokeWidth={1.5} />
+                    </ButtonInstrument>
+                  </Link>
+                </ContainerInstrument>
+              </ContainerInstrument>
+            </ContainerInstrument>
+          </section>
+        );
+
+      case 'workshop_carousel':
+        return (
+          <section key={block.id} id="workshops" className="py-40 bg-white border-y border-black/[0.03] -mx-4 px-4 lg:-mx-32 lg:px-32">
+            <ContainerInstrument plain className="max-w-6xl mx-auto">
+              <ContainerInstrument plain className="max-w-3xl mb-24 space-y-8 mx-auto text-center">
+                {title && <HeadingInstrument level={2} className="text-5xl md:text-6xl font-light tracking-tighter leading-none text-va-black">{title}</HeadingInstrument>}
+                <TextInstrument className="text-xl md:text-2xl text-black/40 font-light leading-relaxed">
+                  {body}
+                </TextInstrument>
+              </ContainerInstrument>
+              <WorkshopCarousel workshops={extraData.workshops || []} />
+            </ContainerInstrument>
+          </section>
+        );
+
+      case 'workshop_calendar':
+        return (
+          <section key={block.id} className="py-40 bg-white">
+            <ContainerInstrument className="max-w-[1140px]">
+              <BentoGrid columns={3}>
+                <BentoCard span="lg" className="bg-va-off-white rounded-[20px] shadow-aura border border-black/[0.02] overflow-hidden">
+                  <ContainerInstrument className="p-12">
+                    <ContainerInstrument className="flex items-center gap-4 mb-8">
+                      <ContainerInstrument className="w-12 h-12 rounded-[10px] bg-primary/10 flex items-center justify-center">
+                        <Image src="/assets/common/branding/icons/INFO.svg" width={24} height={24} alt="" style={{ opacity: 0.4 }} />
+                      </ContainerInstrument>
+                      <ContainerInstrument>
+                        <HeadingInstrument level={2} className="text-3xl font-light tracking-tighter leading-none text-va-black">
+                          {title || 'Kalender'}
+                        </HeadingInstrument>
+                      </ContainerInstrument>
+                    </ContainerInstrument>
+                    <TextInstrument className="text-[15px] text-black/40 font-light leading-relaxed mb-12 max-w-md">
+                      {body}
+                    </TextInstrument>
+                    <WorkshopCalendar workshops={extraData.workshops || []} />
+                  </ContainerInstrument>
+                </BentoCard>
+                <BentoCard span="sm" className="bg-blue-600 p-12 text-white relative overflow-hidden flex flex-col justify-between min-h-[500px] rounded-[20px]">
+                  <ContainerInstrument className="relative z-10">
+                    <HeadingInstrument level={2} className="text-5xl font-light tracking-tighter leading-none mb-8 ">
+                      <VoiceglotText translationKey="studio.bento.guide.title" defaultText="Welke workshop past bij jou?" />
+                    </HeadingInstrument>
+                  </ContainerInstrument>
+                  <ContainerInstrument className="relative z-10">
+                    <Link href="/studio/quiz">
+                      <ButtonInstrument className="va-btn-pro !bg-white !text-black flex items-center gap-4 group !rounded-[10px] font-light tracking-widest uppercase">
+                        <VoiceglotText translationKey="studio.bento.guide.cta" defaultText="Doe de quiz" />
+                        <ArrowRight size={18} strokeWidth={1.5} className="group-hover:translate-x-2 transition-transform" />
+                      </ButtonInstrument>
+                    </Link>
+                  </ContainerInstrument>
+                  <ContainerInstrument className="absolute -right-20 -bottom-20 w-96 h-96 bg-white/10 rounded-[20px] blur-3xl" />
+                </BentoCard>
+              </BentoGrid>
+            </ContainerInstrument>
+          </section>
+        );
+
+      case 'journey_cta':
+        return (
+          <section key={block.id} className="py-20 bg-va-off-white">
+            <ContainerInstrument className="max-w-[1140px]">
+              <JourneyCta journey={body.trim() as any || 'studio'} />
+            </ContainerInstrument>
+          </section>
+        );
+
       case 'founder':
         return (
           <section key={block.id} className="py-48 grid grid-cols-1 lg:grid-cols-12 gap-24 items-center animate-in fade-in slide-in-from-bottom-12 duration-1000 fill-mode-both">
