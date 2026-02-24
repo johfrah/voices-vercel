@@ -12,7 +12,7 @@ import { eq } from "drizzle-orm";
 async function injectHowItWorks() {
   console.log("🚀 MARK: Start injectie 'Zo werkt het'...");
 
-  const slug = "how-it-works";
+  const slug = "zo-werkt-het";
   const title = "Zo werkt het";
   
   // 1. De Grondstof (Gezuiverd door MARK)

@@ -573,19 +573,21 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
       console.error("[SmartRouter] Actor check failed:", e);
     }
 
-    // 2. Check voor CMS Artikel (alleen als er maar 1 segment is)
-    if (segments.length === 1) {
+    // 2. Check voor CMS Artikel (alleen als er maar 1 segment is OF als het een agency sub-route is)
+    const isAgencySubRoute = segments.length === 2 && MarketManager.isAgencySegment(segments[0]);
+    if (segments.length === 1 || isAgencySubRoute) {
+      const cmsSlug = isAgencySubRoute ? segments[1] : firstSegment;
       try {
-        console.log(` [SmartRouter] Fetching CMS article: ${firstSegment}`);
+        console.log(` [SmartRouter] Fetching CMS article: ${cmsSlug}`);
         // 🛡️ CHRIS-PROTOCOL: Use SDK for stability (v2.14.273)
         const { data: page, error } = await supabase
           .from('content_articles')
           .select('*')
-          .eq('slug', firstSegment)
+          .eq('slug', cmsSlug)
           .single();
 
         if (error) {
-          console.warn(` [SmartRouter] CMS Article not found or SDK error: ${firstSegment}`, error.message);
+          console.warn(` [SmartRouter] CMS Article not found or SDK error: ${cmsSlug}`, error.message);
         }
 
         if (page) {
@@ -597,14 +599,14 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
             .order('display_order', { ascending: true });
 
           if (blocksError) {
-            console.error(` [SmartRouter] Error fetching blocks for ${firstSegment}:`, blocksError.message);
+            console.error(` [SmartRouter] Error fetching blocks for ${cmsSlug}:`, blocksError.message);
           }
 
-          console.log(` [SmartRouter] Successfully loaded CMS page: ${firstSegment} with ${blocks?.length || 0} blocks.`);
+          console.log(` [SmartRouter] Successfully loaded CMS page: ${cmsSlug} with ${blocks?.length || 0} blocks.`);
           
           // Fetch extra data based on slug
           let extraData: any = {};
-          if (firstSegment === 'studio') {
+          if (cmsSlug === 'studio') {
             try {
               const workshops = await getWorkshops();
               workshops.sort((a, b) => {
@@ -619,14 +621,14 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
             } catch (err) {
               console.error("[SmartRouter] Failed to fetch workshops for studio page:", err);
             }
-          } else if (firstSegment === 'academy') {
+          } else if (cmsSlug === 'academy') {
             try {
               const { data: lessons } = await supabase.from('lessons').select('*').order('display_order');
               extraData.lessons = lessons || [];
             } catch (err) {
               console.error("[SmartRouter] Failed to fetch lessons for academy page:", err);
             }
-          } else if (firstSegment === 'ademing') {
+          } else if (cmsSlug === 'ademing') {
             try {
               const { data: tracks } = await supabase.from('ademing_tracks').select('*').eq('is_public', true).limit(6);
               extraData.tracks = tracks || [];
@@ -635,7 +637,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
             }
           }
 
-          return <CmsPageContent page={{ ...page, blocks: blocks || [] }} slug={firstSegment} extraData={extraData} />;
+          return <CmsPageContent page={{ ...page, blocks: blocks || [] }} slug={cmsSlug} extraData={extraData} />;
         }
       } catch (e: any) {
         console.error("[SmartRouter] CMS check failed:", e.message);
