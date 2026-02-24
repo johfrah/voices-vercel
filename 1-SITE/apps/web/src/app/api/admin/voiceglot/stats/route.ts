@@ -44,9 +44,8 @@ export async function GET(request: NextRequest) {
     try {
       // Gebruik Drizzle's select met sql count aggregate voor maximale robuustheid
       const totalResult = await db.select({ count: sql`count(*)` }).from(translationRegistry);
-      totalStrings = parseInt(String(totalResult[0]?.count || '0'), 10);
-      console.log(`[Voiceglot Stats] Total strings: ${totalStrings}`);
-
+      totalStrings = parseInt(String((totalResult as any)[0]?.count || '0'), 10);
+      
       if (totalStrings > 0) {
         statsByLang = await db.select({
           lang: translations.lang,
@@ -54,11 +53,9 @@ export async function GET(request: NextRequest) {
         })
         .from(translations)
         .groupBy(translations.lang);
-        console.log(`[Voiceglot Stats] Stats by lang:`, statsByLang);
       }
     } catch (dbErr: any) {
       console.error('[Voiceglot Stats] Database query failed, using fallback:', dbErr.message);
-      // Fallback naar 0 maar laat de API niet crashen
     }
 
     // Bereken percentages
