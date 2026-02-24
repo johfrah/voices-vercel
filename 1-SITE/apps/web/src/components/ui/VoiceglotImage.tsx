@@ -118,7 +118,7 @@ export const VoiceglotImage: React.FC<VoiceglotImageProps> = ({
   const fillValue = props.fill === true ? true : undefined;
   const isProxied = currentSrc?.includes('/api/proxy');
   const isLocal = currentSrc?.startsWith('/') && !isProxied && !currentSrc?.startsWith('https://vcbxyyjsxuquytcsskpj.supabase.co');
-  const isSupabase = currentSrc?.startsWith('https://vcbxyyjsxuquytcsskpj.supabase.co');
+  const isSupabase = currentSrc?.startsWith('https://vcbxyyjsxuquytcsskpj.supabase.co') || currentSrc?.includes('supabase.co');
   const isGoogle = currentSrc?.includes('googleusercontent.com');
   const isDropbox = currentSrc?.includes('dropbox.com');
 
@@ -182,7 +182,7 @@ export const VoiceglotImage: React.FC<VoiceglotImageProps> = ({
           fill={fillValue}
           unoptimized={isProxied || isLocal}
           priority={isSupabase || props.priority}
-          sizes={isFill ? "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" : undefined}
+          sizes={props.sizes || (isFill ? "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" : undefined)}
           style={isFill ? { objectFit: 'cover' } : undefined}
           className={cn(
             className,

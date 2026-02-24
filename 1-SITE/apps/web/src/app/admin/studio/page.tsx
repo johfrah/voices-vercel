@@ -227,15 +227,19 @@ export default async function StudioAdminPage() {
                 Geen edities gevonden of database verbinding instabiel.
               </ContainerInstrument>
             ) : allEditions.map((edition) => (
-              <ContainerInstrument key={edition.id} className="p-6 rounded-2xl bg-va-off-white border border-transparent hover:border-black/5 transition-all flex flex-col md:flex-row justify-between items-center gap-6">
-                <ContainerInstrument className="flex items-center gap-6">
-                  <ContainerInstrument className="w-12 h-12 rounded-xl bg-black text-white flex flex-col items-center justify-center">
+              <Link 
+                key={edition.id} 
+                href={`/admin/studio/edities/${edition.id}`}
+                className="p-6 rounded-2xl bg-va-off-white border border-transparent hover:border-primary/20 hover:bg-white hover:shadow-aura transition-all flex flex-col md:flex-row justify-between items-center gap-6 group va-interactive"
+              >
+                <ContainerInstrument plain className="flex items-center gap-6">
+                  <ContainerInstrument plain className="w-12 h-12 rounded-xl bg-black text-white flex flex-col items-center justify-center group-hover:bg-primary group-hover:text-va-black transition-colors">
                     <TextInstrument className="text-[15px] font-black">{edition.date.getDate()}</TextInstrument>
                     <TextInstrument className="text-[15px] font-bold ">{edition.date.toLocaleString('nl-BE', { month: 'short' })}</TextInstrument>
                   </ContainerInstrument>
-                  <ContainerInstrument>
+                  <ContainerInstrument plain>
                     <HeadingInstrument level={4} className="text-lg font-light tracking-tight"><VoiceglotText  translationKey={`workshop.${edition.workshop?.id}.title`} defaultText={edition.workshop?.title || ''} noTranslate={true} /></HeadingInstrument>
-                    <ContainerInstrument className="flex gap-4 mt-1">
+                    <ContainerInstrument plain className="flex gap-4 mt-1">
                       <TextInstrument className="text-[15px] font-bold text-black/30 tracking-widest">
                         <VoiceglotText  translationKey={`instructor.${edition.instructor?.id}.name`} defaultText={edition.instructor?.name || ''} noTranslate={true} />
                       </TextInstrument>
@@ -246,20 +250,20 @@ export default async function StudioAdminPage() {
                   </ContainerInstrument>
                 </ContainerInstrument>
                 
-                <ContainerInstrument className="flex items-center gap-6">
-                  <ContainerInstrument className="text-right">
-                    <ContainerInstrument className="text-[15px] font-black tracking-widest text-black/20 mb-1">
+                <ContainerInstrument plain className="flex items-center gap-6">
+                  <ContainerInstrument plain className="text-right">
+                    <ContainerInstrument plain className="text-[15px] font-black tracking-widest text-black/20 mb-1">
                       <VoiceglotText  translationKey="common.status" defaultText="Status" />
                     </ContainerInstrument>
                     <TextInstrument className="text-[15px] font-black tracking-widest text-black/40">
                       <VoiceglotText  translationKey={`common.status.${edition.status}`} defaultText={edition.status || ''} />
                     </TextInstrument>
                   </ContainerInstrument>
-                  <Link  href={`/admin/studio/edities/${edition.id}`} className="p-4 rounded-xl bg-white border border-black/5 hover:border-primary transition-all">
-                    <Settings strokeWidth={1.5} size={16} className="text-black/20" />
-                  </Link>
+                  <ContainerInstrument plain className="p-4 rounded-xl bg-white border border-black/5 group-hover:border-primary transition-all">
+                    <Settings strokeWidth={1.5} size={16} className="text-black/20 group-hover:text-primary transition-colors" />
+                  </ContainerInstrument>
                 </ContainerInstrument>
-              </ContainerInstrument>
+              </Link>
             ))}
           </ContainerInstrument>
         </BentoCard>

@@ -589,7 +589,7 @@ export default function GlobalNav() {
           <TextInstrument className="text-xl font-light tracking-tighter transition-transform duration-500 group-hover:scale-105 text-va-black whitespace-nowrap relative z-50"><VoiceglotText  translationKey="nav.artist_name" defaultText={market.name} noTranslate={true} /></TextInstrument>
         ) : (
         <Image  
-          src={market.logo_url} 
+          src={market.logo_url || "/assets/common/branding/Voices-Artists-LOGO.webp"} 
           alt={t(`market.name.${market.market_code.toLowerCase()}`, market.name)} 
           width={200} 
           height={80}
