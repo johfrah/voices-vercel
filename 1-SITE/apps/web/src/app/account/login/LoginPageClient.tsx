@@ -94,12 +94,21 @@ export function LoginPageClient() {
     }
 
     try {
-      // CHRIS-PROTOCOL: Gebruik onze eigen custom auth API voor 100% controle
+      // CHRIS-PROTOCOL: Gebruik de canonieke URL met trailing slash om 308 redirects te voorkomen.
+      // Dit elimineert 'Failed to fetch' errors veroorzaakt door browser-beveiliging tijdens redirects.
+      
+      // NUCLEAR SAFETY: Voeg een controller toe voor een harde timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 seconden timeout
+
       const response = await fetch('/api/auth/send-magic-link/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, redirect }),
+        signal: controller.signal
       });
+
+      clearTimeout(timeoutId);
 
       const result = await response.json();
 
@@ -117,9 +126,16 @@ export function LoginPageClient() {
         document.cookie = `voices_remembered_email=${encodeURIComponent(email)}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`;
         setMessage(t('auth.login.success_message', 'Check je inbox! We hebben een magische inloglink gestuurd.'));
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('[LoginPage] Custom auth failed:', err);
-      setError(t('auth.error.submission', 'Er is een fout opgetreden bij het versturen van de inloglink.'));
+      
+      if (err.name === 'AbortError') {
+        setError(t('auth.error.timeout', 'De server reageert te traag. Probeer het over enkele seconden opnieuw.'));
+      } else if (err.message === 'Failed to fetch') {
+        setError(t('auth.error.blocked', 'Netwerkfout: De verbinding wordt geblokkeerd. Schakel eventuele adblockers uit en probeer het opnieuw.'));
+      } else {
+        setError(t('auth.error.submission', 'Er is een fout opgetreden bij het versturen van de inloglink.'));
+      }
     } finally {
       setIsLoading(false);
     }

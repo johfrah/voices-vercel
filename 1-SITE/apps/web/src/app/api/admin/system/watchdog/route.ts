@@ -93,6 +93,20 @@ export async function POST(request: NextRequest) {
     }
 
     if (mailEngine) {
+      // 🛡️ CHRIS-PROTOCOL: Filter out common noise to prevent mail spam
+      const isNoise = (
+        error.includes('Minified React error #419') || // Hydration mismatch (common in Next.js/Browser extensions)
+        error.includes('Server Components render') || // Generic Next.js error often paired with others
+        error.includes('/api/translations/heal') ||   // Network noise/aborted requests
+        error.includes('Failed to fetch') ||          // Network noise
+        error.includes('Load failed')                 // Network noise
+      );
+
+      if (isNoise) {
+        console.log(`[Watchdog] 🤫 Noise detected: "${error.substring(0, 50)}...". Logged to DB but no mail sent.`);
+        return NextResponse.json({ success: true, eventId, mailSent: false });
+      }
+
       //  BOB'S MANDATE: Rate limiting voor mails (max 1 per 10 minuten)
       const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000).toISOString();
       
@@ -104,7 +118,8 @@ export async function POST(request: NextRequest) {
           .where(
             and(
               eq(systemEvents.source, 'WatchdogMail'),
-              gte(systemEvents.createdAt, tenMinutesAgo)
+              gte(systemEvents.createdAt, tenMinutesAgo),
+              eq(systemEvents.message, `Watchdog summary mail sent: ${error.substring(0, 50)}`)
             )
           )
           .limit(1);
@@ -115,7 +130,7 @@ export async function POST(request: NextRequest) {
       }
 
       if (recentMailSent) {
-        console.log('[Watchdog] 🤫 Mail rate-limited. Error logged to DB but no mail sent.');
+        console.log('[Watchdog] 🤫 Identical mail rate-limited. Error logged to DB but no mail sent.');
         return NextResponse.json({ success: true, eventId, mailSent: false });
       }
 
@@ -124,7 +139,7 @@ export async function POST(request: NextRequest) {
         await db.insert(systemEvents).values({
           level: 'info',
           source: 'WatchdogMail',
-          message: 'Watchdog summary mail sent',
+          message: `Watchdog summary mail sent: ${error.substring(0, 50)}`,
           createdAt: new Date().toISOString()
         });
       } catch (e) {
