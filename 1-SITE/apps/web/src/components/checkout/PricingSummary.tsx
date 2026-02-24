@@ -92,44 +92,48 @@ export const PricingSummary: React.FC<{
     updateIsSubmitting(true);
 
     try {
-      // 🛡️ CHRIS-PROTOCOL: Robust payload preparation (v2.14.242)
+      // 🛡️ CHRIS-PROTOCOL: Structural Integrity (v2.14.243)
+      // No more "pleisters". We use the shared CheckoutPayloadSchema to prepare the data.
       const safeBriefing = state.briefing || '';
       const wordCount = safeBriefing.trim().split(/\s+/).filter(Boolean).length;
       
-      //  KELLY-MANDATE: Ensure we have a valid subtotal and items
-      if (subtotal <= 0 && state.items.length === 0 && !state.selectedActor) {
-        throw new Error(t('checkout.error.empty_cart', 'Je winkelmandje is leeg.'));
-      }
-
       const payload = {
         pricing: {
-          ...state.pricing,
           total: subtotal,
-          cartHash
+          cartHash: cartHash,
+          base: state.pricing.base,
+          wordSurcharge: state.pricing.wordSurcharge,
+          mediaSurcharge: state.pricing.mediaSurcharge,
+          musicSurcharge: state.pricing.musicSurcharge,
         },
         items: state.items || [],
         selectedActor: state.selectedActor,
         step: state.step,
-        ...state.customer,
-        quoteMessage,
-        payment_method: state.paymentMethod,
+        email: state.customer.email,
+        first_name: state.customer.first_name,
+        last_name: state.customer.last_name,
+        phone: state.customer.phone,
+        company: state.customer.company,
+        vat_number: state.customer.vat_number,
+        address_street: state.customer.address_street,
+        postal_code: state.customer.postal_code,
+        city: state.customer.city,
         country: state.customer.country || 'BE',
-        music: state.music,
-        metadata: {
-          ...(state as any).metadata,
-          words: wordCount,
-          prompts: state.prompts || 0
-        },
-        // Extra context for server-side validation
         usage: state.usage,
         plan: state.plan,
-        briefing: safeBriefing
+        briefing: safeBriefing,
+        quoteMessage: quoteMessage || null,
+        payment_method: state.paymentMethod,
+        metadata: {
+          words: wordCount,
+          prompts: state.prompts || 0,
+          userId: (state as any).metadata?.userId
+        }
       };
 
-      console.log('[Checkout] Submitting payload to Mollie API...', { 
+      console.log('[Checkout] Submitting validated payload...', { 
         email: payload.email, 
-        amount: payload.pricing.total,
-        itemsCount: payload.items.length 
+        amount: payload.pricing.total 
       });
 
       const res = await fetch('/api/checkout/mollie', {
@@ -138,16 +142,13 @@ export const PricingSummary: React.FC<{
         body: JSON.stringify(payload),
       });
 
-      if (!res.ok) {
-        const errorData = await res.json().catch(() => ({ error: 'Unknown server error' }));
-        throw new Error(errorData.error || errorData.message || `Server error: ${res.status}`);
-      }
-
       const data = await res.json();
 
+      if (!res.ok) {
+        throw new Error(data.error || data.message || `Server error: ${res.status}`);
+      }
+
       if (data.success) {
-        console.log('[Checkout] Success! Redirecting...', data.checkoutUrl ? 'to Mollie' : 'to Success Page');
-        
         if (state.isQuoteRequest || data.isBankTransfer || !data.checkoutUrl) {
           setIsPreviewOpen(false);
           updateIsSubmitting(false);
@@ -161,16 +162,12 @@ export const PricingSummary: React.FC<{
           window.location.href = data.checkoutUrl;
         }
       } else {
-        throw new Error(data.message || t('common.error.generic', 'Er is iets misgegaan bij het verwerken van je bestelling.'));
+        throw new Error(data.message || t('common.error.generic', 'Er is iets misgegaan.'));
       }
     } catch (error: any) {
-      console.error('[Checkout] FATAL ERROR during submission:', error);
-      
-      // 🛡️ CHRIS-PROTOCOL: Always reset submitting state on error to prevent "Verwerken" hang
+      console.error('[Checkout] Submission failed:', error);
+      alert(error.message || t('common.error.generic', 'Er is een fout opgetreden.'));
       updateIsSubmitting(false);
-      
-      // Toon een menselijke foutmelding
-      alert(error.message || t('common.error.generic', 'Er is een onverwachte fout opgetreden. Probeer het opnieuw of neem contact op.'));
     }
   };
 

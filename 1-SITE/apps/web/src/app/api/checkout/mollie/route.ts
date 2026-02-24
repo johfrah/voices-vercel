@@ -1,7 +1,7 @@
 import { VatService } from '@/lib/compliance/vat-service';
 import { LexCheck } from '@/lib/compliance/lex-check';
 import { db } from '@db';
-import { orders, users, centralLeads, actors, notifications } from '@db/schema';
+import { orders, users, centralLeads, actors, notifications, orderItems } from '@db/schema';
 import { eq, inArray } from 'drizzle-orm';
 import { sign } from 'jsonwebtoken';
 import { headers } from 'next/headers';
@@ -11,6 +11,7 @@ import { MollieService } from '@/lib/payments/mollie';
 import { SlimmeKassa } from '@/lib/engines/pricing-engine';
 import { generateCartHash } from '@/lib/utils/cart-utils';
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
+import { CheckoutPayloadSchema } from '@/lib/validation/checkout-schema';
 
 /**
  * MOLLIE V3 HEADLESS CHECKOUT (CORE LOGIC 2026)
@@ -36,10 +37,21 @@ export async function POST(request: Request) {
     const baseUrl = `${protocol}://${host}`;
     const ip = headersList.get('x-forwarded-for') || 'unknown';
 
-    const body = await request.json();
+    // 🛡️ CHRIS-PROTOCOL: Structural Validation (v2.14.243)
+    const rawBody = await request.json();
+    const validation = CheckoutPayloadSchema.safeParse(rawBody);
+
+    if (!validation.success) {
+      console.error('[Checkout] Validation failed:', validation.error.format());
+      return NextResponse.json({ 
+        error: 'Ongeldige bestelgegevens', 
+        details: validation.error.format() 
+      }, { status: 400 });
+    }
+
     const { 
       pricing, 
-      items = [],
+      items,
       selectedActor,
       step,
       first_name, 
@@ -49,7 +61,6 @@ export async function POST(request: Request) {
       postal_code, 
       city, 
       metadata,
-      isQuote: submittedIsQuote,
       quoteMessage,
       phone,
       company,
@@ -58,30 +69,11 @@ export async function POST(request: Request) {
       plan,
       music,
       country,
-      gateway,
-      isSubscription,
-      billing_po,
-      financial_email,
       payment_method,
-      isVatExempt: submittedIsVatExempt
-    } = body;
+    } = validation.data;
 
-    // 1. Cart Hash Validatie (Race-condition check)
-    const serverCartHash = generateCartHash(items, selectedActor, step);
-    if (pricing?.cartHash && pricing.cartHash !== serverCartHash) {
-      console.warn(`[Checkout] Cart hash mismatch! Client: ${pricing.cartHash}, Server: ${serverCartHash}`);
-      // We blokkeren niet direct, maar we dwingen een herberekening af.
-    }
-
-    // 2. Server-Side Prijs Validatie (Lex Check)
-    let isQuote = submittedIsQuote || false;
-    let serverCalculatedSubtotal = 0;
-    
-    // Fetch actor data from DB for all items
-    const actorIds = Array.from(new Set([
-      ...items.map((i: any) => i.actor?.id).filter(Boolean),
-      ...(selectedActor?.id ? [selectedActor.id] : [])
-    ]));
+    const isSubscription = usage === 'subscription';
+    const submittedIsVatExempt = false; // Te bepalen via VatService later indien nodig
 
     let dbActors: any[] = [];
     if (actorIds.length > 0) {
@@ -164,10 +156,9 @@ export async function POST(request: Request) {
     if (selectedActor && step === 'briefing') {
       const dbActor = actorMap.get(selectedActor.id);
       if (dbActor) {
-        const wordCount = body.briefing?.trim().split(/\s+/).filter(Boolean).length || 0;
         const result = SlimmeKassa.calculate({
           usage: usage,
-          words: wordCount,
+          words: metadata?.words || 0,
           mediaTypes: body.media,
           country: body.country,
           spots: body.spotsDetail || { [body.media?.[0]]: body.spots },

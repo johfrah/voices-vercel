@@ -1,6 +1,6 @@
 {
   "name": "voices-experience-layer",
-    "version": "2.14.242",
+  "version": "2.14.242",
   "private": true,
   "scripts": {
     "dev": "PORT=3000 next dev",
@@ -87,7 +87,8 @@
     "xlsx": "^0.18.5",
     "xml2js": "^0.6.2",
     "xmlbuilder2": "^4.0.3",
-    "ytdl-core": "^4.11.5"
+    "ytdl-core": "^4.11.5",
+    "zod": "^4.3.6"
   },
   "overrides": {
     "get-stream": "6.0.1"
