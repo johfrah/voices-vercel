@@ -21,6 +21,19 @@ import nextDynamic from "next/dynamic";
 import { JourneyType } from '@/contexts/VoicesMasterControlContext';
 import { normalizeSlug } from '@/lib/system/slug';
 
+import { createClient } from "@supabase/supabase-js";
+
+//  CHRIS-PROTOCOL: SDK fallback for stability (v2.14.273)
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const supabase = createClient(supabaseUrl, supabaseKey, {
+  auth: {
+    persistSession: false,
+    autoRefreshToken: false,
+    detectSessionInUrl: false
+  }
+});
+
 //  NUCLEAR LOADING MANDATE
 const LiquidBackground = nextDynamic(() => import("@/components/ui/LiquidBackground").then(mod => mod.LiquidBackground), { ssr: false });
 const VideoPlayer = nextDynamic(() => import("@/components/academy/VideoPlayer").then(mod => mod.VideoPlayer), { ssr: false });
@@ -103,27 +116,17 @@ async function resolveSlug(slug: string, lang: string): Promise<{ originalSlug: 
   try {
     const normalized = normalizeSlug(slug);
     
-    // 🛡️ CHRIS-PROTOCOL: Pre-flight check for DB
-    if (!db) {
-      console.warn('[resolveSlug] Database not available, skipping mapping');
-      return null;
-    }
+    // 🛡️ CHRIS-PROTOCOL: Use SDK for stability (v2.14.273)
+    const { data: mapping, error } = await supabase
+      .from('translations')
+      .select('translation_key, translated_text')
+      .eq('lang', lang)
+      .eq('translated_text', normalized)
+      .ilike('translation_key', 'slug.%')
+      .single();
 
-    // 1. Check de translations tabel voor een slug mapping
-    // Key format: slug.[type].[original_slug]
-    const mapping = await db.query.translations.findFirst({
-      where: and(
-        eq(translations.lang, lang),
-        eq(translations.translatedText, normalized),
-        ilike(translations.translationKey, 'slug.%')
-      )
-    }).catch(err => {
-      console.error(`[resolveSlug] DB Query Error: ${err.message}`);
-      return null;
-    });
-
-    if (mapping && mapping.translationKey) {
-      const parts = mapping.translationKey.split('.');
+    if (!error && mapping && mapping.translation_key) {
+      const parts = mapping.translation_key.split('.');
       if (parts.length >= 3) {
         return {
           originalSlug: parts.slice(2).join('.'),
@@ -556,17 +559,22 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
     // 2. Check voor CMS Artikel (alleen als er maar 1 segment is)
     if (segments.length === 1) {
       try {
-        const page = await db.query.contentArticles.findFirst({
-          where: eq(contentArticles.slug, firstSegment),
-          with: {
-            blocks: {
-              orderBy: (blocks: any, { asc }: { asc: any }) => [asc(blocks.displayOrder)],
-            },
-          },
-        }).catch(() => null);
+        // 🛡️ CHRIS-PROTOCOL: Use SDK for stability (v2.14.273)
+        const { data: page, error } = await supabase
+          .from('content_articles')
+          .select('*')
+          .eq('slug', firstSegment)
+          .single();
 
-        if (page) {
-          return <CmsPageContent page={page} slug={firstSegment} />;
+        if (page && !error) {
+          // Fetch blocks via SDK
+          const { data: blocks } = await supabase
+            .from('content_blocks')
+            .select('*')
+            .eq('article_id', page.id)
+            .order('display_order', { ascending: true });
+
+          return <CmsPageContent page={{ ...page, blocks: blocks || [] }} slug={firstSegment} />;
         }
       } catch (e) {
         console.error("[SmartRouter] CMS check failed:", e);

@@ -359,12 +359,33 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
 }
 
 export async function getArticle(slug: string, lang: string = 'nl'): Promise<any> {
-  const results = await db.select().from(contentArticles).where(eq(contentArticles.slug, slug)).limit(1).catch(() => []);
-  const article = results[0];
-  if (!article) return null;
+  // 🛡️ CHRIS-PROTOCOL: Use SDK for stability (v2.14.273)
+  const { data: article, error } = await supabase
+    .from('content_articles')
+    .select('*')
+    .eq('slug', slug)
+    .single();
+
+  if (error || !article) {
+    console.warn(`[api-server] Article not found for slug: ${slug}`, error);
+    return null;
+  }
+
   const translatedTitle = await VoiceglotBridge.t(`page.${slug}.title`, lang, true);
-  const blocks = await db.select().from(contentBlocks).where(eq(contentBlocks.articleId, article.id)).orderBy(asc(contentBlocks.displayOrder)).catch(() => []);
-  return { ...article, title: translatedTitle, blocks: blocks };
+  
+  // Fetch blocks via SDK
+  const { data: blocks } = await supabase
+    .from('content_blocks')
+    .select('*')
+    .eq('article_id', article.id)
+    .order('display_order', { ascending: true });
+
+  return { 
+    ...article, 
+    id: article.id,
+    title: translatedTitle, 
+    blocks: blocks || [] 
+  };
 }
 
 export async function getActor(slug: string, lang: string = 'nl'): Promise<Actor> {
@@ -511,10 +532,25 @@ export async function getTranslationsServer(lang: string): Promise<Record<string
   const cache = getGlobalCache();
   const cached = cache.translationCache[lang];
   if (cached && (Date.now() - cached.timestamp) < 3600000) return cached.data;
+  
   try {
-    const data = await db.select().from(translations).where(eq(translations.lang, lang)).limit(500).catch(() => []);
+    // 🛡️ CHRIS-PROTOCOL: Use SDK for stability (v2.14.273)
+    const { data, error } = await supabase
+      .from('translations')
+      .select('translation_key, translated_text, original_text')
+      .eq('lang', lang)
+      .limit(500);
+
+    if (error) throw error;
+
     const translationMap: Record<string, string> = {};
-    data?.forEach((row: any) => { if (row.translationKey) translationMap[row.translationKey] = row.translatedText || row.originalText || ''; });
+    data?.forEach((row: any) => { 
+      const key = row.translation_key || row.translationKey;
+      if (key) {
+        translationMap[key] = row.translated_text || row.translatedText || row.original_text || row.originalText || ''; 
+      }
+    });
+    
     cache.translationCache[lang] = { data: translationMap, timestamp: Date.now() };
     return translationMap;
   } catch (e) { 

@@ -230,8 +230,10 @@ export async function POST(request: Request) {
     }
 
     // 6. Bestelling aanmaken
+    const isInvoiceActual = payment_method === 'banktransfer';
+
     // 🛡️ CHRIS-PROTOCOL: Minimum amount check (v2.14.271)
-    if (amount <= 0 && !isQuote && !isInvoice) {
+    if (amount <= 0 && !isQuoteOnly && !isInvoiceActual) {
       console.warn('[Checkout] Amount is 0 or negative for a paid order. Forcing quote mode.');
       isQuoteOnly = true;
     }
@@ -284,9 +286,9 @@ export async function POST(request: Request) {
       { expiresIn: '24h' }
     );
 
-    const isInvoice = payment_method === 'banktransfer';
+    const isInvoiceActual = payment_method === 'banktransfer';
 
-    if (isQuote || isInvoice) {
+    if (isQuote || isInvoiceActual) {
       // Offerte/Factuur flow (Background)
       (async () => {
         try {
@@ -313,9 +315,9 @@ export async function POST(request: Request) {
         success: true,
         orderId: newOrder.id,
         token: secureToken,
-        isBankTransfer: isInvoice,
+        isBankTransfer: isInvoiceActual,
         isQuote,
-        message: isInvoice ? 'Bestelling ontvangen.' : 'Offerte aangemaakt.'
+        message: isInvoiceActual ? 'Bestelling ontvangen.' : 'Offerte aangemaakt.'
       });
     }
 
