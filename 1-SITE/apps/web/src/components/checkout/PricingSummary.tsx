@@ -247,91 +247,101 @@ export const PricingSummary: React.FC<{
                     <HeadingInstrument level={4} className="font-light text-xl text-va-black truncate tracking-tight">
                       {itemObj.actor?.display_name || itemObj.name || 'Stemopname'}
                     </HeadingInstrument>
-                    <div className="text-[13px] leading-relaxed text-va-black/40 font-light mt-1 line-clamp-2">
-                      {itemObj.usage === 'telefonie' ? (
-                        t('checkout.item.telephony_desc', 'Onbeperkt gebruik voor telefonie & IVR.')
-                      ) : itemObj.usage === 'commercial' ? (
-                        <div className="flex flex-col gap-0.5">
-                          <span className="font-medium text-primary/60">
-                            {Array.isArray(itemObj.media) 
-                              ? itemObj.media.map((m: string) => {
-                                  const label = mediaLabels[m] || m;
-                                  const spots = (typeof itemObj.spots === 'object' ? itemObj.spots[m] : itemObj.spots) || 1;
-                                  const years = (typeof itemObj.years === 'object' ? itemObj.years[m] : itemObj.years) || 1;
-                                  return `${label} (${spots} ${spots === 1 ? t('common.spot', 'spot') : t('common.spots', 'spots')}, ${years} ${years === 1 ? t('common.year', 'jaar') : t('common.years', 'jaar')})`;
-                                }).join(' • ')
-                              : (mediaLabels[itemObj.media] || itemObj.media)}
-                          </span>
+                    <div className="text-[13px] leading-relaxed text-va-black/40 font-light mt-1">
+                      <div className="flex flex-col gap-1">
+                        <span className="font-medium text-va-black/60">
+                          {itemObj.usage === 'telefonie' ? (
+                            t('checkout.item.telephony_desc', 'Telefoon / IVR')
+                          ) : itemObj.usage === 'commercial' ? (
+                            Array.isArray(itemObj.media) 
+                              ? itemObj.media.map((m: string) => mediaLabels[m] || m).join(' • ')
+                              : (mediaLabels[itemObj.media] || itemObj.media)
+                          ) : (
+                            t('checkout.item.unpaid_desc', 'Online Video / Corporate')
+                          )}
+                        </span>
+                        {itemObj.usage === 'commercial' && (
                           <span className="text-[11px] uppercase tracking-widest opacity-70">
                             {countryLabels[itemObj.country] || itemObj.country || t('common.country.be', 'België')}
                           </span>
-                        </div>
-                      ) : (
-                        t('checkout.item.unpaid_desc', 'Onbeperkt gebruik in de tijd zonder advertentie-budget.')
-                      )}
+                        )}
+                      </div>
                       
-                      {isCartPage && (itemObj.script || itemObj.briefing) && (
-                        <div className="mt-3 space-y-3">
-                          <div className="p-4 bg-va-off-white/50 rounded-xl border border-va-black/[0.03] italic text-va-black/60 relative group/script-preview">
-                            <div className="absolute -top-2 -left-2 bg-white rounded-full p-1 shadow-sm border border-va-black/5">
-                              <FileText size={10} className="text-primary" />
-                            </div>
-                            &quot;{itemObj.script || itemObj.briefing}&quot;
-                          </div>
-                          
-                          {/* Delivery Date Badge */}
-                          {(() => {
-                            const delivery = calculateDeliveryDate({
-                              deliveryDaysMin: itemObj.actor?.delivery_days_min || 1,
-                              deliveryDaysMax: itemObj.actor?.delivery_days_max || 3,
-                              cutoffTime: itemObj.actor?.cutoff_time || '18:00',
-                              availability: itemObj.actor?.availability || []
-                            });
-                            return (
-                              <div className="flex flex-col gap-4">
-                                <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-green-500/5 border border-green-500/10 rounded-lg w-fit">
-                                  <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-                                  <span className="text-[11px] font-bold text-green-600/80 uppercase tracking-wider">
-                                    Verwachte levering: {delivery.formatted}
-                                  </span>
+                      {isCartPage && (
+                        <div className="mt-6 space-y-6">
+                          {/* Script Preview */}
+                          {(itemObj.script || itemObj.briefing) && (
+                            <div className="space-y-2">
+                              <LabelInstrument className="text-[10px] uppercase tracking-widest text-va-black/30 font-bold ml-0">
+                                Ingevoerde tekst
+                              </LabelInstrument>
+                              <div className="p-6 bg-va-off-white/40 rounded-[24px] border border-va-black/[0.03] italic text-va-black/80 relative group/script-preview text-[15px] leading-relaxed">
+                                <div className="absolute -top-2 -left-2 bg-white rounded-full p-1.5 shadow-sm border border-va-black/5">
+                                  <FileText size={12} className="text-primary" />
                                 </div>
-
-                                {/* INLINE PRICE BREAKDOWN (NUCLEAR 2026) */}
-                                {itemObj.pricing && (
-                                  <div className="pt-4 border-t border-va-black/[0.03] space-y-2">
-                                    <div className="flex justify-between text-[11px] uppercase tracking-widest text-va-black/30 font-bold">
-                                      <span>Prijsopbouw</span>
-                                      <span>Bedrag</span>
-                                    </div>
-                                    <div className="space-y-1.5">
-                                      <div className="flex justify-between text-[13px] text-va-black/60">
-                                        <span>Basistarief</span>
-                                        <span>€ {(itemObj.pricing.base ?? 0).toFixed(2)}</span>
-                                      </div>
-                                      {(itemObj.pricing.wordSurcharge ?? 0) > 0 && (
-                                        <div className="flex justify-between text-[13px] text-va-black/60">
-                                          <span>Extra woorden/verwerking</span>
-                                          <span>+ € {(itemObj.pricing.wordSurcharge ?? 0).toFixed(2)}</span>
-                                        </div>
-                                      )}
-                                      {(itemObj.pricing.mediaSurcharge ?? 0) > 0 && (
-                                        <div className="flex justify-between text-[13px] text-va-black/60">
-                                          <span>Licenties & Buyouts</span>
-                                          <span>+ € {(itemObj.pricing.mediaSurcharge ?? 0).toFixed(2)}</span>
-                                        </div>
-                                      )}
-                                      {(itemObj.pricing.musicSurcharge ?? 0) > 0 && (
-                                        <div className="flex justify-between text-[13px] text-va-black/60">
-                                          <span>Muziek & Mixage</span>
-                                          <span>+ € {(itemObj.pricing.musicSurcharge ?? 0).toFixed(2)}</span>
-                                        </div>
-                                      )}
-                                    </div>
-                                  </div>
-                                )}
+                                &quot;{itemObj.script || itemObj.briefing}&quot;
                               </div>
-                            );
-                          })()}
+                            </div>
+                          )}
+                          
+                          {/* Delivery & Pricing Grid */}
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4 border-t border-va-black/[0.03]">
+                            {/* Delivery Date */}
+                            <div className="space-y-2">
+                              <LabelInstrument className="text-[10px] uppercase tracking-widest text-va-black/30 font-bold ml-0">
+                                Levering
+                              </LabelInstrument>
+                              {(() => {
+                                const delivery = calculateDeliveryDate({
+                                  deliveryDaysMin: itemObj.actor?.delivery_days_min || 1,
+                                  deliveryDaysMax: itemObj.actor?.delivery_days_max || 3,
+                                  cutoffTime: itemObj.actor?.cutoff_time || '18:00',
+                                  availability: itemObj.actor?.availability || []
+                                });
+                                return (
+                                  <div className="inline-flex items-center gap-2 px-3 py-2 bg-green-500/5 border border-green-500/10 rounded-xl w-fit">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                                    <span className="text-[12px] font-bold text-green-600/80 uppercase tracking-wider">
+                                      {delivery.formatted}
+                                    </span>
+                                  </div>
+                                );
+                              })()}
+                            </div>
+
+                            {/* Price Breakdown */}
+                            {itemObj.pricing && (
+                              <div className="space-y-3">
+                                <LabelInstrument className="text-[10px] uppercase tracking-widest text-va-black/30 font-bold ml-0">
+                                  Prijsopbouw (excl. BTW)
+                                </LabelInstrument>
+                                <div className="space-y-1.5">
+                                  <div className="flex justify-between text-[13px] text-va-black/60">
+                                    <span>Basistarief</span>
+                                    <span className="font-medium">€ {(itemObj.pricing.base ?? 0).toFixed(2)}</span>
+                                  </div>
+                                  {(itemObj.pricing.wordSurcharge ?? 0) > 0 && (
+                                    <div className="flex justify-between text-[13px] text-va-black/60">
+                                      <span>Extra woorden/verwerking</span>
+                                      <span className="font-medium">+ € {(itemObj.pricing.wordSurcharge ?? 0).toFixed(2)}</span>
+                                    </div>
+                                  )}
+                                  {(itemObj.pricing.mediaSurcharge ?? 0) > 0 && (
+                                    <div className="flex justify-between text-[13px] text-va-black/60">
+                                      <span>Licenties & Buyouts</span>
+                                      <span className="font-medium">+ € {(itemObj.pricing.mediaSurcharge ?? 0).toFixed(2)}</span>
+                                    </div>
+                                  )}
+                                  {(itemObj.pricing.musicSurcharge ?? 0) > 0 && (
+                                    <div className="flex justify-between text-[13px] text-va-black/60">
+                                      <span>Muziek & Mixage</span>
+                                      <span className="font-medium">+ € {(itemObj.pricing.musicSurcharge ?? 0).toFixed(2)}</span>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            )}
+                          </div>
                         </div>
                       )}
                     </div>
