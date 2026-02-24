@@ -412,9 +412,6 @@ export default function VoiceglotMasterPage() {
           </tbody>
         </table>
       </div>
-          </tbody>
-        </table>
-      </div>
     </PageWrapperInstrument>
   );
 }
