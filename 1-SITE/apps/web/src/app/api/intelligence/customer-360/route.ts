@@ -68,9 +68,24 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  try {
+    try {
     const identifier = userId ? parseInt(userId) : email!;
     
+    // 🛡️ CHRIS-PROTOCOL: Nuclear Caching Layer (SWR)
+    // We cachen de 360 data voor 5 minuten om 504 timeouts te voorkomen.
+    const cacheKey = `customer_360_${identifier}`;
+    const { data: cachedData } = await sdkClient
+      .from('app_configs')
+      .select('value')
+      .eq('key', cacheKey)
+      .single();
+
+    if (cachedData && (Date.now() - new Date((cachedData.value as any).timestamp).getTime() < 300000)) {
+      return NextResponse.json((cachedData.value as any).data, {
+        headers: { 'X-Cache': 'HIT' }
+      });
+    }
+
     //  CHRIS-PROTOCOL: Voeg een timeout toe om 504 Gateway Timeouts te voorkomen
     const customerDataPromise = UCIService.getCustomer360(identifier);
     const timeoutPromise = new Promise((_, reject) => 
@@ -83,9 +98,16 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Customer not found' }, { status: 404 });
     }
 
+    // Background update cache (don't await)
+    sdkClient.from('app_configs').upsert({
+      key: cacheKey,
+      value: { data: customerData, timestamp: new Date().toISOString() }
+    }).then(() => {});
+
     return NextResponse.json(customerData, {
       headers: {
-        'Cache-Control': 'no-store, max-age=0'
+        'Cache-Control': 'no-store, max-age=0',
+        'X-Cache': 'MISS'
       }
     });
   } catch (error: any) {
