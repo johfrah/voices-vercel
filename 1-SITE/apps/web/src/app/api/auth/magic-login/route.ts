@@ -26,15 +26,24 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Invalid or expired token' }, { status: 401 });
     }
 
-    const { userId } = payload;
-    if (!userId) {
-      return NextResponse.json({ error: 'Invalid token payload' }, { status: 400 });
+    let { userId, email: tokenEmail } = payload;
+    
+    // 🛡️ CHRIS-PROTOCOL: Robust user lookup (v2.14.312)
+    // If userId is missing but we have an email, we can still proceed
+    let userRecord: any = null;
+
+    if (userId) {
+      const [u] = await db.select().from(users).where(eq(users.id, userId)).limit(1);
+      userRecord = u;
+    } 
+    
+    if (!userRecord && tokenEmail) {
+      const [u] = await db.select().from(users).where(eq(users.email, tokenEmail)).limit(1);
+      userRecord = u;
     }
 
-    // 2. Fetch User Email
-    const [user] = await db.select().from(users).where(eq(users.id, userId)).limit(1);
-    if (!user || !user.email) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    if (!userRecord || !userRecord.email) {
+      return NextResponse.json({ error: 'User not found or invalid token payload' }, { status: 404 });
     }
 
     // 3. Initialize Supabase Admin
@@ -54,7 +63,7 @@ export async function GET(request: Request) {
     // 4. Generate Magic Link (Action Link)
     const { data, error } = await supabaseAdmin.auth.admin.generateLink({
       type: 'magiclink',
-      email: user.email,
+      email: userRecord.email,
       options: {
         redirectTo: `${currentBaseUrl}${redirectPath}`,
       }
