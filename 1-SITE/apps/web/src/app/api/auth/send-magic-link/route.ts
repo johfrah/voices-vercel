@@ -157,10 +157,15 @@ export async function POST(req: Request) {
       console.warn('[Auth API] Primary mail failed or timed out, triggering Nuclear Fallback:', mailErr.message);
       
       // 🛡️ CHRIS-PROTOCOL: Immediate Fallback to Supabase (Reserve-motor)
+      // IMPORTANT: We point the fallback redirect to our OWN confirm route to ensure session stability.
+      const fallbackRedirect = `${originUrl}/account/confirm?redirect=${encodeURIComponent(redirectPath)}`;
+      
+      console.log(`[Auth API] Triggering Supabase fallback with redirect: ${fallbackRedirect}`);
+
       const { error: fallbackError } = await supabase.auth.signInWithOtp({
         email,
         options: {
-          emailRedirectTo: finalRedirect,
+          emailRedirectTo: fallbackRedirect,
         }
       });
 

@@ -12,6 +12,7 @@ import { useTranslation } from "@/contexts/TranslationContext";
 import { useMasterControl } from "@/contexts/VoicesMasterControlContext";
 import { VoiceCard } from "@/components/ui/VoiceCard";
 import { VoicesMasterControl } from "@/components/ui/VoicesMasterControl";
+import { MarketManagerServer as MarketManager } from "@/lib/system/market-manager-server";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, Suspense } from 'react';
@@ -138,7 +139,6 @@ export function VoiceDetailClient({
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: (() => {
-            const { MarketManagerServer: MarketManager } = require('@/lib/system/market-manager-server');
             const market = MarketManager.getCurrentMarket();
             const siteUrl = MarketManager.getMarketDomains()[market.market_code] || `https://www.voices.be`;
             

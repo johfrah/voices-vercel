@@ -36,14 +36,36 @@ async function testTelephonyOrder() {
     await page.waitForTimeout(4000);
     
     // Step 2: Fill in briefing/script
-    console.log('Step 2: Filling in script...');
+    console.log('Step 2: Looking for script field...');
     
-    const scriptField = await page.locator('textarea, input[type="text"]:visible, [contenteditable="true"]').first();
-    const scriptVisible = await scriptField.isVisible().catch(() => false);
+    // Try multiple selectors
+    let scriptField = await page.locator('textarea').first();
+    let scriptVisible = await scriptField.isVisible().catch(() => false);
     
     if (!scriptVisible) {
-      console.log('\n❌ GEFAALD: Geen script/briefing veld gevonden');
-      await page.screenshot({ path: '/tmp/telephony-no-field.png' });
+      scriptField = await page.locator('input[type="text"]').first();
+      scriptVisible = await scriptField.isVisible().catch(() => false);
+    }
+    
+    if (!scriptVisible) {
+      scriptField = await page.locator('[contenteditable="true"]').first();
+      scriptVisible = await scriptField.isVisible().catch(() => false);
+    }
+    
+    if (!scriptVisible) {
+      // Try any input field
+      scriptField = await page.locator('input').first();
+      scriptVisible = await scriptField.isVisible().catch(() => false);
+    }
+    
+    if (!scriptVisible) {
+      console.log('\n❌ GEFAALD: Geen script/briefing veld gevonden op de pagina');
+      await page.screenshot({ path: '/tmp/telephony-no-field.png', fullPage: true });
+      
+      // Log what we can see
+      const pageText = await page.textContent('body');
+      console.log('Page content preview:', pageText?.substring(0, 200));
+      
       await browser.close();
       return;
     }

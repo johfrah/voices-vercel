@@ -148,7 +148,8 @@ export const VoicesMasterControlProvider: React.FC<{ children: React.ReactNode }
 
     const isRootInitial = (pathname === '/' || pathname === '/agency/' || pathname.startsWith('/voice/'));
 
-    setState({
+    // 🛡️ CHRIS-PROTOCOL: Update state with a single call to prevent partial renders
+    const newState: MasterControlState = {
       journey,
       usage: JOURNEY_USAGE_MAP[journey],
       isMuted: (savedState as any).isMuted ?? false,
@@ -170,8 +171,14 @@ export const VoicesMasterControlProvider: React.FC<{ children: React.ReactNode }
         liveSession: searchParams?.get('liveSession') === 'true',
       },
       currentStep: (searchParams?.get('step') as any) || (isRootInitial ? 'voice' : 'voice'),
-    });
-  }, []); // Run once on mount
+    };
+
+    setState(newState);
+    
+    // Sync with checkout context
+    if (newState.usage) updateUsage(newState.usage);
+    if (newState.filters.media) updateMedia(newState.filters.media);
+  }, [searchParams, pathname, voicesState.current_journey, updateUsage, updateMedia]); // Added dependencies for stability
 
   const detectStateFromUrl = useCallback((url: string) => {
     const segments = url.split('/').filter(Boolean);
