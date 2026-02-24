@@ -440,7 +440,7 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
         method: 'PATCH',
         headers: { 
           'Content-Type': 'application/json',
-          'X-Voices-Version': '2.14.184'
+          'X-Voices-Version': '2.14.188'
         },
         body: JSON.stringify(payload)
       });
@@ -572,7 +572,7 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
         method: 'PATCH',
         headers: { 
           'Content-Type': 'application/json',
-          'X-Voices-Version': '2.14.184'
+          'X-Voices-Version': '2.14.188'
         },
         body: JSON.stringify(payload)
       });
