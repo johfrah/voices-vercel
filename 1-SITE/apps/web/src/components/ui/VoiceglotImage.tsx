@@ -155,12 +155,13 @@ export const VoiceglotImage: React.FC<VoiceglotImageProps> = ({
     }
 
     // If it's a relative path that doesn't start with /assets/, it might be a direct Supabase path (e.g. "active/voicecards/...")
+    // But we must be careful not to wrap paths that are already intended to be local.
     if (!currentSrc.startsWith('http') && !currentSrc.startsWith('/')) {
       return `/api/proxy/?path=${encodeURIComponent(currentSrc)}`;
     }
 
     return currentSrc;
-  }, [currentSrc, isProxied, isSupabase, isValidSrc]);
+  }, [currentSrc, isProxied, isSupabase, isGoogle, isDropbox, isValidSrc]);
 
   // Remove fill from props to avoid passing it to the DOM if it's not needed
   const { fill, ...otherProps } = props;

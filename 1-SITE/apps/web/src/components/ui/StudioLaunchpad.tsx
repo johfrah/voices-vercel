@@ -32,7 +32,10 @@ import toast from 'react-hot-toast';
 import { VoiceCard } from '@/components/ui/VoiceCard';
 import dynamic from 'next/dynamic';
 
-const LiquidBackground = dynamic(() => import('@/components/ui/LiquidBackground').then((mod) => mod.LiquidBackground), { ssr: false });
+const LiquidBackground = dynamic(() => import('@/components/ui/LiquidBackground').then((mod) => mod.LiquidBackground), { 
+  ssr: false,
+  loading: () => <div className="fixed inset-0 bg-va-off-white" />
+});
 
 import { CommercialMediaType } from '@/lib/engines/pricing-engine';
 

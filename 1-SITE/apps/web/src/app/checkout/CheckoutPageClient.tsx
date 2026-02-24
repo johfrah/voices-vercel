@@ -173,7 +173,13 @@ export default function CheckoutPageClient() {
                       <div className="flex -space-x-3">
                         {[1,2,3,4].map(avatarIdx => (
                           <div key={avatarIdx} className="w-10 h-10 rounded-full border-2 border-white bg-va-off-white overflow-hidden relative shadow-sm">
-                            <Image src={`/assets/common/branding/founder/johfrah.png`} fill alt="User" className="object-cover grayscale" />
+                            <Image 
+                              src={`/assets/common/branding/founder/johfrah.png`} 
+                              fill 
+                              sizes="40px"
+                              alt="User" 
+                              className="object-cover grayscale" 
+                            />
                           </div>
                         ))}
                         <div className="w-10 h-10 rounded-full border-2 border-white bg-va-black text-white flex items-center justify-center text-[10px] font-bold shadow-sm">

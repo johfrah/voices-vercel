@@ -124,8 +124,8 @@ export async function GET(request: NextRequest) {
       }
 
       if (storagePath.startsWith('https://')) {
-        // Extract path after /public/voices/
-        const match = storagePath.match(/\/public\/voices\/(.*)/);
+        // Extract path after /public/voices/ or /public/
+        const match = storagePath.match(/\/public\/(?:voices\/)?(.*)/);
         if (match) storagePath = match[1];
       }
 
