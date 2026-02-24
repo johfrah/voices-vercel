@@ -55,6 +55,7 @@ export class MarketManagerServer {
       supported_languages: ['nl-BE', 'nl-NL', 'fr-BE', 'en-GB', 'fr-FR', 'de-DE'],
       popular_languages: ['nl-BE', 'nl-NL', 'fr-BE', 'en-GB', 'fr-FR', 'de-DE'],
       name: 'Voices',
+      email: 'johfrah@voices.be',
       logo_url: VOICES_CONFIG.assets.logos.be,
       theme: 'voices'
     },

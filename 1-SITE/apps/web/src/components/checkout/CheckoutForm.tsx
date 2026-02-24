@@ -172,7 +172,8 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
   }, [formData.vat_number, formData.country, playClick, updateCustomer, vatStatus.lastChecked, t]);
 
   useEffect(() => {
-    if (formData.email && formData.email.includes('@') && formData.email.length > 5) {
+    // CHRIS-PROTOCOL: Alleen lookup doen als de gebruiker is ingelogd (Privacy Fix)
+    if (formData.email && formData.email.includes('@') && formData.email.length > 5 && auth.isAuthenticated) {
       const fetchUserData = async () => {
         try {
           const res = await fetch(`/api/admin/users/lookup?email=${encodeURIComponent(formData.email)}`);

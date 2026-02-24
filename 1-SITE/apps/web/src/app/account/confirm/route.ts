@@ -1,5 +1,6 @@
 import { createClient } from '@/utils/supabase/server'
 import { NextResponse } from 'next/server'
+import { ServerWatchdog } from '@/lib/services/server-watchdog'
 
 /**
  *  AUTH CONFIRM ROUTE (BOB-METHOD 2026)
@@ -41,14 +42,17 @@ export async function GET(request: Request) {
       }
       
       const response = NextResponse.redirect(`${origin}${finalPath}`)
-      
-      // CHRIS-PROTOCOL: Forceer een refresh via een cookie of header indien nodig
-      // Maar NextResponse.redirect is meestal voldoende voor een schone start.
-      
       return response
     }
 
     console.error(' NUCLEAR AUTH ERROR:', error.message)
+    await ServerWatchdog.report({
+      error: `Auth confirmation failed: ${error.message}`,
+      component: 'AuthConfirm',
+      url: request.url,
+      level: 'error',
+      payload: { type, token: token.substring(0, 10) + '...' }
+    })
   }
 
   // Bij een fout sturen we de gebruiker terug naar de login met de specifieke Supabase error

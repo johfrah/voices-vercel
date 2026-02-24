@@ -2,7 +2,7 @@ import { db } from '@db';
 import { users } from '@db/schema';
 import { eq } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
-import { headers } from 'next/headers';
+import { createClient } from '@/utils/supabase/server';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -11,7 +11,7 @@ export const runtime = 'nodejs';
  *  ADMIN USER LOOKUP (GOD MODE 2026)
  * 
  * Doel: Snel ophalen van klantgegevens op basis van e-mail.
- * Alleen toegankelijk voor admins om de checkout te versnellen.
+ * Alleen toegankelijk voor ingelogde gebruikers om de checkout te versnellen.
  */
 export async function GET(request: Request) {
   try {
@@ -22,10 +22,20 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Email is required' }, { status: 400 });
     }
 
-    // 1. Security Check (Admin Only)
-    // In een echte productie omgeving zouden we hier de Supabase session checken.
-    // Voor nu vertrouwen we op de admin context van de aanvrager.
+    // 1. Security Check (Authenticated Only)
+    const supabase = createClient();
+    if (!supabase) {
+      return NextResponse.json({ error: 'Auth system unavailable' }, { status: 500 });
+    }
+
+    const { data: { user: authUser } } = await supabase.auth.getUser();
     
+    // CHRIS-PROTOCOL: Alleen data teruggeven als de gebruiker is ingelogd
+    // OF als het een admin is die een lookup doet voor een klant.
+    if (!authUser) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     // 2. Fetch User from DB
     let user = null;
     try {

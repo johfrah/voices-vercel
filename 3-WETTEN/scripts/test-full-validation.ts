@@ -126,8 +126,8 @@ async function runFullValidation(): Promise<TestResult> {
     console.log('🧪 TEST 1: LANGUAGE FILTER');
     console.log('='.repeat(60));
     
-    console.log('📍 Navigating to https://voices-os-2026.vercel.app/...');
-    await page.goto('https://voices-os-2026.vercel.app/', { 
+    console.log('📍 Navigating to https://www.voices.be/...');
+    await page.goto('https://www.voices.be/', { 
       waitUntil: 'domcontentloaded',
       timeout: 30000 
     });
@@ -208,7 +208,7 @@ async function runFullValidation(): Promise<TestResult> {
     console.log('='.repeat(60));
     
     console.log('📍 Navigating to /account/...');
-    await page.goto('https://voices-os-2026.vercel.app/account/', { 
+    await page.goto('https://www.voices.be/account/', { 
       waitUntil: 'domcontentloaded',
       timeout: 30000 
     });
