@@ -437,7 +437,7 @@ export default function GlobalNav() {
     playClick('pro');
     
     try {
-      const res = await fetch('/api/auth/send-magic-link', {
+      const res = await fetch('/api/auth/send-magic-link/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: loginEmail, redirect: pathname }),

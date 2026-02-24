@@ -69,7 +69,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
 
     try {
       // CHRIS-PROTOCOL: Gebruik onze eigen custom auth API voor 100% controle
-      const response = await fetch('/api/auth/send-magic-link', {
+      const response = await fetch('/api/auth/send-magic-link/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: modalEmail, redirect: '/checkout' }),
