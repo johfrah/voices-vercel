@@ -33,14 +33,14 @@ export async function GET(request: NextRequest) {
     .groupBy(translations.lang);
 
     // 3. Bereken percentages (we gaan uit van NL, EN, FR, DE als doeltalen)
-    const targetLanguages = ['en', 'fr', 'de', 'es', 'pt'];
+    const targetLanguages = ['en-gb', 'fr-fr', 'de-de', 'es-es', 'pt-pt', 'en', 'fr', 'de', 'es', 'pt'];
     const coverage = targetLanguages.map(lang => {
       const found = statsByLang.find(s => s.lang === lang);
       const count = found ? Number(found.count) : 0;
       return {
         lang,
         count,
-        percentage: totalStrings > 0 ? Math.round((count / totalStrings) * 100) : 0
+        percentage: totalStrings > 0 ? Math.min(100, Math.round((count / totalStrings) * 100)) : 0
       };
     });
 
