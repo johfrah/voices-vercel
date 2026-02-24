@@ -227,42 +227,39 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             ));
           });
 
-          // 🛡️ CHRIS-PROTOCOL: Use functional update to ensure we don't overwrite concurrent changes
           setState(prev => ({
-            ...prev, // Use prev instead of initialState to preserve any early state changes
+            ...prev,
             ...parsed,
             items: cleanItems,
             customer: { ...prev.customer, ...parsed.customer },
-            paymentMethods: prev.paymentMethods // Keep default methods until API loads
+            paymentMethods: prev.paymentMethods
           }));
         } catch (e) {
           console.error('Failed to parse checkout state from localStorage', e);
         }
       }
-      // 🛡️ CHRIS-PROTOCOL: Set hydrated flag AFTER state restoration to prevent mismatch
+      // 🛡️ CHRIS-PROTOCOL: Set hydrated flag AFTER state restoration
       setIsHydrated(true);
     }
   }, []);
 
-  //  CHRIS-PROTOCOL: Centralized Config Fetching
+  //  CHRIS-PROTOCOL: Centralized Config Fetching - ONLY AFTER HYDRATION
   useEffect(() => {
+    if (!isHydrated) return;
+
     const fetchConfig = async () => {
       try {
-        // Fetch checkout config
         const res = await fetch('/api/checkout/config');
         const data = await res.json();
         
-        // Fetch pricing config from Supabase via our API
         const pricingRes = await fetch('/api/pricing/config');
         const pricingData = await pricingRes.json();
 
         if (data && data.paymentMethods) {
-          // Filter out unwanted methods
           const filtered = data.paymentMethods.filter((m: any) => 
             m.id !== 'paybybank' && m.id !== 'banktransfer'
           );
           
-          // Add our custom "Invoice" method to the list
           const allMethods = [
             ...filtered.map((m: any) => ({
               ...m,
@@ -283,7 +280,7 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             ...prev,
             paymentMethods: allMethods,
             taxRate: data.taxRate || 0.21,
-            pricingConfig: pricingData // Store dynamic pricing config
+            pricingConfig: pricingData
           }));
         }
       } catch (e) {
@@ -291,7 +288,7 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       }
     };
     fetchConfig();
-  }, []);
+  }, [isHydrated]);
 
   useEffect(() => {
     if (isHydrated && typeof window !== 'undefined') {
