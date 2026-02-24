@@ -92,18 +92,25 @@ export const PricingSummary: React.FC<{
     updateIsSubmitting(true);
 
     try {
-      // 🛡️ CHRIS-PROTOCOL: Robust payload preparation
+      // 🛡️ CHRIS-PROTOCOL: Robust payload preparation (v2.14.242)
       const safeBriefing = state.briefing || '';
       const wordCount = safeBriefing.trim().split(/\s+/).filter(Boolean).length;
       
+      //  KELLY-MANDATE: Ensure we have a valid subtotal and items
+      if (subtotal <= 0 && state.items.length === 0 && !state.selectedActor) {
+        throw new Error(t('checkout.error.empty_cart', 'Je winkelmandje is leeg.'));
+      }
+
       const payload = {
-        ...state,
-        ...state.customer,
         pricing: {
           ...state.pricing,
           total: subtotal,
           cartHash
         },
+        items: state.items || [],
+        selectedActor: state.selectedActor,
+        step: state.step,
+        ...state.customer,
         quoteMessage,
         payment_method: state.paymentMethod,
         country: state.customer.country || 'BE',
@@ -112,10 +119,18 @@ export const PricingSummary: React.FC<{
           ...(state as any).metadata,
           words: wordCount,
           prompts: state.prompts || 0
-        }
+        },
+        // Extra context for server-side validation
+        usage: state.usage,
+        plan: state.plan,
+        briefing: safeBriefing
       };
 
-      console.log('[Checkout] Submitting payload:', payload);
+      console.log('[Checkout] Submitting payload to Mollie API...', { 
+        email: payload.email, 
+        amount: payload.pricing.total,
+        itemsCount: payload.items.length 
+      });
 
       const res = await fetch('/api/checkout/mollie', {
         method: 'POST',
@@ -124,13 +139,15 @@ export const PricingSummary: React.FC<{
       });
 
       if (!res.ok) {
-        const errorText = await res.text();
-        throw new Error(`Server responded with ${res.status}: ${errorText}`);
+        const errorData = await res.json().catch(() => ({ error: 'Unknown server error' }));
+        throw new Error(errorData.error || errorData.message || `Server error: ${res.status}`);
       }
 
       const data = await res.json();
 
       if (data.success) {
+        console.log('[Checkout] Success! Redirecting...', data.checkoutUrl ? 'to Mollie' : 'to Success Page');
+        
         if (state.isQuoteRequest || data.isBankTransfer || !data.checkoutUrl) {
           setIsPreviewOpen(false);
           updateIsSubmitting(false);
@@ -144,12 +161,16 @@ export const PricingSummary: React.FC<{
           window.location.href = data.checkoutUrl;
         }
       } else {
-        throw new Error(data.message || t('common.error.generic', 'Er is iets misgegaan.'));
+        throw new Error(data.message || t('common.error.generic', 'Er is iets misgegaan bij het verwerken van je bestelling.'));
       }
     } catch (error: any) {
-      console.error('Checkout error:', error);
-      alert(error.message || t('common.error.generic', 'Er is iets misgegaan.'));
+      console.error('[Checkout] FATAL ERROR during submission:', error);
+      
+      // 🛡️ CHRIS-PROTOCOL: Always reset submitting state on error to prevent "Verwerken" hang
       updateIsSubmitting(false);
+      
+      // Toon een menselijke foutmelding
+      alert(error.message || t('common.error.generic', 'Er is een onverwachte fout opgetreden. Probeer het opnieuw of neem contact op.'));
     }
   };
 
