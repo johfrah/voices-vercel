@@ -21,8 +21,8 @@ export async function GET(request: NextRequest) {
 
   try {
     // 1. Totaal aantal unieke strings in de registry
-    const totalStringsResult = await db.select({ count: sql<number>`count(*)` }).from(translationRegistry);
-    const totalStrings = Number(totalStringsResult[0].count);
+    const totalStringsResult = await db.select({ count: sql<number>`count(*)` }).from(translationRegistry).catch(() => [{ count: 0 }]);
+    const totalStrings = Number(totalStringsResult[0]?.count || 0);
 
     // 2. Aantal vertalingen per taal
     const statsByLang = await db.select({
@@ -30,7 +30,8 @@ export async function GET(request: NextRequest) {
       count: sql<number>`count(*)`
     })
     .from(translations)
-    .groupBy(translations.lang);
+    .groupBy(translations.lang)
+    .catch(() => []);
 
     // 3. Bereken percentages (we gaan uit van NL, EN, FR, DE als doeltalen)
     const targetLanguages = ['en', 'fr', 'de', 'es', 'pt', 'it', 'en-gb', 'fr-fr', 'de-de', 'es-es', 'pt-pt'];
@@ -46,7 +47,7 @@ export async function GET(request: NextRequest) {
 
     // 4. Onlangs toegevoegde strings (laatste 5)
     // translationRegistry heeft geen createdAt, we gebruiken lastSeen
-    const recentStrings = await db.select().from(translationRegistry).orderBy(desc(translationRegistry.lastSeen)).limit(5);
+    const recentStrings = await db.select().from(translationRegistry).orderBy(desc(translationRegistry.lastSeen)).limit(5).catch(() => []);
 
     return NextResponse.json({
       totalStrings,
