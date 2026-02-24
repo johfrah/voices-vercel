@@ -21,10 +21,10 @@ export async function GET(request: Request) {
     const offset = (page - 1) * limit;
 
     try {
-      // CHRIS-PROTOCOL: Nuclear Raw SQL with Literal Parameters (v2.14.387)
+      // CHRIS-PROTOCOL: Nuclear Raw SQL with Literal Parameters (v2.14.389)
       // We bypass parameter binding for LIMIT/OFFSET which fails in production.
       
-      console.log(`[Voiceglot List] Fetching Registry: Page ${page}, Limit ${limit}`);
+      console.log(`[Voiceglot List] Fetching Registry: Page ${page}, Limit ${limit} (Nuclear Mode)`);
 
       // 1. Fetch Registry Items using Raw SQL with literal numbers
       const registryItems = await db.execute(sql`
