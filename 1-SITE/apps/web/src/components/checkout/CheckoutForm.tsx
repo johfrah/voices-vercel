@@ -149,15 +149,37 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
               return;
             }
 
+            //  CHRIS-PROTOCOL: Parse VIES address into street, zip, and city (v2.14.311)
+            const addressRaw = data.address || '';
+            const addressParts = addressRaw.split('\n').map((s: string) => s.trim()).filter(Boolean);
+            
+            let street = '';
+            let zip = '';
+            let city = '';
+
+            if (addressParts.length >= 2) {
+              // Meest voorkomende formaat: "Straat 123\n1000 Stad"
+              street = addressParts[0];
+              const cityLine = addressParts[1];
+              const zipMatch = cityLine.match(/^(\d{4,5})\s+(.*)$/);
+              if (zipMatch) {
+                zip = zipMatch[1];
+                city = zipMatch[2];
+              } else {
+                city = cityLine;
+              }
+            }
+
             const updates: any = { 
               company: data.companyName,
               vat_verified: true
             };
 
-            // Alleen land invullen als het nog leeg was
-            if (!formData.country) {
-              updates.country = vatCountry;
-            }
+            // Alleen invullen als het nog leeg was om gebruikers-input niet te overschrijven
+            if (!formData.address_street) updates.address_street = street;
+            if (!formData.postal_code) updates.postal_code = zip;
+            if (!formData.city) updates.city = city;
+            if (!formData.country) updates.country = vatCountry;
 
             setFormData(prevForm => ({ ...prevForm, ...updates }));
             updateCustomer(updates);
