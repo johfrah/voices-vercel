@@ -1,5 +1,6 @@
 "use client";
 
+import React, { useRef, useState, useEffect } from 'react';
 import {
     ButtonInstrument,
     ContainerInstrument,
@@ -39,7 +40,6 @@ import {
 import Image from 'next/image';
 import { VoicesLink as Link } from '@/components/ui/VoicesLink';
 import { useRouter } from 'next/navigation';
-import React, { useRef, useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 
 import { VoiceCard } from '@/components/ui/VoiceCard';
@@ -468,6 +468,5 @@ export const StudioLaunchpad = ({ initialActors = [], initialJourney }: StudioLa
           </motion.div>
         </AnimatePresence>
       </SectionInstrument>
-    </SectionInstrument>
   );
 };
