@@ -21,44 +21,38 @@ export async function GET(request: Request) {
     const offset = (page - 1) * limit;
 
     try {
-      // CHRIS-PROTOCOL: Nuclear Raw SQL with Literal Parameters (v2.14.389)
-      // We bypass parameter binding for LIMIT/OFFSET which fails in production.
-      
-      console.log(`[Voiceglot List] Fetching Registry: Page ${page}, Limit ${limit} (Nuclear Mode)`);
+      // CHRIS-PROTOCOL: Ultra-Stable Single Fetch (v2.14.391)
+      // We test if a basic fetch works at all.
+      console.log(`[Voiceglot List] Ultra-Stable Fetch: Page ${page}, Limit ${limit}`);
 
-      // 1. Fetch Registry Items using Raw SQL with literal numbers
-      const registryItems = await db.execute(sql`
-        SELECT id, string_hash as "translationKey", original_text as "originalText", context
-        FROM translation_registry
-        ORDER BY last_seen DESC
-        LIMIT ${sql.raw(limit.toString())}
-        OFFSET ${sql.raw(offset.toString())}
-      `);
+      // 1. Fetch Registry Items using the most basic Drizzle pattern
+      const registryItems = await db
+        .select()
+        .from(translationRegistry)
+        .orderBy(desc(translationRegistry.lastSeen))
+        .limit(limit)
+        .offset(offset);
 
-      console.log(`[Voiceglot List] Registry Items found: ${registryItems.length}`);
+      console.log(`[Voiceglot List] Registry Items found: ${registryItems?.length || 0}`);
 
       if (!registryItems || registryItems.length === 0) {
         return NextResponse.json({ translations: [], page, limit, hasMore: false });
       }
 
-      // 2. Fetch all translations for these keys
-      const hashes = registryItems.map((i: any) => i.translationKey);
-      
-      // Use a simpler query for translations
-      const transData = await db.execute(sql`
-        SELECT id, translation_key as "translationKey", lang, translated_text as "translatedText", status, 
-               (is_locked OR is_manually_edited) as "isLocked", updated_at as "updatedAt"
-        FROM translations
-        WHERE translation_key = ANY(${hashes})
-      `);
+      // 2. Fetch translations for these keys
+      const hashes = registryItems.map(i => i.stringHash);
+      const transData = await db
+        .select()
+        .from(translations)
+        .where(inArray(translations.translationKey, hashes));
 
-      console.log(`[Voiceglot List] Translations Data found: ${transData.length}`);
+      console.log(`[Voiceglot List] Translations found: ${transData?.length || 0}`);
 
       // 3. Join in memory
       const mappedResults = registryItems.map((item: any) => {
-        const itemTranslations = transData.filter((t: any) => t.translationKey === item.translationKey);
+        const itemTranslations = transData.filter((t: any) => t.translationKey === item.stringHash);
         
-        // Detect source language (Simple heuristic)
+        // Detect source language
         const text = (item.originalText || '').toLowerCase();
         const isFr = text.includes(' le ') || text.includes(' la ') || text.includes(' les ');
         const isEn = text.includes(' the ') || text.includes(' and ');
@@ -69,9 +63,19 @@ export async function GET(request: Request) {
         else if (isEn && !isNl) detectedLang = 'en';
 
         return {
-          ...item,
+          id: item.id,
+          translationKey: item.stringHash,
+          originalText: item.originalText,
+          context: item.context,
           sourceLang: detectedLang,
-          translations: itemTranslations
+          translations: itemTranslations.map((t: any) => ({
+            id: t.id,
+            lang: t.lang,
+            translatedText: t.translatedText,
+            status: t.status,
+            isLocked: t.isLocked || t.isManuallyEdited || false,
+            updatedAt: t.updatedAt
+          }))
         };
       });
 
@@ -82,12 +86,9 @@ export async function GET(request: Request) {
         hasMore: mappedResults.length === limit
       });
     } catch (dbErr: any) {
-      console.error('❌ [Voiceglot List API] Nuclear Fetch failed:', dbErr);
-      // Fallback: return empty but with error info for debugging
+      console.error('❌ [Voiceglot List API] Ultra-Stable Fetch failed:', dbErr);
       return NextResponse.json({ 
-        error: `Nuclear Fetch failed: ${dbErr.message}`, 
-        details: dbErr.details || 'No details',
-        hint: dbErr.hint || 'No hint',
+        error: `Ultra-Stable Fetch failed: ${dbErr.message}`, 
         translations: [] 
       }, { status: 500 });
     }
