@@ -209,136 +209,47 @@ export async function POST(request: Request) {
       serverSubtotal: subtotal
     }).catch(e => console.warn('[LEX] Audit failed (background):', e));
 
-    //  CHRIS-PROTOCOL: Execute DB operations
-    const dbResult = await db.transaction(async (tx) => {
-      let userId = metadata?.userId;
+    // Create Order/Quote
+    const [newOrder] = await db.insert(orders).values({
+      wpOrderId: Math.floor(Math.random() * 100000),
+      total: amount.toString(),
+      status: isQuote ? 'quote-pending' : 'pending',
+      userId: userId || null,
+      journey: isSubscription ? 'johfrai-subscription' : 'agency',
+      billingVatNumber: vat_number || null,
+      isQuote: isQuote || false,
+      quoteMessage: quoteMessage || null,
+      quoteSentAt: isQuote ? new Date() : null,
+      rawMeta: {
+        usage,
+        plan,
+        isSubscription,
+        music: music,
+        items: validatedItems,
+        serverCalculated: true
+      },
+      ipAddress: ip,
+      createdAt: new Date()
+    }).returning();
 
-      // Lead Tracking
-      if (email) {
-        tx.insert(centralLeads).values({
-          email,
-          firstName: first_name,
-          lastName: last_name,
-          phone: phone,
-          sourceType: 'checkout_attempt',
-          leadVibe: 'hot',
-          iapContext: {
-            journey: isSubscription ? 'johfrai-subscription' : 'agency',
-            usage,
-            plan,
-            amount: amount.toString(),
-            metadata
-          }
-        }).onConflictDoNothing().catch(e => console.warn('[MAT] Lead tracking failed:', e));
-      }
-
-      // Upsert User
-      let isNewUser = false;
-      if (email) {
-        try {
-          const [existingUser] = await tx.select().from(users).where(eq(users.email, email)).limit(1);
-          isNewUser = !existingUser;
-
-          const [user] = await tx.insert(users).values({
-            email,
-            firstName: first_name,
-            lastName: last_name,
-            phone: phone,
-            companyName: company,
-            vatNumber: vat_number,
-            addressStreet: address_street,
-            addressZip: postal_code,
-            addressCity: city,
-            addressCountry: country || 'BE',
-            role: 'customer',
-            updatedAt: new Date()
-          }).onConflictDoUpdate({
-            target: users.email,
-            set: {
-              firstName: first_name,
-              lastName: last_name,
-              phone: phone,
-              companyName: company,
-              vatNumber: vat_number,
-              addressStreet: address_street,
-              addressZip: postal_code,
-              addressCity: city,
-              addressCountry: country || 'BE',
-              lastActive: new Date()
-            }
-          }).returning();
-          userId = user.id;
-
-          if (isNewUser) {
-            (async () => {
-              try {
-                const { VumeEngine } = await import('@/lib/mail/VumeEngine');
-                const { MarketManagerServer: MarketManager } = await import('@/lib/system/market-manager-server');
-                const market = MarketManager.getCurrentMarket(host);
-                await VumeEngine.send({
-                  to: email,
-                  subject: `Welkom bij ${market.name}`,
-                  template: 'new-account',
-                  context: { name: first_name || 'Klant', language: 'nl' },
-                  host: host
-                });
-              } catch (welcomeErr) {
-                console.warn('[Checkout] Welcome email failed:', welcomeErr);
-              }
-            })();
-          }
-        } catch (userErr) {
-          console.error('[Checkout] User upsert failed:', userErr);
-          if (!userId) throw userErr;
-        }
-      }
-
-      // Create Order/Quote
-      const [newOrder] = await tx.insert(orders).values({
-        wpOrderId: Math.floor(Math.random() * 100000),
-        total: amount.toString(),
-        status: isQuote ? 'quote-pending' : 'pending',
-        userId: userId || null,
-        journey: isSubscription ? 'johfrai-subscription' : 'agency',
-        billingVatNumber: vat_number || null,
-        isQuote: isQuote || false,
-        quoteMessage: quoteMessage || null,
-        quoteSentAt: isQuote ? new Date() : null,
-        rawMeta: {
-          usage,
-          plan,
-          isSubscription,
-          music: body.music,
-          billing_po: billing_po || null,
-          financial_email: financial_email || null,
-          items: validatedItems, // Use server-validated items
-          serverCalculated: true
-        },
-        ipAddress: ip,
-        createdAt: new Date()
-      }).returning();
-
-      // CHRIS-PROTOCOL: Order Items opslaan inclusief volledige metadata (SlimmeKassaResult)
-      if (validatedItems.length > 0) {
-        await tx.insert(orderItems).values(validatedItems.map((item: any) => ({
+    // 🛡️ CHRIS-PROTOCOL: Secure Order Items storage
+    if (validatedItems.length > 0) {
+      try {
+        await db.insert(orderItems).values(validatedItems.map((item: any) => ({
           orderId: newOrder.id,
           actorId: item.actor?.id || null,
-          artistId: item.artist?.id || null,
           name: item.actor?.display_name ? `Stemopname: ${item.actor.display_name}` : (item.name || 'Product'),
           quantity: 1,
           price: (item.pricing?.subtotal || item.pricing?.total || 0).toString(),
           tax: (item.pricing?.tax || 0).toString(),
-          metaData: item.pricing || {}, // Bevat full breakdown: base, wordSurcharge, mediaSurcharge, etc.
+          metaData: item.pricing || {},
           deliveryStatus: 'waiting'
         })));
+      } catch (itemErr) {
+        console.error('[Checkout] Order items storage failed:', itemErr);
       }
+    }
 
-      return { newOrder, userId, isNewUser };
-    });
-
-    const { newOrder, userId, isNewUser } = dbResult;
-
-    // 3. Generate Secure Token
     const secureToken = sign(
       { orderId: newOrder.id, userId, journey: newOrder.journey, email },
       process.env.JWT_SECRET || 'voices-secret-2026',
