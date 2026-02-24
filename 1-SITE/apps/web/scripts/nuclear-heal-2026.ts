@@ -62,6 +62,13 @@ async function translate(text: string, lang: string, context: string, dna: strin
     TONE OF VOICE:
     Warm, gelijkwaardig, vakmanschap, nuchter. Geen AI-bingo woorden (zoals 'ontdek', 'passie', 'ervaar').
     
+    STRICT OUTPUT RULES:
+    - Antwoord UITSLUITEND met de vertaalde tekst.
+    - Geen inleiding zoals "De vertaling is:".
+    - Geen herhaling van de brontekst.
+    - Geen aanhalingstekens rond de vertaling.
+    - Behoud de betekenis en de Voices-vibe.
+    
     TEKST:
     "${text}"
     
