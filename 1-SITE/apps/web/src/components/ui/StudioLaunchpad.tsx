@@ -49,6 +49,7 @@ import { CommercialMediaType, SlimmeKassa } from '@/lib/engines/pricing-engine';
 
 interface StudioLaunchpadProps {
   initialActors?: any[];
+  initialJourney?: "telefonie" | "unpaid" | "paid" | string;
 }
 
 /**
@@ -56,7 +57,7 @@ interface StudioLaunchpadProps {
  * Voldoet aan het Voices Configurator Pattern.
  * Gebruikt de "Slimme Zwevende Kassa" logica voor projectinformatie.
  */
-export const StudioLaunchpad = ({ initialActors = [] }: StudioLaunchpadProps) => {
+export const StudioLaunchpad = ({ initialActors = [], initialJourney }: StudioLaunchpadProps) => {
   const router = useRouter();
   const { state, toggleActorSelection, removeActor, campaignMessage } = useVoicesState();
   const selectedActors = state.selected_actors;
@@ -73,7 +74,18 @@ export const StudioLaunchpad = ({ initialActors = [] }: StudioLaunchpadProps) =>
   const [isDragging, setIsDragging] = useState(false);
   const [isMatching, setIsMatching] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [calcUsage, setCalcUsage] = useState<"telefonie" | "unpaid" | "paid">("paid");
+  
+  //  CHRIS-PROTOCOL: Map initial journey slug to internal usage type
+  const getInitialUsage = () => {
+    if (!initialJourney) return "paid";
+    const s = initialJourney.toLowerCase();
+    if (['telephony', 'telefonie', 'telefoon'].includes(s)) return 'telefonie';
+    if (['video', 'corporate', 'unpaid'].includes(s)) return 'unpaid';
+    if (['commercial', 'advertentie', 'paid'].includes(s)) return 'paid';
+    return "paid";
+  };
+
+  const [calcUsage, setCalcUsage] = useState<"telefonie" | "unpaid" | "paid">(getInitialUsage());
   const [selectedMedia, setSelectedMedia] = useState<CommercialMediaType[]>(['online']);
   const [spotsDetail, setSpotsDetail] = useState<Record<string, number>>({});
   const [yearsDetail, setYearsDetail] = useState<Record<string, number>>({});

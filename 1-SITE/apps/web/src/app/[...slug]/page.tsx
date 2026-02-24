@@ -45,6 +45,7 @@ const WorkshopCarousel = nextDynamic(() => import("@/components/studio/WorkshopC
 const WorkshopCalendar = nextDynamic(() => import("@/components/studio/WorkshopCalendar").then(mod => mod.WorkshopCalendar), { ssr: false });
 const StudioVideoPlayer = nextDynamic(() => import("@/components/ui/StudioVideoPlayer").then(mod => mod.StudioVideoPlayer), { ssr: false });
 const JourneyCta = nextDynamic(() => import("@/components/ui/JourneyCta").then(mod => mod.JourneyCta), { ssr: false });
+const StudioLaunchpad = nextDynamic(() => import("@/components/ui/StudioLaunchpad").then(mod => mod.StudioLaunchpad), { ssr: false });
 
 /**
  *  SUZY-MANDATE: Generate Structured Data (JSON-LD) for Voice Actors
@@ -409,6 +410,15 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
             <AgencyContent mappedActors={mappedActors} filters={searchResults?.filters || { genders: [], languages: [], styles: [] }} />
           </div>
         </>
+      );
+    }
+
+    // 1.7 Casting Tool (Launchpad)
+    if (firstSegment === 'casting') {
+      return (
+        <PageWrapperInstrument>
+          <StudioLaunchpad initialJourney={journey} />
+        </PageWrapperInstrument>
       );
     }
 
