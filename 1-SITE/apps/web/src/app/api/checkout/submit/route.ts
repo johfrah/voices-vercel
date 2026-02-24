@@ -254,7 +254,7 @@ export async function POST(request: Request) {
     }
 
     // 6. Bestelling aanmaken
-    const market = MarketManager.getMarketCode(host);
+    const market = MarketManager.getCurrentMarket(host).market_code;
     const isInvoiceActual = payment_method === 'banktransfer';
     console.log('[Checkout] 🚀 STEP 6: Creating order...', { amount, isInvoiceActual, market });
 

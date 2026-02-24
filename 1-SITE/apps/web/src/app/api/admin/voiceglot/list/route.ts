@@ -1,8 +1,15 @@
 import { db } from '@db';
-import { translations, translationRegistry } from '@db/schema';
-import { desc, eq } from 'drizzle-orm';
-import { NextResponse } from 'next/server';
+import { translations, translationRegistry, appConfigs } from '@db/schema';
+import { sql, desc, eq, inArray } from 'drizzle-orm';
+import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from "@supabase/supabase-js";
+
+/**
+ *  API: VOICEGLOT LIST (GODMODE 2026)
+ * 
+ * Registry-Centric view: toont ELKE string uit de registry, 
+ * ongeacht of er al vertalingen zijn.
+ */
 
 export const dynamic = 'force-dynamic';
 
@@ -20,8 +27,7 @@ export async function GET(request: Request) {
 
     let results: any[] = [];
     try {
-      //  CHRIS-PROTOCOL: Registry-Centric Query (Godmode 2026)
-      // We gaan uit van de registry zodat we ELKE string zien, ook zonder vertalingen.
+      // 1. Haal items uit de registry
       const registryItems = await db
         .select({
           stringHash: translationRegistry.stringHash,
@@ -34,22 +40,26 @@ export async function GET(request: Request) {
         .limit(limit)
         .offset(offset);
 
-      // Haal alle vertalingen op voor deze batch hashes
+      if (registryItems.length === 0) {
+        return NextResponse.json({ translations: [], page, limit, hasMore: false });
+      }
+
+      // 2. Haal bijbehorende vertalingen op
       const hashes = registryItems.map(i => i.stringHash);
-      const batchTranslations = hashes.length > 0 ? await db
+      const batchTranslations = await db
         .select()
         .from(translations)
-        .where(sql`${translations.translationKey} IN ${hashes}`)
-        .catch(() => []) : [];
+        .where(inArray(translations.translationKey, hashes))
+        .catch(() => []);
 
       results = registryItems.map(item => {
         const itemTranslations = batchTranslations.filter((t: any) => t.translationKey === item.stringHash);
         
-        // Detect source language (fallback logic)
+        // Detect source language
         const text = (item.originalText || '').toLowerCase();
-        const isFr = text.includes(' le ') || text.includes(' la ') || text.includes(' les ') || text.includes(' être ');
-        const isEn = text.includes(' the ') || text.includes(' and ') || text.includes(' with ');
-        const isNl = text.includes(' de ') || text.includes(' het ') || text.includes(' en ') || text.includes(' is ');
+        const isFr = text.includes(' le ') || text.includes(' la ') || text.includes(' les ');
+        const isEn = text.includes(' the ') || text.includes(' and ');
+        const isNl = text.includes(' de ') || text.includes(' het ') || text.includes(' en ');
         
         let detectedLang = 'nl';
         if (isFr && !isNl) detectedLang = 'fr';
@@ -63,7 +73,7 @@ export async function GET(request: Request) {
           translations: itemTranslations.map((t: any) => ({
             id: t.id,
             lang: t.lang,
-            translatedText: t.translatedText,
+            translatedText: t.translated_text || t.translatedText,
             status: t.status,
             isLocked: t.isManuallyEdited,
             updatedAt: t.updatedAt
@@ -72,26 +82,37 @@ export async function GET(request: Request) {
       });
     } catch (dbErr: any) {
       console.warn('⚠️ [Voiceglot List API] Drizzle failed, falling back to SDK:', dbErr.message);
-      const { data } = await supabase
-        .from('translations')
+      const { data: registryData } = await supabase
+        .from('translation_registry')
         .select('*')
-        .order('updated_at', { ascending: false })
+        .order('last_seen', { ascending: false })
         .range(offset, offset + limit - 1);
 
-      results = (data || []).map((r: any) => ({
-        translationKey: r.translation_key,
-        originalText: r.original_text,
-        context: r.context,
-        sourceLang: 'nl', // Fallback assumption
-        translations: [{
-          id: r.id,
-          lang: r.lang,
-          translatedText: r.translated_text,
-          status: r.status,
-          isLocked: r.is_manually_edited,
-          updatedAt: r.updated_at
-        }]
-      }));
+      if (!registryData) return NextResponse.json({ translations: [], page, limit, hasMore: false });
+
+      const hashes = registryData.map(i => i.string_hash);
+      const { data: transData } = await supabase
+        .from('translations')
+        .select('*')
+        .in('translation_key', hashes);
+
+      results = registryData.map((item: any) => {
+        const itemTranslations = (transData || []).filter((t: any) => t.translation_key === item.string_hash);
+        return {
+          translationKey: item.string_hash,
+          originalText: item.original_text,
+          context: item.context,
+          sourceLang: 'nl',
+          translations: itemTranslations.map((t: any) => ({
+            id: t.id,
+            lang: t.lang,
+            translatedText: t.translated_text,
+            status: t.status,
+            isLocked: t.is_manually_edited,
+            updatedAt: t.updated_at
+          }))
+        };
+      });
     }
 
     return NextResponse.json({ 
