@@ -100,26 +100,39 @@ function generateArtistSchema(artist: any, host: string = '') {
  * Zoekt de originele slug en entiteit op basis van een vertaalde slug.
  */
 async function resolveSlug(slug: string, lang: string): Promise<{ originalSlug: string, type: 'article' | 'actor' | 'artist' | 'workshop' } | null> {
-  const normalized = normalizeSlug(slug);
-  
-  // 1. Check de translations tabel voor een slug mapping
-  // Key format: slug.[type].[original_slug]
-  const mapping = await db.query.translations.findFirst({
-    where: and(
-      eq(translations.lang, lang),
-      eq(translations.translatedText, normalized),
-      ilike(translations.translationKey, 'slug.%')
-    )
-  });
-
-  if (mapping && mapping.translationKey) {
-    const parts = mapping.translationKey.split('.');
-    if (parts.length >= 3) {
-      return {
-        originalSlug: parts.slice(2).join('.'),
-        type: parts[1] as any
-      };
+  try {
+    const normalized = normalizeSlug(slug);
+    
+    // 🛡️ CHRIS-PROTOCOL: Pre-flight check for DB
+    if (!db) {
+      console.warn('[resolveSlug] Database not available, skipping mapping');
+      return null;
     }
+
+    // 1. Check de translations tabel voor een slug mapping
+    // Key format: slug.[type].[original_slug]
+    const mapping = await db.query.translations.findFirst({
+      where: and(
+        eq(translations.lang, lang),
+        eq(translations.translatedText, normalized),
+        ilike(translations.translationKey, 'slug.%')
+      )
+    }).catch(err => {
+      console.error(`[resolveSlug] DB Query Error: ${err.message}`);
+      return null;
+    });
+
+    if (mapping && mapping.translationKey) {
+      const parts = mapping.translationKey.split('.');
+      if (parts.length >= 3) {
+        return {
+          originalSlug: parts.slice(2).join('.'),
+          type: parts[1] as any
+        };
+      }
+    }
+  } catch (err) {
+    console.error('[resolveSlug] Fatal Error:', err);
   }
 
   // 2. Geen mapping gevonden? Dan is het waarschijnlijk de originele slug
@@ -192,22 +205,22 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
     };
   }
 
-  // 1. Probeer eerst een Artist te vinden (Artist Journey DNA)
-  try {
-    const artist = await getArtist(firstSegment, lang);
-    if (artist) {
-      const title = await getTranslatedSEO(`seo.artist.${artist.id}.title`, `${artist.displayName} | ${market.name} Artist`);
-      const description = await getTranslatedSEO(`seo.artist.${artist.id}.description`, artist.bio);
+    // 1. Probeer eerst een Artist te vinden (Artist Journey DNA)
+    try {
+      const artist = await getArtist(firstSegment, lang);
+      if (artist) {
+        const title = await getTranslatedSEO(`seo.artist.${artist.id}.title`, `${artist.displayName} | ${market.name} Artist`);
+        const description = await getTranslatedSEO(`seo.artist.${artist.id}.description`, artist.bio);
 
-      return {
-        title,
-        description,
-        other: {
-          'script:ld+json': JSON.stringify(generateArtistSchema(artist, host))
-        }
-      };
-    }
-  } catch (e) {}
+        return {
+          title,
+          description,
+          other: {
+            'script:ld+json': JSON.stringify(generateArtistSchema(artist, host))
+          }
+        };
+      }
+    } catch (e) {}
 
   // 2. Probeer een Stem te vinden
   try {

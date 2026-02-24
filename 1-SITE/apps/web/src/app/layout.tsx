@@ -235,7 +235,7 @@ export default async function RootLayout({
     "founder": (market.market_code !== 'PORTFOLIO' && market.market_code !== 'ARTIST') ? {
       "@type": "Person",
       "name": "Johfrah Lefebvre",
-      "sameAs": MarketManagerServer.getMarketDomains()['BE']
+      "sameAs": "https://www.johfrah.be"
     } : undefined
   };
 
