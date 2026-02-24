@@ -1,5 +1,28 @@
 import { relations } from "drizzle-orm/relations";
-import { actors, actorDemos, media, users, ademingReflections, aiClones, aiLogs, chatConversations, aiRecommendations, chatMessages, appointments, courseProgress, courseSubmissions, favorites, contentArticles, contentBlocks, visitors, voicejarSessions, orders, utmTouchpoints, voucherBatches, vouchers, ademingStats, chatPushSubscriptions, voiceAffinity, orderNotes, ademingTracks, workshops, actorVideos, orderItems, vaultFiles, languages, countries, voiceTones, actorLanguages, actorTones } from "./schema";
+import { actors, actorDemos, media, users, ademingReflections, aiClones, aiLogs, chatConversations, aiRecommendations, chatMessages, appointments, courseProgress, courseSubmissions, favorites, contentArticles, contentBlocks, visitors, voicejarSessions, orders, utmTouchpoints, voucherBatches, vouchers, ademingStats, chatPushSubscriptions, voiceAffinity, orderNotes, ademingTracks, workshops, actorVideos, orderItems, vaultFiles, languages, countries, voiceTones, actorLanguages, actorTones, actorStatuses, experienceLevels, actorAttributes, actorAttributeMappings } from "./schema";
+
+export const actorStatusesRelations = relations(actorStatuses, ({many}) => ({
+	actors: many(actors),
+}));
+
+export const experienceLevelsRelations = relations(experienceLevels, ({many}) => ({
+	actors: many(actors),
+}));
+
+export const actorAttributesRelations = relations(actorAttributes, ({many}) => ({
+	mappings: many(actorAttributeMappings),
+}));
+
+export const actorAttributeMappingsRelations = relations(actorAttributeMappings, ({one}) => ({
+	actor: one(actors, {
+		fields: [actorAttributeMappings.actorId],
+		references: [actors.id]
+	}),
+	attribute: one(actorAttributes, {
+		fields: [actorAttributeMappings.attributeId],
+		references: [actorAttributes.id]
+	}),
+}));
 
 export const languagesRelations = relations(languages, ({many}) => ({
 	actorLanguages: many(actorLanguages),
@@ -69,6 +92,15 @@ export const actorsRelations = relations(actors, ({one, many}) => ({
 	}),
 	actorLanguages: many(actorLanguages),
 	actorTones: many(actorTones),
+	statusRel: one(actorStatuses, {
+		fields: [actors.statusId],
+		references: [actorStatuses.id]
+	}),
+	experienceLevelRel: one(experienceLevels, {
+		fields: [actors.experienceLevelId],
+		references: [experienceLevels.id]
+	}),
+	attributes: many(actorAttributeMappings),
 }));
 
 export const mediaRelations = relations(media, ({many}) => ({

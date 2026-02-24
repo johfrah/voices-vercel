@@ -37,6 +37,53 @@ export const voiceTones = pgTable("voice_tones", {
 	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow(),
 });
 
+export const actorStatuses = pgTable("actor_statuses", {
+	id: serial().primaryKey().notNull(),
+	code: text().unique().notNull(), // live, pending, rejected
+	label: text().notNull(), // Live, Wacht op goedkeuring, Afgewezen
+	color: text(), // #22c55e, etc
+	isPublic: boolean("is_public").default(false),
+	canOrder: boolean("can_order").default(false),
+	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow(),
+});
+
+export const experienceLevels = pgTable("experience_levels", {
+	id: serial().primaryKey().notNull(),
+	code: text().unique().notNull(), // junior, pro, senior, legend
+	label: text().notNull(), // Junior, Pro, Senior, Legend
+	basePriceModifier: numeric("base_price_modifier", { precision: 3, scale: 2 }).default('1.00'),
+	icon: text(), // lucide icon name
+	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow(),
+});
+
+export const actorAttributes = pgTable("actor_attributes", {
+	id: serial().primaryKey().notNull(),
+	type: text().notNull(), // tone, category, characteristic
+	code: text().unique().notNull(), // warm, commercial, raspy
+	label: text().notNull(), // Warm, Reclame, Hees
+	description: text(),
+	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow(),
+});
+
+export const actorAttributeMappings = pgTable("actor_attribute_mappings", {
+	id: serial().primaryKey().notNull(),
+	actorId: integer("actor_id").notNull(),
+	attributeId: integer("attribute_id").notNull(),
+	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow(),
+}, (table) => [
+	foreignKey({
+		columns: [table.actorId],
+		foreignColumns: [actors.id],
+		name: "actor_attr_actor_id_fk"
+	}),
+	foreignKey({
+		columns: [table.attributeId],
+		foreignColumns: [actorAttributes.id],
+		name: "actor_attr_attr_id_fk"
+	}),
+	unique("actor_attr_actor_id_attr_id_key").on(table.actorId, table.attributeId),
+]);
+
 export const actorLanguages = pgTable("actor_languages", {
 	id: serial().primaryKey().notNull(),
 	actorId: integer("actor_id").notNull(),
@@ -882,10 +929,11 @@ export const actors = pgTable("actors", {
 	priceUnpaid: numeric("price_unpaid", { precision: 10, scale:  2 }),
 	priceOnline: numeric("price_online", { precision: 10, scale:  2 }),
 	priceIvr: numeric("price_ivr", { precision: 10, scale:  2 }),
-    priceLiveRegie: numeric("price_live_regie", { precision: 10, scale:  2 }),
+	priceLiveRegie: numeric("price_live_regie", { precision: 10, scale:  2 }),
     pendingPriceLiveRegie: numeric("pending_price_live_regie", { precision: 10, scale:  2 }),
     dropboxUrl: text("dropbox_url"),
 	status: text().default('pending'),
+	statusId: integer("status_id"),
 	isPublic: boolean("is_public").default(false),
 	isAi: boolean("is_ai").default(false),
 	elevenlabsId: text("elevenlabs_id"),
@@ -905,6 +953,7 @@ export const actors = pgTable("actors", {
 	pendingBio: text("pending_bio"),
 	pendingTagline: text("pending_tagline"),
 	experienceLevel: experienceLevel().default('pro'),
+	experienceLevelId: integer("experience_level_id"),
 	studioSpecs: jsonb("studio_specs").default({}),
 	connectivity: jsonb().default({}),
 	availability: jsonb().default([]),
@@ -931,6 +980,16 @@ export const actors = pgTable("actors", {
 			columns: [table.countryId],
 			foreignColumns: [countries.id],
 			name: "actors_country_id_countries_id_fk"
+		}),
+	foreignKey({
+			columns: [table.statusId],
+			foreignColumns: [actorStatuses.id],
+			name: "actors_status_id_fk"
+		}),
+	foreignKey({
+			columns: [table.experienceLevelId],
+			foreignColumns: [experienceLevels.id],
+			name: "actors_experience_level_id_fk"
 		}),
 	unique("actors_wp_product_id_unique").on(table.wpProductId),
 	unique("actors_slug_key").on(table.slug),
