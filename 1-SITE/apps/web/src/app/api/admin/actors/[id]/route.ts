@@ -32,6 +32,7 @@ export async function PATCH(
     }
 
     console.log(` ADMIN: Updating actor ${id}`, body);
+    console.log(` ADMIN: Full request body for actor ${id}:`, JSON.stringify(body, null, 2));
 
     //  CHRIS-PROTOCOL: Auth Check (Nuclear 2026)
     const auth = await requireAdmin();
@@ -69,7 +70,7 @@ export async function PATCH(
       nativeLang: body.native_lang,
       extraLangs: body.extra_langs,
       dropboxUrl: cleanPhotoUrl,
-      photoId: body.photo_id !== undefined ? body.photo_id : (body.photoId !== undefined ? body.photoId : undefined),
+      photoId: (body.photo_id && body.photo_id !== 0) ? body.photo_id : (body.photoId !== undefined ? body.photoId : undefined),
       studioSpecs: body.studioSpecs || undefined,
       connectivity: body.connectivity || undefined,
       website: body.website,
@@ -77,7 +78,7 @@ export async function PATCH(
       linkedin: body.linkedin,
       allowFreeTrial: body.allowFreeTrial ?? body.allow_free_trial,
       isManuallyEdited: true, 
-      updatedAt: new Date()
+      updatedAt: new Date().toISOString()
     };
 
     //  CHRIS-PROTOCOL: HITL for Bio & Tagline
@@ -146,7 +147,7 @@ export async function PATCH(
       }
     }
 
-    console.log(` ADMIN: Update data for actor ${id}:`, updateData);
+    console.log(` ADMIN: Update data for actor ${id}:`, JSON.stringify(updateData, null, 2));
       // Update the actor in the database
       const result = await db.update(actors)
       .set(updateData)
@@ -338,7 +339,7 @@ export async function PATCH(
                 authorName: review.author_name || review.authorName,
                 textNl: review.text_nl || review.textNl,
                 rating: review.rating,
-                updatedAt: new Date()
+                updatedAt: new Date().toISOString()
               })
               .where(eq(reviews.id, reviewId));
           } else {

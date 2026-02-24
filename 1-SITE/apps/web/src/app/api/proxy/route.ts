@@ -25,7 +25,15 @@ export async function GET(request: NextRequest) {
     
     //  FIX: Als het pad al een volledige Supabase URL is, haal dan alleen het pad deel eruit
     // MAAR: Behoud de volledige URL voor Supabase Storage direct fetch
-    const isSupabaseUrl = cleanPath.includes('supabase.co/storage/v1/object/public/voices/');
+    let isSupabaseUrl = cleanPath.includes('supabase.co/storage/v1/object/public/voices/');
+    
+    // 🛡️ CHRIS-PROTOCOL: Forensic double-proxy strip (v2.14.179)
+    // If the path already contains /api/proxy/, strip it to get the raw path.
+    if (cleanPath.includes('/api/proxy/?path=')) {
+      console.log(`[Proxy Forensic] Stripping nested proxy prefix from: ${cleanPath}`);
+      cleanPath = decodeURIComponent(cleanPath.split('/api/proxy/?path=')[1]);
+      isSupabaseUrl = cleanPath.includes('supabase.co/storage/v1/object/public/voices/');
+    }
     
     if (cleanPath.startsWith('http') && !isSupabaseUrl) {
       try {

@@ -124,7 +124,7 @@ export async function POST(request: NextRequest) {
 
     //  CHRIS-PROTOCOL: Link in media table IMMEDIATELY to get mediaId (Bob-methode)
     // We do AI analysis in the background.
-    let mediaId = 0;
+    let mediaId = null;
     try {
       console.log(' ADMIN: Linking in media table...');
       
@@ -136,12 +136,13 @@ export async function POST(request: NextRequest) {
         journey: 'agency',
         category: 'voices',
         isPublic: true,
-        isManuallyEdited: true,
-        updatedAt: new Date()
+        updatedAt: new Date().toISOString()
       }).returning({ id: media.id });
       
-      mediaId = mediaResult.id;
-      console.log(' ADMIN: Media record created:', mediaId);
+      if (mediaResult) {
+        mediaId = mediaResult.id;
+        console.log(' ADMIN: Media record created:', mediaId);
+      }
 
       // Background task for AI analysis
       if (process.env.NODE_ENV === 'production') {
