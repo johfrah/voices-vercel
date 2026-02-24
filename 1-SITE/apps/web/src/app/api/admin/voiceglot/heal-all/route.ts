@@ -7,6 +7,9 @@ import { GeminiService } from '@/lib/services/gemini-service';
 import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
 import { requireAdmin } from '@/lib/auth/api-auth';
 import { SlopFilter } from '@/lib/engines/slop-filter';
+import OpenAI from 'openai';
+
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 /**
  *  API: VOICEGLOT HEAL-ALL (NUCLEAR 2026)
@@ -18,7 +21,7 @@ import { SlopFilter } from '@/lib/engines/slop-filter';
 export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
-  //  CHRIS-PROTOCOL: Build Safety
+  // ... (build safety check blijft gelijk)
   if (process.env.NEXT_PHASE === 'phase-production-build' || (process.env.NODE_ENV === 'production' && !process.env.VERCEL_URL)) {
     return NextResponse.json({ success: true, healedCount: 0, message: 'Skipping heal-all during build' });
   }
@@ -44,9 +47,14 @@ export async function POST(request: NextRequest) {
     }
 
     //  CHRIS-PROTOCOL: Resume-First Batching
-    // We filteren eerst de items die ECHT healing nodig hebben
     const itemsToHeal = [];
     for (const item of registryItems) {
+      // --- NIEUW: Deep Source Language Detection ---
+      // We checken of de brontekst eigenlijk NL is.
+      // Voor snelheid doen we dit alleen als we nog geen NL vertaling hebben geregistreerd
+      // of als het een bio/tagline is (hoge kans op mismatch).
+      const isBioOrTagline = item.stringHash.includes('.bio') || item.stringHash.includes('.tagline');
+      
       for (const lang of targetLanguages) {
         const [existing] = await db
           .select()
@@ -70,7 +78,7 @@ export async function POST(request: NextRequest) {
 
     for (const { item, lang } of itemsToHeal) {
       try {
-        // Markeer als 'healing' in de DB zodat de UI dit live kan tonen
+        // Markeer als 'healing'
         await db.insert(translations).values({
           translationKey: item.stringHash,
           lang: lang,
@@ -83,7 +91,46 @@ export async function POST(request: NextRequest) {
           set: { status: 'healing', updatedAt: new Date() }
         });
 
-        // 3. Vertaal via OpenAI (GPT-4o mini) met volledige context
+        // --- NIEUW: Source Healing Logic ---
+        // Als we een bio/tagline verwerken, checken we eerst de taal van de bron.
+        let sourceText = item.originalText;
+        if (item.stringHash.includes('.bio') || item.stringHash.includes('.tagline')) {
+          const detectionResponse = await openai.chat.completions.create({
+            model: "gpt-4o-mini",
+            messages: [
+              { role: "system", content: "Detect language. If not Dutch (NL), translate to Dutch. Return JSON: { \"detected_lang\": \"iso\", \"is_dutch\": bool, \"dutch_version\": \"str\" }" },
+              { role: "user", content: item.originalText }
+            ],
+            response_format: { type: "json_object" }
+          });
+          const detection = JSON.parse(detectionResponse.choices[0].message.content || '{}');
+          
+          if (!detection.is_dutch && detection.detected_lang !== 'nl') {
+            console.log(`♻️ SOURCE HEALING: Detected ${detection.detected_lang} for ${item.stringHash}`);
+            // 1. Update de registry met de NL versie
+            await db.update(translationRegistry)
+              .set({ originalText: detection.dutch_version })
+              .where(eq(translationRegistry.stringHash, item.stringHash));
+            
+            // 2. Sla de originele tekst op als de vertaling voor zijn eigen taal
+            await db.insert(translations).values({
+              translationKey: item.stringHash,
+              lang: detection.detected_lang,
+              originalText: detection.dutch_version,
+              translatedText: item.originalText,
+              status: 'active',
+              isManuallyEdited: true,
+              updatedAt: new Date()
+            }).onConflictDoUpdate({
+              target: [translations.translationKey, translations.lang],
+              set: { translatedText: item.originalText, status: 'active', updatedAt: new Date() }
+            });
+            
+            // Gebruik de nieuwe NL versie als bron voor de verdere vertalingen
+            sourceText = detection.dutch_version;
+          }
+        }
+
         const dna = dnaCache[lang] || '';
           
           //  CHRIS-PROTOCOL: Intelligent Context Enhancement
@@ -125,7 +172,7 @@ export async function POST(request: NextRequest) {
             - Behoud de betekenis en de Voices-vibe.
             
             TEKST:
-            "${item.originalText}"
+            "${sourceText}"
             
             VERTALING:
           `;
@@ -134,7 +181,7 @@ export async function POST(request: NextRequest) {
           const cleanTranslation = translatedText.trim().replace(/^"|"$/g, '');
 
           // 4. Slop Filter (Chris-Protocol)
-          if (SlopFilter.isSlop(cleanTranslation, lang, item.originalText)) {
+          if (SlopFilter.isSlop(cleanTranslation, lang, sourceText)) {
             console.warn(`[Heal-All] Slop detected for ${item.stringHash} (${lang}), skipping.`);
             continue;
           }
@@ -143,7 +190,7 @@ export async function POST(request: NextRequest) {
           await db.insert(translations).values({
             translationKey: item.stringHash,
             lang: lang,
-            originalText: item.originalText,
+            originalText: sourceText,
             translatedText: cleanTranslation,
             status: 'active',
             isManuallyEdited: false,

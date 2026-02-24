@@ -261,13 +261,23 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           );
           
           const allMethods = [
-            ...filtered.map((m: any) => ({
-              ...m,
-              image: {
-                ...m.image,
-                size2x: m.image?.size2x || m.image?.size1x || `/assets/common/branding/payment/${m.id === 'ideal' ? 'mollie.svg' : (m.id + '.svg')}`
-              }
-            })),
+            ...filtered.map((m: any) => {
+              // 🛡️ CHRIS-PROTOCOL: Force local assets for stability (v2.14.272)
+              // API URLs (Mollie) are sometimes unstable or blocked.
+              let localPath = m.image?.size2x || m.image?.size1x;
+              
+              if (m.id === 'bancontact') localPath = '/assets/common/branding/payment/bancontact.svg';
+              if (m.id === 'ideal') localPath = '/assets/common/branding/payment/ideal.svg';
+              if (m.id === 'creditcard') localPath = '/assets/common/branding/payment/visa.svg';
+              
+              return {
+                ...m,
+                image: {
+                  ...m.image,
+                  size2x: localPath
+                }
+              };
+            }),
             { 
               id: 'banktransfer', 
               description: 'Betalen op factuur (Offerte)', 
