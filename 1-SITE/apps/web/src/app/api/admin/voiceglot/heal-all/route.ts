@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
           .from(translations)
           .where(
             and(
-              eq(translations.translationKey, item.registryKey),
+              eq(translations.translationKey, item.stringHash),
               eq(translations.lang, lang)
             )
           )
@@ -56,9 +56,10 @@ export async function POST(request: NextRequest) {
           const prompt = `
             Vertaal de volgende tekst van het Nederlands naar het ${lang}.
             Houd je strikt aan de Voices Tone of Voice: warm, gelijkwaardig, vakmanschap.
-            Geen AI-bingo woorden, geen em-dashes, max 15 woorden.
+            Geen AI-bingo woorden, geen em-dashes.
             
-            Tekst: "${item.sourceText}"
+            Context: ${item.context || 'Algemene tekst'}
+            Tekst: "${item.originalText}"
             Vertaling:
           `;
 
@@ -67,9 +68,9 @@ export async function POST(request: NextRequest) {
 
           // 3. Opslaan in de database (DIRECT LIVE - User Mandate)
           await db.insert(translations).values({
-            translationKey: item.registryKey,
+            translationKey: item.stringHash,
             lang: lang,
-            originalText: item.sourceText,
+            originalText: item.originalText,
             translatedText: cleanTranslation,
             status: 'active',
             isManuallyEdited: false,
