@@ -57,7 +57,8 @@ export class MarketManagerServer {
       name: 'Voices',
       email: 'johfrah@voices.be',
       logo_url: VOICES_CONFIG.assets.logos.be,
-      theme: 'voices'
+      theme: 'voices',
+      has_voicy: true
     },
     'voices.nl': {
       market_code: 'NLNL',
@@ -67,7 +68,8 @@ export class MarketManagerServer {
       popular_languages: ['nl-NL', 'nl-BE', 'en-GB', 'de-DE', 'fr-FR'],
       name: 'Nederland',
       logo_url: VOICES_CONFIG.assets.logos.nl,
-      theme: 'voices'
+      theme: 'voices',
+      has_voicy: true
     },
     'voices.fr': {
       market_code: 'FR',
@@ -77,7 +79,8 @@ export class MarketManagerServer {
       popular_languages: ['fr-FR', 'fr-BE', 'en-GB', 'nl-NL', 'nl-BE', 'de-DE'],
       name: 'France',
       logo_url: VOICES_CONFIG.assets.logos.fr,
-      theme: 'voices'
+      theme: 'voices',
+      has_voicy: true
     },
     'voices.es': {
       market_code: 'ES',
@@ -87,7 +90,8 @@ export class MarketManagerServer {
       popular_languages: ['es-ES', 'en-GB', 'pt-PT'],
       name: 'España',
       logo_url: VOICES_CONFIG.assets.logos.es,
-      theme: 'voices'
+      theme: 'voices',
+      has_voicy: true
     },
     'voices.pt': {
       market_code: 'PT',
@@ -97,7 +101,8 @@ export class MarketManagerServer {
       popular_languages: ['pt-PT', 'en-GB', 'es-ES'],
       name: 'Portugal',
       logo_url: VOICES_CONFIG.assets.logos.pt,
-      theme: 'voices'
+      theme: 'voices',
+      has_voicy: true
     },
     'voices.eu': {
       market_code: 'EU',
@@ -107,7 +112,8 @@ export class MarketManagerServer {
       popular_languages: ['en-GB', 'de-DE', 'fr-BE', 'fr-FR', 'nl-NL', 'nl-BE'],
       name: 'Europe',
       logo_url: VOICES_CONFIG.assets.logos.eu,
-      theme: 'voices'
+      theme: 'voices',
+      has_voicy: true
     },
     'voices.academy': {
       market_code: 'ACADEMY',

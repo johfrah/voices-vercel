@@ -1,6 +1,6 @@
 import { db } from '@db';
 import { translations, translationRegistry } from '@db/schema';
-import { eq, and, sql } from 'drizzle-orm';
+import { eq, and, sql, inArray } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
 import { OpenAIService } from '@/lib/services/openai-service';
 import { GeminiService } from '@/lib/services/gemini-service';
@@ -46,37 +46,46 @@ export async function POST(request: NextRequest) {
       dnaCache[lang] = await GeminiService.getInstance().getMarketDNA(lang);
     }
 
-    //  CHRIS-PROTOCOL: Resume-First Batching
+    //  CHRIS-PROTOCOL: Resume-First Batching (Optimized)
     const itemsToHeal = [];
-    for (const item of registryItems) {
-      // --- NIEUW: Deep Source Language Detection ---
-      // We checken of de brontekst eigenlijk NL is.
-      // Voor snelheid doen we dit alleen als we nog geen NL vertaling hebben geregistreerd
-      // of als het een bio/tagline is (hoge kans op mismatch).
-      const isBioOrTagline = item.stringHash.includes('.bio') || item.stringHash.includes('.tagline');
-      
-      for (const lang of targetLanguages) {
-        const [existing] = await db
-          .select()
-          .from(translations)
-          .where(
-            and(
-              eq(translations.translationKey, item.stringHash),
-              eq(translations.lang, lang)
-            )
-          )
-          .limit(1)
-          .catch(() => []);
+    
+    // 1. Haal alle bestaande vertalingen in één keer op voor de target talen
+    console.log(`[Heal-All] Pre-fetching existing translations for ${targetLanguages.join(', ')}...`);
+    const existingTranslations = await db
+      .select({
+        key: translations.translationKey,
+        lang: translations.lang,
+        text: translations.translatedText,
+        status: translations.status
+      })
+      .from(translations)
+      .where(inArray(translations.lang, targetLanguages))
+      .catch(() => []);
 
-        if (!existing || !existing.translatedText || existing.translatedText === 'Initial Load' || existing.status === 'healing_failed') {
+    // Maak een snelle lookup map
+    const transMap = new Map();
+    existingTranslations.forEach(t => {
+      transMap.set(`${t.key}:${t.lang}`, t);
+    });
+
+    for (const item of registryItems) {
+      for (const lang of targetLanguages) {
+        const existing = transMap.get(`${item.stringHash}:${lang}`);
+
+        if (!existing || !existing.text || existing.text === 'Initial Load' || existing.status === 'healing_failed') {
           itemsToHeal.push({ item, lang });
         }
       }
     }
 
-    console.log(`🚀 Starting Healing for ${itemsToHeal.length} items...`);
+    // 🛡️ CHRIS-PROTOCOL: Batching Mandate
+    // We verwerken maximaal 50 items per keer om timeouts te voorkomen
+    const BATCH_SIZE = 50;
+    const itemsToProcess = itemsToHeal.slice(0, BATCH_SIZE);
 
-    for (const { item, lang } of itemsToHeal) {
+    console.log(`🚀 Starting Healing for ${itemsToProcess.length} items (Total queue: ${itemsToHeal.length})...`);
+
+    for (const { item, lang } of itemsToProcess) {
       try {
         // Markeer als 'healing'
         await db.insert(translations).values({
