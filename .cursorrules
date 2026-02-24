@@ -96,9 +96,14 @@ In 2026 is webdesign "theater": een strak geregisseerde samenwerking tussen expe
 12. **MODERNE STACK DISCIPLINE**:
     - **Geen Raw CSS**: Gebruik UITSLUITEND **Tailwind CSS**.
     - **Geen Raw HTML**: Gebruik UITSLUITEND **JSX/TSX** en `LayoutInstruments`.
-    - **Geen DOM Manipulatie**: Gebruik React State en Refs.
-
-## 📊 De Dashboard Architectuur (De Verdiepingen)
+    99|    - **Geen DOM Manipulatie**: Gebruik React State en Refs.
+   100|
+   101|13. **ANTI-LOOP & DEEP SCAN MANDATE**:
+   102|    - **Geen Herhaling**: Voer nooit twee keer achter elkaar exact hetzelfde commando uit met identieke parameters.
+   103|    - **Escalatie**: Als `git log -n 1` geen antwoord geeft, schaal direct op naar `-n 20` of `-n 50`.
+   104|    - **Breedte-onderzoek**: Als code-historie niet direct uitsluitsel geeft, schakel direct over naar database-inspectie (SQL) of gerelateerde configuratiebestanden.
+   105|
+   106|## 📊 De Dashboard Architectuur (De Verdiepingen)
 
 **Voices** is verdeeld in strikt gescheiden functionele zones, elk met een eigen dashboard:
 
