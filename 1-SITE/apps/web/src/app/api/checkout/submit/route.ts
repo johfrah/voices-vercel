@@ -78,8 +78,7 @@ export async function POST(request: Request) {
       ...(selectedActor?.id ? [selectedActor.id] : [])
     ]));
 
-    const isSubscription = usage === 'subscription';
-    const submittedIsVatExempt = false; // Te bepalen via VatService later indien nodig
+    console.log('[Checkout] Validated Payload:', { email, amount: pricing.total, itemsCount: items.length, actorIds });
 
     let dbActors: any[] = [];
     if (actorIds.length > 0) {
