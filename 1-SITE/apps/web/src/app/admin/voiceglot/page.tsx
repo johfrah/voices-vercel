@@ -65,7 +65,18 @@ export default function VoiceglotMasterPage() {
     try {
       console.log('📡 [Voiceglot Page] Fetching stats...');
       const res = await fetch('/api/admin/voiceglot/stats');
-      const data = await res.json();
+      const text = await res.text();
+      console.log('📡 [Voiceglot Page] Raw Stats Response:', text);
+      
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch (parseErr) {
+        console.error('❌ [Voiceglot Page] Stats JSON Parse Error:', parseErr);
+        toast.error('Stats API gaf geen geldige JSON terug');
+        return;
+      }
+      
       console.log('📊 [Voiceglot Page] Stats Received:', data);
       
       if (res.ok) {
@@ -121,7 +132,18 @@ export default function VoiceglotMasterPage() {
 
     try {
       const res = await fetch(`/api/admin/voiceglot/list?page=${pageNum}&limit=100`);
-      const data = await res.json();
+      const text = await res.text();
+      console.log(`📋 [Voiceglot Page] Raw List Response (Page ${pageNum}):`, text);
+      
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch (parseErr) {
+        console.error('❌ [Voiceglot Page] List JSON Parse Error:', parseErr);
+        toast.error('List API gaf geen geldige JSON terug');
+        return;
+      }
+      
       console.log(`📋 [Voiceglot Page] List Received (Page ${pageNum}):`, data);
       
       if (!res.ok) {

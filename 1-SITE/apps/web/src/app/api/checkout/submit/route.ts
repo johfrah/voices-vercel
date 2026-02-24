@@ -12,6 +12,10 @@ import { SlimmeKassa } from '@/lib/engines/pricing-engine';
 import { generateCartHash } from '@/lib/utils/cart-utils';
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { CheckoutPayloadSchema } from '@/lib/validation/checkout-schema';
+import { YukiService } from '@/lib/services/yuki-service';
+import { VumeEngine } from '@/lib/mail/VumeEngine';
+
+export const dynamic = 'force-dynamic';
 
 /**
  * HEADLESS CHECKOUT SUBMIT HANDLER (2026)
@@ -31,8 +35,8 @@ export async function POST(request: Request) {
     console.log('[Checkout] 🚀 NUCLEAR ZERO-POINT: API Call started');
     const headersList = headers();
     const host = headersList.get('host') || 'www.voices.be';
-    const protocol = host.includes('localhost') ? 'http' : 'https';
-    const baseUrl = `${protocol}://${host}`;
+    const marketConfig = MarketManager.getCurrentMarket(host);
+    const baseUrl = MarketManager.getMarketDomains()[marketConfig.market_code] || `https://${host}`;
     const ip = headersList.get('x-forwarded-for') || 'unknown';
 
     // 1. Validatie van de payload

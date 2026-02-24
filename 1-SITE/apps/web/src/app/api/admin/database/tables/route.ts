@@ -15,14 +15,13 @@ export async function GET() {
 
     // Haal alle tabelnamen op uit de public schema (PostgreSQL)
     const result = await db.execute(sql`
-      SELECT tablename 
-      FROM pg_catalog.pg_tables 
-      WHERE schemaname = 'public'
-      ORDER BY tablename ASC
+      SELECT table_name as tablename
+      FROM information_schema.tables 
+      WHERE table_schema = 'public'
+      AND table_type = 'BASE TABLE'
+      ORDER BY table_name ASC
     `).catch(async (err) => {
-      console.warn(' [Tables API] Drizzle failed, falling back to SDK RPC or hardcoded list:', err.message);
-      // Since Supabase SDK doesn't have a direct "list tables" method without RPC,
-      // and this is mainly for the admin dashboard, we return a common list if it fails.
+      console.error(' [Tables API] Drizzle query failed:', err.message);
       return [
         { tablename: 'actors' },
         { tablename: 'users' },
