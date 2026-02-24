@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useMemo, useCallback } from 'react';
 import { VoiceglotText } from './VoiceglotText';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { useVoicesState } from '@/contexts/VoicesStateContext';
@@ -41,11 +41,12 @@ interface StudioLaunchpadProps {
   initialJourney?: "telefonie" | "unpaid" | "paid" | string;
 }
 
-export function StudioLaunchpad({ initialActors = [], initialJourney }: StudioLaunchpadProps) {
+export const StudioLaunchpad = ({ initialActors = [], initialJourney }: StudioLaunchpadProps) => {
   const router = useRouter();
   const { t } = useTranslation();
-  const { state, removeActor } = useVoicesState();
+  const { state, toggleActorSelection, clearSelectedActors } = useVoicesState();
   const selectedActors = state.selected_actors;
+  
   const [currentStep, setCurrentStep] = useState(1);
   const [script, setScript] = useState('');
   const [projectName, setProjectName] = useState('');
@@ -60,23 +61,23 @@ export function StudioLaunchpad({ initialActors = [], initialJourney }: StudioLa
   const [isMatching, setIsMatching] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   
-  const getInitialUsage = () => {
+  const initialUsageValue = useMemo(() => {
     if (!initialJourney) return "paid";
     const s = initialJourney.toLowerCase();
     if (['telephony', 'telefonie', 'telefoon'].includes(s)) return 'telefonie';
     if (['video', 'corporate', 'unpaid'].includes(s)) return 'unpaid';
     if (['commercial', 'advertentie', 'paid'].includes(s)) return 'paid';
     return "paid";
-  };
+  }, [initialJourney]);
 
-  const [calcUsage, setCalcUsage] = useState<"telefonie" | "unpaid" | "paid">(getInitialUsage());
+  const [calcUsage, setCalcUsage] = useState<"telefonie" | "unpaid" | "paid">(initialUsageValue);
   const [selectedMedia, setSelectedMedia] = useState<CommercialMediaType[]>(['online']);
   const [spotsDetail, setSpotsDetail] = useState<Record<string, number>>({});
   const [yearsDetail, setYearsDetail] = useState<Record<string, number>>({});
   const [pricingConfig, setPricingConfig] = useState<any>(null);
   const [calcWords, setCalcWords] = useState(200);
   
-  const mediaOptions = React.useMemo(() => [
+  const mediaOptions = useMemo(() => [
     { id: 'online', label: t('common.media.online', 'Online & Socials'), sub: t('common.media.online.desc', 'YouTube, Meta, LinkedIn'), icon: Globe },
     { id: 'podcast', label: t('common.media.podcast', 'Podcast'), sub: t('common.media.podcast.desc', 'Pre-roll, Mid-roll'), icon: Mic2 },
     { id: 'radio_national', label: t('common.media.radio', 'Radio'), sub: t('common.media.radio.desc', 'Landelijke Radio'), icon: Radio },
@@ -113,7 +114,7 @@ export function StudioLaunchpad({ initialActors = [], initialJourney }: StudioLa
     { id: 3, title: 'Briefing', key: 'step.briefing', description: 'Script & vibe' },
   ];
 
-  const handleNext = () => {
+  const handleNext = useCallback(() => {
     if (currentStep === 1) {
       if (!projectName) {
         toast.error(t('launchpad.error.project_name', 'Geef je project een naam'));
@@ -136,14 +137,14 @@ export function StudioLaunchpad({ initialActors = [], initialJourney }: StudioLa
 
     setCurrentStep(prev => Math.min(prev + 1, 3));
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  }, [currentStep, projectName, clientEmail, selectedActors.length, t]);
 
-  const handleBack = () => {
+  const handleBack = useCallback(() => {
     setCurrentStep(prev => Math.max(prev - 1, 1));
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  }, []);
 
-  const handleLaunch = async () => {
+  const handleLaunch = useCallback(async () => {
     if (!script || script.trim().length < 10) {
       toast.error(t('launchpad.error.script_short', 'Je script is te kort voor een proefopname'));
       return;
@@ -186,9 +187,9 @@ export function StudioLaunchpad({ initialActors = [], initialJourney }: StudioLa
       toast.error(err.message || t('launchpad.error.submit', 'Er is iets misgegaan bij het aanvragen. Probeer het later opnieuw.'));
       setIsLaunching(false);
     }
-  };
+  }, [script, projectName, clientName, clientCompany, clientEmail, selectedMedia, spotsDetail, yearsDetail, calcWords, deadline, selectedActors, actorNotes, selectedVibe, t]);
 
-  const handleFileDrop = async (e: React.DragEvent) => {
+  const handleFileDrop = useCallback(async (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
     const file = e.dataTransfer.files?.[0];
@@ -205,11 +206,11 @@ export function StudioLaunchpad({ initialActors = [], initialJourney }: StudioLa
     } finally {
       setIsMatching(false);
     }
-  };
+  }, []);
 
   return (
     <div className="bg-va-off-white min-h-screen pb-32 overflow-hidden">
-      <LiquidBackground strokeWidth={1.5} />
+      <LiquidBackground />
       <div className="pt-40 pb-12 relative z-10 max-w-5xl mx-auto px-6 text-center">
         <header className="max-w-4xl mx-auto">
           <h1 className="text-[8vw] lg:text-[80px] font-extralight tracking-tighter mb-8 leading-[0.85] text-va-black">
@@ -411,7 +412,7 @@ export function StudioLaunchpad({ initialActors = [], initialJourney }: StudioLa
                             <div className="relative">
                               <VoiceCard voice={actor} hideButton compact hidePrice />
                               <button 
-                                onClick={() => removeActor(actor)} 
+                                onClick={() => toggleActorSelection(actor)} 
                                 className="absolute -top-3 -right-3 w-8 h-8 bg-white text-va-black/20 hover:text-red-500 rounded-full flex items-center justify-center shadow-lg border border-va-black/5 transition-all z-50"
                               >
                                 <LucideX strokeWidth={1.5} size={16} />
@@ -456,4 +457,4 @@ export function StudioLaunchpad({ initialActors = [], initialJourney }: StudioLa
       </section>
     </div>
   );
-}
+};
