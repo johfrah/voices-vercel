@@ -12,7 +12,11 @@ Dit protocol garandeert dat elke wijziging niet alleen wordt gepusht, maar ook d
 Vóór elke afronding van een taak MOET de agent de volgende stappen doorlopen:
 
 1.  **Pre-Vercel Check**: Voer `npm run check:pre-vercel` uit vanuit de root of `1-SITE/apps/web`. Dit voert een volledige build uit en scant op Nuclear Law schendingen.
-2.  **Versiebeheer**: Verhoog de `version` in `1-SITE/apps/web/package.json`.
+2.  **Versiebeheer (Version Sync Mandate)**: 
+    - Verhoog de `version` in `1-SITE/apps/web/package.json`.
+    - Synchroniseer deze versie EXACT in `1-SITE/apps/web/src/app/Providers.tsx` (`currentVersion`).
+    - Synchroniseer deze versie EXACT in `1-SITE/apps/web/src/app/api/admin/config/route.ts` (`_version`).
+    - Dit is cruciaal voor de `VersionGuard` om browser-reloads te forceren.
 3.  **Atomic Audit**: Voer de `000-ATOMIC-AUDIT.mdc` uit.
 4.  **Push**: Voer `git add . && git commit -m "vX.Y.Z: [Bericht]" && git push` uit.
 5.  **Wacht op Build**: Wacht minimaal 60-90 seconden tot Vercel de build heeft voltooid.

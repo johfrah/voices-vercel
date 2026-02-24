@@ -27,9 +27,12 @@ Vóór het schrijven van ook maar één regel code, MOET de agent de volgende st
 6.  **ISO Verify**: Controleer of taal-codes strikt ISO-5 zijn (`nl-BE`, niet `nl` of `Vlaams`).
 7.  **Instrument Check**: Controleer of er rauwe HTML wordt gebruikt ipv `LayoutInstruments`.
 8.  **Nuclear Lock**: Verifieer of `isManuallyEdited` velden worden gerespecteerd in sync-scripts.
+9.  **API Hardening**: Kritieke API routes (Auth, Admin, Checkout) MOETEN `export const dynamic = 'force-dynamic'` hebben en gedetailleerde foutmeldingen teruggeven bij falen (geen generieke 500's).
 
 ## 🚫 Verboden Patronen (Zero Tolerance)
 
+- **GEEN** relatieve imports naar andere packages (`../../packages`). Gebruik `@db` of `@database/schema`.
+- **GEEN** generieke foutmeldingen in API's. De browser moet weten *waarom* het faalt.
 - **GEEN** "behulpzame" interpretatie van filters. De taalfilter is de moedertaal (Native ID). Punt.
 - **GEEN** code schrijven zonder eerst de API-payload te hebben gezien.
 - **GEEN** `host.includes()` in UI componenten. Gebruik `market.market_code`.
