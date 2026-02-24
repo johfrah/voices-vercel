@@ -69,9 +69,41 @@ export const VoicesMasterControlProvider: React.FC<{ children: React.ReactNode }
   const { state: voicesState, updateJourney: updateVoicesJourney } = useVoicesState();
   const { state: checkoutState, updateUsage, updateMedia, updateSpots, updateYears, updateSpotsDetail, updateYearsDetail, updateLiveSession, updateBriefing, setStep: setCheckoutStep } = useCheckout();
 
-  const [state, setState] = useState<MasterControlState>(() => {
-    const host = typeof window !== 'undefined' ? window.location.host : (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || MarketManager.getMarketDomains()['BE'].replace('https://', ''));
+  const [state, setState] = useState<MasterControlState>({
+    journey: 'video',
+    usage: 'unpaid',
+    isMuted: false,
+    filters: {
+      language: 'nl-be',
+      languages: ['nl-be'],
+      gender: null,
+      style: null,
+      sortBy: 'popularity',
+      words: 200,
+      media: ['online'],
+      countries: ['BE'],
+      country: 'BE',
+      spots: 1,
+      years: 1,
+      liveSession: false,
+    },
+    currentStep: 'voice',
+  });
+
+  const [isClient, setIsClient] = useState(false);
+
+  // 🛡️ CHRIS-PROTOCOL: Initialize state from URL/LocalStorage ONLY on client-side
+  // to prevent Hydration Mismatch errors (#419).
+  useEffect(() => {
+    setIsClient(true);
+    
+    const host = window.location.host;
     const market = MarketManager.getCurrentMarket(host);
+    const saved = localStorage.getItem('voices_master_control');
+    let savedState = {};
+    try {
+      if (saved) savedState = JSON.parse(saved);
+    } catch (e) {}
 
     const journey = (searchParams?.get('journey') as JourneyType) || 
                    (voicesState.current_journey !== 'general' ? voicesState.current_journey as JourneyType : 'video');
@@ -88,7 +120,7 @@ export const VoicesMasterControlProvider: React.FC<{ children: React.ReactNode }
       : (journey === 'telephony' ? 25 : (journey === 'commercial' ? 100 : 200));
     const initialCountries = searchParams?.get('countries') ? searchParams?.get('countries')?.split(',') : [market.market_code];
     
-    const currentPath = typeof window !== 'undefined' ? window.location.pathname : '';
+    const currentPath = window.location.pathname;
     const pathSegments = currentPath.split('/').filter(Boolean);
     let initialMedia = (searchParams?.get('media') ? searchParams?.get('media')?.split(',') : ['online']);
     
@@ -115,17 +147,17 @@ export const VoicesMasterControlProvider: React.FC<{ children: React.ReactNode }
     } catch (e) {}
 
     const isRootInitial = (pathname === '/' || pathname === '/agency/' || pathname.startsWith('/voice/'));
-    
-    return {
+
+    setState({
       journey,
       usage: JOURNEY_USAGE_MAP[journey],
-      isMuted: false,
+      isMuted: (savedState as any).isMuted ?? false,
       filters: {
         language: initialLanguage,
         languages: initialLanguages as string[],
-        gender: searchParams?.get('gender') || null,
-        style: searchParams?.get('style') || null,
-        sortBy: (searchParams?.get('sortBy') as any) || 'popularity',
+        gender: searchParams?.get('gender') || (savedState as any).filters?.gender || null,
+        style: searchParams?.get('style') || (savedState as any).filters?.style || null,
+        sortBy: (searchParams?.get('sortBy') as any) || (savedState as any).filters?.sortBy || 'popularity',
         words: initialWords,
         media: initialMedia,
         countries: initialCountries as string[],
@@ -138,13 +170,8 @@ export const VoicesMasterControlProvider: React.FC<{ children: React.ReactNode }
         liveSession: searchParams?.get('liveSession') === 'true',
       },
       currentStep: (searchParams?.get('step') as any) || (isRootInitial ? 'voice' : 'voice'),
-    };
-  });
-
-  const [isClient, setIsClient] = useState(false);
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
+    });
+  }, []); // Run once on mount
 
   const detectStateFromUrl = useCallback((url: string) => {
     const segments = url.split('/').filter(Boolean);

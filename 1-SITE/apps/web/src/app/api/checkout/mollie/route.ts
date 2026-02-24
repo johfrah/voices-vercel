@@ -6,6 +6,7 @@ import { eq, inArray } from 'drizzle-orm';
 import { sign } from 'jsonwebtoken';
 import { headers } from 'next/headers';
 import { NextResponse } from 'next/server';
+import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
 import { MollieService } from '@/lib/payments/mollie';
 import { SlimmeKassa } from '@/lib/engines/pricing-engine';
 import { generateCartHash } from '@/lib/utils/cart-utils';
@@ -217,7 +218,7 @@ export async function POST(request: Request) {
 
       // Lead Tracking
       if (email) {
-        db.insert(centralLeads).values({
+        tx.insert(centralLeads).values({
           email,
           firstName: first_name,
           lastName: last_name,
@@ -411,7 +412,7 @@ export async function POST(request: Request) {
         success: true,
         orderId: newOrder.id,
         token: secureToken,
-        isBankTransfer: payment_method === 'banktransfer',
+        isBankTransfer: selectedGateway === 'banktransfer',
         isQuote: isQuote,
         message: selectedGateway === 'banktransfer' 
           ? 'Bestelling ontvangen. We sturen je de factuur voor de overschrijving.'

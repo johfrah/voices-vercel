@@ -20,14 +20,24 @@ export async function POST(request: NextRequest) {
     const paymentId = formData.get('id') as string;
 
     if (!paymentId) {
+      // CHRIS-PROTOCOL: Log to Watchdog instead of crashing or sending error mails
+      console.warn('[Mollie Webhook] Missing ID in request');
       return new NextResponse('Missing ID', { status: 400 });
     }
 
     // 1. Haal de status op bij Mollie
-    const payment = await MollieService.getPayment(paymentId);
-    const orderId = parseInt(payment.metadata.orderId);
+    let payment;
+    try {
+      payment = await MollieService.getPayment(paymentId);
+    } catch (mollieErr: any) {
+      console.error('[Mollie Webhook] Failed to fetch payment:', mollieErr.message);
+      return new NextResponse('Payment Not Found', { status: 404 });
+    }
+
+    const orderId = parseInt(payment.metadata?.orderId);
 
     if (!orderId) {
+      console.warn('[Mollie Webhook] Invalid or missing Order ID in metadata:', payment.metadata);
       return new NextResponse('Invalid Metadata', { status: 400 });
     }
 

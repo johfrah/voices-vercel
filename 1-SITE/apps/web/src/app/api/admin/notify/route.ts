@@ -26,15 +26,21 @@ export async function POST(request: NextRequest) {
     const { type, data } = body;
 
     const host = request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be');
-    const { MarketManagerServer: MarketManager } = require('@/lib/system/market-manager-server');
     const market = MarketManager.getCurrentMarket(host);
     const siteUrl = MarketManager.getMarketDomains()[market.market_code] || `https://www.voices.be`;
     const adminEmail = market.email;
+
+    // CHRIS-PROTOCOL: Skip emails if requested by user (logging to watchdog only)
+    const skipEmails = process.env.DISABLE_ADMIN_EMAILS === 'true';
 
     const mailEngine = VoicesMailEngine.getInstance();
 
     if (type === 'add_to_cart') {
       const { actorName, price, email, usage, actorPhoto, briefing } = data;
+      
+      console.log(`[Watchdog] Add to cart: ${actorName} by ${email || 'anonymous'}`);
+
+      if (skipEmails) return NextResponse.json({ success: true, message: 'Email skipped (Watchdog only)' });
       
       // CHRIS-PROTOCOL: Gebruik de VoicesMailEngine voor consistente styling
       await mailEngine.sendVoicesMail({
@@ -71,6 +77,11 @@ export async function POST(request: NextRequest) {
 
     if (type === 'quote_request' || type === 'banktransfer_order' || type === 'sameday_alert' || type === 'payment_received' || type === 'donation_received') {
       const { orderId, email, amount, company, items, customer, isNewUser, artistName, message } = data;
+      
+      console.log(`[Watchdog] ${type.toUpperCase()}: Order #${orderId} - ${email}`);
+
+      if (skipEmails) return NextResponse.json({ success: true, message: 'Email skipped (Watchdog only)' });
+
       const isQuote = type === 'quote_request';
       const isSameDay = type === 'sameday_alert';
       const isPayment = type === 'payment_received';
