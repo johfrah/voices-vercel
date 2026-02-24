@@ -31,7 +31,7 @@ export async function PATCH(
     // 🛡️ CHRIS-PROTOCOL: Nuclear Version Guard (v2.14.192)
     // Detect version mismatch from headers or payload to prevent "cache slop"
     const clientVersion = request.headers.get('X-Voices-Version') || body._version;
-    const serverVersion = '2.14.192';
+    const serverVersion = '2.14.195';
     
     if (clientVersion && clientVersion !== serverVersion) {
       console.warn(` [Version Guard] Mismatch detected: Client ${clientVersion} vs Server ${serverVersion}`);
@@ -403,8 +403,8 @@ export async function PATCH(
               .set({ 
                 authorName: review.author_name || review.authorName,
                 textNl: review.text_nl || review.textNl,
-                rating: review.rating,
-                updatedAt: new Date().toISOString()
+                rating: review.rating
+                // 🛡️ CHRIS-PROTOCOL: Removed manual updatedAt to let DB handle it via defaultNow()
               })
               .where(eq(reviews.id, reviewId));
           } else {

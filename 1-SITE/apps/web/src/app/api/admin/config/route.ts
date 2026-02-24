@@ -127,7 +127,24 @@ export async function POST(request: NextRequest) {
   if (auth instanceof NextResponse) return auth;
 
   try {
-    const body = await request.json();
+    //  CHRIS-PROTOCOL: Database Timeout Protection (2026)
+    const dbWithTimeout = async <T>(promise: Promise<T>): Promise<T> => {
+      const timeout = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Database Timeout')), 2000)
+      );
+      return Promise.race([promise, timeout]) as Promise<T>;
+    };
+
+    // 🛡️ CHRIS-PROTOCOL: Nuclear JSON Guard (v2.14.197)
+    // If we can't parse the body, we return a clear error instead of crashing with 500.
+    let body: any = {};
+    try {
+      body = await request.json();
+    } catch (jsonErr) {
+      console.warn('[Admin Config POST] Failed to parse JSON body:', jsonErr);
+      return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
+    }
+
     const { key, value } = body;
 
     if (!key) return NextResponse.json({ error: 'Key is required' }, { status: 400 });

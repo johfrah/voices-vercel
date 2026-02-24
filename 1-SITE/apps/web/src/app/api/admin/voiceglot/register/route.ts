@@ -21,13 +21,16 @@ export async function POST(request: NextRequest) {
   // maar we beperken de rate of we checken de origin in productie.
   
   try {
-    //  CHRIS-PROTOCOL: Build Safety
-    // We registreren geen strings tijdens de build fase.
-    if (process.env.NEXT_PHASE === 'phase-production-build' || (process.env.NODE_ENV === 'production' && !process.env.VERCEL_URL)) {
-      return NextResponse.json({ success: true, message: 'Skipping registration during build' });
+    // 🛡️ CHRIS-PROTOCOL: Nuclear JSON Guard (v2.14.197)
+    let body: any = {};
+    try {
+      body = await request.json();
+    } catch (jsonErr) {
+      console.warn('[RegisterAPI] Failed to parse JSON body:', jsonErr);
+      return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
     }
-
-    const { key, sourceText, context } = await request.json();
+    
+    const { key, sourceText, context } = body;
 
     if (!key || !sourceText) {
       return NextResponse.json({ error: 'Key and sourceText required' }, { status: 400 });

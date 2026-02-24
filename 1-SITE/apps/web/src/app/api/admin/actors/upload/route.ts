@@ -135,8 +135,8 @@ export async function POST(request: NextRequest) {
         fileSize: (finalFile as any).size || (finalFile as Buffer).length,
         journey: 'agency',
         category: 'voices',
-        isPublic: true,
-        updatedAt: new Date().toISOString()
+        isPublic: true
+        // 🛡️ CHRIS-PROTOCOL: Removed manual updatedAt to let DB handle it via defaultNow()
       };
       console.log(' ADMIN: Media data to insert:', JSON.stringify(mediaData, null, 2));
       const [mediaResult] = await db.insert(media).values(mediaData).returning({ id: media.id });
