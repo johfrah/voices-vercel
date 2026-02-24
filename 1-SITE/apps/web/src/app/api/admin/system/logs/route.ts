@@ -102,7 +102,7 @@ export async function POST(request: Request) {
       const { data: recent } = await supabase.from('system_events')
         .select('id')
         .eq('message', message)
-        .gte('created_at', tenMinutesAgo.toISOString())
+        .gte('created_at', tenMinutesAgo)
         .limit(1);
 
       if (recent && recent.length > 0) {
