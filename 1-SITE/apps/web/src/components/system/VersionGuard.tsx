@@ -31,19 +31,23 @@ export function VersionGuard({ currentVersion }: { currentVersion: string }) {
         // 🛡️ CHRIS-PROTOCOL: Use server-provided version with fallback
         const serverVersion = data._version;
 
-        // Als de server versie verschilt van de browser versie -> HARD RELOAD
-        if (serverVersion && serverVersion !== currentVersion) {
-          // 🛡️ CHRIS-PROTOCOL: Prevent infinite reload loops
-          // If we already have a reloaded flag, don't reload again even if versions mismatch
-          const hasReloaded = window.location.search.includes('reloaded=true');
-          
-          if (hasReloaded) {
-            console.error(`🚀 [VersionGuard] Version mismatch persists after reload (Server: ${serverVersion}, Local: ${currentVersion}). Stopping loop.`);
-            return;
+        // 🛡️ CHRIS-PROTOCOL: Only reload if server has a NEWER version
+        // This prevents loops when server cache is lagging behind browser version.
+        const isNewer = (v1: string, v2: string) => {
+          const parts1 = v1.split('.').map(Number);
+          const parts2 = v2.split('.').map(Number);
+          for (let i = 0; i < 3; i++) {
+            if (parts1[i] > parts2[i]) return true;
+            if (parts1[i] < parts2[i]) return false;
           }
+          return false;
+        };
+
+        if (serverVersion && isNewer(serverVersion, currentVersion)) {
+          const hasReloaded = window.location.search.includes('reloaded=true');
+          if (hasReloaded) return;
 
           console.warn(`🚀 [VersionGuard] New version detected: ${serverVersion} (current: ${currentVersion}). Reloading...`);
-          
           const separator = window.location.href.includes('?') ? '&' : '?';
           window.location.href = `${window.location.href}${separator}reloaded=true`;
         }

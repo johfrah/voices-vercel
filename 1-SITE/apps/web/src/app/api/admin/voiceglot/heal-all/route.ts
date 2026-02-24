@@ -1,16 +1,18 @@
 import { db } from '@db';
 import { translations, translationRegistry } from '@db/schema';
-import { eq, and, notInArray, sql } from 'drizzle-orm';
+import { eq, and, sql } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
+import { OpenAIService } from '@/lib/services/openai-service';
 import { GeminiService } from '@/lib/services/gemini-service';
 import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
 import { requireAdmin } from '@/lib/auth/api-auth';
+import { SlopFilter } from '@/lib/engines/slop-filter';
 
 /**
  *  API: VOICEGLOT HEAL-ALL (NUCLEAR 2026)
  * 
  * Doel: Scant de hele registry op ontbrekende vertalingen en vult deze aan
- * zonder dat er een pagina geopend hoeft te worden.
+ * met maximale intelligentie (Market DNA + Context Aware).
  */
 
 export const dynamic = 'force-dynamic';
@@ -28,13 +30,18 @@ export async function POST(request: NextRequest) {
     const targetLanguages = ['en', 'fr', 'de', 'es', 'pt'];
     let totalHealed = 0;
 
-    //  NUCLEAR CONFIG: Haal admin e-mail uit MarketManager of ENV
     const host = request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be');
     const market = MarketManager.getCurrentMarket(host);
     const adminEmail = process.env.ADMIN_EMAIL || market.email;
 
     // 1. Haal alle unieke strings uit de registry
     const registryItems = await db.select().from(translationRegistry).catch(() => []);
+
+    // 2. Cache Market DNA per taal voor snelheid
+    const dnaCache: Record<string, string> = {};
+    for (const lang of targetLanguages) {
+      dnaCache[lang] = await GeminiService.getInstance().getMarketDNA(lang);
+    }
 
     for (const item of registryItems) {
       for (const lang of targetLanguages) {
@@ -51,22 +58,39 @@ export async function POST(request: NextRequest) {
           .limit(1)
           .catch(() => []);
 
-        if (!existing || !existing.translatedText) {
-          // 2. Vertaal via AI
+        if (!existing || !existing.translatedText || existing.translatedText === 'Initial Load') {
+          // 3. Vertaal via OpenAI (GPT-4o mini) met volledige context
+          const dna = dnaCache[lang] || '';
+          
           const prompt = `
+            Je bent de senior vertaler voor Voices.be, een high-end castingbureau voor stemmen.
             Vertaal de volgende tekst van het Nederlands naar het ${lang}.
-            Houd je strikt aan de Voices Tone of Voice: warm, gelijkwaardig, vakmanschap.
-            Geen AI-bingo woorden, geen em-dashes.
             
-            Context: ${item.context || 'Algemene tekst'}
-            Tekst: "${item.originalText}"
-            Vertaling:
+            MARKET DNA & RULES:
+            ${dna}
+            
+            CONTEXT:
+            ${item.context || 'Algemene website tekst'}
+            
+            TONE OF VOICE:
+            Warm, gelijkwaardig, vakmanschap, nuchter. Geen AI-bingo woorden (zoals 'ontdek', 'passie', 'ervaar').
+            
+            TEKST:
+            "${item.originalText}"
+            
+            VERTALING:
           `;
 
-          const translatedText = await GeminiService.generateText(prompt, { lang: lang });
+          const translatedText = await OpenAIService.generateText(prompt);
           const cleanTranslation = translatedText.trim().replace(/^"|"$/g, '');
 
-          // 3. Opslaan in de database (DIRECT LIVE - User Mandate)
+          // 4. Slop Filter (Chris-Protocol)
+          if (SlopFilter.isSlop(cleanTranslation, lang, item.originalText)) {
+            console.warn(`[Heal-All] Slop detected for ${item.stringHash} (${lang}), skipping.`);
+            continue;
+          }
+
+          // 5. Opslaan in de database
           await db.insert(translations).values({
             translationKey: item.stringHash,
             lang: lang,
