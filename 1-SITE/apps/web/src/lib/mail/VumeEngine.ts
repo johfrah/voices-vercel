@@ -6,6 +6,7 @@ import { VumeActorAssignmentTemplate } from './templates/VumeActorAssignmentTemp
 import { VumeNewAccountTemplate } from './templates/VumeNewAccountTemplate';
 import { VumeDonationThankYouTemplate } from './templates/VumeDonationThankYouTemplate';
 import { VumeOrderConfirmationTemplate } from './templates/VumeOrderConfirmationTemplate';
+import { VumeFollowUpTemplate } from './templates/VumeFollowUpTemplate';
 
 /**
  *  VUME ENGINE (2026)
@@ -16,7 +17,7 @@ import { VumeOrderConfirmationTemplate } from './templates/VumeOrderConfirmation
 interface SendOptions {
   to: string;
   subject: string;
-  template: 'magic-link' | 'studio-experience' | 'invoice-reply' | 'actor-assignment' | 'new-account' | 'donation-thank-you' | 'order-confirmation';
+  template: 'magic-link' | 'studio-experience' | 'invoice-reply' | 'actor-assignment' | 'new-account' | 'donation-thank-you' | 'order-confirmation' | 'follow-up';
   context: any;
   from?: string;
   host?: string;
@@ -105,6 +106,16 @@ export class VumeEngine {
           total: context.total,
           items: context.items,
           paymentMethod: context.paymentMethod,
+          host: host,
+          language: context.language || 'nl'
+        });
+        break;
+
+      case 'follow-up':
+        html = VumeFollowUpTemplate({
+          userName: context.userName,
+          orderId: context.orderId,
+          actorName: context.actorName,
           host: host,
           language: context.language || 'nl'
         });

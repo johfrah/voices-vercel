@@ -52,7 +52,7 @@ export default function AdminUsersPage() {
   }, []);
 
   //  CHRIS-PROTOCOL: Build Safety
-  if (process.env.NEXT_PHASE === 'phase-production-build' || (process.env.NODE_ENV === 'production' && !process.env.VERCEL_URL)) {
+  if (process.env.NEXT_PHASE === 'phase-production-build') {
     return <ContainerInstrument className="p-20 text-center">Skipping users render during build...</ContainerInstrument>;
   }
 
