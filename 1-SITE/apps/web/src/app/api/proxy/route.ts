@@ -27,14 +27,24 @@ export async function GET(request: NextRequest) {
     // MAAR: Behoud de volledige URL voor Supabase Storage direct fetch
     let isSupabaseUrl = cleanPath.includes('supabase.co/storage/v1/object/public/voices/');
     
-    // 🛡️ CHRIS-PROTOCOL: Forensic double-proxy strip (v2.14.189)
+    // 🛡️ CHRIS-PROTOCOL: Forensic double-proxy strip (v2.14.408)
     // If the path already contains /api/proxy/, strip it to get the raw path.
-    if (cleanPath.includes('/api/proxy/?path=')) {
+    if (cleanPath.includes('/api/proxy/')) {
       console.log(`[Proxy Forensic] Stripping nested proxy prefix from: ${cleanPath}`);
-      cleanPath = decodeURIComponent(cleanPath.split('/api/proxy/?path=')[1]);
+      // Handle both ?path= and just /api/proxy/
+      if (cleanPath.includes('?path=')) {
+        cleanPath = decodeURIComponent(cleanPath.split('?path=')[1]);
+      } else {
+        cleanPath = cleanPath.split('/api/proxy/')[1];
+      }
+      
       // If it's still a proxied URL (triple encoding), keep stripping until we get a raw path
-      while (cleanPath.includes('/api/proxy/?path=')) {
-        cleanPath = decodeURIComponent(cleanPath.split('/api/proxy/?path=')[1]);
+      while (cleanPath.includes('/api/proxy/')) {
+        if (cleanPath.includes('?path=')) {
+          cleanPath = decodeURIComponent(cleanPath.split('?path=')[1]);
+        } else {
+          cleanPath = cleanPath.split('/api/proxy/')[1];
+        }
       }
       isSupabaseUrl = cleanPath.includes('supabase.co/storage/v1/object/public/voices/');
     }

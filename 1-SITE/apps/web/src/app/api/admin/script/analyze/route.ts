@@ -28,22 +28,18 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ is_valid: true, insights: [] });
     }
 
-    //  CHRIS-PROTOCOL: Fetch actor details if actorId is provided
-    let actorInfo = "";
-    if (actorId) {
+    // 🛡️ CHRIS-PROTOCOL: Parse actorId to integer to avoid DB crash (v2.14.408)
+    const id = typeof actorId === 'string' ? parseInt(actorId) : actorId;
+    
+    if (!isNaN(id)) {
       try {
         const { db } = await import('@/lib/sync/bridge');
-        const { actors } = await import('@db/schema');
+        const { actors: actorsTable } = await import('@db/schema');
         const { eq } = await import('drizzle-orm');
         
-        // 🛡️ CHRIS-PROTOCOL: Parse actorId to integer to avoid DB crash (v2.14.407)
-        const id = typeof actorId === 'string' ? parseInt(actorId) : actorId;
-        
-        if (!isNaN(id)) {
-          const actorData = await db.select().from(actors).where(eq(actors.id, id)).limit(1);
-          if (actorData[0]) {
-            actorInfo = `De geselecteerde stem is ${actorData[0].firstName}. Deze stem spreekt: Native ${actorData[0].nativeLang}${actorData[0].extraLangs ? `, Extra: ${actorData[0].extraLangs}` : ''}.`;
-          }
+        const actorData = await db.select().from(actorsTable).where(eq(actorsTable.id, id)).limit(1);
+        if (actorData[0]) {
+          actorInfo = `De geselecteerde stem is ${actorData[0].firstName}. Deze stem spreekt: Native ${actorData[0].nativeLang}${actorData[0].extraLangs ? `, Extra: ${actorData[0].extraLangs}` : ''}.`;
         }
       } catch (dbErr) {
         console.warn('[Script Analyze] Actor fetch failed, proceeding without actor context:', dbErr);

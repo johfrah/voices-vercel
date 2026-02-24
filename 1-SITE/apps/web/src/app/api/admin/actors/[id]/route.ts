@@ -64,8 +64,7 @@ export async function PATCH(
     // 🛡️ CHRIS-PROTOCOL: MarketManager check bypass for pre-vercel
     const isSuperAdmin = userEmail === 'johfrah@' + 'voi' + 'ces.be' || userEmail === 'bernadette@' + 'voi' + 'ces.be' || userEmail === adminEmail;
 
-    // 🛡️ CHRIS-PROTOCOL: Nuclear Force Fix (v2.14.192)
-    // We bypass ALL non-essential field validation to ensure the profile SAVES.
+    // 🛡️ CHRIS-PROTOCOL: Nuclear Force Fix (v2.14.408)
     // We strictly map incoming fields to the database schema.
     const cleanUpdateData: any = {};
     
@@ -154,11 +153,11 @@ export async function PATCH(
     // 🛡️ CHRIS-PROTOCOL: Map language IDs to strings if provided
     if (body.native_lang_id || body.extra_lang_ids) {
       try {
-        const { languages } = await import('@db/schema');
+        const { languages: languagesTable } = await import('@db/schema');
         const { inArray } = await import('drizzle-orm');
         const langIds = [body.native_lang_id, ...(body.extra_lang_ids || [])].filter(Boolean);
         if (langIds.length > 0) {
-          const dbLangs = await db.select().from(languages).where(inArray(languages.id, langIds as number[]));
+          const dbLangs = await db.select().from(languagesTable).where(inArray(languagesTable.id, langIds as number[]));
           if (body.native_lang_id) {
             const native = dbLangs.find((l: any) => l.id === body.native_lang_id);
             if (native) cleanUpdateData.nativeLang = native.code;
@@ -173,14 +172,14 @@ export async function PATCH(
       }
     }
 
-    // 🛡️ CHRIS-PROTOCOL: Nuclear Asset Reconciliation (v2.14.186)
+    // 🛡️ CHRIS-PROTOCOL: Nuclear Asset Reconciliation (v2.14.408)
     // If we have a photo_url but no valid photoId, we try to find or create the media record.
     // This makes the save action "Atomic" and independent of frontend upload success.
     let effectivePhotoId = cleanUpdateData.photoId;
     
     if (!effectivePhotoId && cleanPhotoUrl) {
       try {
-        const { media } = await import('@db/schema');
+        const { media: mediaTable } = await import('@db/schema');
         // Strip proxy prefix if present to get the raw path
         const rawPath = cleanPhotoUrl.includes('/api/proxy/?path=') 
           ? decodeURIComponent(cleanPhotoUrl.split('/api/proxy/?path=')[1])
@@ -189,21 +188,21 @@ export async function PATCH(
         console.log(` [Nuclear] Reconciling asset for path: ${rawPath}`);
         
         // 1. Check if media record already exists
-        const existingMedia = await db.select().from(media).where(eq(media.filePath, rawPath)).limit(1);
+        const existingMedia = await db.select().from(mediaTable).where(eq(mediaTable.filePath, rawPath)).limit(1);
         
         if (existingMedia.length > 0) {
           effectivePhotoId = existingMedia[0].id;
           console.log(` [Nuclear] Found existing media record: ${effectivePhotoId}`);
         } else {
           // 2. Create media record on the fly
-          const [newMedia] = await db.insert(media).values({
+          const [newMedia] = await db.insert(mediaTable).values({
             fileName: rawPath.split('/').pop() || 'photo.webp',
             filePath: rawPath,
             fileType: 'image/webp',
             journey: 'agency',
             category: 'voices',
             isPublic: true
-          }).returning({ id: media.id });
+          }).returning({ id: mediaTable.id });
           
           effectivePhotoId = newMedia.id;
           console.log(` [Nuclear] Created new media record on the fly: ${effectivePhotoId}`);

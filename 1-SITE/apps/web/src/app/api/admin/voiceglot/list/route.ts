@@ -45,13 +45,24 @@ export async function GET(request: Request) {
 
       // 2. Fetch translations for these keys
       const hashes = registryItems.map(i => i.string_hash);
+      console.log(`[Voiceglot List] Fetching translations for ${hashes.length} hashes`);
+      
       const { data: transData, error: transErr } = await supabase
         .from('translations')
         .select('id, translation_key, lang, translated_text, status, is_locked, is_manually_edited, updated_at')
         .in('translation_key', hashes);
 
-      if (transErr) throw transErr;
+      if (transErr) {
+        console.error('[Voiceglot List] Translations Fetch Error:', transErr);
+        throw transErr;
+      }
+      
       console.log(`[Voiceglot List] Translations found: ${transData?.length || 0}`);
+      if (transData && transData.length > 0) {
+        console.log(`[Voiceglot List] Sample translation:`, transData[0]);
+      } else {
+        console.warn(`[Voiceglot List] NO TRANSLATIONS FOUND in DB for these hashes!`);
+      }
 
       // 3. Join in memory
       const mappedResults = registryItems.map((item: any) => {
