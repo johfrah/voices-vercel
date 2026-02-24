@@ -1,6 +1,7 @@
 import { createAdminClient } from '@/utils/supabase/server';
 import { VoicesMailEngine } from '@/lib/services/voices-mail-engine';
 import { NextResponse } from 'next/server';
+import { ServerWatchdog } from '@/lib/services/server-watchdog';
 
 /**
  * CUSTOM AUTH API (BOB-METHOD 2026)
@@ -18,6 +19,12 @@ export async function POST(req: Request) {
 
     const supabase = createAdminClient();
     if (!supabase) {
+      await ServerWatchdog.report({
+        error: 'Auth service niet beschikbaar (Service role key missing)',
+        component: 'AuthAPI',
+        url: req.url,
+        level: 'critical'
+      });
       return NextResponse.json({ error: 'Auth service niet beschikbaar (Service role key missing)' }, { status: 500 });
     }
 
@@ -27,13 +34,16 @@ export async function POST(req: Request) {
     const originUrl = new URL(req.url).origin;
     const finalRedirect = redirectPath.startsWith('http') ? redirectPath : `${originUrl}${redirectPath}`;
 
+    // 🛡️ CHRIS-PROTOCOL: Simpler redirectTo to avoid Supabase parsing errors
+    // We use /account/confirm as the base and pass the final redirect as a param
+    const supabaseRedirectTo = `${originUrl}/account/confirm`;
+
     // 1. Probeer een magiclink te genereren
-    // Als de gebruiker niet bestaat, zal dit een error geven
     let { data, error } = await supabase.auth.admin.generateLink({
       type: 'magiclink',
       email: email,
       options: {
-        redirectTo: `${originUrl}/account/confirm?redirect=${encodeURIComponent(finalRedirect)}`,
+        redirectTo: supabaseRedirectTo,
       }
     });
 
@@ -45,12 +55,19 @@ export async function POST(req: Request) {
         type: 'signup',
         email: email,
         options: {
-          redirectTo: `${originUrl}/account/confirm?redirect=${encodeURIComponent(finalRedirect)}`,
+          redirectTo: supabaseRedirectTo,
         }
       });
 
       if (signupError) {
         console.error('[Auth API] Signup link generation failed:', signupError);
+        await ServerWatchdog.report({
+          error: `Signup link generation failed: ${signupError.message}`,
+          component: 'AuthAPI',
+          url: req.url,
+          level: 'error',
+          payload: { email, error: signupError }
+        });
         return NextResponse.json({ error: signupError.message }, { status: 400 });
       }
 
@@ -60,6 +77,13 @@ export async function POST(req: Request) {
 
     if (error || !data) {
       console.error('[Auth API] Supabase error:', error);
+      await ServerWatchdog.report({
+        error: `Supabase generateLink error: ${error?.message || 'Unknown error'}`,
+        component: 'AuthAPI',
+        url: req.url,
+        level: 'error',
+        payload: { email, error }
+      });
       return NextResponse.json({ error: error?.message || 'Kon geen link genereren' }, { status: 400 });
     }
 
@@ -70,6 +94,13 @@ export async function POST(req: Request) {
     
     if (!token) {
       console.error('[Auth API] No token found in action link:', data.properties.action_link);
+      await ServerWatchdog.report({
+        error: 'No token found in action link',
+        component: 'AuthAPI',
+        url: req.url,
+        level: 'critical',
+        payload: { action_link: data.properties.action_link }
+      });
       return NextResponse.json({ error: 'Interne fout: Geen token gegenereerd' }, { status: 500 });
     }
 
@@ -80,6 +111,7 @@ export async function POST(req: Request) {
     const siteUrl = MarketManager.getMarketDomains()[market.market_code] || `https://www.voices.be`;
     
     const origin = host.includes('localhost') ? `http://${host}` : siteUrl;
+    // We voegen de redirectPath hier toe aan ONZE link, niet aan de Supabase link
     const voicesLink = `${origin}/account/confirm?token=${token}&type=${type}&redirect=${encodeURIComponent(redirectPath)}`;
     
     console.log(`[Auth API] Voices link created: ${voicesLink}`);
@@ -94,14 +126,28 @@ export async function POST(req: Request) {
     try {
       await mailEngine.sendMagicLink(email, voicesLink, lang, host);
       console.log(`[Auth API] Mail successfully sent to: ${email} (lang: ${lang})`);
-    } catch (mailErr) {
+    } catch (mailErr: any) {
       console.error('[Auth API] Mail sending failed:', mailErr);
+      await ServerWatchdog.report({
+        error: `Mail sending failed: ${mailErr.message}`,
+        component: 'AuthAPI',
+        url: req.url,
+        level: 'error',
+        payload: { email, voicesLink, lang }
+      });
       return NextResponse.json({ error: 'Mail kon niet worden verzonden via onze server' }, { status: 500 });
     }
 
     return NextResponse.json({ success: true });
   } catch (err: any) {
     console.error('[Auth API] Unexpected error:', err);
+    await ServerWatchdog.report({
+      error: `Unexpected Auth API error: ${err.message}`,
+      stack: err.stack,
+      component: 'AuthAPI',
+      url: req.url,
+      level: 'critical'
+    });
     return NextResponse.json({ error: 'Interne serverfout' }, { status: 500 });
   }
 }
