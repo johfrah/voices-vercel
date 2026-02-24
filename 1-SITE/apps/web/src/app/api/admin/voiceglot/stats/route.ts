@@ -56,25 +56,14 @@ export async function GET(request: NextRequest) {
 
     // 2. Fetch Fresh Data (Ultra-Light)
     // Totaal aantal unieke strings in de registry
-    const totalStringsResult = await db.select({ count: sql`count(*)` }).from(translationRegistry).catch((err) => {
-      console.error('❌ [Voiceglot Stats API] Registry Query Error:', err);
-      return [{ count: '0' }];
-    });
+    const totalStringsResult = await db.execute(sql`SELECT count(*) as count FROM translation_registry`);
     const totalStrings = parseInt(String(totalStringsResult[0]?.count || '0'), 10);
-    console.log('📊 [Voiceglot Stats API] Total strings (parsed):', totalStrings);
+    console.log('📊 [Voiceglot Stats API] Total strings (raw):', totalStrings);
 
     // Aantal vertalingen per taal
-    const statsByLang = totalStrings > 0 ? await db.select({
-      lang: translations.lang,
-      count: sql`count(*)`
-    })
-    .from(translations)
-    .groupBy(translations.lang)
-    .catch((err) => {
-      console.error('❌ [Voiceglot Stats API] Translations Query Error:', err);
-      return [];
-    }) : [];
-    console.log('📊 [Voiceglot Stats API] Stats by lang:', statsByLang.length, 'languages found');
+    const statsByLangResult = await db.execute(sql`SELECT lang, count(*) as count FROM translations GROUP BY lang`);
+    const statsByLang = Array.isArray(statsByLangResult) ? statsByLangResult : [];
+    console.log('📊 [Voiceglot Stats API] Stats by lang (raw):', statsByLang.length, 'languages found');
 
     // Detect non-NL sources (Godmode Detection)
     // We doen een snelle check op de laatste 100 strings om te zien of er veel non-NL tussen zit
@@ -91,7 +80,7 @@ export async function GET(request: NextRequest) {
     // Bereken percentages
     const targetLanguages = ['en', 'fr', 'de', 'es', 'pt', 'it'];
     const coverage = targetLanguages.map(lang => {
-      const found = statsByLang.find(s => s.lang === lang);
+      const found = statsByLang.find((s: any) => s.lang === lang);
       const count = parseInt(String(found?.count || '0'), 10);
       return {
         lang,
