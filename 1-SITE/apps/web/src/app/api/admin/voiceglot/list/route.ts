@@ -32,7 +32,21 @@ export async function GET() {
         .orderBy(desc(translations.updatedAt))
         .limit(500);
       
-      results = rawResults;
+      results = rawResults.map(r => {
+        const text = (r.originalText || '').toLowerCase();
+        const isFr = text.includes(' le ') || text.includes(' la ') || text.includes(' les ') || text.includes(' être ');
+        const isEn = text.includes(' the ') || text.includes(' and ') || text.includes(' with ');
+        const isNl = text.includes(' de ') || text.includes(' het ') || text.includes(' en ') || text.includes(' is ');
+        
+        let detectedLang = 'nl';
+        if (isFr && !isNl) detectedLang = 'fr';
+        else if (isEn && !isNl) detectedLang = 'en';
+
+        return {
+          ...r,
+          sourceLang: detectedLang
+        };
+      });
     } catch (dbErr) {
       console.warn(' [Voiceglot List API] Drizzle failed, falling back to SDK');
       const { data } = await supabase.from('translations').select('*').order('updated_at', { ascending: false }).limit(500);

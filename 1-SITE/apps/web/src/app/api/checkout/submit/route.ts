@@ -348,6 +348,32 @@ export async function POST(request: Request) {
 
   } catch (error: any) {
     console.error('[Checkout FATAL]:', error);
+    
+    // 🛡️ CHRIS-PROTOCOL: Report fatal error to Watchdog (v2.14.270)
+    try {
+      const headersList = headers();
+      const host = headersList.get('host') || 'www.voices.be';
+      const protocol = host.includes('localhost') ? 'http' : 'https';
+      const baseUrl = `${protocol}://${host}`;
+      
+      await fetch(`${baseUrl}/api/admin/system/watchdog`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          level: 'critical',
+          source: 'CheckoutAPI',
+          error: error.message || 'Unknown Checkout Error',
+          stack: error.stack,
+          details: {
+            message: error.message,
+            name: error.name
+          }
+        })
+      });
+    } catch (watchdogErr) {
+      console.error('[Checkout] Failed to report to Watchdog:', watchdogErr);
+    }
+
     return NextResponse.json({ error: 'Checkout failed', message: error.message }, { status: 500 });
   }
 }

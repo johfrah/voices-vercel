@@ -192,6 +192,7 @@ export default function VoiceglotMasterPage() {
         key: curr.translationKey,
         originalText: curr.originalText,
         context: curr.context || null,
+        sourceLang: curr.sourceLang || 'nl',
         langs: {}
       };
     }
@@ -232,7 +233,10 @@ export default function VoiceglotMasterPage() {
     if (!text || lang.startsWith('nl')) return false;
     const lower = text.toLowerCase();
     const sourceLower = original.toLowerCase();
+    
+    // Als de bron al in de doeltaal is, is het technisch gezien slop (geen vertaling nodig)
     if (lower === sourceLower) return true;
+    
     const dutchWords = [' de ', ' het ', ' een ', ' is ', ' zijn ', ' met ', ' voor '];
     return dutchWords.filter(word => lower.includes(word)).length >= 2;
   };
@@ -252,9 +256,17 @@ export default function VoiceglotMasterPage() {
             <ArrowLeft strokeWidth={1.5} size={12} /> 
             Terug naar Markt Beheer
           </Link>
-          <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter">
-            Voiceglot Registry
-          </HeadingInstrument>
+          <div className="flex items-center gap-4">
+            <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter">
+              Voiceglot Registry
+            </HeadingInstrument>
+            {stats?.nonNlSourceWarning && (
+              <div className="bg-amber-50 border border-amber-200 px-4 py-2 rounded-2xl flex items-center gap-2 text-amber-700 animate-bounce-slow">
+                <AlertCircle size={16} />
+                <span className="text-[12px] font-bold uppercase tracking-tight">Non-NL Sources Detected</span>
+              </div>
+            )}
+          </div>
         </ContainerInstrument>
 
         <ButtonInstrument 
@@ -364,6 +376,11 @@ export default function VoiceglotMasterPage() {
                       {group.context && (
                         <span className="text-[10px] font-bold bg-va-black text-white px-2 py-0.5 rounded-full uppercase tracking-tighter" title="Oorsprong van deze tekst">
                           {group.context}
+                        </span>
+                      )}
+                      {group.sourceLang !== 'nl' && (
+                        <span className="text-[10px] font-bold bg-amber-500 text-white px-2 py-0.5 rounded-full uppercase tracking-tighter animate-pulse" title="Deze tekst lijkt niet in het Nederlands te zijn ingevoerd">
+                          Source: {group.sourceLang.toUpperCase()}
                         </span>
                       )}
                     </div>

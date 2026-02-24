@@ -76,6 +76,18 @@ export async function GET(request: NextRequest) {
     });
     console.log('📊 [Voiceglot Stats API] Stats by lang:', statsByLang.length, 'languages found');
 
+    // Detect non-NL sources (Godmode Detection)
+    // We doen een snelle check op de laatste 100 strings om te zien of er veel non-NL tussen zit
+    const sampleStrings = await db.select().from(translationRegistry).orderBy(desc(translationRegistry.lastSeen)).limit(100).catch(() => []);
+    const nonNlCount = sampleStrings.filter(s => {
+      const text = s.originalText.toLowerCase();
+      // Simpele heuristiek voor demo: bevat Franse of Engelse lidwoorden maar geen NL
+      const isFr = text.includes(' le ') || text.includes(' la ') || text.includes(' les ');
+      const isEn = text.includes(' the ') || text.includes(' and ');
+      const isNl = text.includes(' de ') || text.includes(' het ') || text.includes(' en ');
+      return (isFr || isEn) && !isNl;
+    }).length;
+
     // Bereken percentages
     const targetLanguages = ['en', 'fr', 'de', 'es', 'pt', 'it'];
     const coverage = targetLanguages.map(lang => {
@@ -94,6 +106,7 @@ export async function GET(request: NextRequest) {
       totalStrings,
       coverage,
       recentStrings,
+      nonNlSourceWarning: nonNlCount > 5, // Als >5% van de sample non-NL is
       status: totalStrings > 0 ? 'ACTIVE' : 'INITIALIZING',
       updatedAt: new Date().toISOString()
     };
