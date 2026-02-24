@@ -231,6 +231,7 @@ export async function POST(request: Request) {
 
     // 6. Bestelling aanmaken
     const isInvoiceActual = payment_method === 'banktransfer';
+    console.log('[Checkout] 🚀 STEP 6: Creating order...', { amount, isInvoiceActual });
 
     // 🛡️ CHRIS-PROTOCOL: Minimum amount check (v2.14.271)
     if (amount <= 0 && !isQuoteOnly && !isInvoiceActual) {
@@ -239,8 +240,11 @@ export async function POST(request: Request) {
     }
 
     const isQuote = isQuoteOnly || (rawBody as any).isQuote;
+    
+    console.log('[Checkout] 🚀 STEP 6.1: DB Insert payload prepared');
+    
     const [newOrder] = await db.insert(orders).values({
-      wpOrderId: Math.floor(Math.random() * 100000),
+      wpOrderId: Math.floor(Math.random() * 1000000), // Verhoogde range om collisions te voorkomen
       total: amount.toString(),
       status: isQuote ? 'quote-pending' : 'pending',
       userId: userId || null,
@@ -261,13 +265,14 @@ export async function POST(request: Request) {
       createdAt: new Date().toISOString()
     }).returning();
 
-    console.log('[Checkout] Order created:', { id: newOrder?.id, total: amount });
+    console.log('[Checkout] ✅ STEP 6.2: Order created in DB:', { id: newOrder?.id });
 
     if (!newOrder) {
-      throw new Error('Failed to create order in database');
+      throw new Error('Failed to create order in database (returned empty)');
     }
 
     // 7. Order Items opslaan
+    console.log('[Checkout] 🚀 STEP 7: Saving order items...', { count: validatedItems.length });
     if (validatedItems.length > 0) {
       try {
         await db.insert(orderItems).values(validatedItems.map((item: any) => ({
@@ -280,12 +285,15 @@ export async function POST(request: Request) {
           metaData: item.pricing || {},
           deliveryStatus: 'waiting'
         })));
-      } catch (e) {
-        console.error('[Checkout] Failed to save order items:', e);
+        console.log('[Checkout] ✅ STEP 7.1: Order items saved');
+      } catch (e: any) {
+        console.error('[Checkout] ❌ STEP 7 ERROR:', e.message);
+        throw new Error(`Failed to save order items: ${e.message}`);
       }
     }
 
     // 8. Afhandeling (Mollie vs Factuur)
+    console.log('[Checkout] 🚀 STEP 8: Handling payment method...', { method: payment_method });
     const secureToken = sign(
       { orderId: newOrder.id, userId, journey: newOrder.journey, email },
       process.env.JWT_SECRET || 'voices-secret-2026',
@@ -293,11 +301,12 @@ export async function POST(request: Request) {
     );
 
     if (isQuote || isInvoiceActual) {
+      console.log('[Checkout] ✅ STEP 8.1: Quote/Invoice flow triggered');
       // Offerte/Factuur flow (Background)
       (async () => {
         try {
-          // Admin Notificatie
-          await fetch(`${baseUrl}/api/admin/notify`, {
+          console.log('[Checkout] 📡 Background: Sending admin notification...');
+          const notifyRes = await fetch(`${baseUrl}/api/admin/notify`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -310,8 +319,9 @@ export async function POST(request: Request) {
               }
             })
           });
-        } catch (e) {
-          console.warn('[Checkout] Background notification failed:', e);
+          console.log('[Checkout] 📡 Background: Admin notification sent, status:', notifyRes.status);
+        } catch (e: any) {
+          console.warn('[Checkout] ⚠️ Background notification failed:', e.message);
         }
       })();
 
@@ -326,6 +336,7 @@ export async function POST(request: Request) {
     }
 
     // Mollie Flow
+    console.log('[Checkout] 🚀 STEP 8.2: Mollie flow triggered');
     const mollieOrder = await MollieService.createOrder({
       amount: { currency: 'EUR', value: amount.toFixed(2) },
       orderNumber: newOrder.id.toString(),
