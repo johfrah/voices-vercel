@@ -38,16 +38,17 @@ export async function GET(request: NextRequest) {
     }
 
     // 2. Fetch Fresh Data (Ultra-Light)
-    // We gebruiken Drizzle's count helper voor maximale compatibiliteit
-    const [totalResult] = await db.select({ count: sql`count(*)` }).from(translationRegistry);
-    const totalStrings = parseInt(String(totalResult?.count || '0'), 10);
+    // We gebruiken een rauwe SQL query voor maximale snelheid en om Drizzle issues te omzeilen
+    const totalResult = await db.execute(sql`SELECT count(*) FROM translation_registry`);
+    const totalStrings = parseInt(String((totalResult as any)[0]?.count || '0'), 10);
 
-    const statsByLang = totalStrings > 0 ? await db.select({
-      lang: translations.lang,
-      count: sql`count(*)`
-    })
-    .from(translations)
-    .groupBy(translations.lang) : [];
+    const statsByLangResult = totalStrings > 0 ? await db.execute(sql`
+      SELECT lang, count(*) as count 
+      FROM translations 
+      GROUP BY lang
+    `) : [];
+    
+    const statsByLang = (statsByLangResult as any) || [];
 
     // Bereken percentages
     const targetLanguages = ['en', 'fr', 'de', 'es', 'pt', 'it'];
