@@ -139,7 +139,12 @@ interface ActorReorderModalProps {
   onSuccess?: () => void;
 }
 
+import { useTranslation } from '@/contexts/TranslationContext';
+
+// ... (inside component)
+
 export const ActorReorderModal = ({ isOpen, onClose, language, actors: initialActors, onSuccess }: ActorReorderModalProps) => {
+  const { market } = useTranslation();
   const [items, setItems] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [isSaving, setIsSaving] = useState(false);
@@ -148,8 +153,6 @@ export const ActorReorderModal = ({ isOpen, onClose, language, actors: initialAc
     if (isOpen) {
       //  CHRIS-PROTOCOL: Intelligent Market-Aware Sorting (Bob-methode)
       // If "Alle talen" is selected, we sort by market priority first, then menu_order.
-      const host = typeof window !== 'undefined' ? window.location.host : 'voices.be';
-      const market = MarketManager.getCurrentMarket(host);
       
       const filtered = initialActors
         .filter(a => {

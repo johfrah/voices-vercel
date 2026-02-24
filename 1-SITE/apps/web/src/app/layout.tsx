@@ -35,7 +35,10 @@ const TopBar = dynamic(() => import("@/components/ui/TopBar").then(mod => mod.To
 const GlobalNav = dynamic(() => import("@/components/ui/GlobalNav"), { ssr: false, loading: () => <div className="h-[60px] bg-va-off-white/50 backdrop-blur-md" /> });
 const VoicejarTracker = dynamic(() => import("@/components/ui/VoicejarTracker").then(mod => mod.VoicejarTracker), { ssr: false, loading: () => null });
 const VoicyBridge = dynamic(() => import("@/components/ui/VoicyBridge").then(mod => mod.VoicyBridge), { ssr: false, loading: () => null });
-const VoicyChat = dynamic(() => import("@/components/ui/VoicyChat").then(mod => mod.VoicyChatV2).then(mod => ({ default: mod })), { ssr: false, loading: () => null });
+const VoicyChat = dynamic(() => import("@/components/ui/VoicyChat").then(mod => ({ default: mod.VoicyChatV2 })), { 
+  ssr: false,
+  loading: () => null 
+});
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -50,7 +53,7 @@ async function getMarketSafe(host: string) {
     return await Promise.race([marketPromise, timeoutPromise]) as any;
   } catch (err) {
     console.error(' getMarketSafe: Failed or timed out:', err);
-    return MarketManagerServer.getCurrentMarket(process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || "voices.be");
+    return MarketManagerServer.getCurrentMarket(process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || MarketManagerServer.getMarketDomains()['BE'].replace('https://', ''));
   }
 }
 const raleway = Raleway({ subsets: ["latin"], variable: '--font-raleway' });
@@ -105,10 +108,10 @@ export async function generateMetadata(): Promise<Metadata> {
   } catch (err) {
     console.error(' generateMetadata: Failed to load locales (timeout or error):', err);
     alternateLanguages = {
-      'nl-BE': 'https://www.voices.be',
-      'nl-NL': 'https://www.voices.nl',
-      'fr-FR': 'https://www.voices.fr',
-      'en-EU': 'https://www.voices.eu'
+      'nl-BE': MarketManagerServer.getMarketDomains()['BE'],
+      'nl-NL': MarketManagerServer.getMarketDomains()['NLNL'],
+      'fr-FR': MarketManagerServer.getMarketDomains()['FR'],
+      'en-EU': MarketManagerServer.getMarketDomains()['EU']
     };
   }
 
@@ -125,7 +128,7 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     openGraph: {
       type: "website",
-      locale: market.seo_data?.locale_code?.replace('-', '_') || (market.language === "nl" ? "nl_BE" : "fr_FR"),
+      locale: market.seo_data?.locale_code?.replace('-', '_') || (market.primary_language.replace('-', '_')),
       url: baseUrl,
       siteName: market.name,
       images: [

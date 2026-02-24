@@ -50,6 +50,9 @@ export async function PATCH(
         
         const langIds = [body.native_lang_id, ...(body.extra_lang_ids || [])].filter(Boolean);
         if (langIds.length > 0) {
+          // Check if db is available
+          if (!db) throw new Error('Database connection unavailable');
+          
           const dbLangs = await db.select().from(languages).where(inArray(languages.id, langIds as number[]));
           
           if (body.native_lang_id) {
@@ -62,8 +65,8 @@ export async function PATCH(
             body.extra_langs = extras.map((l: any) => l.code).join(', ');
           }
         }
-      } catch (langErr) {
-        console.warn(' ADMIN: Language ID mapping failed:', langErr);
+      } catch (langErr: any) {
+        console.warn(' ADMIN: Language ID mapping failed:', langErr.message);
       }
     }
 
@@ -92,7 +95,6 @@ export async function PATCH(
       samedayDelivery: body.delivery_days === 0 || body.delivery_days_min === 0,
       cutoffTime: body.cutoff_time,
       nativeLang: body.native_lang,
-      nativeLangId: body.native_lang_id,
       extraLangs: body.extra_langs,
       dropboxUrl: cleanPhotoUrl,
       photoId: body.photo_id !== undefined ? body.photo_id : (body.photoId !== undefined ? body.photoId : undefined),

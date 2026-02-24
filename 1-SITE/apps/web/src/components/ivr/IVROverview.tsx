@@ -19,9 +19,9 @@ interface IVRStep {
 }
 
 export const IVROverview: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, market } = useTranslation();
   const [steps, setSteps] = useState<IVRStep[]>([
-    { id: '1', label: t('ivr.step.welcome', 'Welkomstboodschap'), action: 'message', value: 'Welkom bij Voices.be' },
+    { id: '1', label: t('ivr.step.welcome', 'Welkomstboodschap'), action: 'message', value: `Welkom bij ${market.name}` },
     { id: '2', label: t('ivr.step.main_menu', 'Hoofdmenu'), action: 'menu', value: 'Druk 1 voor sales, 2 voor support' }
   ]);
 

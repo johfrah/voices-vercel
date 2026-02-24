@@ -36,19 +36,27 @@ export async function GET(request: NextRequest) {
   }
 
   try {
+    //  CHRIS-PROTOCOL: Database Timeout Protection (2026)
+    const dbWithTimeout = async <T>(promise: Promise<T>): Promise<T> => {
+      const timeout = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Database Timeout')), 2000)
+      );
+      return Promise.race([promise, timeout]) as Promise<T>;
+    };
+
     //  BRIDGE LOGIC: Handle client-side requests for server-only data
     if (type === 'telephony') {
-      const config = await db.select().from(appConfigs).where(eq(appConfigs.key, 'telephony_config')).limit(1).catch(() => []);
+      const config = await dbWithTimeout(db.select().from(appConfigs).where(eq(appConfigs.key, 'telephony_config')).limit(1)).catch(() => []);
       return NextResponse.json({ telephony_config: config[0]?.value || {} });
     }
 
     if (type === 'general') {
-      const config = await db.select().from(appConfigs).where(eq(appConfigs.key, 'general_settings')).limit(1).catch(() => []);
+      const config = await dbWithTimeout(db.select().from(appConfigs).where(eq(appConfigs.key, 'general_settings')).limit(1)).catch(() => []);
       return NextResponse.json({ general_settings: config[0]?.value || {} });
     }
 
     if (type === 'languages') {
-      const results = await db.select().from(languages).orderBy(asc(languages.label)).catch(() => []);
+      const results = await dbWithTimeout(db.select().from(languages).orderBy(asc(languages.label))).catch(() => []);
       return NextResponse.json({ results });
     }
 

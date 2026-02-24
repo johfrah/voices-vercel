@@ -25,6 +25,7 @@
     "mat": "echo 'Mat: Analyzing Visitor Intelligence...'",
     "felix": "npx ts-node 3-WETTEN/scripts/orchestrator.ts deep-clean",
     "watchdog": "npx ts-node 3-WETTEN/scripts/watchdog.ts",
+    "log": "npx tsx 3-WETTEN/scripts/watchdog-live.ts",
     "build": "cd 1-SITE/apps/web && npm run build",
     "serve": "cd 1-SITE/apps/web && npm run start",
     "db:push": "npx drizzle-kit push --config 1-SITE/packages/database/drizzle.config.ts --force",

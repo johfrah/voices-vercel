@@ -120,6 +120,7 @@ export const VoiceglotImage: React.FC<VoiceglotImageProps> = ({
   const isLocal = currentSrc?.startsWith('/') && !isProxied && !currentSrc?.startsWith('https://vcbxyyjsxuquytcsskpj.supabase.co');
   const isSupabase = currentSrc?.startsWith('https://vcbxyyjsxuquytcsskpj.supabase.co');
   const isGoogle = currentSrc?.includes('googleusercontent.com');
+  const isDropbox = currentSrc?.includes('dropbox.com');
 
   const isValidSrc = currentSrc && 
     currentSrc !== 'image/' && 
@@ -129,10 +130,12 @@ export const VoiceglotImage: React.FC<VoiceglotImageProps> = ({
     currentSrc !== 'NULL' && 
     currentSrc !== '/NULL' &&
     currentSrc !== '' &&
-    !currentSrc.endsWith('/image/');
+    !currentSrc.endsWith('/image/') &&
+    // 🛡️ CHRIS-PROTOCOL: Prevent Dropbox folder links from being used as images (v2.14.163)
+    !(isDropbox && currentSrc.includes('/scl/fo/'));
 
   //  CHRIS-PROTOCOL: Automatic Proxy Wrapping (2026 Mandate)
-  // We only use the proxy for external assets (Supabase, Google) or relative paths 
+  // We only use the proxy for external assets (Supabase, Google, Dropbox) or relative paths 
   // that need optimization. Local assets in /assets/ are served directly.
   const finalSrc = React.useMemo(() => {
     if (!isValidSrc) return currentSrc;
@@ -140,8 +143,8 @@ export const VoiceglotImage: React.FC<VoiceglotImageProps> = ({
     // If it's already a proxy URL, don't wrap it again
     if (isProxied) return currentSrc;
 
-    //  FIX: Supabase and Google URLs through proxy to avoid 400 Bad Request from Next.js Image optimizer
-    if (isSupabase || isGoogle) {
+    //  FIX: Supabase, Google and Dropbox URLs through proxy to avoid 400 Bad Request from Next.js Image optimizer
+    if (isSupabase || isGoogle || isDropbox) {
       return `/api/proxy/?path=${encodeURIComponent(currentSrc)}`;
     }
 

@@ -425,20 +425,27 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
     // When a photo is uploaded, we save the profile IMMEDIATELY so the user
     // doesn't have to click "Opslaan" separately for the photo to persist.
     try {
+      const payload = {
+        ...formData,
+        photo_id: mediaId,
+        photo_url: newUrl,
+        // 🛡️ CHRIS-PROTOCOL: Explicitly include language IDs for relational update
+        native_lang_id: formData.native_lang_id,
+        extra_lang_ids: formData.extra_lang_ids
+      };
+
+      console.log(' ADMIN: Auto-saving profile with new photo...', { actorId: actor.id, mediaId });
+
       const response = await fetch(`/api/admin/actors/${actor.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...formData,
-          photo_id: mediaId,
-          photo_url: newUrl,
-          // 🛡️ CHRIS-PROTOCOL: Explicitly include language IDs for relational update
-          native_lang_id: formData.native_lang_id,
-          extra_lang_ids: formData.extra_lang_ids
-        })
+        body: JSON.stringify(payload)
       });
 
-      if (!response.ok) throw new Error('Failed to auto-save photo to profile');
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Failed to auto-save photo to profile');
+      }
       
       const data = await response.json();
       

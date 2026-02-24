@@ -102,7 +102,11 @@ export async function POST(request: NextRequest) {
         Vertaling:
       `;
 
-      cleanTranslation = await OpenAIService.generateText(prompt);
+      //  NUCLEAR TIMEOUT: Max 4s voor AI vertaling
+      const aiPromise = OpenAIService.generateText(prompt);
+      const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('AI Timeout')), 4000));
+      
+      cleanTranslation = await Promise.race([aiPromise, timeoutPromise]) as string;
       cleanTranslation = cleanTranslation.trim().replace(/^"|"$/g, '');
 
       //  CHRIS-PROTOCOL: Slop Filter
@@ -111,11 +115,13 @@ export async function POST(request: NextRequest) {
       }
     } catch (aiErr: any) {
       console.error(' OpenAI Self-Heal Error:', aiErr.message);
+      //  CHRIS-PROTOCOL: Graceful Fallback - return original text if AI fails
       return NextResponse.json({ 
-        success: false, 
-        message: 'AI engine error',
-        text: originalText 
-      }, { status: 500 });
+        success: true, 
+        message: 'AI engine error, falling back to original',
+        text: originalText,
+        _error: aiErr.message
+      });
     }
 
     // 3. Opslaan in de database (DIRECT LIVE - User Mandate)

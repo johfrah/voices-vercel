@@ -13,7 +13,7 @@ const CRITICAL_PATHS = [
   '1-SITE/apps/web/src/app/page.tsx',
   '1-SITE/apps/web/src/components/ui/LayoutInstruments.tsx',
   '1-SITE/apps/web/src/components/ui/VoiceCard.tsx',
-  '1-SITE/apps/web/src/lib/pricing-engine.ts',
+  '1-SITE/apps/web/src/lib/engines/pricing-engine.ts',
   '1-SITE/apps/web/src/app/account/AccountDashboardClient.tsx',
   '1-SITE/apps/web/src/app/account/orders/page.tsx'
 ];

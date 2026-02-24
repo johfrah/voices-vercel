@@ -89,10 +89,28 @@ export async function GET(request: NextRequest) {
     //  CHRIS-PROTOCOL: Voeg een timeout toe om 504 Gateway Timeouts te voorkomen
     const customerDataPromise = UCIService.getCustomer360(identifier);
     const timeoutPromise = new Promise((_, reject) => 
-      setTimeout(() => reject(new Error('Customer 360 Timeout')), 8000)
+      setTimeout(() => reject(new Error('Customer 360 Timeout')), 5000) // Verkort naar 5s voor snellere fallback
     );
 
-    const customerData = await Promise.race([customerDataPromise, timeoutPromise]) as any;
+    let customerData;
+    try {
+      customerData = await Promise.race([customerDataPromise, timeoutPromise]) as any;
+    } catch (raceError: any) {
+      console.warn(`[API Customer 360] Race failed or timeout: ${raceError.message}`);
+      // Fallback naar basis data als de volledige 360 te lang duurt
+      if (raceError.message === 'Customer 360 Timeout') {
+        return NextResponse.json({ 
+          id: typeof identifier === 'number' ? identifier : 0,
+          email: typeof identifier === 'string' ? identifier : '',
+          stats: { totalSpent: 0, orderCount: 0, averageOrderValue: 0, lastOrderDate: null },
+          _partial: true,
+          _message: 'Full profile timeout, showing basic data'
+        }, { 
+          headers: { 'X-Status': 'Partial-Timeout' } 
+        });
+      }
+      throw raceError;
+    }
 
     if (!customerData) {
       return NextResponse.json({ error: 'Customer not found' }, { status: 404 });
