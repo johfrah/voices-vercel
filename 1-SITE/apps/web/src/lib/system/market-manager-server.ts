@@ -468,10 +468,22 @@ export class MarketManagerServer {
 
   /**
    * 🛡️ CHRIS-PROTOCOL: Centralized Agency Segment Check
+   * Used by the SmartRouter to decide between Grid and Profile.
    */
   static isAgencySegment(segment: string): boolean {
     const s = segment?.toLowerCase();
     return ['agency', 'stemmen', 'voix', 'stimmen', 'voices'].includes(s);
+  }
+
+  /**
+   * 🛡️ CHRIS-PROTOCOL: Centralized Agency Entry Point Check
+   * Includes portfolio names that are valid entry points for the Agency journey.
+   * Used by client-side logic to prevent unwanted SPA redirects.
+   */
+  static isAgencyEntryPoint(segment: string): boolean {
+    if (this.isAgencySegment(segment)) return true;
+    const s = segment?.toLowerCase();
+    return ['johfrah', 'youssef', 'ademing'].includes(s);
   }
 }
 

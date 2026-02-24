@@ -231,7 +231,6 @@ export const StudioLaunchpad = ({ initialActors = [], initialJourney }: StudioLa
     }
   };
 
-
   return (
     <SectionInstrument className="bg-va-off-white min-h-screen pb-32 overflow-hidden">
       <LiquidBackground strokeWidth={1.5} />
