@@ -92,7 +92,7 @@ export const PricingSummary: React.FC<{
     updateIsSubmitting(true);
 
     try {
-      // 🛡️ CHRIS-PROTOCOL: Structural Integrity (v2.14.243)
+      // 🛡️ CHRIS-PROTOCOL: Structural Integrity (v2.14.245)
       // No more "pleisters". We use the shared CheckoutPayloadSchema to prepare the data.
       const safeBriefing = state.briefing || '';
       const wordCount = safeBriefing.trim().split(/\s+/).filter(Boolean).length;
@@ -130,6 +130,11 @@ export const PricingSummary: React.FC<{
           userId: (state as any).metadata?.userId
         }
       };
+
+      // 🛡️ CHRIS-PROTOCOL: "Black Box" Snapshot Logging (v2.14.245)
+      // We loggen de VOLLEDIGE payload naar de Watchdog voordat we de API aanroepen.
+      // Dit geeft ons 100% zicht op wat de browser probeert te versturen.
+      console.log('[Checkout] 📦 BLACK BOX SNAPSHOT:', payload);
 
       console.log('[Checkout] Submitting validated payload...', { 
         email: payload.email, 
@@ -805,7 +810,7 @@ const CTASection: React.FC<any> = ({ handleSubmit, setIsPreviewOpen, setIsTermsO
           onClick={() => state.isQuoteRequest ? setIsPreviewOpen(true) : handleSubmit()}
           disabled={state.isSubmitting || !state.agreedToTerms}
           className={cn(
-            "w-full va-btn-pro !py-8 text-lg !rounded-[24px] !bg-va-black !text-white flex items-center justify-center gap-3 group transition-all duration-500",
+            "w-full va-btn-pro !py-8 text-lg !rounded-[24px] !bg-va-black !text-white flex items-center justify-center gap-3 group transition-all duration-500 cursor-pointer",
             (state.isSubmitting || !state.agreedToTerms) ? 'opacity-30 grayscale cursor-not-allowed' : 'hover:shadow-aura-lg hover:scale-[1.01] active:scale-[0.98]'
           )}
         >
