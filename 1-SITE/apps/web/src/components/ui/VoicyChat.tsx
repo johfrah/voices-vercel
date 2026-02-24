@@ -497,7 +497,8 @@ export const VoicyChatV2: React.FC = () => {
             setCustomer360(data);
             
             // Proactive Welcome based on Vibe
-            if (data.intelligence.leadVibe === 'burning') {
+            const currentVibe = data.intelligence?.leadVibe || 'cold';
+            if (currentVibe === 'burning') {
               setMessages(prev => [...prev, {
                 id: 'proactive-burning',
                 role: 'assistant',
@@ -1599,7 +1600,7 @@ export const VoicyChatV2: React.FC = () => {
                       <ContainerInstrument plain>
                         <TextInstrument className="text-[15px] font-light"><VoiceglotText  translationKey={`user.${customer360.id}.name`} defaultText={`${customer360.firstName} ${customer360.lastName}`} noTranslate={true} /></TextInstrument>
                         <TextInstrument className="text-[15px] font-light opacity-40">
-                          {customer360.intelligence?.leadVibe} <VoiceglotText  translationKey="common.vibe" defaultText="Vibe" />
+                          {customer360.intelligence?.leadVibe || 'cold'} <VoiceglotText  translationKey="common.vibe" defaultText="Vibe" />
                         </TextInstrument>
                       </ContainerInstrument>
                     </ContainerInstrument>

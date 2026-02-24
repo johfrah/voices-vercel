@@ -132,12 +132,12 @@ export default function OrdersPage() {
                     <ContainerInstrument className="flex flex-wrap gap-3">
                       <ButtonInstrument 
                         onClick={() => toggleExpand(order.id)}
-                        className="flex items-center gap-2 px-6 py-4 rounded-2xl bg-va-off-white hover:bg-va-black hover:text-white transition-all group shadow-sm"
+                        className="flex items-center gap-2 px-6 py-4 rounded-2xl bg-va-off-white border border-black/[0.03] hover:bg-va-black hover:text-white transition-all group shadow-sm"
                       >
                         {isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
                         <span className="text-[13px] font-bold tracking-widest uppercase">{isExpanded ? 'Verberg Details' : 'Toon Details'}</span>
                       </ButtonInstrument>
-                      <ButtonInstrument className="flex items-center gap-2 px-6 py-4 rounded-2xl bg-va-off-white hover:bg-va-black hover:text-white transition-all group shadow-sm">
+                      <ButtonInstrument className="flex items-center gap-2 px-6 py-4 rounded-2xl bg-va-off-white border border-black/[0.03] hover:bg-va-black hover:text-white transition-all group shadow-sm">
                         <FileText strokeWidth={1.5} size={18} className="opacity-40 group-hover:opacity-100" />
                         <span className="text-[13px] font-bold tracking-widest uppercase"><VoiceglotText translationKey="account.orders.invoice" defaultText="Factuur" /></span>
                       </ButtonInstrument>
@@ -296,7 +296,7 @@ export default function OrdersPage() {
                       </TextInstrument>
                     </ContainerInstrument>
                     <ContainerInstrument className="flex items-center gap-6">
-                      <ButtonInstrument className="text-[15px] font-light tracking-widest text-primary hover:underline">
+                      <ButtonInstrument className="va-btn-pro !bg-va-off-white !text-va-black/60 hover:!text-va-black border border-black/[0.03]">
                         <VoiceglotText translationKey="common.need_help" defaultText="Hulp nodig?" />
                       </ButtonInstrument>
                     </ContainerInstrument>

@@ -109,6 +109,9 @@ export default function AccountDashboardClient() {
 
   const isNewCustomer = !isPartner && !isAdmin && (!customerDNA?.stats?.orderCount || customerDNA.stats.orderCount === 0);
 
+  //  CHRIS-PROTOCOL: Global Null-Safety for leadVibe (v2.14.377)
+  const currentVibe = customerDNA?.intelligence?.leadVibe || 'cold';
+
   return (
     <PageWrapperInstrument>
       <LiquidBackground />
@@ -374,7 +377,7 @@ export default function AccountDashboardClient() {
                     </TextInstrument>
                   </div>
                   <div className="w-full lg:w-48 aspect-square bg-va-black rounded-2xl flex flex-col items-center justify-center text-white p-6 text-center">
-                    <div className="text-4xl font-light tracking-tighter text-primary mb-1">{customerDNA.intelligence.leadVibe}</div>
+                    <div className="text-4xl font-light tracking-tighter text-primary mb-1">{currentVibe}</div>
                     <div className="text-[10px] font-bold tracking-[0.2em] uppercase opacity-40">
                       <VoiceglotText translationKey="account.dashboard.status" defaultText="Status" />
                     </div>

@@ -64,20 +64,20 @@ export const SpatialOrderTrackerInstrument = ({
               {/* Node */}
               <ContainerInstrument 
                 className={cn(
-                  "w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-500 shadow-aura",
-                  isCompleted ? "bg-primary text-white" : 
-                  isActive ? "bg-va-black text-white scale-110" : 
+                  "w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-500 shadow-aura border border-black/[0.03]",
+                  isCompleted ? "bg-primary text-white border-primary" : 
+                  isActive ? "bg-va-black text-white scale-110 shadow-xl" : 
                   "bg-white text-va-black/20"
                 )}
               >
-                {isCompleted ? <Check strokeWidth={1.5} size={20} /> : <Icon strokeWidth={1.5} size={20} />}
+                {isCompleted ? <Check strokeWidth={1.5} size={24} /> : <Icon strokeWidth={1.5} size={24} />}
               </ContainerInstrument>
 
               {/* Label */}
-              <ContainerInstrument className="absolute top-16 whitespace-nowrap text-center">
+              <ContainerInstrument className="absolute top-20 whitespace-nowrap text-center">
                 <TextInstrument 
                   className={cn(
-                    "text-[15px] font-medium uppercase tracking-widest transition-colors",
+                    "text-[13px] font-bold uppercase tracking-[0.2em] transition-colors",
                     isActive ? "text-va-black" : "text-va-black/20"
                   )}
                 ><VoiceglotText  translationKey={step.key} defaultText={step.label} /></TextInstrument>
