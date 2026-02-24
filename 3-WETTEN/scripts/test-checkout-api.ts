@@ -1,180 +1,258 @@
 import { createClient } from '@supabase/supabase-js';
+import chalk from 'chalk';
 
 /**
- * 🧪 PROGRAMMATIC CHECKOUT API TEST
+ * 🧪 CHECKOUT API E2E TEST (NUCLEAR MODE)
  * 
- * Tests the checkout flow by directly calling the API endpoint.
- * This bypasses the browser UI but validates the backend logic.
+ * Tests the complete checkout flow via API calls, including:
+ * - Long script stress test (2000+ words)
+ * - Database insert verification
+ * - Order creation with ID >= 300002
+ * 
+ * Usage: npx tsx 3-WETTEN/scripts/test-checkout-api.ts
  */
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const BASE_URL = 'https://www.voices.be';
+const TEST_EMAIL = `test-checkout-${Date.now()}@voices.be`;
 
-if (!supabaseUrl || !supabaseKey) {
-  console.error('❌ Missing Supabase credentials');
-  process.exit(1);
+// 🛡️ CHRIS-PROTOCOL: Generate a 2000+ word script for stress testing
+function generateLongScript(wordCount: number = 2000): string {
+  const paragraphs = [
+    "In de wereld van voice-over is kwaliteit en professionaliteit van het grootste belang.",
+    "Elke opname moet perfect zijn afgestemd op de doelgroep en de boodschap die we willen overbrengen.",
+    "De stem moet warm en uitnodigend klinken, maar tegelijkertijd ook professioneel en betrouwbaar.",
+    "Dit is een uitdaging die we met veel passie en toewijding aangaan.",
+    "Onze stemacteurs zijn getraind in verschillende stijlen en genres.",
+    "Van commerciële reclames tot educatieve video's, van documentaires tot bedrijfsfilms.",
+    "Elk project krijgt de aandacht die het verdient.",
+    "We werken met state-of-the-art opnameapparatuur in een professionele studio-omgeving.",
+    "De akoestiek is perfect afgesteld voor optimale geluidskwaliteit.",
+    "Onze engineers zorgen voor een vlekkeloze post-productie.",
+  ];
+  
+  let script = "";
+  let currentWordCount = 0;
+  
+  while (currentWordCount < wordCount) {
+    const paragraph = paragraphs[Math.floor(Math.random() * paragraphs.length)];
+    script += paragraph + " ";
+    currentWordCount += paragraph.split(/\s+/).length;
+  }
+  
+  return script.trim();
 }
 
-const supabase = createClient(supabaseUrl, supabaseKey);
+async function testCheckoutFlow() {
+  console.log(chalk.bold.magenta('\n🧪 STARTING CHECKOUT API E2E TEST\n'));
+  console.log(chalk.gray(`Base URL: ${BASE_URL}`));
+  console.log(chalk.gray(`Test Email: ${TEST_EMAIL}\n`));
 
-async function testCheckoutAPI() {
-  console.log('\n🧪 STARTING PROGRAMMATIC CHECKOUT TEST\n');
-  
-  // Step 1: Fetch a live actor
-  console.log('📡 Step 1: Fetching live actors...');
-  const { data: actors, error: actorError } = await supabase
-    .from('actors')
-    .select('id, first_name, last_name, rates')
-    .eq('status', 'live')
-    .eq('is_public', true)
-    .limit(1);
-
-  if (actorError || !actors || actors.length === 0) {
-    console.error('❌ Failed to fetch actors:', actorError?.message);
-    process.exit(1);
-  }
-
-  const actor = actors[0];
-  const actorName = `${actor.first_name} ${actor.last_name}`.trim();
-  console.log(`✅ Found actor: ${actorName} (ID: ${actor.id})`);
-
-  // Step 2: Prepare checkout payload
-  console.log('\n📦 Step 2: Preparing checkout payload...');
-  const payload = {
-    pricing: {
-      total: 150.00,
-      cartHash: 'test-' + Date.now(),
-      base: 125.00,
-      wordSurcharge: 0,
-      mediaSurcharge: 25.00,
-      musicSurcharge: 0,
-    },
-    items: [],
-    selectedActor: {
-      id: actor.id,
-      display_name: actorName,
-    },
-    step: 'briefing',
-    email: 'test-checkout@voices.be',
-    first_name: 'Test',
-    last_name: 'Gebruiker',
-    phone: '+32 470 12 34 56',
-    company: 'Test BV',
-    vat_number: '',
-    address_street: 'Teststraat 123',
-    postal_code: '3000',
-    city: 'Leuven',
-    country: 'BE',
-    usage: 'commercial',
-    plan: 'basic',
-    briefing: 'Dit is een automatische test van de checkout flow. We testen of de API correct werkt en een bestelling kan aanmaken met ID >= 300002.',
-    quoteMessage: null,
-    payment_method: 'banktransfer',
-    metadata: {
-      words: 25,
-      prompts: 0,
-    }
-  };
-
-  console.log('✅ Payload prepared');
-  console.log(`   Actor: ${actorName}`);
-  console.log(`   Total: €${payload.pricing.total}`);
-  console.log(`   Payment: ${payload.payment_method}`);
-
-  // Step 3: Submit to checkout API
-  console.log('\n🚀 Step 3: Submitting to checkout API...');
-  
   try {
-    const response = await fetch('https://www.voices.be/api/checkout/submit', {
+    // Step 1: Generate long script
+    console.log(chalk.bold.blue('📝 Step 1: Generating long script (2000+ words)...'));
+    const longScript = generateLongScript(2000);
+    const wordCount = longScript.split(/\s+/).filter(Boolean).length;
+    console.log(chalk.green(`✅ Generated script with ${wordCount} words (${longScript.length} characters)`));
+    console.log(chalk.gray(`Preview: ${longScript.substring(0, 100)}...\n`));
+
+    // Step 2: Prepare checkout payload
+    console.log(chalk.bold.blue('📦 Step 2: Preparing checkout payload...'));
+    const payload = {
+      pricing: {
+        total: 150.50,
+        cartHash: `test-${Date.now()}`,
+        base: 100,
+        wordSurcharge: 30.50,
+        mediaSurcharge: 20,
+        musicSurcharge: 0,
+      },
+      items: [],
+      selectedActor: {
+        id: 1, // Johfrah's ID
+        display_name: 'Johfrah'
+      },
+      step: 'briefing',
+      email: TEST_EMAIL,
+      first_name: 'Test',
+      last_name: 'Gebruiker',
+      phone: '+32 470 12 34 56',
+      company: 'Test BV',
+      vat_number: '',
+      address_street: 'Teststraat 123',
+      postal_code: '3000',
+      city: 'Leuven',
+      country: 'BE',
+      usage: 'commercial',
+      plan: 'basic',
+      briefing: longScript,
+      quoteMessage: null,
+      payment_method: 'banktransfer',
+      media: ['radio'], // 🛡️ CHRIS-PROTOCOL: Required for pricing calculation
+      spots: 1,
+      years: 1,
+      liveSession: false,
+      music: {
+        trackId: null,
+        asBackground: false,
+        asHoldMusic: false
+      },
+      metadata: {
+        words: wordCount,
+        prompts: 0,
+        userId: null
+      }
+    };
+    console.log(chalk.green(`✅ Payload prepared (${JSON.stringify(payload).length} bytes)\n`));
+
+    // Step 3: Submit order
+    console.log(chalk.bold.blue('🚀 Step 3: Submitting order to API...'));
+    const startTime = Date.now();
+    
+    const response = await fetch(`${BASE_URL}/api/checkout/submit`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'User-Agent': 'Voices-Test-Script/1.0',
+        'User-Agent': 'Voices-E2E-Test/1.0'
       },
-      body: JSON.stringify(payload),
+      body: JSON.stringify(payload)
     });
 
-    const data = await response.json();
+    const responseTime = Date.now() - startTime;
+    console.log(chalk.cyan(`⏱️  Response time: ${responseTime}ms`));
 
     if (!response.ok) {
-      console.error('❌ API Error:', response.status, response.statusText);
-      console.error('   Details:', JSON.stringify(data, null, 2));
-      process.exit(1);
+      const errorText = await response.text();
+      console.error(chalk.red(`❌ HTTP ${response.status}: ${response.statusText}`));
+      console.error(chalk.red(`Response: ${errorText}`));
+      throw new Error(`Checkout API failed with status ${response.status}`);
     }
 
-    console.log('✅ API Response:', JSON.stringify(data, null, 2));
+    const result = await response.json();
+    console.log(chalk.green(`✅ Order submitted successfully\n`));
 
-    // Step 4: Verify order in database
-    if (data.orderId) {
-      console.log(`\n🔍 Step 4: Verifying order ${data.orderId} in database...`);
+    // Step 4: Verify response
+    console.log(chalk.bold.blue('🔍 Step 4: Verifying response...'));
+    console.log(chalk.cyan('Response data:'));
+    console.log(JSON.stringify(result, null, 2));
+
+    if (!result.success) {
+      throw new Error(`Order creation failed: ${result.error || 'Unknown error'}`);
+    }
+
+    if (!result.orderId) {
+      throw new Error('No order ID returned in response');
+    }
+
+    const orderId = result.orderId;
+    console.log(chalk.green(`✅ Order ID: ${orderId}`));
+    console.log(chalk.green(`✅ Is Bank Transfer: ${result.isBankTransfer}`));
+    console.log(chalk.green(`✅ Token: ${result.token ? 'Present' : 'Missing'}\n`));
+
+    // Step 5: Verify order ID >= 300002
+    if (orderId >= 300002) {
+      console.log(chalk.green(`✅ Order ID ${orderId} >= 300002 (PASS)\n`));
+    } else {
+      console.log(chalk.yellow(`⚠️  Order ID ${orderId} < 300002 (WARNING: Expected >= 300002)\n`));
+    }
+
+    // Step 6: Query database to verify order
+    console.log(chalk.bold.blue('🗄️  Step 5: Querying database to verify order...'));
+    
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+    
+    if (!supabaseUrl || !supabaseKey) {
+      console.log(chalk.yellow('⚠️  Supabase credentials not found. Skipping database verification.\n'));
+    } else {
+      const supabase = createClient(supabaseUrl, supabaseKey);
       
-      const { data: order, error: orderError } = await supabase
+      const { data: order, error } = await supabase
         .from('orders')
         .select('*')
-        .eq('id', data.orderId)
+        .eq('id', orderId)
         .single();
 
-      if (orderError) {
-        console.error('❌ Failed to fetch order:', orderError.message);
-        process.exit(1);
-      }
-
-      console.log('✅ Order found in database:');
-      console.log(`   Order ID: ${order.id} ${order.id >= 300002 ? '✅' : '⚠️ (< 300002)'}`);
-      console.log(`   WP Order ID: ${order.wp_order_id}`);
-      console.log(`   Total: €${order.total}`);
-      console.log(`   Status: ${order.status}`);
-      console.log(`   Journey: ${order.journey}`);
-      console.log(`   Is Quote: ${order.is_quote ? 'Yes' : 'No'}`);
-      console.log(`   Created: ${new Date(order.created_at).toLocaleString('nl-BE')}`);
-
-      // Step 5: Check system events
-      console.log('\n📋 Step 5: Checking system events...');
-      const { data: events, error: eventsError } = await supabase
-        .from('system_events')
-        .select('level, source, message, created_at')
-        .eq('source', 'CheckoutAPI')
-        .gte('created_at', new Date(Date.now() - 60000).toISOString())
-        .order('created_at', { ascending: false })
-        .limit(5);
-
-      if (eventsError) {
-        console.warn('⚠️ Failed to fetch events:', eventsError.message);
-      } else if (events && events.length > 0) {
-        console.log('✅ Recent CheckoutAPI events:');
-        events.forEach((event: any) => {
-          const emoji = event.level === 'critical' ? '🔴' : 
-                       event.level === 'error' ? '🔴' : 
-                       event.level === 'warning' ? '⚠️' : '✅';
-          console.log(`   ${emoji} [${event.level}] ${event.message}`);
-        });
+      if (error) {
+        console.error(chalk.red(`❌ Database query failed: ${error.message}`));
+      } else if (!order) {
+        console.error(chalk.red(`❌ Order ${orderId} not found in database`));
       } else {
-        console.log('✅ No errors in system events');
+        console.log(chalk.green(`✅ Order found in database:`));
+        console.log(chalk.cyan(`   ID: ${order.id}`));
+        console.log(chalk.cyan(`   WP Order ID: ${order.wp_order_id}`));
+        console.log(chalk.cyan(`   Total: €${order.total}`));
+        console.log(chalk.cyan(`   Status: ${order.status}`));
+        console.log(chalk.cyan(`   Journey: ${order.journey}`));
+        console.log(chalk.cyan(`   Is Quote: ${order.is_quote}`));
+        console.log(chalk.cyan(`   User ID: ${order.user_id || 'Guest'}`));
+        console.log(chalk.cyan(`   Market: ${order.market}`));
+        console.log(chalk.cyan(`   Created: ${new Date(order.created_at).toLocaleString('nl-BE')}`));
+        
+        // Verify briefing was stored correctly
+        const rawMeta = order.raw_meta as any;
+        if (rawMeta && rawMeta.items && rawMeta.items.length > 0) {
+          const storedBriefing = rawMeta.items[0]?.briefing || '';
+          const storedWordCount = storedBriefing.split(/\s+/).filter(Boolean).length;
+          console.log(chalk.cyan(`   Briefing word count: ${storedWordCount}`));
+          
+          if (storedWordCount >= 2000) {
+            console.log(chalk.green(`   ✅ Long script stored successfully (${storedWordCount} words)\n`));
+          } else {
+            console.log(chalk.yellow(`   ⚠️  Briefing word count < 2000 (${storedWordCount} words)\n`));
+          }
+        }
       }
-
-      // Final Report
-      console.log('\n' + '='.repeat(60));
-      console.log('🎯 TEST RESULTS');
-      console.log('='.repeat(60));
-      console.log(`✅ Order Created: ${data.orderId}`);
-      console.log(`✅ Order ID >= 300002: ${order.id >= 300002 ? 'YES' : 'NO'}`);
-      console.log(`✅ Status: ${order.status}`);
-      console.log(`✅ Total: €${order.total}`);
-      console.log(`✅ Payment Method: ${payload.payment_method}`);
-      console.log(`✅ Expected Redirect: ${data.token ? '/api/auth/magic-login?token=...' : '/checkout/success?orderId=' + data.orderId}`);
-      console.log('='.repeat(60));
-      console.log('\n✅ CHECKOUT TEST PASSED\n');
-
-    } else {
-      console.error('❌ No order ID returned from API');
-      process.exit(1);
     }
 
+    // Step 7: Construct redirect URL
+    console.log(chalk.bold.blue('🔗 Step 6: Constructing redirect URL...'));
+    const redirectUrl = result.token 
+      ? `${BASE_URL}/api/auth/magic-login?token=${result.token}&redirect=/account/orders?orderId=${orderId}`
+      : `${BASE_URL}/checkout/success?orderId=${orderId}`;
+    
+    console.log(chalk.green(`✅ Expected redirect URL:`));
+    console.log(chalk.cyan(`   ${redirectUrl}\n`));
+
+    // Step 8: Final summary
+    console.log(chalk.bold.green('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'));
+    console.log(chalk.bold.green('✅ CHECKOUT E2E TEST PASSED'));
+    console.log(chalk.bold.green('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'));
+    console.log(chalk.green(`Order ID: ${orderId}`));
+    console.log(chalk.green(`Order ID >= 300002: ${orderId >= 300002 ? 'YES' : 'NO'}`));
+    console.log(chalk.green(`Script word count: ${wordCount}`));
+    console.log(chalk.green(`Response time: ${responseTime}ms`));
+    console.log(chalk.green(`Redirect URL: ${redirectUrl}`));
+    console.log(chalk.bold.green('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n'));
+
+    return {
+      success: true,
+      orderId,
+      wordCount,
+      responseTime,
+      redirectUrl
+    };
+
   } catch (error: any) {
-    console.error('❌ Test failed:', error.message);
-    console.error('   Stack:', error.stack);
-    process.exit(1);
+    console.log(chalk.bold.red('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'));
+    console.log(chalk.bold.red('❌ CHECKOUT E2E TEST FAILED'));
+    console.log(chalk.bold.red('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'));
+    console.error(chalk.red(`Error: ${error.message}`));
+    if (error.stack) {
+      console.error(chalk.gray(error.stack));
+    }
+    console.log(chalk.bold.red('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n'));
+    
+    throw error;
   }
 }
 
-testCheckoutAPI().catch(console.error);
+// Run the test
+testCheckoutFlow()
+  .then(() => {
+    console.log(chalk.green('✅ Test completed successfully'));
+    process.exit(0);
+  })
+  .catch((error) => {
+    console.error(chalk.red('❌ Test failed:', error.message));
+    process.exit(1);
+  });

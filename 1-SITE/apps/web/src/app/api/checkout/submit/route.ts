@@ -242,8 +242,8 @@ export async function POST(request: Request) {
           addressZip: postal_code,
           addressCity: city,
           addressCountry: country || 'BE',
-          role: 'customer',
-          updatedAt: new Date().toISOString()
+          role: 'customer'
+          // 🛡️ CHRIS-PROTOCOL: updatedAt has defaultNow(), don't set manually (v2.14.296)
         }).onConflictDoUpdate({
           target: users.email,
           set: {
@@ -255,13 +255,13 @@ export async function POST(request: Request) {
             addressStreet: address_street,
             addressZip: postal_code,
             addressCity: city,
-            addressCountry: country || 'BE',
-            lastActive: new Date().toISOString()
+            addressCountry: country || 'BE'
+            // 🛡️ CHRIS-PROTOCOL: lastActive has defaultNow(), don't set manually (v2.14.296)
           }
         }).returning();
         userId = user.id;
-      } catch (e) {
-        console.error('[Checkout] User upsert failed:', e);
+      } catch (e: any) {
+        console.error('[Checkout] User upsert failed:', e.message);
       }
     }
 
@@ -428,7 +428,7 @@ export async function POST(request: Request) {
     // 🛡️ CHRIS-PROTOCOL: Dual-Path Reporting for Fatal Errors (v2.14.291)
     // We try Drizzle first, then fallback to SDK Client for maximum reliability.
     const errorPayload = {
-      level: 'critical',
+      level: 'critical' as const,
       source: 'CheckoutAPI',
       message: error.message || 'Unknown Checkout Error',
       details: {
@@ -436,8 +436,8 @@ export async function POST(request: Request) {
         name: error.name,
         rawBody: rawBody ? JSON.stringify(rawBody).substring(0, 1000) : 'N/A',
         stage: 'FATAL_CATCH'
-      },
-      created_at: new Date().toISOString()
+      }
+      // 🛡️ CHRIS-PROTOCOL: createdAt has defaultNow(), don't set manually (v2.14.296)
     };
 
     try {

@@ -598,7 +598,6 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
           if (firstSegment === 'studio') {
             try {
               const workshops = await getWorkshops();
-              // Sort workshops: next edition first, then alphabetical
               workshops.sort((a, b) => {
                 const nextA = a.editions?.[0]?.date;
                 const nextB = b.editions?.[0]?.date;
@@ -610,6 +609,20 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
               extraData.workshops = workshops;
             } catch (err) {
               console.error("[SmartRouter] Failed to fetch workshops for studio page:", err);
+            }
+          } else if (firstSegment === 'academy') {
+            try {
+              const { data: lessons } = await supabase.from('lessons').select('*').order('display_order');
+              extraData.lessons = lessons || [];
+            } catch (err) {
+              console.error("[SmartRouter] Failed to fetch lessons for academy page:", err);
+            }
+          } else if (firstSegment === 'ademing') {
+            try {
+              const { data: tracks } = await supabase.from('ademing_tracks').select('*').eq('is_public', true).limit(6);
+              extraData.tracks = tracks || [];
+            } catch (err) {
+              console.error("[SmartRouter] Failed to fetch tracks for ademing page:", err);
             }
           }
 
@@ -769,6 +782,132 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
           <section key={block.id} className="py-20 bg-va-off-white">
             <ContainerInstrument className="max-w-[1140px]">
               <JourneyCta journey={body.trim() as any || 'studio'} />
+            </ContainerInstrument>
+          </section>
+        );
+
+      case 'lesson_grid':
+        return (
+          <section key={block.id} className="py-24 bg-white">
+            <ContainerInstrument className="max-w-7xl mx-auto px-6">
+              {title && <HeadingInstrument level={2} className="text-5xl font-light tracking-tighter mb-16 text-va-black text-center">{title}</HeadingInstrument>}
+              <BentoGrid columns={3}>
+                {(extraData.lessons || []).map((lesson: any) => (
+                  <BentoCard 
+                    key={lesson.id} 
+                    span="md"
+                    className="group p-10 bg-white hover:bg-va-black transition-all duration-700 rounded-[20px] shadow-aura hover:shadow-aura-lg border border-black/5"
+                  >
+                    <ContainerInstrument className="flex justify-between items-start mb-12">
+                      <ContainerInstrument className="bg-va-black/5 group-hover:bg-white/10 text-va-black group-hover:text-white text-[11px] font-bold px-3 py-1 rounded-full tracking-[0.2em] uppercase transition-colors ">ACADEMY</ContainerInstrument>
+                      <TextInstrument className="text-[11px] font-bold text-va-black/30 group-hover:text-white/30 tracking-[0.2em] uppercase transition-colors ">Les {lesson.display_order || lesson.id}</TextInstrument>
+                    </ContainerInstrument>
+                    <HeadingInstrument level={3} className="text-4xl font-light tracking-tighter leading-[0.9] mb-8 text-va-black group-hover:text-white transition-colors">{lesson.title}</HeadingInstrument>
+                    <TextInstrument className="text-va-black/40 group-hover:text-white/40 text-[15px] mb-8 font-light leading-relaxed">{lesson.description}</TextInstrument>
+                    <Link href={`/academy/lesson/${lesson.display_order || lesson.id}`} className="mt-auto flex justify-between items-end">
+                      <ContainerInstrument>
+                        <TextInstrument className="text-[11px] text-va-black/40 group-hover:text-white/40 font-bold tracking-[0.2em] uppercase mb-1 transition-colors ">Start nu</TextInstrument>
+                        <TextInstrument as="span" className="text-2xl font-light tracking-tighter text-va-black group-hover:text-white transition-colors">Bekijk les</TextInstrument>
+                      </ContainerInstrument>
+                      <ButtonInstrument className="!bg-va-black group-hover:!bg-white group-hover:!text-va-black !rounded-[10px] !px-6 transition-all">
+                        <Play strokeWidth={1.5} size={16} fill="currentColor" />
+                      </ButtonInstrument>
+                    </Link>
+                  </BentoCard>
+                ))}
+              </BentoGrid>
+            </ContainerInstrument>
+          </section>
+        );
+
+      case 'track_grid':
+        return (
+          <section key={block.id} className="py-24 bg-va-off-white">
+            <ContainerInstrument className="max-w-7xl mx-auto px-6">
+              {title && <HeadingInstrument level={2} className="text-5xl font-light tracking-tighter mb-16 text-va-black text-center">{title}</HeadingInstrument>}
+              <BentoGrid columns={3}>
+                {(extraData.tracks || []).map((track: any) => (
+                  <BentoCard 
+                    key={track.id} 
+                    className="group p-10 bg-white/50 backdrop-blur-xl border-white/20 hover:shadow-magic transition-all duration-1000 rounded-[20px]"
+                  >
+                    <ContainerInstrument className="flex justify-between items-start mb-12">
+                      <ContainerInstrument className="bg-black/5 text-black/40 text-[15px] font-black px-3 py-1 rounded-full tracking-widest">
+                        {track.duration ? `${Math.floor(track.duration / 60)}` : '10'} min
+                      </ContainerInstrument>
+                    </ContainerInstrument>
+                    <HeadingInstrument level={3} className="text-4xl font-light tracking-tighter leading-[0.8] mb-12 text-black/80">{track.title}</HeadingInstrument>
+                    <ContainerInstrument className="mt-auto flex justify-center">
+                      <ButtonInstrument className="w-16 h-16 rounded-full bg-va-black text-white flex items-center justify-center hover:scale-110 hover:bg-primary transition-all duration-500 shadow-lg active:scale-95">
+                        <Play strokeWidth={1.5} size={24} fill="currentColor" />
+                      </ButtonInstrument>
+                    </ContainerInstrument>
+                  </BentoCard>
+                ))}
+              </BentoGrid>
+            </ContainerInstrument>
+          </section>
+        );
+
+      case 'academy_pricing':
+        const price = body.match(/price:\s*([^\n]+)/)?.[1]?.trim() || "€ 495";
+        const features = body.replace(/price:\s*[^\n]+/, '').split('\n').filter(f => f.trim().startsWith('-')).map(f => f.replace('-', '').trim());
+        
+        return (
+          <section key={block.id} id="inschrijven" className="py-48 bg-va-off-white">
+            <ContainerInstrument className="max-w-4xl mx-auto px-6">
+              <BentoCard span="full" className="bg-white p-20 rounded-[40px] shadow-aura border border-black/[0.02] text-center space-y-12">
+                <div className="space-y-6">
+                  {title && <HeadingInstrument level={2} className="text-5xl md:text-7xl font-light tracking-tighter leading-none text-va-black">{title}</HeadingInstrument>}
+                </div>
+                <div className="flex flex-col items-center gap-4">
+                  <TextInstrument className="text-8xl font-extralight tracking-tighter text-va-black leading-none">{price}</TextInstrument>
+                  <TextInstrument className="text-[11px] font-bold text-va-black/30 uppercase tracking-[0.2em]">Eenmalige investering (excl. BTW)</TextInstrument>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-12 border-t border-black/[0.03]">
+                  {features.map((feature, i) => (
+                    <div key={i} className="flex flex-col items-center gap-4">
+                      <div className="w-12 h-12 rounded-full bg-primary/5 flex items-center justify-center text-primary">
+                        <Zap size={20} strokeWidth={1.5} />
+                      </div>
+                      <TextInstrument className="text-[15px] font-light text-va-black/60">{feature}</TextInstrument>
+                    </div>
+                  ))}
+                </div>
+                <div className="pt-12">
+                  <ButtonInstrument as={Link} href="/checkout?journey=academy" className="va-btn-pro !rounded-[10px] px-20 py-8 text-xl shadow-aura-lg hover:scale-105 transition-transform duration-500 uppercase">Nu inschrijven</ButtonInstrument>
+                </div>
+              </BentoCard>
+            </ContainerInstrument>
+          </section>
+        );
+
+      case 'academy_faq':
+        const faqs = body.split('\n\n').filter(f => f.trim().length > 0).map(f => {
+          const [q, ...a] = f.split('\n');
+          return { q: q.replace('Q:', '').trim(), a: a.join('\n').replace('A:', '').trim() };
+        });
+
+        return (
+          <section key={block.id} className="py-48 bg-white">
+            <ContainerInstrument className="max-w-6xl mx-auto px-6">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-24">
+                <div className="lg:col-span-4 space-y-6">
+                  <ContainerInstrument className="inline-flex items-center gap-3 px-4 py-1.5 bg-va-black/5 rounded-full">
+                    <Info strokeWidth={1.5} size={16} className="text-va-black/40" />
+                    <TextInstrument className="text-[11px] font-bold tracking-[0.2em] text-va-black/40 uppercase">Support</TextInstrument>
+                  </ContainerInstrument>
+                  {title && <HeadingInstrument level={2} className="text-5xl font-light tracking-tighter leading-none text-va-black">{title}</HeadingInstrument>}
+                </div>
+                <div className="lg:col-span-8 space-y-12">
+                  {faqs.map((faq, i) => (
+                    <div key={i} className="space-y-4 pb-12 border-b border-black/[0.03] last:border-none last:pb-0">
+                      <HeadingInstrument level={3} className="text-2xl font-light tracking-tight text-primary">{faq.q}</HeadingInstrument>
+                      <TextInstrument className="text-lg text-va-black/60 font-light leading-relaxed">{faq.a}</TextInstrument>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </ContainerInstrument>
           </section>
         );
