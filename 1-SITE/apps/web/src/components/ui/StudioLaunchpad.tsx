@@ -1,17 +1,7 @@
 "use client";
 
 import React, { useRef, useState, useEffect } from 'react';
-import {
-    ButtonInstrument,
-    InputInstrument,
-    LabelInstrument,
-    SectionInstrument,
-    ContainerInstrument,
-    HeadingInstrument,
-    TextInstrument
-} from '@/components/ui/LayoutInstruments';
-
-import { VoiceglotText } from '@/components/ui/VoiceglotText';
+import { VoiceglotText } from './VoiceglotText';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { useVoicesState } from '@/contexts/VoicesStateContext';
 import { cn } from '@/lib/utils';
@@ -19,8 +9,6 @@ import { AnimatePresence, motion } from 'framer-motion';
 import {
     LucideArrowLeft,
     LucideCheckCircle,
-    LucideFileText,
-    LucideMic,
     LucideUpload,
     LucideX,
     Loader2,
@@ -29,7 +17,6 @@ import {
     Radio,
     Tv,
     Mic2,
-    Building2,
     Phone,
     Video,
     Megaphone,
@@ -38,32 +25,26 @@ import {
     Minus,
     Plus
 } from 'lucide-react';
-import Image from 'next/image';
-import { VoicesLink as Link } from '@/components/ui/VoicesLink';
+import { VoicesLink as Link } from './VoicesLink';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 
-import { VoiceCard } from '@/components/ui/VoiceCard';
-import nextDynamic from 'next/dynamic';
+import { VoiceCard } from './VoiceCard';
+import dynamic from 'next/dynamic';
 
-const LiquidBackground = nextDynamic(() => import('@/components/ui/LiquidBackground').then(mod => mod.LiquidBackground), { ssr: false });
+const LiquidBackground = dynamic(() => import('./LiquidBackground').then(mod => mod.LiquidBackground), { ssr: false });
 
-import { CommercialMediaType, SlimmeKassa } from '@/lib/engines/pricing-engine';
+import { CommercialMediaType } from '@/lib/engines/pricing-engine';
 
 interface StudioLaunchpadProps {
   initialActors?: any[];
   initialJourney?: "telefonie" | "unpaid" | "paid" | string;
 }
 
-/**
- * STUDIO LAUNCHPAD (2026)
- * Voldoet aan het Voices Configurator Pattern.
- * Gebruikt de "Slimme Zwevende Kassa" logica voor projectinformatie.
- */
-export const StudioLaunchpad = ({ initialActors = [], initialJourney }: StudioLaunchpadProps) => {
+export function StudioLaunchpad({ initialActors = [], initialJourney }: StudioLaunchpadProps) {
   const router = useRouter();
   const { t } = useTranslation();
-  const { state, toggleActorSelection, removeActor, campaignMessage } = useVoicesState();
+  const { state, removeActor } = useVoicesState();
   const selectedActors = state.selected_actors;
   const [currentStep, setCurrentStep] = useState(1);
   const [script, setScript] = useState('');
@@ -79,7 +60,6 @@ export const StudioLaunchpad = ({ initialActors = [], initialJourney }: StudioLa
   const [isMatching, setIsMatching] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   
-  //  CHRIS-PROTOCOL: Map initial journey slug to internal usage type
   const getInitialUsage = () => {
     if (!initialJourney) return "paid";
     const s = initialJourney.toLowerCase();
@@ -117,7 +97,6 @@ export const StudioLaunchpad = ({ initialActors = [], initialJourney }: StudioLa
     fetchConfig();
   }, [calcUsage]);
 
-  // Sync selectedMedia with calcUsage
   useEffect(() => {
     if (calcUsage === 'telefonie') {
       setSelectedMedia(['telephony' as any]);
@@ -144,7 +123,6 @@ export const StudioLaunchpad = ({ initialActors = [], initialJourney }: StudioLa
         toast.error(t('launchpad.error.email', 'Vul je e-mailadres in'));
         return;
       }
-      // Basic email regex check
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(clientEmail)) {
         toast.error(t('launchpad.error.email_invalid', 'Vul een geldig e-mailadres in'));
         return;
@@ -173,7 +151,6 @@ export const StudioLaunchpad = ({ initialActors = [], initialJourney }: StudioLa
 
     setIsLaunching(true);
     try {
-      console.log('Campaign message from state:', campaignMessage);
       const response = await fetch('/api/casting/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -196,8 +173,6 @@ export const StudioLaunchpad = ({ initialActors = [], initialJourney }: StudioLa
       if (data.success) {
         toast.success(t('launchpad.success.submit', 'Je aanvraag is succesvol verzonden!'));
         localStorage.removeItem('voices_proefopname_draft');
-        
-        // 🛡️ CHRIS-PROTOCOL: Redirect to the Pitch session (Confirmation & Collaboration)
         if (typeof window !== 'undefined') {
           setTimeout(() => {
             window.location.href = `/pitch/${data.sessionHash}`;
@@ -233,24 +208,24 @@ export const StudioLaunchpad = ({ initialActors = [], initialJourney }: StudioLa
   };
 
   return (
-    <SectionInstrument className="bg-va-off-white min-h-screen pb-32 overflow-hidden">
+    <div className="bg-va-off-white min-h-screen pb-32 overflow-hidden">
       <LiquidBackground strokeWidth={1.5} />
-      <ContainerInstrument className="pt-40 pb-12 relative z-10 max-w-5xl mx-auto px-6 text-center">
+      <div className="pt-40 pb-12 relative z-10 max-w-5xl mx-auto px-6 text-center">
         <header className="max-w-4xl mx-auto">
-          <HeadingInstrument level={1} className="text-[8vw] lg:text-[80px] font-extralight tracking-tighter mb-8 leading-[0.85] text-va-black">
+          <h1 className="text-[8vw] lg:text-[80px] font-extralight tracking-tighter mb-8 leading-[0.85] text-va-black">
             <VoiceglotText translationKey="launchpad.title" defaultText="Gratis Proefopname" />
-          </HeadingInstrument>
+          </h1>
           <div className="h-[60px] flex items-center justify-center overflow-hidden">
-            <TextInstrument className="text-xl lg:text-2xl text-va-black/40 font-light tracking-tight max-w-2xl mx-auto leading-tight">
+            <p className="text-xl lg:text-2xl text-va-black/40 font-light tracking-tight max-w-2xl mx-auto leading-tight">
               <VoiceglotText translationKey={`launchpad.subtitle.step${currentStep}`} defaultText={currentStep === 1 ? "Wat gaan we maken? Kies je projecttype en details." : currentStep === 2 ? "Bevestig je selectie van stemacteurs voor je proefopname." : "Geef je script en instructies door voor de proefopname."} />
-            </TextInstrument>
+            </p>
           </div>
-          <ContainerInstrument className="w-16 h-1 bg-primary/20 rounded-full mx-auto mt-6" />
+          <div className="w-16 h-1 bg-primary/20 rounded-full mx-auto mt-6" />
         </header>
-      </ContainerInstrument>
+      </div>
 
-      <ContainerInstrument className="relative z-20 max-w-6xl mx-auto px-6 mb-12">
-        <ContainerInstrument plain className="bg-white/50 border border-black/5 p-2 rounded-[32px] shadow-aura flex items-center gap-2 max-w-xl mx-auto">
+      <div className="relative z-20 max-w-6xl mx-auto px-6 mb-12">
+        <div className="bg-white/50 border border-black/5 p-2 rounded-[32px] shadow-aura flex items-center gap-2 max-w-xl mx-auto">
           {steps.map((step) => {
             const isActive = currentStep === step.id;
             const isCompleted = currentStep > step.id;
@@ -268,18 +243,16 @@ export const StudioLaunchpad = ({ initialActors = [], initialJourney }: StudioLa
               </button>
             );
           })}
-        </ContainerInstrument>
-      </ContainerInstrument>
+        </div>
+      </div>
 
-      <SectionInstrument className="py-4 relative z-10 max-w-5xl mx-auto px-6">
+      <section className="py-4 relative z-10 max-w-5xl mx-auto px-6">
         <AnimatePresence mode="wait">
           <motion.div key={currentStep} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}>
             {currentStep === 1 && (
-              <ContainerInstrument className="max-w-6xl mx-auto">
+              <div className="max-w-6xl mx-auto">
                 <div className="space-y-8">
-                  <ContainerInstrument className="p-10 bg-white/80 backdrop-blur-xl rounded-[30px] border border-white/20 shadow-aura space-y-12">
-                  
-                  {/* 1. Journey Selector (Pill Mandaat) */}
+                  <div className="p-10 bg-white/80 backdrop-blur-xl rounded-[30px] border border-white/20 shadow-aura space-y-12">
                   <div className="flex justify-center">
                     <div className="flex p-1 bg-va-off-white rounded-2xl border border-black/5 shadow-inner">
                       {[
@@ -308,26 +281,25 @@ export const StudioLaunchpad = ({ initialActors = [], initialJourney }: StudioLa
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                     <div className="space-y-8">
                       <div className="space-y-3">
-                        <LabelInstrument className="text-va-black/40 ml-0 tracking-[0.2em] text-[11px] font-bold uppercase">
+                        <label className="text-va-black/40 ml-0 tracking-[0.2em] text-[11px] font-bold uppercase">
                           <VoiceglotText translationKey="common.project_name" defaultText="Projectnaam" />
-                        </LabelInstrument>
-                        <InputInstrument value={projectName} onChange={(e) => setProjectName(e.target.value)} placeholder={t('launchpad.placeholder.project', "Bijv. Zomer Campagne 2026")} className="w-full h-14 bg-va-off-white/50" />
+                        </label>
+                        <input value={projectName} onChange={(e) => setProjectName(e.target.value)} placeholder={t('launchpad.placeholder.project', "Bijv. Zomer Campagne 2026")} className="w-full h-14 bg-va-off-white/50 border-none rounded-[10px] px-6 py-4 text-[15px] font-medium focus:ring-2 focus:ring-va-black/10 transition-all placeholder:text-va-black/40" />
                       </div>
                       <div className="space-y-3">
-                        <LabelInstrument className="text-va-black/40 ml-0 tracking-[0.2em] text-[11px] font-bold uppercase">
+                        <label className="text-va-black/40 ml-0 tracking-[0.2em] text-[11px] font-bold uppercase">
                           <VoiceglotText translationKey="common.email" defaultText="E-mailadres" />
-                        </LabelInstrument>
-                        <InputInstrument type="email" value={clientEmail} onChange={(e) => setClientEmail(e.target.value)} placeholder={t('common.placeholder.email', "naam@bedrijf.be")} className="w-full h-14 bg-va-off-white/50" />
+                        </label>
+                        <input type="email" value={clientEmail} onChange={(e) => setClientEmail(e.target.value)} placeholder={t('common.placeholder.email', "naam@bedrijf.be")} className="w-full h-14 bg-va-off-white/50 border-none rounded-[10px] px-6 py-4 text-[15px] font-medium focus:ring-2 focus:ring-va-black/10 transition-all placeholder:text-va-black/40" />
                       </div>
                     </div>
 
                     <div className="space-y-8">
                       {calcUsage === 'paid' ? (
-                        /* 2. Media Detail Kaarten Mandaat (Vertical Stack) */
                         <div className="space-y-4">
-                          <LabelInstrument className="text-va-black/40 ml-0 tracking-[0.2em] text-[11px] font-bold uppercase">
+                          <label className="text-va-black/40 ml-0 tracking-[0.2em] text-[11px] font-bold uppercase">
                             <VoiceglotText translationKey="common.select_channels" defaultText="Selecteer Kanalen" />
-                          </LabelInstrument>
+                          </label>
                           <div className="space-y-3">
                             {mediaOptions.map((m) => {
                               const isActive = selectedMedia.includes(m.id as any);
@@ -388,11 +360,10 @@ export const StudioLaunchpad = ({ initialActors = [], initialJourney }: StudioLa
                           </div>
                         </div>
                       ) : (
-                        /* 3. Slider Mandaat */
                         <div className="space-y-6">
-                          <LabelInstrument className="text-va-black/40 ml-0 tracking-[0.2em] text-[11px] font-bold uppercase">
+                          <label className="text-va-black/40 ml-0 tracking-[0.2em] text-[11px] font-bold uppercase">
                             <VoiceglotText translationKey="common.word_count" defaultText="Hoeveelheid woorden" />
-                          </LabelInstrument>
+                          </label>
                           <div className="bg-white rounded-[24px] p-8 border border-black/5 shadow-aura space-y-8">
                             <div className="flex justify-between items-center">
                               <span className="text-[13px] font-medium text-va-black/40">
@@ -420,55 +391,69 @@ export const StudioLaunchpad = ({ initialActors = [], initialJourney }: StudioLa
                   </div>
 
                   <div className="flex justify-end pt-8 border-t border-black/5">
-                    <ButtonInstrument variant="primary" onClick={handleNext} className="va-btn-pro !bg-va-black !text-white px-12 py-6 rounded-2xl text-lg flex items-center gap-3">
+                    <button onClick={handleNext} className="va-btn-pro !bg-va-black !text-white px-12 py-6 rounded-2xl text-lg flex items-center gap-3 shadow-aura-lg hover:scale-105 transition-all">
                       <VoiceglotText translationKey="common.next_step" defaultText="Volgende stap" /> <ArrowRight size={20} />
-                    </ButtonInstrument>
+                    </button>
                   </div>
-                </ContainerInstrument>
+                </div>
               </div>
             )}
 
             {currentStep === 2 && (
-              <ContainerInstrument className="max-w-6xl mx-auto">
+              <div className="max-w-6xl mx-auto">
                 <div className="flex flex-col gap-8">
-                  <ContainerInstrument className="p-10 bg-white/80 backdrop-blur-xl rounded-[30px] border border-white/20 shadow-aura">
-                    <div className="flex items-center justify-between mb-12"><HeadingInstrument level={3} className="text-3xl font-light tracking-tight text-va-black"><VoiceglotText translationKey="launchpad.step2.title" defaultText="Jouw selectie" /></HeadingInstrument><Link href="/agency" className="text-primary text-[15px] font-light hover:underline tracking-widest uppercase"><VoiceglotText translationKey="launchpad.add_more" defaultText="+ Voeg meer toe" /></Link></div>
+                  <div className="p-10 bg-white/80 backdrop-blur-xl rounded-[30px] border border-white/20 shadow-aura">
+                    <div className="flex items-center justify-between mb-12"><h3 className="text-3xl font-light tracking-tight text-va-black"><VoiceglotText translationKey="launchpad.step2.title" defaultText="Jouw selectie" /></h3><Link href="/agency" className="text-primary text-[15px] font-light hover:underline tracking-widest uppercase"><VoiceglotText translationKey="launchpad.add_more" defaultText="+ Voeg meer toe" /></Link></div>
                     {selectedActors.length > 0 ? (
-                      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">{selectedActors.map((actor) => (<div key={actor.id} className="relative group flex flex-col gap-3"><div className="relative"><VoiceCard voice={actor} hideButton compact hidePrice /><button onClick={() => removeActor(actor)} className="absolute -top-3 -right-3 w-8 h-8 bg-white text-va-black/20 hover:text-red-500 rounded-full flex items-center justify-center shadow-lg border border-va-black/5 transition-all z-50"><LucideX strokeWidth={1.5} size={16} /></button></div></div>))}</div>
+                      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+                        {selectedActors.map((actor) => (
+                          <div key={actor.id} className="relative group flex flex-col gap-3">
+                            <div className="relative">
+                              <VoiceCard voice={actor} hideButton compact hidePrice />
+                              <button 
+                                onClick={() => removeActor(actor)} 
+                                className="absolute -top-3 -right-3 w-8 h-8 bg-white text-va-black/20 hover:text-red-500 rounded-full flex items-center justify-center shadow-lg border border-va-black/5 transition-all z-50"
+                              >
+                                <LucideX strokeWidth={1.5} size={16} />
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     ) : (
                       <div className="py-20 text-center space-y-6"><Link href="/agency" className="inline-block bg-va-black text-white px-8 py-4 rounded-[10px] font-medium tracking-widest uppercase hover:scale-105 transition-all">Bekijk stemmen</Link></div>
                     )}
                     <div className="flex items-center justify-between pt-12 border-t border-black/5 mt-12">
-                      <ButtonInstrument variant="outline" onClick={handleBack} className="gap-2"><LucideArrowLeft size={16} /><VoiceglotText translationKey="common.previous" defaultText="Vorige" /></ButtonInstrument>
-                      <ButtonInstrument variant="primary" onClick={handleNext} className="va-btn-pro !bg-va-black !text-white px-12 py-6 rounded-2xl text-lg flex items-center gap-3"><VoiceglotText translationKey="common.next_step" defaultText="Volgende stap" /> <ArrowRight size={20} /></ButtonInstrument>
+                      <button onClick={handleBack} className="flex items-center gap-2 px-8 py-4 rounded-xl border border-black/10 hover:bg-black/5 transition-all text-va-black/60 font-medium tracking-widest uppercase"><LucideArrowLeft size={16} /><VoiceglotText translationKey="common.previous" defaultText="Vorige" /></button>
+                      <button onClick={handleNext} className="va-btn-pro !bg-va-black !text-white px-12 py-6 rounded-2xl text-lg flex items-center gap-3 shadow-aura-lg hover:scale-105 transition-all"><VoiceglotText translationKey="common.next_step" defaultText="Volgende stap" /> <ArrowRight size={20} /></button>
                     </div>
-                  </ContainerInstrument>
+                  </div>
                 </div>
-              </ContainerInstrument>
+              </div>
             )}
 
             {currentStep === 3 && (
-              <ContainerInstrument className="max-w-6xl mx-auto">
+              <div className="max-w-6xl mx-auto">
                 <div className="flex flex-col gap-8">
-                  <ContainerInstrument className="p-10 bg-white/80 backdrop-blur-xl rounded-[30px] border border-white/20 shadow-aura">
-                    <div className="flex items-center justify-between mb-8"><HeadingInstrument level={3} className="text-3xl font-light tracking-tight text-va-black"><VoiceglotText translationKey="launchpad.step3.title" defaultText="Het Script" /></HeadingInstrument><button onClick={() => fileInputRef.current?.click()} className="flex items-center gap-2 text-primary text-[15px] font-light hover:opacity-80 transition-opacity tracking-widest uppercase">{isMatching ? <Loader2 size={16} className="animate-spin" /> : <LucideUpload size={16} strokeWidth={1.5} />}<VoiceglotText translationKey="launchpad.upload" defaultText={isMatching ? "Bezig..." : "Upload bestand"} /></button><input type="file" ref={fileInputRef} className="hidden" onChange={(e) => { const file = e.target.files?.[0]; if (file) console.log('File uploaded:', file.name); }} accept=".pdf,.doc,.docx,.txt" /></div>
+                  <div className="p-10 bg-white/80 backdrop-blur-xl rounded-[30px] border border-white/20 shadow-aura">
+                    <div className="flex items-center justify-between mb-8"><h3 className="text-3xl font-light tracking-tight text-va-black"><VoiceglotText translationKey="launchpad.step3.title" defaultText="Het Script" /></h3><button onClick={() => fileInputRef.current?.click()} className="flex items-center gap-2 text-primary text-[15px] font-light hover:opacity-80 transition-opacity tracking-widest uppercase">{isMatching ? <Loader2 size={16} className="animate-spin" /> : <LucideUpload size={16} strokeWidth={1.5} />}<VoiceglotText translationKey="launchpad.upload" defaultText={isMatching ? "Bezig..." : "Upload bestand"} /></button><input type="file" ref={fileInputRef} className="hidden" onChange={(e) => { const file = e.target.files?.[0]; if (file) console.log('File uploaded:', file.name); }} accept=".pdf,.doc,.docx,.txt" /></div>
                     <div className={cn("relative min-h-[320px] rounded-[20px] transition-all duration-500 overflow-hidden", isDragging ? "bg-primary/5 ring-2 ring-primary ring-inset scale-[0.99]" : "bg-va-off-white")} onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }} onDragLeave={() => setIsDragging(false)} onDrop={handleFileDrop}>
                       <textarea value={script} onChange={(e) => setScript(e.target.value)} placeholder={t('launchpad.placeholder.script', "Plak hier je tekst of sleep een bestand...")} className="w-full h-80 bg-transparent rounded-[20px] p-8 text-lg font-light leading-relaxed border-none focus:ring-2 focus:ring-primary/10 transition-all resize-none relative z-10" spellCheck={false} />
                     </div>
                     <div className="flex items-center justify-between pt-12 border-t border-black/5 mt-12">
-                      <ButtonInstrument variant="outline" onClick={handleBack} className="gap-2"><LucideArrowLeft size={16} /><VoiceglotText translationKey="common.previous" defaultText="Vorige" /></ButtonInstrument>
-                      <ButtonInstrument variant="primary" onClick={handleLaunch} disabled={isLaunching} className="va-btn-pro !bg-primary !text-white px-12 py-6 rounded-2xl text-lg flex items-center gap-3 shadow-xl shadow-primary/20">
+                      <button onClick={handleBack} className="flex items-center gap-2 px-8 py-4 rounded-xl border border-black/10 hover:bg-black/5 transition-all text-va-black/60 font-medium tracking-widest uppercase"><LucideArrowLeft size={16} /><VoiceglotText translationKey="common.previous" defaultText="Vorige" /></button>
+                      <button onClick={handleLaunch} disabled={isLaunching} className="va-btn-pro !bg-primary !text-white px-12 py-6 rounded-2xl text-lg flex items-center gap-3 shadow-xl shadow-primary/20 hover:scale-105 transition-all disabled:opacity-50 disabled:hover:scale-100">
                         {isLaunching ? <Loader2 size={20} className="animate-spin" /> : <Sparkles size={20} />}
                         <VoiceglotText translationKey="launchpad.cta" defaultText="Ontvang gratis proefopnames" />
-                      </ButtonInstrument>
+                      </button>
                     </div>
-                  </ContainerInstrument>
+                  </div>
                 </div>
-              </ContainerInstrument>
+              </div>
             )}
           </motion.div>
         </AnimatePresence>
-      </SectionInstrument>
-    </SectionInstrument>
+      </section>
+    </div>
   );
-};
+}
