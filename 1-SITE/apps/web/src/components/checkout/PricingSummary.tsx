@@ -92,38 +92,49 @@ export const PricingSummary: React.FC<{
     updateIsSubmitting(true);
 
     try {
+      // 🛡️ CHRIS-PROTOCOL: Robust payload preparation
+      const safeBriefing = state.briefing || '';
+      const wordCount = safeBriefing.trim().split(/\s+/).filter(Boolean).length;
+      
+      const payload = {
+        ...state,
+        ...state.customer,
+        pricing: {
+          ...state.pricing,
+          total: subtotal,
+          cartHash
+        },
+        quoteMessage,
+        payment_method: state.paymentMethod,
+        country: state.customer.country || 'BE',
+        music: state.music,
+        metadata: {
+          ...(state as any).metadata,
+          words: wordCount,
+          prompts: state.prompts || 0
+        }
+      };
+
+      console.log('[Checkout] Submitting payload:', payload);
+
       const res = await fetch('/api/checkout/mollie', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...state,
-          ...state.customer,
-          pricing: {
-            ...state.pricing,
-            total: subtotal, // Send the correctly calculated grand total (excl VAT)
-            cartHash
-          },
-          quoteMessage,
-          payment_method: state.paymentMethod,
-          country: state.customer.country || 'BE',
-          music: state.music,
-          metadata: {
-            ...state.metadata,
-            words: state.briefing.trim().split(/\s+/).filter(Boolean).length,
-            prompts: state.prompts
-          }
-        }),
+        body: JSON.stringify(payload),
       });
+
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(`Server responded with ${res.status}: ${errorText}`);
+      }
 
       const data = await res.json();
 
       if (data.success) {
         if (state.isQuoteRequest || data.isBankTransfer || !data.checkoutUrl) {
-          // CHRIS-PROTOCOL: Geen lelijke browser alerts. Direct doorsturen naar de succes-flow.
           setIsPreviewOpen(false);
           updateIsSubmitting(false);
           
-          // Redirect to success page for all non-Mollie successes
           const redirectUrl = data.token 
             ? `/api/auth/magic-login?token=${data.token}&redirect=/account/orders?orderId=${data.orderId}${state.isQuoteRequest ? '&type=quote' : ''}`
             : `/account/orders?orderId=${data.orderId}${state.isQuoteRequest ? '&type=quote' : ''}`;
@@ -133,11 +144,11 @@ export const PricingSummary: React.FC<{
           window.location.href = data.checkoutUrl;
         }
       } else {
-        alert(data.message || t('common.error.generic', 'Er is iets misgegaan.'));
-        updateIsSubmitting(false);
+        throw new Error(data.message || t('common.error.generic', 'Er is iets misgegaan.'));
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Checkout error:', error);
+      alert(error.message || t('common.error.generic', 'Er is iets misgegaan.'));
       updateIsSubmitting(false);
     }
   };
