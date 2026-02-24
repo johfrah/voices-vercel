@@ -93,17 +93,22 @@ export async function POST(request: NextRequest) {
     }
 
     if (mailEngine) {
+      // CHRIS-PROTOCOL: Skip emails if requested by user (logging to watchdog only)
+      const skipEmails = process.env.DISABLE_ADMIN_EMAILS === 'true';
+
       // 🛡️ CHRIS-PROTOCOL: Filter out common noise to prevent mail spam
       const isNoise = (
         error.includes('Minified React error #419') || // Hydration mismatch (common in Next.js/Browser extensions)
         error.includes('Server Components render') || // Generic Next.js error often paired with others
         error.includes('/api/translations/heal') ||   // Network noise/aborted requests
         error.includes('Failed to fetch') ||          // Network noise
-        error.includes('Load failed')                 // Network noise
+        error.includes('Load failed') ||              // Network noise
+        error.includes('Self-healing failed') ||      // Noise from the healer itself
+        error.includes('504')                         // Timeout noise
       );
 
-      if (isNoise) {
-        console.log(`[Watchdog] 🤫 Noise detected: "${error.substring(0, 50)}...". Logged to DB but no mail sent.`);
+      if (isNoise || skipEmails) {
+        console.log(`[Watchdog] 🤫 Noise or Skip detected: "${error.substring(0, 50)}...". Logged to DB but no mail sent.`);
         return NextResponse.json({ success: true, eventId, mailSent: false });
       }
 
