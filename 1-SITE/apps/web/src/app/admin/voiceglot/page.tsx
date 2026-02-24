@@ -44,6 +44,7 @@ export default function VoiceglotMasterPage() {
   const [filterStatus, setFilterStatus] = useState('all');
   const [hideInternal, setHideHideInternal] = useState(true);
   const [page, setPage] = useState(1);
+  const [sortBy, setSortBy] = useState('recent_translated'); // Default naar nieuwst vertaalde
   const [hasMore, setHasMore] = useState(true);
   const [isFetchingMore, setIsFetchingMore] = useState(false);
 
@@ -57,6 +58,10 @@ export default function VoiceglotMasterPage() {
     const interval = setInterval(fetchStats, 10000);
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    fetchTranslations(1, true);
+  }, [sortBy]);
 
   const [isHealingAll, setIsHealingAll] = useState(false);
 
@@ -153,7 +158,7 @@ export default function VoiceglotMasterPage() {
     else setIsFetchingMore(true);
 
     try {
-      const res = await fetch(`/api/admin/voiceglot/list?page=${pageNum}&limit=100`);
+      const res = await fetch(`/api/admin/voiceglot/list?page=${pageNum}&limit=100&sort=${sortBy}`);
       const text = await res.text();
       console.log(`📋 [Voiceglot Page] Raw List Response (Page ${pageNum}):`, text);
       
@@ -437,6 +442,14 @@ export default function VoiceglotMasterPage() {
             className="w-full pl-12 bg-va-off-white border-none rounded-xl py-4"
           />
         </div>
+        <select 
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value)}
+          className="bg-va-off-white border-none rounded-xl py-4 px-6 text-[15px] font-medium outline-none focus:ring-2 focus:ring-primary/20"
+        >
+          <option value="recent_translated">Nieuwst Vertaald</option>
+          <option value="last_seen">Laatst Gezien</option>
+        </select>
         <select 
           value={filterLang}
           onChange={(e) => setFilterLang(e.target.value)}

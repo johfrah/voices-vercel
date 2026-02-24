@@ -9,6 +9,8 @@ import { createClient } from "@supabase/supabase-js";
  * 
  * Registry-Centric view: toont ELKE string uit de registry, 
  * ongeacht of er al vertalingen zijn.
+ * 
+ * Nu met ondersteuning voor sorteren op laatst vertaald.
  */
 
 export const dynamic = 'force-dynamic';
@@ -18,57 +20,77 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '100');
+    const sort = searchParams.get('sort') || 'last_seen'; // 'last_seen' of 'recent_translated'
     const offset = (page - 1) * limit;
 
     try {
-      // CHRIS-PROTOCOL: Supabase SDK Direct Fetch (v2.14.393)
-      // We bypass Drizzle/postgres-js entirely for this critical list to avoid production driver issues.
-      console.log(`[Voiceglot List] SDK Fetch: Page ${page}, Limit ${limit}`);
-
       const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
       const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
       const supabase = createClient(supabaseUrl, supabaseKey);
 
-      // 1. Fetch Registry Items
-      const { data: registryItems, error: regErr } = await supabase
-        .from('translation_registry')
-        .select('id, string_hash, original_text, context, last_seen')
-        .order('last_seen', { ascending: false })
-        .range(offset, offset + limit - 1);
+      let registryItems: any[] = [];
+      let hasMore = false;
 
-      if (regErr) throw regErr;
-      console.log(`[Voiceglot List] Registry Items found: ${registryItems?.length || 0}`);
+      if (sort === 'recent_translated') {
+        // CHRIS-PROTOCOL: Sort by most recently updated translations
+        // 1. Haal de unieke keys op die het laatst zijn bijgewerkt in de translations tabel
+        const { data: recentTrans, error: transErr } = await supabase
+          .from('translations')
+          .select('translation_key, updated_at')
+          .order('updated_at', { ascending: false })
+          .range(offset, offset + limit - 1);
 
-      if (!registryItems || registryItems.length === 0) {
+        if (transErr) throw transErr;
+
+        if (!recentTrans || recentTrans.length === 0) {
+          return NextResponse.json({ translations: [], page, limit, hasMore: false });
+        }
+
+        // Unieke keys behouden (in volgorde van verschijning)
+        const uniqueKeys = [...new Set(recentTrans.map(t => t.translation_key))];
+        
+        // 2. Haal de bijbehorende registry items op
+        const { data: items, error: regErr } = await supabase
+          .from('translation_registry')
+          .select('*')
+          .in('string_hash', uniqueKeys);
+
+        if (regErr) throw regErr;
+
+        // Sorteer de items terug in de volgorde van de recentTrans
+        registryItems = uniqueKeys.map(key => items?.find(i => i.string_hash === key)).filter(Boolean);
+        hasMore = recentTrans.length === limit;
+      } else {
+        // Standaard: Sorteer op last_seen in de registry
+        const { data, error: regErr } = await supabase
+          .from('translation_registry')
+          .select('id, string_hash, original_text, context, last_seen')
+          .order('last_seen', { ascending: false })
+          .range(offset, offset + limit - 1);
+
+        if (regErr) throw regErr;
+        registryItems = data || [];
+        hasMore = registryItems.length === limit;
+      }
+
+      if (registryItems.length === 0) {
         return NextResponse.json({ translations: [], page, limit, hasMore: false });
       }
 
       // 2. Fetch translations for these keys
       const hashes = registryItems.map(i => i.string_hash);
-      console.log(`[Voiceglot List] Fetching translations for ${hashes.length} hashes`);
-      
       const { data: transData, error: transErr } = await supabase
         .from('translations')
         .select('id, translation_key, lang, translated_text, status, is_locked, is_manually_edited, updated_at')
         .in('translation_key', hashes);
 
-      if (transErr) {
-        console.error('[Voiceglot List] Translations Fetch Error:', transErr);
-        throw transErr;
-      }
-      
-      console.log(`[Voiceglot List] Translations found: ${transData?.length || 0}`);
-      if (transData && transData.length > 0) {
-        console.log(`[Voiceglot List] Sample translation:`, transData[0]);
-      } else {
-        console.warn(`[Voiceglot List] NO TRANSLATIONS FOUND in DB for these hashes!`);
-      }
+      if (transErr) throw transErr;
 
       // 3. Join in memory
       const mappedResults = registryItems.map((item: any) => {
         const itemTranslations = (transData || []).filter((t: any) => t.translation_key === item.string_hash);
         
-        // Detect source language
+        // Detect source language (eenvoudige heuristiek)
         const text = (item.original_text || '').toLowerCase();
         const isFr = text.includes(' le ') || text.includes(' la ') || text.includes(' les ');
         const isEn = text.includes(' the ') || text.includes(' and ');
@@ -99,14 +121,11 @@ export async function GET(request: Request) {
         translations: mappedResults,
         page,
         limit,
-        hasMore: mappedResults.length === limit
+        hasMore
       });
     } catch (dbErr: any) {
       console.error('❌ [Voiceglot List API] SDK Fetch failed:', dbErr);
-      return NextResponse.json({ 
-        error: `SDK Fetch failed: ${dbErr.message}`, 
-        translations: [] 
-      }, { status: 500 });
+      return NextResponse.json({ error: dbErr.message, translations: [] }, { status: 500 });
     }
   } catch (error: any) {
     console.error(' [Voiceglot List API] Fatal Error:', error);

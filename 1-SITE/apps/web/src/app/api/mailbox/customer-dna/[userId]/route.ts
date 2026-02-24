@@ -43,7 +43,7 @@ export async function GET(
     // 3. Vault Files (De Kluis)
     const files = await db.query.vaultFiles.findMany({
       where: eq(vaultFiles.customerId, userId),
-      orderBy: [desc(vaultFiles.createdAt)]
+      orderBy: (vaultFiles, { desc }) => [desc(vaultFiles.createdAt)]
     });
 
     // 4. Signature Assets (Potential Avatars)
@@ -52,8 +52,8 @@ export async function GET(
     // 5. Yuki Financile Context (Openstaande Facturen)
     // We zoeken op email in de yuki_outstanding tabel (mirror van Yuki)
     const outstanding = await db.query.yukiOutstanding.findMany({
-      where: eq(yukiOutstanding.contactId, user.email), // In onze mirror gebruiken we vaak email als contactId link
-      orderBy: [desc(yukiOutstanding.invoiceDate)]
+      where: eq(yukiOutstanding.contactId, user.email || ''), // In onze mirror gebruiken we vaak email als contactId link
+      orderBy: (yukiOutstanding, { desc }) => [desc(yukiOutstanding.invoiceDate)]
     });
 
     // 6. Check of het een Actor is (ook op basis van email als userId link mist)
@@ -97,7 +97,7 @@ export async function GET(
       // 8. Haal Vault Files op die specifiek aan deze Actor zijn gekoppeld (bijv. hun demo's of getekende contracten)
       const actorFiles = await db.query.vaultFiles.findMany({
         where: eq(vaultFiles.actorId, actor.id),
-        orderBy: [desc(vaultFiles.createdAt)],
+        orderBy: (vaultFiles, { desc }) => [desc(vaultFiles.createdAt)],
         limit: 10
       });
       // Voeg deze toe aan de vault lijst

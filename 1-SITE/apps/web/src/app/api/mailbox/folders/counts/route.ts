@@ -29,11 +29,11 @@ export async function GET(request: NextRequest) {
       .from(mailContent)
       .where(
         account === 'all' 
-          ? sql`1=1` // In de toekomst filteren op folder indien nodig
+          ? sql`1=1` 
           : sql`account_id = ${account}`
       );
       
-      counts[folder] = result[0]?.count || 0;
+      counts[folder] = Number(result[0]?.count || 0);
     }
 
     return NextResponse.json(counts);
