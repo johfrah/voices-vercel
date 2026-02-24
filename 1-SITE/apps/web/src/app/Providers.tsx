@@ -15,6 +15,7 @@ import { ClientLogger } from '@/lib/system/client-logger';
 
 import { MarketConfig } from '@/lib/system/market-manager-server';
 import { VersionGuard } from '@/components/system/VersionGuard';
+import { Toaster } from 'react-hot-toast';
 
 export function Providers({ 
   children,
@@ -32,7 +33,7 @@ export function Providers({
   initialUsage?: any;
 }) {
   const pathname = usePathname();
-  const currentVersion = '2.14.371';
+  const currentVersion = '2.14.373';
   
   //  CHRIS-PROTOCOL: Initialize Client Logger for real-time error reporting
   React.useEffect(() => {
@@ -51,6 +52,7 @@ export function Providers({
       <AuthProvider>
         <TranslationProvider lang={activeLang} market={market} initialTranslations={initialTranslations}>
           <VersionGuard currentVersion={currentVersion} />
+          <Toaster position="top-center" reverseOrder={false} />
           <EditModeProvider>
             <VoicesStateProvider>
               <GlobalAudioProvider>

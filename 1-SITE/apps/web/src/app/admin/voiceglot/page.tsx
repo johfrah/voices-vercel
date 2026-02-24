@@ -258,26 +258,28 @@ export default function VoiceglotMasterPage() {
     return matchesSearch && matchesLang && matchesStatus;
   });
 
-  // Group translations by key for the Matrix View
-  // CHRIS-PROTOCOL: Registry-Centric handling
-  const groupedList = translations
-    .filter((item: any) => {
-      if (hideInternal && item.translationKey.startsWith('knowledge.')) return false;
-      return true;
-    })
-    .map((item: any) => {
-      const langs: Record<string, any> = {};
-      (item.translations || []).forEach((t: any) => {
-        langs[t.lang] = t;
+    // Group translations by key for the Matrix View
+    // CHRIS-PROTOCOL: Registry-Centric handling
+    const groupedList = translations
+      .filter((item: any) => {
+        if (hideInternal && item.translationKey.startsWith('knowledge.')) return false;
+        return true;
+      })
+      .map((item: any) => {
+        const langs: Record<string, any> = {};
+        (item.translations || []).forEach((t: any) => {
+          langs[t.lang] = t;
+        });
+        return {
+          key: item.translationKey,
+          originalText: item.originalText,
+          context: item.context,
+          sourceLang: item.sourceLang,
+          langs
+        };
       });
-      return {
-        key: item.translationKey,
-        originalText: item.originalText,
-        context: item.context,
-        sourceLang: item.sourceLang,
-        langs
-      };
-    });
+
+    console.log('📦 [Voiceglot Page] Grouped List for Rendering:', groupedList.slice(0, 3));
 
   const isSlop = (text: string, lang: string, original: string) => {
     if (!text || lang.startsWith('nl')) return false;

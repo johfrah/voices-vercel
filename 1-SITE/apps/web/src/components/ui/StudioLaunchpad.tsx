@@ -40,6 +40,7 @@ import Image from 'next/image';
 import { VoicesLink as Link } from '@/components/ui/VoicesLink';
 import { useRouter } from 'next/navigation';
 import React, { useRef, useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 
 import { VoiceCard } from '@/components/ui/VoiceCard';
 import nextDynamic from 'next/dynamic';
@@ -133,8 +134,27 @@ export const StudioLaunchpad = ({ initialActors = [], initialJourney }: StudioLa
   ];
 
   const handleNext = () => {
-    if (currentStep === 1 && (!clientEmail || !projectName)) return;
-    if (currentStep === 2 && selectedActors.length === 0) return;
+    if (currentStep === 1) {
+      if (!projectName) {
+        toast.error(t('launchpad.error.project_name', 'Geef je project een naam'));
+        return;
+      }
+      if (!clientEmail) {
+        toast.error(t('launchpad.error.email', 'Vul je e-mailadres in'));
+        return;
+      }
+      // Basic email regex check
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(clientEmail)) {
+        toast.error(t('launchpad.error.email_invalid', 'Vul een geldig e-mailadres in'));
+        return;
+      }
+    }
+    
+    if (currentStep === 2 && selectedActors.length === 0) {
+      toast.error(t('launchpad.error.no_actors', 'Selecteer minimaal één stemacteur'));
+      return;
+    }
+
     setCurrentStep(prev => Math.min(prev + 1, 3));
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -145,6 +165,11 @@ export const StudioLaunchpad = ({ initialActors = [], initialJourney }: StudioLa
   };
 
   const handleLaunch = async () => {
+    if (!script || script.trim().length < 10) {
+      toast.error(t('launchpad.error.script_short', 'Je script is te kort voor een proefopname'));
+      return;
+    }
+
     setIsLaunching(true);
     try {
       console.log('Campaign message from state:', campaignMessage);
@@ -168,16 +193,19 @@ export const StudioLaunchpad = ({ initialActors = [], initialJourney }: StudioLa
       });
       const data = await response.json();
       if (data.success) {
+        toast.success(t('launchpad.success.submit', 'Je aanvraag is succesvol verzonden!'));
         localStorage.removeItem('voices_proefopname_draft');
         if (typeof window !== 'undefined') {
-          window.location.href = `/casting/session/${data.sessionHash}`;
+          setTimeout(() => {
+            window.location.href = `/casting/session/${data.sessionHash}`;
+          }, 1500);
         }
       } else {
         throw new Error(data.error || 'Fout bij het indienen');
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Launch error:', err);
-      alert(t('launchpad.error.submit', 'Er is iets misgegaan bij het aanvragen. Probeer het later opnieuw.'));
+      toast.error(err.message || t('launchpad.error.submit', 'Er is iets misgegaan bij het aanvragen. Probeer het later opnieuw.'));
       setIsLaunching(false);
     }
   };
@@ -389,7 +417,7 @@ export const StudioLaunchpad = ({ initialActors = [], initialJourney }: StudioLa
                   </div>
 
                   <div className="flex justify-end pt-8 border-t border-black/5">
-                    <ButtonInstrument variant="primary" onClick={handleNext} disabled={!clientEmail || !projectName} className="va-btn-pro !bg-va-black !text-white px-12 py-6 rounded-2xl text-lg flex items-center gap-3">
+                    <ButtonInstrument variant="primary" onClick={handleNext} className="va-btn-pro !bg-va-black !text-white px-12 py-6 rounded-2xl text-lg flex items-center gap-3">
                       <VoiceglotText translationKey="common.next_step" defaultText="Volgende stap" /> <ArrowRight size={20} />
                     </ButtonInstrument>
                   </div>
@@ -409,7 +437,7 @@ export const StudioLaunchpad = ({ initialActors = [], initialJourney }: StudioLa
                     )}
                     <div className="flex items-center justify-between pt-12 border-t border-black/5 mt-12">
                       <ButtonInstrument variant="outline" onClick={handleBack} className="gap-2"><LucideArrowLeft size={16} /><VoiceglotText translationKey="common.previous" defaultText="Vorige" /></ButtonInstrument>
-                      <ButtonInstrument variant="primary" onClick={handleNext} disabled={selectedActors.length === 0} className="va-btn-pro !bg-va-black !text-white px-12 py-6 rounded-2xl text-lg flex items-center gap-3"><VoiceglotText translationKey="common.next_step" defaultText="Volgende stap" /> <ArrowRight size={20} /></ButtonInstrument>
+                      <ButtonInstrument variant="primary" onClick={handleNext} className="va-btn-pro !bg-va-black !text-white px-12 py-6 rounded-2xl text-lg flex items-center gap-3"><VoiceglotText translationKey="common.next_step" defaultText="Volgende stap" /> <ArrowRight size={20} /></ButtonInstrument>
                     </div>
                   </ContainerInstrument>
                 </div>
@@ -426,7 +454,7 @@ export const StudioLaunchpad = ({ initialActors = [], initialJourney }: StudioLa
                     </div>
                     <div className="flex items-center justify-between pt-12 border-t border-black/5 mt-12">
                       <ButtonInstrument variant="outline" onClick={handleBack} className="gap-2"><LucideArrowLeft size={16} /><VoiceglotText translationKey="common.previous" defaultText="Vorige" /></ButtonInstrument>
-                      <ButtonInstrument variant="primary" onClick={handleLaunch} disabled={isLaunching || !script} className="va-btn-pro !bg-primary !text-white px-12 py-6 rounded-2xl text-lg flex items-center gap-3 shadow-xl shadow-primary/20">
+                      <ButtonInstrument variant="primary" onClick={handleLaunch} disabled={isLaunching} className="va-btn-pro !bg-primary !text-white px-12 py-6 rounded-2xl text-lg flex items-center gap-3 shadow-xl shadow-primary/20">
                         {isLaunching ? <Loader2 size={20} className="animate-spin" /> : <Sparkles size={20} />}
                         <VoiceglotText translationKey="launchpad.cta" defaultText="Ontvang gratis proefopnames" />
                       </ButtonInstrument>
