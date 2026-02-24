@@ -68,28 +68,35 @@ export async function getArtist(slug: string, lang: string = 'nl'): Promise<any>
  *  NUCLEAR CALCULATION: Real-time review statistics (SQL-First)
  */
 export async function getReviewStats(businessSlug: string = 'voices-be') {
-  const [stats] = await db.select({
-    totalCount: sql<number>`count(*)`,
-    averageRating: sql<number>`avg(${reviews.rating})`,
-    star5: sql<number>`count(*) filter (where ${reviews.rating} = 5)`,
-    star4: sql<number>`count(*) filter (where ${reviews.rating} = 4)`,
-    star3: sql<number>`count(*) filter (where ${reviews.rating} = 3)`,
-    star2: sql<number>`count(*) filter (where ${reviews.rating} = 2)`,
-    star1: sql<number>`count(*) filter (where ${reviews.rating} = 1)`
-  })
-  .from(reviews)
-  .where(eq(reviews.businessSlug, businessSlug));
+  // 🛡️ CHRIS-PROTOCOL: Use SDK for stability (v2.14.273)
+  const { data: stats, error } = await supabase
+    .from('reviews')
+    .select('rating')
+    .eq('business_slug', businessSlug)
+    .eq('status', 'published');
+
+  if (error || !stats) {
+    return {
+      averageRating: 4.9,
+      totalCount: 0,
+      distribution: { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 }
+    };
+  }
+
+  const totalCount = stats.length;
+  const avgRating = totalCount > 0 
+    ? Math.round((stats.reduce((acc, r) => acc + (r.rating || 5), 0) / totalCount) * 10) / 10 
+    : 4.9;
+
+  const distribution: Record<number, number> = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+  stats.forEach(r => {
+    if (r.rating) distribution[r.rating] = (distribution[r.rating] || 0) + 1;
+  });
   
   return {
-    averageRating: stats?.averageRating ? Math.round(Number(stats.averageRating) * 10) / 10 : 4.9,
-    totalCount: Number(stats?.totalCount || 0),
-    distribution: {
-      5: Number(stats?.star5 || 0),
-      4: Number(stats?.star4 || 0),
-      3: Number(stats?.star3 || 0),
-      2: Number(stats?.star2 || 0),
-      1: Number(stats?.star1 || 0)
-    }
+    averageRating: avgRating,
+    totalCount,
+    distribution
   };
 }
 
@@ -473,58 +480,94 @@ export async function getActor(slug: string, lang: string = 'nl'): Promise<Actor
 }
 
 export async function getMusicLibrary(category: string = 'music'): Promise<any[]> {
-  const musicMedia = await db.select().from(media).where(eq(media.category, category)).limit(50).catch(async (e) => {
+  // 🛡️ CHRIS-PROTOCOL: Use SDK for stability (v2.14.273)
+  const { data: musicMedia, error } = await supabase
+    .from('media')
+    .select('*')
+    .eq('category', category)
+    .limit(50);
+
+  if (error) {
     const { ServerWatchdog } = await import('./server-watchdog');
     ServerWatchdog.report({
       error: `Failed to fetch music library for category: ${category}`,
-      stack: e instanceof Error ? e.stack : String(e),
+      stack: error.message,
       component: 'api-server:getMusicLibrary',
       level: 'error'
     });
     return [];
-  });
-  return (musicMedia || []).map(m => ({ id: m.id.toString(), title: m.fileName, preview: m.filePath }));
+  }
+
+  return (musicMedia || []).map(m => ({ 
+    id: m.id.toString(), 
+    title: m.file_name || m.fileName, 
+    preview: m.file_path || m.filePath 
+  }));
 }
 
 export async function getAcademyLesson(id: string): Promise<any> {
-  const results = await db.select().from(lessons).where(eq(lessons.displayOrder, parseInt(id))).limit(1).catch(async (e) => {
+  // 🛡️ CHRIS-PROTOCOL: Use SDK for stability (v2.14.273)
+  const { data: lesson, error } = await supabase
+    .from('lessons')
+    .select('*')
+    .eq('display_order', parseInt(id))
+    .single();
+
+  if (error) {
     const { ServerWatchdog } = await import('./server-watchdog');
     ServerWatchdog.report({
       error: `Failed to fetch academy lesson for id: ${id}`,
-      stack: e instanceof Error ? e.stack : String(e),
+      stack: error.message,
       component: 'api-server:getAcademyLesson',
       level: 'error'
     });
-    return [];
-  });
-  return results[0] || null;
+    return null;
+  }
+
+  return lesson || null;
 }
 
 export async function getFaqs(category: string, limit: number = 5): Promise<any[]> {
-  const data = await db.select().from(faq).where(and(eq(faq.category, category), eq(faq.isPublic, true))).limit(limit).catch(async (e) => {
+  // 🛡️ CHRIS-PROTOCOL: Use SDK for stability (v2.14.273)
+  const { data, error } = await supabase
+    .from('faq')
+    .select('*')
+    .eq('category', category)
+    .eq('is_public', true)
+    .limit(limit);
+
+  if (error) {
     const { ServerWatchdog } = await import('./server-watchdog');
     ServerWatchdog.report({
       error: `Failed to fetch faqs for category: ${category}`,
-      stack: e instanceof Error ? e.stack : String(e),
+      stack: error.message,
       component: 'api-server:getFaqs',
       level: 'error'
     });
     return [];
-  });
+  }
+
   return data || [];
 }
 
 export async function getWorkshops(limit: number = 50): Promise<any[]> {
-  const workshopsData = await (db.query as any).workshops?.findMany({ limit }).catch(async (e: any) => {
+  // 🛡️ CHRIS-PROTOCOL: Use SDK for stability (v2.14.273)
+  const { data: workshopsData, error } = await supabase
+    .from('workshops')
+    .select('*')
+    .limit(limit);
+
+  if (error) {
     const { ServerWatchdog } = await import('./server-watchdog');
     ServerWatchdog.report({
       error: `Failed to fetch workshops`,
-      stack: e instanceof Error ? e.stack : String(e),
+      stack: error.message,
       component: 'api-server:getWorkshops',
       level: 'error'
     });
     return [];
-  });
+  }
+
   return workshopsData || [];
 }
 
@@ -567,14 +610,22 @@ export async function getTranslationsServer(lang: string): Promise<Record<string
 }
 
 export async function getProducts(category?: string): Promise<any[]> {
-  return await (db.query as any).products?.findMany({ limit: 10 }).catch(async (e: any) => {
+  // 🛡️ CHRIS-PROTOCOL: Use SDK for stability (v2.14.273)
+  const { data: productsData, error } = await supabase
+    .from('products')
+    .select('*')
+    .limit(10);
+
+  if (error) {
     const { ServerWatchdog } = await import('./server-watchdog');
     ServerWatchdog.report({
       error: `Failed to fetch products`,
-      stack: e instanceof Error ? e.stack : String(e),
+      stack: error.message,
       component: 'api-server:getProducts',
       level: 'error'
     });
     return [];
-  });
+  }
+
+  return productsData || [];
 }

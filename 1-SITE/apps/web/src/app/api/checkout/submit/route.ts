@@ -103,7 +103,12 @@ export async function POST(request: Request) {
 
     try {
       if (actorIds.length > 0) {
-        const { data } = await sdkClient.from('actors').select('*').in('id', actorIds);
+        // 🛡️ CHRIS-PROTOCOL: Query by BOTH id and wp_product_id for legacy support (v2.14.278)
+        const { data } = await sdkClient
+          .from('actors')
+          .select('*')
+          .or(`id.in.(${actorIds.join(',')}),wp_product_id.in.(${actorIds.join(',')})`);
+          
         dbActors = (data || []).map(a => ({
           ...a,
           wpProductId: a.wp_product_id,
@@ -123,7 +128,13 @@ export async function POST(request: Request) {
       throw new Error(`Database connection error: ${dbErr.message}`);
     }
 
-    const actorMap = new Map(dbActors.map(a => [a.id, a]));
+    // 🛡️ CHRIS-PROTOCOL: Map both serial ID and WP ID to the actor object
+    const actorMap = new Map();
+    dbActors.forEach(a => {
+      actorMap.set(Number(a.id), a);
+      if (a.wpProductId) actorMap.set(Number(a.wpProductId), a);
+    });
+    
     const workshopMap = new Map(dbWorkshops.map(w => [Number(w.id), w]));
 
     const isSubscription = usage === 'subscription';
@@ -275,16 +286,19 @@ export async function POST(request: Request) {
     console.log('[Checkout] 🚀 STEP 7: Saving order items...', { count: validatedItems.length });
     if (validatedItems.length > 0) {
       try {
-        await db.insert(orderItems).values(validatedItems.map((item: any) => ({
-          orderId: newOrder.id,
-          actorId: item.actor?.id || null,
-          name: item.actor?.display_name ? `Stemopname: ${item.actor.display_name}` : (item.name || 'Product'),
-          quantity: 1,
-          price: (item.pricing?.subtotal || item.pricing?.total || 0).toString(),
-          tax: (item.pricing?.tax || 0).toString(),
-          metaData: item.pricing || {},
-          deliveryStatus: 'waiting'
-        })));
+        await db.insert(orderItems).values(validatedItems.map((item: any) => {
+          const dbActor = actorMap.get(Number(item.actor?.id));
+          return {
+            orderId: newOrder.id,
+            actorId: dbActor?.id || null, // 🛡️ Gebruik ALTIJD de serial ID uit de DB
+            name: item.actor?.display_name ? `Stemopname: ${item.actor.display_name}` : (item.name || 'Product'),
+            quantity: 1,
+            price: (item.pricing?.subtotal || item.pricing?.total || 0).toString(),
+            tax: (item.pricing?.tax || 0).toString(),
+            metaData: item.pricing || {},
+            deliveryStatus: 'waiting'
+          };
+        }));
         console.log('[Checkout] ✅ STEP 7.1: Order items saved');
       } catch (e: any) {
         console.error('[Checkout] ❌ STEP 7 ERROR:', e.message);

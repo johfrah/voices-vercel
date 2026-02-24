@@ -245,7 +245,8 @@ export default function VoiceglotMasterPage() {
   const groupedList = Object.values(groupedTranslations);
 
   //  CHRIS-PROTOCOL: Async Context Hydration (Godmode 2026)
-  // We halen de context (namen) pas op nadat de tabel er staat.
+  // DISABLED: nuclear-audit route is for AI auditing, not context fetching.
+  /*
   useEffect(() => {
     if (groupedList.length > 0) {
       const keysMissingContext = groupedList
@@ -270,6 +271,7 @@ export default function VoiceglotMasterPage() {
       }
     }
   }, [groupedList.length]);
+  */
 
   const isSlop = (text: string, lang: string, original: string) => {
     if (!text || lang.startsWith('nl')) return false;

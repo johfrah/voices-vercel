@@ -56,17 +56,17 @@ export async function GET(request: NextRequest) {
 
     // 2. Fetch Fresh Data (Ultra-Light)
     // Totaal aantal unieke strings in de registry
-    const totalStringsResult = await db.select({ count: sql<number>`count(*)` }).from(translationRegistry).catch((err) => {
+    const totalStringsResult = await db.select({ count: sql`count(*)` }).from(translationRegistry).catch((err) => {
       console.error('❌ [Voiceglot Stats API] Registry Query Error:', err);
-      return [{ count: 0 }];
+      return [{ count: '0' }];
     });
-    const totalStrings = Number(totalStringsResult[0]?.count || 0);
-    console.log('📊 [Voiceglot Stats API] Total strings:', totalStrings);
+    const totalStrings = parseInt(String(totalStringsResult[0]?.count || '0'), 10);
+    console.log('📊 [Voiceglot Stats API] Total strings (parsed):', totalStrings);
 
     // Aantal vertalingen per taal
     const statsByLang = totalStrings > 0 ? await db.select({
       lang: translations.lang,
-      count: sql<number>`count(*)`
+      count: sql`count(*)`
     })
     .from(translations)
     .groupBy(translations.lang)
@@ -92,7 +92,7 @@ export async function GET(request: NextRequest) {
     const targetLanguages = ['en', 'fr', 'de', 'es', 'pt', 'it'];
     const coverage = targetLanguages.map(lang => {
       const found = statsByLang.find(s => s.lang === lang);
-      const count = found ? Number(found.count) : 0;
+      const count = parseInt(String(found?.count || '0'), 10);
       return {
         lang,
         count,

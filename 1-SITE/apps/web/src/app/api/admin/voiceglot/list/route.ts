@@ -20,26 +20,33 @@ export async function GET(request: Request) {
 
     let results: any[] = [];
     try {
-      //  CHRIS-PROTOCOL: Ultra-Light Query with Pagination (Godmode 2026)
-      const rawResults = await db
+      //  CHRIS-PROTOCOL: Registry-Centric Query (Godmode 2026)
+      // We gaan uit van de registry zodat we ELKE string zien, ook zonder vertalingen.
+      const registryItems = await db
         .select({
-          id: translations.id,
-          translationKey: translations.translationKey,
-          lang: translations.lang,
-          originalText: translations.originalText,
-          translatedText: translations.translatedText,
-          isLocked: translations.isManuallyEdited,
-          isManuallyEdited: translations.isManuallyEdited,
-          updatedAt: translations.updatedAt,
-          status: translations.status
+          stringHash: translationRegistry.stringHash,
+          originalText: translationRegistry.originalText,
+          context: translationRegistry.context,
+          lastSeen: translationRegistry.lastSeen
         })
-        .from(translations)
-        .orderBy(desc(translations.updatedAt))
+        .from(translationRegistry)
+        .orderBy(desc(translationRegistry.lastSeen))
         .limit(limit)
         .offset(offset);
-      
-      results = rawResults.map(r => {
-        const text = (r.originalText || '').toLowerCase();
+
+      // Haal alle vertalingen op voor deze batch hashes
+      const hashes = registryItems.map(i => i.stringHash);
+      const batchTranslations = hashes.length > 0 ? await db
+        .select()
+        .from(translations)
+        .where(sql`${translations.translationKey} IN ${hashes}`)
+        .catch(() => []) : [];
+
+      results = registryItems.map(item => {
+        const itemTranslations = batchTranslations.filter((t: any) => t.translationKey === item.stringHash);
+        
+        // Detect source language (fallback logic)
+        const text = (item.originalText || '').toLowerCase();
         const isFr = text.includes(' le ') || text.includes(' la ') || text.includes(' les ') || text.includes(' être ');
         const isEn = text.includes(' the ') || text.includes(' and ') || text.includes(' with ');
         const isNl = text.includes(' de ') || text.includes(' het ') || text.includes(' en ') || text.includes(' is ');
@@ -49,8 +56,18 @@ export async function GET(request: Request) {
         else if (isEn && !isNl) detectedLang = 'en';
 
         return {
-          ...r,
-          sourceLang: detectedLang
+          translationKey: item.stringHash,
+          originalText: item.originalText,
+          context: item.context,
+          sourceLang: detectedLang,
+          translations: itemTranslations.map((t: any) => ({
+            id: t.id,
+            lang: t.lang,
+            translatedText: t.translatedText,
+            status: t.status,
+            isLocked: t.isManuallyEdited,
+            updatedAt: t.updatedAt
+          }))
         };
       });
     } catch (dbErr) {
