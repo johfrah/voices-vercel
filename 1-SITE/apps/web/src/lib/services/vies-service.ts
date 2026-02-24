@@ -61,12 +61,16 @@ export class ViesService {
       const data = await response.json();
       console.log(`[ViesService] API Response for ${cleanVat}:`, data);
       
+      // 🛡️ CHRIS-PROTOCOL: Robust boolean check for VIES API (Godmode 2026)
+      // The API returns 'isValid' or 'valid'. We check both and handle potential string values.
+      const isValid = data.isValid === true || data.valid === true || String(data.isValid).toLowerCase() === 'true' || String(data.valid).toLowerCase() === 'true';
+      
       return {
         name: data.name || data.user_name || '',
         address: data.address || '',
         countryCode: data.countryCode || countryCode,
         vatNumber: data.vatNumber || vatOnly,
-        isValid: data.isValid === true || data.valid === true
+        isValid: isValid
       };
 
     } catch (error) {

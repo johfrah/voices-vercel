@@ -1,6 +1,6 @@
 {
   "name": "voices-experience-layer",
-    "version": "2.14.159",
+    "version": "2.14.160",
   "private": true,
   "scripts": {
     "dev": "PORT=3000 next dev",
@@ -13,6 +13,7 @@
     "health-check": "npm run lint:fix && npm run type-check",
     "watch": "npm run dev & tsc --noEmit --watch",
     "bob-fix": "tsx ../../../3-WETTEN/scripts/watchdog.ts",
+    "mollie:fix": "tsx src/scripts/fix-mollie-icons.ts",
     "check:pre-vercel": "tsx ../../../3-WETTEN/scripts/pre-vercel-check.ts",
     "env:pull": "vercel env pull .env.local",
     "logs:live": "vercel logs voices-os-2026.vercel.app -f",
