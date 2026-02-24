@@ -160,7 +160,7 @@ export default function VoiceglotMasterPage() {
     }
   };
 
-  const filtered = translations.filter(trans => {
+    const filtered = translations.filter(trans => {
     const matchesSearch = trans.translationKey.toLowerCase().includes(search.toLowerCase()) || 
                          trans.originalText.toLowerCase().includes(search.toLowerCase()) ||
                          trans.translatedText.toLowerCase().includes(search.toLowerCase());
@@ -170,6 +170,15 @@ export default function VoiceglotMasterPage() {
                          (filterStatus === 'auto' && !trans.isLocked && !trans.isManuallyEdited);
     return matchesSearch && matchesLang && matchesStatus;
   });
+
+  const isSlop = (trans: any) => {
+    if (trans.lang.startsWith('nl')) return false;
+    const lower = trans.translatedText.toLowerCase();
+    const sourceLower = trans.originalText.toLowerCase();
+    if (lower === sourceLower) return true;
+    const dutchWords = [' de ', ' het ', ' een ', ' is ', ' zijn ', ' met ', ' voor '];
+    return dutchWords.filter(word => lower.includes(word)).length >= 2;
+  };
 
   if (loading) return (
     <ContainerInstrument className="min-h-screen flex items-center justify-center">
@@ -284,98 +293,109 @@ export default function VoiceglotMasterPage() {
             </tr>
           </thead>
           <tbody className="divide-y divide-black/[0.03]">
-            {filtered.map((trans) => (
-              <tr key={trans.id} className="group hover:bg-va-off-white/30 transition-colors">
-                <td className="px-8 py-6">
-                  <div className="flex flex-col">
-                    <span className="text-[13px] font-mono text-primary font-bold mb-1">{trans.translationKey}</span>
-                    <span className="text-[11px] font-black uppercase text-va-black/20 tracking-widest">{trans.lang}</span>
-                  </div>
-                </td>
-                <td className="px-8 py-6">
-                  <TextInstrument className="text-[15px] text-va-black/60" title={trans.originalText}>
-                    {trans.originalText}
-                  </TextInstrument>
-                </td>
-                <td className="px-8 py-6">
-                  <div className="flex flex-col gap-1 group/cell">
-                    {editingId === trans.id ? (
-                      <div className="flex gap-2 items-center">
-                        <input 
-                          autoFocus
-                          value={editingText}
-                          onChange={(e) => setEditingText(e.target.value)}
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter') handleSaveEdit(trans);
-                            if (e.key === 'Escape') setEditingId(null);
-                          }}
-                          className="flex-grow bg-va-off-white border-2 border-primary/20 rounded-lg px-3 py-2 text-[15px] outline-none focus:border-primary transition-all"
-                        />
-                        <button 
-                          onClick={() => handleSaveEdit(trans)}
-                          disabled={isSaving}
-                          className="p-2 bg-primary text-white rounded-lg hover:bg-primary/80 transition-all disabled:opacity-50"
-                        >
-                          {isSaving ? <Loader2 size={16} className="animate-spin" /> : <CheckCircle2 size={16} />}
-                        </button>
+            {filtered.map((trans) => {
+              const slopDetected = isSlop(trans);
+              return (
+                <tr key={trans.id} className={cn("group transition-colors", slopDetected ? "bg-red-50 hover:bg-red-100/50" : "hover:bg-va-off-white/30")}>
+                  <td className="px-8 py-6">
+                    <div className="flex flex-col">
+                      <span className="text-[13px] font-mono text-primary font-bold mb-1">{trans.translationKey}</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[11px] font-black uppercase text-va-black/20 tracking-widest">{trans.lang}</span>
+                        {slopDetected && (
+                          <span className="text-[9px] font-bold bg-red-500 text-white px-1.5 py-0.5 rounded uppercase tracking-tighter">Slop Detected</span>
+                        )}
                       </div>
-                    ) : (
-                      <div className="flex items-center justify-between gap-4">
-                        <TextInstrument 
-                          className={cn("text-[15px] font-medium cursor-pointer hover:text-primary transition-colors flex-grow", trans.isLocked ? "text-va-black" : "text-blue-600")}
-                          onClick={() => handleStartEdit(trans)}
-                        >
-                          {trans.translatedText}
-                        </TextInstrument>
-                        <Sparkles 
-                          size={14} 
-                          className="text-va-black/10 opacity-0 group-hover/cell:opacity-100 transition-opacity cursor-pointer hover:text-primary" 
-                          onClick={() => handleStartEdit(trans)}
-                        />
-                      </div>
-                    )}
-                    {trans.lastAuditedAt && (
-                      <span className="text-[10px] text-va-black/20 flex items-center gap-1">
-                        <CheckCircle2 size={10} /> Gescand: {new Date(trans.lastAuditedAt).toLocaleDateString()}
-                      </span>
-                    )}
-                  </div>
-                </td>
-                <td className="px-8 py-6">
-                  <div className="flex items-center gap-3">
-                    {trans.isLocked ? (
-                      <div className="flex items-center gap-1.5 px-3 py-1 bg-va-black text-white rounded-full text-[10px] font-bold uppercase tracking-widest">
-                        <Lock size={10} /> Locked
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-1.5 px-3 py-1 bg-blue-500/10 text-blue-600 rounded-full text-[10px] font-bold uppercase tracking-widest">
-                        <Sparkles size={10} /> Auto
-                      </div>
-                    )}
-                  </div>
-                </td>
-                <td className="px-8 py-6">
-                  <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button 
-                      onClick={() => toggleLock(trans.id, trans.isLocked)}
-                      className={cn(
-                        "p-2 rounded-lg transition-all",
-                        trans.isLocked ? "bg-va-black text-white" : "bg-va-off-white text-va-black/40 hover:text-va-black"
+                    </div>
+                  </td>
+                  <td className="px-8 py-6">
+                    <TextInstrument className="text-[15px] text-va-black/60" title={trans.originalText}>
+                      {trans.originalText}
+                    </TextInstrument>
+                  </td>
+                  <td className="px-8 py-6">
+                    <div className="flex flex-col gap-1 group/cell">
+                      {editingId === trans.id ? (
+                        <div className="flex gap-2 items-center">
+                          <input 
+                            autoFocus
+                            value={editingText}
+                            onChange={(e) => setEditingText(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') handleSaveEdit(trans);
+                              if (e.key === 'Escape') setEditingId(null);
+                            }}
+                            className="flex-grow bg-va-off-white border-2 border-primary/20 rounded-lg px-3 py-2 text-[15px] outline-none focus:border-primary transition-all"
+                          />
+                          <button 
+                            onClick={() => handleSaveEdit(trans)}
+                            disabled={isSaving}
+                            className="p-2 bg-primary text-white rounded-lg hover:bg-primary/80 transition-all disabled:opacity-50"
+                          >
+                            {isSaving ? <Loader2 size={16} className="animate-spin" /> : <CheckCircle2 size={16} />}
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="flex items-center justify-between gap-4">
+                          <TextInstrument 
+                            className={cn("text-[15px] font-medium cursor-pointer hover:text-primary transition-colors flex-grow", 
+                              trans.isLocked ? "text-va-black" : "text-blue-600",
+                              slopDetected && "text-red-600 underline decoration-dotted"
+                            )}
+                            onClick={() => handleStartEdit(trans)}
+                          >
+                            {trans.translatedText}
+                          </TextInstrument>
+                          <Sparkles 
+                            size={14} 
+                            className="text-va-black/10 opacity-0 group-hover/cell:opacity-100 transition-opacity cursor-pointer hover:text-primary" 
+                            onClick={() => handleStartEdit(trans)}
+                          />
+                        </div>
                       )}
-                      title={trans.isLocked ? "Ontgrendelen" : "Vergrendelen"}
-                    >
-                      {trans.isLocked ? <Lock size={16} /> : <Unlock size={16} />}
-                    </button>
-                    <button 
-                      className="p-2 bg-va-off-white text-va-black/40 hover:text-primary rounded-lg transition-all"
-                      title="Geschiedenis bekijken"
-                    >
-                      <History size={16} />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
+                      {trans.lastAuditedAt && (
+                        <span className="text-[10px] text-va-black/20 flex items-center gap-1">
+                          <CheckCircle2 size={10} /> Gescand: {new Date(trans.lastAuditedAt).toLocaleDateString()}
+                        </span>
+                      )}
+                    </div>
+                  </td>
+                  <td className="px-8 py-6">
+                    <div className="flex items-center gap-3">
+                      {trans.isLocked ? (
+                        <div className="flex items-center gap-1.5 px-3 py-1 bg-va-black text-white rounded-full text-[10px] font-bold uppercase tracking-widest">
+                          <Lock size={10} /> Locked
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-1.5 px-3 py-1 bg-blue-500/10 text-blue-600 rounded-full text-[10px] font-bold uppercase tracking-widest">
+                          <Sparkles size={10} /> Auto
+                        </div>
+                      )}
+                    </div>
+                  </td>
+                  <td className="px-8 py-6">
+                    <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button 
+                        onClick={() => toggleLock(trans.id, trans.isLocked)}
+                        className={cn(
+                          "p-2 rounded-lg transition-all",
+                          trans.isLocked ? "bg-va-black text-white" : "bg-va-off-white text-va-black/40 hover:text-va-black"
+                        )}
+                        title={trans.isLocked ? "Ontgrendelen" : "Vergrendelen"}
+                      >
+                        {trans.isLocked ? <Lock size={16} /> : <Unlock size={16} />}
+                      </button>
+                      <button 
+                        className="p-2 bg-va-off-white text-va-black/40 hover:text-primary rounded-lg transition-all"
+                        title="Geschiedenis bekijken"
+                      >
+                        <History size={16} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
