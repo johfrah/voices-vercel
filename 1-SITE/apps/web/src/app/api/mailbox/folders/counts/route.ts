@@ -28,9 +28,7 @@ export async function GET(request: NextRequest) {
       })
       .from(mailContent)
       .where(
-        account === 'all' 
-          ? sql`1=1` 
-          : sql`account_id = ${account}`
+        sql`(${account} = 'all' OR account_id = ${account})`
       );
       
       counts[folder] = Number(result[0]?.count || 0);
