@@ -21,35 +21,51 @@ export async function GET(request: Request) {
     const offset = (page - 1) * limit;
 
     try {
-      // CHRIS-PROTOCOL: Two-Step Fetch & Join Mandate (v2.14.384)
-      // We avoid complex json_agg subqueries that fail in production.
+      // CHRIS-PROTOCOL: Pure Drizzle Two-Step Fetch (v2.14.385)
+      // We use the ORM for maximum reliability and type-safety in production.
+      
       // 1. Fetch Registry Items
-      const registryItems = await db.execute(sql`
-        SELECT id, string_hash as "translationKey", original_text as "originalText", context
-        FROM translation_registry
-        ORDER BY last_seen DESC
-        LIMIT ${limit}
-        OFFSET ${offset}
-      `);
+      const registryItems = await db
+        .select({
+          id: translationRegistry.id,
+          translationKey: translationRegistry.stringHash,
+          originalText: translationRegistry.originalText,
+          context: translationRegistry.context
+        })
+        .from(translationRegistry)
+        .orderBy(desc(translationRegistry.lastSeen))
+        .limit(limit)
+        .offset(offset);
+
+      console.log(`[Voiceglot List] Drizzle Registry Items: ${registryItems.length}`);
 
       if (!registryItems || registryItems.length === 0) {
         return NextResponse.json({ translations: [], page, limit, hasMore: false });
       }
 
       // 2. Fetch all translations for these keys
-      const hashes = (registryItems as any).map((i: any) => i.translationKey);
-      const transData = await db.execute(sql`
-        SELECT id, translation_key as "translationKey", lang, translated_text as "translatedText", status, 
-               (is_locked OR is_manually_edited) as "isLocked", updated_at as "updatedAt"
-        FROM translations
-        WHERE translation_key = ANY(${hashes})
-      `);
+      const hashes = registryItems.map(i => i.translationKey);
+      const transData = await db
+        .select()
+        .from(translations)
+        .where(inArray(translations.translationKey, hashes));
+
+      console.log(`[Voiceglot List] Drizzle Translations Data: ${transData.length}`);
 
       // 3. Join in memory
-      const mappedResults = (registryItems as any).map((item: any) => {
-        const itemTranslations = (transData as any).filter((t: any) => t.translationKey === item.translationKey);
+      const mappedResults = registryItems.map((item: any) => {
+        const itemTranslations = transData
+          .filter((t: any) => t.translationKey === item.translationKey)
+          .map((t: any) => ({
+            id: t.id,
+            lang: t.lang,
+            translatedText: t.translatedText,
+            status: t.status,
+            isLocked: t.isLocked || t.isManuallyEdited || false,
+            updatedAt: t.updatedAt
+          }));
         
-        // Detect source language
+        // Detect source language (Simple heuristic)
         const text = (item.originalText || '').toLowerCase();
         const isFr = text.includes(' le ') || text.includes(' la ') || text.includes(' les ');
         const isEn = text.includes(' the ') || text.includes(' and ');
@@ -73,7 +89,7 @@ export async function GET(request: Request) {
         hasMore: mappedResults.length === limit
       });
     } catch (dbErr: any) {
-      console.error('❌ [Voiceglot List API] Two-Step Fetch failed:', dbErr.message);
+      console.error('❌ [Voiceglot List API] Drizzle Fetch failed:', dbErr.message);
       return NextResponse.json({ error: dbErr.message, translations: [] }, { status: 500 });
     }
   } catch (error: any) {
