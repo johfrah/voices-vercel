@@ -54,7 +54,7 @@ export default function CartPageClient() {
           </ContainerInstrument>
           <ContainerInstrument className="space-y-2">
             <HeadingInstrument level={1} className="text-4xl font-light tracking-tighter">
-              <VoiceglotText translationKey="cart.empty.title" defaultText="Winkelmand leeg" />
+              <VoiceglotText translationKey="cart.empty.title" defaultText="Projectoverzicht leeg" />
             </HeadingInstrument>
             <TextInstrument className="text-va-black/40 font-light">
               <VoiceglotText translationKey="cart.empty.text" defaultText="Je hebt nog geen stemmen geselecteerd voor je project." />

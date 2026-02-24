@@ -3,7 +3,7 @@ import CartPageClient from './CartPageClient';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Winkelmand | Voices',
+  title: 'Projectoverzicht | Voices',
   description: 'Bekijk je geselecteerde stemmen en projectdetails.',
 };
 

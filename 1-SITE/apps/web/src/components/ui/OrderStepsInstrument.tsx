@@ -27,7 +27,7 @@ export const OrderStepsInstrument: React.FC<OrderStepsInstrumentProps> = ({
   const steps = [
     { id: 'voice', label: 'Kies Stem', key: 'order_steps.voice' },
     { id: 'script', label: 'Script', key: 'order_steps.script' },
-    { id: 'cart', label: 'Mandje', key: 'order_steps.cart' },
+    { id: 'cart', label: 'Overzicht', key: 'order_steps.cart' },
     { id: 'checkout', label: 'Afrekenen', key: 'order_steps.checkout' },
   ] as const;
 
