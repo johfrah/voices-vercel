@@ -26,8 +26,15 @@ export async function GET(request: Request) {
       console.log(`[Voiceglot List] Ultra-Stable Fetch: Page ${page}, Limit ${limit}`);
 
       // 1. Fetch Registry Items using the most basic Drizzle pattern
+      // We use a simpler select to avoid any potential schema issues
       const registryItems = await db
-        .select()
+        .select({
+          id: translationRegistry.id,
+          stringHash: translationRegistry.stringHash,
+          originalText: translationRegistry.originalText,
+          context: translationRegistry.context,
+          lastSeen: translationRegistry.lastSeen
+        })
         .from(translationRegistry)
         .orderBy(desc(translationRegistry.lastSeen))
         .limit(limit)
@@ -42,7 +49,16 @@ export async function GET(request: Request) {
       // 2. Fetch translations for these keys
       const hashes = registryItems.map(i => i.stringHash);
       const transData = await db
-        .select()
+        .select({
+          id: translations.id,
+          translationKey: translations.translationKey,
+          lang: translations.lang,
+          translatedText: translations.translatedText,
+          status: translations.status,
+          isLocked: translations.isLocked,
+          isManuallyEdited: translations.isManuallyEdited,
+          updatedAt: translations.updatedAt
+        })
         .from(translations)
         .where(inArray(translations.translationKey, hashes));
 
