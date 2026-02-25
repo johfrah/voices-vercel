@@ -154,6 +154,7 @@ async function resolveSlug(slug: string, lang: string): Promise<{ originalSlug: 
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
+export const revalidate = 0;
 
 /**
  *  BOB-METHODE: De "Smart Router" (Root Dynamic Handler)
