@@ -4,7 +4,6 @@ import nextDynamic from "next/dynamic";
 import { Suspense } from "react";
 import { AdminHeader } from '@/components/admin/AdminHeader';
 import { LoadingScreenInstrument } from '@/components/ui/LayoutInstruments';
-import { redirect } from 'next/navigation';
 
 //  NUCLEAR LOADING MANDATE
 const LiquidBackground = nextDynamic(() => import('@/components/ui/LiquidBackground').then(mod => mod.LiquidBackground), { ssr: false });
@@ -24,15 +23,9 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  let user = null;
-  try {
-    user = await requireAdminRedirect();
-  } catch (err) {
-    // CHRIS-PROTOCOL: Als redirect() wordt gegooid, laat Next.js dit afhandelen.
-    if (err instanceof Error && err.message === 'NEXT_REDIRECT') throw err;
-    console.error('[AdminLayout] Auth crash, redirecting to home:', err);
-    redirect('/');
-  }
+  // 🛡️ CHRIS-PROTOCOL: No try/catch around redirect-throwing functions in Server Components
+  // Next.js handles redirects via thrown errors, which must bubble up.
+  const user = await requireAdminRedirect();
 
   return (
     <>

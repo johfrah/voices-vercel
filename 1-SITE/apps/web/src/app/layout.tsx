@@ -192,11 +192,26 @@ export default async function RootLayout({
   ]);
   
   // 🛡️ CHRIS-PROTOCOL: Journey Detection for Provider Injection
-  // We extract the journey from the URL segments to prevent Hydration Mismatch (#419)
   const segments = params.slug || pathname.split('/').filter(Boolean);
-  
+  const journeySegment = segments[1]?.toLowerCase();
+  const journeyMap: Record<string, any> = {
+    'telefoon': 'telephony',
+    'telefooncentrale': 'telephony',
+    'telephony': 'telephony',
+    'video': 'video',
+    'commercial': 'commercial',
+    'reclame': 'commercial'
+  };
+  const initialJourney = journeySegment ? journeyMap[journeySegment] : undefined;
+  const initialUsage = initialJourney ? (initialJourney === 'telephony' ? 'telefonie' : (initialJourney === 'commercial' ? 'commercial' : 'unpaid')) : undefined;
+
   // 🛡️ CHRIS-PROTOCOL: Force Client-Only rendering for Admin routes to prevent hydration mismatch (#419)
   const isAdminRoute = pathname.startsWith('/admin') || segments[0] === 'admin';
+  
+  const htmlClass = `${raleway.className} ${inter.className} theme-${market.theme} ${raleway.variable}`;
+  const bodyClass = "pb-24 md:pb-0 touch-manipulation va-main-layout pt-[80px] md:pt-[110px]";
+  const lang = langHeader || (pathname.includes('/artist/youssef') || market.market_code === 'ARTIST' ? 'en' : (market.language || 'nl'));
+
   if (isAdminRoute) {
     return (
       <html lang={lang} className={htmlClass} suppressHydrationWarning>
@@ -212,18 +227,6 @@ export default async function RootLayout({
       </html>
     );
   }
-
-  const journeySegment = segments[1]?.toLowerCase();
-  const journeyMap: Record<string, any> = {
-    'telefoon': 'telephony',
-    'telefooncentrale': 'telephony',
-    'telephony': 'telephony',
-    'video': 'video',
-    'commercial': 'commercial',
-    'reclame': 'commercial'
-  };
-  const initialJourney = journeySegment ? journeyMap[journeySegment] : undefined;
-  const initialUsage = initialJourney ? (initialJourney === 'telephony' ? 'telefonie' : (initialJourney === 'commercial' ? 'commercial' : 'unpaid')) : undefined;
   
   // 🛡️ VISIONARY MANDATE: Journey logic exclusively from market data
   const isSpecialJourney = ['ADEMING', 'PORTFOLIO', 'ARTIST'].includes(market.market_code);
@@ -235,51 +238,7 @@ export default async function RootLayout({
   
   const isYoussefJourney = pathname.includes('/artist/youssef') || market.market_code === 'ARTIST';
   
-  const lang = langHeader || (isYoussefJourney ? 'en' : (market.language || 'nl'));
-  
   const isArtistJourney = market.market_code === 'ARTIST' || pathname.includes('/artist/') || pathname.includes('/voice/');
-  const showVoicy = market.has_voicy !== false && !isArtistJourney && !isUnderConstruction;
-  const showTopBar = !isUnderConstruction;
-  const showGlobalNav = !isUnderConstruction;
-
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": market.seo_data?.schema_type || (market.market_code === 'ADEMING' ? "WebApplication" : (market.market_code === 'PORTFOLIO' || market.market_code === 'ARTIST') ? "Person" : "Organization"),
-    "name": market.name,
-    "url": cleanHost ? `https://${cleanHost}` : '',
-    "logo": market.logo_url?.startsWith('http') ? market.logo_url : `https://${cleanHost}${market.logo_url || ''}`,
-    "description": market.seo_data?.description || (
-      market.market_code === 'ADEMING' ? "Platform voor meditatie en innerlijke rust." : 
-      market.market_code === 'PORTFOLIO' ? "Vlaamse voice-over & regisseur." : 
-      "Het vriendelijkste stemmenbureau."
-    ),
-    "sameAs": Object.values(market.social_links || {}).filter(Boolean),
-    "jobTitle": (market.market_code === 'PORTFOLIO' || market.market_code === 'ARTIST') ? (market.seo_data?.description || '').split('.')[0] : undefined,
-    "contactPoint": {
-      "@type": "ContactPoint",
-      "telephone": market.phone || '',
-      "contactType": "customer service",
-      "email": market.email || '',
-      "availableLanguage": market.supported_languages || []
-    },
-    "address": {
-      "@type": "PostalAddress",
-      "streetAddress": market.address || '',
-      "addressLocality": "Leuven",
-      "addressRegion": "Vlaams-Brabant",
-      "postalCode": "3000",
-      "addressCountry": "BE"
-    },
-    "vatID": market.vat_number || '',
-    "founder": (market.market_code !== 'PORTFOLIO' && market.market_code !== 'ARTIST') ? {
-      "@type": "Person",
-      "name": "Johfrah Lefebvre",
-      "sameAs": "https://www.johfrah.be"
-    } : undefined
-  };
-
-  const htmlClass = `${raleway.className} ${inter.className} theme-${market.theme} ${raleway.variable}`;
-  const bodyClass = "pb-24 md:pb-0 touch-manipulation va-main-layout pt-[80px] md:pt-[110px]";
 
   // UNDER CONSTRUCTION MODE: Minimalistische layout zonder navigatie/footer/voicy
   if (isUnderConstruction) {
