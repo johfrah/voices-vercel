@@ -81,6 +81,30 @@ async function generateAtomicSitemap() {
   const { data: attrs } = await supabase.from('actor_attributes').select('id, code, label');
   attrs?.forEach(at => sitemap.push({ slug: at.code.toLowerCase(), type: 'attribute', entity_id: at.id, journey: 'agency', name: `Attribute: ${at.label}` }));
 
+  // 7. FAQ (from GSC)
+  const { data: faqs } = await supabase.from('faq').select('id, question_nl, category').eq('is_public', true);
+  faqs?.forEach(f => {
+    const faqSlug = f.question_nl?.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    if (faqSlug) {
+      sitemap.push({ slug: `faq/${faqSlug}`, type: 'faq', entity_id: f.id, journey: 'agency', name: `FAQ: ${f.question_nl}` });
+    }
+  });
+
+  // 8. Providers (from GSC)
+  const { data: providers } = await supabase.from('app_configs').select('value').eq('key', 'telephony_config').single();
+  const providerList = (providers?.value as any)?.providers || ['voys', 'ziggo', 'telenet', 'proximus'];
+  providerList.forEach((p: string) => {
+    sitemap.push({ slug: `provider/${p.toLowerCase()}`, type: 'provider', entity_id: 0, journey: 'agency', name: `Provider: ${p}` });
+  });
+
+  // 9. Descriptive Slugs (SEO Legacy)
+  const descriptiveSlugs = [
+    { slug: 'native/vlaamse-voicemail-stemmen', type: 'language', entity_id: 1, journey: 'agency', name: 'Vlaamse Stemmen (Native)' },
+    { slug: 'voice-overs/nederlandse-voice-overs', type: 'language', entity_id: 2, journey: 'agency', name: 'Nederlandse Voice-overs' },
+    { slug: 'country/duitse-voice-overs', type: 'country', entity_id: 4, journey: 'agency', name: 'Duitse Voice-overs (Country)' }
+  ];
+  descriptiveSlugs.forEach(ds => sitemap.push(ds));
+
   // WRITE TO MD
   let mdContent = '# ☢️ ATOMIC SITEMAP - THE 1 TRUTH LIST (2026)\n\n';
   mdContent += '| URL (Slug) | Type | Entity ID | Journey | Handshake Truth |\n';

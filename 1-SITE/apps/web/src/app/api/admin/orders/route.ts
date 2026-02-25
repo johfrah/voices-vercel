@@ -13,19 +13,19 @@ import { createClient } from '@/utils/supabase/server';
  */
 
 export async function GET(request: NextRequest) {
-  // 🛡️ CHRIS-PROTOCOL: Bypass Auth for Debugging (v2.14.571)
+  // 🛡️ CHRIS-PROTOCOL: Bypass Auth for Debugging (v2.14.572)
   const supabase = createClient();
   const { data: { user: authUser } } = await supabase.auth.getUser();
   console.log(`🔐 [API DEBUG] Auth check: user=${authUser?.email || 'none'}`);
 
   try {
-    // 🛡️ CHRIS-PROTOCOL: 1 TRUTH MANDATE (v2.14.571)
+    // 🛡️ CHRIS-PROTOCOL: 1 TRUTH MANDATE (v2.14.572)
     // We stoppen met JOINs die data kunnen verbergen. We halen de orders PUUR op.
     const allOrders = await db.select().from(orders).orderBy(desc(orders.createdAt)).limit(250);
 
     console.log(`🚀 [API DEBUG] 1 TRUTH: Raw orders fetched from DB: ${allOrders.length}`);
     
-    // 🛡️ CHRIS-PROTOCOL: Godmode Data Access (v2.14.571)
+    // 🛡️ CHRIS-PROTOCOL: Godmode Data Access (v2.14.572)
     const sanitizedOrders = await Promise.all(allOrders.map(async (order, index) => {
       try {
         // 🕵️ GUEST & USER RESOLVER: Haal klantgegevens op zonder de query te breken
@@ -38,14 +38,18 @@ export async function GET(request: NextRequest) {
 
         // 1. Probeer via user_id lookup (indien aanwezig)
         if (order.user_id) {
-          const [dbUser] = await db.select().from(users).where(eq(users.id, order.user_id)).limit(1);
-          if (dbUser) {
-            customerInfo = {
-              first_name: dbUser.first_name || "",
-              last_name: dbUser.last_name || "",
-              email: dbUser.email || "unknown@voices.be",
-              companyName: dbUser.companyName || ""
-            };
+          try {
+            const [dbUser] = await db.select().from(users).where(eq(users.id, order.user_id)).limit(1);
+            if (dbUser) {
+              customerInfo = {
+                first_name: dbUser.first_name || "",
+                last_name: dbUser.last_name || "",
+                email: dbUser.email || "unknown@voices.be",
+                companyName: dbUser.companyName || ""
+              };
+            }
+          } catch (userErr) {
+            console.error(`❌ [API DEBUG] User lookup failed for user_id ${order.user_id}:`, userErr);
           }
         }
 
@@ -99,26 +103,6 @@ export async function GET(request: NextRequest) {
     console.log(`✅ [API DEBUG] Final sanitized count: ${finalOrders.length}`);
 
     return NextResponse.json(finalOrders);
-  } catch (error) {
-    console.error('[Admin Orders GET Critical Error]:', error);
-    return NextResponse.json([], { status: 200 });
-  }
-}
-        
-        if (index < 2) {
-          console.log(`📦 [API DEBUG] Sanitized order ${index}: ${sanitized.id} - ${sanitized.total}`);
-        }
-        
-        return sanitized;
-      } catch (innerError) {
-        console.error(`❌ [API DEBUG] Error sanitizing order at index ${index}:`, innerError);
-        return null;
-      }
-    }).filter(Boolean);
-
-    console.log(`✅ [API DEBUG] Final sanitized count: ${sanitizedOrders.length}`);
-
-    return NextResponse.json(sanitizedOrders);
   } catch (error) {
     console.error('[Admin Orders GET Critical Error]:', error);
     return NextResponse.json([], { status: 200 });

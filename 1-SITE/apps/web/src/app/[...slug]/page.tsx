@@ -191,9 +191,15 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
   
   // 🛡️ NUCLEAR HANDSHAKE: Resolve via Slug Registry for Metadata
   let lookupSlug = cleanSegments[0];
-  const systemPrefixes = ['voice', 'stem', 'voix', 'stimme', 'artist', 'artiest', 'studio', 'academy', 'music', 'muziek'];
+  const systemPrefixes = ['voice', 'stem', 'voix', 'stimme', 'artist', 'artiest', 'studio', 'academy', 'music', 'muziek', 'faq', 'provider', 'demos'];
   if (systemPrefixes.includes(lookupSlug?.toLowerCase()) && cleanSegments[1]) {
-    lookupSlug = cleanSegments[1];
+    // If it's a system prefix, the real slug is the second segment (e.g. /voice/johfrah -> johfrah)
+    // BUT for faq/provider/demos, we might want the full path or just the ID
+    if (['faq', 'provider', 'demos'].includes(lookupSlug.toLowerCase())) {
+      lookupSlug = `${lookupSlug.toLowerCase()}/${cleanSegments[1].toLowerCase()}`;
+    } else {
+      lookupSlug = cleanSegments[1];
+    }
   }
 
   const resolved = await resolveSlugFromRegistry(lookupSlug, market.market_code);
@@ -385,12 +391,20 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
     let journey = cleanSegments[1];
     let medium = cleanSegments[2];
 
-    const systemPrefixes = ['voice', 'stem', 'voix', 'stimme', 'artist', 'artiest', 'studio', 'academy', 'music', 'muziek'];
+    const systemPrefixes = ['voice', 'stem', 'voix', 'stimme', 'artist', 'artiest', 'studio', 'academy', 'music', 'muziek', 'faq', 'provider', 'demos'];
     if (systemPrefixes.includes(lookupSlug?.toLowerCase()) && journey) {
       console.error(` [SmartRouter] System prefix detected: ${lookupSlug}. Shifting.`);
-      lookupSlug = journey;
-      journey = medium;
-      medium = cleanSegments[3];
+      
+      // Special case for faq/provider/demos: we keep the prefix in the lookup slug
+      if (['faq', 'provider', 'demos'].includes(lookupSlug.toLowerCase())) {
+        lookupSlug = `${lookupSlug.toLowerCase()}/${journey.toLowerCase()}`;
+        journey = medium;
+        medium = cleanSegments[3];
+      } else {
+        lookupSlug = journey;
+        journey = medium;
+        medium = cleanSegments[3];
+      }
     }
 
     const resolved = await resolveSlugFromRegistry(lookupSlug, market.market_code);
@@ -486,6 +500,12 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
             </div>
           </>
         );
+      }
+
+      if (resolved.routing_type === 'faq' || resolved.routing_type === 'provider') {
+        // Redirect to main FAQ or Provider page with anchor/context if needed
+        // For now, render as a CMS page if possible, or redirect to /agency
+        return redirect('/agency');
       }
     }
 
