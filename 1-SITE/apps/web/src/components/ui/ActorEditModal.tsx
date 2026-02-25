@@ -629,7 +629,7 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
           initial={{ opacity: 0, scale: 0.9, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.9, y: 20 }}
-          className="relative w-full max-w-4xl bg-white rounded-[40px] shadow-2xl overflow-hidden flex flex-col max-h-[90vh] z-[10001]"
+          className="relative w-full max-w-5xl bg-white rounded-[40px] shadow-2xl overflow-hidden flex flex-col max-h-[95vh] z-[10001]"
         >
           {/* Header */}
           <div className="px-8 py-6 border-b border-black/5 flex flex-col gap-6 bg-va-off-white/50">
@@ -1394,15 +1394,17 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
 
                 {/* Market Selector */}
                 <div className="space-y-6 pt-8 border-t border-black/5">
-                  <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div className="space-y-1">
                       <HeadingInstrument level={4} className="text-2xl font-light tracking-tighter flex items-center gap-3">
                         Media Tarieven
                       </HeadingInstrument>
-                      <TextInstrument className="text-[13px] text-va-black/40 font-medium leading-relaxed max-w-md">
-                        Hanteer je voor specifieke landen andere tarieven? Voeg dan een land toe. 
-                        De <span className="text-va-black/60 font-bold">BSF ligt vast op €199</span>. Voor grote campagnes vul je de extra buyout in (1 jaar), voor kleine campagnes de all-in prijs.
-                      </TextInstrument>
+                      <div className="flex items-center gap-2">
+                        <span className="px-2 py-0.5 bg-va-black text-white text-[10px] font-black uppercase tracking-widest rounded-md">BSF: €199</span>
+                        <TextInstrument className="text-[13px] text-va-black/40 font-medium leading-relaxed max-w-md">
+                          Hanteer je voor specifieke landen andere tarieven? Voeg dan een land toe. 
+                        </TextInstrument>
+                      </div>
                     </div>
                     
                     <div className="flex items-center gap-2 p-1 bg-va-off-white rounded-2xl border border-black/5">
