@@ -249,6 +249,100 @@ export const FlagPT = ({ size = 20 }: { size?: number }) => (
   </div>
 );
 
+export const FlagSE = ({ size = 20 }: { size?: number }) => (
+  <div style={{ width: size, height: size }} className="rounded-full overflow-hidden border border-black/5 shrink-0 bg-[#006AA7] relative">
+    <div className="absolute top-1/2 left-0 -translate-y-1/2 w-full h-[20%] bg-[#FECC00]" />
+    <div className="absolute top-0 left-[30%] w-[20%] h-full bg-[#FECC00]" />
+  </div>
+);
+
+export const FlagNO = ({ size = 20 }: { size?: number }) => (
+  <div style={{ width: size, height: size }} className="rounded-full overflow-hidden border border-black/5 shrink-0 bg-[#EF2B2D] relative">
+    <div className="absolute inset-0 flex items-center justify-center">
+      <div className="w-full h-[25%] bg-white" />
+      <div className="h-full w-[25%] bg-white" style={{ marginLeft: '-20%' }} />
+    </div>
+    <div className="absolute inset-0 flex items-center justify-center">
+      <div className="w-full h-[12%] bg-[#002868]" />
+      <div className="h-full w-[12%] bg-[#002868]" style={{ marginLeft: '-20%' }} />
+    </div>
+  </div>
+);
+
+export const FlagFI = ({ size = 20 }: { size?: number }) => (
+  <div style={{ width: size, height: size }} className="rounded-full overflow-hidden border border-black/5 shrink-0 bg-white relative">
+    <div className="absolute top-1/2 left-0 -translate-y-1/2 w-full h-[25%] bg-[#003580]" />
+    <div className="absolute top-0 left-[30%] w-[25%] h-full bg-[#003580]" />
+  </div>
+);
+
+export const FlagGR = ({ size = 20 }: { size?: number }) => (
+  <div style={{ width: size, height: size }} className="rounded-full overflow-hidden border border-black/5 shrink-0 bg-white relative flex flex-col">
+    {[...Array(9)].map((_, i) => (
+      <div key={i} className={cn("h-[11.1%] w-full", i % 2 === 0 ? "bg-[#0D5EAF]" : "bg-white")} />
+    ))}
+    <div className="absolute top-0 left-0 w-[45%] h-[55%] bg-[#0D5EAF] flex items-center justify-center">
+      <div className="w-full h-[25%] bg-white" />
+      <div className="h-full w-[25%] bg-white absolute" />
+    </div>
+  </div>
+);
+
+export const FlagTR = ({ size = 20 }: { size?: number }) => (
+  <div style={{ width: size, height: size }} className="rounded-full overflow-hidden border border-black/5 shrink-0 bg-[#E30A17] relative flex items-center justify-center">
+    <div className="w-[40%] h-[40%] rounded-full bg-white relative">
+      <div className="w-[80%] h-[80%] rounded-full bg-[#E30A17] absolute top-1/2 left-[60%] -translate-x-1/2 -translate-y-1/2" />
+    </div>
+    <div className="w-[25%] h-[25%] bg-white absolute left-[55%]" style={{ clipPath: 'polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)' }} />
+  </div>
+);
+
+export const FlagRU = ({ size = 20 }: { size?: number }) => (
+  <div style={{ width: size, height: size }} className="rounded-full overflow-hidden border border-black/5 shrink-0 flex flex-col">
+    <div className="h-1/3 w-full bg-white" />
+    <div className="h-1/3 w-full bg-[#0039A6]" />
+    <div className="h-1/3 w-full bg-[#D52B1E]" />
+  </div>
+);
+
+export const FlagCN = ({ size = 20 }: { size?: number }) => (
+  <div style={{ width: size, height: size }} className="rounded-full overflow-hidden border border-black/5 shrink-0 bg-[#EE1C25] relative">
+    <div className="absolute top-[15%] left-[15%] w-[30%] h-[30%] bg-[#FFFF00]" style={{ clipPath: 'polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)' }} />
+  </div>
+);
+
+export const FlagJP = ({ size = 20 }: { size?: number }) => (
+  <div style={{ width: size, height: size }} className="rounded-full overflow-hidden border border-black/5 shrink-0 bg-white flex items-center justify-center">
+    <div className="w-[60%] h-[60%] rounded-full bg-[#BC002D]" />
+  </div>
+);
+
+export const FlagKR = ({ size = 20 }: { size?: number }) => (
+  <div style={{ width: size, height: size }} className="rounded-full overflow-hidden border border-black/5 shrink-0 bg-white relative flex items-center justify-center">
+    <div className="w-[50%] h-[50%] rounded-full relative overflow-hidden rotate-[-45deg]">
+      <div className="h-1/2 w-full bg-[#CD2E3A]" />
+      <div className="h-1/2 w-full bg-[#0047A0]" />
+    </div>
+  </div>
+);
+
+export const FlagAR = ({ size = 20 }: { size?: number }) => (
+  <div style={{ width: size, height: size }} className="rounded-full overflow-hidden border border-black/5 shrink-0 bg-white relative flex flex-col">
+    <div className="h-1/3 w-full bg-[#00AB39]" />
+    <div className="h-1/3 w-full bg-white flex items-center justify-center">
+      <div className="w-[20%] h-[20%] rounded-full bg-[#000000]" />
+    </div>
+    <div className="h-1/3 w-full bg-black" />
+  </div>
+);
+
+export const FlagBR = ({ size = 20 }: { size?: number }) => (
+  <div style={{ width: size, height: size }} className="rounded-full overflow-hidden border border-black/5 shrink-0 bg-[#009739] relative flex items-center justify-center">
+    <div className="w-[80%] h-[60%] bg-[#FEDD00]" style={{ clipPath: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)' }} />
+    <div className="w-[35%] h-[35%] rounded-full bg-[#012169] absolute" />
+  </div>
+);
+
 /**
  * FIXED ACTION DOCK INSTRUMENT
  */

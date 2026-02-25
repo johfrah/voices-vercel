@@ -15,7 +15,7 @@ import { usePathname } from 'next/navigation';
 import React, { useEffect, useMemo, useState } from 'react';
 import { ActorReorderModal } from './ActorReorderModal';
 import { AgencyFilterSheet } from './AgencyFilterSheet';
-import { ContainerInstrument, FlagBE, FlagDE, FlagDK, FlagES, FlagFR, FlagIT, FlagNL, FlagPL, FlagPT, FlagUK, FlagUS, TextInstrument } from './LayoutInstruments';
+import { ContainerInstrument, FlagAR, FlagBE, FlagBR, FlagCN, FlagDE, FlagDK, FlagES, FlagFI, FlagFR, FlagGR, FlagIT, FlagJP, FlagKR, FlagNL, FlagPL, FlagPT, FlagRU, FlagSE, FlagTR, FlagUK, FlagUS, TextInstrument } from './LayoutInstruments';
 import { OrderStepsInstrument } from './OrderStepsInstrument';
 import { VoiceglotImage } from './VoiceglotImage';
 import { VoiceglotText } from './VoiceglotText';
@@ -95,6 +95,17 @@ const VoiceFlag = ({ lang, size = 16 }: { lang?: string, size?: number }) => {
   if (lowLang.includes('pl') || lowLang === 'pools' || lowLang === 'polish') return <FlagPL size={size} />;
   if (lowLang.includes('dk') || lowLang === 'deens' || lowLang === 'danish') return <FlagDK size={size} />;
   if (lowLang.includes('pt') || lowLang === 'portugees' || lowLang === 'portuguese') return <FlagPT size={size} />;
+  if (lowLang.includes('se') || lowLang === 'zweeds' || lowLang === 'swedish') return <FlagSE size={size} />;
+  if (lowLang.includes('no') || lowLang === 'noors' || lowLang === 'norwegian') return <FlagNO size={size} />;
+  if (lowLang.includes('fi') || lowLang === 'fins' || lowLang === 'finnish') return <FlagFI size={size} />;
+  if (lowLang.includes('gr') || lowLang === 'grieks' || lowLang === 'greek') return <FlagGR size={size} />;
+  if (lowLang.includes('tr') || lowLang === 'turks' || lowLang === 'turkish') return <FlagTR size={size} />;
+  if (lowLang.includes('ru') || lowLang === 'russisch' || lowLang === 'russian') return <FlagRU size={size} />;
+  if (lowLang.includes('cn') || lowLang.includes('zh') || lowLang === 'chinees' || lowLang === 'chinese') return <FlagCN size={size} />;
+  if (lowLang.includes('jp') || lowLang === 'japans' || lowLang === 'japanese') return <FlagJP size={size} />;
+  if (lowLang.includes('kr') || lowLang === 'koreaans' || lowLang === 'korean') return <FlagKR size={size} />;
+  if (lowLang.includes('ar') || lowLang === 'arabisch' || lowLang === 'arabic') return <FlagAR size={size} />;
+  if (lowLang.includes('br') || lowLang === 'braziliaans' || lowLang === 'brazilian') return <FlagBR size={size} />;
   
   return <Globe size={size} className="opacity-40" />;
 };
@@ -265,7 +276,18 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                        (langObj.icon === 'FlagIT') ? FlagIT :
                        (langObj.icon === 'FlagPL') ? FlagPL :
                        (langObj.icon === 'FlagDK') ? FlagDK :
-                       (langObj.icon === 'FlagPT') ? FlagPT : Globe;
+                       (langObj.icon === 'FlagPT') ? FlagPT :
+                       (langObj.icon === 'FlagSE') ? FlagSE :
+                       (langObj.icon === 'FlagNO') ? FlagNO :
+                       (langObj.icon === 'FlagFI') ? FlagFI :
+                       (langObj.icon === 'FlagGR') ? FlagGR :
+                       (langObj.icon === 'FlagTR') ? FlagTR :
+                       (langObj.icon === 'FlagRU') ? FlagRU :
+                       (langObj.icon === 'FlagCN') ? FlagCN :
+                       (langObj.icon === 'FlagJP') ? FlagJP :
+                       (langObj.icon === 'FlagKR') ? FlagKR :
+                       (langObj.icon === 'FlagAR') ? FlagAR :
+                       (langObj.icon === 'FlagBR') ? FlagBR : Globe;
           return <Flag {...props} />;
         }
         return <IconInstrument name={langObj.icon || 'globe'} {...props} />;
