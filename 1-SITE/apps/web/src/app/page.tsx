@@ -399,6 +399,7 @@ function HomeContent({
               gendersData={handshakeConfig?.genders}
               journeysData={handshakeConfig?.journeys}
               mediaTypesData={handshakeConfig?.mediaTypes}
+              countriesData={handshakeConfig?.countries}
             />
           </div>
           

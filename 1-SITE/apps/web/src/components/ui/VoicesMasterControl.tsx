@@ -169,21 +169,29 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
   };
 
   const journeys = useMemo(() => {
-    if (journeysData.length === 0) return [];
-
     //  CHRIS-PROTOCOL: Handshake Truth Mapping (v2.14.732)
     // We map database codes (agency_vo, agency_ivr, agency_commercial) to frontend IDs.
     const mapping: Record<string, string> = {
       'agency_ivr': 'telephony',
       'agency_vo': 'video',
       'agency_commercial': 'commercial',
-      'telephony': 'telephony', // Fallback for direct codes
+      'telephony': 'telephony',
       'video': 'video',
       'commercial': 'commercial'
     };
 
     const allowedCodes = ['agency_ivr', 'agency_vo', 'agency_commercial', 'telephony', 'video', 'commercial'];
     
+    // 🛡️ CHRIS-PROTOCOL: Emergency Fallback (v2.14.733)
+    // If database data is not yet available, we show the 3 main Agency journeys.
+    if (!journeysData || journeysData.length === 0) {
+      return [
+        { id: 'telephony', icon: (props: any) => <IconInstrument name="phone" {...props} />, label: 'Telefonie', subLabel: 'Voicemail & IVR', key: 'journey.telephony', color: 'text-primary' },
+        { id: 'video', icon: (props: any) => <IconInstrument name="video" {...props} />, label: 'Video', subLabel: 'Corporate & Website', key: 'journey.video', color: 'text-primary' },
+        { id: 'commercial', icon: (props: any) => <IconInstrument name="megaphone" {...props} />, label: 'Advertentie', subLabel: 'Radio, TV & Online Ads', key: 'journey.commercial', color: 'text-primary' },
+      ];
+    }
+
     return journeysData
       .filter(fj => allowedCodes.includes(fj.code))
       .map(fj => {
