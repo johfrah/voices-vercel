@@ -241,14 +241,31 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
 
     // 2. Probeer een Stem te vinden
     try {
-      console.log(` [SmartRouter] Metadata check for actor: ${firstSegment}`);
-      const actor = await getActor(firstSegment, lang).catch((err) => {
-        console.warn(` [SmartRouter] Metadata actor fetch failed for ${firstSegment}:`, err.message);
+      const { ServerWatchdog } = await import('@/lib/services/server-watchdog');
+      await ServerWatchdog.report({
+        error: `[SmartRouter] Metadata check for actor: ${firstSegment}`,
+        component: 'SmartRouter',
+        level: 'info',
+        url: params.slug.join('/')
+      });
+
+      const actor = await getActor(firstSegment, lang).catch(async (err) => {
+        await ServerWatchdog.report({
+          error: `[SmartRouter] Metadata actor fetch failed for ${firstSegment}: ${err.message}`,
+          component: 'SmartRouter',
+          level: 'warn',
+          url: params.slug.join('/')
+        });
         return null;
       });
       
       if (actor) {
-        console.log(` [SmartRouter] Metadata actor found: ${actor.first_name} (${actor.id})`);
+        await ServerWatchdog.report({
+          error: `[SmartRouter] Metadata actor found: ${actor.first_name} (${actor.id})`,
+          component: 'SmartRouter',
+          level: 'info',
+          url: params.slug.join('/')
+        });
         const title = await getTranslatedSEO(`seo.actor.${actor.id}.title`, `${actor.first_name || actor.first_name} - Voice-over Stem | ${market.name}`);
         const description = await getTranslatedSEO(`seo.actor.${actor.id}.description`, actor.bio || `Ontdek de stem van ${actor.first_name || actor.first_name} op ${market.name}.`);
         const schema = generateActorSchema(actor, market.name, host);
@@ -558,9 +575,21 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
 
     // 2. Check voor Stem
     try {
-      console.log(` [SmartRouter] Content check for actor: ${firstSegment}`);
-      const actor = await getActor(firstSegment, lang).catch((err) => {
-        console.warn(` [SmartRouter] Content actor fetch failed for ${firstSegment}:`, err.message);
+      const { ServerWatchdog } = await import('@/lib/services/server-watchdog');
+      await ServerWatchdog.report({
+        error: `[SmartRouter] Content check for actor: ${firstSegment}`,
+        component: 'SmartRouter',
+        level: 'info',
+        url: segments.join('/')
+      });
+
+      const actor = await getActor(firstSegment, lang).catch(async (err) => {
+        await ServerWatchdog.report({
+          error: `[SmartRouter] Content actor fetch failed for ${firstSegment}: ${err.message}`,
+          component: 'SmartRouter',
+          level: 'warn',
+          url: segments.join('/')
+        });
         return null;
       });
 
@@ -576,7 +605,12 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
         };
         const mappedJourney = journey ? journeyMap[journey.toLowerCase()] : undefined;
 
-        console.log(` [SmartRouter] Actor found: ${actor.first_name} (${actor.id})`);
+        await ServerWatchdog.report({
+          error: `[SmartRouter] Actor found: ${actor.first_name} (${actor.id})`,
+          component: 'SmartRouter',
+          level: 'info',
+          url: segments.join('/')
+        });
 
         return (
           <VoiceDetailClient actor={actor} initialJourney={mappedJourney || journey} initialMedium={medium} />
