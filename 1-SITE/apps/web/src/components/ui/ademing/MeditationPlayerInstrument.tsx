@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { 
-  Play, Pause, X, User, Heart, Minimize2, 
-  Flame, Droplet, Wind, Leaf, Music, RotateCcw, 
-  Volume2, Clock, ChevronLeft, ChevronRight, 
+import {
+  Play, Pause, X, Heart, Minimize2,
+  Flame, Droplet, Wind, Leaf, Music, RotateCcw,
+  Volume2, Clock, ChevronLeft, ChevronRight, UserCircle,
   MessageCircle, ArrowLeft, FileText 
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -237,7 +237,7 @@ export const MeditationPlayerInstrument = ({
                 { icon: Clock, label: 'Slaaptimer' },
                 { icon: MessageCircle, label: 'Reflecties' },
                 { icon: FileText, label: 'Transcript' },
-                { icon: User, label: 'Begeleider' },
+                { icon: UserCircle, label: 'Begeleider' },
               ].map((item, i) => (
                 <button 
                   key={i}

@@ -1,7 +1,7 @@
 "use client";
 
 import { 
-  Home, Heart, Library, User, Menu, Search as SearchIcon,
+  Home, Heart, Library, UserCircle, Menu, Search as SearchIcon,
   Sparkles, Compass, Calendar, ChevronDown, Users as UsersIcon 
 } from "lucide-react";
 import { useState, useEffect } from "react";
@@ -35,7 +35,7 @@ export const AdemingNav = () => {
     { label: 'Bibliotheek', icon: Library, path: '/bibliotheek' },
     { label: 'Favorieten', icon: Heart, path: '/favorieten' },
     { label: 'Retreats', icon: Calendar, path: '/retreats' },
-    { label: 'Profiel', icon: User, path: '/account' },
+    { label: 'Profiel', icon: UserCircle, path: '/account' },
   ];
 
   return (
@@ -135,7 +135,7 @@ export const AdemingNav = () => {
             <Library className="w-6 h-6" strokeWidth={1.5} />
           </Link>
           <Link href="/account" className="p-3 hover:bg-black/5 rounded-full transition-all active:scale-90 bg-primary/5 text-primary">
-            <User className="w-6 h-6" strokeWidth={2} />
+            <UserCircle className="w-6 h-6" strokeWidth={2} />
           </Link>
         </div>
       </div>

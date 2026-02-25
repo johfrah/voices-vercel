@@ -1,6 +1,6 @@
 "use client";
 
-import { Play, Heart, MessageCircle, Clock, User } from "lucide-react";
+import { Play, Heart, MessageCircle, Clock, UserCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { ElementIcon } from "./ElementIcon";
@@ -97,7 +97,7 @@ export const AdemingTrackCard = ({ track, onClick, variant = "default" }: Ademin
         <div className="pt-4 flex items-center justify-between border-t border-black/5">
           <div className="flex items-center gap-2">
             <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
-              <User size={12} className="text-primary" />
+              <UserCircle size={12} className="text-primary" />
             </div>
             <span className="text-[11px] font-bold text-va-black/40 uppercase tracking-widest">
               {track.maker || "Julie"}
