@@ -10,10 +10,18 @@ export const VOICES_CONFIG = REAL_CONFIG;
 
 /**
  * 🛡️ CHRIS-PROTOCOL: Build-Safe Database Bridge
- * We exporteren hier de echte definities vanuit de interne kopie
- * om Vercel build-fouten te voorkomen.
+ * 
+ * ⚠️ CRITICAL: De database-client mag NOOIT in de browser geladen worden.
+ * We gebruiken dynamic imports of conditionele exports om te voorkomen dat 
+ * Webpack probeert 'postgres' of 'net/tls' te bundelen voor de client.
  */
-export { db } from '../core-internal/database/index.ts';
+
+// We exporteren de types altijd (veilig voor browser)
 export * from '../core-internal/database/schema/index.ts';
+
+// De 'db' instance mag alleen op de server bestaan
+export const db = (typeof window === 'undefined') 
+  ? require('../core-internal/database/index.ts').db 
+  : ({} as any);
 
 export default VOICES_CONFIG;
