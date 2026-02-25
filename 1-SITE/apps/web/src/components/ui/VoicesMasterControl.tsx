@@ -13,6 +13,23 @@ import { Clock, Globe, Megaphone, Mic2, Phone, Radio, Search as SearchIcon, Star
 import { usePathname } from 'next/navigation';
 import React, { useEffect, useMemo, useState } from 'react';
 import { ActorReorderModal } from './ActorReorderModal';
+
+// 🛡️ CHRIS-PROTOCOL: Icon Registry for Handshake Truth
+const ICON_MAP: Record<string, any> = {
+  phone: Phone,
+  video: Video,
+  megaphone: Megaphone,
+  'mic-2': Mic2,
+  globe: Globe,
+  radio: Radio,
+  tv: Tv,
+  users: Users,
+  user: User,
+  star: Star,
+  clock: Clock,
+  type: Type,
+  search: SearchIcon
+};
 import { AgencyFilterSheet } from './AgencyFilterSheet';
 import { ContainerInstrument, FlagBE, FlagDE, FlagDK, FlagES, FlagFR, FlagIT, FlagNL, FlagPL, FlagPT, FlagUK, FlagUS, TextInstrument } from './LayoutInstruments';
 import { OrderStepsInstrument } from './OrderStepsInstrument';
@@ -149,8 +166,9 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
 
     if (fetchedJourneys.length === 0) return baseJourneys;
 
-    //  CHRIS-PROTOCOL: Handshake Truth Mapping (v2.14.679)
+    //  CHRIS-PROTOCOL: Handshake Truth Mapping (v2.14.713)
     // We ONLY show the 3 main Agency journeys in the MasterControl.
+    // We now pull icons and colors directly from the database journeys table.
     const allowedCodes = ['telephony', 'video', 'commercial'];
     
     return fetchedJourneys
@@ -159,11 +177,11 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
         const base = baseJourneys.find(bj => bj.id === fj.code || bj.key === `journey.${fj.code}`);
         return {
           id: fj.code,
-          icon: base?.icon || Globe,
+          icon: ICON_MAP[fj.icon] || base?.icon || Globe,
           label: fj.label,
           subLabel: fj.description || base?.subLabel || '',
           key: base?.key || `journey.${fj.code}`,
-          color: base?.color || 'text-primary'
+          color: fj.color || base?.color || 'text-primary'
         };
       });
   }, [fetchedJourneys]);
