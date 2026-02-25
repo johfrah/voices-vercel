@@ -29,10 +29,11 @@ export async function GET(request: NextRequest) {
     const sanitizedOrders = await Promise.all(allOrders.map(async (order, index) => {
       try {
         // 🕵️ GUEST & USER RESOLVER: Haal klantgegevens op zonder de query te breken
+        const defaultDomain = MarketManager.getMarketDomains()['BE']?.replace('https://www.', '') || 'voices.be';
         let customerInfo = {
           first_name: "Guest",
           last_name: "",
-          email: "guest@voices.be",
+          email: `guest@${defaultDomain}`,
           companyName: ""
         };
 
@@ -44,7 +45,7 @@ export async function GET(request: NextRequest) {
               customerInfo = {
                 first_name: dbUser.first_name || "",
                 last_name: dbUser.last_name || "",
-                email: dbUser.email || "unknown@voices.be",
+                email: dbUser.email || `unknown@${defaultDomain}`,
                 companyName: dbUser.companyName || ""
               };
             }
