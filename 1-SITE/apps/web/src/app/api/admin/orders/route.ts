@@ -36,9 +36,17 @@ export async function GET(request: NextRequest) {
     .orderBy(desc(orders.createdAt))
     .limit(250);
 
-    console.log(`[Admin Orders GET] Fetched ${allOrders.length} orders`);
+    // 🛡️ CHRIS-PROTOCOL: Nuclear Data Sanitization
+    // We filteren eventuele corrupte data die de JSON response kan breken
+    const sanitizedOrders = allOrders.map(order => ({
+      ...order,
+      total: order.total?.toString() || "0.00",
+      createdAt: order.createdAt instanceof Date ? order.createdAt.toISOString() : order.createdAt
+    }));
 
-    return NextResponse.json(allOrders);
+    console.log(`[Admin Orders GET] Fetched ${sanitizedOrders.length} orders`);
+
+    return NextResponse.json(sanitizedOrders);
   } catch (error) {
     console.error('[Admin Orders GET Error]:', error);
     return NextResponse.json({ error: 'Failed to fetch orders' }, { status: 500 });

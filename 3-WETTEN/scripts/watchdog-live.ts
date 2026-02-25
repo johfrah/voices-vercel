@@ -96,10 +96,21 @@ const channel = supabase
   .subscribe((status) => {
     if (status === 'SUBSCRIBED') {
       console.log(chalk.green('✅ Real-time verbinding actief. Ik wacht op data...\n'));
+      
+      // Heartbeat om de 30 seconden om te laten zien dat we nog live zijn
+      setInterval(() => {
+        const now = new Date().toLocaleTimeString();
+        process.stdout.write(chalk.dim(`[${now}] 💓 Heartbeat: Watchdog is live...\r`));
+      }, 30000);
     }
   });
 
 showRecent();
 
-// Keep process alive
+// Keep process alive and handle exit
+process.on('SIGINT', () => {
+  console.log(chalk.yellow('\n👋 Watchdog gestopt.'));
+  process.exit(0);
+});
+
 process.stdin.resume();
