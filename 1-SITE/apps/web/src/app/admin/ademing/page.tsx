@@ -25,6 +25,7 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 export default function AdemingAdminPage() {
   const [tracks, setTracks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [isSmartUploadOpen, setIsSmartUploadOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
@@ -32,8 +33,31 @@ export default function AdemingAdminPage() {
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('table');
 
   useEffect(() => {
-    loadTracks();
+    checkAuth();
   }, []);
+
+  const checkAuth = async () => {
+    const supabase = createClient(supabaseUrl, supabaseKey);
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (!user) {
+      setIsAuthorized(false);
+      return;
+    }
+
+    const { data: dbUser } = await supabase
+      .from('users')
+      .select('role')
+      .eq('email', user.email)
+      .single();
+
+    if (dbUser?.role === 'admin' || dbUser?.role === 'superadmin' || dbUser?.role === 'ademing_admin') {
+      setIsAuthorized(true);
+      loadTracks();
+    } else {
+      setIsAuthorized(false);
+    }
+  };
 
   const loadTracks = async () => {
     try {
@@ -57,7 +81,12 @@ export default function AdemingAdminPage() {
     t.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  if (loading) return <LoadingScreenInstrument message="Ademing content laden..." />;
+  if (isAuthorized === false) {
+    if (typeof window !== 'undefined') window.location.href = '/';
+    return null;
+  }
+
+  if (loading || isAuthorized === null) return <LoadingScreenInstrument message="Ademing content laden..." />;
 
   return (
     <PageWrapperInstrument className="min-h-screen bg-va-off-white p-8 pt-24">

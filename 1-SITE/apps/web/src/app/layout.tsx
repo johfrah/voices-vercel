@@ -256,7 +256,7 @@ export default async function RootLayout({
   const isAdminRoute = pathname.startsWith('/admin') || segments[0] === 'admin';
   
   // 🛡️ CHRIS-PROTOCOL: Force Client-Only rendering for Studio page to prevent hydration mismatch (#419)
-  const isStudioPage = pathname === '/studio' || pathname === '/studio/';
+  const isStudioPage = pathname.startsWith('/studio/') || pathname === '/studio' || pathname === '/workshops' || pathname === '/voorwaarden-studio';
   
   const isAdeming = market.market_code === 'ADEMING';
   const htmlClass = `${raleway.className} ${inter.className} ${cormorant.variable} theme-${isAdeming ? 'ademing' : market.theme} ${raleway.variable}`;

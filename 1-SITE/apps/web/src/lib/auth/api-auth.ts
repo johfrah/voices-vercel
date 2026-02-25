@@ -43,7 +43,7 @@ async function checkIsAdmin(user: User | null): Promise<boolean> {
 
   try {
     const [dbUser] = await db.select({ role: users.role }).from(users).where(eq(users.email, user.email)).limit(1);
-    return dbUser?.role === 'admin';
+    return dbUser?.role === 'admin' || dbUser?.role === 'ademing_admin';
   } catch (dbError) {
     console.warn(' API Auth Drizzle failed, falling back to SDK');
     const { data, error } = await sdkClient
@@ -53,7 +53,7 @@ async function checkIsAdmin(user: User | null): Promise<boolean> {
       .single();
     
     if (error || !data) return false;
-    return data.role === 'admin';
+    return data.role === 'admin' || data.role === 'ademing_admin';
   }
 }
 

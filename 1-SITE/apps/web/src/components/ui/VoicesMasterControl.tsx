@@ -133,12 +133,53 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
   const [reorderLanguage, setReorderLanguage] = useState('');
   const [mounted, setMounted] = useState(false);
 
+  const availableLanguageIds = useMemo(() => {
+    const ids = new Set<number>();
+    actors.forEach(a => {
+      if (a.native_lang_id) ids.add(a.native_lang_id);
+      if (a.extra_lang_ids) a.extra_lang_ids.forEach(id => ids.add(id));
+    });
+    return ids;
+  }, [actors]);
+
+  const availableGenderIds = useMemo(() => {
+    const ids = new Set<number>();
+    actors.forEach(a => {
+      if (a.gender_id) ids.add(a.gender_id);
+      // Also check legacy gender string mapping if needed, but ID is preferred
+    });
+    return ids;
+  }, [actors]);
+
+  const availableCountryIds = useMemo(() => {
+    const ids = new Set<number>();
+    actors.forEach(a => {
+      if (a.country_id) ids.add(a.country_id);
+    });
+    return ids;
+  }, [actors]);
+
+  const filteredLanguagesData = useMemo(() => 
+    languagesData.filter(l => availableLanguageIds.has(l.id)),
+    [languagesData, availableLanguageIds]
+  );
+
+  const filteredGendersData = useMemo(() => 
+    gendersData.filter(g => availableGenderIds.has(g.id)),
+    [gendersData, availableGenderIds]
+  );
+
+  const filteredCountriesData = useMemo(() => 
+    countriesData.filter(c => availableCountryIds.has(c.id)),
+    [countriesData, availableCountryIds]
+  );
+
   useEffect(() => {
-    if (!languagesData || languagesData.length === 0) return;
+    if (!filteredLanguagesData || filteredLanguagesData.length === 0) return;
 
     // 🛡️ CHRIS-PROTOCOL: Prime MarketManager and Global Registries (v2.14.740)
-    if (languagesData.length > 0) {
-      MarketManager.setLanguages(languagesData);
+    if (filteredLanguagesData.length > 0) {
+      MarketManager.setLanguages(filteredLanguagesData);
     }
     
     if (mediaTypesData && mediaTypesData.length > 0 && typeof global !== 'undefined') {
@@ -148,7 +189,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
     // 🛡️ CHRIS-PROTOCOL: Handshake Truth Sync (v2.14.740)
     // We strictly prioritize IDs. If we only have a code, we resolve it once and then stick to IDs.
     if (state.filters.language && !state.filters.languageId) {
-      const match = languagesData.find(l => 
+      const match = filteredLanguagesData.find(l => 
         l.code.toLowerCase() === state.filters.language?.toLowerCase() || 
         l.label.toLowerCase() === state.filters.language?.toLowerCase()
       );
@@ -157,20 +198,20 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
       }
     }
 
-    if (state.filters.gender && !state.filters.genderId && gendersData.length > 0) {
-      const match = gendersData.find(g => g.code.toLowerCase() === state.filters.gender?.toLowerCase());
+    if (state.filters.gender && !state.filters.genderId && filteredGendersData.length > 0) {
+      const match = filteredGendersData.find(g => g.code.toLowerCase() === state.filters.gender?.toLowerCase());
       if (match) {
         updateFilters({ genderId: match.id, gender: null });
       }
     }
 
-    if (state.filters.country && !state.filters.countryId && countriesData.length > 0) {
-      const match = countriesData.find(c => c.code.toLowerCase() === state.filters.country?.toLowerCase());
+    if (state.filters.country && !state.filters.countryId && filteredCountriesData.length > 0) {
+      const match = filteredCountriesData.find(c => c.code.toLowerCase() === state.filters.country?.toLowerCase());
       if (match) {
         updateFilters({ countryId: match.id, country: null });
       }
     }
-  }, [languagesData, gendersData, countriesData, state.filters.language, state.filters.gender, state.filters.country]);
+  }, [filteredLanguagesData, filteredGendersData, filteredCountriesData, state.filters.language, state.filters.gender, state.filters.country]);
 
   const handleReorderClick = (language: string) => {
     setReorderLanguage(language);
@@ -305,7 +346,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
       return result;
     };
 
-    const languageConfig = languagesData.map(l => {
+    const languageConfig = filteredLanguagesData.map(l => {
       const cleanLabel = l.label.replace(/\s*\(algemeen\)\s*/i, '').trim();
       return {
         label: cleanLabel,

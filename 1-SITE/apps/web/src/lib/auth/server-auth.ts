@@ -60,13 +60,13 @@ export async function getServerUser(): Promise<ServerUser | null> {
 }
 
 /**
- * Controleer of de gebruiker admin is.
+ * Controleer of de gebruiker admin is of specifieke Ademing beheerder.
  */
 export function isAdminUser(u: ServerUser | null): boolean {
   if (!u) return false;
   // 🛡️ CHRIS-PROTOCOL: Role-based auth is the ONLY source of truth. 
   // Hardcoded emails are forbidden in production.
-  return u.role === 'admin' || u.role === 'superadmin';
+  return u.role === 'admin' || u.role === 'superadmin' || u.role === 'ademing_admin';
 }
 
 /**
