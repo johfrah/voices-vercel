@@ -1,0 +1,35 @@
+# ⚡ VIBECODE & SHADOW LAYER (2026)
+
+**DOEL:** De Freedom Machine autonoom maken door intelligentie van de bouwer (Cursor) te verplaatsen naar de site zelf (Shadow Layer).
+
+---
+
+## 1. DE VIBECODE ENGINE
+Vibecode is de in-app cockpit voor real-time logica-aanpassingen.
+
+- **Opslag:** Alle vibes worden opgeslagen in `apps/web/src/content/vibes/*.vibe.md`.
+- **Git-Integrity:** Omdat vibes fysieke bestanden zijn, verschijnen ze direct in Git. Dit waarborgt de "Nuclear Integrity" en maakt "Time Travel" (undo) mogelijk.
+- **Vibe Assistant:** Gebruikt Gemini Intelligence om menselijke instructies om te zetten in uitvoerbare code binnen de Shadow Layer.
+
+---
+
+## 2. 🧠 NUCLEAR AGENT BRIDGE
+De verbinding tussen de externe bouwer en de interne agent (Voicy).
+
+- **Knowledge Sync:** De `KnowledgeService` scant de `docs/Bijbel/` map en `.cursorrules` om de site te briefen op de laatste afspraken.
+- **Intelligence Transfer:** Mijn (Cursor) intelligentie en settings worden via de `KnowledgeSync` route direct naar de Vibe-omgeving gepusht.
+- **Autonomous Action:** Voicy kan op basis van deze briefing zelfstandig beslissen om "Smart Chips" te tonen, prijzen te valideren of de admin te notificeren via Nuclear Alerts.
+
+---
+
+## 3. 🛡️ SECURITY & SAFETY
+- **Admin-Only:** Toegang tot Vibecode (`/admin/vibecode`) is strikt beveiligd via de `isAdmin` check en MFA.
+- **Nuclear Sandbox:** In-app code draait in een geïsoleerde context om systeem-crashes te voorkomen.
+- **Filesystem First:** Geen verborgen database-logica. Alles is tekst, alles is leesbaar, alles is herstelbaar via Cursor.
+
+---
+
+## 4. 🔄 SYNC PROTOCOL
+Elke Cursor-sessie moet eindigen met een verificatie van de `src/content/vibes/` map om te zien of er in-app wijzigingen zijn die geconsolideerd moeten worden in de core code.
+
+**ONTHOUD:** De site is nu een levend organisme. Cursor bouwt de fundering, Vibecode stuurt de vibe. ☢️🤖
