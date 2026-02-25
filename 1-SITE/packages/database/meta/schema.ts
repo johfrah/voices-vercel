@@ -30,8 +30,8 @@ export const actorDemos = pgTable("actor_demos", {
 	name: text().notNull(),
 	url: text().notNull(),
 	type: text(),
-	isPublic: boolean("is_public").default(true),
-	menuOrder: integer("menu_order").default(0),
+	is_public: boolean("is_public").default(true),
+	menu_order: integer("menu_order").default(0),
 	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
 	wpId: bigint("wp_id", { mode: "number" }),
 	mediaId: integer("media_id"),
@@ -51,13 +51,13 @@ export const actorDemos = pgTable("actor_demos", {
 
 export const ademingReflections = pgTable("ademing_reflections", {
 	id: serial().primaryKey().notNull(),
-	userId: integer("user_id").notNull(),
+	user_id: integer("user_id").notNull(),
 	intention: text(),
 	reflection: text(),
 	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow(),
 }, (table) => [
 	foreignKey({
-			columns: [table.userId],
+			columns: [table.user_id],
 			foreignColumns: [users.id],
 			name: "ademing_reflections_user_id_users_id_fk"
 		}),
@@ -67,7 +67,7 @@ export const ademingSeries = pgTable("ademing_series", {
 	id: serial().primaryKey().notNull(),
 	title: text().notNull(),
 	description: text(),
-	isPublic: boolean("is_public").default(true),
+	is_public: boolean("is_public").default(true),
 });
 
 export const aiClones = pgTable("ai_clones", {
@@ -88,14 +88,14 @@ export const aiClones = pgTable("ai_clones", {
 
 export const aiLogs = pgTable("ai_logs", {
 	id: serial().primaryKey().notNull(),
-	userId: integer("user_id"),
+	user_id: integer("user_id"),
 	eventType: text("event_type"),
 	eventData: jsonb("event_data"),
 	fullScript: text("full_script"),
 	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow(),
 }, (table) => [
 	foreignKey({
-			columns: [table.userId],
+			columns: [table.user_id],
 			foreignColumns: [users.id],
 			name: "ai_logs_user_id_users_id_fk"
 		}),
@@ -106,7 +106,7 @@ export const appointments = pgTable("appointments", {
 	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
 	wpId: bigint("wp_id", { mode: "number" }),
 	googleEventId: text("google_event_id"),
-	userId: integer("user_id"),
+	user_id: integer("user_id"),
 	startTime: timestamp("start_time", { mode: 'string' }).notNull(),
 	endTime: timestamp("end_time", { mode: 'string' }).notNull(),
 	status: text().default('confirmed'),
@@ -114,7 +114,7 @@ export const appointments = pgTable("appointments", {
 	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow(),
 }, (table) => [
 	foreignKey({
-			columns: [table.userId],
+			columns: [table.user_id],
 			foreignColumns: [users.id],
 			name: "appointments_user_id_users_id_fk"
 		}),
@@ -146,8 +146,8 @@ export const aiRecommendations = pgTable("ai_recommendations", {
 export const centralLeads = pgTable("central_leads", {
 	id: serial().primaryKey().notNull(),
 	email: text().notNull(),
-	firstName: text("first_name"),
-	lastName: text("last_name"),
+	first_name: text("first_name"),
+	last_name: text("last_name"),
 	phone: text(),
 	sourceType: text("source_type"),
 	leadVibe: text("lead_vibe"),
@@ -180,7 +180,7 @@ export const chatConversations = pgTable("chat_conversations", {
 	id: serial().primaryKey().notNull(),
 	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
 	wpId: bigint("wp_id", { mode: "number" }),
-	userId: integer("user_id"),
+	user_id: integer("user_id"),
 	guestName: text("guest_name"),
 	guestEmail: text("guest_email"),
 	guestPhone: text("guest_phone"),
@@ -206,7 +206,7 @@ export const chatConversations = pgTable("chat_conversations", {
 			name: "chat_conversations_instructor_id_instructors_id_fk"
 		}),
 	foreignKey({
-			columns: [table.userId],
+			columns: [table.user_id],
 			foreignColumns: [users.id],
 			name: "chat_conversations_user_id_users_id_fk"
 		}),
@@ -220,7 +220,7 @@ export const chatConversations = pgTable("chat_conversations", {
 
 export const courseProgress = pgTable("course_progress", {
 	id: serial().primaryKey().notNull(),
-	userId: integer("user_id").notNull(),
+	user_id: integer("user_id").notNull(),
 	courseId: integer("course_id").notNull(),
 	lessonId: integer("lesson_id").notNull(),
 	status: text().default('in_progress'),
@@ -238,7 +238,7 @@ export const courseProgress = pgTable("course_progress", {
 			name: "course_progress_lesson_id_lessons_id_fk"
 		}),
 	foreignKey({
-			columns: [table.userId],
+			columns: [table.user_id],
 			foreignColumns: [users.id],
 			name: "course_progress_user_id_users_id_fk"
 		}),
@@ -246,7 +246,7 @@ export const courseProgress = pgTable("course_progress", {
 
 export const courseSubmissions = pgTable("course_submissions", {
 	id: serial().primaryKey().notNull(),
-	userId: integer("user_id").notNull(),
+	user_id: integer("user_id").notNull(),
 	lessonId: integer("lesson_id").notNull(),
 	filePath: text("file_path").notNull(),
 	status: text().default('pending'),
@@ -264,7 +264,7 @@ export const courseSubmissions = pgTable("course_submissions", {
 			name: "course_submissions_lesson_id_lessons_id_fk"
 		}),
 	foreignKey({
-			columns: [table.userId],
+			columns: [table.user_id],
 			foreignColumns: [users.id],
 			name: "course_submissions_user_id_users_id_fk"
 		}),
@@ -272,7 +272,7 @@ export const courseSubmissions = pgTable("course_submissions", {
 
 export const favorites = pgTable("favorites", {
 	id: serial().primaryKey().notNull(),
-	userId: integer("user_id").notNull(),
+	user_id: integer("user_id").notNull(),
 	actorId: integer("actor_id").notNull(),
 	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow(),
 }, (table) => [
@@ -282,7 +282,7 @@ export const favorites = pgTable("favorites", {
 			name: "favorites_actor_id_actors_id_fk"
 		}),
 	foreignKey({
-			columns: [table.userId],
+			columns: [table.user_id],
 			foreignColumns: [users.id],
 			name: "favorites_user_id_users_id_fk"
 		}),
@@ -297,13 +297,13 @@ export const contentArticles = pgTable("content_articles", {
 	content: text(),
 	excerpt: text(),
 	status: text().default('publish'),
-	userId: integer("user_id"),
+	user_id: integer("user_id"),
 	featuredImageId: integer("featured_image_id"),
 	iapContext: jsonb("iap_context"),
 	seoData: jsonb("seo_data"),
 	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow(),
 	updatedAt: timestamp("updated_at", { mode: 'string' }).defaultNow(),
-	isManuallyEdited: boolean("is_manually_edited").default(false),
+	is_manually_edited: boolean("is_manually_edited").default(false),
 }, (table) => [
 	foreignKey({
 			columns: [table.lockedBy],
@@ -311,7 +311,7 @@ export const contentArticles = pgTable("content_articles", {
 			name: "content_articles_locked_by_users_id_fk"
 		}),
 	foreignKey({
-			columns: [table.userId],
+			columns: [table.user_id],
 			foreignColumns: [users.id],
 			name: "content_articles_user_id_users_id_fk"
 		}),
@@ -326,7 +326,7 @@ export const contentBlocks = pgTable("content_blocks", {
 	content: text(),
 	settings: jsonb(),
 	displayOrder: integer("display_order").default(0),
-	isManuallyEdited: boolean("is_manually_edited").default(false),
+	is_manually_edited: boolean("is_manually_edited").default(false),
 }, (table) => [
 	foreignKey({
 			columns: [table.articleId],
@@ -353,8 +353,8 @@ export const faq = pgTable("faq", {
 	answerEn: text("answer_en"),
 	persona: text(),
 	journeyPhase: text("journey_phase"),
-	isPublic: boolean("is_public").default(true),
-	internalNotes: text("internal_notes"),
+	is_public: boolean("is_public").default(true),
+	internal_notes: text("internal_notes"),
 	displayOrder: integer("display_order").default(0),
 	questionDe: text("question_de"),
 	answerDe: text("answer_de"),
@@ -378,7 +378,7 @@ export const translations = pgTable("translations", {
 	context: text(),
 	status: text().default('active'),
 	updatedAt: timestamp("updated_at", { mode: 'string' }).defaultNow(),
-	isManuallyEdited: boolean("is_manually_edited").default(false),
+	is_manually_edited: boolean("is_manually_edited").default(false),
 });
 
 export const partnerWidgets = pgTable("partner_widgets", {
@@ -439,7 +439,7 @@ export const reviews = pgTable("reviews", {
 export const visitors = pgTable("visitors", {
 	id: serial().primaryKey().notNull(),
 	visitorHash: text("visitor_hash").notNull(),
-	userId: integer("user_id"),
+	user_id: integer("user_id"),
 	currentPage: text("current_page"),
 	referrer: text(),
 	utmSource: text("utm_source"),
@@ -452,7 +452,7 @@ export const visitors = pgTable("visitors", {
 	lastVisitAt: timestamp("last_visit_at", { mode: 'string' }).defaultNow(),
 }, (table) => [
 	foreignKey({
-			columns: [table.userId],
+			columns: [table.user_id],
 			foreignColumns: [users.id],
 			name: "visitors_user_id_users_id_fk"
 		}),
@@ -461,14 +461,14 @@ export const visitors = pgTable("visitors", {
 
 export const voicejarSessions = pgTable("voicejar_sessions", {
 	id: serial().primaryKey().notNull(),
-	userId: integer("user_id"),
+	user_id: integer("user_id"),
 	visitorHash: text("visitor_hash").notNull(),
 	url: text(),
 	status: text().default('active'),
 	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow(),
 }, (table) => [
 	foreignKey({
-			columns: [table.userId],
+			columns: [table.user_id],
 			foreignColumns: [users.id],
 			name: "voicejar_sessions_user_id_users_id_fk"
 		}),
@@ -482,7 +482,7 @@ export const voucherBatches = pgTable("voucher_batches", {
 
 export const utmTouchpoints = pgTable("utm_touchpoints", {
 	id: serial().primaryKey().notNull(),
-	userId: integer("user_id"),
+	user_id: integer("user_id"),
 	orderId: integer("order_id"),
 	source: text(),
 	medium: text(),
@@ -502,7 +502,7 @@ export const utmTouchpoints = pgTable("utm_touchpoints", {
 			name: "utm_touchpoints_order_id_orders_id_fk"
 		}),
 	foreignKey({
-			columns: [table.userId],
+			columns: [table.user_id],
 			foreignColumns: [users.id],
 			name: "utm_touchpoints_user_id_users_id_fk"
 		}),
@@ -513,7 +513,7 @@ export const vouchers = pgTable("vouchers", {
 	code: text().notNull(),
 	batchId: integer("batch_id"),
 	status: text().default('active'),
-	userId: integer("user_id"),
+	user_id: integer("user_id"),
 	usedAt: timestamp("used_at", { mode: 'string' }),
 }, (table) => [
 	foreignKey({
@@ -522,7 +522,7 @@ export const vouchers = pgTable("vouchers", {
 			name: "vouchers_batch_id_voucher_batches_id_fk"
 		}),
 	foreignKey({
-			columns: [table.userId],
+			columns: [table.user_id],
 			foreignColumns: [users.id],
 			name: "vouchers_user_id_users_id_fk"
 		}),
@@ -543,13 +543,13 @@ export const yukiOutstanding = pgTable("yuki_outstanding", {
 
 export const ademingStats = pgTable("ademing_stats", {
 	id: serial().primaryKey().notNull(),
-	userId: integer("user_id").notNull(),
+	user_id: integer("user_id").notNull(),
 	streakDays: integer("streak_days").default(0),
 	totalListenSeconds: integer("total_listen_seconds").default(0),
 	lastActivity: timestamp("last_activity", { mode: 'string' }),
 }, (table) => [
 	foreignKey({
-			columns: [table.userId],
+			columns: [table.user_id],
 			foreignColumns: [users.id],
 			name: "ademing_stats_user_id_users_id_fk"
 		}),
@@ -557,7 +557,7 @@ export const ademingStats = pgTable("ademing_stats", {
 
 export const chatPushSubscriptions = pgTable("chat_push_subscriptions", {
 	id: serial().primaryKey().notNull(),
-	userId: integer("user_id"),
+	user_id: integer("user_id"),
 	endpoint: text().notNull(),
 	p256Dh: text().notNull(),
 	auth: text().notNull(),
@@ -566,7 +566,7 @@ export const chatPushSubscriptions = pgTable("chat_push_subscriptions", {
 	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow(),
 }, (table) => [
 	foreignKey({
-			columns: [table.userId],
+			columns: [table.user_id],
 			foreignColumns: [users.id],
 			name: "chat_push_subscriptions_user_id_users_id_fk"
 		}),
@@ -628,8 +628,8 @@ export const users = pgTable("users", {
 	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
 	wpUserId: bigint("wp_user_id", { mode: "number" }),
 	email: text().notNull(),
-	firstName: text("first_name"),
-	lastName: text("last_name"),
+	first_name: text("first_name"),
+	last_name: text("last_name"),
 	phone: text(),
 	companyName: text("company_name"),
 	companySector: text("company_sector"),
@@ -652,10 +652,10 @@ export const users = pgTable("users", {
 	addressCountry: text("address_country").default('BE'),
 	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
 	wpId: bigint("wp_id", { mode: "number" }),
-	isManuallyEdited: boolean("is_manually_edited").default(false),
+	is_manually_edited: boolean("is_manually_edited").default(false),
 	howHeard: text("how_heard"),
 	updatedAt: timestamp("updated_at", { mode: 'string' }).defaultNow(),
-	photoId: integer("photo_id"),
+	photo_id: integer("photo_id"),
 }, (table) => [
 	unique("users_wp_user_id_unique").on(table.wpUserId),
 	unique("users_email_unique").on(table.email),
@@ -677,7 +677,7 @@ export const workshops = pgTable("workshops", {
 	program: jsonb(),
 	meta: jsonb(),
 	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
-	wpProductId: bigint("wp_product_id", { mode: "number" }),
+	wp_product_id: bigint("wp_product_id", { mode: "number" }),
 }, (table) => [
 	foreignKey({
 			columns: [table.instructorId],
@@ -690,7 +690,7 @@ export const workshops = pgTable("workshops", {
 			name: "workshops_media_id_media_id_fk"
 		}),
 	unique("workshops_slug_unique").on(table.slug),
-	unique("workshops_wp_product_id_unique").on(table.wpProductId),
+	unique("workshops_wp_product_id_unique").on(table.wp_product_id),
 ]);
 
 export const actorVideos = pgTable("actor_videos", {
@@ -700,8 +700,8 @@ export const actorVideos = pgTable("actor_videos", {
 	name: text().notNull(),
 	url: text().notNull(),
 	type: text(),
-	isPublic: boolean("is_public").default(true),
-	menuOrder: integer("menu_order").default(0),
+	is_public: boolean("is_public").default(true),
+	menu_order: integer("menu_order").default(0),
 }, (table) => [
 	foreignKey({
 			columns: [table.actorId],
@@ -727,11 +727,11 @@ export const media = pgTable("media", {
 	labels: text().array(),
 	journey: text(),
 	category: text(),
-	isPublic: boolean("is_public").default(true),
+	is_public: boolean("is_public").default(true),
 	metadata: jsonb().default({}),
 	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow(),
 	updatedAt: timestamp("updated_at", { mode: 'string' }).defaultNow(),
-	isManuallyEdited: boolean("is_manually_edited").default(false),
+	is_manually_edited: boolean("is_manually_edited").default(false),
 }, (table) => [
 	unique("media_wp_id_unique").on(table.wpId),
 ]);
@@ -750,12 +750,12 @@ export const orderItems = pgTable("order_items", {
 	deliveryFileUrl: text("delivery_file_url"),
 	metaData: jsonb("meta_data"),
 	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow(),
-	isManuallyEdited: boolean("is_manually_edited").default(false),
+	is_manually_edited: boolean("is_manually_edited").default(false),
 	invoiceFileUrl: text("invoice_file_url"),
 	payoutStatus: payoutStatus("payout_status").default('pending'),
 	meta: jsonb(),
 	editionId: integer("edition_id"),
-	dropboxUrl: text("dropbox_url"),
+	dropbox_url: text("dropbox_url"),
 }, (table) => [
 	foreignKey({
 			columns: [table.actorId],
@@ -779,7 +779,7 @@ export const navMenus = pgTable("nav_menus", {
 	key: text().notNull(),
 	items: jsonb().notNull(),
 	market: text().default('ALL'),
-	isManuallyEdited: boolean("is_manually_edited").default(false),
+	is_manually_edited: boolean("is_manually_edited").default(false),
 	updatedAt: timestamp("updated_at", { mode: 'string' }).defaultNow(),
 }, (table) => [
 	unique("nav_menus_key_unique").on(table.key),
@@ -789,7 +789,7 @@ export const orders = pgTable("orders", {
 	id: serial().primaryKey().notNull(),
 	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
 	wpOrderId: bigint("wp_order_id", { mode: "number" }),
-	userId: integer("user_id"),
+	user_id: integer("user_id"),
 	total: numeric({ precision: 10, scale:  2 }),
 	totalTax: numeric("total_tax", { precision: 10, scale:  2 }),
 	totalProfit: numeric("total_profit", { precision: 10, scale:  2 }),
@@ -800,20 +800,20 @@ export const orders = pgTable("orders", {
 	billingVatNumber: text("billing_vat_number"),
 	yukiInvoiceId: text("yuki_invoice_id"),
 	dropboxFolderUrl: text("dropbox_folder_url"),
-	internalNotes: text("internal_notes"),
+	internal_notes: text("internal_notes"),
 	isPrivate: boolean("is_private").default(false),
 	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow(),
 	rawMeta: jsonb("raw_meta"),
 	displayOrderId: text("display_order_id"),
 	expectedDeliveryDate: timestamp("expected_delivery_date", { withTimezone: true, mode: 'string' }),
-	isManuallyEdited: boolean("is_manually_edited").default(false),
+	is_manually_edited: boolean("is_manually_edited").default(false),
 	market: text().default('BE'),
 	isQuote: boolean("is_quote").default(false),
 	quoteMessage: text("quote_message"),
 	quoteSentAt: timestamp("quote_sent_at", { mode: 'string' }),
 }, (table) => [
 	foreignKey({
-			columns: [table.userId],
+			columns: [table.user_id],
 			foreignColumns: [users.id],
 			name: "orders_user_id_users_id_fk"
 		}),
@@ -1009,7 +1009,7 @@ export const pageLayouts = pgTable("page_layouts", {
 	layoutJson: jsonb("layout_json").notNull(),
 	iapContext: jsonb("iap_context"),
 	isPublished: boolean("is_published").default(false),
-	isManuallyEdited: boolean("is_manually_edited").default(false),
+	is_manually_edited: boolean("is_manually_edited").default(false),
 	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow(),
 	updatedAt: timestamp("updated_at", { mode: 'string' }).defaultNow(),
 }, (table) => [
@@ -1036,7 +1036,7 @@ export const marketConfigs = pgTable("market_configs", {
 	socialLinks: jsonb("social_links"),
 	legal: jsonb(),
 	localization: jsonb(),
-	isManuallyEdited: boolean("is_manually_edited").default(false),
+	is_manually_edited: boolean("is_manually_edited").default(false),
 	updatedAt: timestamp("updated_at", { mode: 'string' }).defaultNow(),
 }, (table) => [
 	unique("market_configs_market_unique").on(table.market),
@@ -1047,7 +1047,7 @@ export const rateCards = pgTable("rate_cards", {
 	market: text().notNull(),
 	category: text().notNull(),
 	rules: jsonb().notNull(),
-	isManuallyEdited: boolean("is_manually_edited").default(false),
+	is_manually_edited: boolean("is_manually_edited").default(false),
 	updatedAt: timestamp("updated_at", { mode: 'string' }).defaultNow(),
 });
 
@@ -1056,7 +1056,7 @@ export const siteSettings = pgTable("site_settings", {
 	key: text().notNull(),
 	value: text().notNull(),
 	context: text(),
-	isManuallyEdited: boolean("is_manually_edited").default(false),
+	is_manually_edited: boolean("is_manually_edited").default(false),
 	updatedAt: timestamp("updated_at", { mode: 'string' }).defaultNow(),
 }, (table) => [
 	unique("site_settings_key_unique").on(table.key),
@@ -1070,7 +1070,7 @@ export const ademingTracks = pgTable("ademing_tracks", {
 	url: text().notNull(),
 	duration: integer(),
 	vibe: text(),
-	isPublic: boolean("is_public").default(true),
+	is_public: boolean("is_public").default(true),
 	mediaId: integer("media_id"),
 }, (table) => [
 	foreignKey({
@@ -1084,68 +1084,68 @@ export const ademingTracks = pgTable("ademing_tracks", {
 export const actors = pgTable("actors", {
 	id: serial().primaryKey().notNull(),
 	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
-	wpProductId: bigint("wp_product_id", { mode: "number" }),
-	userId: integer("user_id"),
-	firstName: text("first_name").notNull(),
-	lastName: text("last_name"),
+	wp_product_id: bigint("wp_product_id", { mode: "number" }),
+	user_id: integer("user_id"),
+	first_name: text("first_name").notNull(),
+	last_name: text("last_name"),
 	gender: text(),
-	nativeLang: text("native_lang"),
+	native_lang: text("native_lang"),
 	country: text(),
 	deliveryTime: text("delivery_time"),
-	extraLangs: text("extra_langs"),
+	extra_langs: text("extra_langs"),
 	bio: text(),
-	whyVoices: text("why_voices"),
+	why_voices: text("why_voices"),
 	tagline: text(),
-	toneOfVoice: text("tone_of_voice"),
-	photoId: integer("photo_id"),
-	logoId: integer("logo_id"),
-	voiceScore: integer("voice_score").default(10),
-	priceUnpaid: numeric("price_unpaid", { precision: 10, scale:  2 }),
-	priceOnline: numeric("price_online", { precision: 10, scale:  2 }),
-	priceIvr: numeric("price_ivr", { precision: 10, scale:  2 }),
-	priceLiveRegie: numeric("price_live_regie", { precision: 10, scale:  2 }),
-	dropboxUrl: text("dropbox_url"),
+	tone_of_voice: text("tone_of_voice"),
+	photo_id: integer("photo_id"),
+	logo_id: integer("logo_id"),
+	voice_score: integer("voice_score").default(10),
+	price_unpaid: numeric("price_unpaid", { precision: 10, scale:  2 }),
+	price_online: numeric("price_online", { precision: 10, scale:  2 }),
+	price_ivr: numeric("price_ivr", { precision: 10, scale:  2 }),
+	price_live_regie: numeric("price_live_regie", { precision: 10, scale:  2 }),
+	dropbox_url: text("dropbox_url"),
 	status: status().default('pending'),
-	isPublic: boolean("is_public").default(false),
-	isAi: boolean("is_ai").default(false),
-	elevenlabsId: text("elevenlabs_id"),
-	internalNotes: text("internal_notes"),
+	is_public: boolean("is_public").default(false),
+	is_ai: boolean("is_ai").default(false),
+	elevenlabs_id: text("elevenlabs_id"),
+	internal_notes: text("internal_notes"),
 	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow(),
 	updatedAt: timestamp("updated_at", { mode: 'string' }).defaultNow(),
 	slug: text(),
 	youtubeUrl: text("youtube_url"),
 	email: text(),
-	menuOrder: integer("menu_order").default(0),
+	menu_order: integer("menu_order").default(0),
 	rates: jsonb().default({}),
-	deliveryDaysMin: integer("delivery_days_min").default(1),
-	deliveryDaysMax: integer("delivery_days_max").default(3),
-	cutoffTime: text("cutoff_time").default('18:00'),
-	samedayDelivery: boolean("sameday_delivery").default(false),
-	pendingBio: text("pending_bio"),
-	pendingTagline: text("pending_tagline"),
-	experienceLevel: experienceLevel("experience_level").default('pro'),
-	studioSpecs: jsonb("studio_specs").default({}),
+	delivery_days_min: integer("delivery_days_min").default(1),
+	delivery_days_max: integer("delivery_days_max").default(3),
+	cutoff_time: text("cutoff_time").default('18:00'),
+	sameday_delivery: boolean("sameday_delivery").default(false),
+	pending_bio: text("pending_bio"),
+	pending_tagline: text("pending_tagline"),
+	experience_level: experienceLevel("experience_level").default('pro'),
+	studio_specs: jsonb("studio_specs").default({}),
 	connectivity: jsonb().default({}),
 	availability: jsonb().default([]),
-	isManuallyEdited: boolean("is_manually_edited").default(false),
+	is_manually_edited: boolean("is_manually_edited").default(false),
 	website: text(),
 	clients: text(),
 	linkedin: text(),
-	birthYear: integer("birth_year"),
+	birth_year: integer("birth_year"),
 	location: text(),
-	aiTags: text("ai_tags"),
+	ai_tags: text("ai_tags"),
 }, (table) => [
 	foreignKey({
-			columns: [table.photoId],
+			columns: [table.photo_id],
 			foreignColumns: [media.id],
 			name: "actors_photo_id_media_id_fk"
 		}),
 	foreignKey({
-			columns: [table.userId],
+			columns: [table.user_id],
 			foreignColumns: [users.id],
 			name: "actors_user_id_users_id_fk"
 		}),
-	unique("actors_wp_product_id_unique").on(table.wpProductId),
+	unique("actors_wp_product_id_unique").on(table.wp_product_id),
 	unique("actors_slug_unique").on(table.slug),
 ]);
 
@@ -1156,23 +1156,23 @@ export const instructors = pgTable("instructors", {
 	name: text().notNull(),
 	tagline: text(),
 	bio: text(),
-	photoId: integer("photo_id"),
+	photo_id: integer("photo_id"),
 	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow(),
 	slug: text(),
 	socials: jsonb().default({}),
-	isPublic: boolean("is_public").default(true),
+	is_public: boolean("is_public").default(true),
 	updatedAt: timestamp("updated_at", { mode: 'string' }).defaultNow(),
-	userId: integer("user_id"),
-	internalNotes: text("internal_notes"),
+	user_id: integer("user_id"),
+	internal_notes: text("internal_notes"),
 	adminMeta: jsonb("admin_meta").default({}),
 }, (table) => [
 	foreignKey({
-			columns: [table.photoId],
+			columns: [table.photo_id],
 			foreignColumns: [media.id],
 			name: "instructors_photo_id_media_id_fk"
 		}),
 	foreignKey({
-			columns: [table.userId],
+			columns: [table.user_id],
 			foreignColumns: [users.id],
 			name: "instructors_user_id_users_id_fk"
 		}),
@@ -1183,8 +1183,8 @@ export const instructors = pgTable("instructors", {
 export const freePreviews = pgTable("free_previews", {
 	id: serial().primaryKey().notNull(),
 	email: text().notNull(),
-	firstName: text("first_name"),
-	lastName: text("last_name"),
+	first_name: text("first_name"),
+	last_name: text("last_name"),
 	companyName: text("company_name"),
 	phone: text(),
 	agreedToTerms: boolean("agreed_to_terms").default(false),
@@ -1196,7 +1196,7 @@ export const freePreviews = pgTable("free_previews", {
 
 export const pronunciationDictionary = pgTable("pronunciation_dictionary", {
 	id: serial().primaryKey().notNull(),
-	userId: text("user_id").notNull(),
+	user_id: text("user_id").notNull(),
 	word: text().notNull(),
 	phonetic: text().notNull(),
 	language: text().default('nl-BE'),
@@ -1256,8 +1256,8 @@ export const workshopInterestProducts = pgTable("workshop_interest_products", {
 
 export const workshopInterest = pgTable("workshop_interest", {
 	id: serial().primaryKey().notNull(),
-	firstName: text("first_name").notNull(),
-	lastName: text("last_name").notNull(),
+	first_name: text("first_name").notNull(),
+	last_name: text("last_name").notNull(),
 	email: text().notNull(),
 	phone: text(),
 	age: integer(),
@@ -1282,7 +1282,7 @@ export const workshopInterest = pgTable("workshop_interest", {
 	updatedAt: timestamp("updated_at", { mode: 'string' }).defaultNow(),
 	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
 	wpId: bigint("wp_id", { mode: "number" }),
-	userId: integer("user_id"),
+	user_id: integer("user_id"),
 	iapContext: jsonb("iap_context"),
 }, (table) => [
 	unique("workshop_interest_email_unique").on(table.email),
@@ -1298,7 +1298,7 @@ export const locations = pgTable("locations", {
 	zip: text(),
 	country: text().default('BE'),
 	description: text(),
-	photoId: integer("photo_id"),
+	photo_id: integer("photo_id"),
 	mapUrl: text("map_url"),
 	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow(),
 	updatedAt: timestamp("updated_at", { mode: 'string' }).defaultNow(),

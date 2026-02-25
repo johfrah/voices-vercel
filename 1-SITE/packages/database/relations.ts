@@ -25,7 +25,7 @@ export const actorAttributeMappingsRelations = relations(actorAttributeMappings,
 }));
 
 export const languagesRelations = relations(languages, ({many}) => ({
-	actorLanguages: many(actorLanguages),
+	actor_languages: many(actorLanguages),
 }));
 
 export const countriesRelations = relations(countries, ({many}) => ({
@@ -79,9 +79,9 @@ export const actorsRelations = relations(actors, ({one, many}) => ({
 	voiceAffinities_voiceBId: many(voiceAffinity, {
 		relationName: "voiceAffinity_voiceBId_actors_id"
 	}),
-	actorVideos: many(actorVideos),
+	actor_videos: many(actorVideos),
 	user: one(users, {
-		fields: [actors.userId],
+		fields: [actors.user_id],
 		references: [users.id]
 	}),
 	orderItems: many(orderItems),
@@ -90,14 +90,14 @@ export const actorsRelations = relations(actors, ({one, many}) => ({
 		fields: [actors.countryId],
 		references: [countries.id]
 	}),
-	actorLanguages: many(actorLanguages),
+	actor_languages: many(actorLanguages),
 	actorTones: many(actorTones),
-	statusRel: one(actorStatuses, {
-		fields: [actors.statusId],
+	status_rel: one(actorStatuses, {
+		fields: [actors.status_id],
 		references: [actorStatuses.id]
 	}),
-	experienceLevelRel: one(experienceLevels, {
-		fields: [actors.experienceLevelId],
+	experience_level_rel: one(experienceLevels, {
+		fields: [actors.experience_level_id],
 		references: [experienceLevels.id]
 	}),
 	attributes: many(actorAttributeMappings),
@@ -107,13 +107,13 @@ export const mediaRelations = relations(media, ({many}) => ({
 	actorDemos: many(actorDemos),
 	ademingTracks: many(ademingTracks),
 	workshops: many(workshops),
-	actorVideos: many(actorVideos),
+	actor_videos: many(actorVideos),
 	vaultFiles: many(vaultFiles),
 }));
 
 export const ademingReflectionsRelations = relations(ademingReflections, ({one}) => ({
 	user: one(users, {
-		fields: [ademingReflections.userId],
+		fields: [ademingReflections.user_id],
 		references: [users.id]
 	}),
 }));
@@ -147,7 +147,7 @@ export const aiClonesRelations = relations(aiClones, ({one}) => ({
 
 export const aiLogsRelations = relations(aiLogs, ({one}) => ({
 	user: one(users, {
-		fields: [aiLogs.userId],
+		fields: [aiLogs.user_id],
 		references: [users.id]
 	}),
 }));
@@ -167,7 +167,7 @@ export const chatConversationsRelations = relations(chatConversations, ({one, ma
 	aiRecommendations: many(aiRecommendations),
 	chatMessages: many(chatMessages),
 	user: one(users, {
-		fields: [chatConversations.userId],
+		fields: [chatConversations.user_id],
 		references: [users.id]
 	}),
 }));
@@ -182,21 +182,21 @@ export const chatMessagesRelations = relations(chatMessages, ({one, many}) => ({
 
 export const appointmentsRelations = relations(appointments, ({one}) => ({
 	user: one(users, {
-		fields: [appointments.userId],
+		fields: [appointments.user_id],
 		references: [users.id]
 	}),
 }));
 
 export const courseProgressRelations = relations(courseProgress, ({one}) => ({
 	user: one(users, {
-		fields: [courseProgress.userId],
+		fields: [courseProgress.user_id],
 		references: [users.id]
 	}),
 }));
 
 export const courseSubmissionsRelations = relations(courseSubmissions, ({one}) => ({
 	user: one(users, {
-		fields: [courseSubmissions.userId],
+		fields: [courseSubmissions.user_id],
 		references: [users.id]
 	}),
 }));
@@ -207,7 +207,7 @@ export const favoritesRelations = relations(favorites, ({one}) => ({
 		references: [actors.id]
 	}),
 	user: one(users, {
-		fields: [favorites.userId],
+		fields: [favorites.user_id],
 		references: [users.id]
 	}),
 }));
@@ -222,21 +222,21 @@ export const contentBlocksRelations = relations(contentBlocks, ({one}) => ({
 export const contentArticlesRelations = relations(contentArticles, ({one, many}) => ({
 	contentBlocks: many(contentBlocks),
 	user: one(users, {
-		fields: [contentArticles.userId],
+		fields: [contentArticles.user_id],
 		references: [users.id]
 	}),
 }));
 
 export const visitorsRelations = relations(visitors, ({one}) => ({
 	user: one(users, {
-		fields: [visitors.userId],
+		fields: [visitors.user_id],
 		references: [users.id]
 	}),
 }));
 
 export const voicejarSessionsRelations = relations(voicejarSessions, ({one}) => ({
 	user: one(users, {
-		fields: [voicejarSessions.userId],
+		fields: [voicejarSessions.user_id],
 		references: [users.id]
 	}),
 }));
@@ -247,7 +247,7 @@ export const utmTouchpointsRelations = relations(utmTouchpoints, ({one}) => ({
 		references: [orders.id]
 	}),
 	user: one(users, {
-		fields: [utmTouchpoints.userId],
+		fields: [utmTouchpoints.user_id],
 		references: [users.id]
 	}),
 }));
@@ -256,7 +256,7 @@ export const ordersRelations = relations(orders, ({one, many}) => ({
 	utmTouchpoints: many(utmTouchpoints),
 	orderNotes: many(orderNotes),
 	user: one(users, {
-		fields: [orders.userId],
+		fields: [orders.user_id],
 		references: [users.id]
 	}),
 	orderItems: many(orderItems),
@@ -269,7 +269,7 @@ export const vouchersRelations = relations(vouchers, ({one}) => ({
 		references: [voucherBatches.id]
 	}),
 	user: one(users, {
-		fields: [vouchers.userId],
+		fields: [vouchers.user_id],
 		references: [users.id]
 	}),
 }));
@@ -280,14 +280,14 @@ export const voucherBatchesRelations = relations(voucherBatches, ({many}) => ({
 
 export const ademingStatsRelations = relations(ademingStats, ({one}) => ({
 	user: one(users, {
-		fields: [ademingStats.userId],
+		fields: [ademingStats.user_id],
 		references: [users.id]
 	}),
 }));
 
 export const chatPushSubscriptionsRelations = relations(chatPushSubscriptions, ({one}) => ({
 	user: one(users, {
-		fields: [chatPushSubscriptions.userId],
+		fields: [chatPushSubscriptions.user_id],
 		references: [users.id]
 	}),
 }));
