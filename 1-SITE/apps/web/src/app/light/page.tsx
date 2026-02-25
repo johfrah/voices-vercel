@@ -22,17 +22,35 @@ const LightVoiceCard = ({ actor, onSelect }: { actor: Actor, onSelect: (a: Actor
 
   const togglePlay = (e: React.MouseEvent) => {
     e.stopPropagation();
+    
+    // 🛡️ CHRIS-PROTOCOL: Forensic Audio Check
+    const demoUrl = actor.demos?.[0]?.audio_url;
+    if (!demoUrl) {
+      console.warn(`[LightVoiceCard] No audio_url found for actor: ${actor.display_name}`);
+      return;
+    }
+
     if (isPlaying) {
       audio?.pause();
       setIsPlaying(false);
     } else {
-      if (!audio && actor.demos?.[0]?.audio_url) {
-        const newAudio = new Audio(actor.demos[0].audio_url);
+      if (!audio) {
+        const newAudio = new Audio(demoUrl);
         newAudio.onended = () => setIsPlaying(false);
+        newAudio.onerror = (err) => {
+          console.error(`[LightVoiceCard] Audio load error for ${actor.display_name}:`, err);
+          setIsPlaying(false);
+        };
         setAudio(newAudio);
-        newAudio.play();
-      } else if (audio) {
-        audio.play();
+        newAudio.play().catch(err => {
+          console.error(`[LightVoiceCard] Playback failed for ${actor.display_name}:`, err);
+          setIsPlaying(false);
+        });
+      } else {
+        audio.play().catch(err => {
+          console.error(`[LightVoiceCard] Playback failed for ${actor.display_name}:`, err);
+          setIsPlaying(false);
+        });
       }
       setIsPlaying(true);
     }
@@ -94,11 +112,17 @@ export default function LightPage() {
       .then(res => res.json())
       .then(data => {
         if (data?.results) {
-          // CHRIS-PROTOCOL: Sorteer op menu_order en voice_score
+          // 🛡️ CHRIS-PROTOCOL: Sorteer op menu_order en voice_score
+          // We forceren Serge en Marilyn bovenaan door hun menu_order virtueel te verlagen
           const sorted = data.results.sort((a: any, b: any) => {
-            if ((a.menu_order || 0) !== (b.menu_order || 0)) {
-              return (a.menu_order || 0) - (b.menu_order || 0);
-            }
+            const nameA = a.display_name || '';
+            const nameB = b.display_name || '';
+            
+            // Forceer Serge en Marilyn naar de absolute top
+            const orderA = nameA.match(/Serge|Marilyn/i) ? -1000 : (a.menu_order || 0);
+            const orderB = nameB.match(/Serge|Marilyn/i) ? -1000 : (b.menu_order || 0);
+
+            if (orderA !== orderB) return orderA - orderB;
             return (b.voice_score || 0) - (a.voice_score || 0);
           });
 

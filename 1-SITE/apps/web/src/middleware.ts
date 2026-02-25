@@ -179,7 +179,6 @@ export async function middleware(request: NextRequest) {
   response.headers.set('x-voices-intent', intent)
   response.headers.set('x-voices-persona', persona)
 
-  const isAdmin = request.cookies.get('voices_role')?.value === 'admin' || request.cookies.get('sb-access-token') !== undefined
   const isAuthPath = pathname.startsWith('/auth')
   const isUnderConstructionPath = pathname === '/under-construction' || pathname === '/under-construction/'
 
