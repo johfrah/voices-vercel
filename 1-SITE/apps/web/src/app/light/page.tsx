@@ -108,7 +108,11 @@ export default function LightPage() {
 
   const filteredActors = useMemo(() => {
     if (selectedLanguage === 'all') return actors;
-    return actors.filter(a => (a.native_lang || '').toLowerCase() === selectedLanguage.toLowerCase());
+    const targetCode = MarketManager.getLanguageCode(selectedLanguage).toLowerCase();
+    return actors.filter(a => {
+      const actorCode = MarketManager.getLanguageCode(a.native_lang || '').toLowerCase();
+      return actorCode === targetCode;
+    });
   }, [actors, selectedLanguage]);
 
   const languageOptions = useMemo(() => {
