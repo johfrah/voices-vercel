@@ -243,7 +243,7 @@ export default function BestellingenPage() {
             </div>
           </div>
           <div className="px-4 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-bold tracking-widest uppercase">
-            Verified Live: v2.14.616
+            Verified Live: v2.14.623
           </div>
         </div>
 
