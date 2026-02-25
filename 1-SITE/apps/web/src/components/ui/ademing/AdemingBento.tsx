@@ -13,7 +13,7 @@ import { Moon, Zap, Clock, ArrowRight, Compass, Users, Instagram, Globe } from '
 import { VoicesDropdown } from '../VoicesDropdown';
 import { ElementIcon } from './ElementIcon';
 import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
-import { ContainerInstrument, HeadingInstrument, TextInstrument } from '../LayoutInstrumentsServer';
+import { ContainerInstrument, HeadingInstrument, TextInstrument, SectionInstrument } from '../LayoutInstrumentsServer';
 
 interface AdemingBentoProps {
   tracks: any[];
