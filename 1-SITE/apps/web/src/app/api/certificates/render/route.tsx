@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
       year: 'numeric'
     });
 
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.voices.be';
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.voices.eu';
     const bgUrl = `${baseUrl}/assets/studio/certificates/legacy-background.png`;
 
     return new ImageResponse(

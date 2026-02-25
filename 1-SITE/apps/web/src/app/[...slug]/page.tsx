@@ -239,28 +239,28 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
       }
     } catch (e) {}
 
-  // 2. Probeer een Stem te vinden
-  try {
-    const actor = await getActor(firstSegment, lang);
-    if (actor) {
-      const title = await getTranslatedSEO(`seo.actor.${actor.id}.title`, `${actor.first_name || actor.first_name} - Voice-over Stem | ${market.name}`);
-      const description = await getTranslatedSEO(`seo.actor.${actor.id}.description`, actor.bio || `Ontdek de stem van ${actor.first_name || actor.first_name} op ${market.name}.`);
-      const schema = generateActorSchema(actor, market.name, host);
+    // 2. Probeer een Stem te vinden
+    try {
+      const actor = await getActor(firstSegment, lang).catch(() => null);
+      if (actor) {
+        const title = await getTranslatedSEO(`seo.actor.${actor.id}.title`, `${actor.first_name || actor.first_name} - Voice-over Stem | ${market.name}`);
+        const description = await getTranslatedSEO(`seo.actor.${actor.id}.description`, actor.bio || `Ontdek de stem van ${actor.first_name || actor.first_name} op ${market.name}.`);
+        const schema = generateActorSchema(actor, market.name, host);
 
-      return {
-        title,
-        description,
-        alternates: {
-          canonical: `${siteUrl}/${lang !== 'nl' ? lang + '/' : ''}${params.slug.join('/')}`,
-        },
-        other: {
-          'script:ld+json': JSON.stringify(schema)
-        }
-      };
+        return {
+          title,
+          description,
+          alternates: {
+            canonical: `${siteUrl}/${lang !== 'nl' ? lang + '/' : ''}${params.slug.join('/')}`,
+          },
+          other: {
+            'script:ld+json': JSON.stringify(schema)
+          }
+        };
+      }
+    } catch (e) {
+      // Geen stem gevonden, ga door naar CMS check
     }
-  } catch (e) {
-    // Geen stem gevonden, ga door naar CMS check
-  }
 
   // 3. Probeer een CMS Artikel te vinden
   try {
@@ -564,6 +564,8 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
           'reclame': 'commercial'
         };
         const mappedJourney = journey ? journeyMap[journey.toLowerCase()] : undefined;
+
+        console.log(` [SmartRouter] Actor found: ${actor.first_name} (${actor.id})`);
 
         return (
           <PageWrapperInstrument>

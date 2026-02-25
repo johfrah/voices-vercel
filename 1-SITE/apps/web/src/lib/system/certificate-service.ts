@@ -63,7 +63,7 @@ export class CertificateService {
     // CHRIS-PROTOCOL: Nuclear PDF Generation (v2.14.520)
     // We use a specialized OG-based generator that flattens the certificate to a high-res image/PDF.
     // The URL structure is: /api/certificates/render?orderId=...&name=...&workshop=...&date=...
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.voices.be';
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.voices.eu';
     const params = new URLSearchParams({
         name: data.participantName,
         workshop: data.workshopTitle,
