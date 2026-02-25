@@ -34,30 +34,31 @@ const VoiceFlag = ({ lang, size = 16 }: { lang?: string, size?: number }) => {
   if (!lang) return null;
   const lowLang = lang.toLowerCase();
   
-  if (lowLang.includes('be') || lowLang === 'vlaams' || lowLang === 'frans (be)') return <FlagBE size={size} />;
-  if (lowLang.includes('nl') || lowLang === 'nederlands' || lowLang === 'dutch') return <FlagNL size={size} />;
-  if (lowLang.includes('fr') || lowLang === 'frans' || lowLang === 'frans (fr)' || lowLang === 'french') return <FlagFR size={size} />;
-  if (lowLang.includes('de') || lowLang === 'duits' || lowLang === 'german') return <FlagDE size={size} />;
-  if (lowLang.includes('gb') || lowLang.includes('uk') || lowLang === 'engels' || lowLang === 'english') return <FlagUK size={size} />;
-  if (lowLang.includes('us')) return <FlagUS size={size} />;
-  if (lowLang.includes('es') || lowLang === 'spaans' || lowLang === 'spanish') return <FlagES size={size} />;
-  if (lowLang.includes('it') || lowLang === 'italiaans' || lowLang === 'italian') return <FlagIT size={size} />;
-  if (lowLang.includes('pl') || lowLang === 'pools' || lowLang === 'polish') return <FlagPL size={size} />;
-  if (lowLang.includes('dk') || lowLang === 'deens' || lowLang === 'danish') return <FlagDK size={size} />;
-  if (lowLang.includes('pt') || lowLang === 'portugees' || lowLang === 'portuguese') return <FlagPT size={size} />;
-  if (lowLang.includes('se') || lowLang === 'zweeds' || lowLang === 'swedish') return <FlagSE size={size} />;
-  if (lowLang.includes('no') || lowLang === 'noors' || lowLang === 'norwegian') return <FlagNO size={size} />;
-  if (lowLang.includes('fi') || lowLang === 'fins' || lowLang === 'finnish') return <FlagFI size={size} />;
-  if (lowLang.includes('gr') || lowLang === 'grieks' || lowLang === 'greek') return <FlagGR size={size} />;
-  if (lowLang.includes('tr') || lowLang === 'turks' || lowLang === 'turkish') return <FlagTR size={size} />;
-  if (lowLang.includes('ru') || lowLang === 'russisch' || lowLang === 'russian') return <FlagRU size={size} />;
-  if (lowLang.includes('cn') || lowLang.includes('zh') || lowLang === 'chinees' || lowLang === 'chinese') return <FlagCN size={size} />;
-  if (lowLang.includes('jp') || lowLang === 'japans' || lowLang === 'japanese') return <FlagJP size={size} />;
-  if (lowLang.includes('kr') || lowLang === 'koreaans' || lowLang === 'korean') return <FlagKR size={size} />;
-  if (lowLang.includes('ar') || lowLang === 'arabisch' || lowLang === 'arabic') return <FlagAR size={size} />;
-  if (lowLang.includes('br') || lowLang === 'braziliaans' || lowLang === 'brazilian') return <FlagBR size={size} />;
-  
-  return null;
+  const Flag = lowLang.includes('be') || lowLang === 'vlaams' || lowLang === 'frans (be)' ? FlagBE :
+               lowLang.includes('nl') || lowLang === 'nederlands' || lowLang === 'dutch' ? FlagNL :
+               lowLang.includes('fr') || lowLang === 'frans' || lowLang === 'frans (fr)' || lowLang === 'french' ? FlagFR :
+               lowLang.includes('de') || lowLang === 'duits' || lowLang === 'german' ? FlagDE :
+               lowLang.includes('gb') || lowLang.includes('uk') || lowLang === 'engels' || lowLang === 'english' ? FlagUK :
+               lowLang.includes('us') ? FlagUS :
+               lowLang.includes('es') || lowLang === 'spaans' || lowLang === 'spanish' ? FlagES :
+               lowLang.includes('it') || lowLang === 'italiaans' || lowLang === 'italian' ? FlagIT :
+               lowLang.includes('pl') || lowLang === 'pools' || lowLang === 'polish' ? FlagPL :
+               lowLang.includes('dk') || lowLang === 'deens' || lowLang === 'danish' ? FlagDK :
+               lowLang.includes('pt') || lowLang === 'portugees' || lowLang === 'portuguese' ? FlagPT :
+               lowLang.includes('se') || lowLang === 'zweeds' || lowLang === 'swedish' ? FlagSE :
+               lowLang.includes('no') || lowLang === 'noors' || lowLang === 'norwegian' ? FlagNO :
+               lowLang.includes('fi') || lowLang === 'fins' || lowLang === 'finnish' ? FlagFI :
+               lowLang.includes('gr') || lowLang === 'grieks' || lowLang === 'greek' ? FlagGR :
+               lowLang.includes('tr') || lowLang === 'turks' || lowLang === 'turkish' ? FlagTR :
+               lowLang.includes('ru') || lowLang === 'russisch' || lowLang === 'russian' ? FlagRU :
+               lowLang.includes('cn') || lowLang.includes('zh') || lowLang === 'chinees' || lowLang === 'chinese' ? FlagCN :
+               lowLang.includes('jp') || lowLang === 'japans' || lowLang === 'japanese' ? FlagJP :
+               lowLang.includes('kr') || lowLang === 'koreaans' || lowLang === 'korean' ? FlagKR :
+               lowLang.includes('ar') || lowLang === 'arabisch' || lowLang === 'arabic' ? FlagAR :
+               lowLang.includes('br') || lowLang === 'braziliaans' || lowLang === 'brazilian' ? FlagBR : null;
+
+  if (!Flag) return null;
+  return <Flag size={size} />;
 };
 
 export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSelect, hideButton, hidePrice, isCornered, compact }) => {
@@ -690,7 +691,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
         {/* Quality Stamps removed to avoid overlap and focus on audio demos */}
 
         {activeVideo ? (
-          <div className="absolute inset-0 z-10 bg-black">
+          <ContainerInstrument plain className="absolute inset-0 z-10 bg-black">
             <video 
               ref={videoRef}
               src={activeVideo.url.startsWith('http') ? activeVideo.url : `/api/proxy/?path=${encodeURIComponent(activeVideo.url)}`}
@@ -706,7 +707,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
             >
               <Plus className="rotate-45" size={16} />
             </button>
-          </div>
+          </ContainerInstrument>
         ) : voice?.video_url ? (
           <video 
             ref={videoRef}
@@ -779,11 +780,11 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
             isCurrentlyPlaying ? "opacity-100" : "opacity-0 group-hover:opacity-100"
           )}
         >
-          <div className="absolute top-2 md:top-4 left-2 md:left-4 right-2 md:right-4 z-30 flex flex-wrap gap-1 md:gap-2 max-w-full overflow-hidden">
+          <ContainerInstrument plain className="absolute top-2 md:top-4 left-2 md:left-4 right-2 md:left-4 z-30 flex flex-wrap gap-1 md:gap-2 max-w-full overflow-hidden">
             {/*  CHRIS-PROTOCOL: Demos moved to MediaMaster for cleaner UI */}
-          </div>
+          </ContainerInstrument>
 
-          <div className="flex-grow flex items-center justify-center">
+          <ContainerInstrument plain className="flex-grow flex items-center justify-center">
             <button 
               onClick={(e) => {
                 e.stopPropagation();
@@ -830,19 +831,19 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
                 <Play size={24} className="md:w-8 md:h-8 ml-1 group-hover/play:scale-110 transition-transform" />
               )}
             </button>
-          </div>
+          </ContainerInstrument>
 
           {activeSubtitle && (
-            <div className="mt-auto pb-2 md:pb-4 text-center animate-in fade-in slide-in-from-bottom-2">
-              <span className="px-2 md:px-4 py-1 md:py-2 rounded-lg bg-black/60 backdrop-blur-md text-white text-[10px] md:text-xs font-medium border border-white/10">
+            <ContainerInstrument plain className="mt-auto pb-2 md:pb-4 text-center animate-in fade-in slide-in-from-bottom-2">
+              <TextInstrument as="span" className="px-2 md:px-4 py-1 md:py-2 rounded-lg bg-black/60 backdrop-blur-md text-white text-[10px] md:text-xs font-medium border border-white/10">
                 {activeSubtitle}
-              </span>
-            </div>
+              </TextInstrument>
+            </ContainerInstrument>
           )}
         </ContainerInstrument>
 
         {!activeVideo && (voice as any).allow_free_trial !== false && masterControlState.journey !== 'telephony' && (
-          <div className="absolute bottom-2 md:bottom-4 right-2 md:right-4 z-40">
+          <ContainerInstrument plain className="absolute bottom-2 md:bottom-4 right-2 md:right-4 z-40">
             <button 
               onClick={handleStudioToggle}
               className={cn(
@@ -859,16 +860,16 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
               ) : (
                 <>
                   <Plus size={14} className="md:w-4.5 md:h-4.5 shrink-0 transition-transform group-hover/studio:rotate-90 duration-500" />
-                  <span className="max-w-0 group-hover:max-w-[180px] opacity-0 group-hover:opacity-100 transition-all duration-500 text-[8px] md:text-[10px] font-black tracking-widest uppercase whitespace-nowrap">
+                  <TextInstrument as="span" className="max-w-0 group-hover:max-w-[180px] opacity-0 group-hover:opacity-100 transition-all duration-500 text-[8px] md:text-[10px] font-black tracking-widest uppercase whitespace-nowrap">
                     <VoiceglotText 
                       translationKey="common.free_demo_cta" 
                       defaultText="Gratis proefopname" 
                     />
-                  </span>
+                  </TextInstrument>
                 </>
               )}
             </button>
-          </div>
+          </ContainerInstrument>
         )}
 
         {isAdmin && (
@@ -883,8 +884,8 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
 
       <ContainerInstrument plain className="p-0 flex flex-col flex-grow">
         <div className="flex items-start justify-between px-4 md:px-6 pt-4 md:pt-6 pb-2 md:pb-3 border-b border-black/[0.02]">
-          <div className="flex flex-col gap-1.5 md:gap-2">
-            <div className="flex items-center gap-1 bg-va-off-white/50 px-1.5 md:px-2 py-0.5 md:py-1 rounded-full border border-black/[0.05] w-fit relative">
+          <ContainerInstrument plain className="flex flex-col gap-1.5 md:gap-2">
+            <ContainerInstrument plain className="flex items-center gap-1 bg-va-off-white/50 px-1.5 md:px-2 py-0.5 md:py-1 rounded-full border border-black/[0.05] w-fit relative">
               <VoiceFlag lang={voice?.native_lang} size={14} />
               <TextInstrument className="text-[11px] md:text-[13px] font-light text-va-black tracking-tight">
                 <VoiceglotText 
@@ -894,7 +895,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
               </TextInstrument>
               
               {isEditMode && (
-                <div className="flex items-center gap-1 ml-1">
+                <ContainerInstrument plain className="flex items-center gap-1 ml-1">
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -954,7 +955,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
                   >
                     <Settings size={14} strokeWidth={1.5} />
                   </button>
-                </div>
+                </ContainerInstrument>
               )}
 
               <AnimatePresence>
@@ -967,7 +968,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
                     className="absolute top-full left-0 mt-2 w-48 bg-white rounded-2xl shadow-2xl border border-black/10 py-2 z-[110]"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <div className="max-h-64 overflow-y-auto no-scrollbar">
+                    <ContainerInstrument plain className="max-h-48 overflow-y-auto no-scrollbar">
                       {availableLangs.map(langItem => {
                         const isSelectedLang = langItem.id === voice.native_lang_id;
                         return (
@@ -979,12 +980,12 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
                               isSelectedLang ? "bg-primary/10 text-primary" : "text-va-black hover:bg-va-off-white"
                             )}
                           >
-                            <span>{langItem.label}</span>
+                            <TextInstrument as="span">{langItem.label}</TextInstrument>
                             {isSelectedLang && <Check size={14} strokeWidth={3} className="text-primary" />}
                           </button>
                         );
                       })}
-                    </div>
+                    </ContainerInstrument>
                   </motion.div>
                 )}
 
@@ -1153,28 +1154,28 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
           </div>
 
           {!compact && (
-            <div className={cn(
+            <ContainerInstrument plain className={cn(
               "flex flex-col items-end justify-center px-2 md:px-2.5 py-0.5 md:py-1 rounded-lg md:rounded-xl border transition-colors duration-500",
               (deliveryInfo as any).isToday || deliveryInfo.delivery_days_max <= 1 
                 ? "bg-green-500/5 border-green-500/10 text-green-600" 
                 : "bg-blue-500/5 border-blue-500/10 text-blue-600"
             )}>
-              <span className="text-[7px] md:text-[8px] font-black tracking-[0.1em] uppercase leading-none mb-0.5 md:mb-1 flex items-center gap-1 opacity-40">
+              <TextInstrument as="span" className="text-[7px] md:text-[8px] font-black tracking-[0.1em] uppercase leading-none mb-0.5 md:mb-1 flex items-center gap-1 opacity-40">
                 <Clock size={8} className="md:w-2.5 md:h-2.5" strokeWidth={3} />
                 <VoiceglotText translationKey="common.delivery" defaultText="Levering" />
-              </span>
+              </TextInstrument>
               <TextInstrument className="text-[10px] md:text-[12px] font-bold tracking-tight leading-none">
                 <VoiceglotText 
                   translationKey={`actor.${voice.id}.delivery_info`} 
                   defaultText={deliveryInfo.formattedShort} 
                 />
               </TextInstrument>
-            </div>
+            </ContainerInstrument>
           )}
         </div>
 
-        <div className="flex flex-col flex-grow px-4 md:px-6 pt-3 md:pt-4 pb-4 md:pb-6">
-          <div className="flex flex-col mb-2 md:mb-3">
+        <ContainerInstrument plain className="flex flex-col flex-grow px-4 md:px-6 pt-3 md:pt-4 pb-4 md:pb-6">
+          <ContainerInstrument plain className="flex flex-col mb-2 md:mb-3">
             <HeadingInstrument level={3} className={cn("font-extralight tracking-tighter leading-none group-hover:text-primary transition-colors truncate", compact ? "text-xl md:text-2xl mb-1 md:mb-1.5" : "text-2xl md:text-3xl mb-1 md:mb-1.5")}>
               <VoiceglotText  
                 translationKey={`actor.${voice?.id}.name`} 
@@ -1184,19 +1185,19 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
             </HeadingInstrument>
 
             {voice?.tone_of_voice && (
-              <div className="flex flex-wrap gap-1 animate-in fade-in slide-in-from-bottom-1 duration-500 relative">
+              <ContainerInstrument plain className="flex flex-wrap gap-1 animate-in fade-in slide-in-from-bottom-1 duration-500 relative">
                 {voice.tone_of_voice.split(',').filter(Boolean).slice(0, 2).map((toneItem, i) => (
-              <span key={i} className="text-[7px] md:text-[8px] font-light tracking-[0.2em] uppercase px-1.5 py-0.5 bg-primary/5 text-primary rounded-full border border-primary/10">
+              <TextInstrument as="span" key={i} className="text-[7px] md:text-[8px] font-light tracking-[0.2em] uppercase px-1.5 py-0.5 bg-primary/5 text-primary rounded-full border border-primary/10">
                 <VoiceglotText 
                   translationKey={`actor.${voice.id}.tone.${i}`} 
                   context="Voice characteristic / Tone of voice (e.g. warm, deep, professional, energetic)" 
                   defaultText={toneItem.trim()} 
                 />
-              </span>
+              </TextInstrument>
                 ))}
                 
                 {isEditMode && (
-                  <div className="flex items-center gap-1">
+                  <ContainerInstrument plain className="flex items-center gap-1">
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
@@ -1219,7 +1220,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
                     >
                       <Plus size={10} strokeWidth={3} />
                     </button>
-                  </div>
+                  </ContainerInstrument>
                 )}
 
                 <AnimatePresence>
@@ -1235,7 +1236,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
                       <HeadingInstrument level={4} className="text-[10px] font-bold tracking-widest uppercase text-va-black/40 mb-3 px-1">
                         Voice Tones (Handshake)
                       </HeadingInstrument>
-                      <div className="max-h-48 overflow-y-auto no-scrollbar flex flex-wrap gap-2">
+                      <ContainerInstrument plain className="max-h-48 overflow-y-auto no-scrollbar flex flex-wrap gap-2">
                         {availableVoiceTones.map(tone => {
                           const isSelected = voice.tone_ids?.includes(tone.id);
                           return (
@@ -1253,7 +1254,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
                             </button>
                           );
                         })}
-                      </div>
+                      </ContainerInstrument>
                     </motion.div>
                   )}
 
@@ -1284,7 +1285,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
                         />
                       </div>
 
-                      <div className="max-h-48 overflow-y-auto no-scrollbar flex flex-wrap gap-2">
+                    <ContainerInstrument plain className="max-h-64 overflow-y-auto no-scrollbar flex flex-wrap gap-2">
                         {filteredAvailableTags.map(tagItem => {
                           const isSelectedTag = voice.tone_of_voice?.split(',').map(tagToCompare => tagToCompare.trim()).includes(tagItem);
                           return (
@@ -1314,7 +1315,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
                             Voeg &quot;{tagSearchQuery}&quot; toe
                           </button>
                         )}
-                      </div>
+                      </ContainerInstrument>
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -1322,7 +1323,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
             )}
           </div>
           
-          <div className="mb-2 md:mb-4 h-[40px] md:h-[60px] overflow-y-auto no-scrollbar">
+          <ContainerInstrument plain className="mb-2 md:mb-4 h-[40px] md:h-[60px] overflow-y-auto no-scrollbar">
             <TextInstrument className="text-va-black/60 text-[11px] md:text-[13px] font-medium leading-relaxed italic">
               {sectorDemo ? (
                 <>{sectorDemo}</>
@@ -1333,23 +1334,23 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
                 />
               )}
             </TextInstrument>
-          </div>
+          </ContainerInstrument>
 
-          <div className="flex justify-between items-center mt-auto pt-2 md:pt-4 border-t border-black/[0.03]">
-            <div className="flex flex-col items-start">
+          <ContainerInstrument plain className="flex justify-between items-center mt-auto pt-2 md:pt-4 border-t border-black/[0.03]">
+            <ContainerInstrument plain className="flex flex-col items-start">
               {!hidePrice && displayPrice && (
                 <>
                   <TextInstrument className="text-[7px] md:text-[9px] font-light tracking-[0.2em] text-va-black/30 uppercase leading-none mb-0.5 md:mb-1">
                     <VoiceglotText translationKey="common.starting_from" defaultText="Vanaf" />
                   </TextInstrument>
-                  <div className="flex items-baseline gap-0.5 md:gap-1">
+                  <ContainerInstrument plain className="flex items-baseline gap-0.5 md:gap-1">
                     <TextInstrument className="text-base md:text-xl font-extralight tracking-tighter text-va-black">
                       {displayPrice.price}
                     </TextInstrument>
-                  </div>
+                  </ContainerInstrument>
                 </>
               )}
-            </div>
+            </ContainerInstrument>
 
             {!hideButton && (
                   <ButtonInstrument 
@@ -1367,21 +1368,21 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
                 {isSelected ? (
                   <Check size={14} strokeWidth={3} className="md:w-4.5 md:h-4.5 animate-in zoom-in duration-300" />
                 ) : (
-                  <div className="flex flex-col items-center leading-none gap-0.5 md:gap-1">
+                  <ContainerInstrument plain className="flex flex-col items-center leading-none gap-0.5 md:gap-1">
                     <VoiceglotText 
                       translationKey={onSelect ? "common.choose_voice" : "common.add_to_casting"} 
                       defaultText={onSelect ? "Kies stem" : "Proefopname +"} 
                     />
                     {!onSelect && (
-                      <span className="text-[7px] md:text-[8px] font-black tracking-[0.2em] opacity-50">
+                      <TextInstrument as="span" className="text-[7px] md:text-[8px] font-black tracking-[0.2em] opacity-50">
                         <VoiceglotText translationKey="common.free" defaultText="GRATIS" />
-                      </span>
+                      </TextInstrument>
                     )}
-                  </div>
+                  </ContainerInstrument>
                 )}
               </ButtonInstrument>
             )}
-          </div>
+          </ContainerInstrument>
         </div>
       </ContainerInstrument>
     </ContainerInstrument>

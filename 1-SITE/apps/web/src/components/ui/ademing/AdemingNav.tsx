@@ -14,7 +14,7 @@ import {
   Sheet,
   SheetContent,
   SheetTrigger,
-} from "./ui/sheet";
+} from "@/components/ui/ademing/ui/sheet";
 
 export const AdemingNav = () => {
   const pathname = usePathname();
