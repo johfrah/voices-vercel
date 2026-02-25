@@ -8,6 +8,7 @@ import { Mail, ArrowRight } from "lucide-react";
 import { Suspense } from "react";
 import nextDynamic from "next/dynamic";
 import { VoicesLink } from "@/components/ui/VoicesLink";
+import { useCallback } from 'react';
 
 import { MarketManagerServer as MarketManager } from "@/lib/system/market-manager-server";
 
@@ -17,7 +18,10 @@ const LiquidBackground = nextDynamic(() => import("@/components/ui/LiquidBackgro
 });
 
 export default function UnderConstructionPage() {
-  const { playClick } = useSonicDNA();
+  const sonic = useSonicDNA();
+  const playClick = useCallback((type?: any) => {
+    try { sonic.playClick(type); } catch (e) {}
+  }, [sonic]);
 
   return (
     <main className="min-h-screen bg-va-off-white relative flex items-center justify-center overflow-hidden">

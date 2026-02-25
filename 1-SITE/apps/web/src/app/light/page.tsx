@@ -9,7 +9,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useTranslation } from "@/contexts/TranslationContext";
 import { Actor } from "@/types";
 import { MarketManagerServer as MarketManager } from "@/lib/system/market-manager-server";
-import { Suspense, useEffect, useMemo, useState } from 'react';
+import { Suspense, useEffect, useMemo, useState, useCallback } from 'react';
 import nextDynamic from "next/dynamic";
 import { Globe, Mail } from "lucide-react";
 import { VoicesDropdown } from "@/components/ui/VoicesDropdown";
@@ -21,7 +21,11 @@ const LiquidBackground = nextDynamic(() => import("@/components/ui/LiquidBackgro
 
 export default function LightPage() {
   const { t, language } = useTranslation();
-  const { playClick } = useSonicDNA();
+  const sonic = useSonicDNA();
+  const playClick = useCallback((type?: any) => {
+    try { sonic.playClick(type); } catch (e) {}
+  }, [sonic]);
+
   const [actors, setActors] = useState<Actor[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedLanguage, setSelectedLanguage] = useState<string>('all');
