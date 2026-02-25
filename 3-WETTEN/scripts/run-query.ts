@@ -2,7 +2,9 @@ import postgres from 'postgres';
 import * as dotenv from 'dotenv';
 import path from 'path';
 
-dotenv.config({ path: path.resolve(process.cwd(), '1-SITE/apps/web/.env.local') });
+// Zoek de .env.local file relatief aan het script zelf
+const envPath = path.resolve(__dirname, '../../1-SITE/apps/web/.env.local');
+dotenv.config({ path: envPath });
 
 async function runQuery() {
   const query = process.argv[2];

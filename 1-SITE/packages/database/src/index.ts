@@ -19,7 +19,7 @@ const getDb = () => {
     try {
       // 🛡️ CHRIS-PROTOCOL: Load env if not present (for standalone scripts)
       if (!process.env.DATABASE_URL) {
-        const envPath = path.join(process.cwd(), '1-SITE/apps/web/.env.local');
+        const envPath = path.resolve(__dirname, '../../../../1-SITE/apps/web/.env.local');
         dotenv.config({ path: envPath });
       }
 
@@ -29,6 +29,7 @@ const getDb = () => {
         return null;
       }
       
+      /*
       // CHRIS-PROTOCOL: Direct DB Host for Stability (v2.17)
       // The Supabase Pooler (6543) is currently unstable. We bypass it and use the direct host.
       if (connectionString.includes('pooler.supabase.com')) {
@@ -37,6 +38,7 @@ const getDb = () => {
         connectionString = connectionString.replace('postgres.vcbxyyjsxuquytcsskpj', 'postgres');
         connectionString = connectionString.split('?')[0]; 
       }
+      */
 
       // LEX-MANDATE: IPv6 is unstable on some build machines. Force IPv4 if direct host.
       if (connectionString.includes('db.vcbxyyjsxuquytcsskpj.supabase.co')) {
