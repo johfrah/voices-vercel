@@ -12,6 +12,7 @@ import { Testimonials } from './Testimonials';
 import { Moon, Zap, Clock, ArrowRight, Compass, Users, Instagram, Globe } from 'lucide-react';
 import { VoicesDropdown } from '../VoicesDropdown';
 import { ElementIcon } from './ElementIcon';
+import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
 
 interface AdemingBentoProps {
   tracks: any[];
@@ -143,7 +144,7 @@ export const AdemingBento = ({ tracks, initialTrack }: AdemingBentoProps) => {
                   bio: "Julie brengt een zachte, liefdevolle energie in elke meditatie. Haar stem is een warme deken voor de ziel.",
                   avatar: "/assets/ademing/avatar-julie.jpg",
                   instagram: "@julie_ademing",
-                  website: "www.ademing.be"
+                  website: MarketManager.getMarketDomains()['ADEMING']
                 },
                 {
                   name: "Johfrah",
@@ -151,7 +152,7 @@ export const AdemingBento = ({ tracks, initialTrack }: AdemingBentoProps) => {
                   bio: "Johfrah's diepe, rustgevende stem helpt je om direct te landen in het hier en nu.",
                   avatar: "/assets/ademing/avatar-johfrah.jpg",
                   instagram: "@johfrah",
-                  website: "www.voices.be"
+                  website: MarketManager.getMarketDomains()['BE']
                 }
               ].map((maker) => (
                 <div key={maker.name} className="bg-white p-12 rounded-[64px] shadow-soft border border-primary/5 hover:shadow-medium hover:-translate-y-2 transition-all duration-700 group cursor-pointer">

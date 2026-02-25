@@ -2,7 +2,7 @@
 
 import { 
   Home, Heart, Library, User, Menu, Search as SearchIcon,
-  Sparkles, Compass, Calendar, ChevronDown, Users 
+  Sparkles, Compass, Calendar, ChevronDown, Users as UsersIcon 
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
@@ -89,7 +89,7 @@ export const AdemingNav = () => {
                   {[
                     { label: 'Thema\'s', icon: Sparkles, path: '/themas' },
                     { label: 'Elementen', icon: Compass, path: '/elementen' },
-                    { label: 'Begeleiders', icon: Users, path: '/begeleiders' },
+                    { label: 'Begeleiders', icon: UsersIcon, path: '/begeleiders' },
                   ].map((item) => (
                     <Link
                       key={item.path}

@@ -106,7 +106,7 @@ function generateActorSchema(actor: any, marketName: string = 'Voices', host: st
 function generateArtistSchema(artist: any, host: string = '') {
   const market = MarketManager.getCurrentMarket(host);
   const domains = MarketManager.getMarketDomains();
-  const siteUrl = domains[market.market_code] || `https://${host || (MarketManager.getMarketDomains()['BE']?.replace('https://', '') || 'www.voices.be')}`;
+  const siteUrl = domains[market.market_code] || `https://${host || (MarketManager.getMarketDomains()['BE']?.replace('https://', '') || MarketManager.getMarketDomains()['BE']?.replace('https://', ''))}`;
   return {
     "@context": "https://schema.org",
     "@type": "MusicGroup",
@@ -185,7 +185,7 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
   }
 
   const headersList = headers();
-  const host = (headersList.get('host') || (MarketManager.getMarketDomains()['BE']?.replace('https://', '') || 'www.voices.be')).replace(/^https?:\/\//, '');
+  const host = (headersList.get('host') || (MarketManager.getMarketDomains()['BE']?.replace('https://', '') || MarketManager.getMarketDomains()['BE']?.replace('https://', ''))).replace(/^https?:\/\//, '');
   const market = MarketManager.getCurrentMarket(host);
   const domains = MarketManager.getMarketDomains();
   const lang = headersList.get('x-voices-lang') || 'nl';
@@ -197,7 +197,7 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
   const cleanSlug = stripLanguagePrefix(normalizedSlug);
   const cleanSegments = cleanSlug.split('/').filter(Boolean);
 
-  const siteUrl = domains[market.market_code] || `https://${host || (MarketManager.getMarketDomains()['BE']?.replace('https://', '') || 'www.voices.be')}`;
+  const siteUrl = domains[market.market_code] || `https://${host || (MarketManager.getMarketDomains()['BE']?.replace('https://', '') || MarketManager.getMarketDomains()['BE']?.replace('https://', ''))}`;
   
   // 🛡️ NUCLEAR HANDSHAKE: Resolve via Slug Registry for Metadata
   let lookupSlug = cleanSegments.join('/').toLowerCase();
@@ -644,7 +644,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
     // 2. Pitch Link (Casting List)
     if (lookupSlug === 'pitch' && journey) {
       try {
-        const host = headersList.get('host') || MarketManager.getMarketDomains()['BE']?.replace('https://', '') || 'www.voices.be';
+        const host = headersList.get('host') || MarketManager.getMarketDomains()['BE']?.replace('https://', '') || MarketManager.getMarketDomains()['BE']?.replace('https://', '');
         const market = MarketManager.getCurrentMarket(host);
         const domains = MarketManager.getMarketDomains();
 
