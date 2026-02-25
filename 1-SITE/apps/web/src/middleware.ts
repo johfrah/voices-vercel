@@ -93,7 +93,7 @@ export async function middleware(request: NextRequest) {
   
   // 🛡️ CHRIS-PROTOCOL: Bypass voor assets en API's is al geregeld bovenin de middleware.
   // We forceren hier de redirect naar /light voor alle andere routes.
-  if (isUnderConstruction && !isAdmin && pathname !== '/light' && !pathname.startsWith('/auth') && !pathname.startsWith('/api')) {
+  if (isUnderConstruction && !isAdmin && pathname !== '/light' && pathname !== '/light/' && !pathname.startsWith('/auth') && !pathname.startsWith('/api')) {
     const lightUrl = url.clone();
     lightUrl.pathname = '/light';
     console.log(` NUCLEAR REDIRECT: Forcing /light for ${pathname}`);
