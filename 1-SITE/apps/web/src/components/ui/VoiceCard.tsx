@@ -495,15 +495,15 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
             sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 20vw"
             journey="agency"
             category="voicecards"
-            onUpdate={async (newSrc) => {
-              //  CHRIS-PROTOCOL: Direct DB update for actor photo
+            onUpdate={async (newSrc, mediaId) => {
+              //  CHRIS-PROTOCOL: Direct DB update for actor photo (v2.14.520)
               try {
                 const res = await fetch(`/api/admin/actors/${voice.id}`, {
                   method: 'PATCH',
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify({
                     id: voice.id,
-                    photo_url: newSrc
+                    photo_id: mediaId
                   })
                 });
                 

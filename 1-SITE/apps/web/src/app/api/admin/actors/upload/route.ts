@@ -1,28 +1,24 @@
 import { createAdminClient } from '@/utils/supabase/server';
 import { NextResponse, NextRequest } from 'next/server';
 import { requireAdmin } from '@/lib/auth/api-auth';
-import { db } from '@/lib/sync/bridge';
-import { media } from '@/lib/system/voices-config';
-import { eq } from 'drizzle-orm';
+import { ServerWatchdog } from '@/lib/services/server-watchdog';
+import { createClient } from '@supabase/supabase-js';
 
 export const dynamic = 'force-dynamic';
 
 /**
- *  ADMIN PHOTO UPLOAD API (GOD MODE 2026)
+ * 🛡️ CHRIS-PROTOCOL: SUPABASE SDK PHOTO UPLOAD (v2.14.520)
  * 
- * Verwerkt foto uploads naar Supabase Storage.
+ * We use the Supabase SDK for both Storage and Database operations
+ * to ensure 100% stability on Vercel and bypass Drizzle monorepo issues.
  */
 export async function POST(request: NextRequest) {
-  //  CHRIS-PROTOCOL: Build Safety
   if (process.env.NEXT_PHASE === 'phase-production-build' || (process.env.NODE_ENV === 'production' && !process.env.VERCEL_URL)) {
     return NextResponse.json({ success: true });
   }
 
-  //  CHRIS-PROTOCOL: Auth Check (Nuclear 2026)
   const auth = await requireAdmin();
-  if (auth instanceof NextResponse) {
-    return auth;
-  }
+  if (auth instanceof NextResponse) return auth;
 
   try {
     const formData = await request.formData();
@@ -32,193 +28,71 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 });
     }
 
-    const supabase = createAdminClient();
-    if (!supabase) {
-      throw new Error('Supabase Admin client could not be initialized');
-    }
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
     
-    //  CHRIS-PROTOCOL: Forensic naming
     const timestamp = Date.now();
     const originalExtension = file.name.split('.').pop()?.toLowerCase() || 'webp';
     const isAudio = ['mp3', 'wav', 'ogg', 'm4a'].includes(originalExtension);
-    const isWav = originalExtension === 'wav';
     
-    let fileName = `${timestamp}-${file.name.replace(/\s+/g, '-')}`;
-    let filePath = isAudio ? `active/demos/${fileName}` : `active/voicecards/${fileName}`;
-    let finalFile: File | Buffer = file;
-    let finalContentType = file.type || (isAudio ? `audio/${originalExtension === 'mp3' ? 'mpeg' : originalExtension}` : `image/${originalExtension === 'png' ? 'png' : (originalExtension === 'webp' ? 'webp' : 'jpeg')}`);
+    const fileName = `${timestamp}-${file.name.replace(/\s+/g, '-')}`;
+    const filePath = isAudio ? `active/demos/${fileName}` : `active/voicecards/${fileName}`;
+    const contentType = file.type || (isAudio ? 'audio/mpeg' : 'image/webp');
 
-    //  CHRIS-PROTOCOL: Fast-Path for Photos (Bob-methode)
-    // We skip heavy FFmpeg processing for images to ensure <1s upload confirmation.
-    if (isAudio && isWav) {
-      console.log(' ADMIN: WAV detected, initiating MP3 conversion...');
-      try {
-        const ffmpeg = (await import('fluent-ffmpeg')).default;
-        const { Readable, Writable } = await import('stream');
-        
-        const inputBuffer = Buffer.from(await file.arrayBuffer());
-        const inputStream = new Readable();
-        inputStream.push(inputBuffer);
-        inputStream.push(null);
-
-        const chunks: any[] = [];
-        const outputStream = new Writable({
-          write(chunk, encoding, callback) {
-            chunks.push(chunk);
-            callback();
-          }
-        });
-
-        await new Promise((resolve, reject) => {
-          ffmpeg(inputStream)
-            .toFormat('mp3')
-            .audioBitrate('192k')
-            .on('error', (err) => {
-              console.error(' FFmpeg Error:', err);
-              reject(err);
-            })
-            .on('end', () => {
-              console.log(' ADMIN: MP3 conversion complete');
-              resolve(true);
-            })
-            .pipe(outputStream);
-        });
-
-        finalFile = Buffer.concat(chunks);
-        fileName = fileName.replace(/\.wav$/i, '.mp3');
-        filePath = filePath.replace(/\.wav$/i, '.mp3');
-        finalContentType = 'audio/mpeg';
-      } catch (convError) {
-        console.error(' ADMIN: Conversion failed, falling back to original WAV:', convError);
-      }
-    }
-
-    //  CHRIS-PROTOCOL: Explicitly use 'voices' bucket
-    const BUCKET_NAME = 'voices';
-    
-    console.log(` ADMIN: Uploading to bucket '${BUCKET_NAME}', path: ${filePath}`);
-    const { data, error } = await supabase.storage
-      .from(BUCKET_NAME)
-      .upload(filePath, finalFile, {
-        contentType: finalContentType,
+    // 1. Upload to Storage
+    const { error: uploadError } = await supabase.storage
+      .from('voices')
+      .upload(filePath, file, {
+        contentType,
         upsert: true
       });
 
-    if (error) {
-      console.error(' Supabase Upload Error Details:', {
-        message: error.message,
-        name: (error as any).name,
-        status: (error as any).status,
-        stack: (error as any).stack
-      });
-      return NextResponse.json({ error: error.message, _forensic: 'Supabase storage upload failed' }, { status: 500 });
+    if (uploadError) {
+      throw new Error(`Storage upload failed: ${uploadError.message}`);
     }
 
-    // Genereer publieke URL
-    const { data: { publicUrl } } = supabase.storage
-      .from('voices')
-      .getPublicUrl(filePath);
-    
-    //  CHRIS-PROTOCOL: Use the proxied URL for immediate frontend display
-    const proxiedUrl = `/api/proxy/?path=${encodeURIComponent(filePath)}`;
-
-    //  CHRIS-PROTOCOL: Link in media table IMMEDIATELY to get mediaId (Bob-methode)
-    // We do AI analysis in the background.
-    let mediaId = null;
-    try {
-      console.log(' ADMIN: Linking in media table...');
-      
-      const mediaData = {
-        fileName: fileName,
-        filePath: filePath,
-        fileType: finalContentType,
-        fileSize: (finalFile as any).size || (finalFile as Buffer).length,
+    // 2. Create Media Record via SDK
+    const { data: mediaResult, error: mediaError } = await supabase
+      .from('media')
+      .insert({
+        file_name: fileName,
+        file_path: filePath,
+        file_type: contentType,
+        file_size: file.size,
         journey: 'agency',
         category: 'voices',
-        is_public: true
-        // 🛡️ CHRIS-PROTOCOL: Removed manual updatedAt to let DB handle it via defaultNow()
-      };
-      console.log(' ADMIN: Media data to insert:', JSON.stringify(mediaData, null, 2));
-      const [mediaResult] = await db.insert(media).values(mediaData).returning({ id: media.id });
-      
-      if (mediaResult) {
-        mediaId = mediaResult.id;
-        console.log(' ADMIN: Media record created:', mediaId);
-      }
+        is_public: true,
+        labels: ['admin-upload']
+      })
+      .select()
+      .single();
 
-      // Background task for AI analysis
-      if (process.env.NODE_ENV === 'production') {
-        // 🛡️ CHRIS-PROTOCOL: Fully detached background task to avoid blocking the main response
-        setTimeout(async () => {
-          try {
-            console.log(' ADMIN: Starting background AI analysis...');
-            let aiMetadata = {};
-            const { GeminiService } = await import('@/lib/services/gemini-service');
-            const gemini = GeminiService.getInstance();
-            const buffer = Buffer.from(await file.arrayBuffer());
-            const analysis = await gemini.analyzeImage(buffer, file.type || 'image/webp', {
-              fileName,
-              path: filePath,
-              source: 'admin-upload'
-            });
-            
-            if (analysis) {
-              console.log(' ADMIN: AI Image Analysis complete:', analysis.vibe);
-              aiMetadata = {
-                ai_description: analysis.description,
-                ai_vibe: analysis.vibe,
-                ai_labels: analysis.labels,
-                ai_confidence: analysis.confidence,
-                suggested_alt: analysis.suggested_alt
-              };
-
-              // Update the media record with AI data
-              await db.update(media)
-                .set({ 
-                  altText: analysis.suggested_alt || null,
-                  labels: analysis.labels || [],
-                  metadata: aiMetadata 
-                })
-                .where(eq(media.id, mediaId));
-            }
-          } catch (aiError) {
-            console.error(' ADMIN: Background AI Analysis failed:', aiError);
-          }
-        }, 100);
-      } else {
-        console.log(' ADMIN: Skipping AI analysis in non-production environment.');
-      }
-    } catch (dbError: any) {
-      console.error(' ADMIN: DB Link Failure (CRITICAL):', dbError.message);
-      console.error(' ADMIN: DB Link Error Stack:', dbError.stack);
+    if (mediaError) {
+      throw new Error(`Database media link failed: ${mediaError.message}`);
     }
+
+    const proxiedUrl = `/api/proxy/?path=${encodeURIComponent(filePath)}`;
 
     return NextResponse.json({ 
       success: true, 
       url: proxiedUrl,
-      publicUrl: publicUrl,
       path: filePath,
-      mediaId: mediaId,
-      _forensic: `Photo uploaded and linked successfully to ${filePath}. AI analysis in background.`
+      mediaId: mediaResult.id,
+      _forensic: `Photo uploaded and linked successfully via SDK.`
     });
 
-    } catch (error: any) {
-    console.error(' UPLOAD FAILURE:', error);
+  } catch (error: any) {
+    console.error(' [SDK-UPLOAD] CRASH:', error);
     
-    // 🛡️ CHRIS-PROTOCOL: Report server-side error to Watchdog
-    try {
-      const { ServerWatchdog } = await import('@/lib/services/server-watchdog');
-      await ServerWatchdog.report({
-        error: `Photo upload crash: ${error.message}`,
-        stack: error.stack,
-        component: 'AdminPhotoUploadAPI',
-        url: request.url,
-        level: 'critical',
-        schema: 'media'
-      });
-    } catch (reportErr) {
-      console.error(' ADMIN: Failed to report upload crash to Watchdog:', reportErr);
-    }
+    await ServerWatchdog.report({
+      level: 'critical',
+      component: 'AdminPhotoUploadAPI',
+      error: `Upload crash: ${error.message}`,
+      stack: error.stack,
+      url: request.url
+    });
 
     return NextResponse.json({ 
       error: 'Upload failed', 
