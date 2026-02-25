@@ -430,6 +430,7 @@ export const ordersV2 = pgTable('orders_v2', {
   purchaseOrder: text('purchase_order'),
   billingEmailAlt: text('billing_email_alt'),
   createdAt: timestamp('created_at'),
+  legacyInternalId: integer('legacy_internal_id'), // 🛡️ Link naar de hybride order ID voor items
 });
 
 // 🛒 COMMERCE

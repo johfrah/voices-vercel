@@ -15,7 +15,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
       SELECT 
         o.id, o.user_id, o.journey_id, o.status_id, o.payment_method_id,
         o.amount_net, o.amount_total as total, o.purchase_order, o.billing_email_alt,
-        o.created_at, b.raw_meta
+        o.created_at, o.legacy_internal_id, b.raw_meta
       FROM orders_v2 o
       LEFT JOIN orders_legacy_bloat b ON o.id = b.wp_order_id
       WHERE o.id = ${id}
@@ -26,13 +26,15 @@ export async function GET(request: Request, { params }: { params: { id: string }
     const order = rows[0];
     if (!order) return NextResponse.json({ error: 'Order not found' }, { status: 404 });
 
-    // Resolve Items (order.id is hier het WP ID)
-    const items = await db.select().from(orderItems).where(eq(orderItems.orderId, order.id));
+    // 🛡️ CHRIS-PROTOCOL: Zero-Slop Item Mapping (v2.14.634)
+    // We gebruiken het legacy_internal_id om de items te vinden in de hybride tabel
+    const items = await db.select().from(orderItems).where(
+      eq(orderItems.orderId, order.legacy_internal_id || order.id)
+    );
 
     // Resolve User Info
     let customerInfo = null;
     if (order.user_id) {
-      // Check eerst op intern ID, dan op wp_user_id (v2.14.628 logic)
       let dbUser = await db.select().from(users).where(eq(users.id, order.user_id)).limit(1).then(res => res[0]);
       if (!dbUser && order.user_id > 1000) {
         dbUser = await db.select().from(users).where(eq(users.wpUserId, order.user_id)).limit(1).then(res => res[0]);

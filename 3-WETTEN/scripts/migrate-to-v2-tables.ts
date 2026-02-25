@@ -3,7 +3,7 @@ import { orders, ordersV2, ordersLegacyBloat } from '../../1-SITE/packages/datab
 import { eq, and, sql } from 'drizzle-orm';
 
 async function migrateToV2Tables() {
-  console.log('🚀 Starting Migration to Clean V2 Tables (WP ID as PK)...');
+  console.log('🚀 Starting Migration to Clean V2 Tables (WP ID as PK + Legacy ID)...');
 
   try {
     const decemberOrders = await db.select().from(orders).where(
@@ -43,17 +43,19 @@ async function migrateToV2Tables() {
         amountTotal: order.total,
         purchaseOrder: order.purchaseOrder,
         billingEmailAlt: order.billingEmailAlt,
-        createdAt: order.createdAt
+        createdAt: order.createdAt,
+        legacyInternalId: order.id // 🛡️ Bewaar de hybride ID voor items
       }).onConflictDoUpdate({
         target: ordersV2.id,
         set: {
           journeyId: order.journeyId,
           statusId: order.statusId,
-          paymentMethodId: order.paymentMethodId,
+          paymentMethodId: order.payment_method_id,
           amountNet: order.amountNet,
           amountTotal: order.total,
           purchaseOrder: order.purchaseOrder,
-          billingEmailAlt: order.billingEmailAlt
+          billingEmailAlt: order.billingEmailAlt,
+          legacyInternalId: order.id
         }
       });
     }
