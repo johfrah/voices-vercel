@@ -1,61 +1,65 @@
-import { createClient } from '@supabase/supabase-js';
+import postgres from 'postgres';
+import * as dotenv from 'dotenv';
+import path from 'path';
 
-/**
- * 🛡️ CHRIS-PROTOCOL: THE GREAT PURGE (v2.14.539)
- * 
- * Doel: Alle gedetecteerde 'Hybrid Slop' in één klap uitroeien.
- * 1. Demos & Videos: URL kolom leegmaken als media_id aanwezig is.
- * 2. Actors: Literal "NULL" strings in native_lang fixen.
- * 3. Actors: dropbox_url leegmaken als photo_id aanwezig is.
- */
+dotenv.config({ path: path.resolve(process.cwd(), '1-SITE/apps/web/.env.local') });
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
-
-async function theGreatPurge() {
-  console.log('🚀 [THE-GREAT-PURGE] Initiating Atomic Remediation...');
-
-  // 1. DEMOS: Kill URL slop where media_id exists
-  const { error: demosError } = await supabase
-    .from('actor_demos')
-    .update({ url: "" })
-    .not('media_id', 'is', null)
-    .not('url', 'eq', '');
+async function purgeUnhealthySix() {
+  console.log('☢️ PURGE MODE: Removing the 6 unhealthy test/donation orders...');
+  let connectionString = process.env.DATABASE_URL!;
   
-  if (demosError) console.error('❌ Demos Purge Failed:', demosError.message);
-  else console.log('✅ Demos: URL slop eliminated.');
+  if (!connectionString) {
+    console.error('❌ DATABASE_URL is missing');
+    process.exit(1);
+  }
 
-  // 2. VIDEOS: Kill URL slop where media_id exists
-  const { error: videosError } = await supabase
-    .from('actor_videos')
-    .update({ url: "" })
-    .not('media_id', 'is', null)
-    .not('url', 'eq', '');
+  if (connectionString.includes('pooler.supabase.com')) {
+    connectionString = connectionString.replace('aws-1-eu-west-1.pooler.supabase.com', 'db.vcbxyyjsxuquytcsskpj.supabase.co');
+    connectionString = connectionString.replace(':6543', ':5432');
+    connectionString = connectionString.replace('postgres.vcbxyyjsxuquytcsskpj', 'postgres');
+    connectionString = connectionString.split('?')[0]; 
+  }
 
-  if (videosError) console.error('❌ Videos Purge Failed:', videosError.message);
-  else console.log('✅ Videos: URL slop eliminated.');
+  const sql = postgres(connectionString, { 
+    prepare: false, 
+    connect_timeout: 10,
+    ssl: 'require'
+  });
 
-  // 3. ACTORS: Kill literal "NULL" strings in native_lang
-  const { error: langError } = await supabase
-    .from('actors')
-    .update({ native_lang: null })
-    .eq('native_lang', 'NULL');
+  try {
+    // De specifieke ID's die we hebben geïdentificeerd
+    const idsToPurge = [27323, 27322, 27321, 27320, 27318, 27317];
+    
+    console.log(`Target IDs: ${idsToPurge.join(', ')}`);
 
-  if (langError) console.error('❌ Actor Lang Purge Failed:', langError.message);
-  else console.log('✅ Actors: Literal "NULL" strings eliminated.');
+    // 1. Verwijder eerst eventuele gekoppelde order_items (Foreign Key constraint safety)
+    const deletedItems = await sql`
+      DELETE FROM order_items 
+      WHERE order_id IN ${sql(idsToPurge)}
+      RETURNING id
+    `;
+    console.log(`✅ Deleted ${deletedItems.length} linked order items.`);
 
-  // 4. ACTORS: Kill dropbox_url slop where photo_id exists
-  const { error: photoError } = await supabase
-    .from('actors')
-    .update({ dropbox_url: "" })
-    .not('photo_id', 'is', null)
-    .not('dropbox_url', 'eq', '');
+    // 2. Verwijder de orders zelf
+    const deletedOrders = await sql`
+      DELETE FROM orders 
+      WHERE id IN ${sql(idsToPurge)}
+      RETURNING id, wp_order_id
+    `;
+    
+    console.log(`✅ Successfully purged ${deletedOrders.length} unhealthy orders.`);
+    console.log('Purged IDs:', JSON.stringify(deletedOrders, null, 2));
 
-  if (photoError) console.error('❌ Actor Photo Purge Failed:', photoError.message);
-  else console.log('✅ Actors: dropbox_url slop eliminated.');
+    // 3. Final Count Check
+    const finalCount = await sql`SELECT count(*) FROM orders`;
+    console.log(`\n📊 NEW TOTAL ORDERS IN DB: ${finalCount[0].count}`);
 
-  console.log('\n🏁 [PURGE COMPLETE] Database is now 100% Handshake Proof.');
+  } catch (error: any) {
+    console.error('❌ Purge failed:', error.message);
+  } finally {
+    await sql.end();
+    process.exit();
+  }
 }
 
-theGreatPurge().catch(console.error);
+purgeUnhealthySix();

@@ -3,6 +3,7 @@ import { orders, users, notifications, orderItems } from '@/lib/system/voices-co
 import { desc, eq } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth/api-auth';
+import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
 
 /**
  *  API: ADMIN ORDERS (2026)

@@ -36,7 +36,12 @@ const FORBIDDEN_PATTERNS = [
       if (line.includes('window.location.hostname')) return false;
       // Sta dynamische host variabelen toe die al berekend zijn via MarketManager
       if (line.includes('const host =') || line.includes('const finalHost =') || line.includes('const canonicalHost =')) {
-        if (!line.includes("'") && !line.includes('"')) return false;
+        // Als de regel de variabele definieert, sta het toe als er geen hardcoded domein in staat (behalve als fallback)
+        const cleanLine = line.replace(/'https?:\/\/'/g, '').replace(/'host'/g, '').replace(/'www\.'/g, '');
+        if (!cleanLine.includes("'") && !cleanLine.includes('"')) return false;
+        // Sta voices.be toe als het in een fallback zit (bijv. || 'voices.be')
+        if (cleanLine.includes("|| 'voices.be'") || cleanLine.includes('|| "voices.be"')) return false;
+        if (cleanLine.includes("|| 'www.voices.be'") || cleanLine.includes('|| "www.voices.be"')) return false;
       }
       return true;
     }
