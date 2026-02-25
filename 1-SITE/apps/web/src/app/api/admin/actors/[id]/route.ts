@@ -1,6 +1,5 @@
 import { NextResponse, NextRequest } from 'next/server';
-import { db } from '@/lib/sync/bridge';
-import { actors } from '@/lib/system/voices-config';
+import { db, actors } from '@/lib/system/voices-config';
 import { eq, or } from 'drizzle-orm';
 import { requireAdmin } from '@/lib/auth/api-auth';
 
@@ -43,7 +42,7 @@ export async function PATCH(
 
     // 🛡️ CHRIS-PROTOCOL: Nuclear Entity Mapping (v2.14.192)
     // Fetch all statuses and experience levels to map strings to IDs
-    const { actorStatuses, experienceLevels } = await import('@db/schema');
+    const { actorStatuses, experienceLevels } = await import('@/lib/system/voices-config');
     const [dbStatuses, dbLevels] = await Promise.all([
       db.select().from(actorStatuses),
       db.select().from(experienceLevels)
@@ -153,7 +152,7 @@ export async function PATCH(
     // 🛡️ CHRIS-PROTOCOL: Map language IDs to strings if provided
     if (body.native_lang_id || body.extra_lang_ids) {
       try {
-        const { languages: languagesTable } = await import('@db/schema');
+        const { languages: languagesTable } = await import('@/lib/system/voices-config');
         const { inArray } = await import('drizzle-orm');
         const langIds = [body.native_lang_id, ...(body.extra_lang_ids || [])].filter(Boolean);
         if (langIds.length > 0) {
@@ -179,7 +178,7 @@ export async function PATCH(
     
     if (!effectivePhotoId && cleanPhotoUrl) {
       try {
-        const { media: mediaTable } = await import('@db/schema');
+        const { media: mediaTable } = await import('@/lib/system/voices-config');
         // Strip proxy prefix if present to get the raw path
         const rawPath = cleanPhotoUrl.includes('/api/proxy/?path=') 
           ? decodeURIComponent(cleanPhotoUrl.split('/api/proxy/?path=')[1])
@@ -286,7 +285,7 @@ export async function PATCH(
     // 🛡️ CHRIS-PROTOCOL: Update actor_languages relationships (v2.14.133)
     if (body.native_lang_id || body.extra_lang_ids) {
       try {
-        const { actorLanguages } = await import('@db/schema');
+        const { actorLanguages } = await import('@/lib/system/voices-config');
         
         // 1. Verwijder bestaande relaties voor deze acteur
         await db.delete(actorLanguages).where(eq(actorLanguages.actorId, effectiveActorId));
@@ -318,7 +317,7 @@ export async function PATCH(
 
     //  CHRIS-PROTOCOL: Update demos if provided
     if (body.demos && Array.isArray(body.demos)) {
-      const { actorDemos } = await import('@db/schema');
+      const { actorDemos } = await import('@/lib/system/voices-config');
       
       // 1. Get existing demos to find which ones to delete
       const existingDemos = await db.select().from(actorDemos).where(eq(actorDemos.actorId, effectiveActorId));
@@ -363,7 +362,7 @@ export async function PATCH(
 
     //  CHRIS-PROTOCOL: Update actor_videos if provided
     if (body.actor_videos && Array.isArray(body.actor_videos)) {
-      const { actorVideos } = await import('@db/schema');
+      const { actorVideos } = await import('@/lib/system/voices-config');
       
       // 1. Get existing videos to find which ones to delete
       const existingVideos = await db.select().from(actorVideos).where(eq(actorVideos.actorId, effectiveActorId));
@@ -407,7 +406,7 @@ export async function PATCH(
 
     //  CHRIS-PROTOCOL: Update reviews if provided
     if (body.reviews && Array.isArray(body.reviews)) {
-      const { reviews } = await import('@db/schema');
+      const { reviews } = await import('@/lib/system/voices-config');
       
       // 1. Get existing reviews for this actor/business
       // For actors, we use businessSlug = actor.slug
