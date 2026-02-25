@@ -241,7 +241,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
     };
 
     const languageConfig = languagesData.map(l => ({
-      label: l.label,
+      label: l.label.replace(/\s*\(algemeen\)\s*/i, '').trim(),
       value: l.id,
       langCode: l.code,
       icon: l.icon,

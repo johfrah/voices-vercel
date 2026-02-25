@@ -570,7 +570,7 @@ export default function Home() {
   const [mounted, setMounted] = useState(false);
   const [data, setData] = useState<{ actors: Actor[], reviews: any[], reviewStats?: { averageRating: number, totalCount: number, distribution?: Record<number, number> }, dynamicConfig?: any } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [dynamicData, setDynamicConfigData] = useState<{ languages: any[], genders: any[], journeys: any[], mediaTypes: any[] } | null>(null);
+  const [dynamicData, setDynamicConfigData] = useState<{ languages: any[], genders: any[], journeys: any[], mediaTypes: any[], countries: any[] } | null>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -626,9 +626,10 @@ export default function Home() {
       fetch('/api/admin/config?type=languages', { signal: controller.signal }).then(res => res.json()),
       fetch('/api/admin/config?type=genders', { signal: controller.signal }).then(res => res.json()),
       fetch('/api/admin/config?type=journeys', { signal: controller.signal }).then(res => res.json()),
-      fetch('/api/admin/config?type=media_types', { signal: controller.signal }).then(res => res.json())
+      fetch('/api/admin/config?type=media_types', { signal: controller.signal }).then(res => res.json()),
+      fetch('/api/admin/config?type=countries', { signal: controller.signal }).then(res => res.json())
     ])
-      .then(([resData, homeConfig, langs, genders, journeys, mediaTypes]) => {
+      .then(([resData, homeConfig, langs, genders, journeys, mediaTypes, countries]) => {
         clearTimeout(timeoutId);
         if (!mounted) return;
         
@@ -638,7 +639,8 @@ export default function Home() {
           languages: langs.results || [],
           genders: genders.results || [],
           journeys: journeys.results || [],
-          mediaTypes: mediaTypes.results || []
+          mediaTypes: mediaTypes.results || [],
+          countries: countries.results || []
         });
 
         if (!resData || !resData.results) {

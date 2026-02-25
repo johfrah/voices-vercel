@@ -377,7 +377,10 @@ export class MarketManagerServer {
         l.code.toLowerCase() === lowInput || 
         l.label.toLowerCase() === lowInput
       );
-      if (match) return match.label;
+      if (match) {
+        // 🛡️ USER-MANDATE: Remove "(Algemeen)" or similar slop from labels
+        return match.label.replace(/\s*\(algemeen\)\s*/i, '').trim();
+      }
     }
 
     // Emergency fallbacks for early boot/SSR only
@@ -391,8 +394,8 @@ export class MarketManagerServer {
     
     if (emergencyMap[lowInput]) return emergencyMap[lowInput];
     
-    // Fallback: Capitalize first letter
-    return lowInput.charAt(0).toUpperCase() + lowInput.slice(1);
+    // Fallback: Capitalize first letter and remove slop
+    return lowInput.replace(/\s*\(algemeen\)\s*/i, '').trim().charAt(0).toUpperCase() + lowInput.replace(/\s*\(algemeen\)\s*/i, '').trim().slice(1);
   }
 
   /**

@@ -39,25 +39,23 @@ export const dynamic = 'force-dynamic';
 
   interface Order {
     id: number;
-    wpOrderId: number;
-    displayOrderId: string | null;
-    total: string;
-    amountNet: string;
-    purchaseOrder: string | null;
-    billingEmailAlt: string | null;
+    orderNumber: string;
+    date: string;
     status: string;
-    journey: string;
-    journeyId: number | null;
-    statusId: number | null;
-    paymentMethodId: number | null;
-    createdAt: string;
-    isQuote: boolean;
-    user: {
-      first_name: string | null;
-      last_name: string | null;
+    unit: string;
+    customer: {
+      name: string;
       email: string;
-      companyName: string | null;
+      company: string | null;
     } | null;
+    finance: {
+      net: string;
+      total: string;
+    };
+    billing: {
+      purchaseOrder: string | null;
+      email: string | null;
+    };
   }
 
 interface PaginationData {
@@ -149,12 +147,10 @@ export default function BestellingenPage() {
     const searchLower = (search || '').toLowerCase();
     
     const matchesSearch = 
-      (order.displayOrderId?.toLowerCase().includes(searchLower) ?? false) ||
-      (order.wpOrderId?.toString().includes(searchLower) ?? false) ||
-      (order.user?.email?.toLowerCase().includes(searchLower) ?? false) ||
-      (order.user?.companyName?.toLowerCase().includes(searchLower) ?? false) ||
-      (order.user?.first_name?.toLowerCase().includes(searchLower) ?? false) ||
-      (order.user?.last_name?.toLowerCase().includes(searchLower) ?? false);
+      (order.orderNumber?.toLowerCase().includes(searchLower) ?? false) ||
+      (order.customer?.email?.toLowerCase().includes(searchLower) ?? false) ||
+      (order.customer?.company?.toLowerCase().includes(searchLower) ?? false) ||
+      (order.customer?.name?.toLowerCase().includes(searchLower) ?? false);
     
     const matchesFilter = filter === 'all' || order.status === filter;
     
@@ -279,8 +275,8 @@ export default function BestellingenPage() {
                           <ChevronRight size={14} className="text-va-black/20" />
                         </div>
                         <div className="flex flex-col">
-                          <span className="text-[15px] font-light text-va-black tracking-tight">#{order.displayOrderId || order.wpOrderId}</span>
-                          <span className="text-[11px] font-light text-va-black/30 tracking-widest uppercase">{order.journey}</span>
+                          <span className="text-[15px] font-light text-va-black tracking-tight">#{order.orderNumber}</span>
+                          <span className="text-[11px] font-light text-va-black/30 tracking-widest uppercase">{order.unit}</span>
                         </div>
                       </div>
                     </td>
@@ -291,10 +287,10 @@ export default function BestellingenPage() {
                         </div>
                         <div className="flex flex-col">
                           <span className="text-[15px] font-light text-va-black tracking-tight">
-                            {order.user?.first_name} {order.user?.last_name}
+                            {order.customer?.name}
                           </span>
                           <span className="text-[12px] font-light text-va-black/40 tracking-tight">
-                            {order.user?.companyName || order.user?.email}
+                            {order.customer?.company || order.customer?.email}
                           </span>
                         </div>
                       </div>
@@ -302,9 +298,9 @@ export default function BestellingenPage() {
                     <td className="px-8 py-6">
                       <span className="text-[14px] font-light text-va-black/60" suppressHydrationWarning>
                         {(() => {
-                          if (!order.createdAt) return '...';
+                          if (!order.date) return '...';
                           try {
-                            const date = new Date(order.createdAt);
+                            const date = new Date(order.date);
                             if (isNaN(date.getTime())) return 'Ongeldige datum';
                             return format(date, 'dd MMM yyyy', { locale: nl });
                           } catch (e) {
@@ -316,23 +312,23 @@ export default function BestellingenPage() {
                     <td className="px-8 py-6">
                       <div className="flex flex-col">
                         <span className="text-[15px] font-medium text-va-black tracking-tight">
-                          €{parseFloat(order.amountNet || "0").toFixed(2)}
+                          €{parseFloat(order.finance?.net || "0").toFixed(2)}
                         </span>
                         <span className="text-[11px] font-light text-va-black/30 tracking-tight">
-                          Bruto: €{parseFloat(order.total).toFixed(2)}
+                          Bruto: €{parseFloat(order.finance?.total || "0").toFixed(2)}
                         </span>
                       </div>
                     </td>
                     <td className="px-8 py-6">
                       <div className="flex flex-col">
-                        {order.purchaseOrder ? (
-                          <span className="text-[13px] font-medium text-primary tracking-tight">PO: {order.purchaseOrder}</span>
+                        {order.billing?.purchaseOrder ? (
+                          <span className="text-[13px] font-medium text-primary tracking-tight">PO: {order.billing.purchaseOrder}</span>
                         ) : (
                           <span className="text-[13px] font-light text-va-black/20 tracking-tight">-</span>
                         )}
-                        {order.billingEmailAlt && (
-                          <span className="text-[11px] font-light text-va-black/40 truncate max-w-[150px]" title={order.billingEmailAlt}>
-                            {order.billingEmailAlt}
+                        {order.billing?.email && (
+                          <span className="text-[11px] font-light text-va-black/40 truncate max-w-[150px]" title={order.billing.email}>
+                            {order.billing.email}
                           </span>
                         )}
                       </div>

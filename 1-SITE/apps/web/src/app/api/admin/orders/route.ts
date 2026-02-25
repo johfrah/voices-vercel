@@ -131,6 +131,27 @@ export async function GET(request: NextRequest) {
           };
         }
 
+        const journeyMap: Record<number, string> = {
+          1: 'Voices Agency',
+          2: 'Voices Studio',
+          3: 'Voices Academy',
+          4: 'Voices Artist'
+        };
+
+        const statusMap: Record<string, string> = {
+          'completed': 'Voltooid',
+          'processing': 'In behandeling',
+          'pending': 'Wacht op betaling',
+          'on-hold': 'Gepauzeerd',
+          'cancelled': 'Geannuleerd',
+          'refunded': 'Terugbetaald',
+          'failed': 'Mislukt',
+          'wc-completed': 'Voltooid',
+          'wc-processing': 'In behandeling',
+          'wc-pending': 'Wacht op betaling',
+          'waiting-po': 'Wacht op PO-nummer'
+        };
+
         let displayStatus = order.status || 'completed';
         if (order.status_id) {
           const [statusRow] = await db.select().from(orderStatuses).where(eq(orderStatuses.id, order.status_id)).limit(1);
@@ -139,21 +160,23 @@ export async function GET(request: NextRequest) {
 
         return {
           id: order.id,
-          wpOrderId: order.id,
-          displayOrderId: order.id?.toString(),
-          total: order.amount_total?.toString() || order.amountTotal?.toString() || "0.00",
-          amountNet: order.amount_net?.toString() || order.amountNet?.toString() || "0.00",
-          purchaseOrder: order.purchase_order || order.purchaseOrder || null,
-          billingEmailAlt: order.billing_email_alt || order.billingEmailAlt || null,
-          status: displayStatus, 
-          journey: order.journey || 'agency',
-          journeyId: order.journey_id || order.journeyId,
-          statusId: order.status_id || order.statusId,
-          paymentMethodId: order.payment_method_id || order.paymentMethodId,
-          market: order.market || 'BE',
-          createdAt: order.created_at || order.createdAt,
-          isQuote: !!(order.is_quote || order.isQuote),
-          user: customerInfo
+          orderNumber: order.id?.toString(),
+          date: order.created_at || order.createdAt,
+          status: statusMap[displayStatus] || displayStatus,
+          unit: journeyMap[Number(order.journey_id || order.journeyId)] || 'Voices',
+          customer: customerInfo ? {
+            name: `${customerInfo.first_name || ''} ${customerInfo.last_name || ''}`.trim(),
+            email: customerInfo.email,
+            company: customerInfo.companyName
+          } : null,
+          finance: {
+            net: order.amount_net?.toString() || order.amountNet?.toString() || "0.00",
+            total: order.amount_total?.toString() || order.amountTotal?.toString() || "0.00"
+          },
+          billing: {
+            purchaseOrder: order.purchase_order || order.purchaseOrder || null,
+            email: order.billing_email_alt || order.billingEmailAlt || null
+          }
         };
       } catch (innerError) {
         return null;
