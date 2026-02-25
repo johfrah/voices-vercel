@@ -2,14 +2,17 @@ import { NextResponse, NextRequest } from 'next/server';
 import { requireAdmin } from '@/lib/auth/api-auth';
 import { createClient } from '@supabase/supabase-js';
 import { ServerWatchdog } from '@/lib/services/server-watchdog';
+import { db } from '@/lib/core-internal/database';
+import { actors } from '@voices/database/schema';
+import { eq, or } from 'drizzle-orm';
 
 export const dynamic = 'force-dynamic';
 
 /**
- * 🛡️ CHRIS-PROTOCOL: ULTRA-FORENSIC ACTOR UPDATE (v2.14.509)
+ * 🛡️ CHRIS-PROTOCOL: ATOMIC ACTOR UPDATE (v2.14.510)
  * 
- * We use the Supabase SDK directly for maximum stability on Vercel.
- * Every step is logged to system_events for 100% transparency.
+ * We use Drizzle for the main actor update (Stability & Type-Safety)
+ * and the Supabase SDK for relational sync (Languages & Demos).
  */
 export async function PATCH(
   request: NextRequest,
@@ -64,97 +67,86 @@ export async function PATCH(
     );
 
     // 🛡️ CHRIS-PROTOCOL: Forensic Mapping (Form -> Snake Case DB)
-    const sdkData: any = {};
+    const updateData: any = {};
     
     // Basic Info
-    if (body.firstName || body.first_name) sdkData.first_name = body.firstName || body.first_name;
-    if (body.lastName || body.last_name) sdkData.last_name = body.lastName || body.last_name;
-    if (body.email) sdkData.email = body.email;
-    if (body.gender) sdkData.gender = body.gender;
-    if (body.tone_of_voice || body.toneOfVoice) sdkData.tone_of_voice = body.tone_of_voice || body.toneOfVoice;
-    if (body.clients) sdkData.clients = body.clients;
-    if (body.voice_score || body.voiceScore) sdkData.voice_score = parseInt(body.voice_score || body.voiceScore);
-    if (body.menu_order || body.menuOrder) sdkData.menu_order = parseInt(body.menu_order || body.menuOrder);
-    if (body.is_public !== undefined) sdkData.is_public = body.is_public;
+    if (body.first_name || body.firstName) updateData.firstName = body.first_name || body.firstName;
+    if (body.last_name || body.lastName) updateData.lastName = body.last_name || body.lastName;
+    if (body.email) updateData.email = body.email;
+    if (body.gender) updateData.gender = body.gender;
+    if (body.tone_of_voice || body.toneOfVoice) updateData.toneOfVoice = body.tone_of_voice || body.toneOfVoice;
+    if (body.clients) updateData.clients = body.clients;
+    if (body.voice_score || body.voiceScore) updateData.voiceScore = parseInt(body.voice_score || body.voiceScore);
+    if (body.menu_order || body.menuOrder) updateData.menuOrder = parseInt(body.menu_order || body.menuOrder);
+    if (body.is_public !== undefined) updateData.isPublic = body.is_public;
+    if (body.is_ai !== undefined) updateData.isAi = body.is_ai;
     
     // 🛡️ CHRIS-PROTOCOL: Status Mapping Fix (v2.14.509)
-    // Frontend uses 'away', DB enum uses 'unavailable'
     if (body.status) {
       let status = body.status.toLowerCase();
       if (status === 'away') status = 'unavailable';
       
       const validStatuses = ['pending', 'approved', 'active', 'live', 'publish', 'rejected', 'cancelled', 'unavailable'];
       if (validStatuses.includes(status)) {
-        sdkData.status = status;
+        updateData.status = status;
       } else {
-        console.warn(` [SDK-PATCH] Invalid status received: ${status}, defaulting to pending`);
-        sdkData.status = 'pending';
+        console.warn(` [ATOMIC-PATCH] Invalid status received: ${status}, defaulting to pending`);
+        updateData.status = 'pending';
       }
     }
 
     // Delivery
-    if (body.delivery_days !== undefined || body.delivery_days_min !== undefined) {
-      sdkData.delivery_days_min = body.delivery_days === 0 ? 0 : (body.delivery_days || body.delivery_days_min);
-    }
-    if (body.delivery_days !== undefined || body.delivery_days_max !== undefined) {
-      sdkData.delivery_days_max = body.delivery_days || body.delivery_days_max;
-    }
-    if (body.delivery_days === 0 || body.delivery_days_min === 0) {
-      sdkData.sameday_delivery = true;
-    }
-    if (body.cutoff_time) sdkData.cutoff_time = body.cutoff_time;
+    if (body.delivery_days_min !== undefined) updateData.deliveryDaysMin = body.delivery_days_min;
+    if (body.delivery_days_max !== undefined) updateData.deliveryDaysMax = body.delivery_days_max;
+    if (body.delivery_days_min === 0) updateData.samedayDelivery = true;
+    if (body.cutoff_time) updateData.cutoffTime = body.cutoff_time;
 
     // Bio & Tagline (HITL)
     if (isSuperAdmin) {
-      if (body.bio !== undefined) sdkData.bio = body.bio;
-      if (body.tagline !== undefined) sdkData.tagline = body.tagline;
-      sdkData.pending_bio = null;
-      sdkData.pending_tagline = null;
+      if (body.bio !== undefined) updateData.bio = body.bio;
+      if (body.tagline !== undefined) updateData.tagline = body.tagline;
+      updateData.pendingBio = null;
+      updateData.pendingTagline = null;
     } else {
-      if (body.bio !== undefined) sdkData.pending_bio = body.bio;
-      if (body.tagline !== undefined) sdkData.tagline = body.tagline;
+      if (body.bio !== undefined) updateData.pendingBio = body.bio;
+      if (body.tagline !== undefined) updateData.pendingTagline = body.tagline;
     }
 
     // Rates
-    if (body.rates) sdkData.rates = body.rates;
-    if (body.price_live_regie) sdkData.price_live_regie = String(body.price_live_regie);
-    if (body.price_online) sdkData.price_online = String(body.price_online);
-    if (body.price_ivr) sdkData.price_ivr = String(body.price_ivr);
-    if (body.price_unpaid) sdkData.price_unpaid = String(body.price_unpaid);
+    if (body.rates) updateData.rates = body.rates;
+    if (body.price_live_regie !== undefined) updateData.priceLiveRegie = body.price_live_regie ? String(body.price_live_regie) : null;
+    if (body.price_online !== undefined) updateData.priceOnline = body.price_online ? String(body.price_online) : null;
+    if (body.price_ivr !== undefined) updateData.priceIvr = body.price_ivr ? String(body.price_ivr) : null;
+    if (body.price_unpaid !== undefined) updateData.priceUnpaid = body.price_unpaid ? String(body.price_unpaid) : null;
 
     // Assets
-    let cleanPhotoUrl = body.photo_url || body.dropboxUrl || body.dropbox_url;
-    if (cleanPhotoUrl && cleanPhotoUrl.includes('/api/proxy/?path=')) {
-      cleanPhotoUrl = decodeURIComponent(cleanPhotoUrl.split('/api/proxy/?path=')[1]);
-    }
-    if (cleanPhotoUrl) sdkData.dropbox_url = cleanPhotoUrl;
+    if (body.dropbox_url) updateData.dropboxUrl = body.dropbox_url;
+    if (body.photo_id) updateData.photoId = parseInt(body.photo_id);
+
+    // Complex Data
+    if (body.studio_specs) updateData.studioSpecs = body.studio_specs;
+    if (body.connectivity) updateData.connectivity = body.connectivity;
+    if (body.holiday_from) updateData.holidayFrom = body.holiday_from;
+    if (body.holiday_till) updateData.holidayTill = body.holiday_till;
+
+    updateData.isManuallyEdited = true;
+    updateData.updatedAt = new Date().toISOString();
+
+    // 🛡️ CHRIS-PROTOCOL: Atomic Drizzle Update
+    console.log(`🚀 [ATOMIC-PATCH] Updating actor ${id} via Drizzle...`);
     
-    const rawPhotoId = body.photo_id || body.photoId;
-    if (rawPhotoId && parseInt(rawPhotoId) > 0) {
-      sdkData.photo_id = parseInt(rawPhotoId);
-    }
+    const [actorResult] = await db.update(actors)
+      .set(updateData)
+      .where(or(eq(actors.id, id), eq(actors.wpProductId, id)))
+      .returning();
 
-    sdkData.is_manually_edited = true;
-    sdkData.updated_at = new Date().toISOString();
-
-    // 🛡️ CHRIS-PROTOCOL: Super-Admin God Mode
-    console.log(`🚀 [SDK-PATCH] Auth Mode: ${isSuperAdmin ? 'GOD MODE (Service Role)' : 'STANDARD'}`);
-
-    // 1. Update Actor Profile
-    const { data: actorResult, error: actorError } = await supabase
-      .from('actors')
-      .update(sdkData)
-      .or(`id.eq.${id},wp_product_id.eq.${id}`)
-      .select()
-      .single();
-
-    if (actorError) {
-      throw new Error(`Database update failed: ${actorError.message}`);
+    if (!actorResult) {
+      throw new Error(`Actor with ID ${id} not found in database`);
     }
 
     const effectiveActorId = actorResult.id;
 
-    // 2. Update Languages (Relational)
+    // 2. Update Languages (Relational) - Keep SDK for now
     if (body.native_lang_id || body.extra_lang_ids) {
       await supabase.from('actor_languages').delete().eq('actor_id', effectiveActorId);
       
@@ -174,7 +166,7 @@ export async function PATCH(
       }
     }
 
-    // 3. Update Demos
+    // 3. Update Demos - Keep SDK for now
     if (body.demos && Array.isArray(body.demos)) {
       const incomingIds = body.demos.map((d: any) => parseInt(d.id)).filter(Boolean);
       
@@ -217,11 +209,11 @@ export async function PATCH(
     return NextResponse.json({ 
       success: true, 
       actor: actorResult,
-      _forensic: `Actor ${id} updated successfully via Supabase SDK`
+      _forensic: `Actor ${id} updated successfully via Drizzle & SDK`
     });
 
   } catch (error: any) {
-    console.error(' [SDK-PATCH] CRASH:', error);
+    console.error(' [ATOMIC-PATCH] CRASH:', error);
     
     // 🛡️ CHRIS-PROTOCOL: Mandatory Error Reporting
     await ServerWatchdog.report({

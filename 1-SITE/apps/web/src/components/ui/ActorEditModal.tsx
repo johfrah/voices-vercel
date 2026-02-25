@@ -45,31 +45,31 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
     clients: actor.clients || '',
     voice_score: actor.voice_score || 10,
     status: actor.status || 'live',
-    delivery_days: actor.delivery_days_max || 1,
+    delivery_days_max: actor.delivery_days_max || 1,
     cutoff_time: actor.cutoff_time || '18:00',
-    native_lang: actor.native_lang || (actor as any).nativeLang || '',
+    native_lang: (actor as any).native_lang || (actor as any).nativeLang || '',
     native_lang_id: (actor as any).native_lang_id || (actor as any).nativeLangId || null,
-    extra_langs: actor.extra_langs || (actor as any).extraLangs || '',
+    extra_langs: (actor as any).extra_langs || (actor as any).extraLangs || '',
     extra_lang_ids: (actor as any).extra_lang_ids || (actor as any).extraLangIds || [],
     native_lang_label: actor.native_lang_label || (actor as any).nativeLangLabel || (actor as any).native_lang_label || '',
-    photo_url: actor.photo_url || '',
+    dropbox_url: actor.dropbox_url || actor.photo_url || '',
     photo_id: (actor as any).photo_id || (actor as any).photoId || null,
     demos: actor.demos || [],
-    firstName: actor.firstName || actor.first_name || '',
-    lastName: actor.last_name || actor.lastName || '',
+    first_name: actor.first_name || actor.firstName || '',
+    last_name: actor.last_name || actor.lastName || '',
     email: actor.email || (actor as any).user?.email || '',
     gender: actor.gender || 'male',
-    experienceLevel: actor.experienceLevel || 'pro',
-    holiday_from: (actor as any).holidayFrom || (actor as any).holiday_from || '',
-    holiday_till: (actor as any).holidayTill || (actor as any).holiday_till || '',
-    price_online: (actor as any).priceOnline || (actor as any).price_online || '',
-    price_live_regie: (actor as any).priceLiveRegie || (actor as any).price_live_regie || '',
+    experience_level: actor.experience_level || actor.experienceLevel || 'pro',
+    holiday_from: (actor as any).holiday_from || (actor as any).holidayFrom || '',
+    holiday_till: (actor as any).holiday_till || (actor as any).holidayTill || '',
+    price_online: (actor as any).price_online || (actor as any).priceOnline || '',
+    price_live_regie: (actor as any).price_live_regie || (actor as any).priceLiveRegie || '',
     rates: actor.rates || (actor as any).rates || { GLOBAL: {} },
-    delivery_config: actor.delivery_config || (actor as any).deliveryConfig || { type: '24h', cutoff: '18:00', weekly_on: ['mon', 'tue', 'wed', 'thu', 'fri'] },
-    studio_specs: (actor as any).studioSpecs || (actor as any).studio_specs || { microphone: '', preamp: '', interface: '', booth: '' },
+    delivery_config: (actor as any).delivery_config || (actor as any).deliveryConfig || { type: '24h', cutoff: '18:00', weekly_on: ['mon', 'tue', 'wed', 'thu', 'fri'] },
+    studio_specs: (actor as any).studio_specs || (actor as any).studioSpecs || { microphone: '', preamp: '', interface: '', booth: '' },
     connectivity: (actor as any).connectivity || { source_connect: false, zoom: false, cleanfeed: false, session_link: false },
     portfolio_photos: (actor as any).portfolio_photos || [],
-    actor_videos: actor.actor_videos || (actor as any).actorVideos || [],
+    actor_videos: (actor as any).actor_videos || (actor as any).actorVideos || [],
     reviews: actor.reviews || [],
     portfolio_tier: (actor as any).portfolio_tier || (actor as any).portfolioTier || 'none',
     pending_bio: (actor as any).pending_bio || (actor as any).pendingBio || null,
@@ -352,7 +352,7 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
         radio_local: (actor as any).price_radio_local || (actor as any).price_radio_local,
         podcast: (actor as any).price_podcast || (actor as any).price_podcast,
         social_media: (actor as any).price_social_media || (actor as any).price_social_media,
-        online: (actor as any).priceOnline || (actor as any).price_online
+        online: (actor as any).price_online || (actor as any).priceOnline
       };
 
       Object.entries(legacyFields).forEach(([key, val]) => {
@@ -397,19 +397,19 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
         native_lang_label: actor.native_lang_label || (actor as any).native_lang_label || '',
         photo_url: actor.photo_url || '',
         demos: actor.demos || [],
-        firstName: actor.firstName || actor.first_name || (actor as any).display_name || '',
-        lastName: actor.lastName || actor.last_name || '',
+        first_name: actor.first_name || actor.firstName || (actor as any).display_name || '',
+        last_name: actor.last_name || actor.lastName || '',
         email: actor.email || (actor as any).user?.email || '',
         gender: actor.gender || 'male',
-        experienceLevel: actor.experienceLevel || 'pro',
-        holiday_from: (actor as any).holidayFrom || (actor as any).holiday_from || '',
-        holiday_till: (actor as any).holidayTill || (actor as any).holiday_till || '',
-        price_live_regie: (actor as any).priceLiveRegie || (actor as any).price_live_regie || '',
+        experience_level: actor.experience_level || actor.experienceLevel || 'pro',
+        holiday_from: (actor as any).holiday_from || (actor as any).holidayFrom || '',
+        holiday_till: (actor as any).holiday_till || (actor as any).holidayTill || '',
+        price_live_regie: (actor as any).price_live_regie || (actor as any).priceLiveRegie || '',
         rates: initialRates,
-        delivery_config: actor.delivery_config || (actor as any).deliveryConfig || { type: '24h', cutoff: '18:00', weekly_on: ['mon', 'tue', 'wed', 'thu', 'fri'] },
+        delivery_config: (actor as any).delivery_config || (actor as any).deliveryConfig || { type: '24h', cutoff: '18:00', weekly_on: ['mon', 'tue', 'wed', 'thu', 'fri'] },
         photo_id: (actor as any).photo_id || (actor as any).photoId || null,
-        price_online: (actor as any).priceOnline || (actor as any).price_online || '',
-        actor_videos: actor.actor_videos || (actor as any).actorVideos || [],
+        price_online: (actor as any).price_online || (actor as any).priceOnline || '',
+        actor_videos: (actor as any).actor_videos || (actor as any).actorVideos || [],
         pending_bio: (actor as any).pending_bio || (actor as any).pendingBio || null,
         pending_tagline: (actor as any).pending_tagline || (actor as any).pendingTagline || null
       });
@@ -458,7 +458,7 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
           actor: { 
             ...actor, 
             photo_url: newUrl,
-            photoId: mediaId 
+            photo_id: mediaId 
           } 
         } 
       }));
@@ -549,22 +549,13 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
     setIsSaving(true);
     setMessage(null);
 
-    //  CHRIS-PROTOCOL: Map frontend fields to backend expected fields
-    //  The rates JSON is now the primary source of truth for commercial rates
+    //  CHRIS-PROTOCOL: Atomic Payload (2026)
+    //  We stop mapping fields manually. The formData is now the source of truth
+    //  and matches the database snake_case columns exactly.
     const payload = {
       ...formData,
-      photo_id: formData.photo_id,
-      photo_url: formData.photo_url,
+      // Ensure price_live_regie is null if empty to avoid DB errors
       price_live_regie: formData.price_live_regie || null,
-      rates: formData.rates,
-      studioSpecs: formData.studio_specs,
-      connectivity: formData.connectivity,
-      portfolio_photos: formData.portfolio_photos,
-      portfolioTier: formData.portfolio_tier,
-      reviews: formData.reviews,
-      // 🛡️ CHRIS-PROTOCOL: Explicitly include language IDs for relational update (v2.14.161)
-      native_lang_id: formData.native_lang_id,
-      extra_lang_ids: formData.extra_lang_ids
     };
 
     console.log('🚀 [ActorEditModal] Forensic Save Trace:', {
@@ -757,8 +748,8 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
                     <label className="text-[10px] font-bold text-va-black/40 uppercase tracking-widest px-1">Voornaam (Publiek)</label>
                     <input 
                       type="text"
-                      value={formData.firstName}
-                      onChange={(e) => setFormData({ ...formData, firstName: e.target.value, display_name: e.target.value })}
+                      value={formData.first_name}
+                      onChange={(e) => setFormData({ ...formData, first_name: e.target.value, display_name: e.target.value })}
                       className="w-full px-4 py-3 bg-white rounded-xl border border-black/5 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-light"
                     />
                   </div>
@@ -766,8 +757,8 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
                     <label className="text-[10px] font-bold text-va-black/40 uppercase tracking-widest px-1 italic">Familienaam (Priv)</label>
                     <input 
                       type="text"
-                      value={formData.lastName}
-                      onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                          value={formData.last_name}
+                          onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
                       className="w-full px-4 py-3 bg-white rounded-xl border border-black/5 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-light"
                     />
                   </div>
@@ -851,8 +842,8 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
                       <div className="space-y-2">
                         <label className="text-[10px] font-bold text-va-black/40 uppercase tracking-widest px-1">Ervaring</label>
                         <select 
-                          value={formData.experienceLevel}
-                          onChange={(e) => setFormData({ ...formData, experienceLevel: e.target.value })}
+                          value={formData.experience_level}
+                          onChange={(e) => setFormData({ ...formData, experience_level: e.target.value })}
                           className="w-full px-4 py-3 bg-white rounded-xl border border-black/5 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-light appearance-none"
                         >
                           <option value="junior">Junior</option>
