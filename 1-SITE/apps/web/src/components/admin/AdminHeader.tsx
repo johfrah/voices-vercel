@@ -19,7 +19,7 @@ export const AdminHeader = () => {
                 alt="Logo" 
                 width={40} 
                 height={40} 
-                className="object-contain p-1 invert brightness-0"
+                className="object-contain p-1 brightness-0 invert"
                 priority
               />
             ) : (
