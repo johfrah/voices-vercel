@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
   const type = searchParams.get('type');
 
   // appConfigs en overige types: admin only
-  const publicTypes = ['actor', 'actors', 'music', 'navigation', 'telephony', 'general', 'languages'];
+  const publicTypes = ['actor', 'actors', 'music', 'navigation', 'telephony', 'general', 'languages', 'genders'];
   if (!type || !publicTypes.includes(type)) {
     const auth = await requireAdmin();
     if (auth instanceof NextResponse) return auth;
@@ -80,6 +80,11 @@ export async function GET(request: NextRequest) {
 
     if (type === 'languages') {
       const results = await dbWithTimeout(db.select().from(languages).orderBy(asc(languages.label))).catch(() => []);
+      return NextResponse.json({ results });
+    }
+
+    if (type === 'genders') {
+      const results = await dbWithTimeout(db.select().from(genders).orderBy(asc(genders.label))).catch(() => []);
       return NextResponse.json({ results });
     }
 
