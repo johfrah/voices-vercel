@@ -34,14 +34,17 @@ export async function GET(request: NextRequest) {
       allOrders = rawResult.rows || rawResult || [];
       debugInfo.raw_count = allOrders.length;
       debugInfo.source = 'public.orders';
+      debugInfo.db_url_check = process.env.DATABASE_URL?.includes('pooler') ? 'pooler' : 'direct';
     } catch (rawErr: any) {
       debugInfo.raw_error = rawErr.message;
+      debugInfo.raw_error_stack = rawErr.stack;
       try {
         allOrders = await db.select().from(orders).orderBy(desc(orders.createdAt)).limit(250);
         debugInfo.raw_count = allOrders.length;
         debugInfo.source = 'drizzle.orders';
       } catch (drizzleErr: any) {
         debugInfo.drizzle_error = drizzleErr.message;
+        debugInfo.drizzle_error_stack = drizzleErr.stack;
       }
     }
 
