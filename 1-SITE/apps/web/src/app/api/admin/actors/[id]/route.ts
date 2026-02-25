@@ -1,32 +1,51 @@
 import { NextResponse, NextRequest } from 'next/server';
 import { requireAdmin } from '@/lib/auth/api-auth';
 import { createClient } from '@supabase/supabase-js';
+import { ServerWatchdog } from '@/lib/services/server-watchdog';
 
 export const dynamic = 'force-dynamic';
 
 /**
- * 🛡️ CHRIS-PROTOCOL: SUPABASE SDK ACTOR UPDATE (v2.14.505)
+ * 🛡️ CHRIS-PROTOCOL: ULTRA-FORENSIC ACTOR UPDATE (v2.14.509)
  * 
  * We use the Supabase SDK directly for maximum stability on Vercel.
- * This bypasses Drizzle schema resolution issues (Symbol(drizzle:Columns)).
+ * Every step is logged to system_events for 100% transparency.
  */
 export async function PATCH(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   const id = parseInt(params.id);
+  const startTime = Date.now();
   
   // 🛡️ CHRIS-PROTOCOL: Build Safety
   if (process.env.NEXT_PHASE === 'phase-production-build' || (process.env.NODE_ENV === 'production' && !process.env.VERCEL_URL)) {
     return NextResponse.json({ success: true });
   }
 
+  let body: any = {};
+
   try {
-    const body = await request.json();
+    body = await request.json();
     
+    // 🛡️ CHRIS-PROTOCOL: Forensic Start Log
+    await ServerWatchdog.report({
+      level: 'info',
+      component: 'AdminActorAPI',
+      error: `Actor PATCH started for ${id}`,
+      url: request.url,
+      payload: { actorId: id, body }
+    });
+
     // 🛡️ CHRIS-PROTOCOL: Auth Check (Nuclear 2026)
     const auth = await requireAdmin();
     if (auth instanceof NextResponse) {
+      await ServerWatchdog.report({
+        level: 'error',
+        component: 'AdminActorAPI',
+        error: `Unauthorized access attempt for actor ${id}`,
+        url: request.url
+      });
       return auth;
     }
 
@@ -57,7 +76,21 @@ export async function PATCH(
     if (body.voice_score || body.voiceScore) sdkData.voice_score = parseInt(body.voice_score || body.voiceScore);
     if (body.menu_order || body.menuOrder) sdkData.menu_order = parseInt(body.menu_order || body.menuOrder);
     if (body.is_public !== undefined) sdkData.is_public = body.is_public;
-    if (body.status) sdkData.status = body.status.toLowerCase();
+    
+    // 🛡️ CHRIS-PROTOCOL: Status Mapping Fix (v2.14.509)
+    // Frontend uses 'away', DB enum uses 'unavailable'
+    if (body.status) {
+      let status = body.status.toLowerCase();
+      if (status === 'away') status = 'unavailable';
+      
+      const validStatuses = ['pending', 'approved', 'active', 'live', 'publish', 'rejected', 'cancelled', 'unavailable'];
+      if (validStatuses.includes(status)) {
+        sdkData.status = status;
+      } else {
+        console.warn(` [SDK-PATCH] Invalid status received: ${status}, defaulting to pending`);
+        sdkData.status = 'pending';
+      }
+    }
 
     // Delivery
     if (body.delivery_days !== undefined || body.delivery_days_min !== undefined) {
@@ -79,7 +112,7 @@ export async function PATCH(
       sdkData.pending_tagline = null;
     } else {
       if (body.bio !== undefined) sdkData.pending_bio = body.bio;
-      if (body.tagline !== undefined) sdkData.pending_tagline = body.tagline;
+      if (body.tagline !== undefined) sdkData.tagline = body.tagline;
     }
 
     // Rates
@@ -104,14 +137,8 @@ export async function PATCH(
     sdkData.is_manually_edited = true;
     sdkData.updated_at = new Date().toISOString();
 
-    // 🛡️ CHRIS-PROTOCOL: Forensic Trace
-    console.log('🚀 [SDK-PATCH] Forensic Trace:', { actorId: id, sdkData });
-
-    // 🛡️ CHRIS-PROTOCOL: Super-Admin Bypass for God Mode (v2.14.507)
-    // If the user is a super-admin, we bypass RLS by using the service role client.
-    // Otherwise, we use the standard client (which would fail if RLS is strict).
-    const isGodMode = isSuperAdmin;
-    console.log(`🚀 [SDK-PATCH] Auth Mode: ${isGodMode ? 'GOD MODE (Service Role)' : 'STANDARD'}`);
+    // 🛡️ CHRIS-PROTOCOL: Super-Admin God Mode
+    console.log(`🚀 [SDK-PATCH] Auth Mode: ${isSuperAdmin ? 'GOD MODE (Service Role)' : 'STANDARD'}`);
 
     // 1. Update Actor Profile
     const { data: actorResult, error: actorError } = await supabase
@@ -122,27 +149,13 @@ export async function PATCH(
       .single();
 
     if (actorError) {
-      console.error(' [SDK-PATCH] Actor update failed:', actorError);
-      
-      // 🛡️ CHRIS-PROTOCOL: Report server-side error to Watchdog
-      try {
-        const { ServerWatchdog } = await import('@/lib/services/server-watchdog');
-        await ServerWatchdog.report({
-          error: `Actor SDK Update failed: ${actorError.message}`,
-          details: { actorId: id, sdkData, actorError },
-          component: 'AdminActorAPI',
-          level: 'critical'
-        });
-      } catch (e) {}
-
-      throw new Error(`Actor update failed: ${actorError.message}`);
+      throw new Error(`Database update failed: ${actorError.message}`);
     }
 
     const effectiveActorId = actorResult.id;
 
     // 2. Update Languages (Relational)
     if (body.native_lang_id || body.extra_lang_ids) {
-      // Delete existing
       await supabase.from('actor_languages').delete().eq('actor_id', effectiveActorId);
       
       const langInserts = [];
@@ -165,14 +178,12 @@ export async function PATCH(
     if (body.demos && Array.isArray(body.demos)) {
       const incomingIds = body.demos.map((d: any) => parseInt(d.id)).filter(Boolean);
       
-      // Delete removed
       if (incomingIds.length > 0) {
         await supabase.from('actor_demos').delete().eq('actor_id', effectiveActorId).not('id', 'in', `(${incomingIds.join(',')})`);
       } else {
         await supabase.from('actor_demos').delete().eq('actor_id', effectiveActorId);
       }
 
-      // Upsert
       for (const demo of body.demos) {
         const demoId = demo.id ? parseInt(demo.id) : null;
         const isRealId = demoId && demoId < 1000000000;
@@ -194,6 +205,15 @@ export async function PATCH(
       }
     }
 
+    const duration = Date.now() - startTime;
+    await ServerWatchdog.report({
+      level: 'info',
+      component: 'AdminActorAPI',
+      error: `Actor ${id} updated successfully`,
+      url: request.url,
+      payload: { actorId: id, durationMs: duration }
+    });
+
     return NextResponse.json({ 
       success: true, 
       actor: actorResult,
@@ -202,6 +222,17 @@ export async function PATCH(
 
   } catch (error: any) {
     console.error(' [SDK-PATCH] CRASH:', error);
+    
+    // 🛡️ CHRIS-PROTOCOL: Mandatory Error Reporting
+    await ServerWatchdog.report({
+      level: 'critical',
+      component: 'AdminActorAPI',
+      error: `Actor update crash: ${error.message}`,
+      stack: error.stack,
+      url: request.url,
+      payload: { actorId: id, body, errorDetails: error }
+    });
+
     return NextResponse.json({ 
       error: 'Failed to update actor', 
       details: error.message 
