@@ -15,7 +15,7 @@ interface InvoiceReplyOptions {
 }
 
 export function VumeInvoiceReplyTemplate(options: InvoiceReplyOptions) {
-  const { userName, invoiceNumber, amount, host = process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be', language = 'nl' } = options;
+  const { userName, invoiceNumber, amount, host = process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'www.voices.be', language = 'nl-BE' } = options;
   // MarketManager is used for domain resolution in the mail engine
 
   const content = {

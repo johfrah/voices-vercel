@@ -490,7 +490,7 @@ export const MediaLibrary: React.FC = () => {
                 <ContainerInstrument className="aspect-square bg-va-off-white flex items-center justify-center relative overflow-hidden">
                   {item.fileType.startsWith('image/') ? (
                     <Image  
-                      src={`https://www.voices.be/assets/${item.filePath}`} 
+                      src={`/assets/${item.filePath}`} 
                       alt={item.fileName}
                       width={400}
                       height={400}
@@ -498,7 +498,7 @@ export const MediaLibrary: React.FC = () => {
                     />
                   ) : item.fileType.startsWith('video/') ? (
                     <video 
-                      src={`https://www.voices.be/assets/${item.filePath}`}
+                      src={`/assets/${item.filePath}`}
                       className="w-full h-full object-cover"
                       muted
                       onMouseOver={(e) => e.currentTarget.play()}

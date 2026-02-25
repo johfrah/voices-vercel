@@ -33,7 +33,7 @@ export class IntentLearningEngine {
       // 1. AI Analyse van de interactie via Voicy
       const gemini = GeminiService.getInstance();
       const prompt = `
-        Analyseer de volgende gebruikersinteractie op Voices.be.
+        Analyseer de volgende gebruikersinteractie op Voices.
         Bepaal de intentie, sector en specifieke behoeften.
         
         Type: ${type}

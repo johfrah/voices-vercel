@@ -127,7 +127,7 @@ export class PredictiveRouter {
     const subroles = user.subroles || [];
     const adminEmail = process.env.ADMIN_EMAIL;
     if (subroles.includes('academy_student') || user.roles.includes('academy_student')) return '/academy';
-    if (subroles.includes('studio_instructor') || subroles.includes('studio_workshopgever') || user.roles.includes('workshop_partner') || user.email === 'bernadette@voices.be' || (adminEmail && user.email === adminEmail)) return '/studio';
+    if (subroles.includes('studio_instructor') || subroles.includes('studio_workshopgever') || user.roles.includes('workshop_partner') || (adminEmail && user.email === adminEmail)) return '/studio';
     return null;
   }
 }

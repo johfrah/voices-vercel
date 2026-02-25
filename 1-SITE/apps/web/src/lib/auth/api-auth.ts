@@ -38,8 +38,8 @@ async function checkIsAdmin(user: User | null): Promise<boolean> {
 
   if (!user?.email) return false;
   const adminEmail = process.env.ADMIN_EMAIL;
-  // 🛡️ CHRIS-PROTOCOL: Admin emails are hardcoded for safety in the auth layer
-  if (user.email === adminEmail || user.email === 'johfrah@voices.be' || user.email === 'bernadette@voices.be') return true;
+  // 🛡️ CHRIS-PROTOCOL: Admin emails are strictly from ENV or DB role
+  if (user.email === adminEmail) return true;
 
   try {
     const [dbUser] = await db.select({ role: users.role }).from(users).where(eq(users.email, user.email)).limit(1);

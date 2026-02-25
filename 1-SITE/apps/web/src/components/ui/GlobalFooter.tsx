@@ -429,7 +429,7 @@ export default function GlobalFooter() {
               <TextInstrument as="span">
                 <VoiceglotText translationKey="footer.powered_by" defaultText="Powered by" />
                 <ButtonInstrument as="a" href={MarketManager.getMarketDomains()['BE']} variant="plain" size="none" className="hover:text-va-black transition-colors underline decoration-black/10 underline-offset-4 ml-1">
-                  {MarketManager.getCurrentMarket('voices.be').name || 'Voices'}
+                  {MarketManager.getCurrentMarket(MarketManager.getMarketDomains()['BE']?.replace('https://', '')).name || 'Voices'}
                 </ButtonInstrument>
               </TextInstrument>
             </TextInstrument>
@@ -854,7 +854,7 @@ export default function GlobalFooter() {
               <TextInstrument as="span">
                 <VoiceglotText translationKey="footer.powered_by" defaultText="Powered by" />
                 <ButtonInstrument as="a" href={MarketManager.getMarketDomains()['BE']} variant="plain" size="none" className="hover:text-va-black transition-colors underline decoration-black/10 underline-offset-4 ml-1">
-                  <VoiceglotText  translationKey="auto.globalfooter.voices_be.46435e" defaultText={MarketManager.getCurrentMarket('voices.be').name || 'Voices'} />
+                  <VoiceglotText  translationKey="auto.globalfooter.voices_be.46435e" defaultText={MarketManager.getCurrentMarket(MarketManager.getMarketDomains()['BE']?.replace('https://', '')).name || 'Voices'} />
                 </ButtonInstrument>
               </TextInstrument>
             )}

@@ -13,7 +13,7 @@ import { MarketManagerServer as MarketManager } from '@/lib/system/market-manage
 export async function sendTestMails(recipient: string) {
   console.log(` Starting VUME Test Suite for ${recipient}...`);
   const domains = MarketManager.getMarketDomains();
-  const defaultHost = domains['BE']?.replace('https://', '') || 'voices.be';
+  const defaultHost = domains['BE']?.replace('https://', '');
 
   try {
     // 1. Test Magic Link (Auth Journey) - Gebruik echte user data

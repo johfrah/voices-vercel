@@ -91,7 +91,7 @@ export default function VumeAdminPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ templateId: selectedTemplate.id, recipient: VOICES_CONFIG.company.email })
       });
-      if (res.ok) alert('Testmail verzonden naar admin@voices.be');
+      if (res.ok) alert(`Testmail verzonden naar ${VOICES_CONFIG.company.email}`);
     } catch (e) { alert('Fout bij verzenden'); }
     finally { setIsSending(false); }
   };

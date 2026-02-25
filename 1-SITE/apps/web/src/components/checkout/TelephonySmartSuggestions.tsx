@@ -360,7 +360,7 @@ export const TelephonySmartSuggestions: React.FC<{ setLocalBriefing?: (val: stri
             type="text"
             value={email}
             onChange={(e) => { setEmail(e.target.value); updateCustomer({ email: e.target.value }); }}
-            placeholder={t('common.placeholder.email', "info@bedrijf.be")}
+            placeholder={t('common.placeholder.email', "example@domain.com")}
             className="w-full bg-va-off-white border-2 border-transparent focus:border-primary/10 focus:bg-white rounded-[15px] py-4 px-5 text-[15px] font-light transition-all outline-none"
           />
         </div>

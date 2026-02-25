@@ -64,27 +64,28 @@ function HomeContent({ actors: initialActors, reviews, reviewStats, dynamicConfi
   const [customerDNA, setCustomerDNA] = useState<any>(null);
   const [actors, setActors] = useState<Actor[]>(initialActors);
 
-  const [marketCode, setMarketCode] = useState(marketConfig.market_code || 'BE');
+  const [marketCode, setMarketCode] = useState('BE');
 
   //  CHRIS-PROTOCOL: Avoid hydration mismatch by setting market after mount
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      setMarketCode(MarketManager.getCurrentMarket().market_code);
+      const currentMarket = MarketManager.getCurrentMarket();
+      setMarketCode(currentMarket.market_code);
     }
   }, []);
 
   const currentMarketConfig = useMemo(() => {
     //  CHRIS-PROTOCOL: Use a safe default for SSR to prevent hydration error #419
-    const defaultHost = MarketManager.getMarketDomains()['BE']?.replace('https://', '') || 'voices.be';
+    const defaultMarket = MarketManager.getCurrentMarket();
     
     // 🛡️ CHRIS-PROTOCOL: Force consistency between SSR and Client during hydration
     // We use the market from the state if available (client-side), otherwise we derive it.
-    if (typeof window !== 'undefined' && marketCode && marketCode !== marketConfig.market_code) {
+    if (typeof window !== 'undefined' && marketCode) {
       return MarketManager.getCurrentMarket(window.location.host);
     }
     
-    return marketConfig;
-  }, [marketCode, marketConfig]);
+    return defaultMarket;
+  }, [marketCode]);
 
   //  CHRIS-PROTOCOL: Sync local state with initial props
   useEffect(() => {
@@ -504,8 +505,8 @@ function HomeContent({ actors: initialActors, reviews, reviewStats, dynamicConfi
         "@context": "https://schema.org",
         "@type": "Organization",
         "name": currentMarketConfig.name,
-        "url": MarketManager.getMarketDomains()[currentMarketConfig.market_code] || `https://${currentMarketConfig.market_code === 'BE' ? (MarketManager.getMarketDomains()['BE']?.replace('https://', '') || 'www.voices.be') : (MarketManager.getMarketDomains()['NL']?.replace('https://', '') || 'www.voices.nl')}`,
-        "logo": `${MarketManager.getMarketDomains()[currentMarketConfig.market_code] || `https://${currentMarketConfig.market_code === 'BE' ? (MarketManager.getMarketDomains()['BE']?.replace('https://', '') || 'www.voices.be') : (MarketManager.getMarketDomains()['NL']?.replace('https://', '') || 'www.voices.nl')}`}${currentMarketConfig.logo_url}`,
+        "url": MarketManager.getMarketDomains()[currentMarketConfig.market_code] || `https://${currentMarketConfig.market_code === 'BE' ? (MarketManager.getMarketDomains()['BE']?.replace('https://', '')) : (MarketManager.getMarketDomains()['NL']?.replace('https://', ''))}`,
+        "logo": `${MarketManager.getMarketDomains()[currentMarketConfig.market_code] || `https://${currentMarketConfig.market_code === 'BE' ? (MarketManager.getMarketDomains()['BE']?.replace('https://', '')) : (MarketManager.getMarketDomains()['NL']?.replace('https://', ''))}`}${currentMarketConfig.logo_url}`,
         "description": currentMarketConfig.seo_data?.description || "Castingbureau voor stemacteurs en voice-overs.",
         "aggregateRating": {
           "@type": "AggregateRating",
@@ -523,7 +524,7 @@ function HomeContent({ actors: initialActors, reviews, reviewStats, dynamicConfi
         "founder": {
           "@type": "Person",
           "name": "Johfrah Lefebvre",
-          "sameAs": "https://www.johfrah.be"
+          "sameAs": MarketManager.getMarketDomains()['PORTFOLIO']
         },
         "_llm_context": {
           "intent": "explore_platform",
