@@ -12,7 +12,15 @@ import { type NextRequest, NextResponse } from 'next/server'
 
 export async function middleware(request: NextRequest) {
   const url = request.nextUrl.clone()
-  const pathname = url.pathname
+  let pathname = url.pathname
+
+  // 🛡️ CHRIS-PROTOCOL: Normaliseer trailing slash voor consistente routing (v2.14.608)
+  // We zorgen dat alle interne vergelijkingen gebaseerd zijn op een pad ZONDER trailing slash.
+  const hasTrailingSlash = pathname.length > 1 && pathname.endsWith('/')
+  if (hasTrailingSlash) {
+    pathname = pathname.slice(0, -1)
+  }
+
   const userAgent = request.headers.get('user-agent') || ''
 
   // NUCLEAR BOT PROTECTION
