@@ -40,6 +40,8 @@ export async function getServerUser(): Promise<ServerUser | null> {
       .maybeSingle();
     
     if (data && !error) {
+      // FORCEER ROLE CHECK VOOR DEBUGGING
+      console.log(`[Auth] User ${user.email} role: ${data.role}`);
       return { id: data.id, email: data.email, role: data.role };
     }
 
