@@ -182,6 +182,8 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
   const lang = headersList.get('x-voices-lang') || 'nl';
   const normalizedSlug = normalizeSlug(params.slug);
   
+  console.error(` [SmartRouter] Metadata context: host=${host}, market=${market.market_code}, lang=${lang}, slug=${normalizedSlug}`);
+  
   // 🛡️ CHRIS-PROTOCOL: Strip language prefix for metadata resolution
   const cleanSlug = stripLanguagePrefix(normalizedSlug);
   const cleanSegments = cleanSlug.split('/').filter(Boolean);
@@ -191,6 +193,8 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
   // Resolve de slug naar de originele versie
   const resolved = await resolveSlug(cleanSlug, lang);
   const firstSegment = resolved ? resolved.originalSlug : (cleanSegments[0] || normalizedSlug.split('/')[0]);
+
+  console.error(` [SmartRouter] Resolved firstSegment: ${firstSegment} (from cleanSlug: ${cleanSlug})`);
 
   //  CHRIS-PROTOCOL: Helper voor meertalige SEO via Voiceglot
   const getTranslatedSEO = async (key: string, defaultText: string) => {
