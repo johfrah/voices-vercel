@@ -405,7 +405,13 @@ export async function getArticle(slug: string, lang: string = 'nl'): Promise<any
 
 export async function getActor(slug: string, lang: string = 'nl'): Promise<Actor> {
   // 🛡️ CHRIS-PROTOCOL: Use SDK for consistency and field prioritization
-  console.error(` [api-server] getActor lookup for slug: ${slug}`);
+  console.error(` [api-server] getActor lookup for slug: "${slug}" (length: ${slug?.length})`);
+  
+  if (!slug) {
+    console.error(` [api-server] getActor: No slug provided!`);
+    throw new Error("Slug is required");
+  }
+
   const { data: actor, error } = await supabase
     .from('actors')
     .select('*, country:countries(*)')
@@ -413,9 +419,9 @@ export async function getActor(slug: string, lang: string = 'nl'): Promise<Actor
     .single();
 
   if (error || !actor) {
-    console.error(` [api-server] getActor failed for slug: ${slug}`, error?.message || 'Not found');
+    console.error(` [api-server] getActor failed for slug: "${slug}"`, error?.message || 'Not found');
     // 🛡️ CHRIS-PROTOCOL: Fallback lookup by first_name if slug fails (v2.14.525)
-    console.error(` [api-server] Attempting fallback lookup by first_name for: ${slug}`);
+    console.error(` [api-server] Attempting fallback lookup by first_name for: "${slug}"`);
     const { data: fallbackActor, error: fallbackError } = await supabase
       .from('actors')
       .select('*, country:countries(*)')
@@ -424,7 +430,7 @@ export async function getActor(slug: string, lang: string = 'nl'): Promise<Actor
       .single();
 
     if (fallbackError || !fallbackActor) {
-      console.error(` [api-server] Fallback failed for: ${slug}`, fallbackError?.message || 'Not found');
+      console.error(` [api-server] Fallback failed for: "${slug}"`, fallbackError?.message || 'Not found');
       throw new Error("Actor not found");
     }
     
