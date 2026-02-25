@@ -637,6 +637,9 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
               <div>
                 <HeadingInstrument level={3} className="text-2xl font-light tracking-tighter">
                   Bewerk <span className="text-primary italic">{actor.display_name}</span>
+                  <span className="ml-3 text-[10px] font-mono text-va-black/20 uppercase tracking-tight">
+                    ID: {actor.id} {actor.wp_product_id ? `| WP: ${actor.wp_product_id}` : ''}
+                  </span>
                 </HeadingInstrument>
                 <div className="flex items-center gap-3 mt-1">
                   <TextInstrument className="text-[11px] font-bold text-va-black/20 uppercase tracking-widest">
