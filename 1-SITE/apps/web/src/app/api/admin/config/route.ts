@@ -6,7 +6,7 @@ import { getActor, getActors, getMusicLibrary } from '@/lib/services/api-server'
 import { requireAdmin } from '@/lib/auth/api-auth';
 import { ConfigBridge } from '@/lib/utils/config-bridge';
 
-//  NUCLEAR CACHE BUSTER
+//  NUCLEAR CACHE BUSTER (v2.14.447)
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
