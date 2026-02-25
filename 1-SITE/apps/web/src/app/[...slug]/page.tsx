@@ -220,7 +220,9 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
   };
 
   // 0. Agency Journey SEO
-  if (MarketManager.isAgencySegment(firstSegment)) {
+  if (resolved?.routing_type === 'actor' && lookupSlug.includes('/')) {
+    // This is a deep actor route, let it handle its own metadata or proceed
+  } else if (MarketManager.isAgencySegment(firstSegment)) {
     const title = await getTranslatedSEO('seo.agency.title', `Voice-over Agency | Vind de perfecte stem | ${market.name}`);
     const description = await getTranslatedSEO('seo.agency.description', `Ontdek meer dan 500+ professionele voice-over stemmen voor video, commercial en telefonie. Directe prijsberekening en 24u levering bij ${market.name}.`);
     
