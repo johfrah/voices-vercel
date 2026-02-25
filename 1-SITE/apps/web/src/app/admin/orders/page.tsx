@@ -106,29 +106,13 @@ export default function BestellingenPage() {
     
     try {
       const res = await fetch(`/api/admin/orders?page=${page}&limit=50&t=${Date.now()}`);
-      console.log('🚀 [Admin Orders] API Response Status:', res.status);
       
       if (res.ok) {
         const data = await res.json();
-        
-        if (data._debug) {
-          console.log('🚨 [GODMODE DEBUG] API Context:', data._debug);
-        } else if (data._error) {
-          console.error('🚨 [GODMODE ERROR] API Critical:', data._error);
-        }
-
         const ordersList = data.orders || [];
         setOrders(ordersList);
         setPagination(data.pagination || null);
         setCurrentPage(page);
-
-        console.log('📦 [Admin Orders] Data received:', {
-          count: ordersList.length,
-          pagination: data.pagination
-        });
-      } else {
-        const errorText = await res.text();
-        console.error('❌ [Admin Orders] API Error:', errorText);
       }
     } catch (e) {
       console.error('❌ [Admin Orders] Fetch failed:', e);
@@ -153,26 +137,24 @@ export default function BestellingenPage() {
       (order.customer?.name?.toLowerCase().includes(searchLower) ?? false);
     
     const matchesFilter = filter === 'all' || 
-      (filter === 'completed' && (order.status === 'completed_paid' || order.status === 'completed')) ||
-      (filter === 'pending' && (order.status === 'awaiting_payment' || order.status === 'pending' || order.status === 'completed_unpaid')) ||
-      (filter === 'quote-pending' && order.status === 'quote-pending');
+      (filter === 'completed' && order.status === 'Voltooid') ||
+      (filter === 'pending' && (order.status === 'Wacht op betaling' || order.status === 'In behandeling')) ||
+      (filter === 'quote-pending' && order.status === 'Offerte');
     
     return matchesSearch && matchesFilter;
   });
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'completed_paid':
-      case 'completed':
+      case 'Voltooid':
         return <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-green-50 text-green-600 text-[11px] font-medium tracking-widest uppercase"><CheckCircle2 size={10} /> Betaald</span>;
-      case 'completed_unpaid':
-        return <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-orange-50 text-orange-600 text-[11px] font-medium tracking-widest uppercase"><ShoppingBag size={10} /> In productie</span>;
-      case 'awaiting_payment':
-      case 'pending':
-        return <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-yellow-50 text-yellow-600 text-[11px] font-medium tracking-widest uppercase"><Clock size={10} /> Wacht op kassa</span>;
-      case 'quote-pending':
+      case 'In behandeling':
+        return <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-orange-50 text-orange-600 text-[11px] font-medium tracking-widest uppercase"><ShoppingBag size={10} /> Productie</span>;
+      case 'Wacht op betaling':
+        return <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-yellow-50 text-yellow-600 text-[11px] font-medium tracking-widest uppercase"><Clock size={10} /> Kassa</span>;
+      case 'Offerte':
         return <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-50 text-blue-600 text-[11px] font-medium tracking-widest uppercase"><FileText size={10} /> Offerte</span>;
-      case 'failed':
+      case 'Mislukt':
         return <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-red-50 text-red-600 text-[11px] font-medium tracking-widest uppercase"><AlertCircle size={10} /> Mislukt</span>;
       default:
         return <span className="px-2.5 py-1 rounded-full bg-gray-50 text-gray-500 text-[11px] font-medium tracking-widest uppercase">{status}</span>;
@@ -234,22 +216,6 @@ export default function BestellingenPage() {
             </div>
           </div>
         </SectionInstrument>
-
-        {/* Nuclear V2 Banner */}
-        <div className="hidden md:flex mb-8 bg-va-black text-white p-4 rounded-[20px] items-center justify-between border border-primary/30 shadow-lg animate-in fade-in slide-in-from-top duration-1000">
-          <div className="flex items-center gap-4">
-            <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary animate-pulse">
-              <ShoppingBag size={20} />
-            </div>
-            <div>
-              <TextInstrument className="text-[15px] font-medium tracking-tight text-white">Nuclear V2 Architecture Active</TextInstrument>
-              <TextInstrument className="text-[11px] font-light text-white/40 tracking-widest uppercase">Zero-Slop Data Injection Mode</TextInstrument>
-            </div>
-          </div>
-          <div className="px-4 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-bold tracking-widest uppercase">
-            Verified Live: v2.14.623
-          </div>
-        </div>
 
         {/* Orders Table - Desktop */}
         <div className="hidden md:block bg-white rounded-[20px] border border-black/[0.03] shadow-sm overflow-hidden mb-8">
