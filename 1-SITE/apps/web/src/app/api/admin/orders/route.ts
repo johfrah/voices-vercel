@@ -29,14 +29,15 @@ export async function GET(request: NextRequest) {
     // 🛡️ CHRIS-PROTOCOL: 1 TRUTH MANDATE (v2.14.638)
     // We halen eerst het totaal aantal orders op voor de paginering UI
     // NUCLEAR: We gebruiken nu de schone orders_v2 tabel
-    // 🛡️ CHRIS-PROTOCOL: RAW SQL COUNT (v2.14.644)
-    const countResult = await db.execute(sql`SELECT count(*) as value FROM orders_v2`);
+    // 🛡️ CHRIS-PROTOCOL: RAW SQL COUNT (v2.14.645)
+    // We gebruiken db.execute met een string om Drizzle abstractie volledig te passeren
+    const countResult = await db.execute(sql.raw('SELECT count(*) as value FROM orders_v2'));
     const countRows = Array.isArray(countResult) ? countResult : (countResult.rows || []);
     const totalInDb = Number(countRows[0]?.value || 0);
 
     let allOrders: any[] = [];
     let debugInfo: any = {
-      version: '2.14.644',
+      version: '2.14.645',
       db_host: process.env.DATABASE_URL?.split('@')[1]?.split('/')[0] || 'unknown',
       page,
       limit,
@@ -46,18 +47,18 @@ export async function GET(request: NextRequest) {
     };
 
     try {
-      // 🚀 NUCLEAR RAW SQL FETCH (v2.14.644)
+      // 🚀 NUCLEAR RAW SQL FETCH (v2.14.645)
       // We passeren de Drizzle abstractie voor maximale zekerheid
-      // 🛡️ CHRIS-PROTOCOL: Snake Case Mapping (v2.14.644)
-      const rawOrdersResult = await db.execute(sql`
+      // 🛡️ CHRIS-PROTOCOL: Snake Case Mapping (v2.14.645)
+      const rawOrdersResult = await db.execute(sql.raw(`
         SELECT 
           id, user_id, journey_id, status_id, payment_method_id, 
           amount_net, amount_total, purchase_order, billing_email_alt, created_at
         FROM orders_v2
         ORDER BY created_at DESC
-        LIMIT ${sql.raw(limit.toString())}
-        OFFSET ${sql.raw(offset.toString())}
-      `);
+        LIMIT ${limit}
+        OFFSET ${offset}
+      `));
 
       // 🛡️ CHRIS-PROTOCOL: Robust Result Parsing
       const rows = Array.isArray(rawOrdersResult) ? rawOrdersResult : (rawOrdersResult.rows || []);
