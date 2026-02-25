@@ -891,13 +891,13 @@ export const VoicyChatV2: React.FC = () => {
                 }}
                 className="pointer-events-auto bg-white/95 backdrop-blur-md border border-black/5 px-4 py-2 rounded-full shadow-aura flex items-center gap-2 group hover:bg-va-black hover:text-white transition-all"
               >
-                <div className="w-5 h-5 flex items-center justify-center">
+                <ContainerInstrument plain className="w-5 h-5 flex items-center justify-center">
                   {(() => {
                     const Icon = (chip as any).icon;
                     if (!Icon) return null;
                     return <Icon strokeWidth={1.5} size={18} className="text-va-black group-hover:text-white transition-colors" />;
                   })()}
-                </div>
+                </ContainerInstrument>
                 <TextInstrument className="text-[15px] font-light tracking-widest whitespace-nowrap">
                   {chip.label}
                 </TextInstrument>
@@ -1174,7 +1174,7 @@ export const VoicyChatV2: React.FC = () => {
                           className="flex justify-start"
                         >
                           <ContainerInstrument plain className="bg-va-off-white text-va-black p-4 rounded-[20px] rounded-tl-none flex items-center gap-2">
-                            <div className="flex gap-1">
+                            <ContainerInstrument plain className="flex gap-1">
                               <motion.span 
                                 animate={{ opacity: [0.3, 1, 0.3] }}
                                 transition={{ duration: 1.5, repeat: Infinity, delay: 0 }}
@@ -1190,7 +1190,7 @@ export const VoicyChatV2: React.FC = () => {
                                 transition={{ duration: 1.5, repeat: Infinity, delay: 0.4 }}
                                 className="w-1.5 h-1.5 bg-va-black/40 rounded-full" 
                               />
-                            </div>
+                            </ContainerInstrument>
                             <TextInstrument className="text-[13px] tracking-widest opacity-40 font-light">
                               <VoiceglotText translationKey="chat.status.typing" defaultText="VOICY DENKT NA..." />
                             </TextInstrument>

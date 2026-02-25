@@ -5,7 +5,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
-import { ContainerInstrument } from './LayoutInstruments';
+import { ContainerInstrument, TextInstrument } from './LayoutInstruments';
 import { VoiceglotText } from './VoiceglotText';
 
 interface VoicesWordSliderProps {
@@ -57,13 +57,13 @@ export const VoicesWordSlider: React.FC<VoicesWordSliderProps> = ({
   }, [isVideo, value, t]);
 
   const sliderContent = (
-    <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <span className="text-[13px] font-bold text-va-black/40 uppercase tracking-widest">
+    <ContainerInstrument plain className="space-y-4">
+      <ContainerInstrument plain className="flex justify-between items-center">
+        <TextInstrument as="span" className="text-[13px] font-bold text-va-black/40 uppercase tracking-widest">
           <VoiceglotText translationKey="filter.word_count" defaultText="Aantal woorden" />
-        </span>
-        <span className="text-[18px] font-bold text-primary">{value}</span>
-      </div>
+        </TextInstrument>
+        <TextInstrument as="span" className="text-[18px] font-bold text-primary">{value}</TextInstrument>
+      </ContainerInstrument>
       
       <input
         type="range"
@@ -75,20 +75,20 @@ export const VoicesWordSlider: React.FC<VoicesWordSliderProps> = ({
         className="w-full h-1.5 bg-va-off-white rounded-lg appearance-none cursor-pointer accent-primary"
       />
       
-      <div className="flex justify-between text-[11px] font-bold text-va-black/20 uppercase tracking-tighter">
-        <span>{min}</span>
-        <span>{max}</span>
-      </div>
+      <ContainerInstrument plain className="flex justify-between text-[11px] font-bold text-va-black/20 uppercase tracking-tighter">
+        <TextInstrument as="span">{min}</TextInstrument>
+        <TextInstrument as="span">{max}</TextInstrument>
+      </ContainerInstrument>
       {(promptSuggestion || videoSuggestion) && (
-        <div className="text-center">
-          <span className="text-va-black/30 font-light text-[12px]">({promptSuggestion || videoSuggestion})</span>
-        </div>
+        <ContainerInstrument plain className="text-center">
+          <TextInstrument as="span" className="text-va-black/30 font-light text-[12px]">({promptSuggestion || videoSuggestion})</TextInstrument>
+        </ContainerInstrument>
       )}
-    </div>
+    </ContainerInstrument>
   );
 
   if (inline) {
-    return <div className={cn("w-full", className)}>{sliderContent}</div>;
+    return <ContainerInstrument plain className={cn("w-full", className)}>{sliderContent}</ContainerInstrument>;
   }
 
   return (
@@ -105,23 +105,23 @@ export const VoicesWordSlider: React.FC<VoicesWordSliderProps> = ({
         )}
       >
         {label && (
-          <span className="text-[10px] font-bold tracking-[0.2em] text-va-black/60 uppercase mb-0.5 block">
+          <TextInstrument as="span" className="text-[10px] font-bold tracking-[0.2em] text-va-black/60 uppercase mb-0.5 block">
             {label}
-          </span>
+          </TextInstrument>
         )}
-        <div className="flex items-center justify-between gap-2 w-full">
-          <div className="flex items-center gap-3 min-w-0">
-            <span className={cn("text-[16px] font-bold truncate text-va-black")}>
+        <ContainerInstrument plain className="flex items-center justify-between gap-2 w-full">
+          <ContainerInstrument plain className="flex items-center gap-3 min-w-0">
+            <TextInstrument as="span" className={cn("text-[16px] font-bold truncate text-va-black")}>
               {value} {value === 1 ? t('common.word', 'woord') : t('common.words', 'woorden')} {(promptSuggestion || videoSuggestion) && (
-                <span className="text-va-black/30 font-light text-[14px] ml-1">({promptSuggestion || videoSuggestion})</span>
+                <TextInstrument as="span" className="text-va-black/30 font-light text-[14px] ml-1">({promptSuggestion || videoSuggestion})</TextInstrument>
               )}
-            </span>
+            </TextInstrument>
             {livePrice && !disabled && (
-              <span className="text-[14px] font-medium text-primary bg-primary/5 px-2 py-0.5 rounded-full animate-in fade-in zoom-in-95 duration-300">
+              <TextInstrument as="span" className="text-[14px] font-medium text-primary bg-primary/5 px-2 py-0.5 rounded-full animate-in fade-in zoom-in-95 duration-300">
                 {livePrice}
-              </span>
+              </TextInstrument>
             )}
-          </div>
+          </ContainerInstrument>
           {!disabled && (
             <ChevronDown 
               size={14} 

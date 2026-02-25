@@ -14,7 +14,6 @@ export const VOICES_CONFIG = REAL_CONFIG;
 
 // 🛡️ CHRIS-PROTOCOL: Schema Exports (Internalized for Vercel)
 export * from '../core-internal/database/schema/index.ts';
-export { actorStatuses, experienceLevels, genders, recordingSessions, recordingScripts, recordingFeedback } from '../core-internal/database/schema/index.ts';
 
 // 🛡️ CHRIS-PROTOCOL: Conditional DB Export
 // We only export 'db' on the server to prevent bundling 'postgres' in the browser.
