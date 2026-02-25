@@ -577,22 +577,51 @@ export const appointments = pgTable('appointments', {
 });
 
 // 🧘 ADEMING JOURNEY (Meditatie & Rust)
+export const ademingMakers = pgTable('ademing_makers', {
+  id: serial('id').primaryKey(),
+  name: text('name').notNull(),
+  slug: text('slug').unique().notNull(),
+  bio: text('bio'),
+  photo_url: text('photo_url'),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
 export const ademingTracks = pgTable('ademing_tracks', {
   id: serial('id').primaryKey(),
   wpId: bigint('wp_id', { mode: 'number' }).unique(),
   mediaId: integer('media_id').references(() => media.id), // 🔗 Link naar Media Engine
+  makerId: integer('maker_id').references(() => ademingMakers.id),
+  seriesId: integer('series_id').references(() => ademingSeries.id),
   title: text('title').notNull(),
+  slug: text('slug').unique(),
   url: text('url').notNull(),
+  cover_image_url: text('cover_image_url'),
   duration: integer('duration'),
   vibe: text('vibe'),
+  element: text('element'), // water, fire, earth, air
+  seriesOrder: integer('series_order').default(0),
+  short_description: text('short_description'),
+  long_description: text('long_description'),
   is_public: boolean('is_public').default(true),
+  createdAt: timestamp('created_at').defaultNow(),
 });
 
 export const ademingSeries = pgTable('ademing_series', {
   id: serial('id').primaryKey(),
   title: text('title').notNull(),
+  slug: text('slug').unique(),
   description: text('description'),
+  cover_image_url: text('cover_image_url'),
   is_public: boolean('is_public').default(true),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+export const ademingBackgroundMusic = pgTable('ademing_background_music', {
+  id: serial('id').primaryKey(),
+  title: text('title').notNull(),
+  url: text('url').notNull(),
+  is_public: boolean('is_public').default(true),
+  createdAt: timestamp('created_at').defaultNow(),
 });
 
 export const ademingReflections = pgTable('ademing_reflections', {
@@ -1697,4 +1726,23 @@ export const castingListItemsRelations = relations(castingListItems, ({ one }) =
     fields: [castingListItems.actorId],
     references: [actors.id],
   }),
+}));
+
+export const ademingTracksRelations = relations(ademingTracks, ({ one }) => ({
+  maker: one(ademingMakers, {
+    fields: [ademingTracks.makerId],
+    references: [ademingMakers.id],
+  }),
+  series: one(ademingSeries, {
+    fields: [ademingTracks.seriesId],
+    references: [ademingSeries.id],
+  }),
+}));
+
+export const ademingSeriesRelations = relations(ademingSeries, ({ many }) => ({
+  tracks: many(ademingTracks),
+}));
+
+export const ademingMakersRelations = relations(ademingMakers, ({ many }) => ({
+  tracks: many(ademingTracks),
 }));

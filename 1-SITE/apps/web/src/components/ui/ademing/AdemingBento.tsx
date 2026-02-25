@@ -28,10 +28,10 @@ export const AdemingBento = ({ tracks, initialTrack }: AdemingBentoProps) => {
         <section className="max-w-7xl mx-auto px-6 py-24">
           <div className="text-center mb-16 space-y-4">
             <h2 className="text-4xl md:text-5xl font-serif font-bold">
-              <VoiceglotText contentKey="home.featured.title" defaultValue="Uitgelichte meditaties" />
+              <VoiceglotText translationKey="home.featured.title" defaultText="Uitgelichte meditaties" />
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              <VoiceglotText contentKey="home.featured.subtitle" defaultValue="Onze aanbevolen meditaties om mee te beginnen" />
+              <VoiceglotText translationKey="home.featured.subtitle" defaultText="Onze aanbevolen meditaties om mee te beginnen" />
             </p>
           </div>
 
@@ -54,10 +54,10 @@ export const AdemingBento = ({ tracks, initialTrack }: AdemingBentoProps) => {
           <div className="max-w-4xl mx-auto relative">
             <div className="text-center mb-16 space-y-4">
               <h2 className="text-3xl md:text-4xl font-serif font-bold">
-                <VoiceglotText contentKey="home.breathing.title" defaultValue="Neem even een bewuste adem" />
+                <VoiceglotText translationKey="home.breathing.title" defaultText="Neem even een bewuste adem" />
               </h2>
               <p className="text-lg text-muted-foreground">
-                <VoiceglotText contentKey="home.breathing.subtitle" defaultValue="Probeer deze korte ademhalingsoefening en ervaar direct de kracht van bewust ademen" />
+                <VoiceglotText translationKey="home.breathing.subtitle" defaultText="Probeer deze korte ademhalingsoefening en ervaar direct de kracht van bewust ademen" />
               </p>
             </div>
             

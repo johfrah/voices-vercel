@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Play, Pause, RotateCcw } from "lucide-react";
 import { useSonicDNA } from "@/lib/engines/sonic-dna";
+import { ContainerInstrument } from "../LayoutInstrumentsServer";
 
 const BREATHING_CYCLE = {
   inhale: 4,

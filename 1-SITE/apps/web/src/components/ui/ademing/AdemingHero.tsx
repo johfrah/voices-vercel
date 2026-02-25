@@ -16,16 +16,16 @@ export const AdemingHero = () => {
           {/* Main heading */}
           <h1 className="text-4xl md:text-6xl font-serif font-bold leading-relaxed text-foreground">
             <VoiceglotText 
-              contentKey="hero.main.title" 
-              defaultValue="Welkom bij een moment van rust, voor jezelf" 
+              translationKey="hero.main.title" 
+              defaultText="Welkom bij een moment van rust, voor jezelf" 
             />
           </h1>
 
           {/* Persoonlijke boodschap */}
           <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
             <VoiceglotText 
-              contentKey="hero.main.subtitle" 
-              defaultValue="Hoi, ik ben Julie. Samen met Johfrah maakten we Ademing—een zachte plek waar je even mag thuiskomen bij jezelf. Of je nu 5 minuten hebt of een half uur, er is altijd ruimte voor jouw moment." 
+              translationKey="hero.main.subtitle" 
+              defaultText="Hoi, ik ben Julie. Samen met Johfrah maakten we Ademing—een zachte plek waar je even mag thuiskomen bij jezelf. Of je nu 5 minuten hebt of een half uur, er is altijd ruimte voor jouw moment." 
             />
           </p>
 
@@ -36,8 +36,8 @@ export const AdemingHero = () => {
             >
               <Play className="w-5 h-5 fill-current" />
               <VoiceglotText 
-                contentKey="hero.cta.text" 
-                defaultValue="Start je persoonlijke reis" 
+                translationKey="hero.cta.text" 
+                defaultText="Start je persoonlijke reis" 
               />
             </button>
           </div>
@@ -54,15 +54,15 @@ export const AdemingHero = () => {
                 ))}
               </div>
               <VoiceglotText 
-                contentKey="hero.social.users" 
-                defaultValue="Meer dan 500 mensen vonden hun rust" 
+                translationKey="hero.social.users" 
+                defaultText="Meer dan 500 mensen vonden hun rust" 
               />
             </div>
             <div className="flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-primary" />
               <VoiceglotText 
-                contentKey="hero.social.meditations" 
-                defaultValue="50+ liefdevolle meditaties" 
+                translationKey="hero.social.meditations" 
+                defaultText="50+ liefdevolle meditaties" 
               />
             </div>
           </div>
@@ -71,14 +71,14 @@ export const AdemingHero = () => {
           <div className="pt-8 max-w-2xl mx-auto">
             <p className="text-base italic text-muted-foreground leading-relaxed">
               <VoiceglotText 
-                contentKey="hero.quote.text" 
-                defaultValue="Meditatie hoeft niet perfect te zijn. Het gaat erom dat je er bent, voor jezelf. En dat mag op jouw manier." 
+                translationKey="hero.quote.text" 
+                defaultText="Meditatie hoeft niet perfect te zijn. Het gaat erom dat je er bent, voor jezelf. En dat mag op jouw manier." 
               />
             </p>
             <p className="mt-2 text-sm text-muted-foreground">
               <VoiceglotText 
-                contentKey="hero.quote.author" 
-                defaultValue="— Julie" 
+                translationKey="hero.quote.author" 
+                defaultText="— Julie" 
               />
             </p>
           </div>

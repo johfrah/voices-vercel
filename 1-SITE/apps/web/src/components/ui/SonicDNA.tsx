@@ -24,7 +24,7 @@ export function useSonicDNA() {
     return () => window.removeEventListener('click', initAudio);
   }, []);
 
-  const playClick = (type: 'pro' | 'soft' | 'analog' | 'success' | 'error' | 'swell' = 'soft') => {
+  const playClick = (type: 'pro' | 'soft' | 'analog' | 'success' | 'error' | 'swell' | 'startup' = 'soft') => {
     if (!audioCtx.current) return;
 
     const osc = audioCtx.current.createOscillator();

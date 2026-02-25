@@ -133,10 +133,15 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
           if (!isNaN(parseInt(targetLang))) {
             query = query.eq('native_language_id', parseInt(targetLang));
           } else if (targetLang !== 'all') {
+            // 🛡️ CHRIS-PROTOCOL: Handshake Truth (v2.14.673)
+            // We map common codes/labels to IDs to ensure we filter by the source of truth.
             const langMap: Record<string, number> = {
               'nl-be': 1, 'vlaams': 1, 'nederlands': 2, 'nl-nl': 2,
               'fr-be': 3, 'frans (be)': 3, 'fr-fr': 4, 'frans (fr)': 4,
-              'en-gb': 5, 'engels': 5, 'en-us': 6, 'de-de': 7, 'duits': 7
+              'en-gb': 5, 'engels': 5, 'en-us': 6, 'de-de': 7, 'duits': 7,
+              'es-es': 8, 'spaans': 8, 'it-it': 9, 'italiaans': 9,
+              'pl-pl': 10, 'pools': 10, 'da-dk': 11, 'deens': 11,
+              'pt-pt': 12, 'portugees': 12, 'sv-se': 13, 'zweeds': 13
             };
             const mappedId = langMap[targetLang];
             if (mappedId) query = query.eq('native_language_id', mappedId);

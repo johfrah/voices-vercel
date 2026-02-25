@@ -36,15 +36,15 @@ export async function GET(request: NextRequest) {
 
     if (action === 'makers') {
       if (slug) {
-        const [maker] = await db.select().from(ademingMakers).where(eq(ademingMakers.short_name, slug)).limit(1);
+        const [maker] = await db.select().from(ademingMakers).where(eq(ademingMakers.slug, slug)).limit(1);
         return NextResponse.json(maker);
       }
-      const makers = await db.select().from(ademingMakers).where(eq(ademingMakers.is_public, true));
+      const makers = await db.select().from(ademingMakers);
       return NextResponse.json(makers);
     }
 
     if (action === 'background-music') {
-      const music = await db.select().from(ademingBackgroundMusic).where(eq(ademingBackgroundMusic.is_active, true));
+      const music = await db.select().from(ademingBackgroundMusic).where(eq(ademingBackgroundMusic.is_public, true));
       return NextResponse.json(music);
     }
 
