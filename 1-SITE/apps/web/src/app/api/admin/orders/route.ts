@@ -6,6 +6,9 @@ import { requireAdmin } from '@/lib/auth/api-auth';
 import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
 import { createClient } from '@/utils/supabase/server';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 /**
  *  API: ADMIN ORDERS (2026)
  * 
@@ -13,19 +16,20 @@ import { createClient } from '@/utils/supabase/server';
  */
 
 export async function GET(request: NextRequest) {
-  // 🛡️ CHRIS-PROTOCOL: Bypass Auth for Debugging (v2.14.577)
+  // 🛡️ CHRIS-PROTOCOL: Bypass Auth for Debugging (v2.14.591)
   const supabase = createClient();
   const { data: { user: authUser } } = await supabase.auth.getUser();
   console.log(`🔐 [API DEBUG] Auth check: user=${authUser?.email || 'none'}`);
 
   try {
-    // 🛡️ CHRIS-PROTOCOL: 1 TRUTH MANDATE (v2.14.577)
+    // 🛡️ CHRIS-PROTOCOL: 1 TRUTH MANDATE (v2.14.591)
     // We stoppen met JOINs die data kunnen verbergen. We halen de orders PUUR op.
     let allOrders: any[] = [];
     let debugInfo: any = {
-      version: 'v2.14.577',
+      version: 'v2.14.591',
       db_host: process.env.DATABASE_URL?.split('@')[1]?.split('/')[0] || 'unknown',
-      env: process.env.NODE_ENV
+      env: process.env.NODE_ENV,
+      timestamp: new Date().toISOString()
     };
 
     try {
@@ -48,7 +52,7 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // 🛡️ CHRIS-PROTOCOL: Godmode Data Access (v2.14.577)
+    // 🛡️ CHRIS-PROTOCOL: Godmode Data Access (v2.14.591)
     const sanitizedOrders = await Promise.all(allOrders.map(async (order, index) => {
       try {
         // 🕵️ GUEST & USER RESOLVER: Haal klantgegevens op zonder de query te breken

@@ -58,6 +58,17 @@ o/bKiIz+Fq8=
 
       const poolSize = process.env.NEXT_PHASE === 'phase-production-build' ? 5 : (process.env.NODE_ENV === 'production' ? 10 : 10);
       
+      // 🛡️ CHRIS-PROTOCOL: Force Re-initialization if connection string changed (v2.14.591)
+      const currentConnString = (globalThis as any)._lastConnString;
+      if (currentConnString && currentConnString !== connectionString) {
+        console.error(' [getDb] CONNECTION STRING CHANGED: Resetting client...');
+        if ((globalThis as any).postgresClient) {
+          try { (globalThis as any).postgresClient.end(); } catch (e) {}
+          (globalThis as any).postgresClient = null;
+        }
+      }
+      (globalThis as any)._lastConnString = connectionString;
+
       if (!(globalThis as any).postgresClient) {
         (globalThis as any).postgresClient = postgres(connectionString, { 
           prepare: false, 
