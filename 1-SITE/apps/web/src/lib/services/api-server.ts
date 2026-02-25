@@ -461,11 +461,35 @@ export async function getActor(slug: string, lang: string = 'nl'): Promise<Actor
  * 🛡️ CHRIS-PROTOCOL: Process Actor Data (Internal Helper)
  */
 async function processActorData(actor: any, slug: string): Promise<Actor> {
-  // Fetch relations
-  const [demosRes, videosRes] = await Promise.all([
-    supabase.from('actor_demos').select('*').eq('actor_id', actor.id).eq('is_public', true),
-    supabase.from('actor_videos').select('*').eq('actor_id', actor.id).eq('is_public', true)
-  ]);
+  console.error(` [api-server] processActorData START for ${actor.first_name} (ID: ${actor.id})`);
+  
+  // Fetch relations via Drizzle for stability (v2.14.544)
+  let mappedDemos: any[] = [];
+  let mappedVideos: any[] = [];
+
+  try {
+    const [demos, videos] = await Promise.all([
+      db.select().from(actorDemos).where(and(eq(actorDemos.actorId, actor.id), eq(actorDemos.is_public, true))),
+      db.select().from(actorVideos).where(and(eq(actorVideos.actorId, actor.id), eq(actorVideos.is_public, true)))
+    ]);
+
+    mappedDemos = (demos || []).map((d: any) => ({
+      id: d.id,
+      title: d.name,
+      audio_url: d.url?.startsWith('http') ? `/api/proxy/?path=${encodeURIComponent(d.url)}` : d.url,
+      category: d.type || 'demo',
+      status: d.status || 'approved'
+    }));
+
+    mappedVideos = (videos || []).map((v: any) => ({
+      id: v.id,
+      name: v.name,
+      url: v.url?.startsWith('http') ? `/api/proxy/?path=${encodeURIComponent(v.url)}` : v.url,
+      type: v.type || 'portfolio'
+    }));
+  } catch (err: any) {
+    console.warn(` [api-server] processActorData: Drizzle relations failed, using empty arrays:`, err.message);
+  }
 
   const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://vcbxyyjsxuquytcsskpj.supabase.co';
   const SUPABASE_STORAGE_URL = `${SUPABASE_URL.replace(/\/$/, '')}/storage/v1/object/public/voices`;
@@ -475,30 +499,16 @@ async function processActorData(actor: any, slug: string): Promise<Actor> {
   if (actor.dropbox_url) {
     photoUrl = actor.dropbox_url.startsWith('http') ? actor.dropbox_url : `/api/proxy/?path=${encodeURIComponent(actor.dropbox_url)}`;
   } else if (actor.photo_id) {
-    // 🛡️ CHRIS-PROTOCOL: Nuclear Asset Healing (v2.14.199)
-    const { data: mediaItem } = await supabase.from('media').select('*').eq('id', actor.photo_id).single();
-    if (mediaItem) {
-      const fp = mediaItem.file_path || mediaItem.filePath;
-      if (fp) {
-        photoUrl = fp.startsWith('http') ? fp : `${SUPABASE_STORAGE_URL}/${fp}`;
+    try {
+      const [mediaItem] = await db.select().from(media).where(eq(media.id, actor.photo_id)).limit(1);
+      if (mediaItem) {
+        const fp = mediaItem.fileName || mediaItem.filePath; // Use fileName as fallback
+        if (fp) photoUrl = fp.startsWith('http') ? fp : `${SUPABASE_STORAGE_URL}/${fp}`;
       }
-    }
+    } catch (e) {}
   }
 
-  const mappedDemos = (demosRes.data || []).map((d: any) => ({
-    id: d.id,
-    title: d.name,
-    audio_url: d.url?.startsWith('http') ? `/api/proxy/?path=${encodeURIComponent(d.url)}` : d.url,
-    category: d.type || 'demo',
-    status: d.status || 'approved'
-  }));
-
-  const mappedVideos = (videosRes.data || []).map((v: any) => ({
-    id: v.id,
-    name: v.name,
-    url: v.url?.startsWith('http') ? `/api/proxy/?path=${encodeURIComponent(v.url)}` : v.url,
-    type: v.type || 'portfolio'
-  }));
+  console.error(` [api-server] processActorData SUCCESS for ${actor.first_name}`);
 
   return {
     ...actor,
