@@ -26,8 +26,18 @@ export async function GET(request: Request, { params }: { params: { id: string }
     const order = rows[0];
     if (!order) return NextResponse.json({ error: 'Order not found' }, { status: 404 });
 
-    // 🛡️ CHRIS-PROTOCOL: Zero-Slop Item Mapping (v2.14.634)
-    // We gebruiken het legacy_internal_id om de items te vinden in de hybride tabel
+    // 🛡️ CHRIS-PROTOCOL: JSON Parsing Fix (v2.14.637)
+    // raw_meta kan als string of object binnenkomen afhankelijk van de driver
+    let rawMeta = order.raw_meta;
+    if (typeof rawMeta === 'string') {
+      try {
+        rawMeta = JSON.parse(rawMeta);
+      } catch (e) {
+        console.warn(`[Admin Order Detail] Failed to parse raw_meta for ${id}`);
+      }
+    }
+
+    // 🛡️ CHRIS-PROTOCOL: Zero-Slop Item Mapping (v2.14.637)
     const items = await db.select().from(orderItems).where(
       eq(orderItems.orderId, order.legacy_internal_id || order.id)
     );
@@ -59,6 +69,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
 
     return NextResponse.json({
       ...order,
+      raw_meta: rawMeta, // 🤝 De Handdruk: Altijd een object
       user: customerInfo,
       items: items,
       displayOrderId: order.id?.toString(),
