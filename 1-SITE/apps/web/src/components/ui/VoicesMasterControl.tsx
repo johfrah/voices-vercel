@@ -51,6 +51,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
   const [mounted, setMounted] = useState(false);
   const [fetchedLanguages, setFetchedLanguages] = useState<any[]>([]);
   const [fetchedGenders, setFetchedGenders] = useState<any[]>([]);
+  const [fetchedJourneys, setFetchedJourneys] = useState<any[]>([]);
 
   useEffect(() => {
     setMounted(true);
@@ -71,6 +72,15 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
         if (data.results) setFetchedGenders(data.results);
       })
       .catch(err => console.error('[VoicesMasterControl] Failed to fetch genders:', err));
+
+    //  CHRIS-PROTOCOL: Handshake Truth (Source of Truth)
+    // Fetch journeys directly from database.
+    fetch('/api/admin/config?type=journeys')
+      .then(res => res.json())
+      .then(data => {
+        if (data.results) setFetchedJourneys(data.results);
+      })
+      .catch(err => console.error('[VoicesMasterControl] Failed to fetch journeys:', err));
   }, []);
 
   const handleReorderClick = (language: string) => {
@@ -99,32 +109,50 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
     if (usageMap[id]) updateUsage(usageMap[id] as any);
   };
 
-  const journeys = [
-    { 
-      id: 'telephony', 
-      icon: Phone, 
-      label: 'Telefonie', 
-      subLabel: 'Voicemail & IVR',
-      key: 'journey.telephony', 
-      color: 'text-primary' 
-    },
-    { 
-      id: 'video', 
-      icon: Video, 
-      label: 'Video', 
-      subLabel: 'Corporate & Website',
-      key: 'journey.video', 
-      color: 'text-primary' 
-    },
-    { 
-      id: 'commercial', 
-      icon: Megaphone, 
-      label: 'Advertentie', 
-      subLabel: 'Radio, TV & Online Ads',
-      key: 'journey.commercial', 
-      color: 'text-primary' 
-    },
-  ] as const;
+  const journeys = useMemo(() => {
+    const baseJourneys = [
+      { 
+        id: 'telephony', 
+        icon: Phone, 
+        label: 'Telefonie', 
+        subLabel: 'Voicemail & IVR',
+        key: 'journey.telephony', 
+        color: 'text-primary' 
+      },
+      { 
+        id: 'video', 
+        icon: Video, 
+        label: 'Video', 
+        subLabel: 'Corporate & Website',
+        key: 'journey.video', 
+        color: 'text-primary' 
+      },
+      { 
+        id: 'commercial', 
+        icon: Megaphone, 
+        label: 'Advertentie', 
+        subLabel: 'Radio, TV & Online Ads',
+        key: 'journey.commercial', 
+        color: 'text-primary' 
+      },
+    ];
+
+    if (fetchedJourneys.length === 0) return baseJourneys;
+
+    //  CHRIS-PROTOCOL: Handshake Truth Mapping
+    // Map database journeys to frontend structure, preserving icons and colors.
+    return fetchedJourneys.map(fj => {
+      const base = baseJourneys.find(bj => bj.id === fj.code || bj.key === `journey.${fj.code}`);
+      return {
+        id: fj.code,
+        icon: base?.icon || Globe,
+        label: fj.label,
+        subLabel: fj.description || base?.subLabel || '',
+        key: base?.key || `journey.${fj.code}`,
+        color: base?.color || 'text-primary'
+      };
+    });
+  }, [fetchedJourneys]);
 
   // Use state.journey or checkoutState.usage to determine active journey
   const activeJourneyId = useMemo(() => {

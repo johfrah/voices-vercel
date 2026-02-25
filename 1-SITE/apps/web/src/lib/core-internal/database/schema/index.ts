@@ -80,6 +80,17 @@ export const genders = pgTable('genders', {
   createdAt: timestamp('created_at').defaultNow(),
 });
 
+// 📺 MEDIA TYPES (Commercial usage types)
+export const mediaTypes = pgTable('media_types', {
+  id: serial('id').primaryKey(),
+  code: text('code').unique().notNull(), // online, radio_national, tv_national, podcast
+  label: text('label').notNull(), // Online & Socials, Radio, TV, Podcast
+  description: text('description'),
+  icon: text('icon'), // lucide icon name
+  hasRegions: boolean('has_regions').default(false),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
 // 🎓 EXPERIENCE LEVELS
 export const experienceLevels = pgTable('experience_levels', {
   id: serial('id').primaryKey(),
