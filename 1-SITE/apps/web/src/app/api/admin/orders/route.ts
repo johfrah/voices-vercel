@@ -29,23 +29,15 @@ export async function GET(request: NextRequest) {
     // 🛡️ CHRIS-PROTOCOL: 1 TRUTH MANDATE (v2.14.638)
     // We halen eerst het totaal aantal orders op voor de paginering UI
     // NUCLEAR: We gebruiken nu de schone orders_v2 tabel
-    // 🛡️ CHRIS-PROTOCOL: DIRECT POSTGRES BYPASS (v2.14.651)
-    // We gebruiken de onderliggende postgres client om Drizzle volledig te passeren
-    // We triggeren eerst de proxy om zeker te zijn dat de client geïnitialiseerd is
-    const dummy = db?.select; 
-    const pg = (globalThis as any).postgresClient;
-    
-    if (!pg) {
-      console.error("❌ [Admin Orders API] Postgres client NOT found in globalThis");
-      throw new Error("Database connection not initialized");
-    }
-
-    const countResult = await pg.unsafe('SELECT count(*) as value FROM orders_v2');
-    const totalInDb = Number(countResult[0]?.value || countResult[0]?.count || 0);
+    // 🛡️ CHRIS-PROTOCOL: ROBUST PROXY TRIGGER (v2.14.652)
+    // We triggeren de proxy en gebruiken een directe execute op de instance
+    const countResult = await db.execute(sql.raw('SELECT count(*) as value FROM orders_v2'));
+    const countRows: any = Array.isArray(countResult) ? countResult : (countResult.rows || []);
+    const totalInDb = countRows[0] ? Number(countRows[0].value || countRows[0].count || 0) : 0;
 
     let allOrders: any[] = [];
     let debugInfo: any = {
-      version: '2.14.651',
+      version: '2.14.652',
       db_host: process.env.DATABASE_URL?.split('@')[1]?.split('/')[0] || 'unknown',
       page,
       limit,
@@ -55,9 +47,9 @@ export async function GET(request: NextRequest) {
     };
 
     try {
-      // 🚀 NUCLEAR DIRECT PG FETCH (v2.14.647)
-      // We passeren Drizzle volledig voor maximale zekerheid
-      const rows = await pg.unsafe(`
+      // 🚀 NUCLEAR RAW SQL FETCH (v2.14.652)
+      // We gebruiken sql.raw met expliciete numerieke waarden voor Vercel stabiliteit
+      const rowsResult = await db.execute(sql.raw(`
         SELECT 
           id, user_id, journey_id, status_id, payment_method_id, 
           amount_net, amount_total, purchase_order, billing_email_alt, created_at
@@ -65,10 +57,10 @@ export async function GET(request: NextRequest) {
         ORDER BY created_at DESC
         LIMIT ${limit}
         OFFSET ${offset}
-      `);
+      `));
 
-      console.log(`📦 [Admin Orders API] DIRECT PG Fetched ${rows.length} orders from orders_v2`);
-
+      const rows: any = Array.isArray(rowsResult) ? rowsResult : (rowsResult.rows || []);
+      
       // Map snake_case database columns naar de camelCase properties die de rest van de route verwacht
       allOrders = rows.map((row: any) => ({
         id: row.id,
@@ -83,7 +75,7 @@ export async function GET(request: NextRequest) {
         createdAt: row.created_at
       }));
       
-      debugInfo.source = 'direct_pg.orders_v2';
+      debugInfo.source = 'hybrid_sql.orders_v2';
       debugInfo.fetchedCount = allOrders.length;
     } catch (rawErr: any) {
       debugInfo.raw_error = rawErr.message;

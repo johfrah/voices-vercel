@@ -208,11 +208,20 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
   const [eventData, setEventData] = useState<any>(null);
   const [isTagSelectorOpen, setIsTagSelectorOpen] = useState(false);
   const [isLangSelectorOpen, setIsLangSelectorOpen] = useState(false);
+  const [isGenderSelectorOpen, setIsGenderSelectorOpen] = useState(false);
+  const [isExperienceSelectorOpen, setIsExperienceSelectorOpen] = useState(false);
+  const [isStatusSelectorOpen, setIsStatusSelectorOpen] = useState(false);
   const [tagSearchQuery, setTagSearchQuery] = useState('');
   const [availableTags, setAvailableTags] = useState<string[]>([]);
   const [availableLangs, setAvailableLangs] = useState<any[]>([]);
+  const [availableGenders, setAvailableGenders] = useState<any[]>([]);
+  const [availableExperienceLevels, setAvailableExperienceLevels] = useState<any[]>([]);
+  const [availableStatuses, setAvailableStatuses] = useState<any[]>([]);
   const tagSelectorRef = useRef<HTMLDivElement>(null);
   const langSelectorRef = useRef<HTMLDivElement>(null);
+  const genderSelectorRef = useRef<HTMLDivElement>(null);
+  const experienceSelectorRef = useRef<HTMLDivElement>(null);
+  const statusSelectorRef = useRef<HTMLDivElement>(null);
 
   const market = MarketManager.getCurrentMarket();
   const supportedLangs = market.supported_languages;
@@ -242,12 +251,54 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
   }, [isLangSelectorOpen]);
 
   useEffect(() => {
+    if (isGenderSelectorOpen) {
+      fetch('/api/admin/genders')
+        .then(res => res.json())
+        .then(data => {
+          if (data.results) setAvailableGenders(data.results);
+        })
+        .catch(err => console.error('Failed to fetch genders:', err));
+    }
+  }, [isGenderSelectorOpen]);
+
+  useEffect(() => {
+    if (isExperienceSelectorOpen) {
+      fetch('/api/admin/experience-levels')
+        .then(res => res.json())
+        .then(data => {
+          if (data.results) setAvailableExperienceLevels(data.results);
+        })
+        .catch(err => console.error('Failed to fetch experience levels:', err));
+    }
+  }, [isExperienceSelectorOpen]);
+
+  useEffect(() => {
+    if (isStatusSelectorOpen) {
+      fetch('/api/admin/actor-statuses')
+        .then(res => res.json())
+        .then(data => {
+          if (data.results) setAvailableStatuses(data.results);
+        })
+        .catch(err => console.error('Failed to fetch statuses:', err));
+    }
+  }, [isStatusSelectorOpen]);
+
+  useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (tagSelectorRef.current && !tagSelectorRef.current.contains(event.target as Node)) {
         setIsTagSelectorOpen(false);
       }
       if (langSelectorRef.current && !langSelectorRef.current.contains(event.target as Node)) {
         setIsLangSelectorOpen(false);
+      }
+      if (genderSelectorRef.current && !genderSelectorRef.current.contains(event.target as Node)) {
+        setIsGenderSelectorOpen(false);
+      }
+      if (experienceSelectorRef.current && !experienceSelectorRef.current.contains(event.target as Node)) {
+        setIsExperienceSelectorOpen(false);
+      }
+      if (statusSelectorRef.current && !statusSelectorRef.current.contains(event.target as Node)) {
+        setIsStatusSelectorOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -312,6 +363,72 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
       }
     } catch (err) {
       console.error('Failed to update language:', err);
+    }
+  };
+
+  const handleGenderChange = async (genderId: number) => {
+    if (!voice) return;
+    playClick('pro');
+    try {
+      const res = await fetch(`/api/admin/actors/${voice.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ gender_id: genderId })
+      });
+      if (res.ok) {
+        playClick('success');
+        setIsGenderSelectorOpen(false);
+        const selected = availableGenders.find(g => g.id === genderId);
+        if (selected) {
+          setVoice(prev => ({ ...prev, gender_id: genderId, gender: selected.code }));
+        }
+      }
+    } catch (err) {
+      console.error('Failed to update gender:', err);
+    }
+  };
+
+  const handleExperienceChange = async (levelId: number) => {
+    if (!voice) return;
+    playClick('pro');
+    try {
+      const res = await fetch(`/api/admin/actors/${voice.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ experience_level_id: levelId })
+      });
+      if (res.ok) {
+        playClick('success');
+        setIsExperienceSelectorOpen(false);
+        const selected = availableExperienceLevels.find(e => e.id === levelId);
+        if (selected) {
+          setVoice(prev => ({ ...prev, experience_level_id: levelId, experience_level: selected.code }));
+        }
+      }
+    } catch (err) {
+      console.error('Failed to update experience level:', err);
+    }
+  };
+
+  const handleStatusChange = async (statusId: number) => {
+    if (!voice) return;
+    playClick('pro');
+    try {
+      const res = await fetch(`/api/admin/actors/${voice.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status_id: statusId })
+      });
+      if (res.ok) {
+        playClick('success');
+        setIsStatusSelectorOpen(false);
+        const selected = availableStatuses.find(s => s.id === statusId);
+        if (selected) {
+          setVoice(prev => ({ ...prev, status_id: statusId, status: selected.code }));
+        }
+      }
+    } catch (err) {
+      console.error('Failed to update status:', err);
     }
   };
 
@@ -676,16 +793,55 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
               </TextInstrument>
               
               {isEditMode && (
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setIsLangSelectorOpen(!isLangSelectorOpen);
-                    playClick('pro');
-                  }}
-                  className="ml-1 text-primary hover:scale-110 transition-transform"
-                >
-                  <ChevronDown size={14} strokeWidth={3} />
-                </button>
+                <div className="flex items-center gap-1 ml-1">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsLangSelectorOpen(!isLangSelectorOpen);
+                      playClick('pro');
+                    }}
+                    className="text-primary hover:scale-110 transition-transform"
+                    title="Taal wijzigen"
+                  >
+                    <ChevronDown size={14} strokeWidth={3} />
+                  </button>
+
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsGenderSelectorOpen(!isGenderSelectorOpen);
+                      playClick('pro');
+                    }}
+                    className="text-primary hover:scale-110 transition-transform"
+                    title="Geslacht wijzigen"
+                  >
+                    <Mic size={14} strokeWidth={1.5} />
+                  </button>
+
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsExperienceSelectorOpen(!isExperienceSelectorOpen);
+                      playClick('pro');
+                    }}
+                    className="text-primary hover:scale-110 transition-transform"
+                    title="Ervaring wijzigen"
+                  >
+                    <Zap size={14} strokeWidth={1.5} />
+                  </button>
+
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsStatusSelectorOpen(!isStatusSelectorOpen);
+                      playClick('pro');
+                    }}
+                    className="text-primary hover:scale-110 transition-transform"
+                    title="Status wijzigen"
+                  >
+                    <Settings size={14} strokeWidth={1.5} />
+                  </button>
+                </div>
               )}
 
               <AnimatePresence>
@@ -712,6 +868,96 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
                           >
                             <span>{langItem.label}</span>
                             {isSelectedLang && <Check size={14} strokeWidth={3} className="text-primary" />}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </motion.div>
+                )}
+
+                {isGenderSelectorOpen && (
+                  <motion.div
+                    ref={genderSelectorRef}
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    className="absolute top-full left-0 mt-2 w-48 bg-white rounded-2xl shadow-2xl border border-black/10 py-2 z-[110]"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <div className="max-h-64 overflow-y-auto no-scrollbar">
+                      {availableGenders.map(item => {
+                        const isSelected = item.id === (voice as any).gender_id;
+                        return (
+                          <button
+                            key={item.id}
+                            onClick={() => handleGenderChange(item.id)}
+                            className={cn(
+                              "w-full px-4 py-2.5 text-left text-[13px] font-bold transition-colors flex items-center justify-between group",
+                              isSelected ? "bg-primary/10 text-primary" : "text-va-black hover:bg-va-off-white"
+                            )}
+                          >
+                            <span>{item.label}</span>
+                            {isSelected && <Check size={14} strokeWidth={3} className="text-primary" />}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </motion.div>
+                )}
+
+                {isExperienceSelectorOpen && (
+                  <motion.div
+                    ref={experienceSelectorRef}
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    className="absolute top-full left-0 mt-2 w-48 bg-white rounded-2xl shadow-2xl border border-black/10 py-2 z-[110]"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <div className="max-h-64 overflow-y-auto no-scrollbar">
+                      {availableExperienceLevels.map(item => {
+                        const isSelected = item.id === (voice as any).experience_level_id;
+                        return (
+                          <button
+                            key={item.id}
+                            onClick={() => handleExperienceChange(item.id)}
+                            className={cn(
+                              "w-full px-4 py-2.5 text-left text-[13px] font-bold transition-colors flex items-center justify-between group",
+                              isSelected ? "bg-primary/10 text-primary" : "text-va-black hover:bg-va-off-white"
+                            )}
+                          >
+                            <span>{item.label}</span>
+                            {isSelected && <Check size={14} strokeWidth={3} className="text-primary" />}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </motion.div>
+                )}
+
+                {isStatusSelectorOpen && (
+                  <motion.div
+                    ref={statusSelectorRef}
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    className="absolute top-full left-0 mt-2 w-48 bg-white rounded-2xl shadow-2xl border border-black/10 py-2 z-[110]"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <div className="max-h-64 overflow-y-auto no-scrollbar">
+                      {availableStatuses.map(item => {
+                        const isSelected = item.id === (voice as any).status_id;
+                        return (
+                          <button
+                            key={item.id}
+                            onClick={() => handleStatusChange(item.id)}
+                            className={cn(
+                              "w-full px-4 py-2.5 text-left text-[13px] font-bold transition-colors flex items-center justify-between group",
+                              isSelected ? "bg-primary/10 text-primary" : "text-va-black hover:bg-va-off-white"
+                            )}
+                          >
+                            <span>{item.label}</span>
+                            {isSelected && <Check size={14} strokeWidth={3} className="text-primary" />}
                           </button>
                         );
                       })}

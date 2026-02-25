@@ -52,6 +52,9 @@ export async function PATCH(
     // 🛡️ CHRIS-PROTOCOL: Handshake Truth (Relational IDs)
     if (body.native_lang_id) sdkData.native_language_id = parseInt(body.native_lang_id);
     if (body.country_id) sdkData.country_id = parseInt(body.country_id);
+    if (body.gender_id) sdkData.gender_id = parseInt(body.gender_id);
+    if (body.experience_level_id) sdkData.experience_level_id = parseInt(body.experience_level_id);
+    if (body.status_id) sdkData.status_id = parseInt(body.status_id);
 
     // Delivery
     if (body.delivery_days_min !== undefined) sdkData.delivery_days_min = body.delivery_days_min;

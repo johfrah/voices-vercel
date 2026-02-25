@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { db, studioSessions, studioScripts, chatConversations } from '@/lib/system/voices-config';
+import { db, recordingSessions as studioSessions, recordingScripts as studioScripts, chatConversations } from '@/lib/system/voices-config';
 
 export async function POST(req: Request) {
   try {
