@@ -1,7 +1,7 @@
 import { db } from '@/lib/system/voices-config';
 import { ordersV2, users, orderItems, recordingSessions } from '@/lib/system/voices-config';
 import { eq, sql } from 'drizzle-orm';
-import { NextRequest, NextResponse } from 'next/request';
+import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth/api-auth';
 
 export const dynamic = 'force-dynamic';

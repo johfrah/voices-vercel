@@ -461,12 +461,23 @@ export const VoicesMasterControlProvider: React.FC<{
         targetUrl += state.filters.words + '/';
       }
     } else if (isVoiceProfile) {
-      // 🛡️ CHRIS-PROTOCOL: Preserve prefix and slug correctly (v2.14.612)
+      // 🛡️ CHRIS-PROTOCOL: Preserve prefix and slug correctly (v2.14.618)
+      // CRITICAL FIX: Do NOT append journey if the URL already has a journey segment OR if we want the base profile page.
       const locale = pathname.match(/^\/(nl|fr|en|de|es|it|pt)/)?.[0] || '';
       const prefix = isPrefixedVoice ? 'voice/' : '';
       const slug = isPrefixedVoice ? pathSegments[1] : pathSegments[0];
       
-      targetUrl = locale + '/' + prefix + slug + '/' + state.journey;
+      // Check if there's already a journey segment in the URL
+      const hasJourneyInUrl = isPrefixedVoice ? (pathSegments.length > 2) : (pathSegments.length > 1);
+      
+      if (hasJourneyInUrl) {
+        // URL already has a journey segment, preserve it as-is
+        return;
+      }
+      
+      // For base voice profile pages (e.g., /voice/christina/), do NOT append journey
+      // This allows the Smart Checkout to be visible without forcing a journey redirect
+      return;
     } else {
       // For all other pages (tarieven, contact, etc.), we NEVER touch the URL.
       return;
