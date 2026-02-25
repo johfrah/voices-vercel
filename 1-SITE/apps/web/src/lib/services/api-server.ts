@@ -1,8 +1,8 @@
 import { MarketManagerServer as MarketManager } from "@/lib/system/market-manager-server";
 import { MarketDatabaseService } from "@/lib/system/market-manager-db";
-import { db } from "@/../../packages/database/src/index";
+import { db } from "../../../../packages/database/src/index";
 //  CHRIS-PROTOCOL: Source of Truth from Drizzle Schema
-import { actors, actorDemos, actorVideos, contentArticles, contentBlocks, faq, lessons, media, products, reviews, translations } from "@/../../packages/database/src/schema";
+import { actors, actorDemos, actorVideos, contentArticles, contentBlocks, faq, lessons, media, products, reviews, translations } from "../../../../packages/database/src/schema";
 import { createClient } from "@supabase/supabase-js";
 import { and, asc, desc, eq, ilike, or, sql } from "drizzle-orm";
 import {
