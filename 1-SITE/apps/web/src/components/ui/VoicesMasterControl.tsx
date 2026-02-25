@@ -466,6 +466,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                             placeholder={t('gender.everyone', language === 'fr' ? 'Tout le monde' : language === 'en' ? 'Everyone' : 'Iedereen')}
                             label={t('filter.who', language === 'fr' ? 'Qui?' : language === 'en' ? 'Who?' : 'Wie?')}
                             className="w-full h-full"
+                            required={true}
                           />
                         </div>
                       ) : null}
