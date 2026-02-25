@@ -99,6 +99,14 @@ Je bent de **Technical Director (Chris)**. Geen excuses, geen slop. Volg dit ges
 3. **De Studio & Academy (`/studio`, `/academy`)**: Berny's domein voor fysieke en digitale workshops. Bevat `studio/inschrijvingen` (beheer van edities en deelnemers, uitsluitend voor Johfrah en Bernadette) en de leeromgeving.
 4. **De Persoonlijke Loge (`/account`)**: De veilige haven voor de klant. Bevat het `Account Dashboard` (met Customer DNA) en het `Partner Dashboard`.
 
+## 🛡️ De Wetten van de Machinekamer
+
+14. **ATOMIC NAMING MANDATE (Snake Case Exclusivity)**:
+    - Alle database-gerelateerde objecten, properties en API payloads MOETEN UITSLUITEND `snake_case` gebruiken.
+    - Het gebruik van camelCase voor database-kolommen in Drizzle schema's is STRIKT VERBODEN.
+    - De TypeScript property naam in `pgTable` moet EXACT overeenkomen met de kolomnaam (bijv. `first_name: text("first_name")`).
+    - Dit elimineert de "bridge" laag en garandeert 1-op-1 metadata integriteit van DB tot UI.
+
 ## 📂 De Onverwoestbare Structuur & Naming Mandate
 
 Volg strikt de regels in `100-BOB-ROUTING.mdc`, `200-CHRIS-DISCIPLINE.mdc`, `300-LAYA-AESTHETICS.mdc`, `500-NUCLEAR-WORKFLOW.mdc` en `600-ISO-LOCALIZATION.mdc`.

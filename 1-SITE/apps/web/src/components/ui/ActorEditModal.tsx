@@ -45,6 +45,7 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
     clients: actor.clients || '',
     voice_score: actor.voice_score || 10,
     status: actor.status || 'live',
+    delivery_days_min: actor.delivery_days_min || 1,
     delivery_days_max: actor.delivery_days_max || 1,
     cutoff_time: actor.cutoff_time || '18:00',
     native_lang: actor.native_lang || '',
@@ -819,7 +820,7 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
                           className="w-full px-4 py-3 bg-white rounded-xl border border-black/5 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-light appearance-none"
                         >
                           <option value="live">Live</option>
-                          <option value="away">Afwezig (Verborgen)</option>
+                          <option value="unavailable">Afwezig (Verborgen)</option>
                           <option value="pending">Pending</option>
                           <option value="archived">Archived</option>
                         </select>

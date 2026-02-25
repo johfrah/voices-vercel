@@ -1,6 +1,6 @@
 {
   "name": "voices-experience-layer",
-    "version": "2.14.511",
+    "version": "2.14.512",
 
   "private": true,
   "scripts": {
@@ -18,6 +18,7 @@
     "check:pre-vercel": "tsx ../../../3-WETTEN/scripts/pre-vercel-check.ts",
     "env:pull": "vercel env pull .env.local",
     "logs:live": "vercel logs voices-vercel-gazw8trp5-johfrahs-projects.vercel.app -f",
+    "logs:nuclear": "tsx ../../../3-WETTEN/scripts/live-watchdog.ts",
     "audit:forensic": "tsx ../../../3-WETTEN/scripts/forensic-audit.ts",
     "test:unit": "vitest run",
     "test:e2e": "playwright test",

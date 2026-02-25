@@ -95,17 +95,15 @@ export async function PATCH(
       }
     });
 
-    // 🛡️ CHRIS-PROTOCOL: Status Mapping Fix (v2.14.509)
+    // 🛡️ CHRIS-PROTOCOL: Status Mapping (v2.14.511)
+    // We strictly follow the DB enum. No more 'away' slop.
     if (body.status) {
-      let status = body.status.toLowerCase();
-      if (status === 'away') status = 'unavailable';
-      
       const validStatuses = ['pending', 'approved', 'active', 'live', 'publish', 'rejected', 'cancelled', 'unavailable'];
+      const status = body.status.toLowerCase();
       if (validStatuses.includes(status)) {
         updateData.status = status;
       } else {
-        console.warn(` [ATOMIC-PATCH] Invalid status received: ${status}, defaulting to pending`);
-        updateData.status = 'pending';
+        throw new Error(`Invalid status value: "${status}". Must be one of: ${validStatuses.join(', ')}`);
       }
     }
 
