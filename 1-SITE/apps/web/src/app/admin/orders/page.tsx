@@ -196,9 +196,9 @@ export default function BestellingenPage() {
               <ContainerInstrument className="inline-block bg-primary/10 text-primary text-[13px] font-light px-3 py-1 rounded-full tracking-widest">
                 <VoiceglotText translationKey="admin.orders.badge" defaultText="Bestellingen" />
               </ContainerInstrument>
-              <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter flex items-center gap-4">
+              <HeadingInstrument level={1} className="text-4xl md:text-6xl font-light tracking-tighter flex items-center gap-4">
                 <VoiceglotText translationKey="admin.orders.title" defaultText="Bestellingen" />
-                <span className="text-[10px] bg-primary text-white px-2 py-0.5 rounded-full tracking-[0.3em] uppercase font-bold animate-pulse">Nuclear V2</span>
+                <span className="hidden md:inline text-[10px] bg-primary text-white px-2 py-0.5 rounded-full tracking-[0.3em] uppercase font-bold animate-pulse">Nuclear V2</span>
               </HeadingInstrument>
               <TextInstrument className="text-xl text-black/40 font-light tracking-tight max-w-2xl">
                 <VoiceglotText translationKey="admin.orders.subtitle" defaultText={`Beheer alle transacties, offertes en productiestatus van ${typeof window !== 'undefined' ? window.location.hostname : 'Voices'}.`} />
@@ -236,7 +236,7 @@ export default function BestellingenPage() {
         </SectionInstrument>
 
         {/* Nuclear V2 Banner */}
-        <div className="mb-8 bg-va-black text-white p-4 rounded-[20px] flex items-center justify-between border border-primary/30 shadow-lg animate-in fade-in slide-in-from-top duration-1000">
+        <div className="hidden md:flex mb-8 bg-va-black text-white p-4 rounded-[20px] items-center justify-between border border-primary/30 shadow-lg animate-in fade-in slide-in-from-top duration-1000">
           <div className="flex items-center gap-4">
             <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary animate-pulse">
               <ShoppingBag size={20} />
@@ -251,8 +251,8 @@ export default function BestellingenPage() {
           </div>
         </div>
 
-        {/* Orders Table */}
-        <div className="bg-white rounded-[20px] border border-black/[0.03] shadow-sm overflow-hidden mb-8">
+        {/* Orders Table - Desktop */}
+        <div className="hidden md:block bg-white rounded-[20px] border border-black/[0.03] shadow-sm overflow-hidden mb-8">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-va-off-white/50 border-b border-black/[0.03]">
@@ -467,7 +467,7 @@ export default function BestellingenPage() {
                 </React.Fragment>
               )) : (
                 <tr>
-                  <td colSpan={6} className="px-8 py-20 text-center">
+                  <td colSpan={7} className="px-8 py-20 text-center">
                     <div className="flex flex-col items-center gap-4 text-va-black/20">
                       <ShoppingBag size={48} strokeWidth={1} />
                       <TextInstrument className="text-[15px] font-light">Geen bestellingen gevonden die voldoen aan je zoekopdracht.</TextInstrument>
@@ -477,6 +477,84 @@ export default function BestellingenPage() {
               )}
             </tbody>
           </table>
+        </div>
+
+        {/* Orders List - Mobile */}
+        <div className="md:hidden space-y-4 mb-8">
+          {filteredOrders.length > 0 ? filteredOrders.map((order) => (
+            <div 
+              key={order.id}
+              onClick={() => toggleOrder(order.id)}
+              className="bg-white rounded-[20px] border border-black/[0.03] shadow-sm p-6 space-y-4 active:scale-[0.98] transition-all"
+            >
+              <div className="flex justify-between items-start">
+                <div className="flex flex-col">
+                  <span className="text-[16px] font-bold text-va-black tracking-tight">#{order.orderNumber}</span>
+                  <span className="text-[11px] font-light text-va-black/30 tracking-widest uppercase">{order.unit}</span>
+                </div>
+                {getStatusBadge(order.status)}
+              </div>
+              
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-primary/5 flex items-center justify-center text-primary">
+                  <User size={16} />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-[15px] font-medium text-va-black tracking-tight">{order.customer?.name}</span>
+                  <span className="text-[12px] font-light text-va-black/40 truncate max-w-[200px]">{order.customer?.company || order.customer?.email}</span>
+                </div>
+              </div>
+
+              <div className="flex justify-between items-end pt-2 border-t border-black/[0.02]">
+                <div className="flex flex-col">
+                  <span className="text-[11px] font-light text-va-black/30 uppercase tracking-widest">Totaal</span>
+                  <span className="text-[16px] font-bold text-va-black">€{parseFloat(order.finance?.net || "0").toFixed(2)}</span>
+                </div>
+                <Link 
+                  href={`/admin/orders/${order.id}`}
+                  className="p-3 rounded-full bg-va-off-white text-primary active:bg-primary active:text-white transition-all"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <ExternalLink size={18} strokeWidth={1.5} />
+                </Link>
+              </div>
+
+              {expandedOrderId === order.id && (
+                <div className="pt-4 border-t border-black/[0.02] animate-in fade-in slide-in-from-top duration-300">
+                  {isExpanding ? (
+                    <div className="flex items-center gap-3 text-va-black/20 font-light italic text-sm">
+                      <Loader2 className="animate-spin" size={14} />
+                      Laden...
+                    </div>
+                  ) : expandedOrderData ? (
+                    <div className="space-y-6">
+                      <div className="bg-va-off-white/50 p-4 rounded-[15px] space-y-2">
+                        <div className="flex justify-between text-sm">
+                          <span className="text-va-black/40">Marge</span>
+                          <span className="font-bold text-primary">€{expandedOrderData.finance?.margin || '0.00'}</span>
+                        </div>
+                        {expandedOrderData.billing?.purchaseOrder && (
+                          <div className="flex justify-between text-sm">
+                            <span className="text-va-black/40">PO-nummer</span>
+                            <span className="font-medium text-primary">{expandedOrderData.billing.purchaseOrder}</span>
+                          </div>
+                        )}
+                      </div>
+                      <div className="space-y-2">
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-va-black/20">Script Preview</span>
+                        <div className="text-sm font-light text-va-black/70 line-clamp-3">
+                          {expandedOrderData.production?.briefing?.text || 'Geen script.'}
+                        </div>
+                      </div>
+                      <Link href={`/admin/orders/${order.id}`} className="block w-full py-3 bg-va-black text-white text-center rounded-[12px] text-sm font-bold">
+                        Bekijk Volledig Dossier
+                      </Link>
+                    </div>
+                  ) : null}
+                </div>
+              )}
+            </div>
+          ))}
         </div>
 
         {/* Pagination UI */}

@@ -68,60 +68,60 @@ export default function AdminUsersPage() {
   );
 
   return (
-    <PageWrapperInstrument className="p-12 space-y-12 max-w-[1600px] mx-auto min-h-screen">
+    <PageWrapperInstrument className="p-6 md:p-12 space-y-8 md:space-y-12 max-w-[1600px] mx-auto min-h-screen">
       {/* Header */}
-      <SectionInstrument className="flex justify-between items-end">
+      <SectionInstrument className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
         <ContainerInstrument className="space-y-4">
           <Link  href="/admin/dashboard" className="flex items-center gap-2 text-va-black/30 hover:text-primary transition-colors text-[15px] font-light tracking-widest">
             <ArrowLeft strokeWidth={1.5} size={12} /> 
             <VoiceglotText  translationKey="admin.back_to_dashboard" defaultText="Terug" />
           </Link>
-          <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter "><VoiceglotText  translationKey="admin.users.title" defaultText="Klantprofielen" /></HeadingInstrument>
+          <HeadingInstrument level={1} className="text-4xl md:text-6xl font-light tracking-tighter "><VoiceglotText  translationKey="admin.users.title" defaultText="Klantprofielen" /></HeadingInstrument>
         </ContainerInstrument>
         
-        <ContainerInstrument className="flex gap-4">
-          <ContainerInstrument className="relative group">
+        <ContainerInstrument className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
+          <ContainerInstrument className="relative group w-full md:w-auto">
             <SearchIcon strokeWidth={1.5} className="absolute left-4 top-1/2 -translate-y-1/2 text-va-black/20 group-focus-within:text-primary transition-colors" size={16} />
             <input 
               type="text" 
               placeholder="Zoek op naam of email..." 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-12 pr-6 py-4 bg-white border border-black/5 rounded-[10px] text-[15px] font-light focus:outline-none focus:border-primary focus:shadow-aura transition-all w-[300px]"
+              className="pl-12 pr-6 py-4 bg-white border border-black/5 rounded-[10px] text-[15px] font-light focus:outline-none focus:border-primary focus:shadow-aura transition-all w-full md:w-[300px]"
             />
           </ContainerInstrument>
           <ButtonInstrument onClick={() => {
             logAction('users_create_new');
             //  CHRIS-PROTOCOL: Open User Creation Modal
             window.dispatchEvent(new CustomEvent('admin:user:create'));
-          }} className="va-btn-pro !bg-va-black flex items-center gap-2">
+          }} className="va-btn-pro !bg-va-black flex items-center justify-center gap-2 w-full md:w-auto">
             <UserPlus strokeWidth={1.5} size={16} /> <VoiceglotText  translationKey="admin.users.add" defaultText="Nieuwe Gebruiker" />
           </ButtonInstrument>
         </ContainerInstrument>
       </SectionInstrument>
 
       {/* Stats */}
-      <BentoGrid strokeWidth={1.5} columns={4}>
-        <BentoCard span="sm" className="bg-white border border-black/5 p-8 space-y-2 rounded-[20px]">
-          <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/30"><VoiceglotText  translationKey="auto.page.totaal_gebruikers.cf0db8" defaultText="Totaal Gebruikers" /></TextInstrument>
-          <HeadingInstrument level={3} className="text-4xl font-light tracking-tighter">{users.length}</HeadingInstrument>
+      <BentoGrid strokeWidth={1.5} columns={4} className="grid-cols-2 md:grid-cols-4">
+        <BentoCard span="sm" className="bg-white border border-black/5 p-6 md:p-8 space-y-2 rounded-[20px]">
+          <TextInstrument className="text-[13px] md:text-[15px] font-light tracking-widest text-va-black/30"><VoiceglotText  translationKey="auto.page.totaal_gebruikers.cf0db8" defaultText="Totaal" /></TextInstrument>
+          <HeadingInstrument level={3} className="text-3xl md:text-4xl font-light tracking-tighter">{users.length}</HeadingInstrument>
         </BentoCard>
-        <BentoCard span="sm" className="bg-white border border-black/5 p-8 space-y-2 rounded-[20px]">
-          <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/30"><VoiceglotText  translationKey="auto.page.nieuw__30d_.65173a" defaultText="Nieuw (30d)" /></TextInstrument>
-          <HeadingInstrument level={3} className="text-4xl font-light tracking-tighter text-primary">+{users.filter(u => new Date(u.createdAt) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)).length}</HeadingInstrument>
+        <BentoCard span="sm" className="bg-white border border-black/5 p-6 md:p-8 space-y-2 rounded-[20px]">
+          <TextInstrument className="text-[13px] md:text-[15px] font-light tracking-widest text-va-black/30"><VoiceglotText  translationKey="auto.page.nieuw__30d_.65173a" defaultText="Nieuw (30d)" /></TextInstrument>
+          <HeadingInstrument level={3} className="text-3xl md:text-4xl font-light tracking-tighter text-primary">+{users.filter(u => new Date(u.createdAt) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)).length}</HeadingInstrument>
         </BentoCard>
-        <BentoCard span="sm" className="bg-white border border-black/5 p-8 space-y-2 rounded-[20px]">
-          <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/30"><VoiceglotText  translationKey="auto.page.admins.3124e6" defaultText="Admins" /></TextInstrument>
-          <HeadingInstrument level={3} className="text-4xl font-light tracking-tighter text-va-black">{users.filter(u => u.role === 'admin').length}</HeadingInstrument>
+        <BentoCard span="sm" className="bg-white border border-black/5 p-6 md:p-8 space-y-2 rounded-[20px]">
+          <TextInstrument className="text-[13px] md:text-[15px] font-light tracking-widest text-va-black/30"><VoiceglotText  translationKey="auto.page.admins.3124e6" defaultText="Admins" /></TextInstrument>
+          <HeadingInstrument level={3} className="text-3xl md:text-4xl font-light tracking-tighter text-va-black">{users.filter(u => u.role === 'admin').length}</HeadingInstrument>
         </BentoCard>
-        <BentoCard span="sm" className="bg-white border border-black/5 p-8 space-y-2 rounded-[20px]">
-          <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/30"><VoiceglotText  translationKey="auto.page.actieve_sessies.5fbd8f" defaultText="Actieve Sessies" /></TextInstrument>
-          <HeadingInstrument level={3} className="text-4xl font-light tracking-tighter text-green-500">24</HeadingInstrument>
+        <BentoCard span="sm" className="bg-white border border-black/5 p-6 md:p-8 space-y-2 rounded-[20px]">
+          <TextInstrument className="text-[13px] md:text-[15px] font-light tracking-widest text-va-black/30"><VoiceglotText  translationKey="auto.page.actieve_sessies.5fbd8f" defaultText="Online" /></TextInstrument>
+          <HeadingInstrument level={3} className="text-3xl md:text-4xl font-light tracking-tighter text-green-500">24</HeadingInstrument>
         </BentoCard>
       </BentoGrid>
 
-      {/* User Table */}
-      <ContainerInstrument className="bg-white border border-black/5 rounded-[20px] overflow-hidden">
+      {/* User Table - Desktop */}
+      <ContainerInstrument className="hidden md:block bg-white border border-black/5 rounded-[20px] overflow-hidden">
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="bg-va-off-white/50 border-b border-black/5">
@@ -194,6 +194,55 @@ export default function AdminUsersPage() {
           </tbody>
         </table>
       </ContainerInstrument>
+
+      {/* User List - Mobile */}
+      <div className="md:hidden space-y-4">
+        {filteredUsers.map((user) => (
+          <div key={user.id} className="bg-white border border-black/5 rounded-[20px] p-6 space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-va-off-white rounded-full flex items-center justify-center font-light text-va-black/20 text-xl">
+                  {user.name?.charAt(0) || user.email?.charAt(0)}
+                </div>
+                <div className="flex flex-col">
+                  <TextInstrument className="font-bold text-va-black tracking-tight">{user.name || 'Onbekend'}</TextInstrument>
+                  <TextInstrument className="text-sm text-va-black/40 font-light">{user.email}</TextInstrument>
+                </div>
+              </div>
+              <div className={`px-3 py-1 rounded-full text-[11px] font-bold tracking-widest uppercase ${
+                user.role === 'admin' ? 'bg-va-black text-white' : 'bg-va-off-white text-va-black/40'
+              }`}>
+                {user.role}
+              </div>
+            </div>
+            
+            <div className="flex items-center justify-between pt-4 border-t border-black/[0.02]">
+              <div className="flex items-center gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
+                <TextInstrument className="text-sm font-light text-va-black/60">Actief</TextInstrument>
+              </div>
+              <div className="flex items-center gap-2">
+                <button 
+                  onClick={async () => {
+                    logAction('users_impersonate', { user_id: user.id });
+                    const res = await impersonate(user.id);
+                    if (!res.success) toast.error(res.error || 'Ghost Mode mislukt');
+                  }} 
+                  className="p-3 bg-va-off-white rounded-full text-va-black/40 active:bg-primary active:text-white transition-all"
+                >
+                  <Ghost strokeWidth={1.5} size={18} />
+                </button>
+                <button className="p-3 bg-va-off-white rounded-full text-va-black/40 active:bg-primary active:text-white transition-all">
+                  <Edit3 strokeWidth={1.5} size={18} />
+                </button>
+                <button className="p-3 bg-va-off-white rounded-full text-va-black/40 active:bg-primary active:text-white transition-all">
+                  <Mail strokeWidth={1.5} size={18} />
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
 
       <FixedActionDockInstrument>
         <ButtonInstrument 
