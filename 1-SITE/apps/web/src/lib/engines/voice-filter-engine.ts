@@ -23,6 +23,7 @@ export interface FilterCriteria {
   languages?: string[];
   languageIds?: number[]; //  Harde ID matching voor multi-lang
   gender?: string | null;
+  genderId?: number | null; // 🛡️ Handshake Truth
   media?: string[];
   country?: string;
   countryId?: number | null; //  Harde ID matching
@@ -213,8 +214,10 @@ export class VoiceFilterEngine {
       result = result.filter(actor => actor.country_id != null && actor.country_id === criteria.countryId);
     }
 
-    // 6. GENDER
-    if (criteria.gender && criteria.gender !== 'Iedereen' && criteria.gender !== 'Everyone') {
+    // 6. GENDER (Handshake Truth v2.14.714)
+    if (criteria.genderId != null) {
+      result = result.filter(actor => actor.gender_id != null && actor.gender_id === criteria.genderId);
+    } else if (criteria.gender && criteria.gender !== 'Iedereen' && criteria.gender !== 'Everyone') {
       const lowGender = criteria.gender.toLowerCase();
       result = result.filter(actor => {
         const g = actor.gender?.toLowerCase() || '';

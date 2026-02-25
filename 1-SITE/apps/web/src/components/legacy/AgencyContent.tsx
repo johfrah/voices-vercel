@@ -25,7 +25,25 @@ import { RecentlyPlayedBar } from "@/components/ui/RecentlyPlayedBar";
 
 export function AgencyContent({ mappedActors, filters }: { mappedActors: any[], filters: any }) {
   const { state, updateStep } = useMasterControl();
-  
+  const [dynamicConfig, setDynamicConfig] = useState<{ languages: any[], genders: any[], journeys: any[], mediaTypes: any[] } | null>(null);
+
+  useEffect(() => {
+    // 🛡️ CHRIS-PROTOCOL: Handshake Truth Priming (v2.14.714)
+    Promise.all([
+      fetch('/api/admin/config?type=languages').then(res => res.json()),
+      fetch('/api/admin/config?type=genders').then(res => res.json()),
+      fetch('/api/admin/config?type=journeys').then(res => res.json()),
+      fetch('/api/admin/config?type=media_types').then(res => res.json())
+    ]).then(([langs, genders, journeys, mediaTypes]) => {
+      setDynamicConfig({
+        languages: langs.results || [],
+        genders: genders.results || [],
+        journeys: journeys.results || [],
+        mediaTypes: mediaTypes.results || []
+      });
+    });
+  }, []);
+
   const { selectActor, state: checkoutState } = useCheckout();
   const { playClick } = useSonicDNA();
   const router = useRouter();
@@ -100,9 +118,7 @@ export function AgencyContent({ mappedActors, filters }: { mappedActors: any[], 
     }
   }, [mappedActors, selectActor, updateStep, checkoutState.selectedActor, state.currentStep]);
 
-  //  BOB-METHODE: SPA-sync voor de URL
-  // Als we in de 'script' stap zitten en er is een acteur geselecteerd,
-  // zorgen we dat de URL altijd de juiste slug en journey bevat.
+  // ... rest of the file ...
   useEffect(() => {
     if (state.currentStep === 'script' && checkoutState.selectedActor) {
       const slug = checkoutState.selectedActor.slug || checkoutState.selectedActor.first_name?.toLowerCase();
@@ -167,7 +183,14 @@ export function AgencyContent({ mappedActors, filters }: { mappedActors: any[], 
       {/* Filters persistent bovenaan */}
       {state.currentStep !== 'checkout' && (
         <div className="relative z-50 w-full px-4 md:px-6">
-          <VoicesMasterControl actors={mappedActors} filters={filters} />
+          <VoicesMasterControl 
+            actors={mappedActors} 
+            filters={filters} 
+            languagesData={dynamicConfig?.languages}
+            gendersData={dynamicConfig?.genders}
+            journeysData={dynamicConfig?.journeys}
+            mediaTypesData={dynamicConfig?.mediaTypes}
+          />
           <RecentlyPlayedBar />
         </div>
       )}

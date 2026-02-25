@@ -242,6 +242,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
           label: l.label,
           value: l.id,
           langCode: l.code,
+          icon: ICON_MAP[l.icon] || Globe, // 🛡️ CHRIS-PROTOCOL: Handshake Truth (v2.14.714)
           popular: market.popular_languages.some(pl => 
             pl.toLowerCase() === l.code.toLowerCase() || 
             pl.toLowerCase() === l.label.toLowerCase()
@@ -251,17 +252,6 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
 
     const mappedConfig = languageConfig.map(langObj => ({
       ...langObj,
-      icon: (langObj.langCode === 'nl-be' || langObj.langCode === 'fr-be') ? FlagBE :
-            (langObj.langCode === 'nl-nl') ? FlagNL :
-            (langObj.langCode === 'fr-fr') ? FlagFR :
-            (langObj.langCode === 'en-gb') ? FlagUK :
-            (langObj.langCode === 'en-us') ? FlagUS :
-            (langObj.langCode === 'de-de') ? FlagDE :
-            (langObj.langCode === 'es-es') ? FlagES :
-            (langObj.langCode === 'it-it') ? FlagIT :
-            (langObj.langCode === 'pl-pl') ? FlagPL :
-            (langObj.langCode === 'da-dk') ? FlagDK :
-            (langObj.langCode === 'pt-pt') ? FlagPT : Globe,
       availableExtraLangs: activeJourneyId === 'telephony' ? getExtraLangsFor(langObj.label, langObj.value) : []
     }));
 
@@ -549,37 +539,28 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                           <VoicesDropdown
                             stepperMode
                             rounding={state.currentStep !== 'voice' ? 'left' : 'none'}
-                            options={fetchedMediaTypes.length > 0 
-                              ? fetchedMediaTypes.map(fmt => {
+                            options={mediaTypesData.length > 0 
+                              ? mediaTypesData.map(fmt => {
                                   const baseId = fmt.code.split('_')[0];
+                                  const baseIcons: Record<string, any> = { online: Globe, podcast: Mic2, radio: Radio, tv: Tv };
                                   return {
-                                    id: fmt.id, // 🛡️ CHRIS-PROTOCOL: Use ID for Handshake Truth (v2.14.714)
+                                    id: fmt.id,
                                     label: fmt.label,
-                                    value: fmt.id,
-                                    code: fmt.code,
-                                    icon: ICON_MAP[fmt.icon] || Globe,
+                                    value: fmt.id, //  CHRIS-PROTOCOL: Use ID for Handshake Truth
+                                    icon: baseIcons[baseId] || Globe,
                                     subLabel: fmt.description,
-                                    hasRegions: fmt.hasRegions
+                                    hasRegions: fmt.has_regions
                                   };
                                 })
-                              : [
-                                  { id: 1, label: t('media.online_socials', 'Online & Socials'), value: 1, code: 'online', icon: Globe, subLabel: t('media.online_socials.sub', 'YouTube, Meta, LinkedIn') },
-                                  { id: 2, label: t('media.podcast', 'Podcast'), value: 2, code: 'podcast', icon: Mic2, subLabel: t('media.podcast.sub', 'Pre-roll, Mid-roll') },
-                                  { id: 3, label: t('media.radio', 'Radio'), value: 3, code: 'radio_national', icon: Radio, subLabel: t('media.radio.sub', 'Landelijke of regionale zenders'), hasRegions: true },
-                                  { id: 5, label: t('media.television', 'TV'), value: 5, code: 'tv_national', icon: Tv, subLabel: t('media.television.sub', 'Landelijke of regionale zenders'), hasRegions: true }
-                                ]
+                              : []
                             }
                             value={(() => {
                               const val = state.filters.spotsDetail || {};
                               const mappedVal: Record<string, number> = {};
                               Object.keys(val).forEach(k => {
                                 // 🛡️ CHRIS-PROTOCOL: Map code back to ID for UI display
-                                const match = fetchedMediaTypes.find(fmt => fmt.code === k || (k.startsWith('radio_') && fmt.code.startsWith('radio_')) || (k.startsWith('tv_') && fmt.code.startsWith('tv_')));
+                                const match = mediaTypesData.find(fmt => fmt.code === k || (k.startsWith('radio_') && fmt.code.startsWith('radio_')) || (k.startsWith('tv_') && fmt.code.startsWith('tv_')));
                                 if (match) mappedVal[match.id] = val[k];
-                                else if (k === 'online') mappedVal[1] = val[k];
-                                else if (k === 'podcast') mappedVal[2] = val[k];
-                                else if (k.startsWith('radio_')) mappedVal[3] = val[k];
-                                else if (k.startsWith('tv_')) mappedVal[5] = val[k];
                               });
                               return mappedVal;
                             })()}
@@ -599,7 +580,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                               const newSpotsDetail: Record<string, number> = {};
 
                               mediaIds.forEach(id => {
-                                const fmt = fetchedMediaTypes.find(f => f.id === id);
+                                const fmt = mediaTypesData.find(f => f.id === id);
                                 if (fmt) {
                                   let code = fmt.code;
                                   if (code.startsWith('radio_') || code.startsWith('tv_')) {

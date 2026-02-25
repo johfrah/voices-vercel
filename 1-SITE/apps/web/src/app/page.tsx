@@ -52,7 +52,19 @@ import { VoiceCard } from "@/components/ui/VoiceCard";
  * - Geen HowItWorks of Pricing (deze hebben eigen pagina's).
  * - Reviews blijven behouden voor social proof.
  */
-function HomeContent({ actors: initialActors, reviews, reviewStats, dynamicConfig }: { actors: Actor[], reviews: any[], reviewStats?: { averageRating: number, totalCount: number }, dynamicConfig?: any }) {
+function HomeContent({ 
+  actors: initialActors, 
+  reviews, 
+  reviewStats, 
+  dynamicConfig,
+  handshakeConfig
+}: { 
+  actors: Actor[], 
+  reviews: any[], 
+  reviewStats?: { averageRating: number, totalCount: number }, 
+  dynamicConfig?: any,
+  handshakeConfig?: { languages: any[], genders: any[], journeys: any[], mediaTypes: any[] }
+}) {
   const { user, isAuthenticated } = useAuth();
   const { t, language } = useTranslation();
   const { state: masterControlState, updateStep, resetFilters } = useMasterControl();
@@ -379,7 +391,15 @@ function HomeContent({ actors: initialActors, reviews, reviewStats, dynamicConfi
           </ContainerInstrument>
 
           <div className="w-full relative z-50 px-4 md:px-6">
-            <VoicesMasterControl actors={actors} filters={filters} availableExtraLangs={availableExtraLangs} />
+            <VoicesMasterControl 
+              actors={actors} 
+              filters={filters} 
+              availableExtraLangs={availableExtraLangs} 
+              languagesData={handshakeConfig?.languages}
+              gendersData={handshakeConfig?.genders}
+              journeysData={handshakeConfig?.journeys}
+              mediaTypesData={handshakeConfig?.mediaTypes}
+            />
           </div>
           
           <div className="mt-20 relative min-h-[600px] w-full px-4 md:px-6">
@@ -550,6 +570,7 @@ export default function Home() {
   const [mounted, setMounted] = useState(false);
   const [data, setData] = useState<{ actors: Actor[], reviews: any[], reviewStats?: { averageRating: number, totalCount: number, distribution?: Record<number, number> }, dynamicConfig?: any } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [dynamicData, setDynamicConfigData] = useState<{ languages: any[], genders: any[], journeys: any[], mediaTypes: any[] } | null>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -591,7 +612,8 @@ export default function Home() {
       }
     }, 10000);
     
-    // Fetch both actors and dynamic home config
+    // 🛡️ CHRIS-PROTOCOL: Handshake Truth Priming (v2.14.714)
+    // Fetch both actors and the full database configuration for pure Handshake UI.
     Promise.all([
       fetch(fetchUrl, { signal: controller.signal }).then(res => {
         if (!res.ok) throw new Error(`Actors API error: ${res.status}`);
@@ -600,14 +622,25 @@ export default function Home() {
       fetch('/api/home/config', { signal: controller.signal }).then(res => {
         if (!res.ok) throw new Error(`Home Config API error: ${res.status}`);
         return res.json();
-      })
+      }),
+      fetch('/api/admin/config?type=languages', { signal: controller.signal }).then(res => res.json()),
+      fetch('/api/admin/config?type=genders', { signal: controller.signal }).then(res => res.json()),
+      fetch('/api/admin/config?type=journeys', { signal: controller.signal }).then(res => res.json()),
+      fetch('/api/admin/config?type=media_types', { signal: controller.signal }).then(res => res.json())
     ])
-      .then(([resData, homeConfig]) => {
+      .then(([resData, homeConfig, langs, genders, journeys, mediaTypes]) => {
         clearTimeout(timeoutId);
         if (!mounted) return;
         
         console.log('[Home] Data received successfully');
         
+        setDynamicConfigData({
+          languages: langs.results || [],
+          genders: genders.results || [],
+          journeys: journeys.results || [],
+          mediaTypes: mediaTypes.results || []
+        });
+
         if (!resData || !resData.results) {
           setData({ actors: [], reviews: [], dynamicConfig: homeConfig });
           return;
@@ -680,7 +713,16 @@ export default function Home() {
         </ContainerInstrument>
       </SectionInstrument>
     }>
-      {data && <HomeContent strokeWidth={1.5} actors={data.actors} reviews={data.reviews} reviewStats={data.reviewStats} dynamicConfig={data.dynamicConfig} />}
+      {data && (
+        <HomeContent 
+          strokeWidth={1.5} 
+          actors={data.actors} 
+          reviews={data.reviews} 
+          reviewStats={data.reviewStats} 
+          dynamicConfig={data.dynamicConfig} 
+          handshakeConfig={dynamicData || undefined}
+        />
+      )}
       {isLoading && data && (
         <div className="fixed top-0 left-0 w-full h-1 bg-primary/20 z-[9999]">
           <div className="h-full bg-primary animate-progress-fast" style={{ width: '30%' }} />

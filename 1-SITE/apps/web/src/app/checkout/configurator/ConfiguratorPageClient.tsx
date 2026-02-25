@@ -98,6 +98,25 @@ export default function ConfiguratorPageClient({
 
   //  BOB-METHODE: Share Functionality
   const [isSharing, setIsSharing] = useState(false);
+  const [dynamicConfig, setDynamicConfig] = useState<{ languages: any[], genders: any[], journeys: any[], mediaTypes: any[] } | null>(null);
+
+  useEffect(() => {
+    // 🛡️ CHRIS-PROTOCOL: Handshake Truth Priming (v2.14.714)
+    Promise.all([
+      fetch('/api/admin/config?type=languages').then(res => res.json()),
+      fetch('/api/admin/config?type=genders').then(res => res.json()),
+      fetch('/api/admin/config?type=journeys').then(res => res.json()),
+      fetch('/api/admin/config?type=media_types').then(res => res.json())
+    ]).then(([langs, genders, journeys, mediaTypes]) => {
+      setDynamicConfig({
+        languages: langs.results || [],
+        genders: genders.results || [],
+        journeys: journeys.results || [],
+        mediaTypes: mediaTypes.results || []
+      });
+    });
+  }, []);
+
   const [shareUrl, setShareUrl] = useState<string | null>(null);
 
   const handleShare = async () => {
@@ -1153,7 +1172,15 @@ export default function ConfiguratorPageClient({
                     <LabelInstrument className="text-[11px] font-bold tracking-[0.2em] text-va-black/20 uppercase px-2">
                       <VoiceglotText translationKey="configurator.step2.label" defaultText="02. Gebruik & Rechten" />
                     </LabelInstrument>
-                    <VoicesMasterControl minimalMode={minimalMode} actors={[]} filters={{ languages: [], genders: [], styles: [] }} />
+                    <VoicesMasterControl 
+                      minimalMode={minimalMode} 
+                      actors={[]} 
+                      filters={{ languages: [], genders: [], styles: [] }} 
+                      languagesData={dynamicConfig?.languages}
+                      gendersData={dynamicConfig?.genders}
+                      journeysData={dynamicConfig?.journeys}
+                      mediaTypesData={dynamicConfig?.mediaTypes}
+                    />
                   </div>
                 )}
 

@@ -391,10 +391,23 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
     const host = headersList.get('host') || '';
     const market = MarketManager.getCurrentMarket(host);
     
-    // 🛡️ CHRIS-PROTOCOL: Market-Specific Routing for Ademing
+    // 🛡️ CHRIS-PROTOCOL: Market-Specific Routing for Ademing (v2.14.715)
     if (market.market_code === 'ADEMING') {
-      const tracksRes = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/api/ademing?action=tracks`);
-      const tracks = await tracksRes.json();
+      let tracks = [];
+      try {
+        const tracksRes = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/api/ademing?action=tracks`, {
+          next: { revalidate: 60 } // Cache for 1 minute
+        });
+        
+        if (tracksRes.ok) {
+          const data = await tracksRes.json();
+          if (Array.isArray(data)) {
+            tracks = data;
+          }
+        }
+      } catch (err) {
+        console.error("[SmartRouter] Ademing tracks fetch failed:", err);
+      }
       
       // Handle deep meditation routes on ademing.be
       if (cleanSegments.length > 0) {

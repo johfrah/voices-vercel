@@ -14,7 +14,7 @@ import { VoiceCard } from "@/components/ui/VoiceCard";
 import { VoicesMasterControl } from "@/components/ui/VoicesMasterControl";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, Suspense } from 'react';
+import { useEffect, Suspense, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from "next/dynamic";
 
@@ -36,6 +36,25 @@ export function VoiceDetailClient({
   initialMedium?: string 
 }) {
   const { t } = useTranslation();
+  const [dynamicConfig, setDynamicConfig] = useState<{ languages: any[], genders: any[], journeys: any[], mediaTypes: any[] } | null>(null);
+
+  useEffect(() => {
+    // 🛡️ CHRIS-PROTOCOL: Handshake Truth Priming (v2.14.714)
+    Promise.all([
+      fetch('/api/admin/config?type=languages').then(res => res.json()),
+      fetch('/api/admin/config?type=genders').then(res => res.json()),
+      fetch('/api/admin/config?type=journeys').then(res => res.json()),
+      fetch('/api/admin/config?type=media_types').then(res => res.json())
+    ]).then(([langs, genders, journeys, mediaTypes]) => {
+      setDynamicConfig({
+        languages: langs.results || [],
+        genders: genders.results || [],
+        journeys: journeys.results || [],
+        mediaTypes: mediaTypes.results || []
+      });
+    });
+  }, []);
+
   const { selectActor, updateUsage, updateMedia, updateBriefing } = useCheckout();
   const { updateJourney } = useMasterControl();
   const router = useRouter();
@@ -199,6 +218,10 @@ export function VoiceDetailClient({
               genders: [actor.gender],
               styles: actor.styles || []
             }} 
+            languagesData={dynamicConfig?.languages}
+            gendersData={dynamicConfig?.genders}
+            journeysData={dynamicConfig?.journeys}
+            mediaTypesData={dynamicConfig?.mediaTypes}
           />
         </div>
 
