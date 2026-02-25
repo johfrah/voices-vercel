@@ -7,8 +7,8 @@ import {
   TextInstrument
 } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
-import { db } from '../../../../packages/database/src/index';
-import { orderItems, orders, users, vaultFiles } from '../../../../packages/database/src/schema';
+import { db } from '../../../../packages/database/src/index.ts';
+import { orderItems, orders, users, vaultFiles } from '../../../../packages/database/src/schema/index.ts';
 import { clsx } from 'clsx';
 import { format } from 'date-fns';
 import { nl } from 'date-fns/locale';
