@@ -434,8 +434,14 @@ export const VoicesMasterControlProvider: React.FC<{
                                !['/agency/tarieven', '/agency/over-ons', '/agency/privacy', '/agency/cookies', '/agency/voorwaarden', '/tarieven', '/price', '/contact'].includes(cleanPath);
     
     const pathSegments = cleanPath.split('/').filter(Boolean);
-    const isVoiceProfile = pathSegments.length >= 1 && !isAgencyFilterPage && 
-                          !['admin', 'backoffice', 'account', 'api', 'auth', 'checkout', 'tarieven', 'price', 'contact', 'over-ons', 'agency'].includes(pathSegments[0]);
+    
+    // 🛡️ CHRIS-PROTOCOL: Refined Voice Profile detection (v2.14.612)
+    // We detect if this is a voice profile (either legacy flat or prefixed /voice/).
+    const isPrefixedVoice = pathSegments[0] === 'voice' && pathSegments.length >= 2;
+    const isLegacyVoice = pathSegments.length >= 1 && !isAgencyFilterPage && 
+                          !['admin', 'backoffice', 'account', 'api', 'auth', 'checkout', 'tarieven', 'price', 'contact', 'over-ons', 'agency', 'voice', 'artist', 'portfolio'].includes(pathSegments[0]);
+    
+    const isVoiceProfile = isPrefixedVoice || isLegacyVoice;
     
     // CHRIS-PROTOCOL: Strict URL rewrite mandate. 
     // We only touch the URL if we are in a known dynamic flow.
@@ -454,10 +460,13 @@ export const VoicesMasterControlProvider: React.FC<{
       } else if ((state.journey === 'telephony' || state.journey === 'video') && state.filters.words) {
         targetUrl += state.filters.words + '/';
       }
-    } else if (isVoiceProfile && pathSegments.length >= 2) {
-      // Update journey segment on profile pages
+    } else if (isVoiceProfile) {
+      // 🛡️ CHRIS-PROTOCOL: Preserve prefix and slug correctly (v2.14.612)
       const locale = pathname.match(/^\/(nl|fr|en|de|es|it|pt)/)?.[0] || '';
-      targetUrl = locale + '/' + pathSegments[0] + '/' + state.journey;
+      const prefix = isPrefixedVoice ? 'voice/' : '';
+      const slug = isPrefixedVoice ? pathSegments[1] : pathSegments[0];
+      
+      targetUrl = locale + '/' + prefix + slug + '/' + state.journey;
     } else {
       // For all other pages (tarieven, contact, etc.), we NEVER touch the URL.
       return;
