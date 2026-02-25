@@ -118,7 +118,7 @@ export default function AccountDashboardClient() {
       <div className="va-home-container">
         {/*  ACCOUNT HERO */}
         <AccountHeroInstrument 
-          userEmail={user?.email || `user@${isAdmin ? MarketManager.getCurrentMarket().market_code.toLowerCase() + '.be' : (typeof window !== 'undefined' ? window.location.host : 'voices.be')}`} 
+          userEmail={user?.email || `user@${isAdmin ? MarketManager.getCurrentMarket().market_code.toLowerCase() + '.be' : (typeof window !== 'undefined' ? window.location.hostname : 'voices.be')}`} 
           onLogout={logout}
         />
 

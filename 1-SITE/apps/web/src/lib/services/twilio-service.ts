@@ -35,7 +35,8 @@ export class TwilioService {
   public async initiateCallback(destination: string, host?: string): Promise<{ success: boolean; message: string }> {
     try {
       const market = MarketManager.getCurrentMarket(host);
-      const siteUrl = MarketManager.getMarketDomains()[market.market_code] || `https://${host || 'www.voices.be'}`;
+      const domains = MarketManager.getMarketDomains();
+      const siteUrl = domains[market.market_code] || `https://${host || 'www.voices.be'}`;
       
       //  CHRIS-PROTOCOL: Fetch current config from DB for whisper mode
       const response = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/app_configs?key=eq.telephony_config`, {

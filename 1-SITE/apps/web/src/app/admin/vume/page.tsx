@@ -23,8 +23,8 @@ const TEMPLATES = [
     journey: 'auth',
     icon: <ShieldCheck strokeWidth={1.5} size={20} />,
     description: 'Inloglink voor gebruikers.',
-    previewSubject: 'Inloggen op Voices.be',
-    context: { name: 'Admin', link: `https://${process.env.NEXT_PUBLIC_SITE_URL || 'voices.be'}/account/callback?token=test` }
+    previewSubject: `Inloggen op ${typeof window !== 'undefined' ? window.location.hostname : 'Voices.be'}`,
+    context: { name: 'Admin', link: `https://${typeof window !== 'undefined' ? window.location.hostname : 'voices.be'}/account/callback?token=test` }
   },
   {
     id: 'studio-experience',

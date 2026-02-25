@@ -1,3 +1,4 @@
+import { MarketManager } from '@/lib/system/market-manager-server';
 import { VumeMasterWrapper } from './VumeMasterWrapper';
 
 /**
@@ -30,14 +31,18 @@ interface StudioExperienceOptions {
 }
 
 export function VumeStudioTemplate(options: StudioExperienceOptions) {
+  const market = MarketManager.getCurrentMarket(options.host);
+  const domains = MarketManager.getMarketDomains();
+  const canonicalHost = domains[market.market_code]?.replace('https://', '') || 'www.voices.be';
+
   const { 
     name, 
     workshopName, 
     date, 
     time, 
     location = 'Molenbeek (Jules Delhaizestraat 42-2, 1080 Molenbeek)', 
-    host = (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be'), 
-    language = 'nl', 
+    host = canonicalHost, 
+    language = market.primary_language, 
     headerImage,
     instructorName = 'Johfrah Lefebvre',
     instructorRole = 'Voice-over en coach',
@@ -53,9 +58,7 @@ export function VumeStudioTemplate(options: StudioExperienceOptions) {
     email
   } = options;
 
-  const optOutUrl = (optOutToken && email) 
-    ? `https://${host}/api/marketing/opt-out?email=${encodeURIComponent(email)}&token=${optOutToken}`
-    : undefined;
+  const isNl = language.startsWith('nl');
 
   const content = {
     nl: {
@@ -76,7 +79,29 @@ export function VumeStudioTemplate(options: StudioExperienceOptions) {
       footer: 'Warme groeten,<br>Bernadette en Johfrah',
       studioLink: `${host}/studio/`
     },
-  }[language as 'nl'] || content.nl;
+    en: {
+      title: workshopName,
+      greeting: `Hi ${name},`,
+      intro: `Want to sharpen your voice-over skills or discover how to get started? We've reserved your spot. Each workshop has a maximum of 4 participants, so everyone gets plenty of time behind the microphone.`,
+      reservationTitle: 'Your reservation',
+      instructorLabel: `A workshop by ${instructorName},`,
+      instructorTitle: instructorRole,
+      aboutTitle: 'About the workshop',
+      learnTitle: 'What will you learn?',
+      scheduleTitle: 'Schedule',
+      videoTitle: 'How the workshop goes (video)',
+      instructorBioTitle: `About ${instructorName}`,
+      ctaTitle: 'Ready to start?',
+      ctaText: 'Check your dashboard for all details.',
+      button: 'TO DASHBOARD',
+      footer: 'Warm regards,<br>Bernadette and Johfrah',
+      studioLink: `${host}/studio/`
+    }
+  }[isNl ? 'nl' : 'en'];
+
+  const optOutUrl = (optOutToken && email) 
+    ? `https://${host}/api/marketing/opt-out?email=${encodeURIComponent(email)}&token=${optOutToken}`
+    : undefined;
 
   const html = `
     <div style="font-family: 'Raleway', sans-serif;">

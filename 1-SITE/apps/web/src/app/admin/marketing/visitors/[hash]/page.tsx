@@ -128,7 +128,7 @@ export default function VisitorPlayerPage() {
               <ContainerInstrument className="w-px h-full bg-black/5" />
               <ContainerInstrument className="flex flex-col">
                 <TextInstrument className="text-[15px] font-black tracking-widest text-va-black/30"><VoiceglotText  translationKey="auto.page.pagina.265753" defaultText="Pagina" /></TextInstrument>
-                <TextInstrument className="text-[15px] font-bold max-w-[200px] truncate">{session.url?.replace(MarketManager.getMarketDomains()['BE'], '') || '/'}</TextInstrument>
+                <TextInstrument className="text-[15px] font-bold max-w-[200px] truncate">{session.url?.replace(MarketManager.getMarketDomains()[MarketManager.getCurrentMarket().market_code], '') || '/'}</TextInstrument>
               </ContainerInstrument>
             </ContainerInstrument>
             
@@ -222,7 +222,7 @@ export default function VisitorPlayerPage() {
                     {s.user?.first_name ? `${s.user.first_name} ${s.user.last_name}` : 'Anonieme Bezoeker'}
                   </TextInstrument>
                   <TextInstrument className="text-[15px] text-va-black/30 font-medium truncate">
-                    {s.url?.replace('https://www.voices.be', '') || '/'}
+                    {s.url?.replace(MarketManager.getMarketDomains()[MarketManager.getCurrentMarket().market_code], '') || '/'}
                   </TextInstrument>
                 </Link>
               ))}

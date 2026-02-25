@@ -97,7 +97,9 @@ export class VoicesMailEngine {
     // 🛡️ CHRIS-PROTOCOL: Fetch market config for logo and branding
     const { MarketManagerServer: MarketManager } = require('../system/market-manager-server');
     const market = MarketManager.getCurrentMarket(options.host);
-    const logoUrl = market.logo_url?.startsWith('http') ? market.logo_url : `https://${options.host || 'www.voices.be'}${market.logo_url}`;
+    const domains = MarketManager.getMarketDomains();
+    const canonicalHost = domains[market.market_code]?.replace('https://', '') || 'www.voices.be';
+    const logoUrl = market.logo_url?.startsWith('http') ? market.logo_url : `https://${options.host || canonicalHost}${market.logo_url}`;
     
     const contentHtml = `
       <h1 style="font-size: 36px; font-weight: 200; letter-spacing: -0.02em; margin: 0 0 24px 0; color: #1a1a1a;">${options.title}</h1>

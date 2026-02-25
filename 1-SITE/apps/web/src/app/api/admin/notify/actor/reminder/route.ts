@@ -37,6 +37,9 @@ export async function POST(request: NextRequest) {
     const host = request.headers.get('host') || 'www.voices.be';
     const { MarketManagerServer: MarketManager } = require('@/lib/system/market-manager-server');
     const market = MarketManager.getCurrentMarket(host);
+    const domains = MarketManager.getMarketDomains();
+    const canonicalHost = domains[market.market_code]?.replace('https://', '') || 'www.voices.be';
+    const finalHost = host || canonicalHost;
 
     // 3. Verstuur de reminder via VUME
     await VumeEngine.send({
@@ -51,7 +54,7 @@ export async function POST(request: NextRequest) {
         isOverdue: true,
         language: 'nl-be'
       },
-      host: host
+      host: finalHost
     });
 
     return NextResponse.json({ success: true });

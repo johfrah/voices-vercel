@@ -14,6 +14,9 @@ export async function POST(request: NextRequest) {
     const text = formData.get('text') as string;
     const host = request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be');
     const market = MarketManager.getCurrentMarket(host);
+    const domains = MarketManager.getMarketDomains();
+    const canonicalHost = domains[market.market_code]?.replace('https://', '') || 'www.voices.be';
+    const finalHost = host || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || canonicalHost);
     const adminEmail = market.email;
     const email = formData.get('email') as string || adminEmail;
     
@@ -38,7 +41,7 @@ export async function POST(request: NextRequest) {
         </div>
         Gegenereerd door de Private Voice Engine (Mac Mini Edition).
       `,
-      host: host
+      host: finalHost
       // TODO: Add attachment support to sendVoicesMail
     });
 

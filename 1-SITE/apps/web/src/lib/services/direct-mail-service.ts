@@ -138,7 +138,9 @@ export class DirectMailService {
     let smtpPass = this.config.password;
 
     //  Intelligence Layer: SMTP Routing
-    const host = options.host || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be');
+    const domains = MarketManager.getMarketDomains();
+    const canonicalHost = domains[market.market_code]?.replace('https://', '') || 'voices.be';
+    const host = options.host || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || canonicalHost);
     if (from.includes('voices.') || from.includes(host)) {
       smtpHost = process.env.SMTP_SERVER_VOICES || 'smtp-auth.mailprotect.be';
       smtpPass = process.env.IMAP_PASS_VOICES || process.env.IMAP_PASS || this.config.password;
@@ -169,7 +171,7 @@ export class DirectMailService {
     await transporter.sendMail({
       from: `"${senderDisplayName}" <${from}>`,
       to: options.to,
-      bcc: 'catch@voices.be',
+      bcc: `catch@${canonicalHost.replace('www.', '')}`,
       subject: options.subject,
       text: options.text,
       html: options.html,

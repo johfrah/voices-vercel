@@ -57,8 +57,10 @@ export class SEOEngineService {
 
     // 3. FAQ Pages
     if (path.startsWith('/faq')) {
+      const domains = MarketManager.getMarketDomains();
+      const canonicalHost = domains[market.market_code]?.replace('https://', '') || 'www.voices.be';
       return {
-        title: `Veelgestelde vragen over stemmen en workshops | ${market.market_code === 'BE' ? 'Voices.be' : 'Voices.nl'}`,
+        title: `Veelgestelde vragen over stemmen en workshops | ${canonicalHost}`,
         description: 'Vind antwoorden op al je vragen over tarieven, levertijden en onze studio workshops.'
       };
     }
