@@ -131,58 +131,43 @@ export default function OrderDetailPage() {
 
               <div className="h-[1px] bg-black/[0.03]" />
 
-              {/* ACTION CENTER */}
+              {/* REGIEKAMER */}
               <div className="bg-va-off-white/50 rounded-[20px] p-8 border border-primary/10 space-y-6">
                 <div className="flex items-center gap-3 text-primary">
                   <Zap size={20} strokeWidth={1.5} />
-                  <HeadingInstrument level={3} className="text-[13px] font-light tracking-[0.2em] uppercase">Regiekamer Acties</HeadingInstrument>
+                  <HeadingInstrument level={3} className="text-[13px] font-light tracking-[0.2em] uppercase">Regiekamer</HeadingInstrument>
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {order.actions?.needsPO && (
-                    <button className="flex items-center justify-between p-6 bg-white rounded-[15px] border border-orange-500/20 hover:border-orange-500/40 transition-all group">
-                      <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-full bg-orange-500/5 flex items-center justify-center text-orange-500">
-                          <AlertCircle size={18} strokeWidth={1.5} />
-                        </div>
-                        <div className="text-left">
-                          <div className="text-[15px] font-medium tracking-tight">Vraag PO-nummer aan</div>
-                          <div className="text-[11px] font-light text-va-black/30 tracking-tight">Klant heeft nog geen PO opgegeven</div>
-                        </div>
+                  <button 
+                    className="flex items-center justify-between p-6 bg-white rounded-[15px] border border-black/[0.03] hover:border-primary/30 transition-all group"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-full bg-primary/5 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all">
+                        <ShieldCheck size={18} strokeWidth={1.5} />
                       </div>
-                      <Play size={14} className="text-va-black/10 group-hover:text-orange-500 transition-all" />
-                    </button>
-                  )}
+                      <div className="text-left">
+                        <div className="text-[15px] font-light tracking-tight">Check Script</div>
+                        <div className="text-[11px] font-light text-va-black/40 tracking-tight">Kwaliteitscontrole & verzenden</div>
+                      </div>
+                    </div>
+                    <Play size={14} className="text-va-black/10 group-hover:text-primary transition-all" />
+                  </button>
 
-                  {order.actions?.canGeneratePaymentLink && (
-                    <button className="flex items-center justify-between p-6 bg-white rounded-[15px] border border-primary/20 hover:border-primary/40 transition-all group">
-                      <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-full bg-primary/5 flex items-center justify-center text-primary">
-                          <CreditCard size={18} strokeWidth={1.5} />
-                        </div>
-                        <div className="text-left">
-                          <div className="text-[15px] font-medium tracking-tight">Genereer Betaallink</div>
-                          <div className="text-[11px] font-light text-va-black/30 tracking-tight">Stuur betaalverzoek naar klant</div>
-                        </div>
+                  <button 
+                    className="flex items-center justify-between p-6 bg-white rounded-[15px] border border-black/[0.03] hover:border-green-500/30 transition-all group"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-full bg-green-500/5 flex items-center justify-center text-green-500 group-hover:bg-green-500 group-hover:text-white transition-all">
+                        <CheckCircle2 size={18} strokeWidth={1.5} />
                       </div>
-                      <Play size={14} className="text-va-black/10 group-hover:text-primary transition-all" />
-                    </button>
-                  )}
-
-                  {order.actions?.isYukiReady && (
-                    <button className="flex items-center justify-between p-6 bg-white rounded-[15px] border border-va-black/20 hover:border-va-black/40 transition-all group">
-                      <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-full bg-va-black/5 flex items-center justify-center text-va-black">
-                          <RefreshCw size={18} strokeWidth={1.5} />
-                        </div>
-                        <div className="text-left">
-                          <div className="text-[15px] font-medium tracking-tight">Push naar Yuki</div>
-                          <div className="text-[11px] font-light text-va-black/30 tracking-tight">Klaar voor facturatie</div>
-                        </div>
+                      <div className="text-left">
+                        <div className="text-[15px] font-light tracking-tight">Opleveren</div>
+                        <div className="text-[11px] font-light text-va-black/40 tracking-tight">Audio is klaar voor de klant</div>
                       </div>
-                      <Play size={14} className="text-va-black/10 group-hover:text-va-black transition-all" />
-                    </button>
-                  )}
+                    </div>
+                    <Play size={14} className="text-va-black/10 group-hover:text-green-500 transition-all" />
+                  </button>
                 </div>
               </div>
 
@@ -262,7 +247,7 @@ export default function OrderDetailPage() {
               </div>
 
               <ButtonInstrument as={Link} href={`/admin/users?id=${order.technical?.sourceId}`} className="w-full va-btn-pro !bg-va-off-white !text-va-black/60 hover:!text-va-black flex items-center justify-center gap-2">
-                Bekijk User DNA
+                Bekijk Klantprofiel
               </ButtonInstrument>
             </div>
 

@@ -32,7 +32,7 @@ export const AdminHeader = () => {
             </div>
           <div className="flex flex-col">
             <span className="text-[13px] font-bold tracking-[0.2em] text-va-black uppercase Raleway">Admin</span>
-            <span className="text-[11px] font-light tracking-widest text-va-black/30 uppercase">Control Center</span>
+            <span className="text-[11px] font-light tracking-widest text-va-black/30 uppercase">Cockpit</span>
           </div>
         </Link>
         

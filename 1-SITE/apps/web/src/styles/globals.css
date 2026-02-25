@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+@import './ademing-world.css';
+
 :root {
   --va-primary: #FF0084;
   --va-primary-dark: #D63CFF;

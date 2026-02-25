@@ -98,12 +98,12 @@ const menuItems: MenuItem[] = [
   //  CONTENT & JOURNEYS
   { title: 'Article Manager', icon: FileText, href: '/admin/articles', color: 'text-blue-500', group: 'Content', journey: 'all' },
   { title: 'Journey Orchestrator', icon: Target, href: '/admin/journeys', color: 'text-primary', group: 'Content', journey: 'all' },
-  { title: 'Media Engine', icon: Video, href: '/admin/media', color: 'text-va-black/40', group: 'Content', journey: 'all' },
+  { title: 'Audiopost Studio', icon: Video, href: '/admin/media', color: 'text-va-black/40', group: 'Content', journey: 'all' },
 
   //  ANALYTICS & INTELLIGENCE
   { title: 'UTM Attribution', icon: BarChart3, href: '/admin/marketing/utm', color: 'text-orange-500', group: 'Analytics', journey: 'all' },
-  { title: 'Visitor Intel', icon: Activity, href: '/admin/marketing/visitors', color: 'text-emerald-500', group: 'Analytics', journey: 'all' },
-  { title: 'User DNA', icon: Users, href: '/admin/users', color: 'text-blue-400', group: 'Analytics', journey: 'all' },
+  { title: 'Bezoekers Inzichten', icon: Activity, href: '/admin/marketing/visitors', color: 'text-emerald-500', group: 'Analytics', journey: 'all' },
+  { title: 'Klantprofielen', icon: Users, href: '/admin/users', color: 'text-blue-400', group: 'Analytics', journey: 'all' },
   { title: 'CTA AB Test', icon: MousePointer2, href: '/admin/marketing/ab-test', color: 'text-primary', group: 'Analytics', journey: 'all' },
   { title: 'Trends & SWOT', icon: TrendingUp, href: '/admin/marketing/trends', color: 'text-indigo-500', group: 'Analytics', journey: 'all' },
 
@@ -137,7 +137,7 @@ const menuItems: MenuItem[] = [
   { title: 'Systeem Instellingen', icon: Settings, href: '/admin/settings', color: 'text-va-black/40', group: 'Systems', journey: 'all' },
   { title: 'Market SEO Manager', icon: Globe, href: '/admin/settings/markets', color: 'text-emerald-600', group: 'Systems', journey: 'all' },
   { title: 'Voiceglot Registry', icon: Globe, href: '/admin/voiceglot', color: 'text-blue-600', group: 'Systems', journey: 'all' },
-  { title: 'OpenAI Intelligence', icon: Brain, href: '/admin/ai-settings', color: 'text-pink-400', group: 'Systems', journey: 'all' },
+  { title: 'AI Instellingen', icon: Brain, href: '/admin/ai-settings', color: 'text-pink-400', group: 'Systems', journey: 'all' },
   { title: 'Core Locks', icon: Lock, href: '/admin/locks', color: 'text-red-500', group: 'Systems', journey: 'all' },
   { title: 'Vault', icon: Database, href: '/admin/vault', color: 'text-va-black/40', group: 'Systems', journey: 'all' },
   { title: 'AI Agent Control', icon: Bot, href: '/admin/agents', color: 'text-primary', group: 'Systems', journey: 'all' },

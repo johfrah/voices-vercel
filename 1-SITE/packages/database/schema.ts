@@ -165,6 +165,70 @@ export const actorDemos = pgTable("actor_demos", {
 	unique("actor_demos_wp_id_key").on(table.wpId),
 ]);
 
+export const ademingMakers = pgTable("ademing_makers", {
+	id: serial().primaryKey().notNull(),
+	short_name: text("short_name").unique().notNull(), // "Julie" | "Johfrah"
+	full_name: text("full_name").notNull(),
+	avatar_url: text("avatar_url"),
+	hero_image_url: text("hero_image_url"),
+	bio: text(),
+	website: text(),
+	instagram: text(),
+	is_public: boolean("is_public").default(true),
+	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow(),
+});
+
+export const ademingTracks = pgTable("ademing_tracks", {
+	id: serial().primaryKey().notNull(),
+	wpId: integer("wp_id"),
+	title: text().notNull(),
+	slug: text().unique(),
+	url: text().notNull(),
+	duration: integer(),
+	vibe: text(),
+	theme: text(), // "rust" | "energie" | "ritme"
+	element: text(), // "aarde" | "water" | "lucht" | "vuur"
+	makerId: integer("maker_id").references(() => ademingMakers.id),
+	seriesId: integer("series_id").references(() => ademingSeries.id),
+	seriesOrder: integer("series_order").default(0),
+	short_description: text("short_description"),
+	long_description: text("long_description"),
+	cover_image_url: text("cover_image_url"),
+	video_background_url: text("video_background_url"),
+	subtitle_data: jsonb("subtitle_data"),
+	transcript: text(),
+	is_public: boolean("is_public").default(true),
+	mediaId: integer("media_id"),
+	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow(),
+}, (table) => [
+	foreignKey({
+			columns: [table.mediaId],
+			foreignColumns: [media.id],
+			name: "ademing_tracks_media_id_media_id_fk"
+		}),
+	unique("ademing_tracks_wp_id_unique").on(table.wpId),
+]);
+
+export const ademingSeries = pgTable("ademing_series", {
+	id: serial().primaryKey().notNull(),
+	title: text().notNull(),
+	slug: text().unique(),
+	description: text(),
+	cover_image_url: text("cover_image_url"),
+	theme: text().default('rust'),
+	is_public: boolean("is_public").default(true),
+	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow(),
+});
+
+export const ademingBackgroundMusic = pgTable("ademing_background_music", {
+	id: serial().primaryKey().notNull(),
+	title: text().notNull(),
+	url: text().notNull(),
+	element: text(),
+	is_public: boolean("is_public").default(true),
+	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow(),
+});
+
 export const ademingReflections = pgTable("ademing_reflections", {
 	id: serial().primaryKey().notNull(),
 	user_id: integer("user_id").notNull(),
@@ -178,13 +242,6 @@ export const ademingReflections = pgTable("ademing_reflections", {
 			name: "ademing_reflections_user_id_users_id_fk"
 		}),
 ]);
-
-export const ademingSeries = pgTable("ademing_series", {
-	id: serial().primaryKey().notNull(),
-	title: text().notNull(),
-	description: text(),
-	is_public: boolean("is_public").default(true),
-});
 
 export const aiClones = pgTable("ai_clones", {
 	id: serial().primaryKey().notNull(),
@@ -275,7 +332,7 @@ export const chatMessages = pgTable("chat_messages", {
 	wpId: integer("wp_id"),
 	conversationId: integer("conversation_id").notNull(),
 	senderId: integer("sender_id"),
-	senderType: text("sender_type").notNull(),
+	senderType: text("sender_type").notNull(), // user, admin, ai
 	message: text().notNull(),
 	attachments: jsonb().default([]),
 	isAiRecommendation: boolean("is_ai_recommendation").default(false),
@@ -1437,3 +1494,24 @@ export const agencyMembers = pgTable("agency_members", {
 	unique("agency_members_agency_id_member_id_key").on(table.agencyId, table.memberId),
 ]);
 
+export const ademingMakers = pgTable("ademing_makers", {
+	id: serial().primaryKey().notNull(),
+	short_name: text("short_name").unique().notNull(), // "Julie" | "Johfrah"
+	full_name: text("full_name").notNull(),
+	avatar_url: text("avatar_url"),
+	hero_image_url: text("hero_image_url"),
+	bio: text(),
+	website: text(),
+	instagram: text(),
+	is_public: boolean("is_public").default(true),
+	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow(),
+});
+
+export const ademingBackgroundMusic = pgTable("ademing_background_music", {
+	id: serial().primaryKey().notNull(),
+	title: text().notNull(),
+	url: text().notNull(),
+	element: text(),
+	is_public: boolean("is_public").default(true),
+	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow(),
+});

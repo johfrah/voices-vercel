@@ -76,7 +76,7 @@ export default function AdminUsersPage() {
             <ArrowLeft strokeWidth={1.5} size={12} /> 
             <VoiceglotText  translationKey="admin.back_to_dashboard" defaultText="Terug" />
           </Link>
-          <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter "><VoiceglotText  translationKey="admin.users.title" defaultText="User DNA" /></HeadingInstrument>
+          <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter "><VoiceglotText  translationKey="admin.users.title" defaultText="Klantprofielen" /></HeadingInstrument>
         </ContainerInstrument>
         
         <ContainerInstrument className="flex gap-4">
@@ -214,14 +214,14 @@ export default function AdminUsersPage() {
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "AdminPage",
-            "name": "User DNA",
+            "name": "Klantprofielen",
             "description": "Beheer van de Freedom Machine community.",
             "_llm_context": {
               "persona": "Architect",
               "journey": "admin",
               "intent": "user_management",
               "capabilities": ["view_users", "edit_users", "manage_roles"],
-              "lexicon": ["User DNA", "Freedom Machine", "Community"],
+              "lexicon": ["Klantprofiel", "Freedom Machine", "Community"],
               "visual_dna": ["Bento Grid", "Liquid DNA"]
             }
           })

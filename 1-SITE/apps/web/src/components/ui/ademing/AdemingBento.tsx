@@ -11,6 +11,7 @@ import { VoiceglotText } from '../VoiceglotText';
 import { Testimonials } from './Testimonials';
 import { Moon, Zap, Clock, ArrowRight, Compass, Users } from 'lucide-react';
 import { VoicesDropdown } from '../VoicesDropdown';
+import { ElementIcon } from './ElementIcon';
 
 interface AdemingBentoProps {
   tracks: any[];
@@ -49,9 +50,9 @@ export const AdemingBento = ({ tracks, initialTrack }: AdemingBentoProps) => {
                 placeholder="🎯 Kies een thema"
                 options={[
                   { label: "Alle thema's", value: "all" },
-                  { label: "Rust", value: "rust" },
-                  { label: "Energie", value: "energie" },
-                  { label: "Ritme", value: "ritme" }
+                  { label: "Rust", value: "rust", icon: Moon },
+                  { label: "Energie", value: "energie", icon: Zap },
+                  { label: "Ritme", value: "ritme", icon: Clock }
                 ]}
                 value={selectedTheme || "all"}
                 onChange={(v: string) => setSelectedTheme(v === "all" ? null : v)}
@@ -62,10 +63,10 @@ export const AdemingBento = ({ tracks, initialTrack }: AdemingBentoProps) => {
                 placeholder="🌿 Kies een element"
                 options={[
                   { label: "Alle elementen", value: "all" },
-                  { label: "Aarde", value: "aarde" },
-                  { label: "Water", value: "water" },
-                  { label: "Lucht", value: "lucht" },
-                  { label: "Vuur", value: "vuur" }
+                  { label: "Aarde", value: "aarde", icon: () => <ElementIcon element="aarde" /> },
+                  { label: "Water", value: "water", icon: () => <ElementIcon element="water" /> },
+                  { label: "Lucht", value: "lucht", icon: () => <ElementIcon element="lucht" /> },
+                  { label: "Vuur", value: "vuur", icon: () => <ElementIcon element="vuur" /> }
                 ]}
                 value={selectedElement || "all"}
                 onChange={(v: string) => setSelectedElement(v === "all" ? null : v)}

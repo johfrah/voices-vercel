@@ -391,7 +391,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
     const host = headersList.get('host') || '';
     const market = MarketManager.getCurrentMarket(host);
     
-    // 🛡️ CHRIS-PROTOCOL: Market-Specific Routing for Ademing (v2.14.715)
+    // 🛡️ CHRIS-PROTOCOL: Market-Specific Routing for Ademing (v2.14.722)
     if (market.market_code === 'ADEMING') {
       let tracks = [];
       try {
