@@ -33,7 +33,7 @@ export function Providers({
   initialUsage?: any;
 }) {
   const pathname = usePathname();
-  const currentVersion = '2.14.669';
+  const currentVersion = '2.14.670';
 
   
   //  CHRIS-PROTOCOL: Initialize Client Logger for real-time error reporting
@@ -61,6 +61,15 @@ export function Providers({
                   reverseOrder={false} 
                   containerStyle={{
                     top: '40%',
+                  }}
+                  toastOptions={{
+                    style: market.market_code === 'ADEMING' ? {
+                      background: '#FAF9F6',
+                      color: '#1A1A1A',
+                      borderRadius: '24px',
+                      border: '1px solid rgba(0,0,0,0.05)',
+                      fontFamily: 'var(--font-cormorant), serif',
+                    } : undefined
                   }}
                 />
                 <EditModeProvider>

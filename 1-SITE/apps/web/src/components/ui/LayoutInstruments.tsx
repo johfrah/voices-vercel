@@ -285,9 +285,8 @@ export const LoadingScreenInstrument = ({
         <svg viewBox="0 0 1000 1000" className="w-full h-full">
           <defs>
             <linearGradient id="loader_grad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" style={{ stopColor: '#D63CFF', stopOpacity: 1 }} />
-              <stop offset="20%" style={{ stopColor: '#FF0084', stopOpacity: 1 }} />
-              <stop offset="100%" style={{ stopColor: '#FF0084', stopOpacity: 1 }} />
+              <stop offset="0%" style={{ stopColor: 'var(--primary)', stopOpacity: 1 }} />
+              <stop offset="100%" style={{ stopColor: 'var(--primary)', stopOpacity: 1 }} />
             </linearGradient>
           </defs>
           <style>{`

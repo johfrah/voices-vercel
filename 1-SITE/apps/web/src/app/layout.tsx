@@ -368,7 +368,7 @@ export default async function RootLayout({
                 </Suspense>
               )}
               <Suspense fallback={null}>
-                <SonicDNAHandler />
+                <SonicDNAHandler isAdeming={market.market_code === 'ADEMING'} />
                 <GlobalAudioOrchestrator />
               </Suspense>
               {showVoicy && (

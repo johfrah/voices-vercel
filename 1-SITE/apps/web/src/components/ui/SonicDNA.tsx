@@ -127,13 +127,15 @@ export function useSonicDNA() {
   return { playClick, playSwell };
 }
 
-export function SonicDNAHandler() {
+export function SonicDNAHandler({ isAdeming = false }: { isAdeming?: boolean }) {
   const { playClick } = useSonicDNA();
 
   useEffect(() => {
     //  STARTUP CHIME: Play when the engine is ready
     const handleFirstInteraction = () => {
-      playClick('startup');
+      if (!isAdeming) {
+        playClick('startup');
+      }
     };
 
     window.addEventListener('click', handleFirstInteraction, { once: true });
