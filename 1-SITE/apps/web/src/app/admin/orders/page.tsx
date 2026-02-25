@@ -167,8 +167,9 @@ export default function BestellingenPage() {
               <ContainerInstrument className="inline-block bg-primary/10 text-primary text-[13px] font-light px-3 py-1 rounded-full tracking-widest">
                 <VoiceglotText translationKey="admin.orders.badge" defaultText="Order Dashboard" />
               </ContainerInstrument>
-              <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter">
+              <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter flex items-center gap-4">
                 <VoiceglotText translationKey="admin.orders.title" defaultText="Bestellingen" />
+                <span className="text-[10px] bg-primary text-white px-2 py-0.5 rounded-full tracking-[0.3em] uppercase font-bold animate-pulse">Nuclear V2</span>
               </HeadingInstrument>
               <TextInstrument className="text-xl text-black/40 font-light tracking-tight max-w-2xl">
                 <VoiceglotText translationKey="admin.orders.subtitle" defaultText={`Beheer alle transacties, offertes en productiestatus van ${typeof window !== 'undefined' ? window.location.hostname : 'Voices'}.`} />
@@ -204,6 +205,22 @@ export default function BestellingenPage() {
             </div>
           </div>
         </SectionInstrument>
+
+        {/* Nuclear V2 Banner */}
+        <div className="mb-8 bg-va-black text-white p-4 rounded-[20px] flex items-center justify-between border border-primary/30 shadow-lg animate-in fade-in slide-in-from-top duration-1000">
+          <div className="flex items-center gap-4">
+            <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary animate-pulse">
+              <ShoppingBag size={20} />
+            </div>
+            <div>
+              <TextInstrument className="text-[15px] font-medium tracking-tight text-white">Nuclear V2 Architecture Active</TextInstrument>
+              <TextInstrument className="text-[11px] font-light text-white/40 tracking-widest uppercase">Zero-Slop Data Injection Mode</TextInstrument>
+            </div>
+          </div>
+          <div className="px-4 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-bold tracking-widest uppercase">
+            Verified Live: v2.14.616
+          </div>
+        </div>
 
         {/* Orders Table */}
         <div className="bg-white rounded-[20px] border border-black/[0.03] shadow-sm overflow-hidden mb-8">
