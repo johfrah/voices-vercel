@@ -584,43 +584,14 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
 
     // 2. Check voor Stem
     try {
-      const { ServerWatchdog } = await import('@/lib/services/server-watchdog');
-      
-      // 🛡️ CHRIS-PROTOCOL: Direct DB logging fallback (Atomic Pulse)
-      const { db, systemEvents } = await import('@/lib/system/voices-config');
-      if (db && systemEvents) {
-        await db.insert(systemEvents).values({
-          level: 'info',
-          source: 'SmartRouter',
-          message: `[SmartRouter] Content check for actor: ${firstSegment}`,
-          details: { segments, lang, cleanSlug },
-          createdAt: new Date().toISOString()
-        }).catch(() => null);
-      }
-
-      const actor = await getActor(firstSegment, lang).catch(async (err) => {
-        if (db && systemEvents) {
-          await db.insert(systemEvents).values({
-            level: 'warn',
-            source: 'SmartRouter',
-            message: `[SmartRouter] Content actor fetch failed for ${firstSegment}: ${err.message}`,
-            details: { segments, lang, cleanSlug },
-            createdAt: new Date().toISOString()
-          }).catch(() => null);
-        }
+      console.error(` [SmartRouter] Content check for actor: ${firstSegment} (lang: ${lang})`);
+      const actor = await getActor(firstSegment, lang).catch((err) => {
+        console.error(` [SmartRouter] Content actor fetch failed for ${firstSegment}:`, err.message);
         return null;
       });
 
       if (actor) {
-        if (db && systemEvents) {
-          await db.insert(systemEvents).values({
-            level: 'info',
-            source: 'SmartRouter',
-            message: `[SmartRouter] Actor found: ${actor.first_name} (${actor.id})`,
-            details: { actorId: actor.id, slug: actor.slug },
-            createdAt: new Date().toISOString()
-          }).catch(() => null);
-        }
+        console.error(` [SmartRouter] Actor found! rendering VoiceDetailClient for ${actor.first_name}`);
         //  CHRIS-PROTOCOL: Map journey slug to internal journey type
         const journeyMap: Record<string, JourneyType> = {
           'telefoon': 'telephony',
@@ -635,9 +606,11 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
         return (
           <VoiceDetailClient actor={actor} initialJourney={mappedJourney || journey} initialMedium={medium} />
         );
+      } else {
+        console.error(` [SmartRouter] No actor found for ${firstSegment}`);
       }
-    } catch (e) {
-      console.error("[SmartRouter] Actor check failed:", e);
+    } catch (e: any) {
+      console.error("[SmartRouter] Actor check crashed:", e.message);
     }
 
     // 2. Check voor CMS Artikel (alleen als er maar 1 segment is OF als het een agency sub-route is)
