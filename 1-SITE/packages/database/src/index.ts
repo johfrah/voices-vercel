@@ -1,6 +1,8 @@
 import * as schema from './schema/index';
 import postgres from 'postgres';
 import { drizzle } from 'drizzle-orm/postgres-js';
+import * as dotenv from 'dotenv';
+import * as path from 'path';
 
 // Sherlock: We gebruiken een lazy initializer voor de DB client om te voorkomen dat 
 // postgres.js wordt geïnitialiseerd in de Edge runtime (waar het niet werkt).
@@ -15,8 +17,17 @@ const getDb = () => {
   
   if (!(globalThis as any).dbInstance) {
     try {
+      // 🛡️ CHRIS-PROTOCOL: Load env if not present (for standalone scripts)
+      if (!process.env.DATABASE_URL) {
+        const envPath = path.join(process.cwd(), '1-SITE/apps/web/.env.local');
+        dotenv.config({ path: envPath });
+      }
+
       let connectionString = process.env.DATABASE_URL!;
-      if (!connectionString) return null;
+      if (!connectionString) {
+        console.error(' [getDb] FAILED: DATABASE_URL is missing!');
+        return null;
+      }
       
       // CHRIS-PROTOCOL: Direct DB Host for Stability (v2.17)
       // The Supabase Pooler (6543) is currently unstable. We bypass it and use the direct host.

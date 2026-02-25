@@ -36,22 +36,28 @@ import { nl } from 'date-fns/locale';
 
 export const dynamic = 'force-dynamic';
 
-interface Order {
-  id: number;
-  wpOrderId: number;
-  displayOrderId: string | null;
-  total: string;
-  status: string;
-  journey: string;
-  createdAt: string;
-  isQuote: boolean;
-  user: {
-    first_name: string | null;
-    last_name: string | null;
-    email: string;
-    companyName: string | null;
-  } | null;
-}
+  interface Order {
+    id: number;
+    wpOrderId: number;
+    displayOrderId: string | null;
+    total: string;
+    amountNet: string;
+    purchaseOrder: string | null;
+    billingEmailAlt: string | null;
+    status: string;
+    journey: string;
+    journeyId: number | null;
+    statusId: number | null;
+    paymentMethodId: number | null;
+    createdAt: string;
+    isQuote: boolean;
+    user: {
+      first_name: string | null;
+      last_name: string | null;
+      email: string;
+      companyName: string | null;
+    } | null;
+  }
 
 interface PaginationData {
   page: number;
@@ -207,7 +213,8 @@ export default function BestellingenPage() {
                 <th className="px-8 py-5 text-[11px] font-medium tracking-[0.2em] text-va-black/30 uppercase Raleway">Order</th>
                 <th className="px-8 py-5 text-[11px] font-medium tracking-[0.2em] text-va-black/30 uppercase Raleway">Klant</th>
                 <th className="px-8 py-5 text-[11px] font-medium tracking-[0.2em] text-va-black/30 uppercase Raleway">Datum</th>
-                <th className="px-8 py-5 text-[11px] font-medium tracking-[0.2em] text-va-black/30 uppercase Raleway">Bedrag</th>
+                <th className="px-8 py-5 text-[11px] font-medium tracking-[0.2em] text-va-black/30 uppercase Raleway">Netto / Bruto</th>
+                <th className="px-8 py-5 text-[11px] font-medium tracking-[0.2em] text-va-black/30 uppercase Raleway">PO / B2B</th>
                 <th className="px-8 py-5 text-[11px] font-medium tracking-[0.2em] text-va-black/30 uppercase Raleway">Status</th>
                 <th className="px-8 py-5 text-[11px] font-medium tracking-[0.2em] text-va-black/30 uppercase Raleway text-right">Acties</th>
               </tr>
@@ -251,9 +258,28 @@ export default function BestellingenPage() {
                     </span>
                   </td>
                   <td className="px-8 py-6">
-                    <span className="text-[15px] font-medium text-va-black tracking-tight">
-                      €{parseFloat(order.total).toFixed(2)}
-                    </span>
+                    <div className="flex flex-col">
+                      <span className="text-[15px] font-medium text-va-black tracking-tight">
+                        €{parseFloat(order.amountNet || "0").toFixed(2)}
+                      </span>
+                      <span className="text-[11px] font-light text-va-black/30 tracking-tight">
+                        Bruto: €{parseFloat(order.total).toFixed(2)}
+                      </span>
+                    </div>
+                  </td>
+                  <td className="px-8 py-6">
+                    <div className="flex flex-col">
+                      {order.purchaseOrder ? (
+                        <span className="text-[13px] font-medium text-primary tracking-tight">PO: {order.purchaseOrder}</span>
+                      ) : (
+                        <span className="text-[13px] font-light text-va-black/20 tracking-tight">-</span>
+                      )}
+                      {order.billingEmailAlt && (
+                        <span className="text-[11px] font-light text-va-black/40 truncate max-w-[150px]" title={order.billingEmailAlt}>
+                          {order.billingEmailAlt}
+                        </span>
+                      )}
+                    </div>
                   </td>
                   <td className="px-8 py-6">
                     {getStatusBadge(order.status)}

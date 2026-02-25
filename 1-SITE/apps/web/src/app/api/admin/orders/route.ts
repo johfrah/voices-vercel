@@ -51,9 +51,16 @@ export async function GET(request: NextRequest) {
 
     try {
       // 🚀 NUCLEAR PAGINATION: Direct SQL voor snelheid en stabiliteit
-      // We proberen het ZONDER public. prefix om te zien of dat het probleem is op Vercel
+      // We voegen de nieuwe V2 kolommen toe aan de selectie
       const rawResult = await db.execute(sql`
-        SELECT id, wp_order_id, user_id, total, total_tax, status, journey, market, iap_context, raw_meta, display_order_id, total_cost, total_profit, expected_delivery_date, billing_vat_number, yuki_invoice_id, dropbox_folder_url, is_quote, quote_message, quote_sent_at, internal_notes, is_private, is_manually_edited, vies_validated_at, vies_country_code, ip_address, created_at
+        SELECT 
+          id, wp_order_id, user_id, journey_id, status_id, payment_method_id,
+          total, total_tax, amount_net, purchase_order, billing_email_alt,
+          status, journey, market, iap_context, raw_meta, display_order_id, 
+          total_cost, total_profit, expected_delivery_date, billing_vat_number, 
+          yuki_invoice_id, dropbox_folder_url, is_quote, quote_message, 
+          quote_sent_at, internal_notes, is_private, is_manually_edited, 
+          vies_validated_at, vies_country_code, ip_address, created_at
         FROM orders 
         ORDER BY created_at DESC 
         LIMIT ${limit} OFFSET ${offset}
@@ -113,8 +120,14 @@ export async function GET(request: NextRequest) {
           wpOrderId: order.wp_order_id || order.wpOrderId,
           displayOrderId: order.display_order_id || order.displayOrderId,
           total: order.total?.toString() || "0.00",
+          amountNet: order.amount_net?.toString() || order.amountNet?.toString() || "0.00",
+          purchaseOrder: order.purchase_order || order.purchaseOrder || null,
+          billingEmailAlt: order.billing_email_alt || order.billingEmailAlt || null,
           status: order.status || 'pending',
           journey: order.journey || 'agency',
+          journeyId: order.journey_id || order.journeyId,
+          statusId: order.status_id || order.statusId,
+          paymentMethodId: order.payment_method_id || order.paymentMethodId,
           market: order.market || 'BE',
           createdAt: order.created_at || order.createdAt,
           isQuote: !!(order.is_quote || order.isQuote),

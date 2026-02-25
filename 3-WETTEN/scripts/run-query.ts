@@ -12,14 +12,20 @@ async function runQuery() {
   }
 
   let connectionString = process.env.DATABASE_URL!;
+  // Lex-Mandate: Bypass transformation for pooler check
+  /*
   if (connectionString.includes('pooler.supabase.com')) {
     connectionString = connectionString.replace('aws-1-eu-west-1.pooler.supabase.com', 'db.vcbxyyjsxuquytcsskpj.supabase.co');
     connectionString = connectionString.replace(':6543', ':5432');
     connectionString = connectionString.replace('postgres.vcbxyyjsxuquytcsskpj', 'postgres');
     connectionString = connectionString.split('?')[0]; 
   }
+  */
 
-  const sql = postgres(connectionString, { ssl: 'require' });
+  const sql = postgres(connectionString, { 
+    ssl: 'require',
+    onnotice: () => {} 
+  });
 
   try {
     console.log(`Executing: ${query}`);

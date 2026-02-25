@@ -17,6 +17,33 @@ export const experienceLevelEnum = pgEnum('experience_level', ['junior', 'pro', 
 export const payoutStatusEnum = pgEnum('payout_status', ['pending', 'approved', 'paid', 'cancelled']);
 export const genderEnum = pgEnum('gender', ['male', 'female', 'non-binary']);
 
+// 🛤️ JOURNEYS (The Flow Architecture)
+export const journeys = pgTable('journeys', {
+  id: serial('id').primaryKey(),
+  code: text('code').unique().notNull(), // bijv. 'studio', 'agency_vo', 'agency_ivr'
+  label: text('label').notNull(), // bijv. 'Voices Studio', 'Agency: Voice-over'
+  description: text('description'),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+// 🚦 ORDER STATUSES
+export const orderStatuses = pgTable('order_statuses', {
+  id: serial('id').primaryKey(),
+  code: text('code').unique().notNull(), // bijv. 'completed', 'refunded', 'waiting_po'
+  label: text('label').notNull(),
+  color: text('color'), // Voor UI in admin
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+// 💳 PAYMENT METHODS
+export const paymentMethods = pgTable('payment_methods', {
+  id: serial('id').primaryKey(),
+  code: text('code').unique().notNull(), // bijv. 'mollie_bancontact', 'manual_invoice'
+  label: text('label').notNull(),
+  isOnline: boolean('is_online').default(true),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
 // 🌐 LANGUAGES & GEOGRAPHY
 export const languages = pgTable('languages', {
   id: serial('id').primaryKey(),
@@ -415,10 +442,16 @@ export const orders = pgTable('orders', {
   id: serial('id').primaryKey(),
   wpOrderId: bigint('wp_order_id', { mode: 'number' }).unique(),
   user_id: integer('user_id').references(() => users.id),
+  journeyId: integer('journey_id').references(() => journeys.id), // 🛤️ V2: Koppeling naar journeys tabel
+  statusId: integer('status_id').references(() => orderStatuses.id), // 🚦 V2: Koppeling naar statuses tabel
+  paymentMethodId: integer('payment_method_id').references(() => paymentMethods.id), // 💳 V2: Koppeling naar payment_methods
   total: decimal('total', { precision: 10, scale: 2 }),
   tax: decimal('total_tax', { precision: 10, scale: 2 }),
+  amountNet: decimal('amount_net', { precision: 10, scale: 2 }), // 💰 V2: Netto bedrag
+  purchaseOrder: text('purchase_order'), // 🏢 V2: PO Nummer
+  billingEmailAlt: text('billing_email_alt'), // 📧 V2: Facturatie e-mail
   status: text('status').default('pending'),
-  journey: text('journey').notNull(), // studio, academy, agency
+  journey: text('journey').notNull(), // studio, academy, agency (Legacy)
   market: text('market').default('BE'), // 🌍 BE, NL, FR, etc.
   iapContext: jsonb('iap_context'), // Intent, Persona, Flow
   rawMeta: jsonb('raw_meta'), // 📦 Catch-all voor ALLE legacy WooCommerce meta-data
@@ -990,23 +1023,23 @@ export const costs = pgTable('costs', {
   updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow(),
 });
 
-export const studioSessionStatusEnum = pgEnum('studio_session_status', ['active', 'archived', 'completed']);
-export const studioFeedbackTypeEnum = pgEnum('studio_feedback_type', ['text', 'audio', 'waveform_marker']);
+export const recordingSessionStatusEnum = pgEnum('recording_session_status', ['active', 'archived', 'completed']);
+export const recordingFeedbackTypeEnum = pgEnum('recording_feedback_type', ['text', 'audio', 'waveform_marker']);
 
-export const studioSessions = pgTable('studio_sessions', {
+export const recordingSessions = pgTable('recording_sessions', {
   id: serial('id').primaryKey(),
   orderId: integer('order_id').references(() => orders.id),
   orderItemId: integer('order_item_id').references(() => orderItems.id),
   conversationId: integer('conversation_id').references(() => chatConversations.id),
-  status: studioSessionStatusEnum('status').default('active'),
+  status: recordingSessionStatusEnum('status').default('active'),
   settings: jsonb('settings').default({}),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
 });
 
-export const studioScripts = pgTable('studio_scripts', {
+export const recordingScripts = pgTable('recording_scripts', {
   id: serial('id').primaryKey(),
-  sessionId: integer('session_id').references(() => studioSessions.id).notNull(),
+  sessionId: integer('session_id').references(() => recordingSessions.id).notNull(),
   version: integer('version').default(1).notNull(),
   content: text('content').notNull(),
   notes: text('notes'),
@@ -1014,11 +1047,11 @@ export const studioScripts = pgTable('studio_scripts', {
   createdAt: timestamp('created_at').defaultNow(),
 });
 
-export const studioFeedback = pgTable('studio_feedback', {
+export const recordingFeedback = pgTable('recording_feedback', {
   id: serial('id').primaryKey(),
-  sessionId: integer('session_id').references(() => studioSessions.id).notNull(),
+  sessionId: integer('session_id').references(() => recordingSessions.id).notNull(),
   user_id: integer('user_id').references(() => users.id).notNull(),
-  type: studioFeedbackTypeEnum('type').default('text').notNull(),
+  type: recordingFeedbackTypeEnum('type').default('text').notNull(),
   content: text('content').notNull(),
   audioPath: text('audio_path'),
   waveformTimestamp: decimal('waveform_timestamp', { precision: 10, scale: 3 }),
@@ -1466,7 +1499,14 @@ export const ordersRelations = relations(orders, ({ one, many }) => ({
     fields: [orders.user_id],
     references: [users.id],
   }),
+  journey: one(journeys, {
+    fields: [orders.journeyId],
+    references: [journeys.id],
+  }),
   items: many(orderItems),
+}));
+export const journeysRelations = relations(journeys, ({ many }) => ({
+  orders: many(orders),
 }));
 export const orderItemsRelations = relations(orderItems, ({ one, many }) => ({
   order: one(orders, {
@@ -1563,35 +1603,35 @@ export const costsRelations = relations(costs, ({ one }) => ({
     references: [orderItems.id],
   }),
 }));
-export const studioSessionsRelations = relations(studioSessions, ({ one, many }) => ({
+export const recordingSessionsRelations = relations(recordingSessions, ({ one, many }) => ({
   order: one(orders, {
-    fields: [studioSessions.orderId],
+    fields: [recordingSessions.orderId],
     references: [orders.id],
   }),
   orderItem: one(orderItems, {
-    fields: [studioSessions.orderItemId],
+    fields: [recordingSessions.orderItemId],
     references: [orderItems.id],
   }),
   conversation: one(chatConversations, {
-    fields: [studioSessions.conversationId],
+    fields: [recordingSessions.conversationId],
     references: [chatConversations.id],
   }),
-  scripts: many(studioScripts),
-  feedback: many(studioFeedback),
+  scripts: many(recordingScripts),
+  feedback: many(recordingFeedback),
 }));
-export const studioScriptsRelations = relations(studioScripts, ({ one }) => ({
-  session: one(studioSessions, {
-    fields: [studioScripts.sessionId],
-    references: [studioSessions.id],
+export const recordingScriptsRelations = relations(recordingScripts, ({ one }) => ({
+  session: one(recordingSessions, {
+    fields: [recordingScripts.sessionId],
+    references: [recordingSessions.id],
   }),
 }));
-export const studioFeedbackRelations = relations(studioFeedback, ({ one }) => ({
-  session: one(studioSessions, {
-    fields: [studioFeedback.sessionId],
-    references: [studioSessions.id],
+export const recordingFeedbackRelations = relations(recordingFeedback, ({ one }) => ({
+  session: one(recordingSessions, {
+    fields: [recordingFeedback.sessionId],
+    references: [recordingSessions.id],
   }),
   user: one(users, {
-    fields: [studioFeedback.user_id],
+    fields: [recordingFeedback.user_id],
     references: [users.id],
   }),
 }));

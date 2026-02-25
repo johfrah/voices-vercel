@@ -90,9 +90,25 @@ async function generateAtomicSitemap() {
       // Legacy flat slug redirect
       if (lang === 'nl' && a.slug) {
         const legacySlug = a.slug.toLowerCase();
+        const pureNameSlug = slugify(a.first_name);
+        
+        // 1. Redirect from a.slug (e.g. christina-1)
         if (legacySlug !== canonicalActorSlug) {
           sitemap.push({ 
             slug: legacySlug, 
+            entity_type_id: actorTypeId, 
+            entity_id: a.id, 
+            language_id: langId,
+            journey: 'agency', 
+            name: `${a.first_name} ${a.last_name || ''}`, 
+            canonical_slug: canonicalActorSlug 
+          });
+        }
+
+        // 2. Redirect from pure name (e.g. christina)
+        if (pureNameSlug !== canonicalActorSlug && pureNameSlug !== legacySlug) {
+          sitemap.push({ 
+            slug: pureNameSlug, 
             entity_type_id: actorTypeId, 
             entity_id: a.id, 
             language_id: langId,
