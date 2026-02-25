@@ -32,6 +32,11 @@ const getDb = () => {
         console.error(' [getDb] TARGET HOST FORCED: db.vcbxyyjsxuquytcsskpj.supabase.co:5432');
       }
 
+      // LEX-MANDATE: Force IPv4 if direct host to avoid Vercel network slop
+      if (connectionString.includes('db.vcbxyyjsxuquytcsskpj.supabase.co')) {
+        // No-op for now, but we keep an eye on it.
+      }
+
       // 🛡️ CHRIS-PROTOCOL: Force Re-initialization if connection string changed (v2.14.591)
       const lastConn = (globalThis as any)._lastConnString;
       if (lastConn && lastConn !== connectionString) {
