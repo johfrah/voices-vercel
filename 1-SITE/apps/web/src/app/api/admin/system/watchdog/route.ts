@@ -183,7 +183,7 @@ export async function POST(request: NextRequest) {
         }
       } else if (level === 'error' || level === 'critical') {
         // 3. Bij onbekende kritieke fouten: Stuur een One-Click Repair mail
-        const siteUrl = MarketManager.getMarketDomains()[market.market_code] || `https://${host}`;
+        const siteUrl = MarketManager.getMarketDomains()[market.market_code] || `https://${MarketManager.getMarketDomains()['BE']?.replace('https://', '') || 'www.voices.be'}`;
         const repairUrl = `${siteUrl}/api/admin/system/repair?eventId=${eventId}`;
 
         try {

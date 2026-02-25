@@ -53,10 +53,10 @@ export async function GET(request: Request) {
     }
     const supabaseAdmin = createClient(url, key);
 
-    const host = request.headers.get('host') || MarketManager.getMarketDomains()['BE']?.replace('https://', '');
     const { MarketManagerServer: MarketManager } = require('@/lib/system/market-manager-server');
+    const host = request.headers.get('host') || MarketManager.getMarketDomains()['BE']?.replace('https://', '');
     const market = MarketManager.getCurrentMarket(host);
-    const siteUrl = MarketManager.getMarketDomains()[market.market_code] || `https://www.voices.be`;
+    const siteUrl = MarketManager.getMarketDomains()[market.market_code] || `https://${MarketManager.getMarketDomains()['BE']?.replace('https://', '') || 'www.voices.be'}`;
     const currentBaseUrl = host.includes('localhost') ? `http://${host}` : siteUrl;
 
     // 4. Generate Magic Link (Action Link)

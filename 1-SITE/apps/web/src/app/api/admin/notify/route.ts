@@ -28,9 +28,9 @@ export async function POST(request: NextRequest) {
     const host = request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || MarketManager.getMarketDomains()['BE']?.replace('https://', ''));
     const market = MarketManager.getCurrentMarket(host);
     const domains = MarketManager.getMarketDomains();
-    const canonicalHost = domains[market.market_code]?.replace('https://', '') || 'www.voices.be';
+    const canonicalHost = domains[market.market_code]?.replace('https://', '') || (MarketManager.getMarketDomains()['BE']?.replace('https://', '') || 'www.voices.be');
     const finalHost = host || canonicalHost;
-    const siteUrl = domains[market.market_code] || `https://www.voices.be`;
+    const siteUrl = domains[market.market_code] || `https://${canonicalHost}`;
     const adminEmail = market.email;
 
     // CHRIS-PROTOCOL: Skip emails if requested by user (logging to watchdog only)

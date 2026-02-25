@@ -10,13 +10,18 @@ const getDb = () => {
   if (typeof window !== 'undefined') return null; // No DB on client
   
   if (process.env.NEXT_RUNTIME === 'edge') {
+    console.error(' [getDb] BLOCKED: Edge runtime detected');
     return null;
   }
   
   if (!(globalThis as any).dbInstance) {
+    console.error(' [getDb] Initializing new Drizzle instance...');
     try {
       let connectionString = process.env.DATABASE_URL!;
-      if (!connectionString) return null;
+      if (!connectionString) {
+        console.error(' [getDb] FAILED: DATABASE_URL is missing!');
+        return null;
+      }
       
       // CHRIS-PROTOCOL: Direct DB Host for Stability (v2.17)
       // The Supabase Pooler (6543) is currently unstable. We bypass it and use the direct host.

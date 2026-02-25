@@ -231,7 +231,7 @@ export async function POST(request: NextRequest) {
         //  Notificatie naar Admin (HITL)
         try {
           const isSameDay = (order.rawMeta as any)?.items?.some((i: any) => i.actor?.delivery_config?.type === 'sameday');
-          const siteUrl = MarketManager.getMarketDomains()[market.market_code] || `https://www.voices.be`;
+          const siteUrl = MarketManager.getMarketDomains()[market.market_code] || `https://${MarketManager.getMarketDomains()['BE']?.replace('https://', '') || 'www.voices.be'}`;
           const fetchUrl = `${siteUrl}/api/admin/notify`;
           
           await fetch(fetchUrl, {

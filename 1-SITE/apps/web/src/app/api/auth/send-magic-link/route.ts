@@ -111,7 +111,7 @@ export async function POST(req: Request) {
     
     // 🛡️ CHRIS-PROTOCOL: Use MarketManagerServer directly for static config to avoid DB timeout in Auth flow
     const market = MarketManager.getCurrentMarket(host);
-    const siteUrl = MarketManager.getMarketDomains()[market.market_code] || `https://www.voices.be`;
+    const siteUrl = MarketManager.getMarketDomains()[market.market_code] || `https://${MarketManager.getMarketDomains()['BE']?.replace('https://', '') || 'www.voices.be'}`;
     
     const origin = host.includes('localhost') ? `http://${host}` : siteUrl;
     // We voegen de redirectPath hier toe aan ONZE link, niet aan de Supabase link

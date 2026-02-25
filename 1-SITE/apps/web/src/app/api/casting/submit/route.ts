@@ -131,7 +131,7 @@ export async function POST(request: NextRequest) {
     const mailEngine = VoicesMailEngine.getInstance();
     const host = request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || MarketManager.getMarketDomains()['BE']?.replace('https://', ''));
     const market = MarketManager.getCurrentMarket(host);
-    const siteUrl = MarketManager.getMarketDomains()[market.market_code] || `https://www.voices.be`;
+    const siteUrl = MarketManager.getMarketDomains()[market.market_code] || `https://${MarketManager.getMarketDomains()['BE']?.replace('https://', '') || 'www.voices.be'}`;
 
     await mailEngine.sendVoicesMail({
       to: market.email,
