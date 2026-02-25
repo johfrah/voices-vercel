@@ -149,8 +149,6 @@ export const VoicesMasterControlProvider: React.FC<{
       if (mr) initialMediaRegion = JSON.parse(decodeURIComponent(mr));
     } catch (e) {}
 
-    const isRootInitial = (pathname === '/' || pathname === '/agency/' || pathname.startsWith('/voice/'));
-
     const newState: MasterControlState = {
       journey,
       usage: JOURNEY_USAGE_MAP[journey],
@@ -172,7 +170,7 @@ export const VoicesMasterControlProvider: React.FC<{
         mediaRegion: initialMediaRegion,
         liveSession: searchParams?.get('liveSession') === 'true' || savedState.filters?.liveSession || false,
       },
-      currentStep: (searchParams?.get('step') as any) || (isRootInitial ? 'voice' : 'voice'),
+      currentStep: 'voice',
     };
 
     setState(newState);
