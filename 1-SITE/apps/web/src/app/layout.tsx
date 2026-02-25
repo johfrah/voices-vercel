@@ -255,6 +255,9 @@ export default async function RootLayout({
   // 🛡️ CHRIS-PROTOCOL: Force Client-Only rendering for Admin routes to prevent hydration mismatch (#419)
   const isAdminRoute = pathname.startsWith('/admin') || segments[0] === 'admin';
   
+  // 🛡️ CHRIS-PROTOCOL: Force Client-Only rendering for Studio page to prevent hydration mismatch (#419)
+  const isStudioPage = pathname === '/studio' || pathname === '/studio/';
+  
   const isAdeming = market.market_code === 'ADEMING';
   const htmlClass = `${raleway.className} ${inter.className} ${cormorant.variable} theme-${isAdeming ? 'ademing' : market.theme} ${raleway.variable}`;
   const bodyClass = cn(
@@ -263,13 +266,13 @@ export default async function RootLayout({
   );
   const lang = langHeader || (pathname.includes('/artist/youssef') || market.market_code === 'ARTIST' ? 'en-EU' : (market.primary_language || 'nl-BE'));
 
-  if (isAdminRoute) {
+  if (isAdminRoute || isStudioPage) {
     return (
       <html lang={lang} className={htmlClass} suppressHydrationWarning>
         <body className={bodyClass}>
           <Providers lang={lang} market={market} initialTranslations={translations} initialJourney={initialJourney} initialUsage={initialUsage}>
             <SafeErrorGuard>
-              <Suspense fallback={<LoadingScreenInstrument text="Beheer laden..." />}>
+              <Suspense fallback={<LoadingScreenInstrument text={isAdminRoute ? "Beheer laden..." : "Studio laden..."} />}>
                 {children}
               </Suspense>
             </SafeErrorGuard>

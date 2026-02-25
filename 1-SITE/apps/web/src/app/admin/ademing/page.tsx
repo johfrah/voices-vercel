@@ -14,6 +14,8 @@ import { useState, useEffect } from "react";
 import { Plus, Search, Edit, Trash2, Eye, EyeOff, Sparkles, Music, Clock, User } from "lucide-react";
 import { createClient } from "@supabase/supabase-js";
 import { useToast } from "@/hooks/use-toast";
+import { AdemingSmartUpload } from "@/components/ui/ademing/admin/AdemingSmartUpload";
+import { AdemingTrackEdit } from "@/components/ui/ademing/admin/AdemingTrackEdit";
 
 // CHRIS-PROTOCOL: SDK for stability
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -24,6 +26,9 @@ export default function AdemingAdminPage() {
   const [tracks, setTracks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isSmartUploadOpen, setIsSmartUploadOpen] = useState(false);
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [editingTrack, setEditingTrack] = useState<any | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -72,16 +77,38 @@ export default function AdemingAdminPage() {
             </TextInstrument>
           </div>
           <div className="flex gap-4">
-            <ButtonInstrument className="!bg-white !text-va-black border border-black/5 flex items-center gap-2">
+            <ButtonInstrument 
+              onClick={() => setIsSmartUploadOpen(true)}
+              className="!bg-white !text-va-black border border-black/5 flex items-center gap-2"
+            >
               <Sparkles size={18} className="text-primary" />
               Smart Upload
             </ButtonInstrument>
-            <ButtonInstrument className="!bg-va-black !text-white flex items-center gap-2">
+            <ButtonInstrument 
+              onClick={() => {
+                setEditingTrack(null);
+                setIsEditOpen(true);
+              }}
+              className="!bg-va-black !text-white flex items-center gap-2"
+            >
               <Plus size={18} />
               Nieuwe Meditatie
             </ButtonInstrument>
           </div>
         </SectionInstrument>
+
+        <AdemingSmartUpload 
+          open={isSmartUploadOpen} 
+          onOpenChange={setIsSmartUploadOpen} 
+          onComplete={loadTracks}
+        />
+
+        <AdemingTrackEdit 
+          track={editingTrack}
+          open={isEditOpen}
+          onOpenChange={setIsEditOpen}
+          onSaved={loadTracks}
+        />
 
         {/* Stats & Search */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
@@ -165,13 +192,39 @@ export default function AdemingAdminPage() {
                   </td>
                   <td className="px-8 py-6 text-right">
                     <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button className="p-2 hover:bg-va-black hover:text-white rounded-lg transition-all">
+                      <button 
+                        onClick={() => {
+                          setEditingTrack(track);
+                          setIsEditOpen(true);
+                        }}
+                        className="p-2 hover:bg-va-black hover:text-white rounded-lg transition-all"
+                      >
                         <Edit size={16} />
                       </button>
-                      <button className="p-2 hover:bg-va-black hover:text-white rounded-lg transition-all">
+                      <button 
+                        onClick={async () => {
+                          const { error } = await supabase
+                            .from("ademing_tracks")
+                            .update({ is_public: !track.is_public })
+                            .eq("id", track.id);
+                          if (!error) loadTracks();
+                        }}
+                        className="p-2 hover:bg-va-black hover:text-white rounded-lg transition-all"
+                      >
                         {track.is_public ? <EyeOff size={16} /> : <Eye size={16} />}
                       </button>
-                      <button className="p-2 hover:bg-red-500 hover:text-white rounded-lg transition-all">
+                      <button 
+                        onClick={async () => {
+                          if (confirm("Weet je zeker dat je deze meditatie wilt verwijderen?")) {
+                            const { error } = await supabase
+                              .from("ademing_tracks")
+                              .delete()
+                              .eq("id", track.id);
+                            if (!error) loadTracks();
+                          }
+                        }}
+                        className="p-2 hover:bg-red-500 hover:text-white rounded-lg transition-all"
+                      >
                         <Trash2 size={16} />
                       </button>
                     </div>
