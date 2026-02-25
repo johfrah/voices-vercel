@@ -75,6 +75,31 @@ export default function BestellingenPage() {
   const [filter, setFilter] = useState('all');
   const [pagination, setPagination] = useState<PaginationData | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [expandedOrderId, setExpandedOrderId] = useState<number | null>(null);
+  const [expandedOrderData, setExpandedOrderData] = useState<any | null>(null);
+  const [isExpanding, setIsExpanding] = useState(false);
+
+  const toggleOrder = async (orderId: number) => {
+    if (expandedOrderId === orderId) {
+      setExpandedOrderId(null);
+      setExpandedOrderData(null);
+      return;
+    }
+
+    setExpandedOrderId(orderId);
+    setIsExpanding(true);
+    try {
+      const res = await fetch(`/api/admin/orders/${orderId}`);
+      if (res.ok) {
+        const data = await res.json();
+        setExpandedOrderData(data);
+      }
+    } catch (e) {
+      console.error('Failed to fetch expanded order data:', e);
+    } finally {
+      setIsExpanding(false);
+    }
+  };
 
   const fetchOrders = useCallback(async (page = 1, silent = false) => {
     if (!silent) setIsLoading(true);
@@ -238,84 +263,171 @@ export default function BestellingenPage() {
             </thead>
             <tbody className="divide-y divide-black/[0.02]">
               {filteredOrders.length > 0 ? filteredOrders.map((order) => (
-                <tr key={order.id} className="group hover:bg-va-off-white/30 transition-colors">
-                  <td className="px-8 py-6">
-                    <div className="flex flex-col">
-                      <span className="text-[15px] font-light text-va-black tracking-tight">#{order.displayOrderId || order.wpOrderId}</span>
-                      <span className="text-[11px] font-light text-va-black/30 tracking-widest uppercase">{order.journey}</span>
-                    </div>
-                  </td>
-                  <td className="px-8 py-6">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-primary/5 flex items-center justify-center text-primary">
-                        <User size={14} />
+                <React.Fragment key={order.id}>
+                  <tr 
+                    onClick={() => toggleOrder(order.id)}
+                    className={`group hover:bg-va-off-white/30 transition-colors cursor-pointer ${expandedOrderId === order.id ? 'bg-va-off-white/50' : ''}`}
+                  >
+                    <td className="px-8 py-6">
+                      <div className="flex items-center gap-4">
+                        <div className={`transition-transform duration-300 ${expandedOrderId === order.id ? 'rotate-90' : ''}`}>
+                          <ChevronRight size={14} className="text-va-black/20" />
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="text-[15px] font-light text-va-black tracking-tight">#{order.displayOrderId || order.wpOrderId}</span>
+                          <span className="text-[11px] font-light text-va-black/30 tracking-widest uppercase">{order.journey}</span>
+                        </div>
                       </div>
+                    </td>
+                    <td className="px-8 py-6">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-primary/5 flex items-center justify-center text-primary">
+                          <User size={14} />
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="text-[15px] font-light text-va-black tracking-tight">
+                            {order.user?.first_name} {order.user?.last_name}
+                          </span>
+                          <span className="text-[12px] font-light text-va-black/40 tracking-tight">
+                            {order.user?.companyName || order.user?.email}
+                          </span>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-8 py-6">
+                      <span className="text-[14px] font-light text-va-black/60" suppressHydrationWarning>
+                        {(() => {
+                          if (!order.createdAt) return '...';
+                          try {
+                            const date = new Date(order.createdAt);
+                            if (isNaN(date.getTime())) return 'Ongeldige datum';
+                            return format(date, 'dd MMM yyyy', { locale: nl });
+                          } catch (e) {
+                            return 'Fout in datum';
+                          }
+                        })()}
+                      </span>
+                    </td>
+                    <td className="px-8 py-6">
                       <div className="flex flex-col">
-                        <span className="text-[15px] font-light text-va-black tracking-tight">
-                          {order.user?.first_name} {order.user?.last_name}
+                        <span className="text-[15px] font-medium text-va-black tracking-tight">
+                          €{parseFloat(order.amountNet || "0").toFixed(2)}
                         </span>
-                        <span className="text-[12px] font-light text-va-black/40 tracking-tight">
-                          {order.user?.companyName || order.user?.email}
+                        <span className="text-[11px] font-light text-va-black/30 tracking-tight">
+                          Bruto: €{parseFloat(order.total).toFixed(2)}
                         </span>
                       </div>
-                    </div>
-                  </td>
-                  <td className="px-8 py-6">
-                    <span className="text-[14px] font-light text-va-black/60" suppressHydrationWarning>
-                      {(() => {
-                        if (!order.createdAt) return '...';
-                        try {
-                          const date = new Date(order.createdAt);
-                          if (isNaN(date.getTime())) return 'Ongeldige datum';
-                          return format(date, 'dd MMM yyyy', { locale: nl });
-                        } catch (e) {
-                          return 'Fout in datum';
-                        }
-                      })()}
-                    </span>
-                  </td>
-                  <td className="px-8 py-6">
-                    <div className="flex flex-col">
-                      <span className="text-[15px] font-medium text-va-black tracking-tight">
-                        €{parseFloat(order.amountNet || "0").toFixed(2)}
-                      </span>
-                      <span className="text-[11px] font-light text-va-black/30 tracking-tight">
-                        Bruto: €{parseFloat(order.total).toFixed(2)}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-8 py-6">
-                    <div className="flex flex-col">
-                      {order.purchaseOrder ? (
-                        <span className="text-[13px] font-medium text-primary tracking-tight">PO: {order.purchaseOrder}</span>
-                      ) : (
-                        <span className="text-[13px] font-light text-va-black/20 tracking-tight">-</span>
-                      )}
-                      {order.billingEmailAlt && (
-                        <span className="text-[11px] font-light text-va-black/40 truncate max-w-[150px]" title={order.billingEmailAlt}>
-                          {order.billingEmailAlt}
-                        </span>
-                      )}
-                    </div>
-                  </td>
-                  <td className="px-8 py-6">
-                    {getStatusBadge(order.status)}
-                  </td>
-                  <td className="px-8 py-6 text-right">
-                    <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <Link 
-                        href={`/admin/orders/${order.id}`}
-                        className="p-2 rounded-[8px] hover:bg-white hover:shadow-sm text-va-black/40 hover:text-primary transition-all"
-                        title="Bekijk Details"
-                      >
-                        <ExternalLink size={18} strokeWidth={1.5} />
-                      </Link>
-                      <button className="p-2 rounded-[8px] hover:bg-white hover:shadow-sm text-va-black/40 hover:text-va-black transition-all">
-                        <MoreHorizontal size={18} strokeWidth={1.5} />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
+                    </td>
+                    <td className="px-8 py-6">
+                      <div className="flex flex-col">
+                        {order.purchaseOrder ? (
+                          <span className="text-[13px] font-medium text-primary tracking-tight">PO: {order.purchaseOrder}</span>
+                        ) : (
+                          <span className="text-[13px] font-light text-va-black/20 tracking-tight">-</span>
+                        )}
+                        {order.billingEmailAlt && (
+                          <span className="text-[11px] font-light text-va-black/40 truncate max-w-[150px]" title={order.billingEmailAlt}>
+                            {order.billingEmailAlt}
+                          </span>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-8 py-6">
+                      {getStatusBadge(order.status)}
+                    </td>
+                    <td className="px-8 py-6 text-right">
+                      <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Link 
+                          href={`/admin/orders/${order.id}`}
+                          className="p-2 rounded-[8px] hover:bg-white hover:shadow-sm text-va-black/40 hover:text-primary transition-all"
+                          title="Bekijk Details"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <ExternalLink size={18} strokeWidth={1.5} />
+                        </Link>
+                        <button 
+                          className="p-2 rounded-[8px] hover:bg-white hover:shadow-sm text-va-black/40 hover:text-va-black transition-all"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <MoreHorizontal size={18} strokeWidth={1.5} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  
+                  {/* Expanded Atomic View */}
+                  {expandedOrderId === order.id && (
+                    <tr className="bg-va-off-white/20 border-b border-black/[0.03]">
+                      <td colSpan={7} className="px-12 py-10">
+                        {isExpanding ? (
+                          <div className="flex items-center gap-3 text-va-black/20 font-light italic">
+                            <Loader2 className="animate-spin" size={16} />
+                            Atomic data ophalen...
+                          </div>
+                        ) : expandedOrderData ? (
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 animate-in fade-in slide-in-from-left duration-500">
+                            {/* V2 Atomic Truth */}
+                            <div className="space-y-6">
+                              <HeadingInstrument level={4} className="text-[11px] font-bold tracking-[0.2em] text-primary uppercase">Nuclear V2 Truth</HeadingInstrument>
+                              <div className="bg-white p-6 rounded-[15px] border border-primary/10 shadow-sm space-y-4">
+                                <div className="flex justify-between border-b border-black/5 pb-2">
+                                  <span className="text-[12px] text-va-black/40 font-light">Netto Bedrag</span>
+                                  <span className="text-[14px] font-medium">€{parseFloat(expandedOrderData.amount_net || 0).toFixed(2)}</span>
+                                </div>
+                                <div className="flex justify-between border-b border-black/5 pb-2">
+                                  <span className="text-[12px] text-va-black/40 font-light">Journey ID</span>
+                                  <span className="text-[14px] font-medium">{expandedOrderData.journey_id || 'N/A'}</span>
+                                </div>
+                                <div className="flex justify-between border-b border-black/5 pb-2">
+                                  <span className="text-[12px] text-va-black/40 font-light">PO Nummer</span>
+                                  <span className="text-[14px] font-medium text-primary">{expandedOrderData.purchase_order || '-'}</span>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span className="text-[12px] text-va-black/40 font-light">Status ID</span>
+                                  <span className="text-[14px] font-medium">{expandedOrderData.status_id || '1 (Voltooid)'}</span>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Legacy Rugzak (Atomic) */}
+                            <div className="space-y-6">
+                              <HeadingInstrument level={4} className="text-[11px] font-bold tracking-[0.2em] text-va-black/20 uppercase">Legacy Rugzak (Raw)</HeadingInstrument>
+                              <div className="bg-va-off-white/50 p-6 rounded-[15px] border border-black/[0.03] space-y-4 max-h-[300px] overflow-y-auto scrollbar-hide">
+                                {expandedOrderData.raw_meta ? (
+                                  Object.entries(expandedOrderData.raw_meta).filter(([k]) => !k.startsWith('_')).map(([key, value]) => (
+                                    <div key={key} className="flex flex-col border-b border-black/5 pb-2">
+                                      <span className="text-[10px] text-va-black/30 uppercase tracking-wider">{key}</span>
+                                      <span className="text-[12px] font-light break-all">{typeof value === 'object' ? JSON.stringify(value) : String(value)}</span>
+                                    </div>
+                                  ))
+                                ) : (
+                                  <div className="text-[12px] italic text-va-black/20">Geen rugzak data gevonden.</div>
+                                )}
+                              </div>
+                            </div>
+
+                            {/* Quick Actions */}
+                            <div className="space-y-6">
+                              <HeadingInstrument level={4} className="text-[11px] font-bold tracking-[0.2em] text-va-black/20 uppercase">Quick Actions</HeadingInstrument>
+                              <div className="grid grid-cols-1 gap-3">
+                                <ButtonInstrument as={Link} href={`/admin/orders/${order.id}`} className="va-btn-pro !bg-va-black w-full flex items-center justify-center gap-2">
+                                  <ExternalLink size={14} />
+                                  Volledige Detailpagina
+                                </ButtonInstrument>
+                                <ButtonInstrument className="va-btn-pro !bg-va-off-white !text-va-black/60 w-full flex items-center justify-center gap-2">
+                                  <FileText size={14} />
+                                  Download Factuur
+                                </ButtonInstrument>
+                              </div>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="text-center text-red-500 italic">Fout bij laden van data.</div>
+                        )}
+                      </td>
+                    </tr>
+                  )}
+                </React.Fragment>
               )) : (
                 <tr>
                   <td colSpan={6} className="px-8 py-20 text-center">

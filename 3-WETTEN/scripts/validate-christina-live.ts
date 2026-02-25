@@ -47,8 +47,8 @@ async function validateChristinaPage() {
     
     console.log('📍 Step 1: Navigating to https://www.voices.be/voice/christina/');
     await page.goto('https://www.voices.be/voice/christina/', {
-      waitUntil: 'networkidle',
-      timeout: 30000
+      waitUntil: 'domcontentloaded',
+      timeout: 60000
     });
     
     // Wait for initial load
