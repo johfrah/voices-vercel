@@ -84,7 +84,7 @@ export default function LightPage() {
   const { t } = useTranslation();
   const [actors, setActors] = useState<Actor[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedLanguage, setSelectedLanguage] = useState<string>('all');
+  const [selectedLanguage, setSelectedLanguage] = useState<string>('nl-be');
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
