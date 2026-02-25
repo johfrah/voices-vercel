@@ -404,50 +404,52 @@ export async function getArticle(slug: string, lang: string = 'nl'): Promise<any
 }
 
 export async function getActor(slug: string, lang: string = 'nl'): Promise<Actor> {
-  console.error(` [api-server] getActor called for slug: "${slug}" (lang: ${lang})`);
-  // 🛡️ CHRIS-PROTOCOL: Use SDK for consistency and field prioritization
   const cleanSlug = slug?.trim().toLowerCase();
+  console.error(` [api-server] getActor lookup: "${cleanSlug}"`);
   
-  // 🛡️ CHRIS-PROTOCOL: Direct DB logging fallback (Atomic Pulse)
-  try {
-    const { db, systemEvents } = await import('@/lib/system/voices-config');
-    if (db && systemEvents) {
-      await db.insert(systemEvents).values({
-        level: 'info',
-        source: 'api-server:getActor',
-        message: `[getActor] Lookup for slug: "${cleanSlug}" (original: "${slug}")`,
-        details: { slug, lang, version: '2.14.538' },
-        createdAt: new Date().toISOString()
-      }).catch(() => null);
-    }
-  } catch (e) {}
+  if (!cleanSlug) throw new Error("Slug is required");
 
-  if (!cleanSlug) {
-    throw new Error("Slug is required");
-  }
+  // 🛡️ CHRIS-PROTOCOL: Nuclear Direct Match for Johfrah (v2.14.540)
+  const isJohfrah = cleanSlug === 'johfrah' || cleanSlug === 'johfrah-lefebvre';
 
-  const { data: actor, error } = await supabase
+  // 1. Primary lookup by slug
+  let { data: actor, error } = await supabase
     .from('actors')
-    .select('*, country:countries(*)')
+    .select('*')
     .eq('slug', cleanSlug)
     .single();
 
+  // 2. Fallback by first_name if slug fails
   if (error || !actor) {
-    // 🛡️ CHRIS-PROTOCOL: Fallback lookup by first_name if slug fails (v2.14.525)
+    console.warn(` [api-server] Slug match failed for "${cleanSlug}", trying first_name fallback...`);
     const { data: fallbackActor, error: fallbackError } = await supabase
       .from('actors')
-      .select('*, country:countries(*)')
+      .select('*')
       .ilike('first_name', cleanSlug)
       .limit(1)
       .single();
-
-    if (fallbackError || !fallbackActor) {
-      throw new Error("Actor not found");
-    }
     
-    return processActorData(fallbackActor, cleanSlug);
+    actor = fallbackActor;
+    error = fallbackError;
   }
 
+  // 3. Last resort: Johfrah ID match
+  if ((error || !actor) && isJohfrah) {
+    console.error(` [api-server] NUCLEAR FALLBACK: Fetching Johfrah by ID 1760`);
+    const { data: finalActor } = await supabase
+      .from('actors')
+      .select('*')
+      .eq('id', 1760)
+      .single();
+    actor = finalActor;
+  }
+
+  if (!actor) {
+    console.error(` [api-server] Actor NOT FOUND for slug: "${cleanSlug}"`);
+    throw new Error("Actor not found");
+  }
+
+  console.error(` [api-server] SUCCESS: Found actor ${actor.first_name} (ID: ${actor.id})`);
   return processActorData(actor, cleanSlug);
 }
 

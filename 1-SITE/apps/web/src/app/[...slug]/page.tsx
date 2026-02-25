@@ -585,22 +585,13 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
 
     // 2. Check voor Stem
     try {
-      console.error(` [SmartRouter] Content check for actor: "${firstSegment}" (lang: ${lang})`);
-      
-      // 🛡️ CHRIS-PROTOCOL: Force direct lookup by slug first
-      let actor = await getActor(firstSegment, lang).catch(async (err) => {
-        console.error(` [SmartRouter] Content actor fetch failed for "${firstSegment}":`, err.message);
+      const actor = await getActor(firstSegment, lang).catch((err) => {
+        console.error(` [SmartRouter] getActor failed for "${firstSegment}":`, err.message);
         return null;
       });
 
-      // 🛡️ CHRIS-PROTOCOL: NUCLEAR FALLBACK for Johfrah (v2.14.536)
-      if (!actor && (firstSegment === 'johfrah' || firstSegment === 'Johfrah')) {
-        console.error(` [SmartRouter] NUCLEAR FALLBACK: Force loading Johfrah by ID 1760`);
-        actor = await getActor('johfrah', lang).catch(() => null);
-      }
-
       if (actor) {
-        console.error(` [SmartRouter] Actor found! rendering VoiceDetailClient for ${actor.first_name} (ID: ${actor.id})`);
+        console.error(` [SmartRouter] Handshake SUCCESS for ${actor.first_name}. Rendering VoiceDetailClient.`);
         
         //  CHRIS-PROTOCOL: Map journey slug to internal journey type
         const journeyMap: Record<string, JourneyType> = {
