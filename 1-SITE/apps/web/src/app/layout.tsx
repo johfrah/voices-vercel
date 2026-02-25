@@ -141,12 +141,21 @@ export async function generateMetadata(): Promise<Metadata> {
     ? "De stem achter het verhaal. Warme, natuurlijke Vlaamse voice-over & host voor nationale TV-spots en corporate video's."
     : "Een warm en vertrouwd geluid voor elk project. Wij helpen je de perfecte stem te vinden.";
 
+  const icons = isAdeming ? {
+    icon: '/favicon-ademing.ico',
+    apple: '/apple-touch-icon-ademing.png',
+  } : {
+    icon: '/favicon.ico',
+    apple: '/apple-touch-icon.png',
+  };
+
   return {
     title: {
       default: title,
       template: `%s | ${market.name}`,
     },
     description,
+    icons,
     metadataBase: host ? new URL(baseUrl) : undefined,
     alternates: {
       canonical: "/",
