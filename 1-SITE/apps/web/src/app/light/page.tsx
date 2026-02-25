@@ -89,6 +89,8 @@ export default function LightPage() {
 
   useEffect(() => {
     setMounted(true);
+    // Forceer de dropdown naar Vlaams bij mount om zeker te zijn
+    setSelectedLanguage('nl-be');
     fetch('/api/actors/?lang=all')
       .then(res => res.json())
       .then(data => {
