@@ -29,15 +29,17 @@ export async function GET(request: NextRequest) {
     // 🛡️ CHRIS-PROTOCOL: 1 TRUTH MANDATE (v2.14.638)
     // We halen eerst het totaal aantal orders op voor de paginering UI
     // NUCLEAR: We gebruiken nu de schone orders_v2 tabel
-    // 🛡️ CHRIS-PROTOCOL: RAW SQL COUNT (v2.14.645)
-    // We gebruiken db.execute met een string om Drizzle abstractie volledig te passeren
-    const countResult = await db.execute(sql.raw('SELECT count(*) as value FROM orders_v2'));
-    const countRows = Array.isArray(countResult) ? countResult : (countResult.rows || []);
-    const totalInDb = Number(countRows[0]?.value || 0);
+    // 🛡️ CHRIS-PROTOCOL: DIRECT POSTGRES BYPASS (v2.14.647)
+    // We gebruiken de onderliggende postgres client om Drizzle volledig te passeren
+    const pg = (globalThis as any).postgresClient;
+    if (!pg) throw new Error("Postgres client not initialized");
+
+    const countResult = await pg.unsafe('SELECT count(*) as value FROM orders_v2');
+    const totalInDb = Number(countResult[0]?.value || countResult[0]?.count || 0);
 
     let allOrders: any[] = [];
     let debugInfo: any = {
-      version: '2.14.645',
+      version: '2.14.647',
       db_host: process.env.DATABASE_URL?.split('@')[1]?.split('/')[0] || 'unknown',
       page,
       limit,
@@ -47,10 +49,9 @@ export async function GET(request: NextRequest) {
     };
 
     try {
-      // 🚀 NUCLEAR RAW SQL FETCH (v2.14.645)
-      // We passeren de Drizzle abstractie voor maximale zekerheid
-      // 🛡️ CHRIS-PROTOCOL: Snake Case Mapping (v2.14.645)
-      const rawOrdersResult = await db.execute(sql.raw(`
+      // 🚀 NUCLEAR DIRECT PG FETCH (v2.14.647)
+      // We passeren Drizzle volledig voor maximale zekerheid
+      const rows = await pg.unsafe(`
         SELECT 
           id, user_id, journey_id, status_id, payment_method_id, 
           amount_net, amount_total, purchase_order, billing_email_alt, created_at
@@ -58,11 +59,10 @@ export async function GET(request: NextRequest) {
         ORDER BY created_at DESC
         LIMIT ${limit}
         OFFSET ${offset}
-      `));
+      `);
 
-      // 🛡️ CHRIS-PROTOCOL: Robust Result Parsing
-      const rows = Array.isArray(rawOrdersResult) ? rawOrdersResult : (rawOrdersResult.rows || []);
-      
+      console.log(`📦 [Admin Orders API] DIRECT PG Fetched ${rows.length} orders from orders_v2`);
+
       // Map snake_case database columns naar de camelCase properties die de rest van de route verwacht
       allOrders = rows.map((row: any) => ({
         id: row.id,
@@ -77,8 +77,7 @@ export async function GET(request: NextRequest) {
         createdAt: row.created_at
       }));
       
-      console.log(`📦 [Admin Orders API] RAW SQL Fetched ${allOrders.length} orders from orders_v2`);
-      debugInfo.source = 'raw_sql.orders_v2';
+      debugInfo.source = 'direct_pg.orders_v2';
       debugInfo.fetchedCount = allOrders.length;
     } catch (rawErr: any) {
       debugInfo.raw_error = rawErr.message;

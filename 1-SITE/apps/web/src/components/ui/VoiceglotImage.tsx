@@ -256,6 +256,6 @@ export const VoiceglotImage: React.FC<VoiceglotImageProps> = ({
           </ContainerInstrument>
         </>
       )}
-    </ContainerInstrument>
+    </div>
   );
 };

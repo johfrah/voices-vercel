@@ -885,7 +885,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
               {!hidePrice && displayPrice && (
                 <>
                   <TextInstrument className="text-[7px] md:text-[9px] font-light tracking-[0.2em] text-va-black/30 uppercase leading-none mb-0.5 md:mb-1">
-                    <VoiceglotText translationKey="common.starting_from" defaultText="Vanaf" instrument="pricing" />
+                    <VoiceglotText translationKey="common.starting_from" defaultText="Vanaf" />
                   </TextInstrument>
                   <div className="flex items-baseline gap-0.5 md:gap-1">
                     <TextInstrument className="text-base md:text-xl font-extralight tracking-tighter text-va-black">
