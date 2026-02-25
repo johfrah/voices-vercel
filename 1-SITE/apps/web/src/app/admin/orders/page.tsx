@@ -37,26 +37,26 @@ import { nl } from 'date-fns/locale';
 
 export const dynamic = 'force-dynamic';
 
-  interface Order {
-    id: number;
-    orderNumber: string;
-    date: string;
-    status: string;
-    unit: string;
-    customer: {
-      name: string;
-      email: string;
-      company: string | null;
-    } | null;
-    finance: {
-      net: string;
-      total: string;
-    };
-    billing: {
-      purchaseOrder: string | null;
-      email: string | null;
-    };
-  }
+interface Order {
+  id: number;
+  orderNumber: string;
+  date: string;
+  status: string;
+  unit: string;
+  customer: {
+    name: string;
+    email: string;
+    company: string | null;
+  } | null;
+  finance: {
+    net: string;
+    total: string;
+  };
+  billing: {
+    purchaseOrder: string | null;
+    email: string | null;
+  };
+}
 
 interface PaginationData {
   page: number;

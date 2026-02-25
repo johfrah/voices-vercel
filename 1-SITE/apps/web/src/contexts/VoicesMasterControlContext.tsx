@@ -115,14 +115,22 @@ export const VoicesMasterControlProvider: React.FC<{
     
     const initialLanguageParam = searchParams?.get('language');
     const initialLanguageIdParam = searchParams?.get('languageId');
-    const initialLanguage = initialLanguageParam 
+    
+    // 🛡️ CHRIS-PROTOCOL: Handshake Truth Initialization (v2.14.734)
+    // We try to resolve the ID from the code if only the code is present.
+    let initialLanguage = initialLanguageParam 
       ? initialLanguageParam 
       : (savedState.filters?.language || 'nl-be');
     
-    // 🛡️ CHRIS-PROTOCOL: ID-First Initialization (v2.14.734)
-    const initialLanguageId = initialLanguageIdParam 
+    let initialLanguageId = initialLanguageIdParam 
       ? parseInt(initialLanguageIdParam) 
       : (savedState.filters?.languageId || null);
+
+    // If we have a code but no ID, and we are on the client, try a quick lookup in primed MarketManager
+    if (initialLanguage && !initialLanguageId && typeof window !== 'undefined') {
+      const code = MarketManager.getLanguageCode(initialLanguage);
+      // Note: MarketManager might not be primed yet, so we still rely on the component's useEffect sync.
+    }
       
     const initialLanguages = searchParams?.get('languages') ? searchParams?.get('languages')?.split(',') : (savedState.filters?.languages || [initialLanguage.toLowerCase()]);
     const initialLanguageIds = searchParams?.get('languageIds') ? searchParams?.get('languageIds')?.split(',').map(Number) : (savedState.filters?.languageIds || (initialLanguageId ? [initialLanguageId] : []));
@@ -545,6 +553,12 @@ export const VoicesMasterControlProvider: React.FC<{
   const updateFilters = useCallback((newFilters: Partial<MasterControlState['filters']>) => {
     setState(prev => {
       const updatedFilters = { ...prev.filters, ...newFilters };
+
+      // 🛡️ CHRIS-PROTOCOL: Auto-sync IDs for Handshake Truth (v2.14.734)
+      if (newFilters.language && !newFilters.languageId) {
+        // We can't easily resolve ID here without the full list, 
+        // so we still rely on the component's useEffect for the heavy lifting.
+      }
 
       if (updatedFilters.words !== undefined && updatedFilters.words < 5) {
         updatedFilters.words = prev.journey === 'telephony' ? 25 : 200;

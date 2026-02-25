@@ -44,8 +44,7 @@ import {
     PieChart,
     Shield,
     Sparkles,
-    Smartphone,
-    Plus
+    Smartphone
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState, useCallback } from 'react';
@@ -60,8 +59,8 @@ interface MenuItem {
   icon: any;
   href: string;
   color: string;
-  group: 'Directie' | 'Productie' | 'Relaties' | 'Groei' | 'Systeem';
-  agent?: string;
+  group: 'Directiekamer' | 'Journey Leads' | 'Regie & Flow' | 'Decor & Techniek' | 'Kwaliteit & Foyer'; // Updated groups
+  agent?: string; // New property
   badge?: string | number;
   journey?: 'agency' | 'studio' | 'academy' | 'all';
 }
@@ -98,36 +97,35 @@ const journeyInstructions: Record<string, string[]> = {
 };
 
 const menuItems: MenuItem[] = [
-  //  🏢 DIRECTIE (Core Operations)
-  { title: 'Dashboard', icon: Home, href: '/admin/dashboard', color: 'text-va-black', group: 'Directie', agent: 'BOB', journey: 'all' },
-  { title: 'Postvak', icon: Mail, href: '/admin/mailbox', color: 'text-primary', group: 'Directie', agent: 'SALLY', badge: 3, journey: 'all' },
-  { title: 'Statistieken', icon: PieChart, href: '/admin/analytics', color: 'text-blue-500', group: 'Directie', agent: 'MARK', journey: 'all' },
-  { title: 'Klant Inzichten', icon: Brain, href: '/admin/insights', color: 'text-pink-500', group: 'Directie', agent: 'MARK', journey: 'all' },
+  //  🏢 DIRECTIEKAMER (Core Operations)
+  { title: 'Dashboard', icon: Home, href: '/admin/dashboard', color: 'text-va-black', group: 'Directiekamer', agent: 'BOB', journey: 'all' },
+  { title: 'Postvak', icon: Mail, href: '/admin/mailbox', color: 'text-primary', group: 'Directiekamer', agent: 'SALLY', badge: 3, journey: 'all' },
+  { title: 'Statistieken', icon: PieChart, href: '/admin/analytics', color: 'text-blue-500', group: 'Directiekamer', agent: 'MARK', journey: 'all' },
+  { title: 'Klant Inzichten', icon: Brain, href: '/admin/insights', color: 'text-pink-500', group: 'Directiekamer', agent: 'MAT', journey: 'all' },
 
-  //  🎙️ PRODUCTIE (Audiopost & Orders)
-  { title: 'Bestellingen', icon: ShoppingBag, href: '/admin/orders', color: 'text-emerald-600', group: 'Productie', agent: 'KELLY', badge: 5, journey: 'all' },
-  { title: 'Audiopost Studio', icon: Headphones, href: '/admin/media', color: 'text-va-black/40', group: 'Productie', agent: 'LOUIS', journey: 'all' },
-  { title: 'Journey Beheer', icon: Layers, href: '/admin/journeys', color: 'text-primary', group: 'Productie', agent: 'BOB', journey: 'all' },
-  { title: 'Stemmenbeheer', icon: Mic, href: '/admin/voices', color: 'text-purple-500', group: 'Productie', agent: 'VOICY', journey: 'agency' },
-  { title: 'Workshop Beheer', icon: Calendar, href: '/admin/workshops', color: 'text-orange-500', group: 'Productie', agent: 'BERNY', journey: 'studio' },
+  //  🎭 JOURNEY LEADS (Unit Management)
+  { title: 'Stemmenbeheer', icon: Mic, href: '/admin/voices', color: 'text-purple-500', group: 'Journey Leads', agent: 'VOICY', journey: 'agency' },
+  { title: 'Workshop Beheer', icon: Calendar, href: '/admin/workshops', color: 'text-orange-500', group: 'Journey Leads', agent: 'BERNY', journey: 'studio' },
+  { title: 'Artiesten', icon: Briefcase, href: '/admin/artists', color: 'text-slate-600', group: 'Journey Leads', agent: 'LAYA', journey: 'agency' },
+  { title: 'Academy Overzicht', icon: GraduationCap, href: '/admin/academy', color: 'text-primary', group: 'Journey Leads', agent: 'BERNY', journey: 'academy' },
 
-  //  👥 RELATIES (CRM & People)
-  { title: 'Klantprofielen', icon: Users, href: '/admin/users', color: 'text-blue-400', group: 'Relaties', agent: 'MAT', journey: 'all' },
-  { title: 'Artiesten', icon: Briefcase, href: '/admin/artists', color: 'text-slate-600', group: 'Relaties', agent: 'LAYA', journey: 'agency' },
-  { title: 'Deelnemers', icon: Smile, href: '/admin/participants', color: 'text-green-500', group: 'Relaties', agent: 'BERNY', journey: 'studio' },
-  { title: 'Feedback', icon: MessageSquare, href: '/admin/feedback', color: 'text-yellow-500', group: 'Relaties', agent: 'CHATTY', journey: 'studio' },
+  //  🎬 REGIE & FLOW (Execution)
+  { title: 'Bestellingen', icon: ShoppingBag, href: '/admin/orders', color: 'text-emerald-600', group: 'Regie & Flow', agent: 'KELLY', badge: 5, journey: 'all' },
+  { title: 'Bezoekers', icon: Activity, href: '/admin/marketing/visitors', color: 'text-emerald-500', group: 'Regie & Flow', agent: 'MAT', journey: 'all' },
+  { title: 'Marketing & UTM', icon: Target, href: '/admin/marketing/utm', color: 'text-orange-500', group: 'Regie & Flow', agent: 'MARK', journey: 'all' },
+  { title: 'Mobile First', icon: Smartphone, href: '/admin/marketing/trends', color: 'text-va-black', group: 'Regie & Flow', agent: 'MOBY', journey: 'all' },
 
-  //  📈 GROEI (Marketing & Academy)
-  { title: 'Academy Overzicht', icon: GraduationCap, href: '/admin/academy', color: 'text-primary', group: 'Groei', agent: 'BERNY', journey: 'academy' },
-  { title: 'Bezoekers', icon: Activity, href: '/admin/marketing/visitors', color: 'text-emerald-500', group: 'Groei', agent: 'MAT', journey: 'all' },
-  { title: 'Marketing & UTM', icon: Target, href: '/admin/marketing/utm', color: 'text-orange-500', group: 'Groei', agent: 'MARK', journey: 'all' },
-  { title: 'Artikelen', icon: FileText, href: '/admin/articles', color: 'text-blue-500', group: 'Groei', agent: 'MARK', journey: 'all' },
+  //  🛠️ DECOR & TECHNIEK (Infrastructure)
+  { title: 'Audiopost Studio', icon: Headphones, href: '/admin/media', color: 'text-va-black/40', group: 'Decor & Techniek', agent: 'LOUIS', journey: 'all' },
+  { title: 'Journey Beheer', icon: Layers, href: '/admin/journeys', color: 'text-primary', group: 'Decor & Techniek', agent: 'CODY', journey: 'all' },
+  { title: 'Instellingen', icon: Settings, href: '/admin/settings', color: 'text-va-black/40', group: 'Decor & Techniek', agent: 'CHRIS', journey: 'all' },
+  { title: 'Vertalingen', icon: Globe, href: '/admin/voiceglot', color: 'text-blue-600', group: 'Decor & Techniek', agent: 'CHATTY', journey: 'all' },
 
-  //  ⚙️ SYSTEEM (Technical)
-  { title: 'Instellingen', icon: Settings, href: '/admin/settings', color: 'text-va-black/40', group: 'Systeem', agent: 'CHRIS', journey: 'all' },
-  { title: 'AI Instellingen', icon: Bot, href: '/admin/ai-settings', color: 'text-primary', group: 'Systeem', agent: 'ANNA', journey: 'all' },
-  { title: 'Beveiliging & Locks', icon: Shield, href: '/admin/locks', color: 'text-red-500', group: 'Systeem', agent: 'WIM', journey: 'all' },
-  { title: 'Vertalingen', icon: Globe, href: '/admin/voiceglot', color: 'text-blue-600', group: 'Systeem', agent: 'CHATTY', journey: 'all' },
+  //  🛡️ KWALITEIT & FOYER (Security & Support)
+  { title: 'Beveiliging & Locks', icon: Shield, href: '/admin/locks', color: 'text-red-500', group: 'KWALITEIT & FOYER', agent: 'WIM', journey: 'all' },
+  { title: 'Klantprofielen', icon: Users, href: '/admin/users', color: 'text-blue-400', group: 'KWALITEIT & FOYER', agent: 'WIM', journey: 'all' },
+  { title: 'Feedback', icon: MessageSquare, href: '/admin/feedback', color: 'text-yellow-500', group: 'KWALITEIT & FOYER', agent: 'LEX', journey: 'studio' },
+  { title: 'Deelnemers', icon: Smile, href: '/admin/participants', color: 'text-green-500', group: 'KWALITEIT & FOYER', agent: 'ANNA', journey: 'studio' },
 ];
 
 export const SpotlightDashboard: React.FC = () => {
@@ -228,8 +226,8 @@ export const SpotlightDashboard: React.FC = () => {
       if (a.journey === journey && b.journey !== journey) return -1;
       if (b.journey === journey && a.journey !== journey) return 1;
 
-      // 2. Prioriteit voor Financieel & Analytics (als we niet in een specifieke journey zitten)
-      const highPriorityGroups = ['Financieel', 'Analytics', 'Core'];
+      // 2. Prioriteit voor Directie & Productie (als we niet in een specifieke journey zitten)
+      const highPriorityGroups = ['Directie', 'Productie'];
       const aIsHigh = highPriorityGroups.includes(a.group);
       const bIsHigh = highPriorityGroups.includes(b.group);
       
@@ -291,10 +289,10 @@ export const SpotlightDashboard: React.FC = () => {
                   </ContainerInstrument>
                   <ContainerInstrument plain className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
                     {[
-                      { title: 'Bestellingen', icon: ShoppingBag, href: '/admin/orders', agent: 'KELLY', color: 'text-emerald-600' },
-                      { title: 'Studio', icon: Headphones, href: '/admin/media', agent: 'LOUIS', color: 'text-va-black/40' },
-                      { title: 'Postvak', icon: Mail, href: '/admin/mailbox', agent: 'SALLY', color: 'text-primary', badge: 3 },
-                      { title: 'Klanten', icon: Users, href: '/admin/users', agent: 'MAT', color: 'text-blue-400' },
+                      { title: 'Nieuwe Stem', icon: Plus, href: '/admin/voices/new', agent: 'VOICY' },
+                      { title: 'Nieuwe Order', icon: CreditCard, href: '/admin/orders/new', agent: 'KELLY' },
+                      { title: 'Postvak', icon: Mail, href: '/admin/mailbox', agent: 'SALLY', badge: 3 },
+                      { title: 'Live Bezoekers', icon: Activity, href: '/admin/marketing/visitors', agent: 'MAT' },
                     ].map((action, i) => (
                       <button
                         key={`quick-${i}`}
@@ -305,7 +303,7 @@ export const SpotlightDashboard: React.FC = () => {
                         }}
                         className="flex flex-col items-center justify-center gap-3 p-6 rounded-[20px] bg-white border border-primary/5 hover:border-primary/30 hover:shadow-lg transition-all group touch-manipulation relative"
                       >
-                        <ContainerInstrument plain className={cn("w-12 h-12 rounded-full bg-va-off-white flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all", action.color)}>
+                        <ContainerInstrument plain className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all">
                           <action.icon size={24} strokeWidth={1.5} />
                         </ContainerInstrument>
                         <ContainerInstrument plain className="text-center">
@@ -355,9 +353,16 @@ export const SpotlightDashboard: React.FC = () => {
                           {item.type === 'article' && <FileText size={18} className="text-orange-500 group-hover:text-white" />}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <h4 className="font-light tracking-tight text-[14px] md:text-[15px] text-va-black/80 Raleway truncate">
-                            {item.title}
-                          </h4>
+                          <div className="flex items-center justify-between gap-2">
+                            <h4 className="font-light tracking-tight text-[14px] md:text-[15px] text-va-black/80 Raleway truncate">
+                              {item.title}
+                            </h4>
+                            {item.type === 'user' && (
+                              <span className="text-[8px] md:text-[9px] font-bold tracking-[0.2em] text-va-black/20 uppercase shrink-0">
+                                WIM
+                              </span>
+                            )}
+                          </div>
                           <p className="text-[10px] md:text-[11px] font-light tracking-widest text-va-black/30 uppercase truncate">
                             {item.type === 'user' ? `Ghost Mode • ${item.subtitle.split(' • ')[1]}` : item.subtitle}
                           </p>
@@ -401,17 +406,17 @@ export const SpotlightDashboard: React.FC = () => {
                                 : Icon;
                             })()}
                           </ContainerInstrument>
-                          <ContainerInstrument plain className="flex-1">
-                            <ContainerInstrument plain className="flex items-center justify-between gap-2">
+                          <ContainerInstrument plain className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between gap-2">
                               <h4 className="font-light tracking-tight text-[14px] md:text-[15px] text-va-black/80 Raleway truncate">
                                 <VoiceglotText  translationKey={`admin.menu.${item.title.toLowerCase().replace(/\s+/g, '_')}`} defaultText={item.title} />
                               </h4>
                               {item.agent && (
-                                <TextInstrument className="hidden md:inline text-[9px] font-bold tracking-[0.2em] text-va-black/20 uppercase">
+                                <span className="text-[8px] md:text-[9px] font-bold tracking-[0.2em] text-va-black/20 uppercase shrink-0">
                                   {item.agent}
-                                </TextInstrument>
+                                </span>
                               )}
-                            </ContainerInstrument>
+                            </div>
                           </ContainerInstrument>
                           {item.badge && (
                             <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold">

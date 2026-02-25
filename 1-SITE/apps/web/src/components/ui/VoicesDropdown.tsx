@@ -233,24 +233,31 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
 
     const opt = options.find(o => {
       const v = typeof o === 'string' ? o : o.value;
-      //  CHRIS-PROTOCOL: Antifragile Mapping (v2.14.677)
-      // We check both the primary value and the langCode (if available)
-      // to ensure ISO codes map correctly to human-friendly labels.
+      //  CHRIS-PROTOCOL: Antifragile Mapping (v2.14.734)
+      // We check the primary value, the langCode, and the label
+      // to ensure ISO codes or labels map correctly to human-friendly labels.
       const lc = typeof o === 'object' ? (o as any).langCode : undefined;
       const label = typeof o === 'object' ? o.label : o;
       
-      if (typeof value === 'string' && value.includes('-')) {
-        if (lc && lc.toLowerCase() === value.toLowerCase()) return true;
-        if (typeof v === 'string' && v.toLowerCase() === value.toLowerCase()) return true;
-        // 🛡️ CHRIS-PROTOCOL: Final fallback for labels that might match the value
-        if (label && label.toLowerCase() === value.toLowerCase()) return true;
-      }
-      
-      // 🛡️ CHRIS-PROTOCOL: ID-First Matching (v2.14.734)
-      if (typeof value === 'number' && typeof v === 'number' && v === value) return true;
+      const valStr = String(value || '').toLowerCase();
+      const vStr = String(v || '').toLowerCase();
+      const lcStr = String(lc || '').toLowerCase();
+      const labelStr = String(label || '').toLowerCase();
+
+      // 1. Direct match (ID or String)
+      if (v === value) return true;
+      if (vStr === valStr && valStr !== '') return true;
+
+      // 2. ISO Code match (e.g. "nl-be")
+      if (lcStr === valStr && valStr !== '') return true;
+
+      // 3. Label match (e.g. "Vlaams")
+      if (labelStr === valStr && valStr !== '') return true;
+
+      // 4. Numeric string match (e.g. "1" === 1)
       if (typeof value === 'string' && !isNaN(Number(value)) && v === Number(value)) return true;
 
-      return v === value;
+      return false;
     });
     const label = typeof opt === 'string' ? opt : opt?.label || value;
     if (!label) return placeholder;

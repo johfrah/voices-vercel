@@ -54,6 +54,10 @@ export class MarketManagerServer {
    */
   public static setLanguages(langs: any[]) {
     this.languagesRegistry = langs;
+    // 🛡️ CHRIS-PROTOCOL: Sync with global for engines that might not have direct access
+    if (typeof global !== 'undefined') {
+      (global as any).handshakeLanguages = langs;
+    }
   }
 
   public static MARKETS_STATIC: Record<string, Partial<MarketConfig>> = {

@@ -269,7 +269,7 @@ export default async function RootLayout({
         <body className={bodyClass}>
           <Providers lang={lang} market={market} initialTranslations={translations} initialJourney={initialJourney} initialUsage={initialUsage}>
             <SafeErrorGuard>
-              <Suspense fallback={<LoadingScreenInstrument text="Admin cockpit laden..." />}>
+              <Suspense fallback={<LoadingScreenInstrument text="Beheer laden..." />}>
                 {children}
               </Suspense>
             </SafeErrorGuard>

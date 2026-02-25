@@ -136,12 +136,18 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
   useEffect(() => {
     if (!languagesData || languagesData.length === 0) return;
 
+    // 🛡️ CHRIS-PROTOCOL: Prime MarketManager if not already primed
+    if (languagesData.length > 0) {
+      MarketManager.setLanguages(languagesData);
+    }
+
     // 🛡️ CHRIS-PROTOCOL: Handshake Truth Sync (v2.14.734)
     // If we have a language code but no ID, resolve it from the data.
     if (state.filters.language && !state.filters.languageId) {
       const match = languagesData.find(l => 
         l.code.toLowerCase() === state.filters.language?.toLowerCase() || 
-        l.label.toLowerCase() === state.filters.language?.toLowerCase()
+        l.label.toLowerCase() === state.filters.language?.toLowerCase() ||
+        MarketManager.getLanguageCode(l.label).toLowerCase() === state.filters.language?.toLowerCase()
       );
       if (match) {
         console.log(`[VoicesMasterControl] Syncing languageId for ${state.filters.language} -> ${match.id}`);
@@ -151,7 +157,10 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
 
     // Same for gender
     if (state.filters.gender && !state.filters.genderId && gendersData.length > 0) {
-      const match = gendersData.find(g => g.code.toLowerCase() === state.filters.gender?.toLowerCase());
+      const match = gendersData.find(g => 
+        g.code.toLowerCase() === state.filters.gender?.toLowerCase() ||
+        g.label.toLowerCase() === state.filters.gender?.toLowerCase()
+      );
       if (match) {
         updateFilters({ genderId: match.id });
       }
@@ -159,12 +168,15 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
 
     // Same for country
     if (state.filters.country && !state.filters.countryId && countriesData.length > 0) {
-      const match = countriesData.find(c => c.code.toLowerCase() === state.filters.country?.toLowerCase());
+      const match = countriesData.find(c => 
+        c.code.toLowerCase() === state.filters.country?.toLowerCase() ||
+        c.label.toLowerCase() === state.filters.country?.toLowerCase()
+      );
       if (match) {
         updateFilters({ countryId: match.id });
       }
     }
-  }, [languagesData, gendersData, countriesData]);
+  }, [languagesData, gendersData, countriesData, state.filters.language, state.filters.gender, state.filters.country]);
 
   const handleReorderClick = (language: string) => {
     setReorderLanguage(language);
@@ -749,18 +761,18 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                                   code: c.code
                                 }))
                               : [
-                                  { label: t('country.be', language === 'fr' ? 'Belgique' : language === 'en' ? 'Belgium' : 'België'), value: 'BE' },
-                                  { label: t('country.nl', language === 'fr' ? 'Pays-Bas' : language === 'en' ? 'Netherlands' : 'Nederland'), value: 'NL' },
-                                  { label: t('country.fr', language === 'fr' ? 'France' : language === 'en' ? 'France' : 'Frankrijk'), value: 'FR' },
-                                  { label: t('country.de', language === 'fr' ? 'Allemagne' : language === 'en' ? 'Germany' : 'Duitsland'), value: 'DE' },
-                                  { label: t('country.uk', language === 'fr' ? 'Royaume-Uni' : language === 'en' ? 'United Kingdom' : 'Verenigd Koninkrijk'), value: 'UK' },
-                                  { label: t('country.us', language === 'fr' ? 'États-Unis' : language === 'en' ? 'United States' : 'Verenigde Staten'), value: 'US' },
-                                  { label: t('country.es', language === 'fr' ? 'Espagne' : language === 'en' ? 'Spain' : 'Spanje'), value: 'ES' },
-                                  { label: t('country.pt', language === 'fr' ? 'Portugal' : language === 'en' ? 'Portugal' : 'Portugal'), value: 'PT' },
-                                  { label: t('country.it', language === 'fr' ? 'Italie' : language === 'en' ? 'Italy' : 'Italië'), value: 'IT' },
+                                  { label: t('country.be', language === 'fr' ? 'Belgique' : language === 'en' ? 'Belgium' : 'België'), value: 'BE', code: 'BE' },
+                                  { label: t('country.nl', language === 'fr' ? 'Pays-Bas' : language === 'en' ? 'Netherlands' : 'Nederland'), value: 'NL', code: 'NL' },
+                                  { label: t('country.fr', language === 'fr' ? 'France' : language === 'en' ? 'France' : 'Frankrijk'), value: 'FR', code: 'FR' },
+                                  { label: t('country.de', language === 'fr' ? 'Allemagne' : language === 'en' ? 'Germany' : 'Duitsland'), value: 'DE', code: 'DE' },
+                                  { label: t('country.uk', language === 'fr' ? 'Royaume-Uni' : language === 'en' ? 'United Kingdom' : 'Verenigd Koninkrijk'), value: 'UK', code: 'UK' },
+                                  { label: t('country.us', language === 'fr' ? 'États-Unis' : language === 'en' ? 'United States' : 'Verenigde Staten'), value: 'US', code: 'US' },
+                                  { label: t('country.es', language === 'fr' ? 'Espagne' : language === 'en' ? 'Spain' : 'Spanje'), value: 'ES', code: 'ES' },
+                                  { label: t('country.pt', language === 'fr' ? 'Portugal' : language === 'en' ? 'Portugal' : 'Portugal'), value: 'PT', code: 'PT' },
+                                  { label: t('country.it', language === 'fr' ? 'Italie' : language === 'en' ? 'Italy' : 'Italië'), value: 'IT', code: 'IT' },
                                 ]
                             }
-                            value={state.filters.countryId || state.filters.countries || [state.filters.country || 'BE']}
+                            value={state.filters.countryId || state.filters.countries || state.filters.country || 'BE'}
                             onChange={(val) => {
                               const vals = Array.isArray(val) ? val : (val ? [val] : []);
                               const firstVal = vals[0];
