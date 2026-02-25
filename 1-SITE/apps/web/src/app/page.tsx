@@ -652,6 +652,11 @@ export default function Home() {
           if (mediaTypes.results) (global as any).handshakeMediaTypes = mediaTypes.results;
           if (genders.results) (global as any).handshakeGenders = genders.results;
         }
+        if (typeof window !== 'undefined') {
+          if (langs.results) (window as any).handshakeLanguages = langs.results;
+          if (mediaTypes.results) (window as any).handshakeMediaTypes = mediaTypes.results;
+          if (genders.results) (window as any).handshakeGenders = genders.results;
+        }
 
         setDynamicConfigData({
           languages: langs.results || [],

@@ -54,9 +54,12 @@ export class MarketManagerServer {
    */
   public static setLanguages(langs: any[]) {
     this.languagesRegistry = langs;
-    // 🛡️ CHRIS-PROTOCOL: Sync with global for engines that might not have direct access
+    // 🛡️ CHRIS-PROTOCOL: Sync with global/window for engines that might not have direct access
     if (typeof global !== 'undefined') {
       (global as any).handshakeLanguages = langs;
+    }
+    if (typeof window !== 'undefined') {
+      (window as any).handshakeLanguages = langs;
     }
   }
 

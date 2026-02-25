@@ -39,9 +39,10 @@ export class VoiceFilterEngine {
   static filter(actors: Actor[], criteria: FilterCriteria): Actor[] {
     if (!actors || actors.length === 0) return [];
 
-    const g = global as any;
-    const langRegistry = g.handshakeLanguages || [];
-    const mediaRegistry = g.handshakeMediaTypes || [];
+    // 🛡️ CHRIS-PROTOCOL: Handshake Truth Registry Access (v2.14.740)
+    // We use MarketManager as the primary source, falling back to global/window for engines.
+    const langRegistry = (MarketManager as any).languagesRegistry || (typeof window !== 'undefined' ? (window as any).handshakeLanguages : (typeof global !== 'undefined' ? (global as any).handshakeLanguages : [])) || [];
+    const mediaRegistry = (typeof window !== 'undefined' ? (window as any).handshakeMediaTypes : (typeof global !== 'undefined' ? (global as any).handshakeMediaTypes : [])) || [];
 
     console.log(`[VoiceFilter] Starting filter with ${actors.length} actors. Journey: ${criteria.journey}`, { 
       languageId: criteria.languageId,
