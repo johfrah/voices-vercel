@@ -1,5 +1,5 @@
 import { db } from '@/lib/system/voices-config';
-import { orders, users, notifications, orderItems, systemEvents } from '@/lib/system/voices-config';
+import { orders, users, notifications, orderItems, systemEvents, ordersV2 } from '@/lib/system/voices-config';
 import { desc, eq, sql, count } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth/api-auth';
@@ -26,12 +26,13 @@ export async function GET(request: NextRequest) {
   const offset = (page - 1) * limit;
 
   try {
-    // 🛡️ CHRIS-PROTOCOL: 1 TRUTH MANDATE (v2.14.603)
+    // 🛡️ CHRIS-PROTOCOL: 1 TRUTH MANDATE (v2.14.613)
     // We halen eerst het totaal aantal orders op voor de paginering UI
-    const [totalCountResult] = await db.select({ value: count() }).from(orders).catch((err: any) => {
+    // NUCLEAR: We gebruiken nu de schone orders_v2 tabel
+    const [totalCountResult] = await db.select({ value: count() }).from(ordersV2).catch((err: any) => {
       console.error('[Admin Orders GET] Count query failed:', err);
-      // 🛡️ CHRIS-PROTOCOL: Fallback to direct SQL if Drizzle fails (v2.14.603)
-      return db.execute(sql`SELECT count(*) as value FROM orders`).then((res: any) => {
+      // 🛡️ CHRIS-PROTOCOL: Fallback to direct SQL if Drizzle fails (v2.14.613)
+      return db.execute(sql`SELECT count(*) as value FROM orders_v2`).then((res: any) => {
         const rows = res.rows || res;
         return [{ value: rows[0]?.value || 0 }];
       }).catch(() => [{ value: 0 }]);
@@ -40,7 +41,7 @@ export async function GET(request: NextRequest) {
 
     let allOrders: any[] = [];
     let debugInfo: any = {
-      version: 'v2.14.603',
+      version: 'v2.14.613',
       db_host: process.env.DATABASE_URL?.split('@')[1]?.split('/')[0] || 'unknown',
       page,
       limit,
@@ -51,27 +52,23 @@ export async function GET(request: NextRequest) {
 
     try {
       // 🚀 NUCLEAR PAGINATION: Direct SQL voor snelheid en stabiliteit
-      // We voegen de nieuwe V2 kolommen toe aan de selectie
+      // We gebruiken de schone orders_v2 tabel (Zero-Slop)
       const rawResult = await db.execute(sql`
         SELECT 
           id, wp_order_id, user_id, journey_id, status_id, payment_method_id,
-          total, total_tax, amount_net, purchase_order, billing_email_alt,
-          status, journey, market, iap_context, raw_meta, display_order_id, 
-          total_cost, total_profit, expected_delivery_date, billing_vat_number, 
-          yuki_invoice_id, dropbox_folder_url, is_quote, quote_message, 
-          quote_sent_at, internal_notes, is_private, is_manually_edited, 
-          vies_validated_at, vies_country_code, ip_address, created_at
-        FROM orders 
+          amount_net, amount_total as total, purchase_order, billing_email_alt,
+          created_at
+        FROM orders_v2 
         ORDER BY created_at DESC 
         LIMIT ${limit} OFFSET ${offset}
       `);
       allOrders = rawResult.rows || rawResult || [];
-      debugInfo.source = 'raw.orders';
+      debugInfo.source = 'raw.orders_v2';
     } catch (rawErr: any) {
       debugInfo.raw_error = rawErr.message;
       // Fallback naar Drizzle
-      allOrders = await db.select().from(orders).orderBy(desc(orders.createdAt)).limit(limit).offset(offset);
-      debugInfo.source = 'drizzle.orders';
+      allOrders = await db.select().from(ordersV2).orderBy(desc(ordersV2.createdAt)).limit(limit).offset(offset);
+      debugInfo.source = 'drizzle.orders_v2';
     }
 
     // 🕵️ GUEST & USER RESOLVER
@@ -100,7 +97,7 @@ export async function GET(request: NextRequest) {
           } catch (e) {}
         }
 
-        const rawMeta = order.raw_meta || order.rawMeta;
+        const rawMeta = null; // NUCLEAR: orders_v2 has no raw_meta rugzak
         if (customerInfo.first_name === "Guest" && rawMeta) {
           try {
             const meta = typeof rawMeta === 'string' ? JSON.parse(rawMeta) : rawMeta;
@@ -118,12 +115,12 @@ export async function GET(request: NextRequest) {
         return {
           id: order.id,
           wpOrderId: order.wp_order_id || order.wpOrderId,
-          displayOrderId: order.display_order_id || order.displayOrderId,
+          displayOrderId: order.display_order_id || order.displayOrderId || `V-${order.wp_order_id || order.wpOrderId}`,
           total: order.total?.toString() || "0.00",
           amountNet: order.amount_net?.toString() || order.amountNet?.toString() || "0.00",
           purchaseOrder: order.purchase_order || order.purchaseOrder || null,
           billingEmailAlt: order.billing_email_alt || order.billingEmailAlt || null,
-          status: order.status || 'pending',
+          status: order.status || 'completed', // Default for V2 migrated
           journey: order.journey || 'agency',
           journeyId: order.journey_id || order.journeyId,
           statusId: order.status_id || order.statusId,
