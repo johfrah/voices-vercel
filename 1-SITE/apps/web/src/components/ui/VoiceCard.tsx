@@ -31,7 +31,7 @@ interface VoiceCardProps {
 }
 
 const VoiceFlag = ({ lang, size = 16 }: { lang?: string, size?: number }) => {
-  if (!lang) return null;
+  if (!lang) return <Globe size={size} className="opacity-20" />;
   const lowLang = lang.toLowerCase();
   
   const Flag = lowLang.includes('be') || lowLang === 'vlaams' || lowLang === 'frans (be)' ? FlagBE :
@@ -57,7 +57,7 @@ const VoiceFlag = ({ lang, size = 16 }: { lang?: string, size?: number }) => {
                lowLang.includes('ar') || lowLang === 'arabisch' || lowLang === 'arabic' ? FlagAR :
                lowLang.includes('br') || lowLang === 'braziliaans' || lowLang === 'brazilian' ? FlagBR : null;
 
-  if (!Flag) return null;
+  if (!Flag) return <Globe size={size} className="opacity-20" />;
   return <Flag size={size} />;
 };
 
@@ -889,8 +889,8 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
               <VoiceFlag lang={voice?.native_lang} size={14} />
               <TextInstrument className="text-[11px] md:text-[13px] font-light text-va-black tracking-tight">
                 <VoiceglotText 
-                  translationKey={`common.language.${voice?.native_lang?.toLowerCase()}`} 
-                  defaultText={voice?.native_lang_label || MarketManager.getLanguageLabel(voice?.native_lang || '')} 
+                  translationKey={voice?.native_lang ? `common.language.${voice.native_lang.toLowerCase()}` : 'common.language.unknown'} 
+                  defaultText={voice?.native_lang_label || MarketManager.getLanguageLabel(voice?.native_lang || '') || t('common.unknown_language', 'Onbekende taal')} 
                 />
               </TextInstrument>
               
