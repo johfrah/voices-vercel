@@ -34,7 +34,7 @@ export default async function AdminLayout({
       </Suspense>
       <AdminHeader />
       <div className="relative z-10">
-        <Suspense fallback={<LoadingScreenInstrument message="Admin omgeving initialiseren..." />}>
+        <Suspense fallback={<LoadingScreenInstrument text="Admin omgeving initialiseren..." />}>
           {children}
         </Suspense>
       </div>
