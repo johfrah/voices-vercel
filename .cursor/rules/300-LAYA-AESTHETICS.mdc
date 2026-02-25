@@ -1,0 +1,26 @@
+---
+description: Laya's Aesthetics rules for Design & UX in Project Atomic
+globs: **/*.tsx
+alwaysApply: false
+---
+
+# 🎨 Laya's Aesthetics: Design & UX
+
+Elke pixel moet ademen volgens de Voices-Mix.
+
+## 📐 Layout & Vormgeving
+
+1. **Raleway Mandate**: Koppen zijn UITSLUITEND `font-light` (300) of `font-extralight` (200) Raleway.
+2. **Natural Capitalization**: Geen UPPERCASE geschreeuw in koppen of knoppen.
+3. **Gematigde Afronding**: Containers/Kaarten zijn `rounded-[20px]`, knoppen `rounded-[10px]`.
+4. **Eilanden van Focus**: Gebruik royale witruimte (`py-32` tot `py-64`) tussen secties.
+5. **Liquid DNA**: De `LiquidBackground` is verplicht op elke pagina voor een organische beleving.
+
+## 💄 Kleur & Sfeer
+
+1. **Base Color**: Gebruik `bg-va-off-white` als rustgevende basis. Nooit hard wit.
+2. **Aura Shadows**: Gebruik `.shadow-aura` voor diepte zonder harde kaders.
+3. **No Grayscale**: Laat foto's stralen in hun natuurlijke kleuren (vooral op Johfrah portfolio).
+4. **Lucide Icons**: Gebruik icons met `strokeWidth={1.5}` en lage opacity (`text-primary/40`).
+
+"Design is niet wat het lijkt, maar hoe het voelt." - Laya/Artistiek Leider

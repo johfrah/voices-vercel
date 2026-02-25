@@ -1,0 +1,42 @@
+{
+  "name": "clean-astra-2",
+  "version": "2.1.0",
+  "description": "",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "cd apps/web && npm run dev",
+    "build": "npm install && cd apps/web && npm run build",
+    "serve": "cd apps/web && npm run start",
+    "start": "cd apps/web && npm run start",
+    "db:push": "npx drizzle-kit push --config packages/database/drizzle.config.ts --force",
+    "db:generate": "npx drizzle-kit generate --config packages/database/drizzle.config.ts",
+    "db:migrate": "npx drizzle-kit migrate --config packages/database/drizzle.config.ts",
+    "db:studio": "npx drizzle-kit studio --config packages/database/drizzle.config.ts",
+    "db:security-remediation": "ts-node scripts/supabase-security-remediation.ts",
+    "lint": "eslint .",
+    "watchdog": "ts-node scripts/maintenance/watchdog.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@types/dotenv": "^6.1.1",
+    "@types/node": "^25.2.1",
+    "eslint": "^8.57.0",
+    "eslint-config-next": "14.2.3",
+    "prettier": "^3.6.2",
+    "prettier": "^3.6.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.4",
+    "pg": "^8.18.0",
+    "postgres": "^3.4.8"
+  }
+}

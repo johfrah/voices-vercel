@@ -22,6 +22,60 @@ import { notFound, redirect } from "next/navigation";
 import { getServerUser, isAdminUser } from "@/lib/auth/server-auth";
 import MoveParticipantClient from "./MoveParticipantClient";
 import CostsManagerClient from "./CostsManagerClient";
+import { CertificateService } from "@/lib/system/certificate-service";
+import { FileText, Download, Loader2 } from "lucide-react";
+
+// Client-side component for certificate download
+function CertificateDownloadButton({ orderItemId, participantName }: { orderItemId: number, participantName: string }) {
+  "use client";
+  return (
+    <button 
+      onClick={async () => {
+        try {
+          const res = await fetch(`/api/admin/studio/certificates/${orderItemId}?download=true`);
+          const json = await res.json();
+          if (json.data) {
+            const params = new URLSearchParams({
+              name: json.data.participantName,
+              workshop: json.data.workshopTitle,
+              instructor: json.data.instructorName,
+              date: new Date(json.data.date).toISOString().split('T')[0],
+              orderId: json.data.orderId.toString()
+            });
+            window.open(`/api/certificates/render?${params.toString()}`, '_blank');
+          }
+        } catch (err) {
+          console.error('Cert Error:', err);
+        }
+      }}
+      className="p-2 hover:bg-black/5 rounded-lg transition-colors group/cert"
+      title="Download Certificaat"
+    >
+      <FileText size={16} className="text-black/20 group-hover/cert:text-primary transition-colors" />
+    </button>
+  );
+}
+
+// Client-side component for bulk generation
+function BulkCertificateButton({ editionId }: { editionId: number }) {
+  "use client";
+  return (
+    <button 
+      onClick={async () => {
+        try {
+          const res = await fetch(`/api/admin/studio/edities/${editionId}/certificates`, { method: 'POST' });
+          const data = await res.json();
+          alert(`Certificaten voor ${data.processed} deelnemers worden gegenereerd... (Mock)`);
+        } catch (err) {
+          console.error('Bulk Cert Error:', err);
+        }
+      }}
+      className="w-full va-btn-pro !bg-primary/10 !text-primary hover:!bg-primary/20 !border-primary/20"
+    >
+      GENEREER ALLE CERTIFICATEN
+    </button>
+  );
+}
 
 export default async function AdminEditionDetailPage({ params }: { params: { id: string } }) {
   const user = await getServerUser();
@@ -130,11 +184,17 @@ export default async function AdminEditionDetailPage({ params }: { params: { id:
                             <Link href={`/admin/orders/${order.id}`} className="text-[11px] font-black tracking-widest text-black/20 hover:text-primary flex items-center justify-end gap-1">WC #{order.wpOrderId} <ExternalLink size={10} /></Link>
                         </div>
                         
-                        <MoveParticipantClient 
-                          orderItemId={p.id} 
-                          currentEditionId={editionId} 
-                          availableEditions={availableEditions} 
-                        />
+                        <div className="flex flex-col gap-2">
+                            <CertificateDownloadButton 
+                              orderItemId={p.id} 
+                              participantName={`${pInfo.first_name} ${pInfo.last_name}`} 
+                            />
+                            <MoveParticipantClient 
+                              orderItemId={p.id} 
+                              currentEditionId={editionId} 
+                              availableEditions={availableEditions} 
+                            />
+                        </div>
                     </div>
                   </div>
                 </ContainerInstrument>
@@ -158,6 +218,7 @@ export default async function AdminEditionDetailPage({ params }: { params: { id:
                 <div className="space-y-4">
                     <button className="w-full va-btn-pro !bg-white/10 hover:!bg-white/20 !border-white/10">EDITIE WIJZIGEN</button>
                     <button className="w-full va-btn-pro !bg-white/10 hover:!bg-white/20 !border-white/10">MAIL NAAR GROEP</button>
+                    <BulkCertificateButton editionId={editionId} />
                     <button className="w-full va-btn-pro !bg-red-500/10 !text-red-500 hover:!bg-red-500/20 !border-red-500/20">EDITIE ANNULEREN</button>
                 </div>
             </BentoCard>

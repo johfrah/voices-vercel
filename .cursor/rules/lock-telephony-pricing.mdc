@@ -1,0 +1,47 @@
+---
+description: Locks the legacy telephony pricing formula to prevent accidental changes.
+globs: **/pricing-engine.ts
+alwaysApply: false
+---
+
+# ⚓ Telephony Pricing Lock (Legacy Formula)
+
+This rule ensures that the "ingewikkelde berekening" for Telephony (IVR) remains exactly as found in the legacy kelder.
+
+## 🚫 STRIKT VERBOD
+
+1.  **GEEN WIJZIGINGEN** aan de telefonie-formule zonder expliciet "RESTRUCTURE" mandaat van de USER.
+2.  **GEEN CHARM ROUNDING** toepassen op de telefonie-resultaten. De user wil de exacte legacy prijs inclusief decimalen.
+3.  **GEEN PROMPT-BASED PRICING**: De prijs wordt berekend op basis van het **totaal aantal woorden**, niet per prompt. De prompts zijn puur voor de briefing-structuur.
+
+## ⚓ DE VERANKERDE FORMULE
+
+Voor standaard stemacteurs (niet-AI) MOET de berekening als volgt blijven:
+
+```typescript
+// Basis: € 89,00 (incl. 25 woorden)
+// Extra woorden: € 1,00 per woord
+// Setup Fee: € 19,95 (vast, bij > 25 woorden)
+// Processing Fee: 10% over (Basis + Extra woorden)
+
+const subtotalForFee = 89 + (woorden - 25);
+const processingFee = subtotalForFee * 0.10;
+const totaal = subtotalForFee + 19.95 + processingFee;
+```
+
+## ⚓ BULK GRENS (750 woorden)
+
+Vanaf 750 woorden MOET de bulk-formule worden gebruikt:
+- **Vast:** € 915,35
+- **Extra:** + € 0,25 per woord boven de 750.
+- *Geen setup fee, geen 10% fee.*
+
+## ⚓ JOHFRAI (AI) FORMULE
+
+- **Basis:** € 49,00
+- **Extra Woord:** € 0,50
+- **Setup Fee:** € 9,95
+- **Bulk (750w):** € 450,00 + € 0,15 per extra woord.
+
+## ✅ VERIFICATIE CHECK (124 woorden)
+Een correcte implementatie MOET voor 124 woorden uitkomen op exact **€ 226,75** (excl. BTW).

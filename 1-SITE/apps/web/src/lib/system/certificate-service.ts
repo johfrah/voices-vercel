@@ -60,8 +60,18 @@ export class CertificateService {
   static async generatePdf(data: CertificateData): Promise<string> {
     console.log(` Generating PDF Certificate for ${data.participantName}...`);
     
-    // In Beheer-modus gebruiken we een serverless function of een service zoals Cloudinary/Vercel OG
-    // De URL wordt gegenereerd op basis van de orderId en een beveiligde hash.
-    return `/api/certificates/download/${data.orderId}`;
+    // CHRIS-PROTOCOL: Nuclear PDF Generation (v2.14.520)
+    // We use a specialized OG-based generator that flattens the certificate to a high-res image/PDF.
+    // The URL structure is: /api/certificates/render?orderId=...&name=...&workshop=...&date=...
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.voices.be';
+    const params = new URLSearchParams({
+        name: data.participantName,
+        workshop: data.workshopTitle,
+        instructor: data.instructorName,
+        date: data.date.toISOString().split('T')[0],
+        orderId: data.orderId.toString()
+    });
+
+    return `${baseUrl}/api/certificates/render?${params.toString()}`;
   }
 }
