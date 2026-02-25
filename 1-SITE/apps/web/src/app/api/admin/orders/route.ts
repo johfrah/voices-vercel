@@ -26,12 +26,12 @@ export async function GET(request: NextRequest) {
   const offset = (page - 1) * limit;
 
   try {
-    // 🛡️ CHRIS-PROTOCOL: 1 TRUTH MANDATE (v2.14.613)
+    // 🛡️ CHRIS-PROTOCOL: 1 TRUTH MANDATE (v2.14.631)
     // We halen eerst het totaal aantal orders op voor de paginering UI
     // NUCLEAR: We gebruiken nu de schone orders_v2 tabel
     const [totalCountResult] = await db.select({ value: count() }).from(ordersV2).catch((err: any) => {
       console.error('[Admin Orders GET] Count query failed:', err);
-      // 🛡️ CHRIS-PROTOCOL: Fallback to direct SQL if Drizzle fails (v2.14.613)
+      // 🛡️ CHRIS-PROTOCOL: Fallback to direct SQL if Drizzle fails (v2.14.631)
       return db.execute(sql`SELECT count(*) as value FROM orders_v2`).then((res: any) => {
         const rows = res.rows || res;
         return [{ value: rows[0]?.value || 0 }];
@@ -41,7 +41,7 @@ export async function GET(request: NextRequest) {
 
     let allOrders: any[] = [];
     let debugInfo: any = {
-      version: 'v2.14.613',
+      version: 'v2.14.631',
       db_host: process.env.DATABASE_URL?.split('@')[1]?.split('/')[0] || 'unknown',
       page,
       limit,
@@ -52,6 +52,7 @@ export async function GET(request: NextRequest) {
 
     try {
       // 🚀 NUCLEAR PAGINATION: WP ID is nu de PK (id)
+      // We gebruiken de schone orders_v2 tabel (Zero-Slop)
       const rawResult = await db.execute(sql`
         SELECT 
           id, user_id, journey_id, status_id, payment_method_id,
