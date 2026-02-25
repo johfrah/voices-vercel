@@ -495,6 +495,13 @@ export const VoicesMasterControlProvider: React.FC<{
     }
 
     const queryString = params.toString();
+    
+    // 🛡️ CHRIS-PROTOCOL: Nuclear ID-First URL Sync (v2.14.711)
+    // We append the languageId and genderId to the query string to ensure 
+    // the API receives the strict IDs for filtering.
+    if (state.filters.languageId) params.set('languageId', state.filters.languageId.toString());
+    if (state.filters.genderId) params.set('genderId', state.filters.genderId.toString());
+    
     const finalUrl = targetUrl + (queryString ? '?' + queryString : '');
     
     if (window.location.pathname + window.location.search !== finalUrl) {

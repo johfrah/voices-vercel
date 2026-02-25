@@ -38,6 +38,11 @@ export async function GET(request: Request) {
       params[key] = value;
     });
 
+    // 🛡️ NUCLEAR HANDSHAKE: Strict ID Mapping (v2.14.711)
+    // If languageId or genderId are present, we prioritize them over the legacy keys.
+    if (params.languageId) params.language = params.languageId;
+    if (params.genderId) params.gender = params.genderId;
+
     // 🛡️ CHRIS-PROTOCOL: 3s internal timeout for actors
     const fetchPromise = getActors(params, lang);
     const timeoutPromise = new Promise((_, reject) => 

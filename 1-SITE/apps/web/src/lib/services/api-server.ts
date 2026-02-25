@@ -127,16 +127,14 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
           .eq('status', 'live')
           .eq('is_public', true);
           
-        // 🛡️ NUCLEAR HANDSHAKE: ID-First Filtering (v2.14.679)
-        // We use the database as the source of truth for language IDs.
+        // 🛡️ NUCLEAR HANDSHAKE: ID-First Filtering (v2.14.711)
+        // We use the database as the source of truth for IDs.
         if (language || lang) {
           const targetLang = (language || lang).toLowerCase();
           
           if (!isNaN(parseInt(targetLang))) {
             query = query.eq('native_language_id', parseInt(targetLang));
           } else if (targetLang !== 'all') {
-            // 🛡️ CHRIS-PROTOCOL: Dynamic Handshake Truth
-            // We fetch languages once and cache them globally for the duration of the request/process.
             const { data: allLangs } = await supabase.from('languages').select('id, code, label');
             if (allLangs) {
               const match = allLangs.find(l => 
@@ -146,32 +144,27 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
               if (match) {
                 query = query.eq('native_language_id', match.id);
               } else {
-                // Fallback to legacy string match if ID lookup fails
                 query = query.eq('native_lang', targetLang);
               }
             }
           }
         }
 
-        if (country) {
-          query = query.eq('country_id', parseInt(country));
-        }
-
-        if (attribute) {
-          // Attributes are in a mapping table, we need a subquery or join
-          // For now, we'll use a subquery for stability
-          const { data: actorIds } = await supabase
-            .from('actor_attribute_mappings')
-            .select('actor_id')
-            .eq('attribute_id', parseInt(attribute));
-          
-          if (actorIds) {
-            query = query.in('id', actorIds.map(a => a.actor_id));
-          }
-        }
-        
         if (gender) {
-          query = query.eq('gender', gender);
+          if (!isNaN(parseInt(gender))) {
+            query = query.eq('gender_id', parseInt(gender));
+          } else {
+            // Fallback for string-based gender filtering
+            const { data: allGenders } = await supabase.from('genders').select('id, code');
+            if (allGenders) {
+              const match = allGenders.find(g => g.code.toLowerCase() === gender.toLowerCase());
+              if (match) {
+                query = query.eq('gender_id', match.id);
+              } else {
+                query = query.eq('gender', gender);
+              }
+            }
+          }
         }
         
         const { data: sdkData, error: sdkError } = await query
