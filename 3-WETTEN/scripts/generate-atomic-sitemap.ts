@@ -17,7 +17,7 @@ if (!supabaseUrl || !supabaseKey) {
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 async function generateAtomicSitemap() {
-  console.log('☢️ Generating Final Atomic Sitemap & Registry Sync...');
+  console.log('☢️ Generating ID-First Atomic Sitemap & Master Registry Sync...');
 
   const sitemap: any[] = [];
 
@@ -33,9 +33,13 @@ async function generateAtomicSitemap() {
       .replace(/\-\-+/g, '-');
   };
 
-  // 0. Fetch Prefix Translations from Voiceglot
+  // 0. Fetch Master Data (IDs)
+  const { data: entityTypes } = await supabase.from('entity_types').select('id, code');
+  const { data: languages } = await supabase.from('languages').select('id, code');
   const { data: prefixTranslations } = await supabase.from('translations').select('lang, translation_key, translated_text').ilike('translation_key', 'routing.prefix.%');
   
+  const getEntityTypeId = (code: string) => entityTypes?.find(t => t.code === code)?.id;
+  const getLanguageId = (code: string) => languages?.find(l => l.code.toLowerCase() === code.toLowerCase())?.id;
   const getPrefix = (key: string, lang: string = 'nl') => {
     const entry = prefixTranslations?.find(t => t.lang === lang && t.translation_key === `routing.prefix.${key}`);
     return entry?.translated_text || key;
@@ -44,8 +48,10 @@ async function generateAtomicSitemap() {
   const activeLangs = ['nl', 'fr', 'de'];
   const actorJourneys = ['video', 'commercial', 'telephony'];
 
-  // 1. Actors (Agency) -> voice/
+  // 1. Actors (Agency)
   const { data: actors } = await supabase.from('actors').select('id, slug, first_name, last_name').eq('status', 'live').eq('is_public', true);
+  const actorTypeId = getEntityTypeId('actor');
+  
   actors?.forEach(a => {
     const firstName = a.first_name?.toLowerCase().trim();
     const lastInitial = a.last_name ? a.last_name.trim().charAt(0).toLowerCase() : '';
@@ -54,16 +60,26 @@ async function generateAtomicSitemap() {
     activeLangs.forEach(lang => {
       const prefix = getPrefix('voice', lang);
       const canonicalActorSlug = `${prefix}/${baseSlug}`;
+      const langId = getLanguageId(lang);
       
       // Main profile
-      sitemap.push({ slug: canonicalActorSlug, type: 'actor', entity_id: a.id, journey: 'agency', name: `${a.first_name} ${a.last_name || ''}`, market_code: lang.toUpperCase() });
+      sitemap.push({ 
+        slug: canonicalActorSlug, 
+        entity_type_id: actorTypeId, 
+        entity_id: a.id, 
+        language_id: langId,
+        journey: 'agency', 
+        name: `${a.first_name} ${a.last_name || ''}`, 
+        market_code: lang.toUpperCase() 
+      });
       
-      // Journey-specific profiles (Deep Handshake)
+      // Journey-specific
       actorJourneys.forEach(journey => {
         sitemap.push({ 
           slug: `${canonicalActorSlug}/${journey}`, 
-          type: 'actor', 
+          entity_type_id: actorTypeId, 
           entity_id: a.id, 
+          language_id: langId,
           journey: 'agency', 
           name: `${a.first_name} - ${journey.toUpperCase()}`, 
           market_code: lang.toUpperCase(),
@@ -71,32 +87,38 @@ async function generateAtomicSitemap() {
         });
       });
 
-      // Legacy flat slug redirect (only for NL/default)
+      // Legacy flat slug redirect
       if (lang === 'nl' && a.slug) {
         const legacySlug = a.slug.toLowerCase();
         if (legacySlug !== canonicalActorSlug) {
-          sitemap.push({ slug: legacySlug, type: 'actor', entity_id: a.id, journey: 'agency', name: `${a.first_name} ${a.last_name || ''}`, canonical_slug: canonicalActorSlug });
+          sitemap.push({ 
+            slug: legacySlug, 
+            entity_type_id: actorTypeId, 
+            entity_id: a.id, 
+            language_id: langId,
+            journey: 'agency', 
+            name: `${a.first_name} ${a.last_name || ''}`, 
+            canonical_slug: canonicalActorSlug 
+          });
         }
       }
     });
   });
 
-  // 2. Artists (Artist Journey) -> artist/
+  // 2. Artists
   const { data: artists } = await supabase.from('artists').select('id, slug, display_name').eq('status', 'active').eq('is_public', true);
+  const artistTypeId = getEntityTypeId('artist');
   artists?.forEach(a => {
     activeLangs.forEach(lang => {
       const prefix = getPrefix('artist', lang);
       const canonicalArtistSlug = `${prefix}/${a.slug.toLowerCase()}`;
-      sitemap.push({ slug: canonicalArtistSlug, type: 'artist', entity_id: a.id, journey: 'artist', name: a.display_name, market_code: lang.toUpperCase() });
-      
-      if (lang === 'nl' && a.slug && !a.slug.startsWith(prefix)) {
-        sitemap.push({ slug: a.slug.toLowerCase(), type: 'artist', entity_id: a.id, journey: 'artist', name: a.display_name, canonical_slug: canonicalArtistSlug });
-      }
+      const langId = getLanguageId(lang);
+      sitemap.push({ slug: canonicalArtistSlug, entity_type_id: artistTypeId, entity_id: a.id, language_id: langId, journey: 'artist', name: a.display_name, market_code: lang.toUpperCase() });
     });
   });
 
-  // 3. Music (Music Journey) -> music/
-  sitemap.push({ slug: 'music', type: 'music', entity_id: 0, journey: 'agency', name: 'Music Library' });
+  // 3. Music
+  const musicTypeId = getEntityTypeId('music');
   const { data: musicMedia } = await supabase.from('media').select('id, file_name').eq('category', 'music');
   const musicProducts = [
     { slug: 'free', name: 'Free Music Track' },
@@ -108,98 +130,92 @@ async function generateAtomicSitemap() {
     if (track) {
       activeLangs.forEach(lang => {
         const prefix = getPrefix('music', lang);
-        sitemap.push({ slug: `${prefix}/${mp.slug}`, type: 'music', entity_id: track.id, journey: 'agency', name: mp.name, market_code: lang.toUpperCase() });
+        const langId = getLanguageId(lang);
+        sitemap.push({ slug: `${prefix}/${mp.slug}`, entity_type_id: musicTypeId, entity_id: track.id, language_id: langId, journey: 'agency', name: mp.name, market_code: lang.toUpperCase() });
       });
     }
   }
 
-  // 4. Workshops (Studio/Academy) -> studio/ or academy/
+  // 4. Workshops
+  const workshopTypeId = getEntityTypeId('workshop');
   const { data: workshops } = await supabase.from('workshops').select('id, slug, title, journey').eq('status', 'publish');
   workshops?.forEach(w => {
-    const type = w.journey || 'studio';
+    const journey = w.journey || 'studio';
     activeLangs.forEach(lang => {
-      const prefix = getPrefix(type, lang);
-      sitemap.push({ slug: `${prefix}/${w.slug.toLowerCase()}`, type: 'workshop', entity_id: w.id, journey: type, name: w.title, market_code: lang.toUpperCase() });
+      const prefix = getPrefix(journey, lang);
+      const langId = getLanguageId(lang);
+      sitemap.push({ slug: `${prefix}/${w.slug.toLowerCase()}`, entity_type_id: workshopTypeId, entity_id: w.id, language_id: langId, journey, name: w.title, market_code: lang.toUpperCase() });
     });
   });
 
-  // 5. Blog Articles -> blog/
+  // 5. Blog
+  const blogTypeId = getEntityTypeId('blog');
+  const articleTypeId = getEntityTypeId('article');
   const { data: articles } = await supabase.from('content_articles').select('id, slug, title, iap_context').eq('status', 'publish');
   articles?.forEach(art => {
     const isBlog = (art.iap_context as any)?.type === 'blog' || art.slug.startsWith('blog/');
-    const type = isBlog ? 'blog' : 'article';
+    const typeId = isBlog ? blogTypeId : articleTypeId;
     const cleanSlug = art.slug.replace(/^blog\//, '').toLowerCase();
     
     activeLangs.forEach(lang => {
       const prefix = isBlog ? `${getPrefix('blog', lang)}/` : '';
       const canonicalSlug = `${prefix}${cleanSlug}`;
-      sitemap.push({ slug: canonicalSlug, type, entity_id: art.id, journey: (art.iap_context as any)?.journey || 'agency', name: art.title, market_code: lang.toUpperCase() });
+      const langId = getLanguageId(lang);
+      sitemap.push({ slug: canonicalSlug, entity_type_id: typeId, entity_id: art.id, language_id: langId, journey: (art.iap_context as any)?.journey || 'agency', name: art.title, market_code: lang.toUpperCase() });
     });
   });
 
-  // 6. Categories (Languages, Countries, Attributes)
-  const { data: langs } = await supabase.from('languages').select('id, code, label, is_native_only');
+  // 6. Categories (Language/Country/Attribute)
+  const langTypeId = getEntityTypeId('language');
+  const { data: langs } = await supabase.from('languages').select('id, code, label');
   langs?.forEach(l => {
     const descriptiveSlug = `voice-overs/${slugify(l.label)}`;
-    sitemap.push({ slug: descriptiveSlug, type: 'language', entity_id: l.id, journey: 'agency', name: `Language: ${l.label}` });
-    sitemap.push({ slug: l.code.toLowerCase(), type: 'language', entity_id: l.id, journey: 'agency', name: `Language: ${l.label}`, canonical_slug: descriptiveSlug });
+    sitemap.push({ slug: descriptiveSlug, entity_type_id: langTypeId, entity_id: l.id, language_id: getLanguageId('nl'), journey: 'agency', name: `Language: ${l.label}` });
+    sitemap.push({ slug: l.code.toLowerCase(), entity_type_id: langTypeId, entity_id: l.id, language_id: getLanguageId('nl'), journey: 'agency', name: `Language: ${l.label}`, canonical_slug: descriptiveSlug });
   });
 
+  const countryTypeId = getEntityTypeId('country');
   const { data: countries } = await supabase.from('countries').select('id, code, label');
   countries?.forEach(c => {
     const descriptiveSlug = `voice-overs/${slugify(c.label)}`;
-    sitemap.push({ slug: descriptiveSlug, type: 'country', entity_id: c.id, journey: 'agency', name: `Country: ${c.label}` });
-    const genericLangCodes = ['nl', 'fr', 'en', 'de', 'es', 'it', 'pt', 'pl', 'da', 'sv', 'fi', 'nb', 'tr', 'hr', 'ca'];
-    if (!genericLangCodes.includes(c.code.toLowerCase())) {
-      sitemap.push({ slug: c.code.toLowerCase(), type: 'country', entity_id: c.id, journey: 'agency', name: `Country: ${c.label}`, canonical_slug: descriptiveSlug });
-    }
+    sitemap.push({ slug: descriptiveSlug, entity_type_id: countryTypeId, entity_id: c.id, language_id: getLanguageId('nl'), journey: 'agency', name: `Country: ${c.label}` });
   });
 
+  const attrTypeId = getEntityTypeId('attribute');
   const { data: attrs } = await supabase.from('actor_attributes').select('id, code, label');
   attrs?.forEach(at => {
     activeLangs.forEach(lang => {
       const prefix = getPrefix('tone-of-voice', lang);
       const descriptiveSlug = `${prefix}/${slugify(at.label)}`;
-      sitemap.push({ slug: descriptiveSlug, type: 'attribute', entity_id: at.id, journey: 'agency', name: `Attribute: ${at.label}`, market_code: lang.toUpperCase() });
-      
-      if (lang === 'nl') {
-        sitemap.push({ slug: at.code.toLowerCase(), type: 'attribute', entity_id: at.id, journey: 'agency', name: `Attribute: ${at.label}`, canonical_slug: descriptiveSlug });
-        sitemap.push({ slug: `stemmen/${slugify(at.label)}`, type: 'attribute', entity_id: at.id, journey: 'agency', name: `Attribute: ${at.label}`, canonical_slug: descriptiveSlug });
-      }
+      const langId = getLanguageId(lang);
+      sitemap.push({ slug: descriptiveSlug, entity_type_id: attrTypeId, entity_id: at.id, language_id: langId, journey: 'agency', name: `Attribute: ${at.label}`, market_code: lang.toUpperCase() });
     });
   });
 
-  // 7. FAQ -> faq/
-  const { data: faqs } = await supabase.from('faq').select('id, question_nl, category').eq('is_public', true);
+  // 7. FAQ
+  const faqTypeId = getEntityTypeId('faq');
+  const { data: faqs } = await supabase.from('faq').select('id, question_nl').eq('is_public', true);
   faqs?.forEach(f => {
     const faqSlug = f.question_nl?.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
     if (faqSlug) {
       activeLangs.forEach(lang => {
         const prefix = getPrefix('faq', lang);
-        sitemap.push({ slug: `${prefix}/${faqSlug}`, type: 'faq', entity_id: f.id, journey: 'agency', name: `FAQ: ${f.question_nl}`, market_code: lang.toUpperCase() });
+        const langId = getLanguageId(lang);
+        sitemap.push({ slug: `${prefix}/${faqSlug}`, entity_type_id: faqTypeId, entity_id: f.id, language_id: langId, journey: 'agency', name: `FAQ: ${f.question_nl}`, market_code: lang.toUpperCase() });
       });
     }
   });
 
-  // 8. Providers -> provider/
-  const { data: providers } = await supabase.from('app_configs').select('value').eq('key', 'telephony_config').single();
-  const providerList = (providers?.value as any)?.providers || ['voys', 'ziggo', 'telenet', 'proximus'];
-  providerList.forEach((p: string) => {
-    activeLangs.forEach(lang => {
-      const prefix = getPrefix('provider', lang);
-      sitemap.push({ slug: `${prefix}/${p.toLowerCase()}`, type: 'provider', entity_id: 0, journey: 'agency', name: `Provider: ${p}`, market_code: lang.toUpperCase() });
-    });
-  });
-
   // WRITE TO MD & REGISTRY
-  let mdContent = '# ☢️ ATOMIC SITEMAP - THE 1 TRUTH LIST (2026)\n\n';
-  mdContent += '| URL (Slug) | Type | Entity ID | Market | Handshake Truth |\n';
-  mdContent += '| :--- | :--- | :--- | :--- | :--- |\n';
+  let mdContent = '# ☢️ ATOMIC SITEMAP - ID-FIRST MASTER LEDGER (2026)\n\n';
+  mdContent += '| URL (Slug) | Type ID | Entity ID | Lang ID | Market | Handshake Truth |\n';
+  mdContent += '| :--- | :--- | :--- | :--- | :--- | :--- |\n';
   
   const registryEntries = sitemap.map(item => ({
     slug: item.slug.toLowerCase(),
-    routing_type: item.type,
+    entity_type_id: item.entity_type_id,
     entity_id: item.entity_id,
+    language_id: item.language_id,
     journey: item.journey,
     market_code: item.market_code || 'ALL',
     canonical_slug: item.canonical_slug || null,
@@ -219,11 +235,11 @@ async function generateAtomicSitemap() {
 
   sitemap.sort((a, b) => a.slug.localeCompare(b.slug));
   for (const item of sitemap) {
-    mdContent += `| \`/${item.slug}\` | \`${item.type}\` | \`${item.entity_id}\` | \`${item.market_code || 'ALL'}\` | ${item.name} |\n`;
+    mdContent += `| \`/${item.slug}\` | \`${item.entity_type_id}\` | \`${item.entity_id}\` | \`${item.language_id}\` | \`${item.market_code || 'ALL'}\` | ${item.name} |\n`;
   }
 
   fs.writeFileSync(path.resolve(process.cwd(), '3-WETTEN/docs/ATOMIC_SITEMAP.md'), mdContent);
-  console.log('✅ Atomic Sitemap generated and Registry synced.');
+  console.log('✅ ID-First Atomic Sitemap generated and Master Registry synced.');
 }
 
 generateAtomicSitemap().catch(console.error);

@@ -119,14 +119,14 @@ function generateArtistSchema(artist: any, host: string = '') {
 }
 
 /**
- * 🧠 SLUG RESOLVER (NUCLEAR 2026)
- * Zoekt de entiteit op basis van de slug_registry (Handshake Truth).
+ * 🧠 SLUG RESOLVER (ID-FIRST 2026)
+ * Zoekt de entiteit op basis van de slug_registry (ID Handshake Truth).
  */
-async function resolveSlugFromRegistry(slug: string, marketCode: string = 'ALL', journey: string = 'agency'): Promise<{ entity_id: number, routing_type: string, journey: string, canonical_slug?: string, metadata?: any } | null> {
+async function resolveSlugFromRegistry(slug: string, marketCode: string = 'ALL', journey: string = 'agency'): Promise<{ entity_id: number, routing_type: string, journey: string, canonical_slug?: string, metadata?: any, entity_type_id?: number, language_id?: number } | null> {
   try {
     const { data: entry, error } = await supabase
       .from('slug_registry')
-      .select('entity_id, routing_type, journey, canonical_slug, metadata')
+      .select('entity_id, journey, canonical_slug, metadata, entity_type_id, language_id, entity_types(code)')
       .eq('slug', slug.toLowerCase())
       .or(`market_code.eq.${marketCode},market_code.eq.ALL`)
       .eq('is_active', true)
@@ -136,10 +136,12 @@ async function resolveSlugFromRegistry(slug: string, marketCode: string = 'ALL',
     if (!error && entry) {
       return {
         entity_id: Number(entry.entity_id),
-        routing_type: entry.routing_type,
+        routing_type: (entry.entity_types as any)?.code || 'article',
         journey: entry.journey,
         canonical_slug: entry.canonical_slug,
-        metadata: entry.metadata
+        metadata: entry.metadata,
+        entity_type_id: entry.entity_type_id,
+        language_id: entry.language_id
       };
     }
   } catch (err) {

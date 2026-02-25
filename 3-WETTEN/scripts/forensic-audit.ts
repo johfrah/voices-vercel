@@ -88,6 +88,15 @@ const FORBIDDEN_PATTERNS = [
       if (line.trim().startsWith('*') || line.trim().startsWith('//')) return false;
       return true;
     }
+  },
+  {
+    regex: /\.(map|find|filter|forEach|reduce)\s*\(([^)]+)\)\s*=>\s*\{([^}]*)\}/gs,
+    message: 'Mogelijke onveilige array operatie. Gebruik null-checks of optionele chaining.',
+    type: 'warning' as const,
+    test: (match: string, line: string) => {
+      // Alleen waarschuwen als er geen duidelijke null-check voorafgaat
+      return !match.includes('?.') && !match.includes('if (') && !match.includes('&&');
+    }
   }
 ];
 

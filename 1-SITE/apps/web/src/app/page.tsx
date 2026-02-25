@@ -87,6 +87,8 @@ function HomeContent({ actors: initialActors, reviews, reviewStats, dynamicConfi
     return defaultMarket;
   }, [marketCode]);
 
+  const market = currentMarketConfig; // Fix for ReferenceError: market is not defined
+
   //  CHRIS-PROTOCOL: Sync local state with initial props
   useEffect(() => {
     setActors(initialActors);

@@ -28,8 +28,11 @@ export async function GET(request: NextRequest) {
   try {
     // 🛡️ CHRIS-PROTOCOL: 1 TRUTH MANDATE (v2.14.596)
     // We halen eerst het totaal aantal orders op voor de paginering UI
-    const [totalCountResult] = await db.select({ value: count() }).from(orders);
-    const totalInDb = Number(totalCountResult.value);
+    const [totalCountResult] = await db.select({ value: count() }).from(orders).catch((err: any) => {
+      console.error('[Admin Orders GET] Count query failed:', err);
+      return [{ value: 0 }];
+    });
+    const totalInDb = Number(totalCountResult?.value || 0);
 
     let allOrders: any[] = [];
     let debugInfo: any = {
