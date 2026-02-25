@@ -50,6 +50,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
   const [reorderLanguage, setReorderLanguage] = useState('');
   const [mounted, setMounted] = useState(false);
   const [fetchedLanguages, setFetchedLanguages] = useState<any[]>([]);
+  const [fetchedGenders, setFetchedGenders] = useState<any[]>([]);
 
   useEffect(() => {
     setMounted(true);
@@ -61,6 +62,15 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
         if (data.results) setFetchedLanguages(data.results);
       })
       .catch(err => console.error('[VoicesMasterControl] Failed to fetch languages:', err));
+
+    //  CHRIS-PROTOCOL: Handshake Truth (Source of Truth)
+    // Fetch genders directly from database.
+    fetch('/api/admin/config?type=genders')
+      .then(res => res.json())
+      .then(data => {
+        if (data.results) setFetchedGenders(data.results);
+      })
+      .catch(err => console.error('[VoicesMasterControl] Failed to fetch genders:', err));
   }, []);
 
   const handleReorderClick = (language: string) => {
@@ -475,11 +485,21 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                       {state.currentStep === 'voice' ? (
                         <div className="flex-1 h-full flex flex-col justify-center relative group/gender">
                           <VoicesDropdown 
-                            options={[
-                              { label: t('gender.everyone', language === 'fr' ? 'Tout le monde' : language === 'en' ? 'Everyone' : 'Iedereen'), value: '', icon: Users },
-                              { label: t('gender.male', language === 'fr' ? 'Masculin' : language === 'en' ? 'Male' : 'Mannelijk'), value: 'Mannelijk', icon: User },
-                              { label: t('gender.female', language === 'fr' ? 'Féminin' : language === 'en' ? 'Female' : 'Vrouwelijk'), value: 'Vrouwelijk', icon: User },
-                            ]}
+                            options={fetchedGenders.length > 0 
+                              ? [
+                                  { label: t('gender.everyone', language === 'fr' ? 'Tout le monde' : language === 'en' ? 'Everyone' : 'Iedereen'), value: '', icon: Users },
+                                  ...fetchedGenders.map(g => ({
+                                    label: g.label,
+                                    value: g.code, // Use code for filtering
+                                    icon: User
+                                  }))
+                                ]
+                              : [
+                                  { label: t('gender.everyone', language === 'fr' ? 'Tout le monde' : language === 'en' ? 'Everyone' : 'Iedereen'), value: '', icon: Users },
+                                  { label: t('gender.male', language === 'fr' ? 'Masculin' : language === 'en' ? 'Male' : 'Mannelijk'), value: 'Mannelijk', icon: User },
+                                  { label: t('gender.female', language === 'fr' ? 'Féminin' : language === 'en' ? 'Female' : 'Vrouwelijk'), value: 'Vrouwelijk', icon: User },
+                                ]
+                            }
                             value={state.filters.gender || ''}
                             onChange={(val) => updateFilters({ gender: val || undefined })}
                             placeholder={t('gender.everyone', language === 'fr' ? 'Tout le monde' : language === 'en' ? 'Everyone' : 'Iedereen')}
