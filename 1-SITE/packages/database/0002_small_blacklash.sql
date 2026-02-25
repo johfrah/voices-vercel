@@ -1,2 +1,0 @@
-ALTER TABLE "workshops" ADD COLUMN "media_id" integer;--> statement-breakpoint
-ALTER TABLE "workshops" ADD CONSTRAINT "workshops_media_id_media_id_fk" FOREIGN KEY ("media_id") REFERENCES "public"."media"("id") ON DELETE no action ON UPDATE no action;

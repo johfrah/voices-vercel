@@ -68,50 +68,50 @@ export function VoiceDetailClient({
         }
       }
 
-      // 2. Fallback naar Segmenten (Mooie URL's)
-      // CHRIS-PROTOCOL: De slug (segment 1) is onvertaalbaar (ID/Naam).
-      // Segment 2 (Journey) en Segment 3 (Medium) zijn WEL vertaalbaar via Voiceglot mapping.
-      if (initialJourney) {
-        const journeyMap: Record<string, any> = {
-          // Nederlands
-          'telefoon': 'telephony',
-          'telefooncentrale': 'telephony',
-          'telephony': 'telephony',
-          'video': 'video',
-          'commercial': 'commercial',
-          'reclame': 'commercial',
-          // Engels (Voiceglot fallback)
-          'telephony': 'telephony',
-          'phone': 'telephony',
-          'ad': 'commercial',
-          'advertisement': 'commercial'
-        };
-        const mappedJourney = journeyMap[initialJourney.toLowerCase()] || initialJourney;
-        
-        if (mappedJourney) {
-          // BOB-METHODE: Update zowel de MasterControl (voor filters/UI) als de Checkout (voor prijs)
-          updateJourney(mappedJourney as any);
-          
-          if (mappedJourney === 'commercial' && initialMedium) {
-            const mediumMap: Record<string, string> = {
-              // Nederlands
-              'online': 'online',
-              'social': 'online',
-              'radio': 'radio_national',
-              'tv': 'tv_national',
-              'televisie': 'tv_national',
-              'podcast': 'podcast',
-              // Engels
-              'web': 'online',
-              'television': 'tv_national'
-            };
-            const mediaType = mediumMap[initialMedium.toLowerCase()];
-            if (mediaType) {
-              updateMedia([mediaType]);
-            }
-          }
-        }
+    // Fallback naar Segmenten (Mooie URL's)
+    // CHRIS-PROTOCOL: De slug (segment 1) is onvertaalbaar (ID/Naam).
+    // Segment 2 (Journey) en Segment 3 (Medium) zijn WEL vertaalbaar via Voiceglot mapping.
+    const journeyMap: Record<string, any> = {
+      // Nederlands
+      'telefoon': 'telephony',
+      'telefooncentrale': 'telephony',
+      'telephony': 'telephony',
+      'video': 'video',
+      'commercial': 'commercial',
+      'reclame': 'commercial',
+      // Engels (Voiceglot fallback)
+      'phone': 'telephony',
+      'ad': 'commercial',
+      'advertisement': 'commercial'
+    };
+
+    const mappedJourney = initialJourney ? (journeyMap[initialJourney.toLowerCase()] || initialJourney) : 'video';
+    
+    // BOB-METHODE: Update zowel de MasterControl (voor filters/UI) als de Checkout (voor prijs)
+    updateJourney(mappedJourney as any);
+    
+    if (mappedJourney === 'commercial' && initialMedium) {
+      const mediumMap: Record<string, string> = {
+        // Nederlands
+        'online': 'online',
+        'social': 'online',
+        'radio': 'radio_national',
+        'tv': 'tv_national',
+        'televisie': 'tv_national',
+        'podcast': 'podcast',
+        // Engels
+        'web': 'online',
+        'television': 'tv_national'
+      };
+      const mediaType = mediumMap[initialMedium.toLowerCase()];
+      if (mediaType) {
+        updateMedia([mediaType]);
       }
+    } else if (mappedJourney !== 'commercial') {
+      // Reset media for non-commercial journeys to ensure pricing works
+      updateMedia(['online']);
+    }
+
     };
 
     syncFromUrl();
