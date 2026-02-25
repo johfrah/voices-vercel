@@ -419,15 +419,12 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
   }, [isOpen, actor]);
 
   const handlePhotoUploadSuccess = async (newUrl: string, mediaId: number) => {
-    setFormData({ ...formData, photo_url: newUrl, photo_id: mediaId });
+    setFormData(prev => ({ ...prev, photo_url: newUrl, photo_id: mediaId }));
     playClick('success');
 
     //  CHRIS-PROTOCOL: Immediate Profile Sync (2026)
-    // When a photo is uploaded, we save the profile IMMEDIATELY so the user
-    // doesn't have to click "Opslaan" separately for the photo to persist.
     try {
       const payload = {
-        ...formData,
         photo_id: mediaId,
         photo_url: newUrl,
         // 🛡️ CHRIS-PROTOCOL: Explicitly include language IDs for relational update
@@ -441,7 +438,7 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
         method: 'PATCH',
         headers: { 
           'Content-Type': 'application/json',
-          'X-Voices-Version': '2.14.195'
+          'X-Voices-Version': '2.14.519'
         },
         body: JSON.stringify(payload)
       });

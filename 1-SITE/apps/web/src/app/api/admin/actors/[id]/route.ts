@@ -72,11 +72,15 @@ export async function PATCH(
     if (body.price_ivr) sdkData.price_ivr = String(body.price_ivr);
     if (body.price_unpaid) sdkData.price_unpaid = String(body.price_unpaid);
 
-    // 🛡️ CHRIS-PROTOCOL: 1 Truth Asset Handshake
+    // 🛡️ CHRIS-PROTOCOL: 1 Truth Asset Handshake (v2.14.519)
     // We ONLY accept photo_id. dropbox_url is cleared to force migration.
     if (body.photo_id) {
       sdkData.photo_id = parseInt(body.photo_id);
-      sdkData.dropbox_url = ""; // 🧹 Kill the legacy noise
+      sdkData.dropbox_url = ""; 
+    } else if (body.photo_url) {
+      // Fallback: if frontend sends a URL, we clear the ID to avoid conflicts
+      sdkData.dropbox_url = body.photo_url;
+      sdkData.photo_id = null;
     }
 
     sdkData.is_manually_edited = true;
