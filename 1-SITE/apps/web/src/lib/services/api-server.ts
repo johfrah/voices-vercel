@@ -396,6 +396,7 @@ export async function getArticle(slug: string, lang: string = 'nl'): Promise<any
 
 export async function getActor(slug: string, lang: string = 'nl'): Promise<Actor> {
   // 🛡️ CHRIS-PROTOCOL: Use SDK for consistency and field prioritization
+  console.log(` [api-server] getActor lookup for slug: ${slug}`);
   const { data: actor, error } = await supabase
     .from('actors')
     .select('*, country:countries(*)')
@@ -403,10 +404,32 @@ export async function getActor(slug: string, lang: string = 'nl'): Promise<Actor
     .single();
 
   if (error || !actor) {
-    console.error(`[getActor] Error or not found: ${slug}`, error);
-    throw new Error("Actor not found");
+    console.error(`[getActor] Error or not found: ${slug}`, error?.message || 'Not found');
+    // 🛡️ CHRIS-PROTOCOL: Fallback lookup by first_name if slug fails (v2.14.525)
+    console.log(` [api-server] Attempting fallback lookup by first_name for: ${slug}`);
+    const { data: fallbackActor, error: fallbackError } = await supabase
+      .from('actors')
+      .select('*, country:countries(*)')
+      .ilike('first_name', slug)
+      .limit(1)
+      .single();
+
+    if (fallbackError || !fallbackActor) {
+      console.error(`[getActor] Fallback failed for: ${slug}`, fallbackError?.message || 'Not found');
+      throw new Error("Actor not found");
+    }
+    
+    console.log(` [api-server] Fallback SUCCESS: Found actor ${fallbackActor.first_name} by name.`);
+    return processActorData(fallbackActor, slug);
   }
 
+  return processActorData(actor, slug);
+}
+
+/**
+ * 🛡️ CHRIS-PROTOCOL: Process Actor Data (Internal Helper)
+ */
+async function processActorData(actor: any, slug: string): Promise<Actor> {
   // Fetch relations
   const [demosRes, videosRes] = await Promise.all([
     supabase.from('actor_demos').select('*').eq('actor_id', actor.id).eq('is_public', true),
@@ -422,26 +445,11 @@ export async function getActor(slug: string, lang: string = 'nl'): Promise<Actor
     photoUrl = actor.dropbox_url.startsWith('http') ? actor.dropbox_url : `/api/proxy/?path=${encodeURIComponent(actor.dropbox_url)}`;
   } else if (actor.photo_id) {
     // 🛡️ CHRIS-PROTOCOL: Nuclear Asset Healing (v2.14.199)
-    // We fetch the media item and verify its existence.
     const { data: mediaItem } = await supabase.from('media').select('*').eq('id', actor.photo_id).single();
     if (mediaItem) {
       const fp = mediaItem.file_path || mediaItem.filePath;
       if (fp) {
         photoUrl = fp.startsWith('http') ? fp : `${SUPABASE_STORAGE_URL}/${fp}`;
-        
-        // 🛡️ FORENSIC CHECK: Is this a known broken asset path?
-        if (fp.includes('goedele-A-234829') || fp.includes('charline-A-186167') || fp.includes('sander-A-234808')) {
-          console.warn(` [Asset Guard] Detected potentially broken legacy path: ${fp}`);
-          // Trigger silent healing report
-          const { ServerWatchdog } = await import('@/lib/services/server-watchdog');
-          await ServerWatchdog.report({
-            error: `Broken asset path detected in getActor: ${fp}`,
-            component: 'AssetGuard',
-            url: `/actor/${slug}`,
-            level: 'warning',
-            details: { actorId: actor.id, filePath: fp }
-          });
-        }
       }
     }
   }
