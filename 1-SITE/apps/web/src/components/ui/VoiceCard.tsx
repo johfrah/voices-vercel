@@ -1103,15 +1103,15 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 px-1 animate-in fade-in slide-in-from-left-1 duration-500">
                 {voice.extra_langs.split(',').filter(Boolean).map((lItem, idx) => {
                   const trimmed = lItem.trim().toLowerCase();
-                  const label = MarketManager.getLanguageLabel(trimmed);
                   
                   // 🛡️ CHRIS-PROTOCOL: Handshake Truth (ID-First)
+                  // We halen de label op via MarketManager voor de volledige naam (Frans, Duits, etc.)
+                  const label = MarketManager.getLanguageLabel(trimmed);
+                  
                   // We checken of deze extra taal momenteel geselecteerd is in de Master Configurator
                   const isSelectedInFilter = masterControlState.filters.languages?.includes(trimmed) || 
                                            (masterControlState.filters.languageIds && 
                                             masterControlState.filters.languageIds.length > 1 && 
-                                            // We weten dat we hier extra talen mappen, dus we zoeken in de lookup
-                                            // Voor nu matchen we op code voor de UI feedback
                                             masterControlState.filters.languages?.includes(trimmed));
 
                   return (
