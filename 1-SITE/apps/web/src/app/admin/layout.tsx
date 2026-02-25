@@ -2,6 +2,9 @@ import { requireAdminRedirect } from '@/lib/auth/server-auth';
 import { Metadata } from 'next';
 import nextDynamic from "next/dynamic";
 import { Suspense } from "react";
+import { AdminHeader } from '@/components/admin/AdminHeader';
+import { LoadingScreenInstrument } from '@/components/ui/LayoutInstruments';
+import { redirect } from 'next/navigation';
 
 //  NUCLEAR LOADING MANDATE
 const LiquidBackground = nextDynamic(() => import('@/components/ui/LiquidBackground').then(mod => mod.LiquidBackground), { ssr: false });
@@ -36,6 +39,7 @@ export default async function AdminLayout({
       <Suspense fallback={null}>
         <LiquidBackground />
       </Suspense>
+      <AdminHeader />
       <div className="relative z-10">
         <Suspense fallback={<LoadingScreenInstrument message="Admin omgeving initialiseren..." />}>
           {children}

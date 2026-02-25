@@ -202,9 +202,11 @@ export default async function RootLayout({
       <html lang={lang} className={htmlClass} suppressHydrationWarning>
         <body className={bodyClass}>
           <Providers lang={lang} market={market} initialTranslations={translations} initialJourney={initialJourney} initialUsage={initialUsage}>
-            <Suspense fallback={<LoadingScreenInstrument message="Admin cockpit laden..." />}>
-              {children}
-            </Suspense>
+            <SafeErrorGuard>
+              <Suspense fallback={<LoadingScreenInstrument message="Admin cockpit laden..." />}>
+                {children}
+              </Suspense>
+            </SafeErrorGuard>
           </Providers>
         </body>
       </html>
