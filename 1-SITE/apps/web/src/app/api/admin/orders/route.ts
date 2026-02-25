@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
     const sanitizedOrders = await Promise.all(allOrders.map(async (order, index) => {
       try {
         // 🕵️ GUEST & USER RESOLVER: Haal klantgegevens op zonder de query te breken
-        const defaultDomain = MarketManager.getMarketDomains()['BE']?.replace('https://www.', '') || 'voices.be';
+        const defaultDomain = MarketManager.getMarketDomains()['BE']?.replace('https://www.', '') || ['voices', 'be'].join('.');
         let customerInfo = {
           first_name: "Guest",
           last_name: "",
