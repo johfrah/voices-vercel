@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@voices/database';
-import { actors, actorDemos, actorDialects } from '@voices/database/src/schema';
+import { db } from '@/../../packages/database/src/index';
+import { actors, actorDemos, actorDialects } from '@/../../packages/database/src/schema';
 import { eq, sql } from 'drizzle-orm';
 
 /**
