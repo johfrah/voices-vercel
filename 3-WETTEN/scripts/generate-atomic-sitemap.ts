@@ -97,12 +97,20 @@ async function generateAtomicSitemap() {
       .replace(/\-\-+/g, '-');            // replace multiple - with single -
   };
 
-  const { data: langs } = await supabase.from('languages').select('id, code, label');
+  const { data: langs } = await supabase.from('languages').select('id, code, label, is_native_only');
   langs?.forEach(l => {
     const descriptiveSlug = `voice-overs/${slugify(l.label)}`;
+    
+    // Always register the descriptive slug
     sitemap.push({ slug: descriptiveSlug, type: 'language', entity_id: l.id, journey: 'agency', name: `Language: ${l.label}` });
-    // Redirect old code-based slug
+    
+    // Redirect old code-based slug (e.g. /nl-be -> /voice-overs/vlaams)
     sitemap.push({ slug: l.code.toLowerCase(), type: 'language', entity_id: l.id, journey: 'agency', name: `Language: ${l.label}`, canonical_slug: descriptiveSlug });
+    
+    // Special case: if it's a generic language (e.g. 'en'), also register the short slug
+    if (l.code.length === 2) {
+      sitemap.push({ slug: l.code.toLowerCase(), type: 'language', entity_id: l.id, journey: 'agency', name: `Language: ${l.label}` });
+    }
   });
 
   const { data: countries } = await supabase.from('countries').select('id, code, label');
@@ -150,21 +158,27 @@ async function generateAtomicSitemap() {
   mdContent += '| URL (Slug) | Type | Entity ID | Journey | Handshake Truth |\n';
   mdContent += '| :--- | :--- | :--- | :--- | :--- |\n';
   
+  const registryEntries = sitemap.map(item => ({
+    slug: item.slug.toLowerCase(),
+    routing_type: item.type,
+    entity_id: item.entity_id,
+    journey: item.journey,
+    market_code: 'ALL',
+    canonical_slug: item.canonical_slug || null,
+    is_active: true
+  }));
+
+  // Bulk UPSERT to Registry in chunks of 50 to avoid timeouts
+  const chunkSize = 50;
+  for (let i = 0; i < registryEntries.length; i += chunkSize) {
+    const chunk = registryEntries.slice(i, i + chunkSize);
+    const { error } = await supabase.from('slug_registry').upsert(chunk, { onConflict: 'slug, market_code, journey' });
+    if (error) console.error(`❌ Error syncing chunk starting at ${i}:`, error.message);
+    else console.log(`Synced chunk ${i / chunkSize + 1}/${Math.ceil(registryEntries.length / chunkSize)}`);
+  }
+
   for (const item of sitemap) {
     mdContent += `| \`/${item.slug}\` | \`${item.type}\` | \`${item.entity_id}\` | \`${item.journey}\` | ${item.name} |\n`;
-    
-    // UPSERT TO REGISTRY
-    const { error } = await supabase.from('slug_registry').upsert({
-      slug: item.slug.toLowerCase(),
-      routing_type: item.type,
-      entity_id: item.entity_id,
-      journey: item.journey,
-      market_code: 'ALL',
-      canonical_slug: item.canonical_slug || null,
-      is_active: true
-    }, { onConflict: 'slug, market_code, journey' });
-    
-    if (error) console.error(`❌ Error syncing ${item.slug}:`, error.message);
   }
 
   fs.writeFileSync(path.resolve(process.cwd(), '3-WETTEN/docs/ATOMIC_SITEMAP.md'), mdContent);

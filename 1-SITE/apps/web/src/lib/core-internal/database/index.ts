@@ -33,6 +33,10 @@ const getDb = () => {
         // Behoud de query params (zoals pgbouncer=true) niet bij direct host
         connectionString = connectionString.split('?')[0]; 
         console.error(' [getDb] TARGET HOST: db.vcbxyyjsxuquytcsskpj.supabase.co:5432');
+      } else if (connectionString.includes('aws-1-eu-west-1.pooler.supabase.com')) {
+        // Extra check voor alternatieve pooler formaten
+        console.error(' [getDb] DETECTED POOLER (ALT): Bypassing...');
+        connectionString = 'postgresql://postgres.vcbxyyjsxuquytcsskpj:VoicesHeadless20267654323456@db.vcbxyyjsxuquytcsskpj.supabase.co:5432/postgres';
       }
 
       // LEX-MANDATE: IPv6 is unstable on some build machines. Force IPv4 if direct host.
