@@ -82,10 +82,17 @@ export async function GET(request: NextRequest) {
           companyName: ""
         };
 
+        // 🛡️ CHRIS-PROTOCOL: User Resolution Fix (v2.14.628)
+        // We moeten zowel wp_user_id als het interne user_id checken
         const userId = order.user_id || order.userId;
         if (userId) {
           try {
-            const [dbUser] = await db.select().from(users).where(eq(users.id, userId)).limit(1);
+            // Check eerst op intern ID, dan op wp_user_id
+            let dbUser = await db.select().from(users).where(eq(users.id, userId)).limit(1).then(res => res[0]);
+            if (!dbUser && userId > 1000) {
+              dbUser = await db.select().from(users).where(eq(users.wpUserId, userId)).limit(1).then(res => res[0]);
+            }
+            
             if (dbUser) {
               customerInfo = {
                 first_name: dbUser.first_name || "",
