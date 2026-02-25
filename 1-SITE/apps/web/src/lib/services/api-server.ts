@@ -240,16 +240,22 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
     const actorLangsRes = await supabase.from('actor_languages').select('*').in('actor_id', actorIds);
     const actorLangsData = actorLangsRes.data || [];
 
-    // 🛡️ CHRIS-PROTOCOL: Fetch all languages for Handshake Truth mapping (v2.14.656)
+    // 🛡️ CHRIS-PROTOCOL: Global Data Registry for Handshake Truth (v2.14.676)
     const { data: allLangsData } = await supabase.from('languages').select('*');
+    const { data: allStatusesData } = await supabase.from('actor_statuses').select('*');
+    const { data: allExperienceData } = await supabase.from('experience_levels').select('*');
+    const { data: allCountriesData } = await supabase.from('countries').select('*');
+
     const langLookup = new Map<number, { code: string, label: string }>();
     allLangsData?.forEach(l => langLookup.set(l.id, { code: l.code, label: l.label }));
 
-    // 🛡️ CHRIS-PROTOCOL: Global Language Cache for UI (v2.14.667)
     // We prime the MarketManager with real data from Supabase to kill hardcoded maps.
     MarketManager.setLanguages(allLangsData || []);
     const g = global as any;
     g.handshakeLanguages = allLangsData || [];
+    g.handshakeStatuses = allStatusesData || [];
+    g.handshakeExperience = allExperienceData || [];
+    g.handshakeCountries = allCountriesData || [];
 
     // Create lookup maps for performance
     const nativeLangMap = new Map<number, number>();
@@ -344,6 +350,11 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
 
       const nativeLangId = nativeLangMap.get(actor.id) || actor.native_language_id || null;
       const nativeLangInfo = nativeLangId ? langLookup.get(nativeLangId) : null;
+      
+      // 🛡️ CHRIS-PROTOCOL: Handshake Truth Resolution (v2.14.676)
+      const statusInfo = allStatusesData?.find(s => s.id === actor.status_id);
+      const experienceInfo = allExperienceData?.find(e => e.id === actor.experience_level_id);
+      const countryInfo = allCountriesData?.find(c => c.id === actor.country_id);
 
       return {
         id: actor.wp_product_id || actor.id,
@@ -371,8 +382,12 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
         actor_videos: proxiedVideos,
         rates: actor.rates || {},
         email: actor.email || '',
-        status: actor.status || 'live',
-        experience_level: actor.experience_level || 'pro',
+        status: statusInfo?.label || actor.status || 'live',
+        status_code: statusInfo?.code || actor.status || 'live',
+        experience_level: experienceInfo?.label || actor.experience_level || 'pro',
+        experience_level_code: experienceInfo?.code || actor.experience_level || 'pro',
+        country: countryInfo?.label || actor.country || 'België',
+        country_code: countryInfo?.code || actor.country || 'BE',
         clients: actor.clients || '',
         tone_of_voice: actor.tone_of_voice || '',
         cutoff_time: actor.cutoff_time || '18:00',
@@ -588,9 +603,24 @@ async function processActorData(actor: any, slug: string): Promise<Actor> {
   let nativeLangLabel = actor.native_lang_label || '';
   let extraLangs = actor.extra_langs || '';
   
+  // 🛡️ CHRIS-PROTOCOL: Handshake Truth Resolution (v2.14.676)
+  let statusLabel = actor.status || 'live';
+  let statusCode = actor.status || 'live';
+  let experienceLabel = actor.experience_level || 'pro';
+  let experienceCode = actor.experience_level || 'pro';
+  let countryLabel = actor.country || 'België';
+  let countryCode = actor.country || 'BE';
+
   if (actor.native_language_id || actor.id) {
     try {
-      const { db: directDb, languages: langsTable, actorLanguages: actorLangsTable } = await import('@/lib/system/voices-config');
+      const { 
+        db: directDb, 
+        languages: langsTable, 
+        actorLanguages: actorLangsTable,
+        actorStatuses: statusesTable,
+        experienceLevels: expTable,
+        countries: countriesTable
+      } = await import('@/lib/system/voices-config');
       
       // Fetch native lang
       if (actor.native_language_id) {
@@ -598,6 +628,33 @@ async function processActorData(actor: any, slug: string): Promise<Actor> {
         if (langInfo) {
           nativeLang = langInfo.code;
           nativeLangLabel = langInfo.label;
+        }
+      }
+
+      // Fetch status handshake
+      if (actor.status_id) {
+        const [statusInfo] = await directDb.select().from(statusesTable).where(eq(statusesTable.id, actor.status_id)).limit(1);
+        if (statusInfo) {
+          statusLabel = statusInfo.label;
+          statusCode = statusInfo.code;
+        }
+      }
+
+      // Fetch experience handshake
+      if (actor.experience_level_id) {
+        const [expInfo] = await directDb.select().from(expTable).where(eq(expTable.id, actor.experience_level_id)).limit(1);
+        if (expInfo) {
+          experienceLabel = expInfo.label;
+          experienceCode = expInfo.code;
+        }
+      }
+
+      // Fetch country handshake
+      if (actor.country_id) {
+        const [countryInfo] = await directDb.select().from(countriesTable).where(eq(countriesTable.id, actor.country_id)).limit(1);
+        if (countryInfo) {
+          countryLabel = countryInfo.label;
+          countryCode = countryInfo.code;
         }
       }
 
@@ -624,6 +681,12 @@ async function processActorData(actor: any, slug: string): Promise<Actor> {
     native_lang: nativeLang,
     native_lang_label: nativeLangLabel,
     extra_langs: extraLangs,
+    status: statusLabel,
+    status_code: statusCode,
+    experience_level: experienceLabel,
+    experience_level_code: experienceCode,
+    country: countryLabel,
+    country_code: countryCode,
     photo_url: photoUrl,
     starting_price: parseFloat(actor.price_unpaid || '0'),
     voice_score: actor.voice_score || 10,

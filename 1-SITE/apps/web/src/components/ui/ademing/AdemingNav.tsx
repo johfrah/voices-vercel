@@ -27,8 +27,8 @@ export const AdemingNav = () => {
       <div className="max-w-7xl mx-auto grid grid-cols-3 items-center">
         {/* Left: Search/Menu */}
         <div className="flex items-center gap-4">
-          <button className="p-2 hover:bg-black/5 rounded-full transition-colors">
-            <Menu className="w-6 h-6" />
+          <button className="p-2 hover:bg-black/5 rounded-full transition-colors group">
+            <Menu className="w-6 h-6 animate-breathe-wave-subtle" />
           </button>
           <button className="p-2 hover:bg-black/5 rounded-full transition-colors hidden md:block">
             <Search className="w-5 h-5" />

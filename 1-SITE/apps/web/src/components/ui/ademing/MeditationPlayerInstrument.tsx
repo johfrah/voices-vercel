@@ -34,7 +34,9 @@ export const MeditationPlayerInstrument = ({
   const [duration, setDuration] = useState(0);
   const [showControls, setShowControls] = useState(true);
   const [bgElement, setBgElement] = useState<string | null>(null);
+  const [videoOpacity, setVideoOpacity] = useState(1);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
   const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Auto-hide controls
@@ -54,6 +56,30 @@ export const MeditationPlayerInstrument = ({
       window.removeEventListener('touchstart', handleActivity);
     };
   }, []);
+
+  // Video setup: slow motion and smooth loop crossfade
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video || !track.video_background_url) return;
+
+    video.playbackRate = 0.6;
+
+    const handleTimeUpdate = () => {
+      if (!video.duration) return;
+      const timeLeft = video.duration - video.currentTime;
+      
+      if (timeLeft <= 1.5 && timeLeft > 0) {
+        setVideoOpacity(timeLeft / 1.5);
+      } else if (video.currentTime < 1.5) {
+        setVideoOpacity(video.currentTime / 1.5);
+      } else {
+        setVideoOpacity(1);
+      }
+    };
+
+    video.addEventListener('timeupdate', handleTimeUpdate);
+    return () => video.removeEventListener('timeupdate', handleTimeUpdate);
+  }, [track.video_background_url]);
 
   const togglePlay = () => {
     if (audioRef.current) {
@@ -80,26 +106,45 @@ export const MeditationPlayerInstrument = ({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[300] bg-va-black text-white overflow-hidden"
+      className="fixed inset-0 z-[300] bg-black text-white overflow-hidden"
     >
       {/* Background Layer (Video or Cover) */}
       <div className="absolute inset-0 z-0">
         {track.video_background_url ? (
-          <video 
-            src={track.video_background_url} 
-            autoPlay 
-            loop 
-            muted 
-            playsInline
-            className="w-full h-full object-cover opacity-40 scale-105 blur-sm"
-          />
+          <>
+            <video 
+              ref={videoRef}
+              src={track.video_background_url} 
+              autoPlay 
+              loop 
+              muted 
+              playsInline
+              className={cn(
+                "w-full h-full object-cover transition-all duration-500",
+                !isPlaying && "blur-md scale-105"
+              )}
+              style={{ opacity: videoOpacity * 0.4 }}
+            />
+            <div 
+              className="absolute inset-0 pointer-events-none"
+              style={{
+                background: 'radial-gradient(circle at center, transparent 0%, transparent 40%, rgba(0,0,0,0.3) 70%, rgba(0,0,0,0.6) 100%)'
+              }}
+            />
+          </>
         ) : (
           <div 
-            className="w-full h-full bg-cover bg-center opacity-30 blur-xl scale-110"
-            style={{ backgroundImage: `url(${track.cover_image_url})` }}
+            className={cn(
+              "w-full h-full bg-cover bg-center transition-all duration-500",
+              !isPlaying && "blur-md scale-105"
+            )}
+            style={{ 
+              backgroundImage: `url(${track.cover_image_url})`,
+              opacity: 0.3
+            }}
           />
         )}
-        <div className="absolute inset-0 bg-gradient-to-b from-va-black/60 via-transparent to-va-black" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/60" />
       </div>
 
       {/* Visual Effects Layer */}
@@ -134,12 +179,52 @@ export const MeditationPlayerInstrument = ({
                   {track.title}
                 </h2>
               </div>
-              <button 
-                onClick={onClose}
-                className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md border border-white/10 flex items-center justify-center hover:bg-white/20 transition-all"
-              >
-                <X size={24} strokeWidth={1.5} />
-              </button>
+              <div className="flex gap-3">
+                <button 
+                  onClick={onClose}
+                  className="w-12 h-12 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center hover:bg-black/60 transition-all"
+                >
+                  <Minimize2 size={20} strokeWidth={1.5} />
+                </button>
+                <button 
+                  onClick={onClose}
+                  className="w-12 h-12 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center hover:bg-black/60 transition-all"
+                >
+                  <X size={24} strokeWidth={1.5} />
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Right side controls */}
+        <AnimatePresence>
+          {showControls && (
+            <motion.div 
+              initial={{ x: 20, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              exit={{ x: 20, opacity: 0 }}
+              className="absolute top-1/2 right-8 -translate-y-1/2 flex flex-col gap-4 z-30"
+            >
+              {[
+                { icon: Heart, label: 'Favoriet' },
+                { icon: Music, label: 'Achtergrond' },
+                { icon: RotateCcw, label: 'Herbegin' },
+                { icon: Clock, label: 'Slaaptimer' },
+                { icon: MessageCircle, label: 'Reflecties' },
+                { icon: FileText, label: 'Transcript' },
+                { icon: User, label: 'Begeleider' },
+              ].map((item, i) => (
+                <button 
+                  key={i}
+                  className="w-12 h-12 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center hover:bg-black/60 hover:scale-110 transition-all group relative"
+                >
+                  <item.icon size={20} strokeWidth={1.5} />
+                  <span className="absolute right-full mr-4 px-2 py-1 rounded bg-black/80 text-[10px] font-bold uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
+                    {item.label}
+                  </span>
+                </button>
+              ))}
             </motion.div>
           )}
         </AnimatePresence>
@@ -195,22 +280,12 @@ export const MeditationPlayerInstrument = ({
                 
                 <button 
                   onClick={togglePlay}
-                  className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-white text-va-black flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-2xl"
+                  className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-white text-black flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-2xl"
                 >
                   {isPlaying ? <Pause size={32} fill="currentColor" /> : <Play size={32} fill="currentColor" className="ml-2" />}
                 </button>
 
                 <button className="text-white/40 hover:text-white transition-colors"><ChevronRight size={32} strokeWidth={1.5} /></button>
-              </div>
-
-              {/* Secondary Options */}
-              <div className="flex justify-center gap-4">
-                <button className="bg-white/5 border border-white/5 rounded-full px-6 py-2 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 hover:bg-white/10 transition-all">
-                  <Music size={14} /> Achtergrond
-                </button>
-                <button className="bg-white/5 border border-white/5 rounded-full px-6 py-2 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 hover:bg-white/10 transition-all">
-                  <Clock size={14} /> Slaaptimer
-                </button>
               </div>
             </motion.div>
           )}

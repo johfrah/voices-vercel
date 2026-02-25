@@ -45,7 +45,6 @@ export const BreathingInstrument = ({ className }: { className?: string }) => {
         }
 
         setPhase(nextPhase);
-        // Play subtle haptic/sonic feedback on phase change
         playClick('soft');
         return nextCounter;
       });
@@ -124,7 +123,7 @@ export const BreathingInstrument = ({ className }: { className?: string }) => {
           </div>
         </div>
 
-        {/* Liquid DNA background effect (simulated) */}
+        {/* Liquid DNA background effect */}
         {isActive && (
           <div className="absolute inset-0 -z-0 opacity-30 blur-3xl animate-pulse">
             <div className={cn(

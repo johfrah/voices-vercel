@@ -43,18 +43,22 @@ export const VoicesWordSlider: React.FC<VoicesWordSliderProps> = ({
 
   //  CHRIS-PROTOCOL: Suggestion logic (Nuclear 2026)
   const promptSuggestion = useMemo(() => {
-    if (isTelephony) return t('filter.telephony_suggestion', '± 30 sec');
-    return null;
-  }, [isTelephony, t]);
-
-  const videoSuggestion = useMemo(() => {
-    if (isVideo) {
-      if (value <= 150) return t('filter.video_suggestion_1', '± 1 min');
-      if (value <= 300) return t('filter.video_suggestion_2', '± 2 min');
-      return t('filter.video_suggestion_3', '± 3+ min');
+    if (isTelephony || isVideo) {
+      const wpm = 155; // Vlaamse standaard uit SlimmeKassa
+      const seconds = Math.round((value / wpm) * 60);
+      
+      if (seconds < 60) {
+        return `± ${seconds} sec`;
+      } else {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `± ${mins}:${secs.toString().padStart(2, '0')} min`;
+      }
     }
     return null;
-  }, [isVideo, value, t]);
+  }, [isTelephony, isVideo, value]);
+
+  const videoSuggestion = null; // Deprecated in favor of unified promptSuggestion
 
   const sliderContent = (
     <ContainerInstrument plain className="space-y-4">

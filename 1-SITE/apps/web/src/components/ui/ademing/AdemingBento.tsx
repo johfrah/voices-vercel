@@ -8,6 +8,9 @@ import { AdemingTrackCard } from './AdemingTrackCard';
 import { BreathingInstrument } from './BreathingInstrument';
 import { MeditationPlayerInstrument } from './MeditationPlayerInstrument';
 import { VoiceglotText } from '../VoiceglotText';
+import { Testimonials } from './Testimonials';
+import { Moon, Zap, Clock, ArrowRight, Compass, Users } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface AdemingBentoProps {
   tracks: any[];
@@ -16,6 +19,10 @@ interface AdemingBentoProps {
 
 export const AdemingBento = ({ tracks, initialTrack }: AdemingBentoProps) => {
   const [activeTrack, setActiveTrack] = useState<any | null>(initialTrack || null);
+  const [selectedTheme, setSelectedTheme] = useState<string | null>(null);
+  const [selectedElement, setSelectedElement] = useState<string | null>(null);
+
+  const publishedTracks = tracks.filter(t => t.is_public);
 
   return (
     <div className="min-h-screen bg-background text-foreground font-sans selection:bg-primary/20">
@@ -24,94 +31,154 @@ export const AdemingBento = ({ tracks, initialTrack }: AdemingBentoProps) => {
       <main className="pt-20">
         <AdemingHero />
 
-        {/* Featured Meditations Section */}
-        <section className="max-w-7xl mx-auto px-6 py-24">
-          <div className="text-center mb-16 space-y-4">
-            <h2 className="text-4xl md:text-5xl font-serif font-bold">
-              <VoiceglotText translationKey="home.featured.title" defaultText="Uitgelichte meditaties" />
-            </h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              <VoiceglotText translationKey="home.featured.subtitle" defaultText="Onze aanbevolen meditaties om mee te beginnen" />
-            </p>
-          </div>
+        {/* Main Container */}
+        <div className="max-w-6xl mx-auto px-4 space-y-24 py-16">
+          
+          {/* Filters Section */}
+          <section className="bg-gradient-to-br from-primary/5 via-background to-primary/10 rounded-[32px] p-8 md:p-12 border border-primary/10 shadow-soft">
+            <div className="mb-10 text-center space-y-3">
+              <h2 className="text-3xl md:text-4xl font-serif font-bold">
+                <VoiceglotText translationKey="home.filters.title" defaultText="Vind jouw perfecte meditatie" />
+              </h2>
+              <p className="text-muted-foreground text-lg">
+                <VoiceglotText translationKey="home.filters.subtitle" defaultText="Kies wat je zoekt en ontdek meditaties op maat" />
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <Select onValueChange={(v) => setSelectedTheme(v === "all" ? null : v)}>
+                <SelectTrigger className="h-16 text-base font-medium border-2 rounded-2xl hover:border-primary/50 transition-colors bg-white/50 backdrop-blur-sm">
+                  <SelectValue placeholder="🎯 Kies een thema" />
+                </SelectTrigger>
+                <SelectContent className="rounded-2xl border-primary/10">
+                  <SelectItem value="all">Alle thema's</SelectItem>
+                  <SelectItem value="rust">Rust</SelectItem>
+                  <SelectItem value="energie">Energie</SelectItem>
+                  <SelectItem value="ritme">Ritme</SelectItem>
+                </SelectContent>
+              </Select>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {tracks.slice(0, 6).map((track) => (
-              <AdemingTrackCard 
-                key={track.id} 
-                track={track} 
-                onClick={() => setActiveTrack(track)}
-              />
-            ))}
-          </div>
-        </section>
+              <Select onValueChange={(v) => setSelectedElement(v === "all" ? null : v)}>
+                <SelectTrigger className="h-16 text-base font-medium border-2 rounded-2xl hover:border-primary/50 transition-colors bg-white/50 backdrop-blur-sm">
+                  <SelectValue placeholder="🌿 Kies een element" />
+                </SelectTrigger>
+                <SelectContent className="rounded-2xl border-primary/10">
+                  <SelectItem value="all">Alle elementen</SelectItem>
+                  <SelectItem value="aarde">Aarde</SelectItem>
+                  <SelectItem value="water">Water</SelectItem>
+                  <SelectItem value="lucht">Lucht</SelectItem>
+                  <SelectItem value="vuur">Vuur</SelectItem>
+                </SelectContent>
+              </Select>
 
-        {/* Breathing Exercise Section */}
+              <Select>
+                <SelectTrigger className="h-16 text-base font-medium border-2 rounded-2xl hover:border-primary/50 transition-colors bg-white/50 backdrop-blur-sm">
+                  <SelectValue placeholder="⏱️ Kies duur" />
+                </SelectTrigger>
+                <SelectContent className="rounded-2xl border-primary/10">
+                  <SelectItem value="all">Alle duur</SelectItem>
+                  <SelectItem value="kort">Kort (&lt; 10 min)</SelectItem>
+                  <SelectItem value="middel">Middel (10-20 min)</SelectItem>
+                  <SelectItem value="lang">Lang (&gt; 20 min)</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <Select>
+                <SelectTrigger className="h-16 text-base font-medium border-2 rounded-2xl hover:border-primary/50 transition-colors bg-white/50 backdrop-blur-sm">
+                  <SelectValue placeholder="👤 Kies begeleider" />
+                </SelectTrigger>
+                <SelectContent className="rounded-2xl border-primary/10">
+                  <SelectItem value="all">Alle begeleiders</SelectItem>
+                  <SelectItem value="julie">Julie</SelectItem>
+                  <SelectItem value="johfrah">Johfrah</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </section>
+
+          {/* Featured Meditations Section */}
+          <section>
+            <div className="mb-12 space-y-3 text-center">
+              <h2 className="text-4xl md:text-5xl font-serif font-bold">
+                <VoiceglotText translationKey="home.featured.title" defaultText="Uitgelichte meditaties" />
+              </h2>
+              <p className="text-xl text-muted-foreground">
+                <VoiceglotText translationKey="home.featured.subtitle" defaultText="Onze aanbevolen meditaties om mee te beginnen" />
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {publishedTracks.slice(0, 3).map((track) => (
+                <AdemingTrackCard 
+                  key={track.id} 
+                  track={track} 
+                  onClick={() => setActiveTrack(track)}
+                />
+              ))}
+            </div>
+          </section>
+
+          {/* Meet Julie and Johfrah */}
+          <section>
+            <div className="mb-12 space-y-3 text-center">
+              <h2 className="text-4xl md:text-5xl font-serif font-bold">
+                <VoiceglotText translationKey="home.creators.title" defaultText="Maak kennis met Julie en Johfrah" />
+              </h2>
+              <p className="text-xl text-muted-foreground">
+                <VoiceglotText translationKey="home.creators.subtitle" defaultText="Ontmoet de stemmen achter de meditaties" />
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {[
+                {
+                  name: "Julie",
+                  fullName: "Julie",
+                  bio: "Julie brengt een zachte, liefdevolle energie in elke meditatie. Haar stem is een warme deken voor de ziel.",
+                  avatar: "/assets/ademing/avatar-julie.jpg"
+                },
+                {
+                  name: "Johfrah",
+                  fullName: "Johfrah",
+                  bio: "Johfrah's diepe, rustgevende stem helpt je om direct te landen in het hier en nu.",
+                  avatar: "/assets/ademing/avatar-johfrah.jpg"
+                }
+              ].map((maker) => (
+                <div key={maker.name} className="bg-white p-6 rounded-[32px] shadow-soft border border-primary/5 hover:shadow-medium transition-all group cursor-pointer">
+                  <div className="flex gap-6">
+                    <div className="h-20 w-20 rounded-full overflow-hidden flex-shrink-0 border-2 border-primary/10">
+                      <img src={maker.avatar} alt={maker.name} className="h-full w-full object-cover" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-serif font-bold text-2xl mb-2 group-hover:text-primary transition-colors">{maker.fullName}</h3>
+                      <p className="text-muted-foreground leading-relaxed line-clamp-2">{maker.bio}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+        </div>
+
+        {/* Testimonials - Full width */}
+        <Testimonials />
+
+        {/* Breathing Exercise - Full width */}
         <section className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-background to-primary/10 py-32 px-6">
-          <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-primary/3 rounded-full blur-3xl" />
-          <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-primary/5 rounded-full blur-3xl" />
+          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/3 rounded-full blur-3xl" />
+          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-primary/5 rounded-full blur-3xl" />
           
           <div className="max-w-4xl mx-auto relative">
             <div className="text-center mb-16 space-y-4">
-              <h2 className="text-3xl md:text-4xl font-serif font-bold">
+              <h2 className="text-4xl md:text-5xl font-serif font-bold">
                 <VoiceglotText translationKey="home.breathing.title" defaultText="Neem even een bewuste adem" />
               </h2>
-              <p className="text-lg text-muted-foreground">
+              <p className="text-xl text-muted-foreground">
                 <VoiceglotText translationKey="home.breathing.subtitle" defaultText="Probeer deze korte ademhalingsoefening en ervaar direct de kracht van bewust ademen" />
               </p>
             </div>
-            
-            <div className="bg-white/40 backdrop-blur-md rounded-[40px] p-8 md:p-12 shadow-soft border border-white/20">
-              <BreathingInstrument />
-            </div>
+            <BreathingInstrument />
           </div>
         </section>
 
-        {/* Community Section (Simplified) */}
-        <section className="max-w-7xl mx-auto px-6 py-32 text-center">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-            <div className="space-y-2">
-              <p className="text-5xl font-serif font-light text-primary">12.4k</p>
-              <p className="text-sm font-bold uppercase tracking-widest text-muted-foreground">Bewuste Ademhalingen</p>
-            </div>
-            <div className="space-y-2">
-              <p className="text-5xl font-serif font-light text-primary">482</p>
-              <p className="text-sm font-bold uppercase tracking-widest text-muted-foreground">Mensen nu online</p>
-            </div>
-            <div className="space-y-2">
-              <p className="text-5xl font-serif font-light text-primary">98%</p>
-              <p className="text-sm font-bold uppercase tracking-widest text-muted-foreground">Voelt zich rustiger</p>
-            </div>
-          </div>
-        </section>
-
-        {/* Meet Julie and Johfrah */}
-        <section className="max-w-7xl mx-auto px-6 py-24 bg-white/30 backdrop-blur-sm rounded-[48px] mb-24">
-          <div className="text-center mb-16 space-y-4">
-            <h2 className="text-4xl md:text-5xl font-serif font-bold">Maak kennis met Julie en Johfrah</h2>
-            <p className="text-xl text-muted-foreground">Ontmoet de stemmen achter de meditaties</p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-            <div className="flex flex-col items-center text-center space-y-6">
-              <div className="w-48 h-48 rounded-full overflow-hidden shadow-large border-4 border-white">
-                <img src="/assets/ademing/avatar-julie.jpg" alt="Julie" className="w-full h-full object-cover" />
-              </div>
-              <h3 className="text-2xl font-serif font-bold">Julie</h3>
-              <p className="text-muted-foreground leading-relaxed max-w-sm">
-                Julie brengt een zachte, liefdevolle energie in elke meditatie. Haar stem is een warme deken voor de ziel.
-              </p>
-            </div>
-            <div className="flex flex-col items-center text-center space-y-6">
-              <div className="w-48 h-48 rounded-full overflow-hidden shadow-large border-4 border-white">
-                <img src="/assets/ademing/avatar-johfrah.jpg" alt="Johfrah" className="w-full h-full object-cover" />
-              </div>
-              <h3 className="text-2xl font-serif font-bold">Johfrah</h3>
-              <p className="text-muted-foreground leading-relaxed max-w-sm">
-                Johfrah's diepe, rustgevende stem helpt je om direct te landen in het hier en nu.
-              </p>
-            </div>
-          </div>
-        </section>
       </main>
 
       {/* Fullscreen Player Portal */}
@@ -125,15 +192,16 @@ export const AdemingBento = ({ tracks, initialTrack }: AdemingBentoProps) => {
       </AnimatePresence>
 
       {/* Simple Footer */}
-      <footer className="bg-background border-t border-border py-16 px-6">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
-          <div className="font-serif text-2xl font-semibold opacity-40">ademing</div>
-          <div className="flex gap-8 text-sm font-bold uppercase tracking-widest text-muted-foreground">
+      <footer className="bg-background border-t border-border py-20 px-6">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-12">
+          <div className="font-serif text-3xl font-semibold opacity-40">ademing</div>
+          <div className="flex flex-wrap justify-center gap-10 text-sm font-bold uppercase tracking-[0.2em] text-muted-foreground">
             <a href="#" className="hover:text-primary transition-colors">Over ons</a>
             <a href="#" className="hover:text-primary transition-colors">Contact</a>
             <a href="#" className="hover:text-primary transition-colors">Privacy</a>
+            <a href="#" className="hover:text-primary transition-colors">Mijn meditaties</a>
           </div>
-          <div className="text-sm text-muted-foreground opacity-60">
+          <div className="text-sm text-muted-foreground opacity-60 font-medium">
             © 2026 Ademing. Alle rechten voorbehouden.
           </div>
         </div>
