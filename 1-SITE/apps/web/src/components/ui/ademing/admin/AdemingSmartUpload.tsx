@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/LayoutInstruments';
 import { Sparkles, Upload, Check, X, Loader2, Music, Globe, FileText, Save } from "lucide-react";
 import { createClient } from "@supabase/supabase-js";
-import { useToast } from "@/hooks/use-toast";
+import toast from "react-hot-toast";
 
 // CHRIS-PROTOCOL: SDK for stability
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -31,7 +31,6 @@ export const AdemingSmartUpload = ({ open, onOpenChange, onComplete }: SmartUplo
   const [audioUrl, setAudioUrl] = useState("");
   const [editedData, setEditedData] = useState<any>(null);
   const [activeTab, setActiveTab] = useState<'content' | 'seo' | 'transcript'>('content');
-  const { toast } = useToast();
 
   if (!open) return null;
 
@@ -58,14 +57,10 @@ export const AdemingSmartUpload = ({ open, onOpenChange, onComplete }: SmartUplo
         .from("voices")
         .getPublicUrl(uploadData.path);
 
-      setAudioUrl(publicUrl);
       setUploading(false);
       setAnalyzing(true);
 
-      toast({
-        title: "🤖 AI Analyse gestart",
-        description: "De meditatie wordt getranscribeerd en geanalyseerd...",
-      });
+      toast.loading("De meditatie wordt getranscribeerd en geanalyseerd...", { id: "analysis" });
 
       // 2. Invoke AI Analysis (Legacy Edge Function)
       const { data: analysisData, error: analysisError } = await supabase.functions.invoke(
@@ -87,21 +82,14 @@ export const AdemingSmartUpload = ({ open, onOpenChange, onComplete }: SmartUplo
           audio_url: publicUrl
         });
         setStep('review');
-        toast({
-          title: "✨ Analyse voltooid",
-          description: "Review de AI-voorstellen en pas aan waar nodig.",
-        });
+        toast.success("Review de AI-voorstellen en pas aan waar nodig.", { id: "analysis" });
       } else {
         throw new Error(analysisData.error || "Analyse mislukt");
       }
 
     } catch (error: any) {
       console.error('Upload/Analysis error:', error);
-      toast({
-        title: "Fout bij verwerken",
-        description: error.message || "Onbekende fout",
-        variant: "destructive",
-      });
+      toast.error(error.message || "Onbekende fout", { id: "analysis" });
     } finally {
       setUploading(false);
       setAnalyzing(false);
@@ -137,10 +125,7 @@ export const AdemingSmartUpload = ({ open, onOpenChange, onComplete }: SmartUplo
 
       if (error) throw error;
 
-      toast({
-        title: "🎉 Opgeslagen!",
-        description: "De meditatie is aangemaakt als concept.",
-      });
+      toast.success("De meditatie is aangemaakt als concept.");
 
       if (onComplete) onComplete();
       onOpenChange(false);

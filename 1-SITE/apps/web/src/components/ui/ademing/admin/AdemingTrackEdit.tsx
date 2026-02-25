@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/LayoutInstruments';
 import { X, Loader2, Save, Music, Image as ImageIcon, Video } from "lucide-react";
 import { createClient } from "@supabase/supabase-js";
-import { useToast } from "@/hooks/use-toast";
+import toast from "react-hot-toast";
 
 // CHRIS-PROTOCOL: SDK for stability
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -38,7 +38,6 @@ export const AdemingTrackEdit = ({ track, open, onOpenChange, onSaved }: Ademing
     video_background_url: "",
     duration: 0
   });
-  const { toast } = useToast();
 
   useEffect(() => {
     if (track) {
@@ -109,21 +108,14 @@ export const AdemingTrackEdit = ({ track, open, onOpenChange, onSaved }: Ademing
 
       if (error) throw error;
 
-      toast({
-        title: "Succes",
-        description: "Meditatie is succesvol opgeslagen.",
-      });
+      toast.success("Meditatie is succesvol opgeslagen.");
 
       if (onSaved) onSaved();
       onOpenChange(false);
 
     } catch (error: any) {
       console.error('Save error:', error);
-      toast({
-        title: "Fout bij opslaan",
-        description: error.message || "Onbekende fout",
-        variant: "destructive",
-      });
+      toast.error(error.message || "Onbekende fout");
     } finally {
       setLoading(false);
     }

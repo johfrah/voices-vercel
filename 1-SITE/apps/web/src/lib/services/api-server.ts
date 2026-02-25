@@ -69,8 +69,7 @@ export async function getReviewStats(businessSlug: string = 'voices-be') {
   const { data: stats, error } = await supabase
     .from('reviews')
     .select('rating')
-    .eq('business_slug', businessSlug)
-    .eq('status', 'published');
+    .eq('business_slug', businessSlug);
 
   if (error || !stats) {
     return {
@@ -237,12 +236,11 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
     const photoIds = Array.from(new Set(dbResults.map(a => a.photo_id).filter(Boolean).map(id => Number(id))));
     const actorIds = dbResults.map(a => a.id);
     
-    // Fetch secondary data via SDK for stability
+    // 🛡️ CHRIS-PROTOCOL: Use secondary data via SDK for stability
     const reviewsRes = await supabase
       .from('reviews')
       .select('*')
       .eq('business_slug', market === 'STUDIO' || market === 'ACADEMY' ? 'voices-studio' : 'voices-be')
-      .eq('status', 'published')
       .limit(20);
     const mediaRes = photoIds.length > 0 ? await supabase.from('media').select('*').in('id', photoIds) : { data: [] };
     const demosRes = await supabase.from('actor_demos').select('*').in('actor_id', actorIds).eq('is_public', true);
@@ -305,8 +303,7 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
     const statsRes = await supabase
       .from('reviews')
       .select('rating')
-      .eq('business_slug', market === 'STUDIO' || market === 'ACADEMY' ? 'voices-studio' : 'voices-be')
-      .eq('status', 'published');
+      .eq('business_slug', market === 'STUDIO' || market === 'ACADEMY' ? 'voices-studio' : 'voices-be');
     
     const dbReviewsRaw = reviewsRes.data || [];
     const mediaResults = mediaRes.data || [];
