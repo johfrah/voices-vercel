@@ -168,13 +168,16 @@ async function generateAtomicSitemap() {
     is_active: true
   }));
 
+  // Deduplicate registry entries based on slug, market_code, and journey
+  const uniqueEntries = Array.from(new Map(registryEntries.map(e => [`${e.slug}|${e.market_code}|${e.journey}`, e])).values());
+
   // Bulk UPSERT to Registry in chunks of 50 to avoid timeouts
   const chunkSize = 50;
-  for (let i = 0; i < registryEntries.length; i += chunkSize) {
-    const chunk = registryEntries.slice(i, i + chunkSize);
+  for (let i = 0; i < uniqueEntries.length; i += chunkSize) {
+    const chunk = uniqueEntries.slice(i, i + chunkSize);
     const { error } = await supabase.from('slug_registry').upsert(chunk, { onConflict: 'slug, market_code, journey' });
     if (error) console.error(`❌ Error syncing chunk starting at ${i}:`, error.message);
-    else console.log(`Synced chunk ${i / chunkSize + 1}/${Math.ceil(registryEntries.length / chunkSize)}`);
+    else console.log(`Synced chunk ${i / chunkSize + 1}/${Math.ceil(uniqueEntries.length / chunkSize)}`);
   }
 
   for (const item of sitemap) {
