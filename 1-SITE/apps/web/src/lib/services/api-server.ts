@@ -788,12 +788,15 @@ export async function getWorkshops(limit: number = 50): Promise<any[]> {
     .from('workshops')
     .select(`
       *,
+      media:media_id(*),
       editions:workshop_editions(
         *,
-        instructor:instructors(id, first_name, last_name, bio, photo_url),
+        instructor:instructors(id, name, first_name, last_name, bio, photo_url),
         location:locations(id, name, address, city, zip, country)
       )
     `)
+    .eq('status', 'live')
+    .order('id', { ascending: true })
     .limit(limit);
 
   if (error) {
@@ -807,7 +810,14 @@ export async function getWorkshops(limit: number = 50): Promise<any[]> {
     return [];
   }
 
-  return workshopsData || [];
+  // 🛡️ CHRIS-PROTOCOL: Filter out past editions and sort by date
+  const now = new Date().toISOString();
+  return (workshopsData || []).map(w => ({
+    ...w,
+    editions: (w.editions || [])
+      .filter((e: any) => e.date >= now && e.status !== 'cancelled')
+      .sort((a: any, b: any) => a.date.localeCompare(b.date))
+  }));
 }
 
 export async function getTranslationsServer(lang: string): Promise<Record<string, string>> {
