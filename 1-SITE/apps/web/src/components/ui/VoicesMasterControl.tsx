@@ -195,7 +195,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
       { label: MarketManager.getLanguageLabel('pl-pl'), value: 10, langCode: 'pl-pl', popular: market.popular_languages.includes('pl-pl') || market.popular_languages.includes('Pools') || market.popular_languages.includes('Polish') },
       { label: MarketManager.getLanguageLabel('da-dk'), value: 11, langCode: 'da-dk', popular: market.popular_languages.includes('da-dk') || market.popular_languages.includes('Deens') || market.popular_languages.includes('Danish') },
       { label: MarketManager.getLanguageLabel('pt-pt'), value: 12, langCode: 'pt-pt', popular: market.popular_languages.includes('pt-pt') || market.popular_languages.includes('Portugees') || market.popular_languages.includes('Portuguese') },
-      { label: MarketManager.getLanguageLabel('sv-se'), value: 13, langCode: 'sv-se', popular: market.popular_languages.includes('sv-se') || market.popular_languages.includes('Zweeds') || market.popular_languages.includes('Swedish') },
+      { label: MarketManager.getLanguageLabel('sv-se'), value: 43, langCode: 'sv-se', popular: market.popular_languages.includes('sv-se') || market.popular_languages.includes('Zweeds') || market.popular_languages.includes('Swedish') },
       { label: MarketManager.getLanguageLabel('ca-es'), value: 42, langCode: 'ca-es', popular: false },
       { label: MarketManager.getLanguageLabel('fi-fi'), value: 44, langCode: 'fi-fi', popular: false },
       { label: MarketManager.getLanguageLabel('nb-no'), value: 45, langCode: 'nb-no', popular: false },
