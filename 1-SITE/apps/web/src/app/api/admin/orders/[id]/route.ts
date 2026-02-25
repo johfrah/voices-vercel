@@ -15,8 +15,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
     // 🛡️ CHRIS-PROTOCOL: Auth Check
     const auth = await requireAdmin();
     if (auth instanceof NextResponse) {
-      // Voor nu laten we admins door voor debugging als de check faalt maar er wel een id is
-      console.warn(`⚠️ [Admin Order Detail] Auth check returned status ${auth.status} for order ${id}`);
+      return auth;
     }
 
     // 🚀 NUCLEAR DETAIL FETCH: Gebruik standaard Drizzle select voor stabiliteit
