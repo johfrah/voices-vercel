@@ -218,7 +218,16 @@ export default function BestellingenPage() {
                   </td>
                   <td className="px-8 py-6">
                     <span className="text-[14px] font-light text-va-black/60" suppressHydrationWarning>
-                      {order.createdAt ? format(new Date(order.createdAt), 'dd MMM yyyy', { locale: nl }) : '...'}
+                      {(() => {
+                        if (!order.createdAt) return '...';
+                        try {
+                          const date = new Date(order.createdAt);
+                          if (isNaN(date.getTime())) return 'Ongeldige datum';
+                          return format(date, 'dd MMM yyyy', { locale: nl });
+                        } catch (e) {
+                          return 'Fout in datum';
+                        }
+                      })()}
                     </span>
                   </td>
                   <td className="px-8 py-6">

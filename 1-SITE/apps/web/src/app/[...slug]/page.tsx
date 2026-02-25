@@ -189,9 +189,15 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
 
   const siteUrl = domains[market.market_code] || `https://${host || (MarketManager.getMarketDomains()['BE']?.replace('https://', '') || 'www.voices.be')}`;
   
-  // Resolve de slug naar de originele versie
-  const resolved = await resolveSlug(cleanSlug, lang);
-  const firstSegment = resolved ? resolved.originalSlug : (cleanSegments[0] || normalizedSlug.split('/')[0]);
+  // 🛡️ NUCLEAR HANDSHAKE: Resolve via Slug Registry for Metadata
+  let lookupSlug = cleanSegments[0];
+  const systemPrefixes = ['voice', 'stem', 'voix', 'stimme', 'artist', 'artiest', 'studio', 'academy', 'music', 'muziek'];
+  if (systemPrefixes.includes(lookupSlug?.toLowerCase()) && cleanSegments[1]) {
+    lookupSlug = cleanSegments[1];
+  }
+
+  const resolved = await resolveSlugFromRegistry(lookupSlug, market.market_code);
+  const firstSegment = lookupSlug;
 
   console.error(` [SmartRouter] Resolved firstSegment: ${firstSegment} (from cleanSlug: ${cleanSlug})`);
 
@@ -224,9 +230,10 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
     };
   }
 
-    // 1. Probeer eerst een Artist te vinden (Artist Journey DNA)
+  // 1. Probeer eerst een Artist te vinden (Artist Journey DNA)
+  if (resolved?.routing_type === 'artist') {
     try {
-      const artist = await getArtist(firstSegment, lang);
+      const artist = await getArtist(resolved.entity_id.toString(), lang);
       if (artist) {
         const title = await getTranslatedSEO(`seo.artist.${artist.id}.title`, `${artist.display_name || artist.displayName} | ${market.name} Artist`);
         const description = await getTranslatedSEO(`seo.artist.${artist.id}.description`, artist.bio);
@@ -240,43 +247,25 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
         };
       }
     } catch (e) {}
+  }
 
-    // 2. Probeer een Stem te vinden
+  // 2. Probeer een Stem te vinden
+  if (resolved?.routing_type === 'actor') {
     try {
       const { db, systemEvents } = await import('@/lib/system/voices-config');
-      if (db && systemEvents) {
-        await db.insert(systemEvents).values({
-          level: 'info',
-          source: 'SmartRouter',
-          message: `[SmartRouter] Metadata check for actor: ${firstSegment}`,
-          details: { segments: params.slug, lang, cleanSlug },
-          createdAt: new Date().toISOString()
-        }).catch(() => null);
-      }
-
-      const actor = await getActor(firstSegment, lang).catch(async (err) => {
+      const actor = await getActor(resolved.entity_id.toString(), lang).catch(async (err) => {
         if (db && systemEvents) {
           await db.insert(systemEvents).values({
             level: 'warn',
             source: 'SmartRouter',
-            message: `[SmartRouter] Metadata actor fetch failed for ${firstSegment}: ${err.message}`,
-            details: { segments: params.slug, lang, cleanSlug },
-            createdAt: new Date().toISOString()
-          }).catch(() => null);
+            message: `[SmartRouter] Metadata actor fetch failed for ${resolved.entity_id}: ${err.message}`,
+            details: { resolved, lang },
+          });
         }
         return null;
       });
       
       if (actor) {
-        if (db && systemEvents) {
-          await db.insert(systemEvents).values({
-            level: 'info',
-            source: 'SmartRouter',
-            message: `[SmartRouter] Metadata actor found: ${actor.first_name} (${actor.id})`,
-            details: { actorId: actor.id, slug: actor.slug },
-            createdAt: new Date().toISOString()
-          }).catch(() => null);
-        }
         const title = await getTranslatedSEO(`seo.actor.${actor.id}.title`, `${actor.first_name || actor.first_name} - Voice-over Stem | ${market.name}`);
         const description = await getTranslatedSEO(`seo.actor.${actor.id}.description`, actor.bio || `Ontdek de stem van ${actor.first_name || actor.first_name} op ${market.name}.`);
         const schema = generateActorSchema(actor, market.name, host);
@@ -295,32 +284,53 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
     } catch (e) {
       // Geen stem gevonden, ga door naar CMS check
     }
-
-  // 3. Probeer een CMS Artikel te vinden
-  try {
-    // 🛡️ CHRIS-PROTOCOL: Use Drizzle for stability in Metadata (v2.14.547)
-    const { db: directDb, contentArticles: articlesTable } = await import('@/lib/system/voices-config');
-    if (directDb) {
-      const results = await directDb.select().from(articlesTable).where(eq(articlesTable.slug, firstSegment)).limit(1);
-      const page = results[0];
-
-      if (page) {
-        const title = await getTranslatedSEO(`seo.page.${page.slug}.title`, `${page.title} | ${market.name}`);
-        const description = await getTranslatedSEO(`seo.page.${page.slug}.description`, page.excerpt || `Ontdek meer over ${page.title} op ${market.name}.`);
-        return {
-          title,
-          description,
-          alternates: {
-            canonical: `${siteUrl}/${lang !== 'nl' ? lang + '/' : ''}${firstSegment}`,
-          }
-        };
-      }
-    }
-  } catch (e) {
-    // Fout bij CMS check
   }
 
-  return {};
+    // 3. Probeer een CMS Artikel te vinden
+    if (resolved?.routing_type === 'article') {
+      try {
+        const { db: directDb, contentArticles: articlesTable } = await import('@/lib/system/voices-config');
+        if (directDb) {
+          const results = await directDb.select().from(articlesTable).where(eq(articlesTable.id, resolved.entity_id)).limit(1);
+          const page = results[0];
+
+          if (page) {
+            const title = await getTranslatedSEO(`seo.page.${page.slug}.title`, `${page.title} | ${market.name}`);
+            const description = await getTranslatedSEO(`seo.page.${page.slug}.description`, page.excerpt || `Ontdek meer over ${page.title} op ${market.name}.`);
+            return {
+              title,
+              description,
+              alternates: {
+                canonical: `${siteUrl}/${lang !== 'nl' ? lang + '/' : ''}${page.slug}`,
+              }
+            };
+          }
+        }
+      } catch (e) {}
+    }
+
+    // 4. Probeer een CMS Artikel te vinden (Legacy Fallback by Slug)
+    try {
+      const { db: directDb, contentArticles: articlesTable } = await import('@/lib/system/voices-config');
+      if (directDb) {
+        const results = await directDb.select().from(articlesTable).where(eq(articlesTable.slug, firstSegment)).limit(1);
+        const page = results[0];
+
+        if (page) {
+          const title = await getTranslatedSEO(`seo.page.${page.slug}.title`, `${page.title} | ${market.name}`);
+          const description = await getTranslatedSEO(`seo.page.${page.slug}.description`, page.excerpt || `Ontdek meer over ${page.title} op ${market.name}.`);
+          return {
+            title,
+            description,
+            alternates: {
+              canonical: `${siteUrl}/${lang !== 'nl' ? lang + '/' : ''}${firstSegment}`,
+            }
+          };
+        }
+      }
+    } catch (e) {}
+
+    return {};
 }
 
 export default async function SmartRoutePage({ params }: { params: SmartRouteParams }) {
@@ -457,11 +467,6 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
 
     // Legacy Fallbacks (Agency, Casting, etc.)
     if (MarketManager.isAgencySegment(lookupSlug)) {
-      // ... (Agency Logic - abbreviated for brevity but should be preserved)
-    }
-
-    // 1.5 Agency Journey (Voice Casting)
-    if (MarketManager.isAgencySegment(firstSegment)) {
       const filters: Record<string, string> = {};
       
       //  CHRIS-PROTOCOL: Map translated journey segments to internal journey types via MarketManager
@@ -483,10 +488,8 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
       const mappedActors = actors.map((actor: any) => ({
         id: actor.id,
         display_name: actor.display_name,
-        first_name: actor.first_name || actor.first_name,
-        last_name: actor.last_name || actor.last_name,
-        first_name: actor.first_name || actor.first_name,
-        last_name: actor.last_name || actor.last_name,
+        first_name: actor.first_name,
+        last_name: actor.last_name,
         email: actor.email,
         photo_url: actor.photo_url,
         voice_score: actor.voice_score,
@@ -513,7 +516,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
         rates_raw: actor.rates_raw || {}
       }));
 
-      const market = headersList.get("x-voices-market") || "BE";
+      const marketCode = headersList.get("x-voices-market") || "BE";
 
       return (
         <>
@@ -522,7 +525,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
           </Suspense>
           <AgencyHeroInstrument 
             filters={searchResults?.filters || { genders: [], languages: [], styles: [] }}
-            market={market}
+            market={marketCode}
             searchParams={filters}
           />
           <div className="!pt-0 -mt-24 relative z-40">
@@ -542,7 +545,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
     }
 
     // 2. Pitch Link (Casting List)
-    if (firstSegment === 'pitch' && journey) {
+    if (lookupSlug === 'pitch' && journey) {
       try {
         const host = headersList.get('host') || MarketManager.getMarketDomains()['BE']?.replace('https://', '') || 'www.voices.be';
         const market = MarketManager.getCurrentMarket(host);
@@ -669,15 +672,15 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
       }
     }
 
-    // 2. Check voor Stem
+    // 3. Check voor Stem (Legacy Fallback by Slug)
     try {
-      const actor = await getActor(firstSegment, lang).catch((err) => {
-        console.error(` [SmartRouter] getActor failed for "${firstSegment}":`, err.message);
+      const actor = await getActor(lookupSlug, lang).catch((err) => {
+        console.error(` [SmartRouter] getActor failed for "${lookupSlug}":`, err.message);
         return null;
       });
 
       if (actor) {
-        console.error(` [SmartRouter] Handshake SUCCESS for ${actor.first_name}. Rendering VoiceDetailClient.`);
+        console.error(` [SmartRouter] Handshake SUCCESS (Legacy Fallback) for ${actor.first_name}. Rendering VoiceDetailClient.`);
         
         // 🛡️ CHRIS-PROTOCOL: Log handshake success
         try {
@@ -686,7 +689,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
             await directDb.insert(systemEvents).values({
               level: 'info',
               source: 'SmartRouter',
-              message: ` [SmartRouter] Handshake SUCCESS for ${actor.first_name}`,
+              message: ` [SmartRouter] Handshake SUCCESS (Legacy Fallback) for ${actor.first_name}`,
               details: { actorId: actor.id, slug: actor.slug },
             });
           }
@@ -708,16 +711,16 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
           <VoiceDetailClient actor={actor} initialJourney={mappedJourney || journey} initialMedium={medium} />
         );
       } else {
-        console.error(` [SmartRouter] No actor found for "${firstSegment}" after all attempts. Proceeding to CMS check.`);
+        console.error(` [SmartRouter] No actor found for "${lookupSlug}" after all attempts. Proceeding to CMS check.`);
       }
     } catch (e: any) {
       console.error("[SmartRouter] Actor check crashed:", e.message);
     }
 
-    // 2. Check voor CMS Artikel (alleen als er maar 1 segment is OF als het een agency sub-route is)
+    // 4. Check voor CMS Artikel (Legacy Fallback by Slug)
     const isAgencySubRoute = segments.length === 2 && MarketManager.isAgencySegment(segments[0]);
     if (segments.length === 1 || isAgencySubRoute) {
-      const cmsSlug = isAgencySubRoute ? segments[1] : firstSegment;
+      const cmsSlug = isAgencySubRoute ? segments[1] : lookupSlug;
       try {
         console.log(` [SmartRouter] Fetching CMS article: ${cmsSlug}`);
         // 🛡️ CHRIS-PROTOCOL: Use SDK for stability (v2.14.273)
