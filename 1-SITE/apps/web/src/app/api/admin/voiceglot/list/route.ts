@@ -1,6 +1,3 @@
-import { db } from '@db';
-import { translations, translationRegistry, appConfigs } from '@db/schema';
-import { sql, desc, eq, inArray } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from "@supabase/supabase-js";
 

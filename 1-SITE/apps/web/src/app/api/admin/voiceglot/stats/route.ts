@@ -1,6 +1,3 @@
-import { db } from '@db';
-import { translations, translationRegistry, appConfigs } from '@db/schema';
-import { sql, desc, eq } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth/api-auth';
 import { createClient } from "@supabase/supabase-js";
@@ -84,22 +81,7 @@ export async function GET(request: NextRequest) {
         console.log(`[Voiceglot Stats] Stats by lang result:`, statsByLang);
       }
     } catch (dbErr: any) {
-      console.error('[Voiceglot Stats] Supabase SDK query failed, trying Drizzle backup:', dbErr.message);
-      try {
-        const totalResult = await db.execute(sql`SELECT count(*) as count FROM translation_registry`);
-        totalStrings = parseInt(String((totalResult as any)[0]?.count || '0'), 10);
-        
-        if (totalStrings > 0) {
-          const langResult = await db.execute(sql`
-            SELECT lang, count(*) as count 
-            FROM translations 
-            GROUP BY lang
-          `);
-          statsByLang = (langResult as any) || [];
-        }
-      } catch (drizzleErr: any) {
-        console.error('[Voiceglot Stats] Drizzle backup also failed:', drizzleErr.message);
-      }
+      console.error('[Voiceglot Stats] Supabase SDK query failed:', dbErr.message);
     }
 
     // Bereken percentages
