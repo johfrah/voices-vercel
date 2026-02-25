@@ -194,9 +194,17 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
   let lookupSlug = cleanSegments[0];
   const systemPrefixes = ['voice', 'stem', 'voix', 'stimme', 'artist', 'artiest', 'studio', 'academy', 'music', 'muziek', 'faq', 'provider', 'demos', 'blog', 'article', 'tone-of-voice', 'nl', 'fr', 'en', 'de', 'es', 'it', 'pt', 'pl', 'da', 'sv', 'fi', 'nb', 'tr', 'hr', 'ca'];
   
+  // 🛡️ CHRIS-PROTOCOL: Map translated prefixes to internal canonical types
+  const prefixMap: Record<string, string> = {
+    'stem': 'voice', 'voix': 'voice', 'stimme': 'voice',
+    'artiest': 'artist',
+    'muziek': 'music'
+  };
+
   // If the slug has multiple parts, we check if the first part is a system prefix
   if (systemPrefixes.includes(lookupSlug?.toLowerCase()) && cleanSegments[1]) {
-    lookupSlug = `${lookupSlug.toLowerCase()}/${cleanSegments.slice(1).join('/').toLowerCase()}`;
+    const canonicalPrefix = prefixMap[lookupSlug.toLowerCase()] || lookupSlug.toLowerCase();
+    lookupSlug = `${canonicalPrefix}/${cleanSegments.slice(1).join('/').toLowerCase()}`;
   }
 
   const resolved = await resolveSlugFromRegistry(lookupSlug, market.market_code);
@@ -390,13 +398,21 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
 
     const systemPrefixes = ['voice', 'stem', 'voix', 'stimme', 'artist', 'artiest', 'studio', 'academy', 'music', 'muziek', 'faq', 'provider', 'demos', 'blog', 'article', 'tone-of-voice', 'nl', 'fr', 'en', 'de', 'es', 'it', 'pt', 'pl', 'da', 'sv', 'fi', 'nb', 'tr', 'hr', 'ca'];
     
+    // 🛡️ CHRIS-PROTOCOL: Map translated prefixes to internal canonical types
+    const prefixMap: Record<string, string> = {
+      'stem': 'voice', 'voix': 'voice', 'stimme': 'voice',
+      'artiest': 'artist',
+      'muziek': 'music'
+    };
+
     if (systemPrefixes.includes(lookupSlug?.toLowerCase()) && journey) {
       console.error(` [SmartRouter] System prefix detected: ${lookupSlug}.`);
       
+      const canonicalPrefix = prefixMap[lookupSlug.toLowerCase()] || lookupSlug.toLowerCase();
+      
       // For all hierarchical prefixes, we use the full path for registry lookup
-      // e.g. /voice/johfrah -> lookup "voice/johfrah"
-      // e.g. /blog/mijn-artikel -> lookup "blog/mijn-artikel"
-      lookupSlug = `${lookupSlug.toLowerCase()}/${cleanSegments.slice(1).join('/').toLowerCase()}`;
+      // e.g. /voix/johfrah -> lookup "voice/johfrah"
+      lookupSlug = `${canonicalPrefix}/${cleanSegments.slice(1).join('/').toLowerCase()}`;
       
       // Shift journey/medium for actor detail logic if it's a voice prefix
       if (['voice', 'stem', 'voix', 'stimme'].includes(cleanSegments[0].toLowerCase())) {
