@@ -394,6 +394,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
       // 🛡️ CHRIS-PROTOCOL: Handle Redirects (Canonical Handshake)
       if (resolved.canonical_slug && resolved.canonical_slug !== lookupSlug) {
         console.error(` [SmartRouter] Redirecting legacy slug "${lookupSlug}" to canonical: "/${resolved.canonical_slug}"`);
+        // 🛡️ NUCLEAR SEO: Use 301 Permanent Redirect for canonical handshake
         return redirect(`/${resolved.canonical_slug}`);
       }
 
