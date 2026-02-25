@@ -571,7 +571,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
           }}
         >
         {navConfig?.logo?.src ? (
-          <div className="relative group/logo">
+          <ContainerInstrument plain className="relative group/logo">
             <VoiceglotImage  
               src={navConfig.logo.src} 
               alt={navConfig.logo.alt || "Logo"} 
@@ -586,7 +586,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
               }}
               className="h-10 md:h-12 w-auto transition-transform duration-500 group-hover:scale-105 relative z-50"
             />
-          </div>
+          </ContainerInstrument>
         ) : isPortfolioMarket ? (
           <TextInstrument className="text-xl font-light tracking-tighter transition-transform duration-500 group-hover:scale-105 text-va-black whitespace-nowrap relative z-50"><VoiceglotText  translationKey="nav.portfolio_name" defaultText={market.name} noTranslate={true} /></TextInstrument>
         ) : market.market_code === 'ARTIST' ? (
@@ -605,13 +605,13 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
       </ButtonInstrument>
     </ContainerInstrument>
 
-      <ContainerInstrument plain className="hidden md:flex gap-8 absolute left-1/2 -translate-x-1/2 items-center z-50">
+        <ContainerInstrument plain className="hidden md:flex gap-8 absolute left-1/2 -translate-x-1/2 items-center z-50">
       {activeLinks.slice(0, 6).map((link: any, idx: number) => {
         const isActive = pathname.startsWith(link.href) && link.href !== '#';
         const hasSubmenu = link.submenu && link.submenu.length > 0;
 
         return (
-          <div key={idx} className="relative group/link flex items-center gap-1">
+          <ContainerInstrument plain key={idx} className="relative group/link flex items-center gap-1">
             <ButtonInstrument 
               as={hasSubmenu ? 'div' : VoicesLink}
               href={hasSubmenu ? undefined : link.href}
@@ -652,8 +652,8 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
             </ButtonInstrument>
 
             {hasSubmenu && (
-              <div className="absolute top-full left-1/2 -translate-x-1/2 pt-4 opacity-0 translate-y-2 pointer-events-none group-hover/link:opacity-100 group-hover/link:translate-y-0 group-hover/link:pointer-events-auto transition-all duration-500 z-[250]">
-                <div className="bg-white rounded-[20px] shadow-aura border border-black/5 p-2 w-64 overflow-hidden">
+              <ContainerInstrument plain className="absolute top-full left-1/2 -translate-x-1/2 pt-4 opacity-0 translate-y-2 pointer-events-none group-hover/link:opacity-100 group-hover/link:translate-y-0 group-hover/link:pointer-events-auto transition-all duration-500 z-[250]">
+                <ContainerInstrument plain className="bg-white rounded-[20px] shadow-aura border border-black/5 p-2 w-64 overflow-hidden">
                   {link.submenu.map((sub: any, subIdx: number) => (
                     <DropdownItem 
                       key={subIdx}
@@ -662,13 +662,15 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
                       href={sub.href}
                     />
                   ))}
-                </div>
-              </div>
+                </ContainerInstrument>
+              </ContainerInstrument>
             )}
 
             {isEditMode && !isPortfolioMarket && (
-              <div className="flex items-center gap-0.5 opacity-0 group-hover/link:opacity-100 transition-opacity">
-                <button 
+              <ContainerInstrument plain className="flex items-center gap-0.5 opacity-0 group-hover/link:opacity-100 transition-opacity">
+                <ButtonInstrument 
+                  variant="plain"
+                  size="none"
                   onClick={() => {
                     setIsEditingLink(idx);
                     setEditValue(link.href);
@@ -677,14 +679,16 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
                   className="p-1 text-primary hover:bg-primary/10 rounded"
                 >
                   <LinkIcon size={10} />
-                </button>
-                <button 
+                </ButtonInstrument>
+                <ButtonInstrument 
+                  variant="plain"
+                  size="none"
                   onClick={() => removeLink(idx)}
                   className="p-1 text-red-500 hover:bg-red-50 rounded"
                 >
                   <Trash2 size={10} />
-                </button>
-              </div>
+                </ButtonInstrument>
+              </ContainerInstrument>
             )}
 
             <AnimatePresence>
@@ -696,43 +700,45 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
                   exit={{ opacity: 0, scale: 0.9, y: 10 }}
                   className="absolute left-0 top-full mt-2 w-64 bg-white rounded-xl shadow-2xl border border-black/10 p-3 z-[250]"
                 >
-                  <div className="flex flex-col gap-3">
+                  <ContainerInstrument plain className="flex flex-col gap-3">
                     <TextInstrument className="text-[11px] font-bold text-va-black/40 tracking-widest">
                       <VoiceglotText translationKey="nav.edit.link_url" defaultText="Link url" />
                     </TextInstrument>
-                    <input 
+                    <InputInstrument 
                       autoFocus
                       type="text" 
                       value={editValue}
                       onChange={(e) => setEditValue(e.target.value)}
-                      className="bg-va-off-white px-3 py-2 rounded-lg border border-black/5 text-[13px] font-medium w-full outline-none focus:ring-2 focus:ring-primary/20"
+                      className="w-full text-sm"
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') updateLinkUrl(idx, editValue);
                         if (e.key === 'Escape') setIsEditingLink(null);
                       }}
                     />
-                    <div className="flex justify-end gap-2">
-                      <button onClick={() => setIsEditingLink(null)} className="px-3 py-1.5 text-[11px] font-bold text-va-black/40 hover:text-va-black">
+                    <ContainerInstrument plain className="flex justify-end gap-2">
+                      <ButtonInstrument variant="plain" size="none" onClick={() => setIsEditingLink(null)} className="px-3 py-1.5 text-[11px] font-bold text-va-black/40 hover:text-va-black">
                         <VoiceglotText translationKey="common.cancel" defaultText="Annuleer" />
-                      </button>
-                      <button onClick={() => updateLinkUrl(idx, editValue)} className="px-3 py-1.5 bg-primary text-white rounded-lg text-[11px] font-bold flex items-center gap-1">
+                      </ButtonInstrument>
+                      <ButtonInstrument variant="plain" size="none" onClick={() => updateLinkUrl(idx, editValue)} className="px-3 py-1.5 bg-primary text-white rounded-lg text-[11px] font-bold flex items-center gap-1">
                         <Check size={12} strokeWidth={3} /> <VoiceglotText translationKey="common.save" defaultText="Save" />
-                      </button>
-                    </div>
-                  </div>
+                      </ButtonInstrument>
+                    </ContainerInstrument>
+                  </ContainerInstrument>
                 </motion.div>
               )}
             </AnimatePresence>
-          </div>
+          </ContainerInstrument>
         );
       })}
       {isEditMode && !isPortfolioMarket && (
-        <button 
+        <ButtonInstrument 
+          variant="plain"
+          size="none"
           onClick={addLink}
           className="p-2 text-primary hover:bg-primary/10 rounded-full transition-all"
         >
           <Plus size={16} strokeWidth={3} />
-        </button>
+        </ButtonInstrument>
       )}
     </ContainerInstrument>
 

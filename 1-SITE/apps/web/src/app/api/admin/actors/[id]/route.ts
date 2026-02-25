@@ -49,6 +49,10 @@ export async function PATCH(
     if (body.is_public !== undefined) sdkData.is_public = body.is_public;
     if (body.status) sdkData.status = body.status.toLowerCase();
 
+    // 🛡️ CHRIS-PROTOCOL: Handshake Truth (Relational IDs)
+    if (body.native_lang_id) sdkData.native_language_id = parseInt(body.native_lang_id);
+    if (body.country_id) sdkData.country_id = parseInt(body.country_id);
+
     // Delivery
     if (body.delivery_days_min !== undefined) sdkData.delivery_days_min = body.delivery_days_min;
     if (body.delivery_days_max !== undefined) sdkData.delivery_days_max = body.delivery_days_max;

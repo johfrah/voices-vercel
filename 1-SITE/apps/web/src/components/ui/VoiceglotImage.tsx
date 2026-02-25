@@ -206,7 +206,7 @@ export const VoiceglotImage: React.FC<VoiceglotImageProps> = ({
           width={!isFill ? (props.width || 500) : undefined}
           height={!isFill ? (props.height || 500) : undefined}
           fill={fillValue}
-          unoptimized={isProxied || isLocal || currentSrc?.toLowerCase().endsWith('.svg')}
+          unoptimized={isProxied || isLocal || finalSrc?.toLowerCase().endsWith('.svg')}
           priority={isSupabase || props.priority}
           sizes={props.sizes || (isFill ? "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" : undefined)}
           style={isFill ? { objectFit: 'cover' } : undefined}
@@ -217,44 +217,45 @@ export const VoiceglotImage: React.FC<VoiceglotImageProps> = ({
           {...otherProps}
         />
       ) : (
-        <div className={cn("bg-va-off-white flex items-center justify-center", className)} {...(props as any)}>
+        <ContainerInstrument plain className={cn("bg-va-off-white flex items-center justify-center", className)} {...(props as any)}>
           <ImageIcon className="text-va-black/10" />
-        </div>
+        </ContainerInstrument>
       )}
 
       {isEditMode && (
         <>
-          <div 
+          <ContainerInstrument 
+            plain
             onClick={triggerUpload}
             onMouseEnter={() => playSwell()}
             className="absolute inset-0 bg-primary/20 opacity-0 group-hover/image-edit:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px] rounded-[inherit]"
           >
-            <div className="bg-va-black text-white px-4 py-2 rounded-full flex items-center gap-2 shadow-xl scale-90 group-hover/image-edit:scale-100 transition-transform">
+            <ContainerInstrument plain className="bg-va-black text-white px-4 py-2 rounded-full flex items-center gap-2 shadow-xl scale-90 group-hover/image-edit:scale-100 transition-transform">
               {isUploading ? (
                 <Loader2 strokeWidth={1.5} size={14} className="animate-spin text-primary" />
               ) : (
                 <Upload strokeWidth={1.5} size={14} className="text-primary" />
               )}
-              <span className="text-[15px] font-black tracking-widest">
+              <TextInstrument as="span" className="text-[15px] font-black tracking-widest">
                 {isUploading ? 'Uploaden...' : 'Vervang afbeelding'}
-              </span>
-            </div>
-          </div>
+              </TextInstrument>
+            </ContainerInstrument>
+          </ContainerInstrument>
 
           <input 
             type="file" 
-            ref={fileInputRef}
+            ref={fileInputRef} 
             onChange={handleFileChange}
             accept="image/*"
             className="hidden"
           />
 
-          <div className="absolute -top-6 right-0 opacity-0 group-hover/image-edit:opacity-100 transition-opacity flex items-center gap-1 bg-va-black text-white px-2 py-0.5 rounded text-[15px] font-black tracking-widest pointer-events-none z-50 shadow-lg">
+          <ContainerInstrument plain className="absolute -top-6 right-0 opacity-0 group-hover/image-edit:opacity-100 transition-opacity flex items-center gap-1 bg-va-black text-white px-2 py-0.5 rounded text-[15px] font-black tracking-widest pointer-events-none z-50 shadow-lg">
             <ImageIcon    size={8} className="text-primary" />
             Media: {category}
-          </div>
+          </ContainerInstrument>
         </>
       )}
-    </div>
+    </ContainerInstrument>
   );
 };

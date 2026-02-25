@@ -72,7 +72,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
   useEffect(() => {
     const handleGlobalUpdate = (e: CustomEvent<{ actor: Actor }>) => {
       const updatedActor = e.detail?.actor;
-      if (updatedActor && (updatedActor.id === voice.id || updatedActor.wp_product_id === voice.id)) {
+      if (updatedActor && (updatedActor.id === voice.id || (updatedActor as any).wp_product_id === voice.id)) {
         console.log(`[VoiceCard] Received global update for ${voice.display_name}`);
         
         // Ensure photo_url is correctly proxied if it's a raw path
@@ -112,7 +112,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
   const handleStudioToggle = (e: React.MouseEvent) => {
     if (!voice) return;
     e.stopPropagation();
-    playClick(isSelected ? 'light' : 'pro');
+    playClick(isSelected ? 'soft' : 'pro');
     toggleActorSelection(voice);
   };
 
@@ -121,7 +121,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
     e.stopPropagation();
     
     if (onSelect) {
-      playClick(isSelected ? 'light' : 'pro');
+      playClick(isSelected ? 'soft' : 'pro');
       onSelect(voice);
     } else {
       //  CHRIS-PROTOCOL: In non-SPA context (like home carousel), 
@@ -210,6 +210,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
   const [isLangSelectorOpen, setIsLangSelectorOpen] = useState(false);
   const [tagSearchQuery, setTagSearchQuery] = useState('');
   const [availableTags, setAvailableTags] = useState<string[]>([]);
+  const [availableLangs, setAvailableLangs] = useState<any[]>([]);
   const tagSelectorRef = useRef<HTMLDivElement>(null);
   const langSelectorRef = useRef<HTMLDivElement>(null);
 
@@ -227,6 +228,18 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
         .catch(err => console.error('Failed to fetch tags:', err));
     }
   }, [isTagSelectorOpen]);
+
+  useEffect(() => {
+    if (isLangSelectorOpen) {
+      // Fetch languages from database (Handshake Truth)
+      fetch('/api/admin/languages')
+        .then(res => res.json())
+        .then(data => {
+          if (data.results) setAvailableLangs(data.results);
+        })
+        .catch(err => console.error('Failed to fetch languages:', err));
+    }
+  }, [isLangSelectorOpen]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -271,22 +284,31 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
     }
   };
 
-  const handleLangChange = async (langLabel: string) => {
+  const handleLangChange = async (langId: number) => {
     if (!voice) return;
     playClick('pro');
-    
-    const langCode = MarketManager.getLanguageCode(langLabel);
     
     try {
       const res = await fetch(`/api/admin/actors/${voice.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ native_lang: langCode })
+        body: JSON.stringify({ native_lang_id: langId })
       });
       
       if (res.ok) {
         playClick('success');
         setIsLangSelectorOpen(false);
+        
+        // Update local state for immediate feedback
+        const selectedLang = availableLangs.find(l => l.id === langId);
+        if (selectedLang) {
+          setVoice(prev => ({
+            ...prev,
+            native_lang_id: langId,
+            native_lang: selectedLang.code,
+            native_lang_label: selectedLang.label
+          }));
+        }
       }
     } catch (err) {
       console.error('Failed to update language:', err);
@@ -312,8 +334,9 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
     if (!voice) return { delivery_days_min: 1, delivery_days_max: 1, formattedShort: '' };
     
     // NUCLEAR GOD MODE: Gebruik direct de database datum voor de UI
-    if (voice.delivery_date_min) {
-      const date = new Date(voice.delivery_date_min);
+    const deliveryDateMin = (voice as any).delivery_date_min;
+    if (deliveryDateMin) {
+      const date = new Date(deliveryDateMin);
       const today = new Date();
       today.setHours(0, 0, 0, 0);
       const isToday = date.getTime() === today.getTime();
@@ -336,9 +359,9 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
       delivery_days_max: voice.delivery_days_max || 1,
       cutoff_time: voice.cutoff_time || '18:00',
       availability: voice.availability,
-      holiday_from: voice.holiday_from,
-      holiday_till: voice.holiday_till,
-      delivery_config: voice.delivery_config
+      holidayFrom: (voice as any).holiday_from,
+      holidayTill: (voice as any).holiday_till,
+      delivery_config: (voice as any).delivery_config
     });
   }, [voice]);
 
@@ -600,7 +623,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
           )}
         </ContainerInstrument>
 
-        {!activeVideo && voice.allow_free_trial !== false && masterControlState.journey !== 'telephony' && (
+        {!activeVideo && (voice as any).allow_free_trial !== false && masterControlState.journey !== 'telephony' && (
           <div className="absolute bottom-2 md:bottom-4 right-2 md:right-4 z-40">
             <button 
               onClick={handleStudioToggle}
@@ -622,8 +645,6 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
                     <VoiceglotText 
                       translationKey="common.free_demo_cta" 
                       defaultText="Gratis proefopname" 
-                      instrument="button"
-                      maxChars={18}
                     />
                   </span>
                 </>
@@ -646,7 +667,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
         <div className="flex items-start justify-between px-4 md:px-6 pt-4 md:pt-6 pb-2 md:pb-3 border-b border-black/[0.02]">
           <div className="flex flex-col gap-1.5 md:gap-2">
             <div className="flex items-center gap-1 bg-va-off-white/50 px-1.5 md:px-2 py-0.5 md:py-1 rounded-full border border-black/[0.05] w-fit relative">
-              <VoiceFlag lang={voice?.native_lang} size={14} className="md:w-4.5 md:h-4.5" />
+              <VoiceFlag lang={voice?.native_lang} size={14} />
               <TextInstrument className="text-[11px] md:text-[13px] font-light text-va-black tracking-tight">
                 <VoiceglotText 
                   translationKey={`common.language.${voice?.native_lang?.toLowerCase()}`} 
@@ -678,18 +699,18 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
                     onClick={(e) => e.stopPropagation()}
                   >
                     <div className="max-h-64 overflow-y-auto no-scrollbar">
-                      {supportedLangs.map(langItem => {
-                        const isSelectedLang = MarketManager.getLanguageCode(langItem) === voice.native_lang;
+                      {availableLangs.map(langItem => {
+                        const isSelectedLang = langItem.id === voice.native_lang_id;
                         return (
                           <button
-                            key={langItem}
-                            onClick={() => handleLangChange(langItem)}
+                            key={langItem.id}
+                            onClick={() => handleLangChange(langItem.id)}
                             className={cn(
                               "w-full px-4 py-2.5 text-left text-[13px] font-bold transition-colors flex items-center justify-between group",
                               isSelectedLang ? "bg-primary/10 text-primary" : "text-va-black hover:bg-va-off-white"
                             )}
                           >
-                            <span>{langItem}</span>
+                            <span>{langItem.label}</span>
                             {isSelectedLang && <Check size={14} strokeWidth={3} className="text-primary" />}
                           </button>
                         );
@@ -762,7 +783,6 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
                 <VoiceglotText 
                   translationKey={`actor.${voice.id}.tone.${i}`} 
                   context="Voice characteristic / Tone of voice (e.g. warm, deep, professional, energetic)" 
-                  instrument="tag"
                   defaultText={toneItem.trim()} 
                 />
               </span>
@@ -877,7 +897,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
             </div>
 
             {!hideButton && (
-              <ButtonInstrument 
+                  <ButtonInstrument 
                 onClick={handleMainAction}
                 variant={isSelected ? "default" : "outline"}
                 size="sm"
@@ -886,7 +906,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
                   isSelected 
                     ? "bg-primary text-white border-primary shadow-lg shadow-primary/20 scale-105 px-2 md:px-4 py-2 md:py-4" 
                     : "px-3 md:px-5 py-2 md:py-4 hover:bg-va-black hover:text-white hover:border-va-black",
-                  (voice.allow_free_trial === false || masterControlState.journey === 'telephony') && !onSelect && "opacity-0 pointer-events-none"
+                  ((voice as any).allow_free_trial === false || masterControlState.journey === 'telephony') && !onSelect && "opacity-0 pointer-events-none"
                 )}
               >
                 {isSelected ? (
@@ -895,7 +915,6 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
                   <div className="flex flex-col items-center leading-none gap-0.5 md:gap-1">
                     <VoiceglotText 
                       translationKey={onSelect ? "common.choose_voice" : "common.add_to_casting"} 
-                      instrument="button"
                       defaultText={onSelect ? "Kies stem" : "Proefopname +"} 
                     />
                     {!onSelect && (
