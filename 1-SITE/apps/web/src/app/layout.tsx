@@ -116,6 +116,24 @@ export async function generateMetadata(): Promise<Metadata> {
 
   const baseUrl = `https://${market.market_code === 'BE' ? MarketManagerServer.getMarketDomains()['BE'].replace('https://', '') : (market.market_code === 'NLNL' ? 'www.voices.nl' : cleanHost)}`;
 
+  const isAdeming = market.market_code === 'ADEMING';
+  const isJohfrah = market.market_code === 'PORTFOLIO';
+  const isArtist = market.market_code === 'ARTIST';
+
+  const title = isAdeming 
+    ? "Ademing | Kom tot rust" 
+    : isJohfrah 
+    ? "Johfrah Lefebvre | Vlaamse Voice-over & Regisseur" 
+    : isArtist
+    ? "Voices Artist | Premium Voice-over Talent"
+    : "Voices | Het Vriendelijkste Stemmenbureau";
+
+  const description = isAdeming 
+    ? "Adem in. Kom tot rust. Luister en verbind met de stilte in jezelf." 
+    : isJohfrah
+    ? "De stem achter het verhaal. Warme, natuurlijke Vlaamse voice-over & host voor nationale TV-spots en corporate video's."
+    : "Een warm en vertrouwd geluid voor elk project. Wij helpen je de perfecte stem te vinden.";
+
   return {
     title: {
       default: title,
@@ -240,13 +258,34 @@ export default async function RootLayout({
   
   const isArtistJourney = market.market_code === 'ARTIST' || pathname.includes('/artist/') || pathname.includes('/voice/');
 
+  const showVoicy = !isArtistJourney && !isUnderConstruction;
+  const showTopBar = !isArtistJourney && !isUnderConstruction;
+  const showGlobalNav = !isUnderConstruction;
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": market.market_code === 'ADEMING' ? "WebApplication" : (['PORTFOLIO', 'ARTIST'].includes(market.market_code) ? "Person" : "Organization"),
+    "name": market.name,
+    "url": `https://${cleanHost}`,
+    "logo": `https://${cleanHost}${market.logo_url}`,
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "telephone": market.phone,
+      "contactType": "customer service",
+      "email": market.email,
+      "availableLanguage": ["Dutch", "French", "English"]
+    }
+  };
+
   // UNDER CONSTRUCTION MODE: Minimalistische layout zonder navigatie/footer/voicy
   if (isUnderConstruction) {
     return (
       <html lang={lang} className={htmlClass} suppressHydrationWarning>
       <body className={bodyClass}>
         <Providers lang={lang} market={market} initialTranslations={translations} initialJourney={initialJourney} initialUsage={initialUsage}>
-          <SonicDNAHandler />
+          <Suspense fallback={null}>
+            <SonicDNAHandler />
+          </Suspense>
           <PageWrapperInstrument>
             {children}
           </PageWrapperInstrument>
