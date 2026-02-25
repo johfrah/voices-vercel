@@ -238,23 +238,26 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
     const actorLangsRes = await supabase.from('actor_languages').select('*').in('actor_id', actorIds);
     const actorLangsData = actorLangsRes.data || [];
 
-    // 🛡️ CHRIS-PROTOCOL: Global Data Registry for Handshake Truth (v2.14.676)
-    const { data: allLangsData } = await supabase.from('languages').select('*');
+    // 🛡️ CHRIS-PROTOCOL: Global Data Registry for Handshake Truth (v2.14.716)
+    const { data: allLangsData } = await supabase.from('languages').select('*').order('display_order', { ascending: true });
     const { data: allStatusesData } = await supabase.from('actor_statuses').select('*');
-    const { data: allExperienceData } = await supabase.from('experience_levels').select('*');
-    const { data: allCountriesData } = await supabase.from('countries').select('*');
+    const { data: allExperienceData } = await supabase.from('experience_levels').select('*').order('display_order', { ascending: true });
+    const { data: allCountriesData } = await supabase.from('countries').select('*').order('display_order', { ascending: true });
+    const { data: allGendersData } = await supabase.from('genders').select('*').order('display_order', { ascending: true });
+    const { data: allMediaTypesData } = await supabase.from('media_types').select('*').order('display_order', { ascending: true });
 
     const langLookup = new Map<number, { code: string, label: string }>();
     allLangsData?.forEach(l => langLookup.set(l.id, { code: l.code, label: l.label }));
 
-    // 🛡️ CHRIS-PROTOCOL: Handshake Truth (v2.14.679)
-    // We prime the global cache for other server functions, but avoid modifying 
-    // the MarketManager directly during a render pass to prevent hydration issues.
+    // 🛡️ CHRIS-PROTOCOL: Handshake Truth (v2.14.716)
+    // We prime the global cache for other server functions.
     const g = global as any;
     if (allLangsData) g.handshakeLanguages = allLangsData;
     if (allStatusesData) g.handshakeStatuses = allStatusesData;
     if (allExperienceData) g.handshakeExperience = allExperienceData;
     if (allCountriesData) g.handshakeCountries = allCountriesData;
+    if (allGendersData) g.handshakeGenders = allGendersData;
+    if (allMediaTypesData) g.handshakeMediaTypes = allMediaTypesData;
 
     // Create lookup maps for performance
     const nativeLangMap = new Map<number, number>();

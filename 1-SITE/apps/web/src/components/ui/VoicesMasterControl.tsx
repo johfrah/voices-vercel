@@ -14,60 +14,70 @@ import { usePathname } from 'next/navigation';
 import React, { useEffect, useMemo, useState } from 'react';
 import { ActorReorderModal } from './ActorReorderModal';
 
-// 🛡️ CHRIS-PROTOCOL: Icon Registry for Handshake Truth
-const ICON_MAP: Record<string, any> = {
-  phone: Phone,
-  video: Video,
-  megaphone: Megaphone,
-  'mic-2': Mic2,
-  globe: Globe,
-  radio: Radio,
-  tv: Tv,
-  users: Users,
-  user: User,
-  star: Star,
-  clock: Clock,
-  type: Type,
-  search: SearchIcon,
-  // Flags
-  FlagBE: FlagBE,
-  FlagNL: FlagNL,
-  FlagFR: FlagFR,
-  FlagUK: FlagUK,
-  FlagUS: FlagUS,
-  FlagDE: FlagDE,
-  FlagES: FlagES,
-  FlagIT: FlagIT,
-  FlagPL: FlagPL,
-  FlagDK: FlagDK,
-  FlagPT: FlagPT
-};
-import { AgencyFilterSheet } from './AgencyFilterSheet';
-import { ContainerInstrument, FlagBE, FlagDE, FlagDK, FlagES, FlagFR, FlagIT, FlagNL, FlagPL, FlagPT, FlagUK, FlagUS, TextInstrument } from './LayoutInstruments';
-import { OrderStepsInstrument } from './OrderStepsInstrument';
-import { VoiceglotImage } from './VoiceglotImage';
-import { VoiceglotText } from './VoiceglotText';
-import { VoicesDropdown } from './VoicesDropdown';
-import { VoicesWordSlider } from './VoicesWordSlider';
-
-
-interface VoicesMasterControlProps {
-  actors?: any[]; //  Added actors prop for real-time extra language mapping
-  filters?: {
-    languages: string[];
-    genders: string[];
-    styles: string[];
-  };
-  availableExtraLangs?: string[]; 
-  minimalMode?: boolean; //  Added minimalMode for portfolio use
+// 🛡️ CHRIS-PROTOCOL: Icon Registry for Handshake Truth (v2.14.716)
+// We use a centralized IconInstrument to render icons from database strings.
+export const IconInstrument = ({ name, size = 18, className = '', strokeWidth = 1.5 }: { name?: string, size?: number, className?: string, strokeWidth?: number }) => {
+  if (!name) return null;
+  const lowName = name.toLowerCase();
   
-  // 🛡️ CHRIS-PROTOCOL: Handshake Truth Props (v2.14.714)
-  // These props replace the internal useEffect fetching for a pure "Instrument" architecture.
-  languagesData?: any[];
-  gendersData?: any[];
-  journeysData?: any[];
-  mediaTypesData?: any[];
-}
+  const map: Record<string, any> = {
+    phone: Phone,
+    video: Video,
+    megaphone: Megaphone,
+    'mic-2': Mic2,
+    globe: Globe,
+    radio: Radio,
+    tv: Tv,
+    users: Users,
+    user: User,
+    star: Star,
+    clock: Clock,
+    type: Type,
+    search: SearchIcon,
+    zap: Zap,
+    'shield-check': ShieldCheck,
+    'check-circle-2': CheckCircle2,
+    'shopping-bag': ShoppingBag,
+    sparkles: Sparkles,
+    upload: Upload,
+    paperclip: Paperclip,
+    minus: Minus,
+    plus: Plus,
+    info: Info,
+    loader2: Loader2,
+    'music-icon': MusicIcon,
+    'chevron-right': ChevronRight,
+    'check-circle': CheckCircle2,
+    'mic': Mic,
+    'play': Play,
+    'pause': Pause,
+    'x': X,
+    'zap-icon': Zap,
+    'shield': ShieldCheck
+  };
+
+  const Icon = map[lowName] || Globe;
+  return <Icon size={size} className={className} strokeWidth={strokeWidth} />;
+};
+
+const VoiceFlag = ({ lang, size = 16 }: { lang?: string, size?: number }) => {
+  if (!lang) return null;
+  const lowLang = lang.toLowerCase();
+  
+  if (lowLang.includes('be') || lowLang === 'vlaams' || lowLang === 'frans (be)') return <FlagBE size={size} />;
+  if (lowLang.includes('nl') || lowLang === 'nederlands' || lowLang === 'dutch') return <FlagNL size={size} />;
+  if (lowLang.includes('fr') || lowLang === 'frans' || lowLang === 'frans (fr)' || lowLang === 'french') return <FlagFR size={size} />;
+  if (lowLang.includes('de') || lowLang === 'duits' || lowLang === 'german') return <FlagDE size={size} />;
+  if (lowLang.includes('gb') || lowLang.includes('uk') || lowLang === 'engels' || lowLang === 'english') return <FlagUK size={size} />;
+  if (lowLang.includes('us')) return <FlagUS size={size} />;
+  if (lowLang.includes('es') || lowLang === 'spaans' || lowLang === 'spanish') return <FlagES size={size} />;
+  if (lowLang.includes('it') || lowLang === 'italiaans' || lowLang === 'italian') return <FlagIT size={size} />;
+  if (lowLang.includes('pl') || lowLang === 'pools' || lowLang === 'polish') return <FlagPL size={size} />;
+  if (lowLang.includes('dk') || lowLang === 'deens' || lowLang === 'danish') return <FlagDK size={size} />;
+  if (lowLang.includes('pt') || lowLang === 'portugees' || lowLang === 'portuguese') return <FlagPT size={size} />;
+  
+  return <Globe size={size} className="opacity-40" />;
+};
 
 export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({ 
   actors = [], 
@@ -121,50 +131,22 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
   };
 
   const journeys = useMemo(() => {
-    const baseJourneys = [
-      { 
-        id: 'telephony', 
-        icon: Phone, 
-        label: 'Telefonie', 
-        subLabel: 'Voicemail & IVR',
-        key: 'journey.telephony', 
-        color: 'text-primary' 
-      },
-      { 
-        id: 'video', 
-        icon: Video, 
-        label: 'Video', 
-        subLabel: 'Corporate & Website',
-        key: 'journey.video', 
-        color: 'text-primary' 
-      },
-      { 
-        id: 'commercial', 
-        icon: Megaphone, 
-        label: 'Advertentie', 
-        subLabel: 'Radio, TV & Online Ads',
-        key: 'journey.commercial', 
-        color: 'text-primary' 
-      },
-    ];
+    if (journeysData.length === 0) return [];
 
-    if (journeysData.length === 0) return baseJourneys;
-
-    //  CHRIS-PROTOCOL: Handshake Truth Mapping (v2.14.714)
+    //  CHRIS-PROTOCOL: Handshake Truth Mapping (v2.14.716)
     // We ONLY show the 3 main Agency journeys in the MasterControl.
     const allowedCodes = ['telephony', 'video', 'commercial'];
     
     return journeysData
       .filter(fj => allowedCodes.includes(fj.code))
       .map(fj => {
-        const base = baseJourneys.find(bj => bj.id === fj.code || bj.key === `journey.${fj.code}`);
         return {
           id: fj.code,
-          icon: base?.icon || Globe,
+          icon: (props: any) => <IconInstrument name={fj.icon} {...props} />,
           label: fj.label,
-          subLabel: fj.description || base?.subLabel || '',
-          key: base?.key || `journey.${fj.code}`,
-          color: base?.color || 'text-primary'
+          subLabel: fj.description || '',
+          key: `journey.${fj.code}`,
+          color: fj.color || 'text-primary'
         };
       });
   }, [journeysData]);

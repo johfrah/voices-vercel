@@ -65,6 +65,7 @@ export const languages = pgTable('languages', {
   icon: text('icon'), // flag component name or asset path
   isPopular: boolean('is_popular').default(false),
   isNativeOnly: boolean('is_native_only').default(false),
+  displayOrder: integer('display_order').default(0), // 🛡️ Handshake Truth
   createdAt: timestamp('created_at').defaultNow(),
 });
 
@@ -72,6 +73,7 @@ export const countries = pgTable('countries', {
   id: serial('id').primaryKey(),
   code: text('code').unique().notNull(),
   label: text('label').notNull(),
+  displayOrder: integer('display_order').default(0), // 🛡️ Handshake Truth
   createdAt: timestamp('created_at').defaultNow(),
 });
 
@@ -80,6 +82,7 @@ export const genders = pgTable('genders', {
   id: serial('id').primaryKey(),
   code: text('code').unique().notNull(), // male, female, non-binary, boy, girl
   label: text('label').notNull(), // Man, Vrouw, Non-binair, Jongen, Meisje
+  displayOrder: integer('display_order').default(0), // 🛡️ Handshake Truth
   createdAt: timestamp('created_at').defaultNow(),
 });
 
@@ -91,6 +94,7 @@ export const mediaTypes = pgTable('media_types', {
   description: text('description'),
   icon: text('icon'), // lucide icon name
   hasRegions: boolean('has_regions').default(false),
+  displayOrder: integer('display_order').default(0), // 🛡️ Handshake Truth
   createdAt: timestamp('created_at').defaultNow(),
 });
 

@@ -68,23 +68,70 @@ export async function GET(request: Request, { params }: { params: { id: string }
       }
     }
 
-    // 🤝 DE HANDDRUK
+    // 🤝 DE HANDDRUK (Human-Centric Mapping)
+    const formattedItems = items.map((item: any) => ({
+      id: item.id,
+      name: item.name || 'Onbekend item',
+      quantity: item.quantity || 1,
+      price: item.price?.toString() || "0.00",
+      subtotal: (Number(item.price || 0) * Number(item.quantity || 1)).toFixed(2)
+    }));
+
+    const journeyMap: Record<number, string> = {
+      1: 'Voices Agency',
+      2: 'Voices Studio',
+      3: 'Voices Academy',
+      4: 'Voices Artist'
+    };
+
+    const statusMap: Record<string, string> = {
+      'completed': 'Voltooid',
+      'processing': 'In behandeling',
+      'pending': 'Wacht op betaling',
+      'on-hold': 'Gepauzeerd',
+      'cancelled': 'Geannuleerd',
+      'refunded': 'Terugbetaald',
+      'failed': 'Mislukt',
+      'wc-completed': 'Voltooid',
+      'wc-processing': 'In behandeling',
+      'wc-pending': 'Wacht op betaling'
+    };
+
+    const paymentMap: Record<number, string> = {
+      1: 'Bancontact',
+      2: 'Creditcard',
+      3: 'iDEAL',
+      4: 'Factuur (PO)',
+      5: 'Handmatige overboeking'
+    };
+
     return NextResponse.json({
-      ...order,
       id: orderPk,
-      userId: userId,
-      user_id: userId,
-      legacyInternalId: legacyInternalId,
-      legacy_internal_id: legacyInternalId,
-      user: customerInfo,
-      items: items,
-      displayOrderId: orderPk.toString(),
-      status: 'completed',
-      amountNet: order.amountNet?.toString() || "0.00",
-      amount_net: order.amountNet?.toString() || "0.00",
-      total: order.amountTotal?.toString() || "0.00",
-      amount_total: order.amountTotal?.toString() || "0.00",
-      raw_meta: order.rawMeta || {}
+      orderNumber: orderPk.toString(),
+      date: order.createdAt,
+      status: statusMap[order.statusId?.toString() || ''] || statusMap['completed'] || 'In behandeling',
+      unit: journeyMap[Number(order.journeyId)] || 'Voices',
+      customer: customerInfo ? {
+        name: `${customerInfo.first_name || ''} ${customerInfo.last_name || ''}`.trim(),
+        email: customerInfo.email,
+        company: customerInfo.companyName
+      } : null,
+      billing: {
+        email: order.billingEmailAlt || customerInfo?.email,
+        purchaseOrder: order.purchaseOrder
+      },
+      finance: {
+        net: order.amountNet?.toString() || "0.00",
+        total: order.amountTotal?.toString() || "0.00",
+        vat: (Number(order.amountTotal || 0) - Number(order.amountNet || 0)).toFixed(2),
+        method: paymentMap[Number(order.paymentMethodId)] || 'Online betaling'
+      },
+      items: formattedItems,
+      briefing: order.rawMeta?.briefing || order.rawMeta?._billing_wo_briefing || null,
+      technical: {
+        sourceId: legacyInternalId,
+        meta: order.rawMeta || {}
+      }
     });
 
   } catch (error: any) {
