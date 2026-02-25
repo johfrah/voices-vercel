@@ -122,11 +122,11 @@ function generateArtistSchema(artist: any, host: string = '') {
  * 🧠 SLUG RESOLVER (NUCLEAR 2026)
  * Zoekt de entiteit op basis van de slug_registry (Handshake Truth).
  */
-async function resolveSlugFromRegistry(slug: string, marketCode: string = 'ALL', journey: string = 'agency'): Promise<{ entity_id: number, routing_type: string, journey: string, canonical_slug?: string } | null> {
+async function resolveSlugFromRegistry(slug: string, marketCode: string = 'ALL', journey: string = 'agency'): Promise<{ entity_id: number, routing_type: string, journey: string, canonical_slug?: string, metadata?: any } | null> {
   try {
     const { data: entry, error } = await supabase
       .from('slug_registry')
-      .select('entity_id, routing_type, journey, canonical_slug')
+      .select('entity_id, routing_type, journey, canonical_slug, metadata')
       .eq('slug', slug.toLowerCase())
       .or(`market_code.eq.${marketCode},market_code.eq.ALL`)
       .eq('is_active', true)
@@ -138,7 +138,8 @@ async function resolveSlugFromRegistry(slug: string, marketCode: string = 'ALL',
         entity_id: Number(entry.entity_id),
         routing_type: entry.routing_type,
         journey: entry.journey,
-        canonical_slug: entry.canonical_slug
+        canonical_slug: entry.canonical_slug,
+        metadata: entry.metadata
       };
     }
   } catch (err) {
@@ -427,14 +428,15 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
             'video': 'video', 'commercial': 'commercial', 'reclame': 'commercial'
           };
           
-          // 🛡️ CHRIS-PROTOCOL: Robust Journey Detection for Hierarchical Slugs
-          // If the lookupSlug is hierarchical (e.g. voice/johfrah), segments[1] is 'johfrah', not the journey.
-          // We need to look at the segment AFTER the resolved slug.
+          // 🛡️ CHRIS-PROTOCOL: Unified Journey Handshake
+          // We prioritize the journey from the slug_registry metadata (if it was a deep match)
+          // Otherwise we look at the segment after the resolved path.
+          const registryJourney = resolved.metadata?.journey;
           const lookupSegments = lookupSlug.split('/');
           const nextSegment = cleanSegments[lookupSegments.length];
-          const mappedJourney = nextSegment ? journeyMap[nextSegment.toLowerCase()] : undefined;
+          const mappedJourney = registryJourney || (nextSegment ? journeyMap[nextSegment.toLowerCase()] : undefined);
           
-          console.error(` [SmartRouter] Actor Journey Detection: nextSegment=${nextSegment}, mapped=${mappedJourney}`);
+          console.error(` [SmartRouter] Actor Handshake: registryJourney=${registryJourney}, nextSegment=${nextSegment}, finalJourney=${mappedJourney}`);
           
           return <VoiceDetailClient actor={actor} initialJourney={mappedJourney || (nextSegment as any)} initialMedium={cleanSegments[lookupSegments.length + 1]} />;
         }

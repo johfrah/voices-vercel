@@ -42,6 +42,7 @@ async function generateAtomicSitemap() {
   };
 
   const activeLangs = ['nl', 'fr', 'de'];
+  const actorJourneys = ['video', 'commercial', 'telephony'];
 
   // 1. Actors (Agency) -> voice/
   const { data: actors } = await supabase.from('actors').select('id, slug, first_name, last_name').eq('status', 'live').eq('is_public', true);
@@ -53,8 +54,23 @@ async function generateAtomicSitemap() {
     activeLangs.forEach(lang => {
       const prefix = getPrefix('voice', lang);
       const canonicalActorSlug = `${prefix}/${baseSlug}`;
+      
+      // Main profile
       sitemap.push({ slug: canonicalActorSlug, type: 'actor', entity_id: a.id, journey: 'agency', name: `${a.first_name} ${a.last_name || ''}`, market_code: lang.toUpperCase() });
       
+      // Journey-specific profiles (Deep Handshake)
+      actorJourneys.forEach(journey => {
+        sitemap.push({ 
+          slug: `${canonicalActorSlug}/${journey}`, 
+          type: 'actor', 
+          entity_id: a.id, 
+          journey: 'agency', 
+          name: `${a.first_name} - ${journey.toUpperCase()}`, 
+          market_code: lang.toUpperCase(),
+          metadata: { journey } 
+        });
+      });
+
       // Legacy flat slug redirect (only for NL/default)
       if (lang === 'nl' && a.slug) {
         const legacySlug = a.slug.toLowerCase();
@@ -187,6 +203,7 @@ async function generateAtomicSitemap() {
     journey: item.journey,
     market_code: item.market_code || 'ALL',
     canonical_slug: item.canonical_slug || null,
+    metadata: item.metadata || {},
     is_active: true
   }));
 
