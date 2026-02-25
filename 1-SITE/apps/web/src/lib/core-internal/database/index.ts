@@ -1,6 +1,8 @@
-import * as schema from './schema/index.ts';
+import * as schema from './schema/index';
 import postgres from 'postgres';
 import { drizzle } from 'drizzle-orm/postgres-js';
+import * as dotenv from 'dotenv';
+import * as path from 'path';
 
 // Sherlock: We gebruiken een lazy initializer voor de DB client om te voorkomen dat 
 // postgres.js wordt geïnitialiseerd in de Edge runtime (waar het niet werkt).
@@ -10,43 +12,38 @@ const getDb = () => {
   if (typeof window !== 'undefined') return null; // No DB on client
   
   if (process.env.NEXT_RUNTIME === 'edge') {
-    console.error(' [getDb] BLOCKED: Edge runtime detected');
     return null;
   }
   
   if (!(globalThis as any).dbInstance) {
-    console.error(' [getDb] Initializing new Drizzle instance...');
     try {
+      // 🛡️ CHRIS-PROTOCOL: Load env if not present (for standalone scripts)
+      if (!process.env.DATABASE_URL) {
+        const envPath = path.resolve(__dirname, '../../../../1-SITE/apps/web/.env.local');
+        dotenv.config({ path: envPath });
+      }
+
       let connectionString = process.env.DATABASE_URL!;
       if (!connectionString) {
         console.error(' [getDb] FAILED: DATABASE_URL is missing!');
         return null;
       }
       
+      /*
       // CHRIS-PROTOCOL: Direct DB Host for Stability (v2.17)
       // The Supabase Pooler (6543) is currently unstable. We bypass it and use the direct host.
-      if (connectionString.includes('pooler.supabase.com') || connectionString.includes('vcbxyyjsxuquytcsskpj')) {
-        console.error(' [getDb] DETECTED POOLER/SUPABASE: Bypassing for stability...');
-        // Forceer de direct host URL
-        connectionString = 'postgresql://postgres.vcbxyyjsxuquytcsskpj:VoicesHeadless20267654323456@db.vcbxyyjsxuquytcsskpj.supabase.co:5432/postgres';
-        console.error(' [getDb] TARGET HOST FORCED: db.vcbxyyjsxuquytcsskpj.supabase.co:5432');
+      if (connectionString.includes('pooler.supabase.com')) {
+        connectionString = connectionString.replace('aws-1-eu-west-1.pooler.supabase.com', 'db.vcbxyyjsxuquytcsskpj.supabase.co');
+        connectionString = connectionString.replace(':6543', ':5432');
+        connectionString = connectionString.replace('postgres.vcbxyyjsxuquytcsskpj', 'postgres');
+        connectionString = connectionString.split('?')[0]; 
       }
+      */
 
-      // LEX-MANDATE: Force IPv4 if direct host to avoid Vercel network slop
+      // LEX-MANDATE: IPv6 is unstable on some build machines. Force IPv4 if direct host.
       if (connectionString.includes('db.vcbxyyjsxuquytcsskpj.supabase.co')) {
         // No-op for now, but we keep an eye on it.
       }
-
-      // 🛡️ CHRIS-PROTOCOL: Force Re-initialization if connection string changed (v2.14.591)
-      const lastConn = (globalThis as any)._lastConnString;
-      if (lastConn && lastConn !== connectionString) {
-        console.error(' [getDb] CONNECTION STRING CHANGED: Resetting client...');
-        if ((globalThis as any).postgresClient) {
-          try { (globalThis as any).postgresClient.end(); } catch (e) {}
-          (globalThis as any).postgresClient = null;
-        }
-      }
-      (globalThis as any)._lastConnString = connectionString;
 
       const supabaseRootCA = `-----BEGIN CERTIFICATE-----
 MIIDxDCCAqygAwIBAgIUbLxMod62P2ktCiAkxnKJwtE9VPYwDQYJKoZIhvcNAQEL
@@ -59,7 +56,7 @@ Um9vdCAyMDIxIENBMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAqQXW
 QyHOB+qR2GJobCq/CBmQ40G0oDmCC3mzVnn8sv4XNeWtE5XcEL0uVih7Jo4Dkx1Q
 DmGHBH1zDfgs2qXiLb6xpw/CKQPypZW1JssOTMIfQppNQ87K75Ya0p25Y3ePS2t2
 GtvHxNjUV6kjOZjEn2yWEcBdpOVCUYBVFBNMB4YBHkNRDa/+S4uywAoaTWnCJLUi
-cvTlHmMw6xSQQn1UfRQHk50DMCEJ7Cy1RxrZJrkXXRP3LrkL2ijJ6F4yMfh+Gyb4
+cvTlHmMw6xSQQn1UfRQHk50DMCEJ7Cy1RxrZJrkXXRP3LqQL2ijJ6F4yMfh+Gyb4
 O4XajoVj/+R4GwywKYrrS8PrSNtwxr5StlQO8zIQUSMiq26wM8mgELFlS/32Uclt
 NaQ1xBRizkzpZct9DwIDAQABo2AwXjALBgNVHQ8EBAMCAQYwHQYDVR0OBBYEFKjX
 uXY32CztkhImng4yJNUtaUYsMB8GA1UdIwQYMBaAFKjXuXY32CztkhImng4yJNUt
@@ -75,7 +72,6 @@ o/bKiIz+Fq8=
       const poolSize = process.env.NEXT_PHASE === 'phase-production-build' ? 5 : (process.env.NODE_ENV === 'production' ? 10 : 10);
       
       if (!(globalThis as any).postgresClient) {
-        console.error(' [getDb] CONNECTING TO:', connectionString.replace(/:[^:]*@/, ':****@'));
         (globalThis as any).postgresClient = postgres(connectionString, { 
           prepare: false, 
           ssl: { ca: supabaseRootCA, rejectUnauthorized: false },
@@ -94,16 +90,6 @@ o/bKiIz+Fq8=
   }
   return (globalThis as any).dbInstance;
 };
-
-// 🛡️ CHRIS-PROTOCOL: Force Global Reset (v2.14.606)
-// We dwingen een harde reset van de singleton bij elke koude start op Vercel.
-if (typeof window === 'undefined' && process.env.NODE_ENV === 'production') {
-  (globalThis as any).dbInstance = null;
-  if ((globalThis as any).postgresClient) {
-    try { (globalThis as any).postgresClient.end(); } catch (e) {}
-    (globalThis as any).postgresClient = null;
-  }
-}
 
 export const db = new Proxy({} as any, {
   get(target, prop) {
