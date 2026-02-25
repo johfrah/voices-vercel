@@ -1,5 +1,5 @@
 import { db } from '@/lib/system/voices-config';
-import { orders, users, notifications, orderItems, systemEvents, ordersV2 } from '@/lib/system/voices-config';
+import { orders, users, notifications, orderItems, systemEvents, ordersV2, orderStatuses, ordersLegacyBloat } from '@/lib/system/voices-config';
 import { desc, eq, sql, count } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth/api-auth';
@@ -22,23 +22,18 @@ export async function GET(request: NextRequest) {
     if (auth instanceof NextResponse) return auth;
 
     const { searchParams } = new URL(request.url);
-  const page = parseInt(searchParams.get('page') || '1');
-  const limit = parseInt(searchParams.get('limit') || '50');
-  const offset = (page - 1) * limit;
+    const page = parseInt(searchParams.get('page') || '1');
+    const limit = parseInt(searchParams.get('limit') || '50');
+    const offset = (page - 1) * limit;
 
-  try {
     // 🛡️ CHRIS-PROTOCOL: 1 TRUTH MANDATE (v2.14.638)
-    // We halen eerst het totaal aantal orders op voor de paginering UI
-    // NUCLEAR: We gebruiken nu de schone orders_v2 tabel
-    // 🛡️ CHRIS-PROTOCOL: ROBUST PROXY TRIGGER (v2.14.652)
-    // We triggeren de proxy en gebruiken een directe execute op de instance
     const countResult = await db.execute(sql.raw('SELECT count(*) as value FROM orders_v2'));
     const countRows: any = Array.isArray(countResult) ? countResult : (countResult.rows || []);
     const totalInDb = countRows[0] ? Number(countRows[0].value || countRows[0].count || 0) : 0;
 
     let allOrders: any[] = [];
     let debugInfo: any = {
-      version: '2.14.652',
+      version: '2.14.685',
       db_host: process.env.DATABASE_URL?.split('@')[1]?.split('/')[0] || 'unknown',
       page,
       limit,
@@ -47,46 +42,34 @@ export async function GET(request: NextRequest) {
       timestamp: new Date().toISOString()
     };
 
-    try {
-      // 🚀 NUCLEAR RAW SQL FETCH (v2.14.652)
-      // We gebruiken sql.raw met expliciete numerieke waarden voor Vercel stabiliteit
-      const rowsResult = await db.execute(sql.raw(`
-        SELECT 
-          id, user_id, journey_id, status_id, payment_method_id, 
-          amount_net, amount_total, purchase_order, billing_email_alt, created_at
-        FROM orders_v2
-        ORDER BY created_at DESC
-        LIMIT ${limit}
-        OFFSET ${offset}
-      `));
+    // 🚀 NUCLEAR RAW SQL FETCH (v2.14.652)
+    const rowsResult = await db.execute(sql.raw(`
+      SELECT 
+        id, user_id, journey_id, status_id, payment_method_id, 
+        amount_net, amount_total, purchase_order, billing_email_alt, created_at
+      FROM orders_v2
+      ORDER BY created_at DESC
+      LIMIT ${limit}
+      OFFSET ${offset}
+    `));
 
-      const rows: any = Array.isArray(rowsResult) ? rowsResult : (rowsResult.rows || []);
-      
-      // Map snake_case database columns naar de camelCase properties die de rest van de route verwacht
-      allOrders = rows.map((row: any) => ({
-        id: row.id,
-        userId: row.user_id,
-        journeyId: row.journey_id,
-        statusId: row.status_id,
-        paymentMethodId: row.payment_method_id,
-        amountNet: row.amount_net,
-        amountTotal: row.amount_total,
-        purchaseOrder: row.purchase_order,
-        billingEmailAlt: row.billing_email_alt,
-        createdAt: row.created_at
-      }));
-      
-      debugInfo.source = 'hybrid_sql.orders_v2';
-      debugInfo.fetchedCount = allOrders.length;
-    } catch (rawErr: any) {
-      debugInfo.raw_error = rawErr.message;
-      console.error('[Admin Orders GET] Drizzle query failed:', rawErr);
-      return NextResponse.json({
-        orders: [],
-        _error: rawErr.message,
-        _debug: debugInfo
-      }, { status: 200 });
-    }
+    const rows: any = Array.isArray(rowsResult) ? rowsResult : (rowsResult.rows || []);
+    
+    allOrders = rows.map((row: any) => ({
+      id: row.id,
+      userId: row.user_id,
+      journeyId: row.journey_id,
+      statusId: row.status_id,
+      paymentMethodId: row.payment_method_id,
+      amountNet: row.amount_net,
+      amountTotal: row.amount_total,
+      purchaseOrder: row.purchase_order,
+      billingEmailAlt: row.billing_email_alt,
+      createdAt: row.created_at
+    }));
+    
+    debugInfo.source = 'hybrid_sql.orders_v2';
+    debugInfo.fetchedCount = allOrders.length;
 
     // 🕵️ GUEST & USER RESOLVER
     const sanitizedOrders = await Promise.all(allOrders.map(async (order) => {
@@ -99,9 +82,6 @@ export async function GET(request: NextRequest) {
           companyName: ""
         };
 
-        // 🛡️ CHRIS-PROTOCOL: User Resolution Fix (v2.14.628)
-        // We moeten zowel wp_user_id als het interne user_id checken
-        // 🛡️ CHRIS-PROTOCOL: User Resolution & Silent Creation (v2.14.630)
         const userId = order.user_id || order.userId;
         let dbUser = null;
 
@@ -114,10 +94,8 @@ export async function GET(request: NextRequest) {
           } catch (e) {}
         }
 
-        // 🚀 SILENT USER CREATION: Als er geen user is, maar we hebben wel de rugzak (voor email)
         if (!dbUser) {
           try {
-            // Haal de rugzak op als we die niet hebben
             const [bloat] = await db.select().from(ordersLegacyBloat).where(eq(ordersLegacyBloat.wpOrderId, order.id)).limit(1);
             const rawMeta = bloat?.rawMeta;
 
@@ -126,11 +104,8 @@ export async function GET(request: NextRequest) {
               const email = meta.billing?.email || meta._billing_email;
               
               if (email) {
-                // Check of de user stiekem al bestaat op email
                 dbUser = await db.select().from(users).where(eq(users.email, email)).limit(1).then(res => res[0]);
-                
                 if (!dbUser) {
-                  // Maak de user silent aan (Nuclear Mode)
                   const [newUser] = await db.insert(users).values({
                     email: email,
                     first_name: meta.billing?.first_name || meta._billing_first_name || "Guest",
@@ -141,13 +116,10 @@ export async function GET(request: NextRequest) {
                     createdAt: new Date()
                   }).returning();
                   dbUser = newUser;
-                  console.log(`👤 Silent User Created: ${email} for Order ${order.id}`);
                 }
               }
             }
-          } catch (e) {
-            console.error(`❌ Silent User Creation Failed for Order ${order.id}:`, e);
-          }
+          } catch (e) {}
         }
 
         if (dbUser) {
@@ -159,7 +131,6 @@ export async function GET(request: NextRequest) {
           };
         }
 
-        // 🚦 V2 STATUS RESOLVER (v2.14.636)
         let displayStatus = order.status || 'completed';
         if (order.status_id) {
           const [statusRow] = await db.select().from(orderStatuses).where(eq(orderStatuses.id, order.status_id)).limit(1);
@@ -168,7 +139,7 @@ export async function GET(request: NextRequest) {
 
         return {
           id: order.id,
-          wpOrderId: order.id, // id IS nu het wp_order_id
+          wpOrderId: order.id,
           displayOrderId: order.id?.toString(),
           total: order.amount_total?.toString() || order.amountTotal?.toString() || "0.00",
           amountNet: order.amount_net?.toString() || order.amountNet?.toString() || "0.00",
@@ -189,10 +160,8 @@ export async function GET(request: NextRequest) {
       }
     }));
 
-    const finalOrders = sanitizedOrders.filter(Boolean);
-
     return NextResponse.json({
-      orders: finalOrders,
+      orders: sanitizedOrders.filter(Boolean),
       pagination: {
         page,
         limit,
@@ -206,7 +175,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       orders: [],
       _error: error.message
-    }, { status: 200 });
+    }, { status: 500 });
   }
 }
 

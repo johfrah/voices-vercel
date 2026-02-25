@@ -49,9 +49,18 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
   const [isReorderModalOpen, setIsReorderModalOpen] = useState(false);
   const [reorderLanguage, setReorderLanguage] = useState('');
   const [mounted, setMounted] = useState(false);
+  const [fetchedLanguages, setFetchedLanguages] = useState<any[]>([]);
 
   useEffect(() => {
     setMounted(true);
+    //  CHRIS-PROTOCOL: Handshake Truth (Source of Truth)
+    // Fetch languages directly from database to ensure IDs and Labels match.
+    fetch('/api/admin/config?type=languages')
+      .then(res => res.json())
+      .then(data => {
+        if (data.results) setFetchedLanguages(data.results);
+      })
+      .catch(err => console.error('[VoicesMasterControl] Failed to fetch languages:', err));
   }, []);
 
   const handleReorderClick = (language: string) => {
@@ -182,26 +191,36 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
       return result;
     };
 
-    const languageConfig = [
-      { label: MarketManager.getLanguageLabel('nl-be'), value: 1, langCode: 'nl-be', popular: market.popular_languages.includes('nl-be') || market.popular_languages.includes('Vlaams') },
-      { label: MarketManager.getLanguageLabel('nl-nl'), value: 2, langCode: 'nl-nl', popular: market.popular_languages.includes('nl-nl') || market.popular_languages.includes('Nederlands') },
-      { label: MarketManager.getLanguageLabel('fr-be'), value: 3, langCode: 'fr-be', popular: (market.popular_languages.includes('fr-be') || market.popular_languages.includes('Frans')) && market.market_code === 'BE' },
-      { label: MarketManager.getLanguageLabel('fr-fr'), value: 4, langCode: 'fr-fr', popular: (market.popular_languages.includes('fr-fr') || market.popular_languages.includes('Frans')) && market.market_code !== 'BE' },
-      { label: MarketManager.getLanguageLabel('en-gb'), value: 5, langCode: 'en-gb', popular: market.popular_languages.includes('en-gb') || market.popular_languages.includes('Engels') || market.popular_languages.includes('English') },
-      { label: MarketManager.getLanguageLabel('en-us'), value: 6, langCode: 'en-us', popular: market.popular_languages.includes('en-us') },
-      { label: MarketManager.getLanguageLabel('de-de'), value: 7, langCode: 'de-de', popular: market.popular_languages.includes('de-de') || market.popular_languages.includes('Duits') || market.popular_languages.includes('German') },
-      { label: MarketManager.getLanguageLabel('es-es'), value: 8, langCode: 'es-es', popular: market.popular_languages.includes('es-es') || market.popular_languages.includes('Spaans') || market.popular_languages.includes('Spanish') },
-      { label: MarketManager.getLanguageLabel('it-it'), value: 9, langCode: 'it-it', popular: market.popular_languages.includes('it-it') || market.popular_languages.includes('Italiaans') || market.popular_languages.includes('Italian') },
-      { label: MarketManager.getLanguageLabel('pl-pl'), value: 10, langCode: 'pl-pl', popular: market.popular_languages.includes('pl-pl') || market.popular_languages.includes('Pools') || market.popular_languages.includes('Polish') },
-      { label: MarketManager.getLanguageLabel('da-dk'), value: 11, langCode: 'da-dk', popular: market.popular_languages.includes('da-dk') || market.popular_languages.includes('Deens') || market.popular_languages.includes('Danish') },
-      { label: MarketManager.getLanguageLabel('pt-pt'), value: 12, langCode: 'pt-pt', popular: market.popular_languages.includes('pt-pt') || market.popular_languages.includes('Portugees') || market.popular_languages.includes('Portuguese') },
-      { label: MarketManager.getLanguageLabel('sv-se'), value: 43, langCode: 'sv-se', popular: market.popular_languages.includes('sv-se') || market.popular_languages.includes('Zweeds') || market.popular_languages.includes('Swedish') },
-      { label: MarketManager.getLanguageLabel('ca-es'), value: 42, langCode: 'ca-es', popular: market.popular_languages.includes('ca-es') },
-      { label: MarketManager.getLanguageLabel('fi-fi'), value: 44, langCode: 'fi-fi', popular: market.popular_languages.includes('fi-fi') },
-      { label: MarketManager.getLanguageLabel('nb-no'), value: 45, langCode: 'nb-no', popular: market.popular_languages.includes('nb-no') },
-      { label: MarketManager.getLanguageLabel('tr-tr'), value: 46, langCode: 'tr-tr', popular: market.popular_languages.includes('tr-tr') },
-      { label: MarketManager.getLanguageLabel('hr-hr'), value: 47, langCode: 'hr-hr', popular: market.popular_languages.includes('hr-hr') },
-    ];
+    const languageConfig = fetchedLanguages.length > 0 
+      ? fetchedLanguages.map(l => ({
+          label: l.label,
+          value: l.id,
+          langCode: l.code,
+          popular: market.popular_languages.some(pl => 
+            pl.toLowerCase() === l.code.toLowerCase() || 
+            pl.toLowerCase() === l.label.toLowerCase()
+          )
+        }))
+      : [
+          { label: MarketManager.getLanguageLabel('nl-be'), value: 1, langCode: 'nl-be', popular: market.popular_languages.includes('nl-be') || market.popular_languages.includes('Vlaams') },
+          { label: MarketManager.getLanguageLabel('nl-nl'), value: 2, langCode: 'nl-nl', popular: market.popular_languages.includes('nl-nl') || market.popular_languages.includes('Nederlands') },
+          { label: MarketManager.getLanguageLabel('fr-be'), value: 3, langCode: 'fr-be', popular: (market.popular_languages.includes('fr-be') || market.popular_languages.includes('Frans')) && market.market_code === 'BE' },
+          { label: MarketManager.getLanguageLabel('fr-fr'), value: 4, langCode: 'fr-fr', popular: (market.popular_languages.includes('fr-fr') || market.popular_languages.includes('Frans')) && market.market_code !== 'BE' },
+          { label: MarketManager.getLanguageLabel('en-gb'), value: 5, langCode: 'en-gb', popular: market.popular_languages.includes('en-gb') || market.popular_languages.includes('Engels') || market.popular_languages.includes('English') },
+          { label: MarketManager.getLanguageLabel('en-us'), value: 6, langCode: 'en-us', popular: market.popular_languages.includes('en-us') },
+          { label: MarketManager.getLanguageLabel('de-de'), value: 7, langCode: 'de-de', popular: market.popular_languages.includes('de-de') || market.popular_languages.includes('Duits') || market.popular_languages.includes('German') },
+          { label: MarketManager.getLanguageLabel('es-es'), value: 8, langCode: 'es-es', popular: market.popular_languages.includes('es-es') || market.popular_languages.includes('Spaans') || market.popular_languages.includes('Spanish') },
+          { label: MarketManager.getLanguageLabel('it-it'), value: 9, langCode: 'it-it', popular: market.popular_languages.includes('it-it') || market.popular_languages.includes('Italiaans') || market.popular_languages.includes('Italian') },
+          { label: MarketManager.getLanguageLabel('pl-pl'), value: 10, langCode: 'pl-pl', popular: market.popular_languages.includes('pl-pl') || market.popular_languages.includes('Pools') || market.popular_languages.includes('Polish') },
+          { label: MarketManager.getLanguageLabel('da-dk'), value: 11, langCode: 'da-dk', popular: market.popular_languages.includes('da-dk') || market.popular_languages.includes('Deens') || market.popular_languages.includes('Danish') },
+          { label: MarketManager.getLanguageLabel('pt-pt'), value: 12, langCode: 'pt-pt', popular: market.popular_languages.includes('pt-pt') || market.popular_languages.includes('Portugees') || market.popular_languages.includes('Portuguese') },
+          { label: MarketManager.getLanguageLabel('sv-se'), value: 43, langCode: 'sv-se', popular: market.popular_languages.includes('sv-se') || market.popular_languages.includes('Zweeds') || market.popular_languages.includes('Swedish') },
+          { label: MarketManager.getLanguageLabel('ca-es'), value: 42, langCode: 'ca-es', popular: market.popular_languages.includes('ca-es') },
+          { label: MarketManager.getLanguageLabel('fi-fi'), value: 44, langCode: 'fi-fi', popular: market.popular_languages.includes('fi-fi') },
+          { label: MarketManager.getLanguageLabel('nb-no'), value: 45, langCode: 'nb-no', popular: market.popular_languages.includes('nb-no') },
+          { label: MarketManager.getLanguageLabel('tr-tr'), value: 46, langCode: 'tr-tr', popular: market.popular_languages.includes('tr-tr') },
+          { label: MarketManager.getLanguageLabel('hr-hr'), value: 47, langCode: 'hr-hr', popular: market.popular_languages.includes('hr-hr') },
+        ];
 
     const mappedConfig = languageConfig.map(langObj => ({
       ...langObj,
