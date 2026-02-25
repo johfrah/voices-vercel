@@ -66,12 +66,22 @@ export default function BestellingenPage() {
     
     try {
       const res = await fetch('/api/admin/orders');
+      console.log('🚀 [Admin Orders] API Response Status:', res.status);
+      
       if (res.ok) {
         const data = await res.json();
+        console.log('📦 [Admin Orders] Data received:', {
+          count: data.length,
+          sample: data.slice(0, 2),
+          totalInDb: data.length // Voorlopig even gelijk aan count
+        });
         setOrders(data);
+      } else {
+        const errorText = await res.text();
+        console.error('❌ [Admin Orders] API Error:', errorText);
       }
     } catch (e) {
-      console.error('Failed to fetch orders:', e);
+      console.error('❌ [Admin Orders] Fetch failed:', e);
     } finally {
       setIsLoading(false);
       setIsRefreshing(false);
