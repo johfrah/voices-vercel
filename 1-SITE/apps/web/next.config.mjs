@@ -59,6 +59,14 @@ const nextConfig = {
         source: '/wp-content/uploads/2025/06/vstudio.webp',
         destination: '/wp-content/uploads/2025/06/VSTUDIO.webp',
       },
+      {
+        source: '/assets/common/branding/Voices-LOGO-Animated.svg',
+        destination: '/assets/common/branding/Voices-LOGO-Animated.svg',
+      },
+      {
+        source: '/assets/common/branding/Voices-LOGO.svg',
+        destination: '/assets/common/branding/Voices-LOGO.svg',
+      },
     ];
   },
   // Skip linting during build to speed up
