@@ -118,7 +118,17 @@ export async function PATCH(
       if (langInserts.length > 0) await supabase.from('actor_languages').insert(langInserts);
     }
 
-    // 3. Update Demos (1 Truth Handshake)
+    // 3. Update Tones (Relational Handshake)
+    if (body.tone_ids && Array.isArray(body.tone_ids)) {
+      await supabase.from('actor_tones').delete().eq('actor_id', effectiveActorId);
+      const toneInserts = body.tone_ids.map((toneId: number) => ({
+        actor_id: effectiveActorId,
+        tone_id: toneId
+      }));
+      if (toneInserts.length > 0) await supabase.from('actor_tones').insert(toneInserts);
+    }
+
+    // 4. Update Demos (1 Truth Handshake)
     if (body.demos && Array.isArray(body.demos)) {
       const incomingIds = body.demos.map((d: any) => parseInt(d.id)).filter(Boolean);
       if (incomingIds.length > 0) {

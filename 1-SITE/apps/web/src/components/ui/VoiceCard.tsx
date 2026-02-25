@@ -14,7 +14,7 @@ import { cn } from '@/lib/utils';
 import { Actor, Demo } from '@/types';
 import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, Check, ChevronDown, Clock, Edit3, Mic, Pause, Play, Plus, Search as SearchIcon, Settings, ShieldCheck, Zap, X } from 'lucide-react';
+import { ArrowRight, Check, ChevronDown, Clock, Edit3, MapPin, Mic, Pause, Play, Plus, Search as SearchIcon, Settings, ShieldCheck, Zap, X } from 'lucide-react';
 import { useVoicesRouter } from '@/components/ui/VoicesLink';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ButtonInstrument, ContainerInstrument, FlagBE, FlagDE, FlagDK, FlagES, FlagFR, FlagIT, FlagNL, FlagPL, FlagPT, FlagUK, FlagUS, HeadingInstrument, TextInstrument } from './LayoutInstruments';
@@ -207,18 +207,24 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
   const [pricingUpdateTick, setPricingUpdateTick] = useState(0);
   const [eventData, setEventData] = useState<any>(null);
   const [isTagSelectorOpen, setIsTagSelectorOpen] = useState(false);
+  const [isToneSelectorOpen, setIsToneSelectorOpen] = useState(false);
   const [isLangSelectorOpen, setIsLangSelectorOpen] = useState(false);
+  const [isCountrySelectorOpen, setIsCountrySelectorOpen] = useState(false);
   const [isGenderSelectorOpen, setIsGenderSelectorOpen] = useState(false);
   const [isExperienceSelectorOpen, setIsExperienceSelectorOpen] = useState(false);
   const [isStatusSelectorOpen, setIsStatusSelectorOpen] = useState(false);
   const [tagSearchQuery, setTagSearchQuery] = useState('');
   const [availableTags, setAvailableTags] = useState<string[]>([]);
+  const [availableVoiceTones, setAvailableVoiceTones] = useState<any[]>([]);
   const [availableLangs, setAvailableLangs] = useState<any[]>([]);
+  const [availableCountries, setAvailableCountries] = useState<any[]>([]);
   const [availableGenders, setAvailableGenders] = useState<any[]>([]);
   const [availableExperienceLevels, setAvailableExperienceLevels] = useState<any[]>([]);
   const [availableStatuses, setAvailableStatuses] = useState<any[]>([]);
   const tagSelectorRef = useRef<HTMLDivElement>(null);
+  const toneSelectorRef = useRef<HTMLDivElement>(null);
   const langSelectorRef = useRef<HTMLDivElement>(null);
+  const countrySelectorRef = useRef<HTMLDivElement>(null);
   const genderSelectorRef = useRef<HTMLDivElement>(null);
   const experienceSelectorRef = useRef<HTMLDivElement>(null);
   const statusSelectorRef = useRef<HTMLDivElement>(null);
@@ -284,12 +290,41 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
   }, [isStatusSelectorOpen]);
 
   useEffect(() => {
+    if (isToneSelectorOpen) {
+      // Fetch voice tones from database (Handshake Truth)
+      fetch('/api/admin/voice-tones')
+        .then(res => res.json())
+        .then(data => {
+          if (data.results) setAvailableVoiceTones(data.results);
+        })
+        .catch(err => console.error('Failed to fetch voice tones:', err));
+    }
+  }, [isToneSelectorOpen]);
+
+  useEffect(() => {
+    if (isCountrySelectorOpen) {
+      fetch('/api/admin/countries')
+        .then(res => res.json())
+        .then(data => {
+          if (data.results) setAvailableCountries(data.results);
+        })
+        .catch(err => console.error('Failed to fetch countries:', err));
+    }
+  }, [isCountrySelectorOpen]);
+
+  useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (tagSelectorRef.current && !tagSelectorRef.current.contains(event.target as Node)) {
         setIsTagSelectorOpen(false);
       }
+      if (toneSelectorRef.current && !toneSelectorRef.current.contains(event.target as Node)) {
+        setIsToneSelectorOpen(false);
+      }
       if (langSelectorRef.current && !langSelectorRef.current.contains(event.target as Node)) {
         setIsLangSelectorOpen(false);
+      }
+      if (countrySelectorRef.current && !countrySelectorRef.current.contains(event.target as Node)) {
+        setIsCountrySelectorOpen(false);
       }
       if (genderSelectorRef.current && !genderSelectorRef.current.contains(event.target as Node)) {
         setIsGenderSelectorOpen(false);
@@ -304,6 +339,61 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  const handleCountryChange = async (countryId: number) => {
+    if (!voice) return;
+    playClick('pro');
+    try {
+      const res = await fetch(`/api/admin/actors/${voice.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ country_id: countryId })
+      });
+      if (res.ok) {
+        playClick('success');
+        setIsCountrySelectorOpen(false);
+        const selected = availableCountries.find(c => c.id === countryId);
+        if (selected) {
+          setVoice(prev => ({ ...prev, country_id: countryId, country: selected.code }));
+        }
+      }
+    } catch (err) {
+      console.error('Failed to update country:', err);
+    }
+  };
+
+  const handleToneToggle = async (toneId: number) => {
+    if (!voice) return;
+    playClick('pro');
+    
+    const currentTones = voice.tone_ids || [];
+    let newTones: number[];
+    
+    if (currentTones.includes(toneId)) {
+      newTones = currentTones.filter(id => id !== toneId);
+    } else {
+      newTones = [...currentTones, toneId];
+    }
+    
+    try {
+      const res = await fetch(`/api/admin/actors/${voice.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tone_ids: newTones })
+      });
+      
+      if (res.ok) {
+        playClick('success');
+        // Update local state for immediate feedback
+        setVoice(prev => ({
+          ...prev,
+          tone_ids: newTones
+        }));
+      }
+    } catch (err) {
+      console.error('Failed to update tones:', err);
+    }
+  };
 
   const handleTagToggle = async (tag: string) => {
     if (!voice) return;
@@ -809,6 +899,18 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
+                      setIsCountrySelectorOpen(!isCountrySelectorOpen);
+                      playClick('pro');
+                    }}
+                    className="text-primary hover:scale-110 transition-transform"
+                    title="Land wijzigen"
+                  >
+                    <MapPin size={14} strokeWidth={1.5} />
+                  </button>
+
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
                       setIsGenderSelectorOpen(!isGenderSelectorOpen);
                       playClick('pro');
                     }}
@@ -868,6 +970,36 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
                           >
                             <span>{langItem.label}</span>
                             {isSelectedLang && <Check size={14} strokeWidth={3} className="text-primary" />}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </motion.div>
+                )}
+
+                {isCountrySelectorOpen && (
+                  <motion.div
+                    ref={countrySelectorRef}
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    className="absolute top-full left-0 mt-2 w-48 bg-white rounded-2xl shadow-2xl border border-black/10 py-2 z-[110]"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <div className="max-h-64 overflow-y-auto no-scrollbar">
+                      {availableCountries.map(item => {
+                        const isSelected = item.id === (voice as any).country_id;
+                        return (
+                          <button
+                            key={item.id}
+                            onClick={() => handleCountryChange(item.id)}
+                            className={cn(
+                              "w-full px-4 py-2.5 text-left text-[13px] font-bold transition-colors flex items-center justify-between group",
+                              isSelected ? "bg-primary/10 text-primary" : "text-va-black hover:bg-va-off-white"
+                            )}
+                          >
+                            <span>{item.label}</span>
+                            {isSelected && <Check size={14} strokeWidth={3} className="text-primary" />}
                           </button>
                         );
                       })}
@@ -1035,19 +1167,67 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
                 ))}
                 
                 {isEditMode && (
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setIsTagSelectorOpen(!isTagSelectorOpen);
-                      playClick('pro');
-                    }}
-                    className="w-5 h-5 rounded-full bg-primary text-white flex items-center justify-center hover:scale-110 transition-all shadow-sm ml-1"
-                  >
-                    <Plus size={10} strokeWidth={3} />
-                  </button>
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setIsToneSelectorOpen(!isToneSelectorOpen);
+                        playClick('pro');
+                      }}
+                      className="w-5 h-5 rounded-full bg-primary text-white flex items-center justify-center hover:scale-110 transition-all shadow-sm"
+                      title="Relational Tones (Handshake)"
+                    >
+                      <Zap size={10} strokeWidth={3} />
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setIsTagSelectorOpen(!isTagSelectorOpen);
+                        playClick('pro');
+                      }}
+                      className="w-5 h-5 rounded-full bg-va-black/20 text-white flex items-center justify-center hover:scale-110 transition-all shadow-sm"
+                      title="Legacy Tags (String)"
+                    >
+                      <Plus size={10} strokeWidth={3} />
+                    </button>
+                  </div>
                 )}
 
                 <AnimatePresence>
+                  {isToneSelectorOpen && (
+                    <motion.div
+                      ref={toneSelectorRef}
+                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                      className="absolute bottom-full left-0 mb-2 w-64 bg-white rounded-2xl shadow-2xl border border-black/10 p-4 z-[100]"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <HeadingInstrument level={4} className="text-[10px] font-bold tracking-widest uppercase text-va-black/40 mb-3 px-1">
+                        Voice Tones (Handshake)
+                      </HeadingInstrument>
+                      <div className="max-h-48 overflow-y-auto no-scrollbar flex flex-wrap gap-2">
+                        {availableVoiceTones.map(tone => {
+                          const isSelected = voice.tone_ids?.includes(tone.id);
+                          return (
+                            <button
+                              key={tone.id}
+                              onClick={() => handleToneToggle(tone.id)}
+                              className={cn(
+                                "px-3 py-1.5 rounded-full text-[10px] font-bold tracking-widest uppercase transition-all",
+                                isSelected 
+                                  ? "bg-primary text-white" 
+                                  : "bg-va-off-white text-va-black/40 hover:bg-va-black/5"
+                              )}
+                            >
+                              {tone.label}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </motion.div>
+                  )}
+
                   {isTagSelectorOpen && (
                     <motion.div
                       ref={tagSelectorRef}

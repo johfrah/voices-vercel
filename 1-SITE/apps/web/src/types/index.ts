@@ -100,6 +100,9 @@ export interface Actor {
   extra_lang_ids?: number[]; //  Harde koppeling naar languages.id
   tone_ids?: number[]; //  Harde koppeling naar voice_tones.id
   country_id?: number; //  Harde koppeling naar countries.id
+  gender_id?: number; //  Harde koppeling naar genders.id
+  experience_level_id?: number; //  Harde koppeling naar experience_levels.id
+  status_id?: number; //  Harde koppeling naar actor_statuses.id
   ai_enabled?: boolean;
   ai_tags?: string;
   price_ivr?: number;

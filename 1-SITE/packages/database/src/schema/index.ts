@@ -244,11 +244,36 @@ export const actors = pgTable('actors', {
 });
 
 // 🗣️ DIALECTS (Linguistic Nuance)
+export const dialects = pgTable('dialects', {
+  id: serial('id').primaryKey(),
+  code: text('code').unique().notNull(), // bijv. 'nl_vlaams', 'fr_be'
+  label: text('label').notNull(), // bijv. 'Vlaams', 'Belgisch Frans'
+  languageId: integer('language_id').references(() => languages.id), // Koppeling aan de hoofdtaal
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+export const proficiencies = pgTable('proficiencies', {
+  id: serial('id').primaryKey(),
+  code: text('code').unique().notNull(), // native, fluent, imitation
+  label: text('label').notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
 export const actorDialects = pgTable('actor_dialects', {
   id: serial('id').primaryKey(),
-  actorId: integer('actor_id').references(() => actors.id).notNull(),
-  dialect: text('dialect').notNull(), // e.g., 'West-Vlaams', 'Limburgs-NL', 'Paulista'
-  proficiency: text('proficiency').default('native'), // native, fluent, imitation
+  actorId: integer('actor_id').references(() => actors.id, { onDelete: 'cascade' }).notNull(),
+  dialect: text('dialect'), // Legacy string
+  dialectId: integer('dialect_id').references(() => dialects.id), // 🛡️ Handshake Truth
+  proficiency: text('proficiency').default('native'), // Legacy string
+  proficiencyId: integer('proficiency_id').references(() => proficiencies.id), // 🛡️ Handshake Truth
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+// 🎙️ DEMO TYPES
+export const demoTypes = pgTable('demo_types', {
+  id: serial('id').primaryKey(),
+  code: text('code').unique().notNull(), // bijv. 'commercial', 'telephony', 'corporate'
+  label: text('label').notNull(),
   createdAt: timestamp('created_at').defaultNow(),
 });
 
@@ -259,7 +284,8 @@ export const actorDemos = pgTable('actor_demos', {
   mediaId: integer('media_id').references(() => media.id), // 🔗 Link naar Media Engine
   name: text('name').notNull(),
   url: text('url').notNull(),
-  type: text('type'), // demo, telephony, corporate, etc.
+  type: text('type'), // Legacy string
+  typeId: integer('type_id').references(() => demoTypes.id), // 🛡️ Handshake Truth
   is_public: boolean('is_public').default(true), // Sommige demo's kunnen privé blijven voor offertes
   menu_order: integer('menu_order').default(0),
 });
@@ -529,6 +555,14 @@ export const orders = pgTable('orders', {
   createdAt: timestamp('created_at').defaultNow(),
 });
 
+// 🚚 DELIVERY STATUSES
+export const deliveryStatuses = pgTable('delivery_statuses', {
+  id: serial('id').primaryKey(),
+  code: text('code').unique().notNull(), // bijv. 'waiting', 'uploaded', 'approved'
+  label: text('label').notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
 export const orderItems = pgTable('order_items', {
   id: serial('id').primaryKey(),
   orderId: integer('order_id').references(() => orders.id),
@@ -539,10 +573,12 @@ export const orderItems = pgTable('order_items', {
   price: decimal('price', { precision: 10, scale: 2 }),
   cost: decimal('cost', { precision: 10, scale: 2 }), // 🤫 De COG per line item (inkoopwaarde stem)
   tax: decimal('tax', { precision: 10, scale: 2 }),
-  deliveryStatus: text('delivery_status').default('waiting'), // waiting, uploaded, admin_review, client_review, approved, rejected
+  deliveryStatus: text('delivery_status').default('waiting'), // Legacy string
+  deliveryStatusId: integer('delivery_status_id').references(() => deliveryStatuses.id), // 🛡️ Handshake Truth
   deliveryFileUrl: text('delivery_file_url'), // Pad naar de audio in Supabase Storage
   invoiceFileUrl: text('invoice_file_url'), // De geüploade factuur van de acteur
   payoutStatus: payoutStatusEnum('payout_status').default('pending'), // pending, approved, paid, cancelled
+  payoutStatusId: integer('payout_status_id'), // 🛡️ Handshake Truth (Future)
   metaData: jsonb('meta_data'), // Bevat script, usage, instructions, deadline, etc.
   meta: jsonb('meta'), // 📦 Extra meta data
   editionId: integer('edition_id').references(() => workshopEditions.id), // 📅 Link naar specifieke workshop editie
@@ -1063,7 +1099,8 @@ export const costs = pgTable('costs', {
   id: serial('id').primaryKey(),
   amount: decimal('amount', { precision: 10, scale: 2 }).notNull(),
   type: text('type').notNull(), // 'locatie', 'instructeur', 'materiaal', 'overig'
-  journey: text('journey').notNull().default('studio'), // 🎭 'studio', 'agency', 'academy'
+  journey: text('journey'), // Legacy string
+  journeyId: integer('journey_id').references(() => journeys.id), // 🛡️ Handshake Truth
   note: text('note'),
   workshopEditionId: integer('workshop_edition_id').references(() => workshopEditions.id),
   locationId: integer('location_id').references(() => locations.id),
@@ -1500,16 +1537,44 @@ export const actorTonesRelations = relations(actorTones, ({ one }) => ({
 export const countriesRelations = relations(countries, ({ many }) => ({
   actors: many(actors),
 }));
+export const dialectsRelations = relations(dialects, ({ one, many }) => ({
+  language: one(languages, {
+    fields: [dialects.languageId],
+    references: [languages.id],
+  }),
+  actorDialects: many(actorDialects),
+}));
 export const actorDialectsRelations = relations(actorDialects, ({ one }) => ({
   actor: one(actors, {
     fields: [actorDialects.actorId],
     references: [actors.id],
   }),
+  dialect: one(dialects, {
+    fields: [actorDialects.dialectId],
+    references: [dialects.id],
+  }),
+  proficiency: one(proficiencies, {
+    fields: [actorDialects.proficiencyId],
+    references: [proficiencies.id],
+  }),
+}));
+export const proficienciesRelations = relations(proficiencies, ({ many }) => ({
+  actorDialects: many(actorDialects),
+}));
+export const demoTypesRelations = relations(demoTypes, ({ many }) => ({
+  actorDemos: many(actorDemos),
+}));
+export const deliveryStatusesRelations = relations(deliveryStatuses, ({ many }) => ({
+  orderItems: many(orderItems),
 }));
 export const actorDemosRelations = relations(actorDemos, ({ one }) => ({
   actor: one(actors, {
     fields: [actorDemos.actorId],
     references: [actors.id],
+  }),
+  demoType: one(demoTypes, {
+    fields: [actorDemos.typeId],
+    references: [demoTypes.id],
   }),
 }));
 export const actorVideosRelations = relations(actorVideos, ({ one }) => ({
@@ -1589,6 +1654,10 @@ export const orderItemsRelations = relations(orderItems, ({ one, many }) => ({
   edition: one(workshopEditions, {
     fields: [orderItems.editionId],
     references: [workshopEditions.id],
+  }),
+  deliveryStatus: one(deliveryStatuses, {
+    fields: [orderItems.deliveryStatusId],
+    references: [deliveryStatuses.id],
   }),
   costs: many(costs),
 }));
@@ -1670,6 +1739,10 @@ export const costsRelations = relations(costs, ({ one }) => ({
   orderItem: one(orderItems, {
     fields: [costs.orderItemId],
     references: [orderItems.id],
+  }),
+  journey: one(journeys, {
+    fields: [costs.journeyId],
+    references: [journeys.id],
   }),
 }));
 export const recordingSessionsRelations = relations(recordingSessions, ({ one, many }) => ({
