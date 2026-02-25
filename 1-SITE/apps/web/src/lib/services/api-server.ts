@@ -110,7 +110,7 @@ function getGlobalCache() {
 const ACTORS_CACHE_TTL = 1000 * 60 * 5; // 5 minutes
 
 export async function getActors(params: Record<string, string> = {}, lang: string = 'nl'): Promise<SearchResults> {
-  const { language, search, gender, style, market: marketParam } = params;
+  const { language, country, attribute, search, gender, style, market: marketParam } = params;
   const market = marketParam || 'BE'; // Default to BE if not provided
   const cache = getGlobalCache();
   const cacheKey = JSON.stringify({ params, lang });
@@ -127,33 +127,36 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
           .eq('status', 'live')
           .eq('is_public', true);
           
+        // 🛡️ NUCLEAR HANDSHAKE: ID-First Filtering
         if (language || lang) {
           const targetLang = (language || lang).toLowerCase();
+          if (!isNaN(parseInt(targetLang))) {
+            query = query.eq('native_language_id', parseInt(targetLang));
+          } else if (targetLang !== 'all') {
+            const langMap: Record<string, number> = {
+              'nl-be': 1, 'vlaams': 1, 'nederlands': 2, 'nl-nl': 2,
+              'fr-be': 3, 'frans (be)': 3, 'fr-fr': 4, 'frans (fr)': 4,
+              'en-gb': 5, 'engels': 5, 'en-us': 6, 'de-de': 7, 'duits': 7
+            };
+            const mappedId = langMap[targetLang];
+            if (mappedId) query = query.eq('native_language_id', mappedId);
+          }
+        }
+
+        if (country) {
+          query = query.eq('country_id', parseInt(country));
+        }
+
+        if (attribute) {
+          // Attributes are in a mapping table, we need a subquery or join
+          // For now, we'll use a subquery for stability
+          const { data: actorIds } = await supabase
+            .from('actor_attribute_mappings')
+            .select('actor_id')
+            .eq('attribute_id', parseInt(attribute));
           
-          // 🛡️ CHRIS-PROTOCOL: Pre-selection logic (Make it easier, not impossible)
-          // We filter on the server to provide a fast initial load, but the client 
-          // can still request other languages or 'all'.
-          if (targetLang === 'nl' || targetLang === 'nl-be' || targetLang === 'nl-nl') {
-            query = query.or('native_lang.ilike.nl,native_lang.ilike.nl-%,native_lang.ilike.vlaams,native_lang.ilike.nederlands');
-          } else if (targetLang === 'en' || targetLang === 'en-gb' || targetLang === 'en-us') {
-            query = query.or('native_lang.ilike.en,native_lang.ilike.en-%,native_lang.ilike.engels');
-          } else if (targetLang === 'fr-be' || targetLang === 'frans (be)') {
-            // 🛡️ CHRIS-PROTOCOL: STRICT NATIVE-ONLY MATCHING
-            // Als de bezoeker specifiek filtert op Frans (België), 
-            // tonen we uitsluitend stemmen met de juiste regio-code.
-            query = query.or('native_lang.ilike.fr-be,native_lang.ilike.frans (be),native_lang.ilike.belgisch frans');
-          } else if (targetLang === 'fr-fr' || targetLang === 'frans (fr)') {
-            query = query.or('native_lang.ilike.fr-fr,native_lang.ilike.frans (fr)');
-          } else if (targetLang === 'fr') {
-            // Algemene Franse filter (moedertaal)
-            query = query.or('native_lang.ilike.fr,native_lang.ilike.fr-%');
-          } else if (targetLang === 'de' || targetLang === 'de-de') {
-            query = query.or('native_lang.ilike.de,native_lang.ilike.de-%,native_lang.ilike.duits');
-          } else if (targetLang === 'all') {
-            // 🛡️ CHRIS-PROTOCOL: 'all' allows the visitor to see the entire selection
-            console.log(' [getActors] Fetching all live actors per request');
-          } else {
-            query = query.or(`native_lang.ilike.${targetLang},native_lang.ilike.${targetLang}-%`);
+          if (actorIds) {
+            query = query.in('id', actorIds.map(a => a.actor_id));
           }
         }
         
@@ -175,7 +178,7 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
           ...a,
           first_name: a.first_name,
           last_name: a.last_name,
-          native_lang: a.native_lang,
+          native_lang_id: a.native_language_id,
           countryId: a.country_id,
           wp_product_id: a.wp_product_id,
           photo_id: a.photo_id,
@@ -322,7 +325,7 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
         last_name: actor.last_name || '',
         slug: actor.slug || actor.first_name?.toLowerCase(),
         gender: actor.gender,
-        native_lang: actor.native_lang,
+        native_lang_id: nativeLangMap.get(actor.id) || actor.native_language_id || null,
         photo_url: photoUrl,
         starting_price: parseFloat(actor.price_unpaid || '0'),
         voice_score: actor.voice_score || 10,
@@ -545,7 +548,7 @@ async function processActorData(actor: any, slug: string): Promise<Actor> {
     display_name: actor.first_name,
     first_name: actor.first_name,
     last_name: actor.last_name || '',
-    native_lang: actor.native_lang,
+    native_lang_id: actor.native_language_id,
     photo_url: photoUrl,
     starting_price: parseFloat(actor.price_unpaid || '0'),
     voice_score: actor.voice_score || 10,
