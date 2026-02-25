@@ -1,0 +1,92 @@
+/* 🧘 ADEMING WORLD - SOURCE OF TRUTH (2026)
+   Doel: Het herstellen van de exacte look 'n feel van de originele Ademing app.
+   Dwingt een zachte, warme, en natuurlijke esthetiek af die losstaat van de Voices branding.
+*/
+
+.theme-ademing {
+  /* Base colors - extra warm, rustgevend */
+  --background: 35 25% 98%;
+  --foreground: 28 12% 25%;
+
+  /* Card system - zachter, meer diepte */
+  --card: 0 0% 100%;
+  --card-foreground: 28 12% 25%;
+
+  /* Popover */
+  --popover: 0 0% 100%;
+  --popover-foreground: 28 12% 25%;
+
+  /* Primary - zachte, natuurlijke groene tint */
+  --primary: 160 28% 48%;
+  --primary-foreground: 0 0% 100%;
+
+  /* Secondary - warme, uitnodigende tint */
+  --secondary: 35 30% 94%;
+  --secondary-foreground: 28 12% 25%;
+
+  /* Muted - extra zachte achtergrond */
+  --muted: 35 25% 96%;
+  --muted-foreground: 28 10% 55%;
+
+  /* Accent - voor zachte highlights */
+  --accent: 35 35% 92%;
+  --accent-foreground: 28 12% 25%;
+
+  /* Borders & inputs - heel subtiel */
+  --border: 35 20% 92%;
+  --input: 35 20% 92%;
+  --ring: 160 28% 48%;
+
+  /* Element kleuren - kern van Ademing identiteit */
+  --element-aarde: 40 65% 55%; /* Oker/Ochre */
+  --element-aarde-soft: 40 45% 88%;
+  --element-vuur: 5 75% 55%; /* Warm rood */
+  --element-vuur-soft: 5 50% 88%;
+  --element-water: 180 55% 55%; /* Turquoise */
+  --element-water-soft: 180 40% 88%;
+  --element-lucht: 210 60% 55%; /* Helder blauw */
+  --element-lucht-soft: 210 45% 88%;
+
+  /* Thema kleuren */
+  --theme-rust: 210 45% 50%;
+  --theme-rust-soft: 210 35% 94%;
+  --theme-vuur: 15 70% 50%;
+  --theme-vuur-soft: 15 55% 94%;
+  --theme-routine: 160 35% 50%;
+  --theme-routine-soft: 160 28% 94%;
+
+  /* Shadows - extra zachte, natuurlijke schaduwen */
+  --shadow-soft: 0 2px 12px hsla(28, 12%, 25%, 0.06);
+  --shadow-medium: 0 4px 20px hsla(28, 12%, 25%, 0.09);
+  --shadow-large: 0 8px 40px hsla(28, 12%, 25%, 0.12);
+
+  /* Typography Override */
+  --font-serif: 'Cormorant Garamond', serif;
+}
+
+.theme-ademing h1, 
+.theme-ademing h2, 
+.theme-ademing h3, 
+.theme-ademing .font-serif {
+  font-family: var(--font-serif);
+  font-weight: 500;
+}
+
+/* Mindful Animations */
+@keyframes breathe {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.05); opacity: 0.9; }
+}
+
+.animate-breathe {
+  animation: breathe 5.5s ease-in-out infinite;
+}
+
+@keyframes gentle-float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+.animate-gentle-float {
+  animation: gentle-float 6s ease-in-out infinite;
+}

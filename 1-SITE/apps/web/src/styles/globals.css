@@ -13,9 +13,48 @@
 
 /* 🎨 THEME SYSTEM */
 .theme-ademing {
-  --va-primary: #6366f1;
-  --va-background: #FAF9F6;
-  font-family: var(--font-raleway), 'Inter', system-ui, sans-serif !important;
+  /* Base colors - extra warm, rustgevend */
+  --background: 35 25% 98%;
+  --foreground: 28 12% 25%;
+
+  /* Card system - zachter, meer diepte */
+  --card: 0 0% 100%;
+  --card-foreground: 28 12% 25%;
+
+  /* Primary - zachte, natuurlijke groene tint */
+  --primary: 160 28% 48%;
+  --primary-foreground: 0 0% 100%;
+
+  /* Secondary - warme, uitnodigende tint */
+  --secondary: 35 30% 94%;
+  --secondary-foreground: 28 12% 25%;
+
+  /* Muted - extra zachte achtergrond */
+  --muted: 35 25% 96%;
+  --muted-foreground: 28 10% 55%;
+
+  /* Borders & inputs - heel subtiel */
+  --border: 35 20% 92%;
+  --input: 35 20% 92%;
+  --ring: 160 28% 48%;
+
+  /* Element kleuren - kern van Ademing identiteit */
+  --element-aarde: 40 65% 55%;
+  --element-vuur: 5 75% 55%;
+  --element-water: 180 55% 55%;
+  --element-lucht: 210 60% 55%;
+
+  /* Shadows */
+  --shadow-soft: 0 2px 12px hsla(28, 12%, 25%, 0.06);
+  --shadow-medium: 0 4px 20px hsla(28, 12%, 25%, 0.09);
+}
+
+.theme-ademing h1, 
+.theme-ademing h2, 
+.theme-ademing h3, 
+.theme-ademing .font-serif {
+  font-family: var(--font-cormorant), serif !important;
+  font-weight: 500;
 }
 
 .theme-youssef {

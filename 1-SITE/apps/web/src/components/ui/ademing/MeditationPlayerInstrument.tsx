@@ -9,12 +9,6 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { 
-  ButtonInstrument, 
-  ContainerInstrument, 
-  TextInstrument, 
-  HeadingInstrument 
-} from "../LayoutInstruments";
 import { useSonicDNA } from "@/lib/engines/sonic-dna";
 import { useGlobalAudio } from "@/contexts/GlobalAudioContext";
 import nextDynamic from "next/dynamic";
@@ -133,19 +127,19 @@ export const MeditationPlayerInstrument = ({
               className="flex justify-between items-start"
             >
               <div className="space-y-1">
-                <TextInstrument className="text-primary font-bold text-[10px] uppercase tracking-[0.3em]">
+                <span className="text-primary font-bold text-[10px] uppercase tracking-[0.3em]">
                   {track.theme || 'Meditatie'}
-                </TextInstrument>
-                <HeadingInstrument level={2} className="text-3xl md:text-5xl font-light tracking-tighter text-white">
+                </span>
+                <h2 className="text-3xl md:text-5xl font-serif font-bold text-white tracking-tight">
                   {track.title}
-                </HeadingInstrument>
+                </h2>
               </div>
-              <ButtonInstrument 
+              <button 
                 onClick={onClose}
                 className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md border border-white/10 flex items-center justify-center hover:bg-white/20 transition-all"
               >
                 <X size={24} strokeWidth={1.5} />
-              </ButtonInstrument>
+              </button>
             </motion.div>
           )}
         </AnimatePresence>
@@ -166,9 +160,9 @@ export const MeditationPlayerInstrument = ({
           
           {/* Subtitles / Intentions */}
           <div className="mt-12 max-w-2xl text-center">
-            <TextInstrument className="text-xl md:text-2xl font-light text-white/80 leading-relaxed italic">
+            <p className="text-xl md:text-2xl font-serif italic text-white/80 leading-relaxed">
               "Laat je adem de weg wijzen naar binnen."
-            </TextInstrument>
+            </p>
           </div>
         </div>
 
@@ -211,12 +205,12 @@ export const MeditationPlayerInstrument = ({
 
               {/* Secondary Options */}
               <div className="flex justify-center gap-4">
-                <ButtonInstrument className="bg-white/5 border border-white/5 rounded-full px-6 py-2 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 hover:bg-white/10 transition-all">
+                <button className="bg-white/5 border border-white/5 rounded-full px-6 py-2 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 hover:bg-white/10 transition-all">
                   <Music size={14} /> Achtergrond
-                </ButtonInstrument>
-                <ButtonInstrument className="bg-white/5 border border-white/5 rounded-full px-6 py-2 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 hover:bg-white/10 transition-all">
+                </button>
+                <button className="bg-white/5 border border-white/5 rounded-full px-6 py-2 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 hover:bg-white/10 transition-all">
                   <Clock size={14} /> Slaaptimer
-                </ButtonInstrument>
+                </button>
               </div>
             </motion.div>
           )}

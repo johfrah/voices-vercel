@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Play, Pause, RotateCcw } from "lucide-react";
-import { ButtonInstrument, ContainerInstrument, TextInstrument, HeadingInstrument } from "../LayoutInstruments";
 import { useSonicDNA } from "@/lib/engines/sonic-dna";
 
 const BREATHING_CYCLE = {
@@ -76,10 +75,10 @@ export const BreathingInstrument = ({ className }: { className?: string }) => {
 
   const getPhaseColor = () => {
     switch (phase) {
-      case "inhale": return "bg-blue-500/10 text-blue-600";
-      case "hold": return "bg-purple-500/10 text-purple-600";
-      case "exhale": return "bg-green-500/10 text-green-600";
-      case "rest": return "bg-amber-500/10 text-amber-600";
+      case "inhale": return "bg-element-water/10 text-element-water";
+      case "hold": return "bg-element-aarde/10 text-element-aarde";
+      case "exhale": return "bg-element-vuur/10 text-element-vuur";
+      case "rest": return "bg-element-lucht/10 text-element-lucht";
     }
   };
 
@@ -89,35 +88,35 @@ export const BreathingInstrument = ({ className }: { className?: string }) => {
       isActive && "shadow-aura",
       className
     )}>
-      <HeadingInstrument level={3} className="text-2xl font-light mb-2 tracking-tight">
+      <h3 className="text-3xl font-serif font-bold mb-2 tracking-tight">
         Neem even een bewuste adem
-      </HeadingInstrument>
-      <TextInstrument className="text-[15px] text-va-black/40 mb-12 font-light">
-        Een kleine oefening om tot rust te komen in de Voices-wereld.
-      </TextInstrument>
+      </h3>
+      <p className="text-[15px] text-muted-foreground mb-12">
+        Een kleine oefening om tot rust te komen.
+      </p>
 
       <div className="relative w-64 h-64 mx-auto mb-12 flex items-center justify-center">
         {/* Outer Ring */}
-        <div className="absolute inset-0 rounded-full border border-black/5 animate-pulse opacity-20" />
+        <div className="absolute inset-0 rounded-full border border-primary/10 animate-pulse opacity-20" />
         
         {/* Breathing circle */}
         <div
           className={cn(
             "w-48 h-48 rounded-full transition-all duration-[4000ms] ease-in-out flex items-center justify-center relative z-10",
-            isActive && phase === "inhale" && "scale-[1.4] bg-primary/10",
-            isActive && phase === "hold" && "scale-[1.4] bg-primary/20",
-            isActive && phase === "exhale" && "scale-100 bg-primary/5",
-            isActive && phase === "rest" && "scale-100 bg-primary/5",
-            !isActive && "scale-100 bg-va-black/5"
+            isActive && phase === "inhale" && "scale-[1.4] bg-element-water/10",
+            isActive && phase === "hold" && "scale-[1.4] bg-element-aarde/20",
+            isActive && phase === "exhale" && "scale-100 bg-element-vuur/5",
+            isActive && phase === "rest" && "scale-100 bg-element-lucht/5",
+            !isActive && "scale-100 bg-black/5"
           )}
         >
           <div className="text-center">
-            <TextInstrument className="text-6xl font-light tracking-tighter text-va-black leading-none mb-2">
+            <p className="text-6xl font-serif font-light text-foreground leading-none mb-2">
               {counter}
-            </TextInstrument>
+            </p>
             <div className={cn(
               "px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest transition-colors duration-500",
-              isActive ? getPhaseColor() : "bg-va-black/5 text-va-black/20"
+              isActive ? getPhaseColor() : "bg-black/5 text-muted-foreground"
             )}>
               {isActive ? getPhaseText() : "Klaar?"}
             </div>
@@ -129,20 +128,20 @@ export const BreathingInstrument = ({ className }: { className?: string }) => {
           <div className="absolute inset-0 -z-0 opacity-30 blur-3xl animate-pulse">
             <div className={cn(
               "w-full h-full rounded-full transition-colors duration-1000",
-              phase === 'inhale' ? 'bg-blue-400' : 
-              phase === 'hold' ? 'bg-purple-400' : 
-              phase === 'exhale' ? 'bg-green-400' : 'bg-amber-400'
+              phase === 'inhale' ? 'bg-element-water' : 
+              phase === 'hold' ? 'bg-element-aarde' : 
+              phase === 'exhale' ? 'bg-element-vuur' : 'bg-element-lucht'
             )} />
           </div>
         )}
       </div>
 
       <div className="flex justify-center gap-4">
-        <ButtonInstrument
+        <button
           onClick={toggleActive}
           className={cn(
             "px-10 py-4 rounded-full font-bold text-[13px] tracking-widest uppercase transition-all",
-            isActive ? "bg-va-black text-white" : "bg-primary text-white"
+            isActive ? "bg-foreground text-background" : "bg-primary text-white"
           )}
         >
           {isActive ? (
@@ -150,27 +149,27 @@ export const BreathingInstrument = ({ className }: { className?: string }) => {
           ) : (
             <span className="flex items-center gap-2"><Play size={16} strokeWidth={2} /> Start ademhaling</span>
           )}
-        </ButtonInstrument>
+        </button>
         
         {isActive && (
-          <ButtonInstrument
+          <button
             onClick={() => {
               setIsActive(false);
               setPhase("inhale");
               setCounter(BREATHING_CYCLE.inhale);
               playClick('soft');
             }}
-            className="w-14 h-14 rounded-full bg-va-black/5 text-va-black/40 flex items-center justify-center hover:bg-va-black/10 transition-all"
+            className="w-14 h-14 rounded-full bg-black/5 text-muted-foreground flex items-center justify-center hover:bg-black/10 transition-all"
           >
             <RotateCcw size={20} strokeWidth={1.5} />
-          </ButtonInstrument>
+          </button>
         )}
       </div>
 
       {isActive && (
-        <TextInstrument className="text-[11px] font-bold text-va-black/20 uppercase tracking-[0.2em] mt-12 animate-pulse">
+        <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-[0.2em] mt-12 animate-pulse">
           Volg gewoon je adem, zonder oordeel
-        </TextInstrument>
+        </p>
       )}
     </ContainerInstrument>
   );

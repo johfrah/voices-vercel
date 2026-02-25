@@ -15,7 +15,7 @@ import { MarketDatabaseService } from "@/lib/system/market-manager-db";
 import { Analytics } from "@vercel/analytics/react";
 import { VercelToolbar } from "@vercel/toolbar/next";
 import type { Metadata, Viewport } from "next";
-import { Inter, Raleway } from "next/font/google";
+import { Inter, Raleway, Cormorant_Garamond } from "next/font/google";
 import { headers } from "next/headers";
 import { Suspense } from "react";
 import dynamic from "next/dynamic";
@@ -59,6 +59,12 @@ async function getMarketSafe(host: string) {
   }
 }
 const raleway = Raleway({ subsets: ["latin"], variable: '--font-raleway' });
+const cormorant = Cormorant_Garamond({ 
+  subsets: ["latin"], 
+  variable: '--font-cormorant',
+  weight: ['300', '400', '500', '600', '700'],
+  style: ['normal', 'italic']
+});
 
 export const viewport: Viewport = {
   themeColor: "#000000",
@@ -240,8 +246,12 @@ export default async function RootLayout({
   // 🛡️ CHRIS-PROTOCOL: Force Client-Only rendering for Admin routes to prevent hydration mismatch (#419)
   const isAdminRoute = pathname.startsWith('/admin') || segments[0] === 'admin';
   
-  const htmlClass = `${raleway.className} ${inter.className} theme-${market.theme} ${raleway.variable}`;
-  const bodyClass = "pb-24 md:pb-0 touch-manipulation va-main-layout pt-[80px] md:pt-[110px]";
+  const isAdeming = market.market_code === 'ADEMING';
+  const htmlClass = `${raleway.className} ${inter.className} ${cormorant.variable} theme-${market.theme} ${raleway.variable}`;
+  const bodyClass = cn(
+    "pb-24 md:pb-0 touch-manipulation va-main-layout",
+    !isAdeming && "pt-[80px] md:pt-[110px]"
+  );
   const lang = langHeader || (pathname.includes('/artist/youssef') || market.market_code === 'ARTIST' ? 'en-EU' : (market.primary_language || 'nl-BE'));
 
   if (isAdminRoute) {
@@ -272,9 +282,9 @@ export default async function RootLayout({
   
   const isArtistJourney = market.market_code === 'ARTIST' || pathname.includes('/artist/') || pathname.includes('/voice/');
 
-  const showVoicy = !isArtistJourney && !isUnderConstruction;
-  const showTopBar = !isArtistJourney && !isUnderConstruction;
-  const showGlobalNav = !isUnderConstruction;
+  const showVoicy = !isArtistJourney && !isUnderConstruction && market.market_code !== 'ADEMING';
+  const showTopBar = !isArtistJourney && !isUnderConstruction && market.market_code !== 'ADEMING';
+  const showGlobalNav = !isUnderConstruction && market.market_code !== 'ADEMING';
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -359,7 +369,7 @@ export default async function RootLayout({
                 </Suspense>
               )}
               <CookieBanner />
-              <FooterWrapper />
+              {market.market_code !== 'ADEMING' && <FooterWrapper />}
             </EditModeOverlay>
           </SafeErrorGuard>
         </Providers>

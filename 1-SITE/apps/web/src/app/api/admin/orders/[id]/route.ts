@@ -48,6 +48,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
     }
 
     // 🛡️ CHRIS-PROTOCOL: Zero-Slop Item Mapping (v2.14.637)
+    // We zoeken op legacy_internal_id (WooCommerce order_id) voor items
     const items = await db.select().from(orderItems).where(
       eq(orderItems.orderId, legacyInternalId || orderPk)
     );
@@ -55,8 +56,9 @@ export async function GET(request: Request, { params }: { params: { id: string }
     // Resolve User Info
     let customerInfo = null;
     if (userId) {
+      // 🛡️ CHRIS-PROTOCOL: Deep User Search (v2.14.656)
       let dbUser = await db.select().from(users).where(eq(users.id, userId)).limit(1).then(res => res[0]);
-      if (!dbUser && userId > 1000) {
+      if (!dbUser) {
         dbUser = await db.select().from(users).where(eq(users.wpUserId, userId)).limit(1).then(res => res[0]);
       }
       
@@ -85,16 +87,19 @@ export async function GET(request: Request, { params }: { params: { id: string }
       details: { order_id: id, has_meta: !!rawMeta, item_count: items.length }
     }).catch(() => {});
 
+    // 🤝 DE HANDDRUK: We sturen een object terug dat de frontend begrijpt
     return NextResponse.json({
       ...order,
       id: orderPk,
       user_id: userId,
       legacy_internal_id: legacyInternalId,
-      raw_meta: rawMeta, // 🤝 De Handdruk: Altijd een object
+      raw_meta: rawMeta, 
       user: customerInfo,
       items: items,
       displayOrderId: orderPk.toString(),
-      status: 'completed' // Default for now
+      status: 'completed', // Default for now
+      amount_net: order.amount_net?.toString() || "0.00",
+      amount_total: order.total?.toString() || "0.00"
     });
 
   } catch (error: any) {
