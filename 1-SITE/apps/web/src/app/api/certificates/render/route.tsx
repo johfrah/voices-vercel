@@ -1,5 +1,6 @@
 import { ImageResponse } from 'next/og';
 import { NextRequest } from 'next/server';
+import React from 'react';
 
 export const runtime = 'edge';
 
@@ -40,7 +41,6 @@ export async function GET(request: NextRequest) {
             flexDirection: 'column',
             alignItems: 'center',
             backgroundColor: '#fff',
-            fontFamily: 'sans-serif', // Raleway wordt via CSS/Fonts geladen indien beschikbaar
             position: 'relative',
             overflow: 'hidden',
           }}
@@ -48,6 +48,7 @@ export async function GET(request: NextRequest) {
           {/* Legacy Background */}
           <img 
             src={bgUrl} 
+            alt="background"
             style={{
               position: 'absolute',
               top: 0,
@@ -68,7 +69,7 @@ export async function GET(request: NextRequest) {
             fontWeight: '700', 
             color: '#000', 
             textAlign: 'center', 
-            white-space: 'nowrap',
+            whiteSpace: 'nowrap',
             letterSpacing: '-0.02em',
           }}>
             {name}
@@ -84,7 +85,7 @@ export async function GET(request: NextRequest) {
             fontWeight: '700', 
             color: '#000', 
             textAlign: 'center', 
-            white-space: 'nowrap',
+            whiteSpace: 'nowrap',
           }}>
             {workshop}
           </div>
@@ -99,7 +100,7 @@ export async function GET(request: NextRequest) {
             fontWeight: '700', 
             color: '#000', 
             textAlign: 'center', 
-            white-space: 'nowrap',
+            whiteSpace: 'nowrap',
           }}>
             {instructor}
           </div>
