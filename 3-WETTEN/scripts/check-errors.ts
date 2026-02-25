@@ -1,13 +1,23 @@
-import { db } from '@db';
-import { systemEvents } from '@db/schema';
+import { db } from '../1-SITE/packages/database';
+import { systemEvents } from '../1-SITE/packages/database/schema';
 import { desc } from 'drizzle-orm';
 
-async function main() {
+async function checkErrors() {
+  console.log('🔍 Checking recent system events...');
   try {
-    const events = await db.select().from(systemEvents).orderBy(desc(systemEvents.createdAt)).limit(5);
+    const events = await db.select()
+      .from(systemEvents)
+      .where((table) => ({
+        level: 'error'
+      }))
+      .orderBy(desc(systemEvents.createdAt))
+      .limit(10);
+    
+    console.log('Recent Errors:');
     console.log(JSON.stringify(events, null, 2));
-  } catch (e) {
-    console.error('Error fetching events:', e);
+  } catch (err) {
+    console.error('Failed to fetch events:', err);
   }
 }
-main();
+
+checkErrors();

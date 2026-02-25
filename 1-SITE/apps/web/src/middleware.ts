@@ -86,7 +86,7 @@ export async function middleware(request: NextRequest) {
   const forceUnderConstruction = process.env.NEXT_PUBLIC_UNDER_CONSTRUCTION === 'true';
   
   // 🛡️ CHRIS-PROTOCOL: MarketManager is the source of truth for domains
-  const isUnderConstruction = true; // Bob: De gate staat nu definitief open voor de lancering! 🚀🏗️
+  const isUnderConstruction = forceUnderConstruction;
 
   // 1.8 LEGACY REDIRECTS (v2.24)
   // Vang oude URL-structuren op en stuur ze naar de nieuwe canonieke paden.
