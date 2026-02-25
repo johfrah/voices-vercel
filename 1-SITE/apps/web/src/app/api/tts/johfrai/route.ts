@@ -2,8 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { AudioEngine } from '@/lib/audio/audio-engine';
 import ffmpeg from 'fluent-ffmpeg';
 import { Readable, PassThrough } from 'stream';
-import { db } from '@db';
-import { freePreviews } from '@db/schema';
+import { db, freePreviews } from '@/lib/system/voices-config';
 import { eq, and, or, sql } from 'drizzle-orm';
 import md5 from 'md5';
 

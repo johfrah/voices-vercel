@@ -1,5 +1,4 @@
-import { db } from "@db";
-import { instructors, orderItems, orders, reviews, workshopInterest, workshops, workshopEditions, workshopGallery, costs } from "@db/schema";
+import { db, instructors, orderItems, orders, reviews, workshopInterest, workshops, workshopEditions, workshopGallery, costs } from '@/lib/system/voices-config';
 import { and, count, desc, eq, sql } from "drizzle-orm";
 import { StudioDashboardData, Workshop } from "../services/api";
 import { createClient } from "@supabase/supabase-js";

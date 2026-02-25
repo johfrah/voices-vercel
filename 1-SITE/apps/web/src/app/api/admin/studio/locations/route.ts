@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import { db } from "@db";
-import { locations } from "@db/schema";
+import { db, locations } from '@/lib/system/voices-config';
 import { getServerUser, isAdminUser } from "@/lib/auth/server-auth";
 import { eq } from "drizzle-orm";
 

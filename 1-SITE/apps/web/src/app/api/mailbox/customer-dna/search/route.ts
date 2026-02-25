@@ -1,5 +1,4 @@
-import { db } from '@db';
-import { users, orders, vaultFiles, actors, yukiOutstanding, orderItems } from '@db/schema';
+import { db, users, orders, vaultFiles, actors, yukiOutstanding, orderItems } from '@/lib/system/voices-config';
 import { eq, desc } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 

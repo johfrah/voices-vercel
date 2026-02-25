@@ -1,5 +1,4 @@
-import { db } from '@db';
-import { reviews, actors } from '@db/schema';
+import { db, reviews, actors } from '@/lib/system/voices-config';
 import { eq, sql, desc, ilike, and } from 'drizzle-orm';
 
 /**

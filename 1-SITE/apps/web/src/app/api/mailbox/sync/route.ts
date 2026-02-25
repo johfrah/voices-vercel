@@ -1,8 +1,7 @@
 import { DirectMailService } from '@/lib/services/direct-mail-service';
 import { VectorService } from '@/lib/services/vector-service';
 import { GeminiService } from '@/lib/services/gemini-service';
-import { db } from '@db';
-import { mailContent } from '@db/schema';
+import { db, mailContent } from '@/lib/system/voices-config';
 import { NextRequest, NextResponse } from 'next/server';
 
 /**

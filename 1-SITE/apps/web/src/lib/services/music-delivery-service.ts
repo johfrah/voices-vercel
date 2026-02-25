@@ -1,5 +1,4 @@
-import { db } from '@db';
-import { media, orders, users } from '@db/schema';
+import { db, media, orders, users } from '@/lib/system/voices-config';
 import { eq, sql } from 'drizzle-orm';
 import { DropboxService } from '@/lib/services/dropbox-service';
 

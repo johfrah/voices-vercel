@@ -1,5 +1,4 @@
-import { db } from '@db';
-import { orders } from '@db/schema';
+import { db, orders } from '@/lib/system/voices-config';
 import { eq } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 

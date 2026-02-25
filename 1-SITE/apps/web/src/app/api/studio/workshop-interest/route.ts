@@ -1,5 +1,4 @@
-import { db } from '@db';
-import { workshopInterest, systemEvents } from '@db/schema';
+import { db, workshopInterest, systemEvents } from '@/lib/system/voices-config';
 import { NextResponse } from 'next/server';
 
 /**

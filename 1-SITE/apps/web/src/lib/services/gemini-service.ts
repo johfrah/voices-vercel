@@ -1,6 +1,5 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { db } from "@db";
-import { systemKnowledge } from "@db/schema";
+import { db, systemKnowledge } from '@/lib/system/voices-config';
 import { eq, or } from "drizzle-orm";
 import { MarketManagerServer as MarketManager } from "@/lib/system/market-manager-server";
 

@@ -2,8 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { UCIService } from '@/lib/intelligence/uci-service';
 import { createClient } from '@/utils/supabase/server';
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
-import { db } from '@db';
-import { users } from '@db/schema';
+import { db, users } from '@/lib/system/voices-config';
 import { eq } from 'drizzle-orm';
 
 /**

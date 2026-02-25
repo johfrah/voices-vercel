@@ -1,5 +1,4 @@
-import { db } from "@db";
-import { orders, users, approvalQueue } from "@db/schema";
+import { db, orders, users, approvalQueue } from '@/lib/system/voices-config';
 import { eq, inArray, sql } from "drizzle-orm";
 
 /**

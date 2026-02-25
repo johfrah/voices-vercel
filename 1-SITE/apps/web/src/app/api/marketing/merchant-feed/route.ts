@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
-import { db } from "@db";
-import { actors, workshops, courses } from "@db/schema";
+import { db, actors, workshops, courses } from '@/lib/system/voices-config';
 import { eq, and, asc } from "drizzle-orm";
 
 /**

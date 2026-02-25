@@ -1,5 +1,4 @@
-import { db } from '@db';
-import { mailContent, vaultFiles } from '@db/schema';
+import { db, mailContent, vaultFiles } from '@/lib/system/voices-config';
 import { eq, sql } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 

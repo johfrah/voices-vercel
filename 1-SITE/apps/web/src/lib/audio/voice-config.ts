@@ -5,8 +5,7 @@
  * Vervangt de PHP VoicesConfigEngine en zorgt voor schone URL's (?vcfg=).
  */
 
-import { db } from '@db';
-import { appConfigs } from '@db/schema'; // We gebruiken appConfigs of een specifieke tabel
+import { db, appConfigs } from '@/lib/system/voices-config';
 import { eq } from 'drizzle-orm';
 import crypto from 'crypto';
 

@@ -2,7 +2,7 @@ import { createAdminClient } from '@/utils/supabase/server';
 import { NextResponse, NextRequest } from 'next/server';
 import { requireAdmin } from '@/lib/auth/api-auth';
 import { db } from '@/lib/sync/bridge';
-import { media } from '@db/schema';
+import { media } from '@/lib/system/voices-config';
 import { eq } from 'drizzle-orm';
 
 export const dynamic = 'force-dynamic';

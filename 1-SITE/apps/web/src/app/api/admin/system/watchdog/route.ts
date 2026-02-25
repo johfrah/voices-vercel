@@ -1,5 +1,4 @@
-import { db } from '@db';
-import { systemEvents } from '@db/schema';
+import { db, systemEvents } from '@/lib/system/voices-config';
 import { NextRequest, NextResponse } from 'next/server';
 import { VoicesMailEngine } from '@/lib/services/voices-mail-engine';
 import { TelegramService } from '@/lib/services/telegram-service';

@@ -1,5 +1,4 @@
-import { db } from '@db';
-import { chatMessages } from '@db/schema';
+import { db, chatMessages } from '@/lib/system/voices-config';
 import { and, asc, eq, gt } from 'drizzle-orm';
 
 /**

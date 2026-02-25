@@ -1,7 +1,4 @@
-import { db } from "@db";
-import { sql, eq, and, asc } from "drizzle-orm";
-import { useSonicDNA } from "../engines/sonic-dna";
-import { languages, voiceTones, countries } from "@db/schema";
+import { db, languages, voiceTones, countries } from "@/lib/system/voices-config";
 
 /**
  *  ATOMIC CRUD ENGINE - MASTER SERVICE

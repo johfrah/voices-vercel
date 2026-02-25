@@ -1,9 +1,5 @@
 import { NextResponse } from 'next/server';
-import { db } from '@db';
-import { translations } from '@db/schema';
-import { eq, and } from 'drizzle-orm';
-import { requireAdmin } from '@/lib/auth/api-auth';
-import { workshops } from '@db/schema';
+import { db, translations, workshops } from '@/lib/system/voices-config';
 
 /**
  *  VOICEGLOT ADMIN API

@@ -1,5 +1,4 @@
-import { db } from "@db";
-import { actors } from "@db/schema";
+import { db, actors } from '@/lib/system/voices-config';
 import { eq, sql } from "drizzle-orm";
 import { DbService } from "../services/db-service";
 

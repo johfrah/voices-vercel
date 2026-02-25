@@ -1,5 +1,4 @@
-import { db } from '@db';
-import { actors, media } from '@db/schema';
+import { db, actors, media } from '@/lib/system/voices-config';
 import { eq, sql } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth/api-auth';

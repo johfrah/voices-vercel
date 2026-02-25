@@ -1,5 +1,4 @@
-import { db } from '@db';
-import { locations, instructors } from '@db/schema';
+import { db, locations, instructors } from '@/lib/system/voices-config';
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth/api-auth';
 

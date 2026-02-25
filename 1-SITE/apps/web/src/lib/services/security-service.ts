@@ -1,5 +1,4 @@
-import { db } from "@db";
-import { courseProgress, users } from "@db/schema";
+import { db, courseProgress, users } from '@/lib/system/voices-config';
 import { eq, and } from "drizzle-orm";
 import { createClient } from '@supabase/supabase-js';
 

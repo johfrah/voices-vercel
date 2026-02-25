@@ -1,5 +1,4 @@
-import { db } from '@db';
-import { utmTouchpoints, visitors } from '@db/schema';
+import { db, utmTouchpoints, visitors } from '@/lib/system/voices-config';
 import { desc, sql } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth/api-auth';

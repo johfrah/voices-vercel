@@ -1,8 +1,7 @@
 import { YukiInboundMonitor } from "./yuki-inbound-monitor";
 import { DocumentProcessor } from "../intelligence/document-processor";
 import { CoreAutomationEngine } from "../system/core-automation-engine";
-import { db } from "@db";
-import { systemEvents } from "@db/schema";
+import { db, systemEvents } from '@/lib/system/voices-config';
 
 /**
  *  FINANCIAL SYNC ENGINE (2026)

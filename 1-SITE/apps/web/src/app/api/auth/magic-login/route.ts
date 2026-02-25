@@ -1,5 +1,4 @@
-import { db } from '@db';
-import { users } from '@db/schema';
+import { db, users } from '@/lib/system/voices-config';
 import { createClient } from '@supabase/supabase-js';
 import { eq } from 'drizzle-orm';
 import { verify } from 'jsonwebtoken';

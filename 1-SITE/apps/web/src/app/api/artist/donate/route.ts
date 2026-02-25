@@ -1,6 +1,5 @@
 import { MollieService } from '@/lib/payments/mollie';
-import { db } from '@db';
-import { orders } from '@db/schema';
+import { db, orders } from '@/lib/system/voices-config';
 import { NextResponse } from 'next/server';
 
 /**

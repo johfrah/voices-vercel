@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@db';
-import { ademingTracks, ademingStats, ademingReflections } from '@db/schema';
+import { db, ademingTracks, ademingStats, ademingReflections } from '@/lib/system/voices-config';
 import { eq, desc } from 'drizzle-orm';
 
 /**

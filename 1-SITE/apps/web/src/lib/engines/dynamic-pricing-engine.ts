@@ -1,5 +1,4 @@
-import { db } from '@db';
-import { appConfigs, rateCards, navMenus, marketConfigs } from '@db/schema';
+import { db, appConfigs, rateCards, navMenus, marketConfigs } from '@/lib/system/voices-config';
 import { SlimmeKassa } from './pricing-engine';
 import { eq } from 'drizzle-orm';
 

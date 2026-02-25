@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@db';
-import { orderItems } from '@db/schema';
+import { db, orderItems } from '@/lib/system/voices-config';
 import { eq } from 'drizzle-orm';
 import { PayoutReadinessService } from '@/lib/services/payout-readiness-service';
 

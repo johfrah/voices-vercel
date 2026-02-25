@@ -1,5 +1,4 @@
-import { db } from '@db';
-import { users } from '@db/schema';
+import { db, users } from '@/lib/system/voices-config';
 import { eq } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 import { createClient } from '@/utils/supabase/server';

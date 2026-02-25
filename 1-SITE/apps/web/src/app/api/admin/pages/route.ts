@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@db';
-import { contentArticles } from '@db/schema';
+import { db, contentArticles } from '@/lib/system/voices-config';
 import { desc } from 'drizzle-orm';
 import { requireAdmin } from '@/lib/auth/api-auth';
 
