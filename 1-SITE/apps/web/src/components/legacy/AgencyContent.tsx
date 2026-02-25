@@ -90,10 +90,11 @@ export function AgencyContent({ mappedActors, filters }: { mappedActors: any[], 
           const newUrl = (typeof window !== 'undefined' ? window.location.pathname : '') + (cleanSearch ? `?${cleanSearch}` : '');
           if (typeof window !== 'undefined') window.history.replaceState(null, '', newUrl);
         }
-      } else if (!actorId && !checkoutState.selectedActor && state.currentStep === 'script') {
+      } else if (!actorId && !checkoutState.selectedActor && state.currentStep === 'script' && (typeof window !== 'undefined' && window.location.pathname.startsWith('/agency'))) {
         // BOB-FIX: If we are in 'script' step but NO actor is selected (e.g. after refresh),
         // we MUST go back to 'voice' step to prevent an empty/broken state.
-        console.warn("[AgencyContent] Script step active but no actor selected. Reverting to voice step.");
+        // 🛡️ CHRIS-PROTOCOL: Only revert if we are actually on an agency page to prevent hijacking profile pages.
+        console.warn("[AgencyContent] Script step active but no actor selected on agency page. Reverting to voice step.");
         updateStep('voice');
       }
     }
