@@ -192,15 +192,11 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
   
   // 🛡️ NUCLEAR HANDSHAKE: Resolve via Slug Registry for Metadata
   let lookupSlug = cleanSegments[0];
-  const systemPrefixes = ['voice', 'stem', 'voix', 'stimme', 'artist', 'artiest', 'studio', 'academy', 'music', 'muziek', 'faq', 'provider', 'demos'];
+  const systemPrefixes = ['voice', 'stem', 'voix', 'stimme', 'artist', 'artiest', 'studio', 'academy', 'music', 'muziek', 'faq', 'provider', 'demos', 'blog', 'article', 'nl', 'fr', 'en', 'de', 'es', 'it', 'pt', 'pl', 'da', 'sv', 'fi', 'nb', 'tr', 'hr', 'ca'];
+  
+  // If the slug has multiple parts, we check if the first part is a system prefix
   if (systemPrefixes.includes(lookupSlug?.toLowerCase()) && cleanSegments[1]) {
-    // If it's a system prefix, the real slug is the second segment (e.g. /voice/johfrah -> johfrah)
-    // BUT for faq/provider/demos, we might want the full path or just the ID
-    if (['faq', 'provider', 'demos'].includes(lookupSlug.toLowerCase())) {
-      lookupSlug = `${lookupSlug.toLowerCase()}/${cleanSegments[1].toLowerCase()}`;
-    } else {
-      lookupSlug = cleanSegments[1];
-    }
+    lookupSlug = `${lookupSlug.toLowerCase()}/${cleanSegments.slice(1).join('/').toLowerCase()}`;
   }
 
   const resolved = await resolveSlugFromRegistry(lookupSlug, market.market_code);
@@ -392,23 +388,18 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
     let journey = cleanSegments[1];
     let medium = cleanSegments[2];
 
-    const systemPrefixes = ['voice', 'stem', 'voix', 'stimme', 'artist', 'artiest', 'studio', 'academy', 'music', 'muziek', 'faq', 'provider', 'demos', 'nl', 'fr', 'en', 'de', 'es', 'it', 'pt', 'pl'];
+    const systemPrefixes = ['voice', 'stem', 'voix', 'stimme', 'artist', 'artiest', 'studio', 'academy', 'music', 'muziek', 'faq', 'provider', 'demos', 'blog', 'article', 'nl', 'fr', 'en', 'de', 'es', 'it', 'pt', 'pl', 'da', 'sv', 'fi', 'nb', 'tr', 'hr', 'ca'];
+    
     if (systemPrefixes.includes(lookupSlug?.toLowerCase()) && journey) {
-      console.error(` [SmartRouter] System prefix detected: ${lookupSlug}. Shifting.`);
+      console.error(` [SmartRouter] System prefix detected: ${lookupSlug}.`);
       
-      // Special case for faq/provider/demos: we keep the prefix in the lookup slug
-      if (['faq', 'provider', 'demos'].includes(lookupSlug.toLowerCase())) {
-        lookupSlug = `${lookupSlug.toLowerCase()}/${journey.toLowerCase()}`;
-        journey = medium;
-        medium = cleanSegments[3];
-      } else if (['nl', 'fr', 'en', 'de', 'es', 'it', 'pt', 'pl'].includes(lookupSlug.toLowerCase())) {
-        // Generic language prefix (e.g. /en/johfrah -> lookup johfrah)
-        // This handles cases where the language isn't handled by the middleware but is in the URL
-        lookupSlug = journey;
-        journey = medium;
-        medium = cleanSegments[3];
-      } else {
-        lookupSlug = journey;
+      // For all hierarchical prefixes, we use the full path for registry lookup
+      // e.g. /voice/johfrah -> lookup "voice/johfrah"
+      // e.g. /blog/mijn-artikel -> lookup "blog/mijn-artikel"
+      lookupSlug = `${lookupSlug.toLowerCase()}/${cleanSegments.slice(1).join('/').toLowerCase()}`;
+      
+      // Shift journey/medium for actor detail logic if it's a voice prefix
+      if (['voice', 'stem', 'voix', 'stimme'].includes(cleanSegments[0].toLowerCase())) {
         journey = medium;
         medium = cleanSegments[3];
       }

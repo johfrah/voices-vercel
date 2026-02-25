@@ -21,70 +21,6 @@ async function generateAtomicSitemap() {
 
   const sitemap: any[] = [];
 
-  // 1. Actors (Agency)
-  const { data: actors } = await supabase.from('actors').select('id, slug, first_name, last_name').eq('status', 'live').eq('is_public', true);
-  actors?.forEach(a => {
-    // 🛡️ CHRIS-PROTOCOL: No last names in slugs (mark-labrand -> mark-l)
-    const firstName = a.first_name?.toLowerCase().trim();
-    const lastInitial = a.last_name ? a.last_name.trim().charAt(0).toLowerCase() : '';
-    const canonicalActorSlug = lastInitial ? `${firstName}-${lastInitial}` : firstName;
-    
-    // If the current slug is not the canonical one, we register it as a redirect
-    if (a.slug && a.slug.toLowerCase() !== canonicalActorSlug) {
-      sitemap.push({ slug: a.slug.toLowerCase(), type: 'actor', entity_id: a.id, journey: 'agency', name: `${a.first_name} ${a.last_name || ''}`, canonical_slug: canonicalActorSlug });
-    }
-    
-    // Always register the canonical slug
-    sitemap.push({ slug: canonicalActorSlug, type: 'actor', entity_id: a.id, journey: 'agency', name: `${a.first_name} ${a.last_name || ''}` });
-  });
-
-  // 2. Artists (Artist Journey)
-  const { data: artists } = await supabase.from('artists').select('id, slug, display_name').eq('status', 'active').eq('is_public', true);
-  artists?.forEach(a => sitemap.push({ slug: `artist/${a.slug}`, type: 'artist', entity_id: a.id, journey: 'artist', name: a.display_name }));
-
-  // 3. Music (Music Journey)
-  // Hardcoded system routes for music
-  sitemap.push({ slug: 'music', type: 'music', entity_id: 0, journey: 'agency', name: 'Music Library' });
-  
-  // Specific Music Products (from media table)
-  const { data: musicMedia } = await supabase.from('media').select('id, file_name').eq('category', 'music');
-  const musicProducts = [
-    { slug: 'free', name: 'Free Music Track' },
-    { slug: 'away', name: 'Away Music Track' },
-    { slug: 'before', name: 'Before You Music Track' }
-  ];
-
-  for (const mp of musicProducts) {
-    const track = musicMedia?.find(m => m.file_name.toLowerCase().includes(mp.slug));
-    if (track) {
-      sitemap.push({ 
-        slug: `music/${mp.slug}`, 
-        type: 'music', 
-        entity_id: track.id, 
-        journey: 'agency', 
-        name: mp.name 
-      });
-    }
-  }
-
-  // 4. Workshops (Studio/Academy)
-  const { data: workshops } = await supabase.from('workshops').select('id, slug, title, journey').eq('status', 'publish');
-  workshops?.forEach(w => sitemap.push({ slug: `${w.journey || 'studio'}/${w.slug}`, type: 'workshop', entity_id: w.id, journey: w.journey || 'studio', name: w.title }));
-
-  // 5. Blog Articles
-  const { data: articles } = await supabase.from('content_articles').select('id, slug, title, iap_context').eq('status', 'publish');
-  articles?.forEach(art => {
-    const isBlog = (art.iap_context as any)?.type === 'blog' || art.slug.startsWith('blog/');
-    sitemap.push({ 
-      slug: art.slug, 
-      type: isBlog ? 'blog' : 'article', 
-      entity_id: art.id, 
-      journey: (art.iap_context as any)?.journey || 'agency', 
-      name: art.title 
-    });
-  });
-
-  // 6. Categories (Languages, Countries, Attributes)
   const slugify = (text: string) => {
     return text
       .toString()
@@ -97,31 +33,94 @@ async function generateAtomicSitemap() {
       .replace(/\-\-+/g, '-');            // replace multiple - with single -
   };
 
+  // 1. Actors (Agency) -> voice/
+  const { data: actors } = await supabase.from('actors').select('id, slug, first_name, last_name').eq('status', 'live').eq('is_public', true);
+  actors?.forEach(a => {
+    const firstName = a.first_name?.toLowerCase().trim();
+    const lastInitial = a.last_name ? a.last_name.trim().charAt(0).toLowerCase() : '';
+    const canonicalActorSlug = lastInitial ? `voice/${firstName}-${lastInitial}` : `voice/${firstName}`;
+    
+    // Legacy redirect (flat slug -> voice/slug)
+    if (a.slug) {
+      const legacySlug = a.slug.toLowerCase();
+      if (legacySlug !== canonicalActorSlug) {
+        sitemap.push({ slug: legacySlug, type: 'actor', entity_id: a.id, journey: 'agency', name: `${a.first_name} ${a.last_name || ''}`, canonical_slug: canonicalActorSlug });
+      }
+    }
+    
+    // Always register the canonical slug
+    sitemap.push({ slug: canonicalActorSlug, type: 'actor', entity_id: a.id, journey: 'agency', name: `${a.first_name} ${a.last_name || ''}` });
+  });
+
+  // 2. Artists (Artist Journey) -> artist/
+  const { data: artists } = await supabase.from('artists').select('id, slug, display_name').eq('status', 'active').eq('is_public', true);
+  artists?.forEach(a => {
+    const canonicalArtistSlug = `artist/${a.slug.toLowerCase()}`;
+    sitemap.push({ slug: canonicalArtistSlug, type: 'artist', entity_id: a.id, journey: 'artist', name: a.display_name });
+    
+    // Legacy flat slug redirect if it exists
+    if (a.slug && !a.slug.startsWith('artist/')) {
+        sitemap.push({ slug: a.slug.toLowerCase(), type: 'artist', entity_id: a.id, journey: 'artist', name: a.display_name, canonical_slug: canonicalArtistSlug });
+    }
+  });
+
+  // 3. Music (Music Journey) -> music/
+  sitemap.push({ slug: 'music', type: 'music', entity_id: 0, journey: 'agency', name: 'Music Library' });
+  const { data: musicMedia } = await supabase.from('media').select('id, file_name').eq('category', 'music');
+  const musicProducts = [
+    { slug: 'free', name: 'Free Music Track' },
+    { slug: 'away', name: 'Away Music Track' },
+    { slug: 'before', name: 'Before You Music Track' }
+  ];
+  for (const mp of musicProducts) {
+    const track = musicMedia?.find(m => m.file_name.toLowerCase().includes(mp.slug));
+    if (track) {
+      sitemap.push({ slug: `music/${mp.slug}`, type: 'music', entity_id: track.id, journey: 'agency', name: mp.name });
+    }
+  }
+
+  // 4. Workshops (Studio/Academy) -> studio/ or academy/
+  const { data: workshops } = await supabase.from('workshops').select('id, slug, title, journey').eq('status', 'publish');
+  workshops?.forEach(w => {
+    const prefix = w.journey || 'studio';
+    sitemap.push({ slug: `${prefix}/${w.slug.toLowerCase()}`, type: 'workshop', entity_id: w.id, journey: prefix, name: w.title });
+  });
+
+  // 5. Blog Articles -> blog/
+  const { data: articles } = await supabase.from('content_articles').select('id, slug, title, iap_context').eq('status', 'publish');
+  articles?.forEach(art => {
+    const isBlog = (art.iap_context as any)?.type === 'blog' || art.slug.startsWith('blog/');
+    const prefix = isBlog ? 'blog/' : '';
+    const cleanSlug = art.slug.replace(/^blog\//, '').toLowerCase();
+    const canonicalSlug = `${prefix}${cleanSlug}`;
+    
+    sitemap.push({ 
+      slug: canonicalSlug, 
+      type: isBlog ? 'blog' : 'article', 
+      entity_id: art.id, 
+      journey: (art.iap_context as any)?.journey || 'agency', 
+      name: art.title 
+    });
+
+    // Legacy flat slug redirect
+    if (isBlog && art.slug && !art.slug.startsWith('blog/')) {
+        sitemap.push({ slug: art.slug.toLowerCase(), type: 'blog', entity_id: art.id, journey: 'agency', name: art.title, canonical_slug: canonicalSlug });
+    }
+  });
+
+  // 6. Categories (Languages, Countries, Attributes) -> category/ or descriptive
   const { data: langs } = await supabase.from('languages').select('id, code, label, is_native_only');
   langs?.forEach(l => {
     const descriptiveSlug = `voice-overs/${slugify(l.label)}`;
-    
-    // Always register the descriptive slug
     sitemap.push({ slug: descriptiveSlug, type: 'language', entity_id: l.id, journey: 'agency', name: `Language: ${l.label}` });
-    
-    // Redirect old code-based slug (e.g. /nl-be -> /voice-overs/vlaams)
     sitemap.push({ slug: l.code.toLowerCase(), type: 'language', entity_id: l.id, journey: 'agency', name: `Language: ${l.label}`, canonical_slug: descriptiveSlug });
-    
-    // Special case: if it's a generic language (e.g. 'en'), also register the short slug
-    if (l.code.length === 2) {
-      // Register /en -> /voice-overs/engels-algemeen
-      sitemap.push({ slug: l.code.toLowerCase(), type: 'language', entity_id: l.id, journey: 'agency', name: `Language: ${l.label}`, canonical_slug: descriptiveSlug });
-    }
   });
 
   const { data: countries } = await supabase.from('countries').select('id, code, label');
   countries?.forEach(c => {
     const descriptiveSlug = `voice-overs/${slugify(c.label)}`;
     sitemap.push({ slug: descriptiveSlug, type: 'country', entity_id: c.id, journey: 'agency', name: `Country: ${c.label}` });
-    
-    // Redirect old code-based slug, but ONLY if it doesn't conflict with a 2-letter language code
-    // We check if the code is NOT one of our generic language codes
-    const genericLangCodes = ['nl', 'fr', 'en', 'de', 'es', 'it', 'pt', 'pl'];
+    const genericLangCodes = ['nl', 'fr', 'en', 'de', 'es', 'it', 'pt', 'pl', 'da', 'sv', 'fi', 'nb', 'tr', 'hr', 'ca'];
     if (!genericLangCodes.includes(c.code.toLowerCase())) {
       sitemap.push({ slug: c.code.toLowerCase(), type: 'country', entity_id: c.id, journey: 'agency', name: `Country: ${c.label}`, canonical_slug: descriptiveSlug });
     }
@@ -131,11 +130,10 @@ async function generateAtomicSitemap() {
   attrs?.forEach(at => {
     const descriptiveSlug = `stemmen/${slugify(at.label)}`;
     sitemap.push({ slug: descriptiveSlug, type: 'attribute', entity_id: at.id, journey: 'agency', name: `Attribute: ${at.label}` });
-    // Redirect old code-based slug
     sitemap.push({ slug: at.code.toLowerCase(), type: 'attribute', entity_id: at.id, journey: 'agency', name: `Attribute: ${at.label}`, canonical_slug: descriptiveSlug });
   });
 
-  // 7. FAQ (from GSC)
+  // 7. FAQ -> faq/
   const { data: faqs } = await supabase.from('faq').select('id, question_nl, category').eq('is_public', true);
   faqs?.forEach(f => {
     const faqSlug = f.question_nl?.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
@@ -144,20 +142,12 @@ async function generateAtomicSitemap() {
     }
   });
 
-  // 8. Providers (from GSC)
+  // 8. Providers -> provider/
   const { data: providers } = await supabase.from('app_configs').select('value').eq('key', 'telephony_config').single();
   const providerList = (providers?.value as any)?.providers || ['voys', 'ziggo', 'telenet', 'proximus'];
   providerList.forEach((p: string) => {
     sitemap.push({ slug: `provider/${p.toLowerCase()}`, type: 'provider', entity_id: 0, journey: 'agency', name: `Provider: ${p}` });
   });
-
-  // 9. Descriptive Slugs (SEO Legacy Redirects)
-  const legacyRedirects = [
-    { slug: 'native/vlaamse-voicemail-stemmen', type: 'language', entity_id: 1, journey: 'agency', name: 'Vlaamse Stemmen (Native)', canonical_slug: 'voice-overs/vlaams' },
-    { slug: 'voice-overs/nederlandse-voice-overs', type: 'language', entity_id: 2, journey: 'agency', name: 'Nederlandse Voice-overs', canonical_slug: 'voice-overs/nederlands' },
-    { slug: 'country/duitse-voice-overs', type: 'country', entity_id: 4, journey: 'agency', name: 'Duitse Voice-overs (Country)', canonical_slug: 'voice-overs/duitsland' }
-  ];
-  legacyRedirects.forEach(ds => sitemap.push(ds));
 
   // WRITE TO MD
   let mdContent = '# ☢️ ATOMIC SITEMAP - THE 1 TRUTH LIST (2026)\n\n';
@@ -174,10 +164,8 @@ async function generateAtomicSitemap() {
     is_active: true
   }));
 
-  // Deduplicate registry entries based on slug, market_code, and journey
   const uniqueEntries = Array.from(new Map(registryEntries.map(e => [`${e.slug}|${e.market_code}|${e.journey}`, e])).values());
 
-  // Bulk UPSERT to Registry in chunks of 50 to avoid timeouts
   const chunkSize = 50;
   for (let i = 0; i < uniqueEntries.length; i += chunkSize) {
     const chunk = uniqueEntries.slice(i, i + chunkSize);
@@ -185,6 +173,9 @@ async function generateAtomicSitemap() {
     if (error) console.error(`❌ Error syncing chunk starting at ${i}:`, error.message);
     else console.log(`Synced chunk ${i / chunkSize + 1}/${Math.ceil(uniqueEntries.length / chunkSize)}`);
   }
+
+  // Sort sitemap for clean MD output
+  sitemap.sort((a, b) => a.slug.localeCompare(b.slug));
 
   for (const item of sitemap) {
     mdContent += `| \`/${item.slug}\` | \`${item.type}\` | \`${item.entity_id}\` | \`${item.journey}\` | ${item.name} |\n`;
