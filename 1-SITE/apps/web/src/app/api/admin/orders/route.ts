@@ -41,7 +41,7 @@ export async function GET(request: NextRequest) {
 
     let allOrders: any[] = [];
     let debugInfo: any = {
-      version: '2.14.639',
+      version: '2.14.640',
       db_host: process.env.DATABASE_URL?.split('@')[1]?.split('/')[0] || 'unknown',
       page,
       limit,
@@ -53,6 +53,7 @@ export async function GET(request: NextRequest) {
     try {
       // 🚀 NUCLEAR PAGINATION: WP ID is nu de PK (id)
       // We gebruiken Drizzle voor maximale stabiliteit en type-safety
+      // 🛡️ CHRIS-PROTOCOL: Explicit Table Reference (v2.14.640)
       allOrders = await db.select({
         id: ordersV2.id,
         user_id: ordersV2.userId,
@@ -70,7 +71,9 @@ export async function GET(request: NextRequest) {
       .limit(limit)
       .offset(offset);
       
+      console.log(`📦 [Admin Orders API] Fetched ${allOrders.length} orders from orders_v2`);
       debugInfo.source = 'drizzle.orders_v2';
+      debugInfo.fetchedCount = allOrders.length;
     } catch (rawErr: any) {
       debugInfo.raw_error = rawErr.message;
       console.error('[Admin Orders GET] Drizzle query failed:', rawErr);

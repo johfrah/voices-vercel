@@ -18,12 +18,13 @@ export const AdminHeader = () => {
         <Link href="/admin" className="flex items-center gap-4 group">
             <div className="relative w-10 h-10 bg-va-black rounded-[10px] flex items-center justify-center overflow-hidden transition-transform group-hover:scale-105">
               {market?.logo_url ? (
-                /* eslint-disable-next-line @next/next/no-img-element */
-                <img 
+                <VoiceglotImage 
                   src={market.logo_url} 
                   alt="Logo" 
+                  width={32}
+                  height={32}
                   className="w-8 h-8 object-contain brightness-0 invert"
-                  loading="eager"
+                  priority
                 />
               ) : (
                 <div className="text-white font-bold text-xl">V</div>
