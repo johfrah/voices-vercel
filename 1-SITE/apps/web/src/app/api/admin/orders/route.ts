@@ -1,5 +1,5 @@
 import { db } from '@db';
-import { orders, users, notifications } from '@db/schema';
+import { orders, users, notifications, orderItems } from '@db/schema';
 import { desc, eq } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth/api-auth';
@@ -69,6 +69,82 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('[Admin Orders GET Error]:', error);
     return NextResponse.json({ error: 'Failed to fetch orders' }, { status: 500 });
+  }
+}
+
+/**
+ *  API: CREATE MANUAL ORDER (2026)
+ */
+export async function POST(request: NextRequest) {
+  const auth = await requireAdmin();
+  if (auth instanceof NextResponse) return auth;
+
+  try {
+    const body = await request.json();
+    const { userId, journey, items, internalNotes, syncToYuki, status } = body;
+
+    if (!userId || !items || items.length === 0) {
+      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    }
+
+    // 1. Calculate Totals
+    const total = items.reduce((acc: number, item: any) => acc + (parseFloat(item.price) * item.quantity), 0);
+    const totalTax = total * 0.21; // Standaard 21% voor NL/BE (Chris-Protocol: ISO-FIRST)
+    
+    // 2. Insert Order
+    const [newOrder] = await db.insert(orders).values({
+      userId,
+      journey,
+      total: total.toString(),
+      totalTax: totalTax.toString(),
+      status: status || 'pending',
+      internalNotes,
+      isManuallyEdited: true,
+      market: 'BE', // Default
+      createdAt: new Date(),
+    }).returning();
+
+    // 3. Insert Order Items
+    const orderItemsToInsert = items.map((item: any) => ({
+      orderId: newOrder.id,
+      name: item.name,
+      quantity: item.quantity,
+      price: item.price.toString(),
+      createdAt: new Date(),
+      isManuallyEdited: true,
+    }));
+
+    await db.insert(orderItems).values(orderItemsToInsert);
+
+    // 4. Yuki Sync (Optional)
+    let yukiResult = null;
+    if (syncToYuki) {
+      try {
+        // We roepen de bestaande Yuki sync route aan (intern)
+        const yukiRes = await fetch(`${request.nextUrl.origin}/api/yuki/sync`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ orderId: newOrder.id })
+        });
+        if (yukiRes.ok) {
+          yukiResult = await yukiRes.json();
+          // Update order met Yuki ID
+          await db.update(orders)
+            .set({ yukiInvoiceId: yukiResult.yukiId })
+            .where(eq(orders.id, newOrder.id));
+        }
+      } catch (yukiErr) {
+        console.error('[Admin Orders Yuki Sync Error]:', yukiErr);
+      }
+    }
+
+    return NextResponse.json({ 
+      ...newOrder, 
+      yukiResult 
+    });
+  } catch (error) {
+    console.error('[Admin Orders POST Error]:', error);
+    return NextResponse.json({ error: 'Failed to create order' }, { status: 500 });
   }
 }
 

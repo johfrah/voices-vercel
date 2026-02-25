@@ -24,7 +24,8 @@ import {
   AlertCircle,
   FileText,
   User,
-  MoreHorizontal
+  MoreHorizontal,
+  Plus
 } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState, useCallback } from 'react';
@@ -138,7 +139,11 @@ export default function BestellingenPage() {
               </TextInstrument>
             </div>
             
-            <div className="flex gap-4">
+            <div className="flex gap-4 items-end">
+              <ButtonInstrument as={Link} href="/admin/orders/new" className="va-btn-pro !bg-va-black flex items-center gap-2 mb-1">
+                <Plus strokeWidth={1.5} size={16} /> 
+                <VoiceglotText translationKey="admin.orders.add" defaultText="Nieuwe Bestelling" />
+              </ButtonInstrument>
               <div className="relative">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-va-black/20" size={18} />
                 <input 
