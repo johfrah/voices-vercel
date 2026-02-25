@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
 
     let allOrders: any[] = [];
     let debugInfo: any = {
-      version: '2.14.647',
+      version: '2.14.650',
       db_host: process.env.DATABASE_URL?.split('@')[1]?.split('/')[0] || 'unknown',
       page,
       limit,
