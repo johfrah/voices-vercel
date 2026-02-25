@@ -1,6 +1,6 @@
 "use client";
 
-import { Card } from "@/components/ui/card";
+import React from 'react';
 import { Quote } from "lucide-react";
 import { VoiceglotText } from "../VoiceglotText";
 
@@ -52,9 +52,9 @@ export const Testimonials = () => {
 
         <div className="grid md:grid-cols-3 gap-8">
           {testimonials.map((testimonial) => (
-            <Card 
+            <div 
               key={testimonial.id} 
-              className="p-8 hover:shadow-xl transition-all duration-500 hover:-translate-y-2 border-2 hover:border-primary/20 bg-card/50 backdrop-blur-sm rounded-3xl"
+              className="p-8 hover:shadow-xl transition-all duration-500 hover:-translate-y-2 border-2 hover:border-primary/20 bg-white/50 backdrop-blur-sm rounded-[32px] shadow-soft"
             >
               <Quote className="h-10 w-10 text-primary/30 mb-6" />
               
@@ -98,7 +98,7 @@ export const Testimonials = () => {
                   </p>
                 </div>
               </div>
-            </Card>
+            </div>
           ))}
         </div>
 

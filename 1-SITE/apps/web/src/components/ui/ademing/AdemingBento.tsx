@@ -10,7 +10,7 @@ import { MeditationPlayerInstrument } from './MeditationPlayerInstrument';
 import { VoiceglotText } from '../VoiceglotText';
 import { Testimonials } from './Testimonials';
 import { Moon, Zap, Clock, ArrowRight, Compass, Users } from 'lucide-react';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { VoicesDropdown } from '../VoicesDropdown';
 
 interface AdemingBentoProps {
   tracks: any[];
@@ -45,53 +45,57 @@ export const AdemingBento = ({ tracks, initialTrack }: AdemingBentoProps) => {
               </p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <Select onValueChange={(v) => setSelectedTheme(v === "all" ? null : v)}>
-                <SelectTrigger className="h-16 text-base font-medium border-2 rounded-2xl hover:border-primary/50 transition-colors bg-white/50 backdrop-blur-sm">
-                  <SelectValue placeholder="🎯 Kies een thema" />
-                </SelectTrigger>
-                <SelectContent className="rounded-2xl border-primary/10">
-                  <SelectItem value="all">Alle thema's</SelectItem>
-                  <SelectItem value="rust">Rust</SelectItem>
-                  <SelectItem value="energie">Energie</SelectItem>
-                  <SelectItem value="ritme">Ritme</SelectItem>
-                </SelectContent>
-              </Select>
+              <VoicesDropdown 
+                placeholder="🎯 Kies een thema"
+                options={[
+                  { label: "Alle thema's", value: "all" },
+                  { label: "Rust", value: "rust" },
+                  { label: "Energie", value: "energie" },
+                  { label: "Ritme", value: "ritme" }
+                ]}
+                value={selectedTheme || "all"}
+                onChange={(v: string) => setSelectedTheme(v === "all" ? null : v)}
+                className="bg-white/50 backdrop-blur-sm rounded-2xl border-2 border-transparent hover:border-primary/50 transition-all"
+              />
 
-              <Select onValueChange={(v) => setSelectedElement(v === "all" ? null : v)}>
-                <SelectTrigger className="h-16 text-base font-medium border-2 rounded-2xl hover:border-primary/50 transition-colors bg-white/50 backdrop-blur-sm">
-                  <SelectValue placeholder="🌿 Kies een element" />
-                </SelectTrigger>
-                <SelectContent className="rounded-2xl border-primary/10">
-                  <SelectItem value="all">Alle elementen</SelectItem>
-                  <SelectItem value="aarde">Aarde</SelectItem>
-                  <SelectItem value="water">Water</SelectItem>
-                  <SelectItem value="lucht">Lucht</SelectItem>
-                  <SelectItem value="vuur">Vuur</SelectItem>
-                </SelectContent>
-              </Select>
+              <VoicesDropdown 
+                placeholder="🌿 Kies een element"
+                options={[
+                  { label: "Alle elementen", value: "all" },
+                  { label: "Aarde", value: "aarde" },
+                  { label: "Water", value: "water" },
+                  { label: "Lucht", value: "lucht" },
+                  { label: "Vuur", value: "vuur" }
+                ]}
+                value={selectedElement || "all"}
+                onChange={(v: string) => setSelectedElement(v === "all" ? null : v)}
+                className="bg-white/50 backdrop-blur-sm rounded-2xl border-2 border-transparent hover:border-primary/50 transition-all"
+              />
 
-              <Select>
-                <SelectTrigger className="h-16 text-base font-medium border-2 rounded-2xl hover:border-primary/50 transition-colors bg-white/50 backdrop-blur-sm">
-                  <SelectValue placeholder="⏱️ Kies duur" />
-                </SelectTrigger>
-                <SelectContent className="rounded-2xl border-primary/10">
-                  <SelectItem value="all">Alle duur</SelectItem>
-                  <SelectItem value="kort">Kort (&lt; 10 min)</SelectItem>
-                  <SelectItem value="middel">Middel (10-20 min)</SelectItem>
-                  <SelectItem value="lang">Lang (&gt; 20 min)</SelectItem>
-                </SelectContent>
-              </Select>
+              <VoicesDropdown 
+                placeholder="⏱️ Kies duur"
+                options={[
+                  { label: "Alle duur", value: "all" },
+                  { label: "Kort (< 10 min)", value: "kort" },
+                  { label: "Middel (10-20 min)", value: "middel" },
+                  { label: "Lang (> 20 min)", value: "lang" }
+                ]}
+                value="all"
+                onChange={() => {}}
+                className="bg-white/50 backdrop-blur-sm rounded-2xl border-2 border-transparent hover:border-primary/50 transition-all"
+              />
 
-              <Select>
-                <SelectTrigger className="h-16 text-base font-medium border-2 rounded-2xl hover:border-primary/50 transition-colors bg-white/50 backdrop-blur-sm">
-                  <SelectValue placeholder="👤 Kies begeleider" />
-                </SelectTrigger>
-                <SelectContent className="rounded-2xl border-primary/10">
-                  <SelectItem value="all">Alle begeleiders</SelectItem>
-                  <SelectItem value="julie">Julie</SelectItem>
-                  <SelectItem value="johfrah">Johfrah</SelectItem>
-                </SelectContent>
-              </Select>
+              <VoicesDropdown 
+                placeholder="👤 Kies begeleider"
+                options={[
+                  { label: "Alle begeleiders", value: "all" },
+                  { label: "Julie", value: "julie" },
+                  { label: "Johfrah", value: "johfrah" }
+                ]}
+                value="all"
+                onChange={() => {}}
+                className="bg-white/50 backdrop-blur-sm rounded-2xl border-2 border-transparent hover:border-primary/50 transition-all"
+              />
             </div>
           </section>
 
