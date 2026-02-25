@@ -86,7 +86,15 @@ export async function middleware(request: NextRequest) {
   const forceUnderConstruction = process.env.NEXT_PUBLIC_UNDER_CONSTRUCTION === 'true';
   
   // 🛡️ CHRIS-PROTOCOL: MarketManager is the source of truth for domains
-  const isUnderConstruction = false; // Bob: De gate staat nu definitief open voor de lancering! 🚀🏗️
+  const isUnderConstruction = true; // Bob: Tijdelijk alle verkeer naar /light forceren! 🏗️
+
+  // 1.7.5 LIGHT MODE REDIRECT (NUCLEAR)
+  const isAdmin = request.cookies.get('voices_role')?.value === 'admin' || request.cookies.get('sb-access-token') !== undefined;
+  if (isUnderConstruction && !isAdmin && !pathname.startsWith('/light') && !pathname.startsWith('/auth') && !pathname.startsWith('/api')) {
+    const lightUrl = url.clone();
+    lightUrl.pathname = '/light';
+    return NextResponse.redirect(lightUrl);
+  }
 
   // 1.8 LEGACY REDIRECTS (v2.24)
   // Vang oude URL-structuren op en stuur ze naar de nieuwe canonieke paden.

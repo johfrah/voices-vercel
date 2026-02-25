@@ -26,13 +26,13 @@ const LightVoiceCard = ({ actor, onSelect }: { actor: Actor, onSelect: (a: Actor
       audio?.pause();
       setIsPlaying(false);
     } else {
-      if (!audio && actor.demos?.[0]?.url) {
-        const newAudio = new Audio(actor.demos[0].url);
+      if (!audio && actor.demos?.[0]?.audio_url) {
+        const newAudio = new Audio(actor.demos[0].audio_url);
         newAudio.onended = () => setIsPlaying(false);
         setAudio(newAudio);
         newAudio.play();
-      } else {
-        audio?.play();
+      } else if (audio) {
+        audio.play();
       }
       setIsPlaying(true);
     }
@@ -89,13 +89,20 @@ export default function LightPage() {
 
   useEffect(() => {
     setMounted(true);
-    // Forceer de dropdown naar Vlaams bij mount om zeker te zijn
     setSelectedLanguage('nl-be');
     fetch('/api/actors/?lang=all')
       .then(res => res.json())
       .then(data => {
         if (data?.results) {
-          const mapped = data.results.map((a: any) => ({
+          // CHRIS-PROTOCOL: Sorteer op menu_order en voice_score
+          const sorted = data.results.sort((a: any, b: any) => {
+            if ((a.menu_order || 0) !== (b.menu_order || 0)) {
+              return (a.menu_order || 0) - (b.menu_order || 0);
+            }
+            return (b.voice_score || 0) - (a.voice_score || 0);
+          });
+
+          const mapped = sorted.map((a: any) => ({
             ...a,
             photo_url: a.photo_url?.startsWith('http') ? a.photo_url : `/api/proxy/?path=${encodeURIComponent(a.photo_url || '')}`
           }));
@@ -130,6 +137,11 @@ export default function LightPage() {
 
   return (
     <main className="min-h-screen bg-va-off-white relative">
+      <style jsx global>{`
+        .va-main-layout { padding-top: 0 !important; }
+        footer, header:not(.light-header) { display: none !important; }
+      `}</style>
+
       <Suspense fallback={null}>
         <LiquidBackground strokeWidth={1.5} />
       </Suspense>
