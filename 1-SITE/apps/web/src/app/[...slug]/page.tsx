@@ -579,9 +579,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
         console.log(` [SmartRouter] Actor found: ${actor.first_name} (${actor.id})`);
 
         return (
-          <PageWrapperInstrument>
-            <VoiceDetailClient actor={actor} initialJourney={mappedJourney || journey} initialMedium={medium} />
-          </PageWrapperInstrument>
+          <VoiceDetailClient actor={actor} initialJourney={mappedJourney || journey} initialMedium={medium} />
         );
       }
     } catch (e) {
