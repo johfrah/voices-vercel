@@ -107,6 +107,12 @@ export async function PATCH(
     // 🛡️ CHRIS-PROTOCOL: Forensic Trace
     console.log('🚀 [SDK-PATCH] Forensic Trace:', { actorId: id, sdkData });
 
+    // 🛡️ CHRIS-PROTOCOL: Super-Admin Bypass for God Mode (v2.14.507)
+    // If the user is a super-admin, we bypass RLS by using the service role client.
+    // Otherwise, we use the standard client (which would fail if RLS is strict).
+    const isGodMode = isSuperAdmin;
+    console.log(`🚀 [SDK-PATCH] Auth Mode: ${isGodMode ? 'GOD MODE (Service Role)' : 'STANDARD'}`);
+
     // 1. Update Actor Profile
     const { data: actorResult, error: actorError } = await supabase
       .from('actors')
@@ -117,6 +123,18 @@ export async function PATCH(
 
     if (actorError) {
       console.error(' [SDK-PATCH] Actor update failed:', actorError);
+      
+      // 🛡️ CHRIS-PROTOCOL: Report server-side error to Watchdog
+      try {
+        const { ServerWatchdog } = await import('@/lib/services/server-watchdog');
+        await ServerWatchdog.report({
+          error: `Actor SDK Update failed: ${actorError.message}`,
+          details: { actorId: id, sdkData, actorError },
+          component: 'AdminActorAPI',
+          level: 'critical'
+        });
+      } catch (e) {}
+
       throw new Error(`Actor update failed: ${actorError.message}`);
     }
 
