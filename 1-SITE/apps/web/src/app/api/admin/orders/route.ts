@@ -19,11 +19,21 @@ export async function GET(request: NextRequest) {
   console.log(`🔐 [API DEBUG] Auth check: user=${authUser?.email || 'none'}`);
 
   try {
-    // 🛡️ CHRIS-PROTOCOL: 1 TRUTH MANDATE (v2.14.572)
+    // 🛡️ CHRIS-PROTOCOL: 1 TRUTH MANDATE (v2.14.573)
     // We stoppen met JOINs die data kunnen verbergen. We halen de orders PUUR op.
     const allOrders = await db.select().from(orders).orderBy(desc(orders.createdAt)).limit(250);
 
     console.log(`🚀 [API DEBUG] 1 TRUTH: Raw orders fetched from DB: ${allOrders.length}`);
+    
+    // 🛡️ CHRIS-PROTOCOL: Emergency DB Check
+    if (allOrders.length === 0) {
+      const rawCount = await db.select({ count: orders.id }).from(orders).limit(1);
+      console.log(`🚨 [API DEBUG] EMERGENCY: Orders table check: ${rawCount.length > 0 ? 'Table exists but empty' : 'Table might not exist or inaccessible'}`);
+      
+      // Check schema search path
+      const schemaCheck = await db.execute('SELECT current_schema(), current_database()');
+      console.log(`🚨 [API DEBUG] DB CONTEXT: ${JSON.stringify(schemaCheck)}`);
+    }
     
     // 🛡️ CHRIS-PROTOCOL: Godmode Data Access (v2.14.572)
     const sanitizedOrders = await Promise.all(allOrders.map(async (order, index) => {
