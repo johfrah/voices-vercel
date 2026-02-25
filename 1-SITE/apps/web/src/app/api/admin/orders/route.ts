@@ -41,7 +41,7 @@ export async function GET(request: NextRequest) {
 
     let allOrders: any[] = [];
     let debugInfo: any = {
-      version: '2.14.642',
+      version: '2.14.643',
       db_host: process.env.DATABASE_URL?.split('@')[1]?.split('/')[0] || 'unknown',
       page,
       limit,
@@ -51,8 +51,9 @@ export async function GET(request: NextRequest) {
     };
 
     try {
-      // 🚀 NUCLEAR RAW SQL FETCH (v2.14.642)
+      // 🚀 NUCLEAR RAW SQL FETCH (v2.14.643)
       // We passeren de Drizzle abstractie voor maximale zekerheid
+      // 🛡️ CHRIS-PROTOCOL: Snake Case Mapping (v2.14.643)
       const rawOrdersResult = await db.execute(sql`
         SELECT 
           id, user_id, journey_id, status_id, payment_method_id, 
@@ -63,7 +64,22 @@ export async function GET(request: NextRequest) {
         OFFSET ${offset}
       `);
 
-      allOrders = Array.isArray(rawOrdersResult) ? rawOrdersResult : (rawOrdersResult.rows || []);
+      // 🛡️ CHRIS-PROTOCOL: Robust Result Parsing
+      const rows = Array.isArray(rawOrdersResult) ? rawOrdersResult : (rawOrdersResult.rows || []);
+      
+      // Map snake_case database columns naar de camelCase properties die de rest van de route verwacht
+      allOrders = rows.map((row: any) => ({
+        id: row.id,
+        userId: row.user_id,
+        journeyId: row.journey_id,
+        statusId: row.status_id,
+        paymentMethodId: row.payment_method_id,
+        amountNet: row.amount_net,
+        amountTotal: row.amount_total,
+        purchaseOrder: row.purchase_order,
+        billingEmailAlt: row.billing_email_alt,
+        createdAt: row.created_at
+      }));
       
       console.log(`📦 [Admin Orders API] RAW SQL Fetched ${allOrders.length} orders from orders_v2`);
       debugInfo.source = 'raw_sql.orders_v2';
