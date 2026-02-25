@@ -115,7 +115,7 @@ export async function GET(request: NextRequest) {
         return {
           id: order.id,
           wpOrderId: order.wp_order_id || order.wpOrderId,
-          displayOrderId: order.display_order_id || order.displayOrderId || `V-${order.wp_order_id || order.wpOrderId}`,
+          displayOrderId: order.display_order_id || order.displayOrderId || (order.wp_order_id || order.wpOrderId)?.toString(),
           total: order.total?.toString() || "0.00",
           amountNet: order.amount_net?.toString() || order.amountNet?.toString() || "0.00",
           purchaseOrder: order.purchase_order || order.purchaseOrder || null,
