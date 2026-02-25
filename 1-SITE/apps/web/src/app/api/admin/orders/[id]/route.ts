@@ -13,9 +13,13 @@ export async function GET(request: Request, { params }: { params: { id: string }
 
     console.log(`🚀 [Admin Order Detail] Fetching atomic data for WP ID: ${id}`);
 
-    // 🛡️ CHRIS-PROTOCOL: Auth Check
+    // 🛡️ CHRIS-PROTOCOL: Auth Check (v2.14.685)
+    // We laten de admin door als er een sessie is.
     const auth = await requireAdmin();
-    if (auth instanceof NextResponse) return auth;
+    if (auth instanceof NextResponse) {
+      console.warn(`⚠️ [Admin Order Detail] Auth Failed for ${id}:`, auth.status);
+      return auth;
+    }
 
     // 🚀 NUCLEAR DETAIL FETCH: WP ID is nu de PK
     // We gebruiken sql.raw voor maximale stabiliteit in de cloud

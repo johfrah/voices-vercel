@@ -392,92 +392,84 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                     {/* Language Segment - CHRIS-PROTOCOL: Hide in script flow */}
                     {state.currentStep === 'voice' ? (
                       <div className="flex-1 h-full flex flex-col justify-center relative group/lang">
-                        <VoicesDropdown 
-                          searchable
-                          rounding="left"
-                          options={sortedLanguages}
-                          value={state.filters.languageId || state.filters.language}
-                          selectedExtraLangs={state.filters.languageIds?.map(String) || state.filters.languages || []}
-                          onExtraLangToggle={(lang) => {
-                            //  CHRIS-PROTOCOL: Handle both ID and Label toggling
-                            const isId = !isNaN(Number(lang));
-                            if (isId) {
-                              const langId = Number(lang);
-                              const currentIds = state.filters.languageIds || [state.filters.languageId].filter(Boolean) as number[];
-                              if (currentIds.includes(langId)) {
-                                updateFilters({ languageIds: currentIds.filter(id => id !== langId) });
-                              } else {
-                                updateFilters({ languageIds: [...currentIds, langId] });
-                              }
-                            } else {
-                              // Resolve label to ID if possible
-                              const langId = sortedLanguages.find(langOpt => typeof langOpt === 'object' && langOpt.label === lang)?.value;
-                              if (typeof langId === 'number') {
+                          <VoicesDropdown 
+                            searchable
+                            rounding="left"
+                            options={sortedLanguages}
+                            value={state.filters.languageId || state.filters.language}
+                            selectedExtraLangs={state.filters.languageIds?.map(String) || state.filters.languages || []}
+                            onExtraLangToggle={(lang) => {
+                              //  CHRIS-PROTOCOL: Handle both ID and Label toggling
+                              const isId = !isNaN(Number(lang));
+                              if (isId) {
+                                const langId = Number(lang);
                                 const currentIds = state.filters.languageIds || [state.filters.languageId].filter(Boolean) as number[];
                                 if (currentIds.includes(langId)) {
                                   updateFilters({ languageIds: currentIds.filter(id => id !== langId) });
                                 } else {
                                   updateFilters({ languageIds: [...currentIds, langId] });
                                 }
-                                return;
-                              }
+                              } else {
+                                // Resolve label to ID if possible
+                                const langId = sortedLanguages.find(langOpt => typeof langOpt === 'object' && langOpt.label === lang)?.value;
+                                if (typeof langId === 'number') {
+                                  const currentIds = state.filters.languageIds || [state.filters.languageId].filter(Boolean) as number[];
+                                  if (currentIds.includes(langId)) {
+                                    updateFilters({ languageIds: currentIds.filter(id => id !== langId) });
+                                  } else {
+                                    updateFilters({ languageIds: [...currentIds, langId] });
+                                  }
+                                  return;
+                                }
 
-                              const currentLangs = state.filters.languages || [state.filters.language?.toLowerCase() || ''];
-                              const lowLang = lang.toLowerCase();
-                              if (currentLangs.includes(lowLang)) {
-                                updateFilters({ languages: currentLangs.filter(l => l !== lowLang) });
-                              } else {
-                                updateFilters({ languages: [...currentLangs, lowLang] });
+                                const currentLangs = state.filters.languages || [state.filters.language?.toLowerCase() || ''];
+                                const lowLang = lang.toLowerCase();
+                                if (currentLangs.includes(lowLang)) {
+                                  updateFilters({ languages: currentLangs.filter(l => l !== lowLang) });
+                                } else {
+                                  updateFilters({ languages: [...currentLangs, lowLang] });
+                                }
                               }
-                            }
-                          }}
-                          onChange={(val) => {
-                            if (typeof val === 'number') {
-                              // Hard ID selected (from other contexts if any)
-                              const optMatch = sortedLanguages.find(langOpt => typeof langOpt === 'object' && langOpt.value === val);
-                              updateFilters({ 
-                                languageId: val,
-                                languageIds: [val],
-                                language: optMatch?.langCode || optMatch?.label || undefined
-                              });
-                            } else if (val && val.includes(',')) {
-                              // Combination selected (Legacy support)
-                              const langs = val.split(',').map((l: string) => l.trim().toLowerCase());
-                              updateFilters({ 
-                                language: val,
-                                languages: langs
-                              });
-                            } else {
-                              // ISO Code or Label selected
-                              const optMatch = sortedLanguages.find(langOpt => typeof langOpt === 'object' && langOpt.value === val);
-                              if (optMatch && typeof optMatch.value === 'string' && optMatch.value.includes('-')) {
-                                // Standard ISO Code selected
+                            }}
+                            onChange={(val) => {
+                              if (typeof val === 'number') {
+                                //  CHRIS-PROTOCOL: ID-First Selection (Handshake Truth)
+                                const optMatch = sortedLanguages.find(langOpt => typeof langOpt === 'object' && langOpt.value === val);
                                 updateFilters({ 
-                                  language: optMatch.langCode, // Store the code, not the translated label
-                                  languages: [optMatch.langCode],
-                                  languageId: undefined // Clear ID if switching to code-based
+                                  languageId: val,
+                                  languageIds: [val],
+                                  language: optMatch?.langCode || optMatch?.label || undefined
                                 });
-                              } else if (optMatch && typeof optMatch.value === 'number') {
+                              } else if (val && val.includes(',')) {
+                                // Combination selected (Legacy support)
+                                const langs = val.split(',').map((l: string) => l.trim().toLowerCase());
                                 updateFilters({ 
-                                  languageId: optMatch.value,
-                                  languageIds: [optMatch.value],
-                                  language: optMatch.label
+                                  language: val,
+                                  languages: langs
                                 });
                               } else {
-                                // Fallback for labels
-                                updateFilters({ 
-                                  language: val || undefined,
-                                  languages: val ? [val.toLowerCase()] : undefined 
-                                });
+                                // ISO Code or Label selected
+                                const optMatch = sortedLanguages.find(langOpt => typeof langOpt === 'object' && (langOpt.langCode === val || langOpt.value === val));
+                                if (optMatch && typeof optMatch.value === 'number') {
+                                  updateFilters({ 
+                                    languageId: optMatch.value,
+                                    languageIds: [optMatch.value],
+                                    language: optMatch.langCode || optMatch.label
+                                  });
+                                } else {
+                                  updateFilters({ 
+                                    language: val || undefined,
+                                    languages: val ? [val.toLowerCase()] : undefined 
+                                  });
+                                }
                               }
-                            }
-                          }}
-                          placeholder={t('filter.all_languages', 'Alle talen')}
-                          label={t('filter.which_language', 'Welke taal?')}
-                          className="w-full h-full"
-                          required={true}
-                          onOrderClick={handleReorderClick}
-                        />
+                            }}
+                            placeholder={t('filter.all_languages', 'Alle talen')}
+                            label={t('filter.which_language', 'Welke taal?')}
+                            className="w-full h-full"
+                            required={true}
+                            onOrderClick={handleReorderClick}
+                          />
                       </div>
                     ) : null}
 
@@ -490,18 +482,32 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                                   { label: t('gender.everyone', language === 'fr' ? 'Tout le monde' : language === 'en' ? 'Everyone' : 'Iedereen'), value: '', icon: Users },
                                   ...fetchedGenders.map(g => ({
                                     label: g.label,
-                                    value: g.code, // Use code for filtering
+                                    value: g.id, //  CHRIS-PROTOCOL: Use ID for Handshake Truth
+                                    code: g.code,
                                     icon: User
                                   }))
                                 ]
                               : [
                                   { label: t('gender.everyone', language === 'fr' ? 'Tout le monde' : language === 'en' ? 'Everyone' : 'Iedereen'), value: '', icon: Users },
-                                  { label: t('gender.male', language === 'fr' ? 'Masculin' : language === 'en' ? 'Male' : 'Mannelijk'), value: 'Mannelijk', icon: User },
-                                  { label: t('gender.female', language === 'fr' ? 'Féminin' : language === 'en' ? 'Female' : 'Vrouwelijk'), value: 'Vrouwelijk', icon: User },
+                                  { label: t('gender.male', language === 'fr' ? 'Masculin' : language === 'en' ? 'Male' : 'Mannelijk'), value: 'male', icon: User },
+                                  { label: t('gender.female', language === 'fr' ? 'Féminin' : language === 'en' ? 'Female' : 'Vrouwelijk'), value: 'female', icon: User },
                                 ]
                             }
-                            value={state.filters.gender || ''}
-                            onChange={(val) => updateFilters({ gender: val || undefined })}
+                            value={state.filters.genderId || state.filters.gender || ''}
+                            onChange={(val) => {
+                              if (typeof val === 'number') {
+                                const optMatch = fetchedGenders.find(g => g.id === val);
+                                updateFilters({ 
+                                  genderId: val,
+                                  gender: optMatch?.code || undefined 
+                                });
+                              } else {
+                                updateFilters({ 
+                                  genderId: undefined,
+                                  gender: val || undefined 
+                                });
+                              }
+                            }}
                             placeholder={t('gender.everyone', language === 'fr' ? 'Tout le monde' : language === 'en' ? 'Everyone' : 'Iedereen')}
                             label={t('filter.who', language === 'fr' ? 'Qui?' : language === 'en' ? 'Who?' : 'Wie?')}
                             className="w-full h-full"
