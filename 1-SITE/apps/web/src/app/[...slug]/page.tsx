@@ -409,6 +409,36 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
         console.error("[SmartRouter] Ademing tracks fetch failed:", err);
       }
       
+      // Handle Ademing sub-pages
+      const ademingSlug = cleanSegments[0];
+      
+      if (ademingSlug === 'bibliotheek') {
+        return (
+          <PageWrapperInstrument className="bg-va-off-white">
+            <Suspense fallback={null}><LiquidBackground /></Suspense>
+            <AdemingBento tracks={tracks} mode="library" />
+          </PageWrapperInstrument>
+        );
+      }
+
+      if (ademingSlug === 'favorieten') {
+        return (
+          <PageWrapperInstrument className="bg-va-off-white">
+            <Suspense fallback={null}><LiquidBackground /></Suspense>
+            <AdemingBento tracks={tracks} mode="favorites" />
+          </PageWrapperInstrument>
+        );
+      }
+
+      if (ademingSlug === 'zoeken') {
+        return (
+          <PageWrapperInstrument className="bg-va-off-white">
+            <Suspense fallback={null}><LiquidBackground /></Suspense>
+            <AdemingBento tracks={tracks} mode="search" />
+          </PageWrapperInstrument>
+        );
+      }
+
       // Handle deep meditation routes on ademing.be
       if (cleanSegments.length > 0) {
         const meditationSlug = cleanSegments[cleanSegments.length - 1];
