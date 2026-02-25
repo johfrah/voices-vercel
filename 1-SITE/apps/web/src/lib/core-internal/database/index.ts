@@ -95,9 +95,8 @@ o/bKiIz+Fq8=
   return (globalThis as any).dbInstance;
 };
 
-// 🛡️ CHRIS-PROTOCOL: Force Global Reset (v2.14.597)
-// Als we in productie zijn en de pooler-fout blijft aanhouden, 
-// dwingen we hier een harde reset van de singleton.
+// 🛡️ CHRIS-PROTOCOL: Force Global Reset (v2.14.606)
+// We dwingen een harde reset van de singleton bij elke koude start op Vercel.
 if (typeof window === 'undefined' && process.env.NODE_ENV === 'production') {
   (globalThis as any).dbInstance = null;
   if ((globalThis as any).postgresClient) {
