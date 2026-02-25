@@ -41,11 +41,18 @@ export async function GET(request: NextRequest) {
     console.log(`🚀 [API DEBUG] Raw orders fetched from DB: ${allOrders.length}`);
     if (allOrders.length === 0) {
       console.log('⚠️ [API DEBUG] NO ORDERS FOUND IN DB QUERY. Checking raw count...');
-      const [{ count }] = await db.select({ count: db.fn.count(orders.id) }).from(orders);
-      console.log(`📊 [API DEBUG] Raw count in DB: ${count}`);
+      try {
+        const rawOrders = await db.select().from(orders).limit(5);
+        console.log(`📊 [API DEBUG] Raw orders sample count: ${rawOrders.length}`);
+        if (rawOrders.length > 0) {
+          console.log(`📦 [API DEBUG] Raw sample: ${JSON.stringify(rawOrders[0])}`);
+        }
+      } catch (rawErr) {
+        console.error('❌ [API DEBUG] Raw select failed:', rawErr);
+      }
     }
 
-    // 🛡️ CHRIS-PROTOCOL: Godmode Data Access (v2.14.563)
+    // 🛡️ CHRIS-PROTOCOL: Godmode Data Access (v2.14.564)
     const sanitizedOrders = allOrders.map((order, index) => {
       try {
         const sanitized = {
