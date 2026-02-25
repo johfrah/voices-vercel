@@ -128,9 +128,12 @@ async function generateAtomicSitemap() {
 
   const { data: attrs } = await supabase.from('actor_attributes').select('id, code, label');
   attrs?.forEach(at => {
-    const descriptiveSlug = `stemmen/${slugify(at.label)}`;
+    const descriptiveSlug = `tone-of-voice/${slugify(at.label)}`;
     sitemap.push({ slug: descriptiveSlug, type: 'attribute', entity_id: at.id, journey: 'agency', name: `Attribute: ${at.label}` });
+    
+    // Redirect old code-based slug and old 'stemmen/' prefix
     sitemap.push({ slug: at.code.toLowerCase(), type: 'attribute', entity_id: at.id, journey: 'agency', name: `Attribute: ${at.label}`, canonical_slug: descriptiveSlug });
+    sitemap.push({ slug: `stemmen/${slugify(at.label)}`, type: 'attribute', entity_id: at.id, journey: 'agency', name: `Attribute: ${at.label}`, canonical_slug: descriptiveSlug });
   });
 
   // 7. FAQ -> faq/

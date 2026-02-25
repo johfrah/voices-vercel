@@ -192,7 +192,7 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
   
   // 🛡️ NUCLEAR HANDSHAKE: Resolve via Slug Registry for Metadata
   let lookupSlug = cleanSegments[0];
-  const systemPrefixes = ['voice', 'stem', 'voix', 'stimme', 'artist', 'artiest', 'studio', 'academy', 'music', 'muziek', 'faq', 'provider', 'demos', 'blog', 'article', 'nl', 'fr', 'en', 'de', 'es', 'it', 'pt', 'pl', 'da', 'sv', 'fi', 'nb', 'tr', 'hr', 'ca'];
+  const systemPrefixes = ['voice', 'stem', 'voix', 'stimme', 'artist', 'artiest', 'studio', 'academy', 'music', 'muziek', 'faq', 'provider', 'demos', 'blog', 'article', 'tone-of-voice', 'nl', 'fr', 'en', 'de', 'es', 'it', 'pt', 'pl', 'da', 'sv', 'fi', 'nb', 'tr', 'hr', 'ca'];
   
   // If the slug has multiple parts, we check if the first part is a system prefix
   if (systemPrefixes.includes(lookupSlug?.toLowerCase()) && cleanSegments[1]) {
@@ -388,7 +388,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
     let journey = cleanSegments[1];
     let medium = cleanSegments[2];
 
-    const systemPrefixes = ['voice', 'stem', 'voix', 'stimme', 'artist', 'artiest', 'studio', 'academy', 'music', 'muziek', 'faq', 'provider', 'demos', 'blog', 'article', 'nl', 'fr', 'en', 'de', 'es', 'it', 'pt', 'pl', 'da', 'sv', 'fi', 'nb', 'tr', 'hr', 'ca'];
+    const systemPrefixes = ['voice', 'stem', 'voix', 'stimme', 'artist', 'artiest', 'studio', 'academy', 'music', 'muziek', 'faq', 'provider', 'demos', 'blog', 'article', 'tone-of-voice', 'nl', 'fr', 'en', 'de', 'es', 'it', 'pt', 'pl', 'da', 'sv', 'fi', 'nb', 'tr', 'hr', 'ca'];
     
     if (systemPrefixes.includes(lookupSlug?.toLowerCase()) && journey) {
       console.error(` [SmartRouter] System prefix detected: ${lookupSlug}.`);
