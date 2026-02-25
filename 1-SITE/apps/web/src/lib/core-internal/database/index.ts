@@ -33,8 +33,8 @@ const getDb = () => {
       }
 
       // 🛡️ CHRIS-PROTOCOL: Force Re-initialization if connection string changed (v2.14.591)
-      const currentConnString = (globalThis as any)._lastConnString;
-      if (currentConnString && currentConnString !== connectionString) {
+      const lastConn = (globalThis as any)._lastConnString;
+      if (lastConn && lastConn !== connectionString) {
         console.error(' [getDb] CONNECTION STRING CHANGED: Resetting client...');
         if ((globalThis as any).postgresClient) {
           try { (globalThis as any).postgresClient.end(); } catch (e) {}
@@ -54,7 +54,7 @@ Um9vdCAyMDIxIENBMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAqQXW
 QyHOB+qR2GJobCq/CBmQ40G0oDmCC3mzVnn8sv4XNeWtE5XcEL0uVih7Jo4Dkx1Q
 DmGHBH1zDfgs2qXiLb6xpw/CKQPypZW1JssOTMIfQppNQ87K75Ya0p25Y3ePS2t2
 GtvHxNjUV6kjOZjEn2yWEcBdpOVCUYBVFBNMB4YBHkNRDa/+S4uywAoaTWnCJLUi
-cvTlHmMw6xSQQn1UfRQHk50DMCEJ7Cy1RxrZJrkXXRP3LqQL2ijJ6F4yMfh+Gyb4
+cvTlHmMw6xSQQn1UfRQHk50DMCEJ7Cy1RxrZJrkXXRP3LrkL2ijJ6F4yMfh+Gyb4
 O4XajoVj/+R4GwywKYrrS8PrSNtwxr5StlQO8zIQUSMiq26wM8mgELFlS/32Uclt
 NaQ1xBRizkzpZct9DwIDAQABo2AwXjALBgNVHQ8EBAMCAQYwHQYDVR0OBBYEFKjX
 uXY32CztkhImng4yJNUtaUYsMB8GA1UdIwQYMBaAFKjXuXY32CztkhImng4yJNUt
@@ -69,17 +69,6 @@ o/bKiIz+Fq8=
 
       const poolSize = process.env.NEXT_PHASE === 'phase-production-build' ? 5 : (process.env.NODE_ENV === 'production' ? 10 : 10);
       
-      // 🛡️ CHRIS-PROTOCOL: Force Re-initialization if connection string changed (v2.14.591)
-      const currentConnString = (globalThis as any)._lastConnString;
-      if (currentConnString && currentConnString !== connectionString) {
-        console.error(' [getDb] CONNECTION STRING CHANGED: Resetting client...');
-        if ((globalThis as any).postgresClient) {
-          try { (globalThis as any).postgresClient.end(); } catch (e) {}
-          (globalThis as any).postgresClient = null;
-        }
-      }
-      (globalThis as any)._lastConnString = connectionString;
-
       if (!(globalThis as any).postgresClient) {
         console.error(' [getDb] CONNECTING TO:', connectionString.replace(/:[^:]*@/, ':****@'));
         (globalThis as any).postgresClient = postgres(connectionString, { 
