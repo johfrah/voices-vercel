@@ -211,6 +211,7 @@ export function VoiceDetailClient({
               minimalMode={false} 
               hideVoiceCard={true}
               hideUsageSelector={true}
+              hidePriceBlock={false}
             />
           </div>
 
