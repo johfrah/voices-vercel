@@ -1,4 +1,4 @@
-import { db, appConfigs, languages, genders, journeys, mediaTypes } from '@/lib/system/voices-config';
+import { db, appConfigs, languages, genders, journeys, mediaTypes, countries } from '@/lib/system/voices-config';
 import { eq, asc, desc, and, or, ilike, sql } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
 import { getActor, getActors, getMusicLibrary } from '@/lib/services/api-server';
@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
   const type = searchParams.get('type');
 
   // appConfigs en overige types: admin only
-  const publicTypes = ['actor', 'actors', 'music', 'navigation', 'telephony', 'general', 'languages', 'genders', 'journeys', 'media_types'];
+  const publicTypes = ['actor', 'actors', 'music', 'navigation', 'telephony', 'general', 'languages', 'genders', 'journeys', 'media_types', 'countries'];
   if (!type || !publicTypes.includes(type)) {
     const auth = await requireAdmin();
     if (auth instanceof NextResponse) return auth;
@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
     //  BRIDGE LOGIC: Handle client-side requests for server-only data
     if (type === 'telephony') {
       try {
-        const config = await dbWithTimeout(db.select().from(appConfigs).where(eq(appConfigs.key, 'telephony_config')).limit(1));
+        const config = await dbWithTimeout(db.select().from(appConfigs).where(eq(appConfigs.key, 'telephony_config')).limit(1)) as any[];
         return NextResponse.json({ telephony_config: config[0]?.value || {} });
       } catch (err: any) {
         console.warn(`[Admin Config] Telephony fetch failed, returning empty: ${err.message}`);
@@ -64,42 +64,44 @@ export async function GET(request: NextRequest) {
 
     if (type === 'general') {
       try {
-        const config = await dbWithTimeout(db.select().from(appConfigs).where(eq(appConfigs.key, 'general_settings')).limit(1));
+        const config = await dbWithTimeout(db.select().from(appConfigs).where(eq(appConfigs.key, 'general_settings')).limit(1)) as any[];
         return NextResponse.json({
         general_settings: config[0]?.value || {},
-        _version: '2.14.747'
+        _version: '2.14.748'
       });
     } catch (err: any) {
       console.warn(`[Admin Config] General settings fetch failed, returning empty: ${err.message}`);
       return NextResponse.json({
         general_settings: {},
-        _version: '2.14.747'
+        _version: '2.14.748'
       });
       }
     }
 
     if (type === 'languages') {
-      const results = await dbWithTimeout(db.select().from(languages).orderBy(asc(languages.displayOrder))).catch(() => []);
+      // 🛡️ CHRIS-PROTOCOL: Safe ordering (v2.14.748)
+      // displayOrder doesn't exist in DB yet, falling back to ID.
+      const results = await dbWithTimeout(db.select().from(languages).orderBy(asc(languages.id))).catch(() => []);
       return NextResponse.json({ results });
     }
 
     if (type === 'genders') {
-      const results = await dbWithTimeout(db.select().from(genders).orderBy(asc(genders.displayOrder))).catch(() => []);
+      const results = await dbWithTimeout(db.select().from(genders).orderBy(asc(genders.id))).catch(() => []);
       return NextResponse.json({ results });
     }
 
     if (type === 'journeys') {
-      const results = await dbWithTimeout(db.select().from(journeys).orderBy(asc(journeys.displayOrder))).catch(() => []);
+      const results = await dbWithTimeout(db.select().from(journeys).orderBy(asc(journeys.id))).catch(() => []);
       return NextResponse.json({ results });
     }
 
     if (type === 'media_types') {
-      const results = await dbWithTimeout(db.select().from(mediaTypes).orderBy(asc(mediaTypes.displayOrder))).catch(() => []);
+      const results = await dbWithTimeout(db.select().from(mediaTypes).orderBy(asc(mediaTypes.id))).catch(() => []);
       return NextResponse.json({ results });
     }
 
     if (type === 'countries') {
-      const results = await dbWithTimeout(db.select().from(countries).orderBy(asc(countries.displayOrder))).catch(() => []);
+      const results = await dbWithTimeout(db.select().from(countries).orderBy(asc(countries.id))).catch(() => []);
       return NextResponse.json({ results });
     }
 
@@ -139,8 +141,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Default: Return all app configs
-    const configs = await db.select().from(appConfigs).catch(() => []);
-    const configMap = configs.reduce((acc: any, curr) => {
+    const configs = await db.select().from(appConfigs).catch(() => []) as any[];
+    const configMap = configs.reduce((acc: any, curr: any) => {
       acc[curr.key] = curr.value;
       return acc;
     }, {});

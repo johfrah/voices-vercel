@@ -5,7 +5,7 @@ import { and, asc, desc, eq, ilike, or, sql } from "drizzle-orm";
 import {
     Actor,
     SearchResults,
-} from "../types";
+} from "../../types";
 import { VoiceglotBridge } from "../bridges/voiceglot-bridge";
 
 //  CHRIS-PROTOCOL: SDK fallback voor als direct-connect faalt (DNS/Pooler issues)
@@ -254,12 +254,13 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
     const actorLangsData = actorLangsRes.data || [];
 
     // 🛡️ CHRIS-PROTOCOL: Global Data Registry for Handshake Truth (v2.14.716)
-    const { data: allLangsData } = await supabase.from('languages').select('*').order('display_order', { ascending: true });
+    // We fetch all relational data to ensure labels are available for mapping.
+    const { data: allLangsData } = await supabase.from('languages').select('*');
     const { data: allStatusesData } = await supabase.from('actor_statuses').select('*');
-    const { data: allExperienceData } = await supabase.from('experience_levels').select('*').order('display_order', { ascending: true });
-    const { data: allCountriesData } = await supabase.from('countries').select('*').order('display_order', { ascending: true });
-    const { data: allGendersData } = await supabase.from('genders').select('*').order('display_order', { ascending: true });
-    const { data: allMediaTypesData } = await supabase.from('media_types').select('*').order('display_order', { ascending: true });
+    const { data: allExperienceData } = await supabase.from('experience_levels').select('*');
+    const { data: allCountriesData } = await supabase.from('countries').select('*');
+    const { data: allGendersData } = await supabase.from('genders').select('*');
+    const { data: allMediaTypesData } = await supabase.from('media_types').select('*');
 
     const langLookup = new Map<number, { code: string, label: string }>();
     allLangsData?.forEach(l => langLookup.set(l.id, { code: l.code, label: l.label }));
@@ -683,7 +684,7 @@ async function processActorData(actor: any, slug: string): Promise<Actor> {
         .where(and(eq(actorLangsTable.actorId, actor.id), eq(actorLangsTable.isNative, false)));
       
       if (extraLangsData.length > 0) {
-        extraLangs = extraLangsData.map(l => l.code).join(', ');
+        extraLangs = extraLangsData.map((l: any) => l.code).join(', ');
       }
     } catch (e) {}
   }
