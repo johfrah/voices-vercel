@@ -40,8 +40,24 @@ export default async function StudioAdminWorkshopsPage() {
   if (!isAdminUser(user)) redirect('/studio');
 
   const editions = await StudioDataBridge.getAllEditions();
-  const upcomingEditions = editions.filter(e => e.status === 'upcoming');
-  const pastEditions = editions.filter(e => e.status === 'completed');
+  const now = new Date();
+  
+  // 1 Truth Handshake: Datum is de bron van waarheid, status is een label
+  const upcomingEditions = editions.filter(e => {
+    const editionDate = new Date(e.date);
+    return editionDate >= now && e.status !== 'cancelled';
+  });
+  
+  const pastEditions = editions.filter(e => {
+    const editionDate = new Date(e.date);
+    return editionDate < now || e.status === 'completed';
+  });
+
+  // Forensische check: Edities die in het verleden liggen maar niet op 'completed' staan
+  const needsAction = editions.filter(e => {
+    const editionDate = new Date(e.date);
+    return editionDate < now && e.status === 'upcoming';
+  });
 
   return (
     <PageWrapperInstrument className="min-h-screen pt-24 pb-32 px-6 md:px-12 max-w-[1600px] mx-auto">
@@ -55,6 +71,21 @@ export default async function StudioAdminWorkshopsPage() {
           </HeadingInstrument>
         </ContainerInstrument>
       </ContainerInstrument>
+
+      {needsAction.length > 0 && (
+        <ContainerInstrument className="mb-12 p-6 bg-amber-50 border border-amber-200 rounded-2xl flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="w-10 h-10 bg-amber-200 rounded-xl flex items-center justify-center text-amber-700">
+              <Clock size={20} />
+            </div>
+            <div>
+              <TextInstrument className="font-black text-amber-900 uppercase tracking-tight">Actie Vereist</TextInstrument>
+              <TextInstrument className="text-amber-700/70 text-sm font-medium">{needsAction.length} edities liggen in het verleden maar staan nog op 'upcoming'.</TextInstrument>
+            </div>
+          </div>
+          <Link href="/admin/studio/workshops/audit" className="va-btn-pro !bg-amber-200 !text-amber-900 !text-[11px]">START AUTO-HEAL</Link>
+        </ContainerInstrument>
+      )}
 
       <BentoGrid columns={3} className="gap-8">
         <BentoCard span="sm" className="bg-va-off-white p-8 border border-black/5 flex flex-col justify-between rounded-[20px]">

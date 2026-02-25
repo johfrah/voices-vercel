@@ -59,24 +59,12 @@ export default async function StudioAdminPage() {
 
     if (error) {
       console.error(' [StudioAdmin] SDK Error (Editions):', error.message);
-      // 🛡️ CHRIS-PROTOCOL: Report to Watchdog
-      try {
-        const { ServerWatchdog } = await import('@/lib/services/server-watchdog');
-        await ServerWatchdog.report({
-          error: `Studio Admin SDK Error: ${error.message}`,
-          component: 'StudioAdminPage',
-          level: 'error'
-        });
-      } catch (watchdogErr) {
-        console.error('Failed to report to watchdog:', watchdogErr);
-      }
     }
 
     if (editions) {
       console.log(` [StudioAdmin] Found ${editions.length} editions.`);
       allEditions = editions.map(e => {
         const d = e.date ? new Date(e.date) : new Date();
-        // Check if date is valid, fallback to now if not
         return {
           ...e,
           date: isNaN(d.getTime()) ? new Date() : d,
@@ -89,6 +77,11 @@ export default async function StudioAdminPage() {
   } catch (dbError: any) {
     console.error(' [StudioAdmin] Fatal Error (Editions):', dbError.message);
   }
+
+  const now = new Date();
+  const upcomingEditions = allEditions.filter(e => e.date >= now && e.status !== 'cancelled');
+  const pastEditions = allEditions.filter(e => e.date < now || e.status === 'completed');
+
 
   // 2. Haal financile stats op (Nuclear Logic)
   let financeStats = {
@@ -127,6 +120,20 @@ export default async function StudioAdminPage() {
       </ContainerInstrument>
 
       <BentoGrid strokeWidth={1.5} columns={3} className="gap-8">
+        <BentoCard span="sm" className="bg-va-off-white p-8 border border-black/5 flex flex-col justify-between rounded-[20px]">
+          <ContainerInstrument>
+            <Calendar strokeWidth={1.5} className="text-primary mb-6" size={24} />
+            <TextInstrument className="text-[15px] tracking-widest text-black/30 font-light">Geplande edities</TextInstrument>
+            <HeadingInstrument level={3} className="text-4xl font-light tracking-tighter mt-2">{upcomingEditions.length}</HeadingInstrument>
+          </ContainerInstrument>
+        </BentoCard>
+        <BentoCard span="sm" className="bg-va-off-white p-8 border border-black/5 flex flex-col justify-between rounded-[20px]">
+          <ContainerInstrument>
+            <History strokeWidth={1.5} className="text-primary mb-6" size={24} />
+            <TextInstrument className="text-[15px] tracking-widest text-black/30 font-light">Historische edities</TextInstrument>
+            <HeadingInstrument level={3} className="text-4xl font-light tracking-tighter mt-2">{pastEditions.length}</HeadingInstrument>
+          </ContainerInstrument>
+        </BentoCard>
         {/* FINANCE OVERVIEW (Step 4) */}
         <BentoCard span="sm" className="bg-va-black text-white p-8 flex flex-col justify-between">
           <ContainerInstrument>
@@ -219,55 +226,59 @@ export default async function StudioAdminPage() {
 
         {/* EDITIONS LIST FOR ADMIN */}
         <BentoCard span="lg" className="bg-white shadow-aura p-10 border border-black/5">
-          <HeadingInstrument level={2} className="text-[15px] font-light tracking-widest text-black/30 mb-8"><VoiceglotText  translationKey="admin.studio.all_editions" defaultText="Alle Studio Edities" /></HeadingInstrument>
-          
+          <HeadingInstrument level={2} className="text-[15px] font-light tracking-widest text-black/30 mb-8">Komende Studio Edities</HeadingInstrument>
           <ContainerInstrument className="space-y-4">
-            {allEditions.length === 0 ? (
-              <ContainerInstrument className="p-20 text-center text-black/20 italic">
-                Geen edities gevonden of database verbinding instabiel.
-              </ContainerInstrument>
-            ) : allEditions.map((edition) => (
-              <Link 
-                key={edition.id} 
-                href={`/admin/studio/edities/${edition.id}`}
-                className="p-6 rounded-2xl bg-va-off-white border border-transparent hover:border-primary/20 hover:bg-white hover:shadow-aura transition-all flex flex-col md:flex-row justify-between items-center gap-6 group va-interactive"
-              >
-                <ContainerInstrument plain className="flex items-center gap-6">
-                  <ContainerInstrument plain className="w-12 h-12 rounded-xl bg-black text-white flex flex-col items-center justify-center group-hover:bg-primary group-hover:text-va-black transition-colors">
-                    <TextInstrument className="text-[15px] font-black">{edition.date.getDate()}</TextInstrument>
-                    <TextInstrument className="text-[15px] font-bold ">{edition.date.toLocaleString('nl-BE', { month: 'short' })}</TextInstrument>
-                  </ContainerInstrument>
-                  <ContainerInstrument plain>
-                    <HeadingInstrument level={4} className="text-lg font-light tracking-tight"><VoiceglotText  translationKey={`workshop.${edition.workshop?.id}.title`} defaultText={edition.workshop?.title || ''} noTranslate={true} /></HeadingInstrument>
-                    <ContainerInstrument plain className="flex gap-4 mt-1">
-                      <TextInstrument className="text-[15px] font-bold text-black/30 tracking-widest">
-                        <VoiceglotText  translationKey={`instructor.${edition.instructor?.id}.name`} defaultText={edition.instructor?.name || ''} noTranslate={true} />
-                      </TextInstrument>
-                      <TextInstrument className="text-[15px] font-bold text-black/30 tracking-widest">
-                        <VoiceglotText  translationKey={`location.${edition.location?.id}.name`} defaultText={edition.location?.name || ''} noTranslate={true} />
-                      </TextInstrument>
-                    </ContainerInstrument>
-                  </ContainerInstrument>
-                </ContainerInstrument>
-                
-                <ContainerInstrument plain className="flex items-center gap-6">
-                  <ContainerInstrument plain className="text-right">
-                    <ContainerInstrument plain className="text-[15px] font-black tracking-widest text-black/20 mb-1">
-                      <VoiceglotText  translationKey="common.status" defaultText="Status" />
-                    </ContainerInstrument>
-                    <TextInstrument className="text-[15px] font-black tracking-widest text-black/40">
-                      <VoiceglotText  translationKey={`common.status.${edition.status}`} defaultText={edition.status || ''} />
-                    </TextInstrument>
-                  </ContainerInstrument>
-                  <ContainerInstrument plain className="p-4 rounded-xl bg-white border border-black/5 group-hover:border-primary transition-all">
-                    <Settings strokeWidth={1.5} size={16} className="text-black/20 group-hover:text-primary transition-colors" />
-                  </ContainerInstrument>
-                </ContainerInstrument>
-              </Link>
-            ))}
+            {upcomingEditions.length === 0 ? (
+              <ContainerInstrument className="p-20 text-center text-black/20 italic">Geen komende edities gevonden.</ContainerInstrument>
+            ) : upcomingEditions.map((edition) => <EditionRow key={edition.id} edition={edition} />)}
+          </ContainerInstrument>
+
+          <HeadingInstrument level={2} className="text-[15px] font-light tracking-widest text-black/30 mt-16 mb-8">Historische Studio Edities</HeadingInstrument>
+          <ContainerInstrument className="space-y-4">
+            {pastEditions.length === 0 ? (
+              <ContainerInstrument className="p-20 text-center text-black/20 italic">Geen historische edities gevonden.</ContainerInstrument>
+            ) : pastEditions.map((edition) => <EditionRow key={edition.id} edition={edition} />)}
           </ContainerInstrument>
         </BentoCard>
       </BentoGrid>
     </PageWrapperInstrument>
+  );
+}
+
+function EditionRow({ edition }: { edition: any }) {
+  const date = new Date(edition.date);
+  return (
+    <Link 
+      href={`/admin/studio/workshops/${edition.id}`}
+      className="p-6 rounded-2xl bg-va-off-white border border-transparent hover:border-primary/20 hover:bg-white hover:shadow-aura transition-all flex flex-col md:flex-row justify-between items-center gap-6 group va-interactive"
+    >
+      <ContainerInstrument plain className="flex items-center gap-6">
+        <ContainerInstrument plain className="w-12 h-12 rounded-xl bg-black text-white flex flex-col items-center justify-center group-hover:bg-primary group-hover:text-va-black transition-colors">
+          <TextInstrument className="text-[15px] font-black">{date.getDate()}</TextInstrument>
+          <TextInstrument className="text-[15px] font-bold ">{date.toLocaleString('nl-BE', { month: 'short' })}</TextInstrument>
+        </ContainerInstrument>
+        <ContainerInstrument plain>
+          <HeadingInstrument level={4} className="text-lg font-light tracking-tight">{edition.workshop?.title || edition.title}</HeadingInstrument>
+          <ContainerInstrument plain className="flex gap-4 mt-1">
+            <TextInstrument className="text-[13px] font-bold text-black/30 tracking-widest uppercase flex items-center gap-1">
+              <Users size={12} /> {edition.instructor?.name || 'Onbekend'}
+            </TextInstrument>
+            <TextInstrument className="text-[13px] font-bold text-black/30 tracking-widest uppercase flex items-center gap-1">
+              <MapPin size={12} /> {edition.location?.name || 'Gent'}
+            </TextInstrument>
+          </ContainerInstrument>
+        </ContainerInstrument>
+      </ContainerInstrument>
+      
+      <ContainerInstrument plain className="flex items-center gap-6">
+        <ContainerInstrument plain className="text-right">
+          <ContainerInstrument plain className="text-[11px] font-black tracking-widest text-black/20 mb-1 uppercase">Status</ContainerInstrument>
+          <TextInstrument className="text-[13px] font-black tracking-widest text-black/40 uppercase">{edition.status}</TextInstrument>
+        </ContainerInstrument>
+        <ContainerInstrument plain className="p-4 rounded-xl bg-white border border-black/5 group-hover:border-primary transition-all">
+          <Settings strokeWidth={1.5} size={16} className="text-black/20 group-hover:text-primary transition-colors" />
+        </ContainerInstrument>
+      </ContainerInstrument>
+    </Link>
   );
 }

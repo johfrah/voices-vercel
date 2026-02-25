@@ -385,7 +385,7 @@ export class StudioDataBridge {
 
   /**
    * Haalt een workshop op met al zijn edities (datums)
-   *  VOICES OS: Nuclear Edition Support
+   *  VOICES OS: Nuclear Edition Support - Geen status filters in de bridge
    */
   static async getWorkshopWithEditions(slug: string) {
     try {
@@ -393,7 +393,6 @@ export class StudioDataBridge {
         where: eq(workshops.slug, slug),
         with: {
           editions: {
-            where: eq(workshopEditions.status, 'upcoming'),
             orderBy: [workshopEditions.date],
           }
         }

@@ -629,7 +629,7 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
           initial={{ opacity: 0, scale: 0.9, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.9, y: 20 }}
-          className="relative w-full max-w-2xl bg-white rounded-[30px] shadow-2xl overflow-hidden flex flex-col max-h-[90vh] z-[10001]"
+          className="relative w-full max-w-4xl bg-white rounded-[40px] shadow-2xl overflow-hidden flex flex-col max-h-[90vh] z-[10001]"
         >
           {/* Header */}
           <div className="px-8 py-6 border-b border-black/5 flex flex-col gap-6 bg-va-off-white/50">
