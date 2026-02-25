@@ -91,14 +91,18 @@ export async function GET(request: Request, { params }: { params: { id: string }
     return NextResponse.json({
       ...order,
       id: orderPk,
+      userId: userId, // CamelCase mapping
       user_id: userId,
+      legacyInternalId: legacyInternalId, // CamelCase mapping
       legacy_internal_id: legacyInternalId,
       raw_meta: rawMeta, 
       user: customerInfo,
       items: items,
       displayOrderId: orderPk.toString(),
       status: 'completed', // Default for now
+      amountNet: order.amount_net?.toString() || "0.00", // CamelCase mapping
       amount_net: order.amount_net?.toString() || "0.00",
+      total: order.total?.toString() || "0.00", // CamelCase mapping
       amount_total: order.total?.toString() || "0.00"
     });
 
