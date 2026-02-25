@@ -786,7 +786,14 @@ export async function getWorkshops(limit: number = 50): Promise<any[]> {
   // 🛡️ CHRIS-PROTOCOL: Use SDK for stability (v2.14.273)
   const { data: workshopsData, error } = await supabase
     .from('workshops')
-    .select('*')
+    .select(`
+      *,
+      editions:workshop_editions(
+        *,
+        instructor:instructors(id, first_name, last_name, bio, photo_url),
+        location:locations(id, name, address, city, zip, country)
+      )
+    `)
     .limit(limit);
 
   if (error) {
