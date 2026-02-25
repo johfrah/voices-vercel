@@ -550,14 +550,19 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
     setIsSaving(true);
     setMessage(null);
 
-    //  CHRIS-PROTOCOL: Atomic Payload (2026)
-    //  We stop mapping fields manually. The formData is now the source of truth
-    //  and matches the database snake_case columns exactly.
+    //  CHRIS-PROTOCOL: 1 Truth Payload (v2.14.518)
+    //  We only send IDs for assets. URL strings are legacy noise.
     const payload = {
       ...formData,
+      photo_id: formData.photo_id,
       // Ensure price_live_regie is null if empty to avoid DB errors
       price_live_regie: formData.price_live_regie || null,
     };
+
+    // 🧹 Remove legacy URL fields from payload to enforce 1 Truth
+    delete (payload as any).photo_url;
+    delete (payload as any).dropbox_url;
+    delete (payload as any).dropboxUrl;
 
     console.log('🚀 [ActorEditModal] Forensic Save Trace:', {
       actorId: actor.id,
