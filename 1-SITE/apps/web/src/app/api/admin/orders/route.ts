@@ -1,5 +1,5 @@
 import { db } from '@/lib/system/voices-config';
-import { orders, users, notifications, orderItems } from '@/lib/system/voices-config';
+import { orders, users, notifications, orderItems, systemEvents } from '@/lib/system/voices-config';
 import { desc, eq } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth/api-auth';
@@ -25,6 +25,23 @@ export async function GET(request: NextRequest) {
 
     console.log(`🚀 [API DEBUG] 1 TRUTH: Raw orders fetched from DB: ${allOrders.length}`);
     
+    // 🛡️ CHRIS-PROTOCOL: Force Log to DB for Forensic Visibility
+    try {
+      await db.insert(systemEvents).values({
+        level: 'info',
+        source: 'api',
+        message: `[API DEBUG] Orders Fetch: ${allOrders.length} records`,
+        details: { 
+          count: allOrders.length, 
+          version: 'v2.14.574',
+          firstOrderId: allOrders[0]?.id || null,
+          db_host: process.env.DATABASE_URL?.split('@')[1]?.split('/')[0] || 'unknown'
+        }
+      });
+    } catch (logErr) {
+      console.error('Failed to log to system_events:', logErr);
+    }
+
     // 🛡️ CHRIS-PROTOCOL: Emergency DB Check
     if (allOrders.length === 0) {
       const rawCount = await db.select({ count: orders.id }).from(orders).limit(1);
