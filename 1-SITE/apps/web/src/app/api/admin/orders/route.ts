@@ -23,13 +23,18 @@ export async function GET(request: NextRequest) {
     // We stoppen met JOINs die data kunnen verbergen. We halen de orders PUUR op.
     let allOrders: any[] = [];
     try {
-      // Emergency Raw SQL Check
-      const rawResult = await db.execute(sql`SELECT * FROM orders ORDER BY created_at DESC LIMIT 250`);
+      // Emergency Raw SQL Check with explicit schema
+      const rawResult = await db.execute(sql`SELECT * FROM public.orders ORDER BY created_at DESC LIMIT 250`);
       allOrders = rawResult.rows || rawResult || [];
-      console.log(`🚀 [API DEBUG] 1 TRUTH (RAW SQL): Fetched ${allOrders.length} records`);
+      console.log(`🚀 [API DEBUG] 1 TRUTH (RAW SQL): Fetched ${allOrders.length} records from public.orders`);
     } catch (rawErr) {
-      console.error('❌ [API DEBUG] Raw SQL failed, falling back to Drizzle:', rawErr);
-      allOrders = await db.select().from(orders).orderBy(desc(orders.createdAt)).limit(250);
+      console.error('❌ [API DEBUG] Raw SQL failed for public.orders:', rawErr);
+      try {
+        const rawResult = await db.execute(sql`SELECT * FROM orders ORDER BY created_at DESC LIMIT 250`);
+        allOrders = rawResult.rows || rawResult || [];
+      } catch (e) {
+        allOrders = await db.select().from(orders).orderBy(desc(orders.createdAt)).limit(250);
+      }
     }
 
     // 🛡️ CHRIS-PROTOCOL: Force Log to DB for Forensic Visibility
