@@ -41,7 +41,7 @@ export async function GET(request: NextRequest) {
 
     let allOrders: any[] = [];
     let debugInfo: any = {
-      version: '2.14.640',
+      version: '2.14.642',
       db_host: process.env.DATABASE_URL?.split('@')[1]?.split('/')[0] || 'unknown',
       page,
       limit,
@@ -51,28 +51,22 @@ export async function GET(request: NextRequest) {
     };
 
     try {
-      // 🚀 NUCLEAR PAGINATION: WP ID is nu de PK (id)
-      // We gebruiken Drizzle voor maximale stabiliteit en type-safety
-      // 🛡️ CHRIS-PROTOCOL: Explicit Table Reference (v2.14.640)
-      allOrders = await db.select({
-        id: ordersV2.id,
-        user_id: ordersV2.userId,
-        journey_id: ordersV2.journeyId,
-        status_id: ordersV2.statusId,
-        payment_method_id: ordersV2.paymentMethodId,
-        amount_net: ordersV2.amountNet,
-        amount_total: ordersV2.amountTotal,
-        purchase_order: ordersV2.purchaseOrder,
-        billing_email_alt: ordersV2.billingEmailAlt,
-        created_at: ordersV2.createdAt
-      })
-      .from(ordersV2)
-      .orderBy(desc(ordersV2.createdAt))
-      .limit(limit)
-      .offset(offset);
+      // 🚀 NUCLEAR RAW SQL FETCH (v2.14.642)
+      // We passeren de Drizzle abstractie voor maximale zekerheid
+      const rawOrdersResult = await db.execute(sql`
+        SELECT 
+          id, user_id, journey_id, status_id, payment_method_id, 
+          amount_net, amount_total, purchase_order, billing_email_alt, created_at
+        FROM orders_v2
+        ORDER BY created_at DESC
+        LIMIT ${limit}
+        OFFSET ${offset}
+      `);
+
+      allOrders = Array.isArray(rawOrdersResult) ? rawOrdersResult : (rawOrdersResult.rows || []);
       
-      console.log(`📦 [Admin Orders API] Fetched ${allOrders.length} orders from orders_v2`);
-      debugInfo.source = 'drizzle.orders_v2';
+      console.log(`📦 [Admin Orders API] RAW SQL Fetched ${allOrders.length} orders from orders_v2`);
+      debugInfo.source = 'raw_sql.orders_v2';
       debugInfo.fetchedCount = allOrders.length;
     } catch (rawErr: any) {
       debugInfo.raw_error = rawErr.message;
