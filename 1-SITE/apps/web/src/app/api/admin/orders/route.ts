@@ -30,7 +30,11 @@ export async function GET(request: NextRequest) {
     // We halen eerst het totaal aantal orders op voor de paginering UI
     const [totalCountResult] = await db.select({ value: count() }).from(orders).catch((err: any) => {
       console.error('[Admin Orders GET] Count query failed:', err);
-      return [{ value: 0 }];
+      // 🛡️ CHRIS-PROTOCOL: Fallback to direct SQL if Drizzle fails (v2.14.602)
+      return db.execute(sql`SELECT count(*) as value FROM public.orders`).then((res: any) => {
+        const rows = res.rows || res;
+        return [{ value: rows[0]?.value || 0 }];
+      }).catch(() => [{ value: 0 }]);
     });
     const totalInDb = Number(totalCountResult?.value || 0);
 
