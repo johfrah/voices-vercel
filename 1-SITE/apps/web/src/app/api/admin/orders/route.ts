@@ -67,9 +67,15 @@ export async function GET(request: NextRequest) {
           status: order.status || 'pending',
           journey: order.journey || 'agency',
           market: order.market || 'ALL',
-          createdAt: order.createdAt instanceof Date 
-            ? order.createdAt.toISOString() 
-            : (typeof order.createdAt === 'string' ? order.createdAt : new Date().toISOString()),
+          createdAt: (() => {
+            if (order.createdAt instanceof Date) return order.createdAt.toISOString();
+            if (typeof order.createdAt === 'string') {
+              const d = new Date(order.createdAt);
+              if (!isNaN(d.getTime())) return d.toISOString();
+            }
+            // Fallback naar nu als de datum echt corrupt is (Chris-Protocol: No Slop)
+            return new Date().toISOString();
+          })(),
           isQuote: !!order.isQuote,
           user: order.user ? {
             first_name: order.user.first_name || "",
