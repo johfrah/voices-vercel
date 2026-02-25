@@ -86,6 +86,8 @@ export const users = pgTable('users', {
   customerInsights: jsonb('customer_insights'), // AI-analyzed data
   activityLog: jsonb('activity_log').default([]),
   isManuallyEdited: boolean('is_manually_edited').default(false), // 🛡️ NUCLEAR LOCK MANDATE
+  wpId: bigint('wp_id', { mode: 'number' }), // 🛡️ CHRIS-PROTOCOL: Legacy ID (v2.14.446)
+  photoId: integer('photo_id'), // 🛡️ CHRIS-PROTOCOL: Legacy ID (v2.14.446)
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
   lastActive: timestamp('last_active').defaultNow(),
