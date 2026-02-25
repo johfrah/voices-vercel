@@ -21,7 +21,16 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  await requireAdminRedirect();
+  try {
+    await requireAdminRedirect();
+  } catch (err) {
+    // CHRIS-PROTOCOL: Als redirect() wordt gegooid, laat Next.js dit afhandelen.
+    // Andere errors loggen we en redirecten we handmatig naar de home.
+    if (err instanceof Error && err.message === 'NEXT_REDIRECT') throw err;
+    console.error('[AdminLayout] Auth crash, redirecting to home:', err);
+    redirect('/');
+  }
+
   return (
     <>
       <Suspense fallback={null}>

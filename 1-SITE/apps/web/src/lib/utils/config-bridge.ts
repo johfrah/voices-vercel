@@ -90,22 +90,32 @@ export class ConfigBridge {
   private static async fetchFromSource(key: string): Promise<NavConfig | null> {
     let menu: any = null;
     try {
-      menu = await db.query.navMenus.findFirst({
-        where: eq(navMenus.key, `nav_${key}`)
-      });
+      if (process.env.NEXT_RUNTIME !== 'edge') {
+        menu = await db.query.navMenus.findFirst({
+          where: eq(navMenus.key, `nav_${key}`)
+        });
+      } else {
+        throw new Error('Drizzle not available on Edge');
+      }
     } catch (dbError) {
       console.warn(` ConfigBridge Drizzle failed for ${key}, falling back to SDK`);
-      const { data, error } = await sdkClient
-        .from('nav_menus')
-        .select('*')
-        .eq('key', `nav_${key}`)
-        .single();
-      
-      if (error) throw error;
-      menu = {
-        ...data,
-        updatedAt: data.updated_at
-      };
+      try {
+        const { data, error } = await sdkClient
+          .from('nav_menus')
+          .select('*')
+          .eq('key', `nav_${key}`)
+          .maybeSingle();
+        
+        if (error) throw error;
+        if (data) {
+          menu = {
+            ...data,
+            updatedAt: data.updated_at
+          };
+        }
+      } catch (sdkErr: any) {
+        console.error(`[ConfigBridge] SDK fallback failed for ${key}:`, sdkErr.message);
+      }
     }
 
     if (!menu) return null;

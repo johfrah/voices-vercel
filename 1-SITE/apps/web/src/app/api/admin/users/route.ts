@@ -13,7 +13,15 @@ export async function GET(request: NextRequest) {
   if (auth instanceof NextResponse) return auth;
 
   try {
-    const allUsers = await db.select().from(users).orderBy(desc(users.createdAt)).catch(() => []);
+    const allUsers = await db.select({
+      id: users.id,
+      firstName: users.firstName,
+      lastName: users.lastName,
+      email: users.email,
+      companyName: users.companyName,
+      createdAt: users.createdAt
+    }).from(users).orderBy(desc(users.createdAt)).limit(50);
+
     return NextResponse.json(allUsers);
   } catch (error) {
     console.error('[Admin Users GET Error]:', error);
