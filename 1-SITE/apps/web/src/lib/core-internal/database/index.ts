@@ -32,6 +32,17 @@ const getDb = () => {
         console.error(' [getDb] TARGET HOST FORCED: db.vcbxyyjsxuquytcsskpj.supabase.co:5432');
       }
 
+      // 🛡️ CHRIS-PROTOCOL: Force Re-initialization if connection string changed (v2.14.591)
+      const currentConnString = (globalThis as any)._lastConnString;
+      if (currentConnString && currentConnString !== connectionString) {
+        console.error(' [getDb] CONNECTION STRING CHANGED: Resetting client...');
+        if ((globalThis as any).postgresClient) {
+          try { (globalThis as any).postgresClient.end(); } catch (e) {}
+          (globalThis as any).postgresClient = null;
+        }
+      }
+      (globalThis as any)._lastConnString = connectionString;
+
       const supabaseRootCA = `-----BEGIN CERTIFICATE-----
 MIIDxDCCAqygAwIBAgIUbLxMod62P2ktCiAkxnKJwtE9VPYwDQYJKoZIhvcNAQEL
 BQAwazELMAkGA1UEBhMCVVMxEDAOBgNVBAgMB0RlbHdhcmUxEzARBgNVBAcMCk5l
@@ -70,6 +81,7 @@ o/bKiIz+Fq8=
       (globalThis as any)._lastConnString = connectionString;
 
       if (!(globalThis as any).postgresClient) {
+        console.error(' [getDb] CONNECTING TO:', connectionString.replace(/:[^:]*@/, ':****@'));
         (globalThis as any).postgresClient = postgres(connectionString, { 
           prepare: false, 
           ssl: { ca: supabaseRootCA, rejectUnauthorized: false },
@@ -88,6 +100,17 @@ o/bKiIz+Fq8=
   }
   return (globalThis as any).dbInstance;
 };
+
+// 🛡️ CHRIS-PROTOCOL: Force Global Reset (v2.14.597)
+// Als we in productie zijn en de pooler-fout blijft aanhouden, 
+// dwingen we hier een harde reset van de singleton.
+if (typeof window === 'undefined' && process.env.NODE_ENV === 'production') {
+  (globalThis as any).dbInstance = null;
+  if ((globalThis as any).postgresClient) {
+    try { (globalThis as any).postgresClient.end(); } catch (e) {}
+    (globalThis as any).postgresClient = null;
+  }
+}
 
 export const db = new Proxy({} as any, {
   get(target, prop) {
