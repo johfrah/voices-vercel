@@ -252,6 +252,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
     };
 
     const result = [
+      { label: t('filter.popular_languages', 'POPULAIRE TALEN'), value: '', isHeader: true, popular: true },
       ...popularLangs.sort(sortFn),
       { label: t('filter.other_languages', 'OVERIGE TALEN'), value: '', isHeader: true },
       ...otherLangs.sort(sortFn)
