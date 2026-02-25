@@ -26,14 +26,14 @@ export async function GET(request: NextRequest) {
   const offset = (page - 1) * limit;
 
   try {
-    // 🛡️ CHRIS-PROTOCOL: 1 TRUTH MANDATE (v2.14.631)
+    // 🛡️ CHRIS-PROTOCOL: 1 TRUTH MANDATE (v2.14.638)
     // We halen eerst het totaal aantal orders op voor de paginering UI
     // NUCLEAR: We gebruiken nu de schone orders_v2 tabel
     const [totalCountResult] = await db.select({ value: count() }).from(ordersV2).catch((err: any) => {
       console.error('[Admin Orders GET] Count query failed:', err);
-      // 🛡️ CHRIS-PROTOCOL: Fallback to direct SQL if Drizzle fails (v2.14.631)
+      // 🛡️ CHRIS-PROTOCOL: Fallback to direct SQL if Drizzle fails (v2.14.638)
       return db.execute(sql`SELECT count(*) as value FROM orders_v2`).then((res: any) => {
-        const rows = res.rows || res;
+        const rows = Array.isArray(res) ? res : (res.rows || []);
         return [{ value: rows[0]?.value || 0 }];
       }).catch(() => [{ value: 0 }]);
     });
@@ -41,7 +41,7 @@ export async function GET(request: NextRequest) {
 
     let allOrders: any[] = [];
     let debugInfo: any = {
-      version: 'v2.14.631',
+      version: '2.14.639',
       db_host: process.env.DATABASE_URL?.split('@')[1]?.split('/')[0] || 'unknown',
       page,
       limit,
@@ -52,23 +52,33 @@ export async function GET(request: NextRequest) {
 
     try {
       // 🚀 NUCLEAR PAGINATION: WP ID is nu de PK (id)
-      // We gebruiken de schone orders_v2 tabel (Zero-Slop)
-      const rawResult = await db.execute(sql`
-        SELECT 
-          id, user_id, journey_id, status_id, payment_method_id,
-          amount_net, amount_total as total, purchase_order, billing_email_alt,
-          created_at
-        FROM orders_v2 
-        ORDER BY created_at DESC 
-        LIMIT ${limit} OFFSET ${offset}
-      `);
-      allOrders = rawResult.rows || rawResult || [];
-      debugInfo.source = 'raw.orders_v2';
+      // We gebruiken Drizzle voor maximale stabiliteit en type-safety
+      allOrders = await db.select({
+        id: ordersV2.id,
+        user_id: ordersV2.userId,
+        journey_id: ordersV2.journeyId,
+        status_id: ordersV2.statusId,
+        payment_method_id: ordersV2.paymentMethodId,
+        amount_net: ordersV2.amountNet,
+        amount_total: ordersV2.amountTotal,
+        purchase_order: ordersV2.purchaseOrder,
+        billing_email_alt: ordersV2.billingEmailAlt,
+        created_at: ordersV2.createdAt
+      })
+      .from(ordersV2)
+      .orderBy(desc(ordersV2.createdAt))
+      .limit(limit)
+      .offset(offset);
+      
+      debugInfo.source = 'drizzle.orders_v2';
     } catch (rawErr: any) {
       debugInfo.raw_error = rawErr.message;
-      // Fallback naar Drizzle
-      allOrders = await db.select().from(ordersV2).orderBy(desc(ordersV2.createdAt)).limit(limit).offset(offset);
-      debugInfo.source = 'drizzle.orders_v2';
+      console.error('[Admin Orders GET] Drizzle query failed:', rawErr);
+      return NextResponse.json({
+        orders: [],
+        _error: rawErr.message,
+        _debug: debugInfo
+      }, { status: 200 });
     }
 
     // 🕵️ GUEST & USER RESOLVER
@@ -153,7 +163,7 @@ export async function GET(request: NextRequest) {
           id: order.id,
           wpOrderId: order.id, // id IS nu het wp_order_id
           displayOrderId: order.id?.toString(),
-          total: order.total?.toString() || "0.00",
+          total: order.amount_total?.toString() || order.amountTotal?.toString() || "0.00",
           amountNet: order.amount_net?.toString() || order.amountNet?.toString() || "0.00",
           purchaseOrder: order.purchase_order || order.purchaseOrder || null,
           billingEmailAlt: order.billing_email_alt || order.billingEmailAlt || null,
