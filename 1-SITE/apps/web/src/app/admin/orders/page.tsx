@@ -30,7 +30,7 @@ import {
   ChevronRight
 } from 'lucide-react';
 import Link from 'next/link';
-import { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { format } from 'date-fns';
 import { nl } from 'date-fns/locale';
 
