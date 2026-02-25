@@ -63,6 +63,10 @@ export class MarketManagerServer {
     }
   }
 
+  public static get languages() {
+    return this.languagesRegistry;
+  }
+
   public static MARKETS_STATIC: Record<string, Partial<MarketConfig>> = {
     'voices.be': {
       market_code: 'BE',
