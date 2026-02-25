@@ -3,18 +3,12 @@ import { orders, users, notifications, orderItems } from '@db/schema';
 import { desc, eq } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth/api-auth';
-import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 
 /**
  *  API: ADMIN ORDERS (2026)
  * 
  * Haalt alle bestellingen op voor de admin cockpit, inclusief klantgegevens.
  */
-
-//  CHRIS-PROTOCOL: SDK fallback voor als direct-connect faalt
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-const sdkClient = createSupabaseClient(supabaseUrl, supabaseKey);
 
 export async function GET(request: NextRequest) {
   const auth = await requireAdmin();
@@ -40,30 +34,7 @@ export async function GET(request: NextRequest) {
     .from(orders)
     .leftJoin(users, eq(orders.userId, users.id))
     .orderBy(desc(orders.createdAt))
-    .limit(50)
-    .catch(async (err: any) => {
-      console.warn(' Admin Orders Drizzle failed, falling back to SDK:', err.message);
-      const { data, error } = await sdkClient
-        .from('orders')
-        .select('*, user:users(*)')
-        .order('created_at', { ascending: false })
-        .limit(50);
-      
-      if (error) {
-        console.error(' Admin Orders SDK fallback failed:', error.message);
-        return [];
-      }
-      return (data || []).map(o => ({
-        ...o,
-        createdAt: new Date(o.created_at),
-        user: o.user ? {
-          firstName: o.user.first_name,
-          lastName: o.user.last_name,
-          email: o.user.email,
-          companyName: o.user.company_name
-        } : null
-      }));
-    });
+    .limit(50);
 
     return NextResponse.json(allOrders);
   } catch (error) {
