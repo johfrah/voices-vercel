@@ -585,6 +585,8 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
     // 2. Check voor Stem
     try {
       console.error(` [SmartRouter] Content check for actor: ${firstSegment} (lang: ${lang})`);
+      
+      // 🛡️ CHRIS-PROTOCOL: Force direct lookup by slug first
       const actor = await getActor(firstSegment, lang).catch((err) => {
         console.error(` [SmartRouter] Content actor fetch failed for ${firstSegment}:`, err.message);
         return null;
@@ -607,7 +609,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
           <VoiceDetailClient actor={actor} initialJourney={mappedJourney || journey} initialMedium={medium} />
         );
       } else {
-        console.error(` [SmartRouter] No actor found for ${firstSegment}`);
+        console.error(` [SmartRouter] No actor found for ${firstSegment}. Proceeding to CMS check.`);
       }
     } catch (e: any) {
       console.error("[SmartRouter] Actor check crashed:", e.message);
