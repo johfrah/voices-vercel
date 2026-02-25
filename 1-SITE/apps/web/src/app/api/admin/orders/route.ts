@@ -30,6 +30,7 @@ export async function GET(request: NextRequest) {
       market: orders.market,
       createdAt: orders.createdAt,
       isQuote: orders.isQuote,
+      rawMeta: orders.rawMeta,
       user: {
         first_name: users.first_name,
         last_name: users.last_name,
@@ -56,9 +57,27 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // 🛡️ CHRIS-PROTOCOL: Godmode Data Access (v2.14.565)
+    // 🛡️ CHRIS-PROTOCOL: Godmode Data Access (v2.14.568)
     const sanitizedOrders = allOrders.map((order, index) => {
       try {
+        // 🕵️ GUEST ORDER LOGIC: Als er geen user_id is, proberen we de klantgegevens uit rawMeta te vissen.
+        let guestInfo = null;
+        if (!order.user && order.rawMeta) {
+          try {
+            const meta = typeof order.rawMeta === 'string' ? JSON.parse(order.rawMeta) : order.rawMeta;
+            if (meta.billing) {
+              guestInfo = {
+                first_name: meta.billing.first_name || "Guest",
+                last_name: meta.billing.last_name || "",
+                email: meta.billing.email || "guest@voices.be",
+                companyName: meta.billing.company || ""
+              };
+            }
+          } catch (e) {
+            // Meta parsing failed, fallback naar default guest
+          }
+        }
+
         const sanitized = {
           id: order.id || 0,
           wpOrderId: order.wpOrderId || 0,
@@ -73,7 +92,6 @@ export async function GET(request: NextRequest) {
               const d = new Date(order.createdAt);
               if (!isNaN(d.getTime())) return d.toISOString();
             }
-            // Fallback naar nu als de datum echt corrupt is (Chris-Protocol: No Slop)
             return new Date().toISOString();
           })(),
           isQuote: !!order.isQuote,
@@ -82,7 +100,12 @@ export async function GET(request: NextRequest) {
             last_name: order.user.last_name || "",
             email: order.user.email || "unknown@voices.be",
             companyName: order.user.companyName || ""
-          } : null
+          } : (guestInfo || {
+            first_name: "Guest",
+            last_name: "",
+            email: "guest@voices.be",
+            companyName: ""
+          })
         };
         
         if (index < 2) {
