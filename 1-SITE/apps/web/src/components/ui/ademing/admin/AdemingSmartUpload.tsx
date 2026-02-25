@@ -135,11 +135,7 @@ export const AdemingSmartUpload = ({ open, onOpenChange, onComplete }: SmartUplo
 
     } catch (error: any) {
       console.error('Save error:', error);
-      toast({
-        title: "Fout bij opslaan",
-        description: error.message || "Onbekende fout",
-        variant: "destructive",
-      });
+      toast.error("Fout bij opslaan: " + (error.message || "Onbekende fout"));
     } finally {
       setSaving(false);
     }
