@@ -613,22 +613,62 @@ export const appointments = pgTable('appointments', {
 });
 
 // 🧘 ADEMING JOURNEY (Meditatie & Rust)
+export const ademingMakers = pgTable('ademing_makers', {
+  id: serial('id').primaryKey(),
+  short_name: text('short_name').unique().notNull(), // "Julie" | "Johfrah"
+  full_name: text('full_name').notNull(),
+  avatar_url: text('avatar_url'),
+  hero_image_url: text('hero_image_url'),
+  bio: text('bio'),
+  website: text('website'),
+  instagram: text('instagram'),
+  is_public: boolean('is_public').default(true),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
 export const ademingTracks = pgTable('ademing_tracks', {
   id: serial('id').primaryKey(),
   wpId: bigint('wp_id', { mode: 'number' }).unique(),
   mediaId: integer('media_id').references(() => media.id), // 🔗 Link naar Media Engine
   title: text('title').notNull(),
-  url: text('url').notNull(),
+  slug: text('slug').unique().notNull(),
+  url: text('url').notNull(), // audio_url
   duration: integer('duration'),
   vibe: text('vibe'),
+  theme: text('theme'), // "rust" | "energie" | "ritme"
+  element: text('element'), // "aarde" | "water" | "lucht" | "vuur"
+  makerId: integer('maker_id').references(() => ademingMakers.id),
+  seriesId: integer('series_id').references(() => ademingSeries.id),
+  seriesOrder: integer('series_order'),
+  short_description: text('short_description'),
+  long_description: text('long_description'),
+  cover_image_url: text('cover_image_url'),
+  video_background_url: text('video_background_url'),
+  subtitle_data: jsonb('subtitle_data'),
+  transcript: text('transcript'),
   is_public: boolean('is_public').default(true),
+  createdAt: timestamp('created_at').defaultNow(),
 });
 
 export const ademingSeries = pgTable('ademing_series', {
   id: serial('id').primaryKey(),
   title: text('title').notNull(),
+  slug: text('slug').unique().notNull(),
   description: text('description'),
+  cover_image_url: text('cover_image_url'),
+  theme: text('theme').default('rust'),
   is_public: boolean('is_public').default(true),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+export const ademingBackgroundMusic = pgTable('ademing_background_music', {
+  id: serial('id').primaryKey(),
+  element: text('element').notNull(), // "aarde" | "water" | "lucht" | "vuur"
+  audio_url: text('audio_url').notNull(),
+  mediaId: integer('media_id').references(() => media.id),
+  is_active: boolean('is_active').default(true),
+  createdAt: timestamp('created_at').defaultNow(),
 });
 
 export const ademingReflections = pgTable('ademing_reflections', {
@@ -1786,6 +1826,43 @@ export const lessonsRelations = relations(lessons, ({ one }) => ({
     references: [courses.id],
   }),
 }));
+export const ademingTracksRelations = relations(ademingTracks, ({ one }) => ({
+  media: one(media, {
+    fields: [ademingTracks.mediaId],
+    references: [media.id],
+  }),
+  maker: one(ademingMakers, {
+    fields: [ademingTracks.makerId],
+    references: [ademingMakers.id],
+  }),
+  series: one(ademingSeries, {
+    fields: [ademingTracks.seriesId],
+    references: [ademingSeries.id],
+  }),
+}));
+
+export const ademingSeriesRelations = relations(ademingSeries, ({ many }) => ({
+  tracks: many(ademingTracks),
+}));
+
+export const ademingMakersRelations = relations(ademingMakers, ({ many }) => ({
+  tracks: many(ademingTracks),
+}));
+
+export const ademingReflectionsRelations = relations(ademingReflections, ({ one }) => ({
+  user: one(users, {
+    fields: [ademingReflections.user_id],
+    references: [users.id],
+  }),
+}));
+
+export const ademingStatsRelations = relations(ademingStats, ({ one }) => ({
+  user: one(users, {
+    fields: [ademingStats.user_id],
+    references: [users.id],
+  }),
+}));
+
 export const castingListsRelations = relations(castingLists, ({ one, many }) => ({
   user: one(users, {
     fields: [castingLists.user_id],

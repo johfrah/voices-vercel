@@ -124,7 +124,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
     const host = typeof window !== 'undefined' ? window.location.host : (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || MarketManager.getMarketDomains()['BE'].replace('https://', ''));
     const market = MarketManager.getCurrentMarket(host);
     
-    //  CHRIS-PROTOCOL: Map extra languages available for each primary language
+  // 🛡️ CHRIS-PROTOCOL: Map extra languages available for each primary language
     const getExtraLangsFor = (primary: string, primaryValue: any) => {
       const lowPrimary = String(primary || '').toLowerCase();
       const lowPrimaryValue = String(primaryValue || '').toLowerCase();
@@ -138,9 +138,11 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
       if (actors && Array.isArray(actors)) {
         actors.forEach(a => {
           const actorNative = a.native_lang?.toLowerCase();
+          const actorNativeId = a.native_lang_id || a.native_language_id;
           
-          //  CHRIS-PROTOCOL: Match native language by code or label
-          const isMatch = actorNative === primaryCode || 
+          //  CHRIS-PROTOCOL: Match native language by ID or code/label
+          const isMatch = (typeof primaryValue === 'number' && actorNativeId === primaryValue) ||
+                         actorNative === primaryCode || 
                          actorNative === lowPrimaryValue ||
                          (primaryCode === 'nl-be' && (actorNative === 'vlaams' || actorNative === 'nl-be')) ||
                          (primaryCode === 'nl-nl' && (actorNative === 'nederlands' || actorNative === 'nl-nl'));
@@ -174,24 +176,35 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
     };
 
     const languageConfig = [
-      { label: MarketManager.getLanguageLabel('nl-be'), value: 'nl-be', icon: FlagBE, langCode: 'nl-be', popular: market.popular_languages.includes('nl-be') || market.popular_languages.includes('Vlaams') },
-      { label: MarketManager.getLanguageLabel('nl-nl'), value: 'nl-nl', icon: FlagNL, langCode: 'nl-nl', popular: market.popular_languages.includes('nl-nl') || market.popular_languages.includes('Nederlands') },
-      { label: MarketManager.getLanguageLabel('fr-be'), value: 'fr-be', icon: FlagBE, langCode: 'fr-be', popular: (market.popular_languages.includes('fr-be') || market.popular_languages.includes('Frans')) && market.market_code === 'BE' },
-      { label: MarketManager.getLanguageLabel('fr-fr'), value: 'fr-fr', icon: FlagFR, langCode: 'fr-fr', popular: (market.popular_languages.includes('fr-fr') || market.popular_languages.includes('Frans')) && market.market_code !== 'BE' },
-      { label: MarketManager.getLanguageLabel('en-gb'), value: 'en-gb', icon: FlagUK, langCode: 'en-gb', popular: market.popular_languages.includes('en-gb') || market.popular_languages.includes('Engels') },
-      { label: MarketManager.getLanguageLabel('en-us'), value: 'en-us', icon: FlagUS, langCode: 'en-us', popular: false },
-      { label: MarketManager.getLanguageLabel('de-de'), value: 'de-de', icon: FlagDE, langCode: 'de-de', popular: market.popular_languages.includes('de-de') || market.popular_languages.includes('Duits') },
-      { label: MarketManager.getLanguageLabel('es-es'), value: 'es-es', icon: FlagES, langCode: 'es-es', popular: market.popular_languages.includes('es-es') || market.popular_languages.includes('Spaans') },
-      { label: MarketManager.getLanguageLabel('it-it'), value: 'it-it', icon: FlagIT, langCode: 'it-it', popular: market.popular_languages.includes('it-it') || market.popular_languages.includes('Italiaans') },
-      { label: MarketManager.getLanguageLabel('pl-pl'), value: 'pl-pl', icon: FlagPL, langCode: 'pl-pl', popular: market.popular_languages.includes('pl-pl') || market.popular_languages.includes('Pools') },
-      { label: MarketManager.getLanguageLabel('da-dk'), value: 'da-dk', icon: FlagDK, langCode: 'da-dk', popular: market.popular_languages.includes('da-dk') || market.popular_languages.includes('Deens') },
-      { label: MarketManager.getLanguageLabel('pt-pt'), value: 'pt-pt', icon: FlagPT, langCode: 'pt-pt', popular: market.popular_languages.includes('pt-pt') || market.popular_languages.includes('Portugees') },
-      { label: MarketManager.getLanguageLabel('sv-se'), value: 'sv-se', icon: Globe, langCode: 'sv-se', popular: market.popular_languages.includes('sv-se') || market.popular_languages.includes('Zweeds') },
+      { label: MarketManager.getLanguageLabel('nl-be'), value: 1, langCode: 'nl-be', popular: market.popular_languages.includes('nl-be') || market.popular_languages.includes('Vlaams') },
+      { label: MarketManager.getLanguageLabel('nl-nl'), value: 2, langCode: 'nl-nl', popular: market.popular_languages.includes('nl-nl') || market.popular_languages.includes('Nederlands') },
+      { label: MarketManager.getLanguageLabel('fr-be'), value: 3, langCode: 'fr-be', popular: (market.popular_languages.includes('fr-be') || market.popular_languages.includes('Frans')) && market.market_code === 'BE' },
+      { label: MarketManager.getLanguageLabel('fr-fr'), value: 4, langCode: 'fr-fr', popular: (market.popular_languages.includes('fr-fr') || market.popular_languages.includes('Frans')) && market.market_code !== 'BE' },
+      { label: MarketManager.getLanguageLabel('en-gb'), value: 5, langCode: 'en-gb', popular: market.popular_languages.includes('en-gb') || market.popular_languages.includes('Engels') },
+      { label: MarketManager.getLanguageLabel('en-us'), value: 6, langCode: 'en-us', popular: false },
+      { label: MarketManager.getLanguageLabel('de-de'), value: 7, langCode: 'de-de', popular: market.popular_languages.includes('de-de') || market.popular_languages.includes('Duits') },
+      { label: MarketManager.getLanguageLabel('es-es'), value: 8, langCode: 'es-es', popular: market.popular_languages.includes('es-es') || market.popular_languages.includes('Spaans') },
+      { label: MarketManager.getLanguageLabel('it-it'), value: 9, langCode: 'it-it', popular: market.popular_languages.includes('it-it') || market.popular_languages.includes('Italiaans') },
+      { label: MarketManager.getLanguageLabel('pl-pl'), value: 10, langCode: 'pl-pl', popular: market.popular_languages.includes('pl-pl') || market.popular_languages.includes('Pools') },
+      { label: MarketManager.getLanguageLabel('da-dk'), value: 11, langCode: 'da-dk', popular: market.popular_languages.includes('da-dk') || market.popular_languages.includes('Deens') },
+      { label: MarketManager.getLanguageLabel('pt-pt'), value: 12, langCode: 'pt-pt', popular: market.popular_languages.includes('pt-pt') || market.popular_languages.includes('Portugees') },
+      { label: MarketManager.getLanguageLabel('sv-se'), value: 13, langCode: 'sv-se', popular: market.popular_languages.includes('sv-se') || market.popular_languages.includes('Zweeds') },
     ];
 
     const mappedConfig = languageConfig.map(langObj => ({
       ...langObj,
-      availableExtraLangs: state.journey === 'telephony' ? getExtraLangsFor(langObj.label, langObj.value) : []
+      icon: (langObj.langCode === 'nl-be' || langObj.langCode === 'fr-be') ? FlagBE :
+            (langObj.langCode === 'nl-nl') ? FlagNL :
+            (langObj.langCode === 'fr-fr') ? FlagFR :
+            (langObj.langCode === 'en-gb') ? FlagUK :
+            (langObj.langCode === 'en-us') ? FlagUS :
+            (langObj.langCode === 'de-de') ? FlagDE :
+            (langObj.langCode === 'es-es') ? FlagES :
+            (langObj.langCode === 'it-it') ? FlagIT :
+            (langObj.langCode === 'pl-pl') ? FlagPL :
+            (langObj.langCode === 'da-dk') ? FlagDK :
+            (langObj.langCode === 'pt-pt') ? FlagPT : Globe,
+      availableExtraLangs: activeJourneyId === 'telephony' ? getExtraLangsFor(langObj.label, langObj.value) : []
     }));
 
     const popularLangs = mappedConfig.filter(l => l.popular);

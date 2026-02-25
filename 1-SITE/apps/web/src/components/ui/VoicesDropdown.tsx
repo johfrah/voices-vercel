@@ -1,7 +1,7 @@
 "use client";
 
-import { useTranslation } from '@/contexts/TranslationContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTranslation } from '@/contexts/TranslationContext';
 import { cn } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Check, ChevronDown, Globe, GripVertical, Minus, Plus, Search as SearchIcon } from 'lucide-react';
@@ -11,16 +11,16 @@ import { VoiceglotImage } from './VoiceglotImage';
 import { VoiceglotText } from './VoiceglotText';
 
 interface VoicesDropdownProps {
-  options: (string | { 
-    label: string; 
-    value: string; 
-    isHeader?: boolean; 
+  options: (string | {
+    label: string;
+    value: string;
+    isHeader?: boolean;
     isSub?: boolean;
     subLabel?: string;
     icon?: React.ElementType | string;
     availableExtraLangs?: string[]; //  Support for nested extra language chips
   })[];
-  value: any; 
+  value: any;
   onChange: (value: any) => void;
   onExtraLangToggle?: (lang: string) => void; //  Callback for extra language chips
   selectedExtraLangs?: string[]; //  Currently selected extra languages
@@ -30,11 +30,11 @@ interface VoicesDropdownProps {
   className?: string;
   required?: boolean;
   multiSelect?: boolean;
-  stepperMode?: boolean; 
+  stepperMode?: boolean;
   yearsValue?: Record<string, number>;
   onYearsChange?: (value: Record<string, number>) => void;
-  searchable?: boolean; 
-  rounding?: 'left' | 'right' | 'none'; 
+  searchable?: boolean;
+  rounding?: 'left' | 'right' | 'none';
   livePrice?: string;
   disabled?: boolean;
   mediaRegion?: Record<string, string>;
@@ -122,7 +122,7 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
         const isTelephony = typeof window !== 'undefined' && window.location.search.includes('journey=telephony');
         const isCommercial = typeof window !== 'undefined' && window.location.search.includes('journey=commercial');
         const hasExtraLangs = filteredOptions.some(opt => typeof opt === 'object' && (opt as any).availableExtraLangs && (opt as any).availableExtraLangs.length > 0);
-        
+
         if (isTelephony || isCommercial || hasExtraLangs) {
           // Keep open to allow immediate switching or extra language selection
         } else {
@@ -137,14 +137,14 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
     const currentMap = (value && typeof value === 'object' && !Array.isArray(value)) ? value : {};
     const currentValue = currentMap[itemValue] || 0;
     const nextValue = Math.max(0, currentValue + delta);
-    
+
     let nextMap = { ...currentMap, [itemValue]: nextValue };
-    
+
     //  CHRIS-PROTOCOL: Exclusivity Logic (Radio & TV)
     if (nextValue > 0) {
       const radioOptions = ['radio_national', 'radio_regional', 'radio_local'];
       const tvOptions = ['tv_national', 'tv_regional', 'tv_local'];
-      
+
       if (radioOptions.includes(itemValue)) {
         // If selecting a radio option, remove other radio options
         radioOptions.forEach(opt => {
@@ -159,18 +159,18 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
     }
 
     if (nextValue === 0) delete nextMap[itemValue];
-    
+
     onChange(nextMap);
 
     // CHRIS-PROTOCOL: Force immediate pricing recalculation globally
     // This ensures that all components (including VoiceCards in the overview)
     // react immediately to the change in spots/media.
-    const event = new CustomEvent('voices_pricing_update', { 
-      detail: { 
+    const event = new CustomEvent('voices_pricing_update', {
+      detail: {
         spotsDetail: nextMap,
         yearsDetail: yearsValue, // Include years to ensure full context
         media: Object.keys(nextMap) // Explicitly pass media types
-      } 
+      }
     });
     window.dispatchEvent(event);
   };
@@ -178,7 +178,7 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
   const displayValue = () => {
     if (!mounted) return placeholder;
     if (!value || (Array.isArray(value) && value.length === 0)) return placeholder;
-    
+
     if (stepperMode) {
       const activeKeys = Object.keys(value);
       if (activeKeys.length === 0) return placeholder;
@@ -187,7 +187,7 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
         const count = value[key];
         const opt = options.find(o => (typeof o === 'string' ? o : o.value) === key);
         const label = typeof opt === 'string' ? opt : opt?.label || key;
-        
+
         // CHRIS-PROTOCOL: Human-friendly full labels for single selection
         let humanLabel = label;
         if (key.startsWith('radio_')) humanLabel = count === 1 ? t('common.radio_spot_label', `radiospot (${label.toLowerCase()})`, { label: label.toLowerCase() }) : t('common.radio_spots_label', `radiospots (${label.toLowerCase()})`, { label: label.toLowerCase() });
@@ -211,7 +211,7 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
       }
       return `${value.length} ${t('common.selected', 'geselecteerd')}`;
     }
-    
+
     const opt = options.find(o => {
       const v = typeof o === 'string' ? o : o.value;
       if (typeof v !== 'string' || typeof value !== 'string') return v === value;
@@ -244,11 +244,11 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
           <div className="flex items-center gap-3 min-w-0">
             {icon && (
               <div className="shrink-0 opacity-60">
-                <VoiceglotImage  
-                  src={icon} 
-                  alt="" 
-                  width={12} 
-                  height={12} 
+                <VoiceglotImage
+                  src={icon}
+                  alt=""
+                  width={12}
+                  height={12}
                   style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }}
                 />
               </div>
@@ -262,9 +262,9 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
               </span>
             )}
           </div>
-          <ChevronDown 
-            size={14} 
-            className={cn("opacity-40 transition-transform duration-300 shrink-0 group-hover/dropdown:text-primary group-hover/dropdown:opacity-100", isOpen && "rotate-180 opacity-100")} 
+          <ChevronDown
+            size={14}
+            className={cn("opacity-40 transition-transform duration-300 shrink-0 group-hover/dropdown:text-primary group-hover/dropdown:opacity-100", isOpen && "rotate-180 opacity-100")}
           />
         </div>
       </button>
@@ -286,7 +286,7 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
               <div className="p-4 border-b border-black/5">
                 <div className="relative">
                   <SearchIcon size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-va-black/30" />
-                  <input 
+                  <input
                     autoFocus
                     type="text"
                     value={searchQuery}
@@ -313,11 +313,11 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
                   {!value && <Check size={16} strokeWidth={3} className="text-primary" />}
                 </button>
               )}
-              
+
               {filteredOptions.map((opt, idx) => {
                 const item = typeof opt === 'string' ? { label: opt, value: opt, isHeader: false, isSub: false, subLabel: undefined, icon: undefined } : opt;
                 const Icon = item.icon;
-                
+
                 if (item.isHeader) {
                   return (
                     <div key={idx} className="px-6 py-2 mt-2 text-[11px] font-bold tracking-[0.2em] text-va-black/40 uppercase bg-va-off-white/50">
@@ -334,14 +334,14 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
                   const years = yearsValue?.[item.value] || 1;
 
                   return (
-                    <div 
-                      key={idx} 
+                    <div
+                      key={idx}
                       className={cn(
                         "px-6 py-4 flex flex-col transition-colors border-b border-black/[0.03] last:border-0 gap-4",
                         count > 0 ? "bg-primary/[0.02]" : "hover:bg-va-off-white"
                       )}
                     >
-                      <div 
+                      <div
                         className="flex items-center justify-between cursor-pointer"
                         onClick={() => updateStepper(item.value, count > 0 ? -count : 1)}
                       >
@@ -367,7 +367,7 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
                             )}
                           </div>
                         </div>
-                        
+
                         <div className="w-5 flex justify-end shrink-0 ml-4">
                           {count > 0 ? (
                             <Check size={16} strokeWidth={3} className="text-primary animate-in zoom-in duration-300" />
@@ -387,7 +387,7 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
                                 <VoiceglotText translationKey="common.broadcast_area" defaultText="Uitzendgebied" />
                               </span>
                               <div className="flex items-center gap-3 bg-va-off-white p-1 rounded-lg border border-black/5">
-                                <button 
+                                <button
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     const current = mediaRegion[item.value] || 'national';
@@ -408,7 +408,7 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
                                     return t('common.local', 'Lokaal');
                                   })()}
                                 </span>
-                                <button 
+                                <button
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     const current = mediaRegion[item.value] || 'national';
@@ -431,7 +431,7 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
                               <VoiceglotText translationKey="common.spots_count" defaultText="Nombre de spots" />
                             </span>
                             <div className="flex items-center gap-3">
-                              <button 
+                              <button
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   updateStepper(item.value, -1);
@@ -443,7 +443,7 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
                               <span className="text-[11px] font-bold text-primary min-w-[40px] text-center">
                                 {count} {count === 1 ? t('common.spot', 'spot') : t('common.spots', 'spots')}
                               </span>
-                              <button 
+                              <button
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   updateStepper(item.value, 1);
@@ -462,56 +462,56 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
                                 {isPodcast ? <VoiceglotText translationKey="common.license" defaultText="Licentie" /> : <VoiceglotText translationKey="common.duration" defaultText="Looptijd" />}
                               </span>
                               <div className="flex items-center gap-3">
-                                  <button 
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      const next = Math.max(isPodcast ? 0.25 : 1, years - (isPodcast ? 0.25 : 1));
-                                      const nextMap = { ...yearsValue, [item.value]: next };
-                                      onYearsChange(nextMap);
-                                      
-                                      // CHRIS-PROTOCOL: Force immediate pricing update
-                                      window.dispatchEvent(new CustomEvent('voices_pricing_update', { 
-                                        detail: { 
-                                          yearsDetail: nextMap,
-                                          spotsDetail: value, // Include spots to ensure full context
-                                          media: Object.keys(value || {}) // Explicitly pass media types
-                                        } 
-                                      }));
-                                    }}
-                                    className="text-va-black/40 hover:text-primary transition-colors"
-                                  >
-                                    <Minus size={12} strokeWidth={2.5} />
-                                  </button>
-                                  <span className="text-[11px] font-bold text-primary min-w-[40px] text-center">
-                                    {isPodcast ? (
-                                      years === 0.25 ? t('common.3_months', "3 maanden") :
-                                      years === 0.5 ? t('common.6_months', "6 maanden") :
-                                      years === 0.75 ? t('common.9_months', "9 maanden") :
-                                      t('common.years_count', `${years} jaar`, { count: years })
-                                    ) : (
-                                      years === 1 ? t('common.1_year', "1 jaar") : t('common.years_count', `${years} jaar`, { count: years })
-                                    )}
-                                  </span>
-                                  <button 
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      const next = Math.min(5, years + (isPodcast ? 0.25 : 1));
-                                      const nextMap = { ...yearsValue, [item.value]: next };
-                                      onYearsChange(nextMap);
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    const next = Math.max(isPodcast ? 0.25 : 1, years - (isPodcast ? 0.25 : 1));
+                                    const nextMap = { ...yearsValue, [item.value]: next };
+                                    onYearsChange(nextMap);
 
-                                      // CHRIS-PROTOCOL: Force immediate pricing update
-                                      window.dispatchEvent(new CustomEvent('voices_pricing_update', { 
-                                        detail: { 
-                                          yearsDetail: nextMap,
-                                          spotsDetail: value, // Include spots to ensure full context
-                                          media: Object.keys(value || {}) // Explicitly pass media types
-                                        } 
-                                      }));
-                                    }}
-                                    className="text-va-black/40 hover:text-primary transition-colors"
-                                  >
-                                    <Plus size={12} strokeWidth={2.5} />
-                                  </button>
+                                    // CHRIS-PROTOCOL: Force immediate pricing update
+                                    window.dispatchEvent(new CustomEvent('voices_pricing_update', {
+                                      detail: {
+                                        yearsDetail: nextMap,
+                                        spotsDetail: value, // Include spots to ensure full context
+                                        media: Object.keys(value || {}) // Explicitly pass media types
+                                      }
+                                    }));
+                                  }}
+                                  className="text-va-black/40 hover:text-primary transition-colors"
+                                >
+                                  <Minus size={12} strokeWidth={2.5} />
+                                </button>
+                                <span className="text-[11px] font-bold text-primary min-w-[40px] text-center">
+                                  {isPodcast ? (
+                                    years === 0.25 ? t('common.3_months', "3 maanden") :
+                                      years === 0.5 ? t('common.6_months', "6 maanden") :
+                                        years === 0.75 ? t('common.9_months', "9 maanden") :
+                                          t('common.years_count', `${years} jaar`, { count: years })
+                                  ) : (
+                                    years === 1 ? t('common.1_year', "1 jaar") : t('common.years_count', `${years} jaar`, { count: years })
+                                  )}
+                                </span>
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    const next = Math.min(5, years + (isPodcast ? 0.25 : 1));
+                                    const nextMap = { ...yearsValue, [item.value]: next };
+                                    onYearsChange(nextMap);
+
+                                    // CHRIS-PROTOCOL: Force immediate pricing update
+                                    window.dispatchEvent(new CustomEvent('voices_pricing_update', {
+                                      detail: {
+                                        yearsDetail: nextMap,
+                                        spotsDetail: value, // Include spots to ensure full context
+                                        media: Object.keys(value || {}) // Explicitly pass media types
+                                      }
+                                    }));
+                                  }}
+                                  className="text-va-black/40 hover:text-primary transition-colors"
+                                >
+                                  <Plus size={12} strokeWidth={2.5} />
+                                </button>
                               </div>
                             </div>
                           )}
@@ -521,9 +521,9 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
                   );
                 }
 
-                
-                const isSelected = Array.isArray(value) 
-                  ? value.some(v => typeof v === 'string' && typeof item.value === 'string' ? v.toLowerCase() === item.value.toLowerCase() : v === item.value) 
+
+                const isSelected = Array.isArray(value)
+                  ? value.some(v => typeof v === 'string' && typeof item.value === 'string' ? v.toLowerCase() === item.value.toLowerCase() : v === item.value)
                   : (typeof value === 'string' && typeof item.value === 'string' ? value.toLowerCase() === item.value.toLowerCase() : value === item.value);
                 const IconComponent = item.icon;
 
@@ -578,7 +578,7 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
                     {/*  NESTED EXTRA LANGUAGES CHIPS (Progressive Disclosure inside Dropdown) */}
                     <AnimatePresence initial={false}>
                       {isSelected && item.availableExtraLangs && item.availableExtraLangs.length > 0 && (
-                        <motion.div 
+                        <motion.div
                           key={`extra-${item.value}`}
                           initial={{ height: 0, opacity: 0 }}
                           animate={{ height: 'auto', opacity: 1 }}
@@ -602,8 +602,8 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
                                     }}
                                     className={cn(
                                       "px-3 py-1.5 rounded-full border text-[11px] font-bold transition-all duration-300 flex items-center gap-1.5",
-                                      isExtraSelected 
-                                        ? "bg-primary text-white border-primary shadow-md scale-105" 
+                                      isExtraSelected
+                                        ? "bg-primary text-white border-primary shadow-md scale-105"
                                         : "bg-white border-black/5 text-va-black/60 hover:border-primary/30 hover:text-primary"
                                     )}
                                   >

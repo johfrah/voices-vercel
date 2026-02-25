@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db, ademingTracks, ademingStats, ademingReflections } from '@/lib/system/voices-config';
+import { db, ademingTracks, ademingStats, ademingReflections, ademingSeries, ademingMakers, ademingBackgroundMusic } from '@/lib/system/voices-config';
 import { eq, desc } from 'drizzle-orm';
 
 /**
@@ -12,11 +12,40 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const userId = searchParams.get('userId');
   const action = searchParams.get('action') || 'tracks';
+  const slug = searchParams.get('slug');
 
   try {
     if (action === 'tracks') {
+      if (slug) {
+        const [track] = await db.select().from(ademingTracks).where(eq(ademingTracks.slug, slug)).limit(1);
+        return NextResponse.json(track);
+      }
       const tracks = await db.select().from(ademingTracks).where(eq(ademingTracks.is_public, true));
       return NextResponse.json(tracks);
+    }
+
+    if (action === 'series') {
+      if (slug) {
+        const [series] = await db.select().from(ademingSeries).where(eq(ademingSeries.slug, slug)).limit(1);
+        const tracks = await db.select().from(ademingTracks).where(eq(ademingTracks.seriesId, series.id)).orderBy(ademingTracks.seriesOrder);
+        return NextResponse.json({ ...series, tracks });
+      }
+      const seriesList = await db.select().from(ademingSeries).where(eq(ademingSeries.is_public, true));
+      return NextResponse.json(seriesList);
+    }
+
+    if (action === 'makers') {
+      if (slug) {
+        const [maker] = await db.select().from(ademingMakers).where(eq(ademingMakers.short_name, slug)).limit(1);
+        return NextResponse.json(maker);
+      }
+      const makers = await db.select().from(ademingMakers).where(eq(ademingMakers.is_public, true));
+      return NextResponse.json(makers);
+    }
+
+    if (action === 'background-music') {
+      const music = await db.select().from(ademingBackgroundMusic).where(eq(ademingBackgroundMusic.is_active, true));
+      return NextResponse.json(music);
     }
 
     if (action === 'stats' && userId) {
@@ -46,7 +75,7 @@ export async function POST(request: NextRequest) {
     const { userId, intention, reflection } = body;
 
     const [newReflection] = await db.insert(ademingReflections).values({
-      userId,
+      user_id: userId,
       intention,
       reflection
     }).returning();

@@ -48,6 +48,11 @@ const StudioVideoPlayer = nextDynamic(() => import("@/components/ui/StudioVideoP
 const JourneyCta = nextDynamic(() => import("@/components/ui/JourneyCta").then(mod => mod.JourneyCta), { ssr: false });
 const StudioLaunchpad = nextDynamic(() => import("@/components/ui/StudioLaunchpad").then(mod => mod.StudioLaunchpad), { ssr: false });
 
+// Ademing Components
+const AdemingBento = nextDynamic(() => import("@/components/ui/ademing/AdemingBento").then(mod => mod.AdemingBento), { ssr: false });
+const MeditationPlayerInstrument = nextDynamic(() => import("@/components/ui/ademing/MeditationPlayerInstrument").then(mod => mod.MeditationPlayerInstrument), { ssr: false });
+const BreathingInstrument = nextDynamic(() => import("@/components/ui/ademing/BreathingInstrument").then(mod => mod.BreathingInstrument), { ssr: false });
+
 /**
  *  SUZY-MANDATE: Generate Structured Data (JSON-LD) for Voice Actors
  */
@@ -385,6 +390,33 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
     // 🛡️ NUCLEAR HANDSHAKE: Resolve via Slug Registry
     const host = headersList.get('host') || '';
     const market = MarketManager.getCurrentMarket(host);
+    
+    // 🛡️ CHRIS-PROTOCOL: Market-Specific Routing for Ademing
+    if (market.market_code === 'ADEMING') {
+      const tracksRes = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/api/ademing?action=tracks`);
+      const tracks = await tracksRes.json();
+      
+      // Handle deep meditation routes on ademing.be
+      if (cleanSegments.length > 0) {
+        const meditationSlug = cleanSegments[cleanSegments.length - 1];
+        const track = tracks.find((t: any) => t.slug === meditationSlug);
+        if (track) {
+          return (
+            <PageWrapperInstrument className="bg-va-off-white">
+              <Suspense fallback={null}><LiquidBackground /></Suspense>
+              <AdemingBento tracks={tracks} initialTrack={track} />
+            </PageWrapperInstrument>
+          );
+        }
+      }
+
+      return (
+        <PageWrapperInstrument className="bg-va-off-white">
+          <Suspense fallback={null}><LiquidBackground /></Suspense>
+          <AdemingBento tracks={tracks} />
+        </PageWrapperInstrument>
+      );
+    }
     
     // 1. Full Path Lookup (Multilingual Registry Handshake)
     let lookupSlug = cleanSegments.join('/').toLowerCase();

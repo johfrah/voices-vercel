@@ -1099,18 +1099,36 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
               </AnimatePresence>
             </div>
 
-            {voice?.extra_langs && (
+            {voice?.extra_langs && masterControlState.journey === 'telephony' && (
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 px-1 animate-in fade-in slide-in-from-left-1 duration-500">
                 {voice.extra_langs.split(',').filter(Boolean).map((lItem, idx) => {
                   const trimmed = lItem.trim().toLowerCase();
                   const label = MarketManager.getLanguageLabel(trimmed);
+                  
+                  // 🛡️ CHRIS-PROTOCOL: Handshake Truth (ID-First)
+                  // We checken of deze extra taal momenteel geselecteerd is in de Master Configurator
+                  const isSelectedInFilter = masterControlState.filters.languages?.includes(trimmed) || 
+                                           (masterControlState.filters.languageIds && 
+                                            masterControlState.filters.languageIds.length > 1 && 
+                                            // We weten dat we hier extra talen mappen, dus we zoeken in de lookup
+                                            // Voor nu matchen we op code voor de UI feedback
+                                            masterControlState.filters.languages?.includes(trimmed));
 
                   return (
-                    <div key={idx} className="flex items-center gap-1.5">
-                      <div className="w-4 h-4 rounded-full border border-black/5 bg-va-off-white flex items-center justify-center overflow-hidden shadow-sm shrink-0">
+                    <div key={idx} className={cn(
+                      "flex items-center gap-1.5 transition-all duration-500",
+                      isSelectedInFilter ? "scale-110" : "opacity-60"
+                    )}>
+                      <div className={cn(
+                        "w-4 h-4 rounded-full border border-black/5 flex items-center justify-center overflow-hidden shadow-sm shrink-0",
+                        isSelectedInFilter ? "ring-2 ring-primary ring-offset-1" : "bg-va-off-white"
+                      )}>
                         <VoiceFlag lang={trimmed} size={10} />
                       </div>
-                      <TextInstrument className="text-[10px] text-va-black/40 font-bold uppercase tracking-widest whitespace-nowrap">
+                      <TextInstrument className={cn(
+                        "text-[10px] font-bold uppercase tracking-widest whitespace-nowrap",
+                        isSelectedInFilter ? "text-primary" : "text-va-black/40"
+                      )}>
                         <VoiceglotText 
                           translationKey={`common.language.${trimmed}`} 
                           defaultText={label} 
