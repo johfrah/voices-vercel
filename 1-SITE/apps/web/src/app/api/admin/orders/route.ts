@@ -36,6 +36,8 @@ export async function GET(request: NextRequest) {
     .orderBy(desc(orders.createdAt))
     .limit(250);
 
+    console.log(`[Admin Orders GET] Fetched ${allOrders.length} orders`);
+
     return NextResponse.json(allOrders);
   } catch (error) {
     console.error('[Admin Orders GET Error]:', error);

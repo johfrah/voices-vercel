@@ -1,41 +1,49 @@
-import { createClient } from '@supabase/supabase-js';
+#!/usr/bin/env tsx
+
+/**
+ * 🛡️ CHRIS-PROTOCOL: Check Recent System Errors
+ */
+
 import { config } from 'dotenv';
 import { resolve } from 'path';
 
-// Load env vars from web app
 config({ path: resolve(__dirname, '../../1-SITE/apps/web/.env.local') });
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+import { createClient } from '@supabase/supabase-js';
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 async function checkRecentErrors() {
-  const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000).toISOString();
-  
-  const { data, error } = await supabase
+  console.log('🔍 Checking recent system errors (last 24h)...\n');
+
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+
+  const { data: errors } = await supabase
     .from('system_events')
     .select('*')
-    .in('level', ['error', 'critical'])
-    .gte('created_at', tenMinutesAgo)
+    .in('level', ['error', 'warn'])
+    .gte('created_at', yesterday.toISOString())
     .order('created_at', { ascending: false })
-    .limit(10);
+    .limit(20);
 
-  if (error) {
-    console.error('❌ Query error:', error);
-    process.exit(1);
-  }
-
-  console.log(`\n🔍 Recent errors (last 10 minutes): ${data?.length || 0}\n`);
-  
-  if (data && data.length > 0) {
-    data.forEach(e => {
-      console.log(`- [${new Date(e.created_at).toLocaleTimeString()}] [${e.level?.toUpperCase()}] ${e.source}: ${e.message}`);
-      if (e.details) console.log(`  Details: ${JSON.stringify(e.details).substring(0, 150)}`);
+  if (errors && errors.length > 0) {
+    console.log(`Found ${errors.length} recent errors/warnings:\n`);
+    errors.forEach((e, i) => {
+      console.log(`${i + 1}. [${e.level.toUpperCase()}] ${e.source}`);
+      console.log(`   Message: ${e.message}`);
+      console.log(`   Time: ${new Date(e.created_at).toLocaleString()}`);
+      if (e.details) {
+        console.log(`   Details: ${JSON.stringify(e.details, null, 2)}`);
+      }
+      console.log('');
     });
   } else {
-    console.log('✅ No errors in the last 10 minutes!');
+    console.log('✅ No recent errors or warnings found!');
   }
 }
 
-checkRecentErrors();
+checkRecentErrors().catch(console.error);
