@@ -438,6 +438,30 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
         }
       }
 
+      if (resolved.routing_type === 'music') {
+        const trackId = resolved.entity_id > 0 ? resolved.entity_id : null;
+        const filters: Record<string, string> = { journey: 'telephony' };
+        if (trackId) filters.musicTrackId = trackId.toString();
+        
+        const searchResults = await getActors(filters, lang);
+        return (
+          <>
+            <Suspense fallback={null}><LiquidBackground /></Suspense>
+            <AgencyHeroInstrument filters={searchResults?.filters || { genders: [], languages: [], styles: [] }} market={market.market_code} searchParams={filters} />
+            <div className="!pt-0 -mt-24 relative z-40">
+              <AgencyContent mappedActors={searchResults?.results || []} filters={searchResults?.filters || { genders: [], languages: [], styles: [] }} />
+            </div>
+          </>
+        );
+      }
+
+      if (resolved.routing_type === 'blog' || resolved.routing_type === 'article') {
+        const article = await getArticle(lookupSlug, lang);
+        if (article) {
+          return <CmsPageContent page={article} slug={lookupSlug} />;
+        }
+      }
+
       if (resolved.routing_type === 'language' || resolved.routing_type === 'country' || resolved.routing_type === 'attribute') {
         // Category Page Logic
         const filters: Record<string, string> = {};
