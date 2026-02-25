@@ -39,8 +39,13 @@ export async function GET(request: NextRequest) {
     .limit(250);
 
     console.log(`🚀 [API DEBUG] Raw orders fetched from DB: ${allOrders.length}`);
+    if (allOrders.length === 0) {
+      console.log('⚠️ [API DEBUG] NO ORDERS FOUND IN DB QUERY. Checking raw count...');
+      const [{ count }] = await db.select({ count: db.fn.count(orders.id) }).from(orders);
+      console.log(`📊 [API DEBUG] Raw count in DB: ${count}`);
+    }
 
-    // 🛡️ CHRIS-PROTOCOL: Godmode Data Access (v2.14.562)
+    // 🛡️ CHRIS-PROTOCOL: Godmode Data Access (v2.14.563)
     const sanitizedOrders = allOrders.map((order, index) => {
       try {
         const sanitized = {

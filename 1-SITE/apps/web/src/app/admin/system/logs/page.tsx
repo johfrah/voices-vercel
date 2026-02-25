@@ -129,7 +129,7 @@ export default function SystemLogsPage() {
                     </td>
                     <td className="px-6 py-4">
                       <TextInstrument className="text-[12px] text-va-black/40 font-light">
-                        {format(new Date(log.createdAt), 'dd MMM HH:mm:ss', { locale: nlBE })}
+                        {log.createdAt ? format(new Date(log.createdAt), 'dd MMM HH:mm:ss', { locale: nlBE }) : '---'}
                       </TextInstrument>
                     </td>
                     <td className="px-6 py-4">
