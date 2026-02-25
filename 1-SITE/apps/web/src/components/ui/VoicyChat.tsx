@@ -1320,9 +1320,9 @@ export const VoicyChatV2: React.FC = () => {
 
                     <FormInstrument onSubmit={handleMailSubmit} className="space-y-3">
                       <ContainerInstrument plain className="relative group">
-                        <div className="absolute left-5 top-1/2 -translate-y-1/2 text-va-black/40 group-focus-within:text-primary transition-colors">
+                        <ContainerInstrument plain className="absolute left-5 top-1/2 -translate-y-1/2 text-va-black/40 group-focus-within:text-primary transition-colors">
                           <User size={16} strokeWidth={1.5} />
-                        </div>
+                        </ContainerInstrument>
                         <InputInstrument 
                           type="email" 
                           required
@@ -1333,9 +1333,9 @@ export const VoicyChatV2: React.FC = () => {
                         />
                       </ContainerInstrument>
                       <ContainerInstrument plain className="relative group">
-                        <div className="absolute left-5 top-5 text-va-black/40 group-focus-within:text-primary transition-colors">
+                        <ContainerInstrument plain className="absolute left-5 top-5 text-va-black/40 group-focus-within:text-primary transition-colors">
                           <MessageCircle size={16} strokeWidth={1.5} />
-                        </div>
+                        </ContainerInstrument>
                         <textarea 
                           required
                           value={mailForm.message}
@@ -1356,13 +1356,13 @@ export const VoicyChatV2: React.FC = () => {
                       </ButtonInstrument>
                     </FormInstrument>
 
-                    <div className="flex items-center gap-3 py-1">
-                      <div className="flex-1 h-px bg-black/5" />
+                    <ContainerInstrument plain className="flex items-center gap-3 py-1">
+                      <ContainerInstrument plain className="flex-1 h-px bg-black/5" />
                       <TextInstrument className="text-[10px] text-va-black/20 tracking-widest uppercase">
                         <VoiceglotText translationKey="common.or" defaultText="of" />
                       </TextInstrument>
-                      <div className="flex-1 h-px bg-black/5" />
-                    </div>
+                      <ContainerInstrument plain className="flex-1 h-px bg-black/5" />
+                    </ContainerInstrument>
 
                         <ButtonInstrument 
                           as="a" 
@@ -1450,9 +1450,9 @@ export const VoicyChatV2: React.FC = () => {
                     {isActuallyOpen && (
                         <ContainerInstrument plain className="w-full space-y-3">
                         <ContainerInstrument plain className="relative group">
-                          <div className="absolute left-5 top-1/2 -translate-y-1/2 text-va-black/40 group-focus-within:text-primary transition-colors">
+                          <ContainerInstrument plain className="absolute left-5 top-1/2 -translate-y-1/2 text-va-black/40 group-focus-within:text-primary transition-colors">
                             <Phone size={16} strokeWidth={1.5} />
-                          </div>
+                          </ContainerInstrument>
                           <InputInstrument 
                             type="tel"
                             placeholder={t('chat.phone.placeholder', "0475 00 00 00")}
@@ -1475,7 +1475,7 @@ export const VoicyChatV2: React.FC = () => {
                             isCalling && "opacity-70"
                           )}
                         >
-                          <div className="flex items-center gap-2">
+                          <ContainerInstrument plain className="flex items-center gap-2">
                             {isCalling ? (
                               <Loader2 className="animate-spin" size={16} />
                             ) : (
@@ -1484,19 +1484,19 @@ export const VoicyChatV2: React.FC = () => {
                             <TextInstrument className="font-black tracking-widest text-[14px] uppercase">
                               <VoiceglotText translationKey="chat.phone.call_me_now" defaultText="BEL MIJ NU" />
                             </TextInstrument>
-                          </div>
+                          </ContainerInstrument>
                           <TextInstrument className="text-[9px] opacity-60 font-light tracking-widest uppercase">
                             <VoiceglotText translationKey="chat.phone.call_me_now_desc" defaultText="Je telefoon gaat direct over" />
                           </TextInstrument>
                         </ButtonInstrument>
 
-                        <div className="flex items-center gap-3 py-1">
-                          <div className="flex-1 h-px bg-black/5" />
+                        <ContainerInstrument plain className="flex items-center gap-3 py-1">
+                          <ContainerInstrument plain className="flex-1 h-px bg-black/5" />
                           <TextInstrument className="text-[10px] text-va-black/20 tracking-widest uppercase">
                             <VoiceglotText translationKey="common.or" defaultText="of" />
                           </TextInstrument>
-                          <div className="flex-1 h-px bg-black/5" />
-                        </div>
+                          <ContainerInstrument plain className="flex-1 h-px bg-black/5" />
+                        </ContainerInstrument>
 
                         <ButtonInstrument 
                           as="a" 

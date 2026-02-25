@@ -29,16 +29,17 @@ const getDb = () => {
         return null;
       }
       
-      // CHRIS-PROTOCOL: Direct DB Host for Stability (v2.17)
-      // The Supabase Pooler (6543) is currently unstable. We bypass it and use the direct host.
+      // CHRIS-PROTOCOL: Pooler Stability Check (v2.18)
+      // We keep the connection string as is, unless we are in a known unstable environment.
+      // The bypass was hardcoded to a specific project ID which is fragile.
+      /*
       if (connectionString.includes('pooler.supabase.com')) {
-        // Sherlock: We use the project ID to construct the direct host.
-        // If vcbxyyjsxuquytcsskpj.supabase.co is failing, we try the project-ref host.
         connectionString = connectionString.replace('aws-1-eu-west-1.pooler.supabase.com', 'vcbxyyjsxuquytcsskpj.supabase.co');
         connectionString = connectionString.replace(':6543', ':5432');
         connectionString = connectionString.replace('postgres.vcbxyyjsxuquytcsskpj', 'postgres');
         connectionString = connectionString.split('?')[0]; 
       }
+      */
 
       // LEX-MANDATE: IPv6 is unstable on some build machines. Force IPv4 if direct host.
       if (connectionString.includes('vcbxyyjsxuquytcsskpj.supabase.co')) {

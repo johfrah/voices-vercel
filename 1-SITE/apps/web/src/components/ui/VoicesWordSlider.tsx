@@ -128,7 +128,7 @@ export const VoicesWordSlider: React.FC<VoicesWordSliderProps> = ({
               className={cn("opacity-40 transition-transform duration-300 shrink-0 group-hover/slider:text-primary group-hover/slider:opacity-100", isOpen && "rotate-180 opacity-100")} 
             />
           )}
-        </div>
+        </ContainerInstrument>
       </button>
 
       <AnimatePresence>
