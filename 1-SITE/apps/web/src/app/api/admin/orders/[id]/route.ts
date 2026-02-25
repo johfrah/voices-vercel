@@ -22,7 +22,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
       LIMIT 1
     `);
 
-    const rows = rawResult.rows || rawResult;
+    const rows = Array.isArray(rawResult) ? rawResult : (rawResult.rows || []);
     const order = rows[0];
     if (!order) return NextResponse.json({ error: 'Order not found' }, { status: 404 });
 

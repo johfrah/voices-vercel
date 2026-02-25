@@ -130,6 +130,7 @@ async function resolveSlugFromRegistry(slug: string, marketCode: string = 'ALL',
       .eq('slug', slug.toLowerCase())
       .or(`market_code.eq.${marketCode},market_code.eq.ALL`)
       .eq('is_active', true)
+      .order('entity_type_id', { ascending: false }) // 🛡️ CHRIS-PROTOCOL: Prioritize entries with valid type IDs
       .limit(1)
       .single();
 
