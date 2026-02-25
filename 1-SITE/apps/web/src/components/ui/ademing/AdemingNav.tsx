@@ -1,8 +1,8 @@
 "use client";
 
 import { 
-  Home, Heart, Library, User, Menu, 
-  Sparkles, Compass, Calendar, ChevronDown 
+  Home, Heart, Library, User, Menu, Search as SearchIcon,
+  Sparkles, Compass, Calendar, ChevronDown, Users 
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
@@ -45,8 +45,8 @@ export const AdemingNav = () => {
       )}
     >
       <div className="max-w-6xl mx-auto grid grid-cols-3 items-center">
-        {/* Left: Hamburger Menu */}
-        <div className="flex items-center gap-4">
+        {/* Left: Hamburger Menu & Search */}
+        <div className="flex items-center gap-2">
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
               <button className="p-4 hover:bg-black/5 rounded-full transition-all group active:scale-90 relative">
@@ -114,6 +114,9 @@ export const AdemingNav = () => {
               </div>
             </SheetContent>
           </Sheet>
+          <button className="p-4 hover:bg-black/5 rounded-full transition-all hidden md:flex active:scale-90 text-va-black/40 hover:text-primary">
+            <SearchIcon className="w-6 h-6" strokeWidth={1.5} />
+          </button>
         </div>
 
         {/* Center: Logo */}

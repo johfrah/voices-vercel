@@ -256,7 +256,7 @@ export default async function RootLayout({
   const isAdminRoute = pathname.startsWith('/admin') || segments[0] === 'admin';
   
   const isAdeming = market.market_code === 'ADEMING';
-  const htmlClass = `${raleway.className} ${inter.className} ${cormorant.variable} theme-${market.theme} ${raleway.variable}`;
+  const htmlClass = `${raleway.className} ${inter.className} ${cormorant.variable} theme-${isAdeming ? 'ademing' : market.theme} ${raleway.variable}`;
   const bodyClass = cn(
     "pb-24 md:pb-0 touch-manipulation va-main-layout",
     !isAdeming && "pt-[80px] md:pt-[110px]"
