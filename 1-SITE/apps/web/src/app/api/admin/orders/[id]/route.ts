@@ -1,5 +1,4 @@
-import { db } from '@/lib/system/voices-config';
-import { ordersV2, users, orderItems, recordingSessions } from '@/lib/system/voices-config';
+import { db, ordersV2, users, orderItems, recordingSessions, ordersLegacyBloat } from '@/lib/system/voices-config';
 import { eq, sql } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth/api-auth';
@@ -23,7 +22,8 @@ export async function GET(request: Request, { params }: { params: { id: string }
       LIMIT 1
     `);
 
-    const order = rawResult.rows?.[0] || rawResult[0];
+    const rows = rawResult.rows || rawResult;
+    const order = rows[0];
     if (!order) return NextResponse.json({ error: 'Order not found' }, { status: 404 });
 
     // Resolve User Info

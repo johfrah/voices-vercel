@@ -27,7 +27,8 @@ import {
   MoreHorizontal,
   Plus,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Loader2
 } from 'lucide-react';
 import Link from 'next/link';
 import React, { useEffect, useState, useCallback } from 'react';
