@@ -127,29 +127,30 @@ const HeaderIcon = ({
             alt={alt} 
             width={20}
             height={20}
-            className={`w-5 h-5 transition-transform duration-500 group-hover/icon:scale-110 ${isActive ? 'brightness-0 invert' : ''}`} 
+            unoptimized={src.toLowerCase().endsWith('.svg')}
+            className={cn(
+              "w-5 h-5 transition-transform duration-500 group-hover/icon:scale-110",
+              isActive && "brightness-0 invert"
+            )} 
           />
         ) : Icon ? (
           <Icon size={20} className={`transition-transform duration-500 group-hover/icon:scale-110 ${isActive ? 'text-white' : ''}`} />
         ) : null}
 
         {(badge !== undefined && badge > 0) || badgeText ? (
-          <TextInstrument 
-            as={motion.span}
+          <motion.span 
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-primary text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-lg border-2 border-white leading-none z-10"
           >
             {badgeText || badge}
-          </TextInstrument>
+          </motion.span>
         ) : null}
       </ButtonInstrument>
 
       <AnimatePresence>
         {isOpen && children && (
-          <ContainerInstrument
-            as={motion.div}
-            plain
+          <motion.div
             initial={{ opacity: 0, y: 10, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
@@ -159,7 +160,7 @@ const HeaderIcon = ({
             <ContainerInstrument plain className="p-1">
               {children}
             </ContainerInstrument>
-          </ContainerInstrument>
+          </motion.div>
         )}
       </AnimatePresence>
     </ContainerInstrument>
@@ -531,7 +532,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
   const showLanguage = isAdmin || (navConfig?.icons?.language ?? !isMobile);
   const showAccount = isAdmin || (navConfig?.icons?.account ?? (!isSpecialJourney && !isStudioJourney && !isMobile));
   const showMenu = isAdmin || (navConfig?.icons?.menu ?? !isSpecialJourney);
-  const showLinks = isAdmin || (navConfig?.links?.length > 0 && !isMobile); 
+  const showLinks = isAdmin || ((navConfig?.links?.length ?? 0) > 0 && !isMobile); 
 
   const showPortfolioAdmin = isPortfolioMarket && isAdmin;
 
@@ -591,11 +592,11 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
         ) : market.market_code === 'ARTIST' ? (
           <TextInstrument className="text-xl font-light tracking-tighter transition-transform duration-500 group-hover:scale-105 text-va-black whitespace-nowrap relative z-50"><VoiceglotText  translationKey="nav.artist_name" defaultText={market.name} noTranslate={true} /></TextInstrument>
         ) : (
-        <Image  
+        <VoiceglotImage  
           src={market.logo_url} 
           alt={t(`market.name.${market.market_code.toLowerCase()}`, market.name)} 
           width={200} 
-          height={80}
+          height={80} 
           priority
           sizes="(max-width: 768px) 150px, 200px"
           className="h-10 md:h-12 w-auto transition-transform duration-500 group-hover:scale-105 relative z-50"
@@ -636,8 +637,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
               {hasSubmenu && <ChevronDown size={12} className="opacity-40 group-hover/link:rotate-180 transition-transform duration-500" />}
               
               {isActive && (
-                <ContainerInstrument
-                  as={motion.div}
+                <motion.div
                   layoutId="nav-indicator"
                   className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary rounded-full"
                   initial={{ opacity: 0 }}
@@ -988,7 +988,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
                       size="none"
                       onClick={() => { markAsRead(n.id); }}
                       className={`w-full text-left p-2 rounded-xl transition-all duration-300 group mb-1 last:mb-0 flex gap-3 ${
-                        (isAdmin ? n.read : n.isRead) ? 'opacity-50 hover:bg-va-black/5' : 'bg-primary/5 hover:bg-primary/10'
+                        n.isRead ? 'opacity-50 hover:bg-va-black/5' : 'bg-primary/5 hover:bg-primary/10'
                       }`}
                     >
                       <ContainerInstrument plain className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${

@@ -3,6 +3,7 @@
 import { useEditMode } from '@/contexts/EditModeContext';
 import { VoicesMasterControlContext } from '@/contexts/VoicesMasterControlContext';
 import { useSonicDNA } from '@/lib/engines/sonic-dna';
+import { MarketManagerServer } from '@/lib/system/market-manager-server';
 import { cn } from '@/lib/utils';
 import { Image as ImageIcon, Loader2, Upload } from 'lucide-react';
 import Image, { ImageProps } from 'next/image';
@@ -146,24 +147,46 @@ export const VoiceglotImage: React.FC<VoiceglotImageProps> = ({
     // If it's already a proxy URL, don't wrap it again
     if (isProxied) return currentSrc;
 
+    let cleanSrc = currentSrc;
+
+    // 🛡️ CHRIS-PROTOCOL: Forensic domain stripping (v2.14.644)
+    // If the URL is from one of our own domains, strip it to make it a relative path.
+    // This ensures it hits the local asset logic and bypasses Next.js remote pattern restrictions.
+    if (cleanSrc.startsWith('http')) {
+      try {
+        const url = new URL(cleanSrc);
+        const marketDomains = Object.values(MarketManagerServer.getMarketDomains());
+        const isOwnDomain = marketDomains.some(d => url.hostname.includes(d.replace('https://', '').replace('www.', ''))) || 
+                           url.hostname === 'localhost' || 
+                           url.hostname === '127.0.0.1' || 
+                           url.hostname.includes('vercel.app');
+        
+        if (isOwnDomain) {
+          cleanSrc = url.pathname + url.search;
+        }
+      } catch (e) {
+        // Not a valid URL, ignore
+      }
+    }
+
     //  FIX: Supabase, Google and Dropbox URLs through proxy to avoid 400 Bad Request from Next.js Image optimizer
     if (isSupabase || isGoogle || isDropbox) {
-      return `/api/proxy/?path=${encodeURIComponent(currentSrc)}`;
+      return `/api/proxy/?path=${encodeURIComponent(cleanSrc)}`;
     }
 
     //  CHRIS-PROTOCOL: Local assets in /assets/ do NOT need the proxy.
     // They are served directly from the public folder.
-    if (currentSrc.startsWith('/assets/')) {
-      return currentSrc;
+    if (cleanSrc.startsWith('/assets/')) {
+      return cleanSrc;
     }
 
     // If it's a relative path that doesn't start with /assets/, it might be a direct Supabase path (e.g. "active/voicecards/...")
     // But we must be careful not to wrap paths that are already intended to be local.
-    if (!currentSrc.startsWith('http') && !currentSrc.startsWith('/')) {
-      return `/api/proxy/?path=${encodeURIComponent(currentSrc)}`;
+    if (!cleanSrc.startsWith('http') && !cleanSrc.startsWith('/')) {
+      return `/api/proxy/?path=${encodeURIComponent(cleanSrc)}`;
     }
 
-    return currentSrc;
+    return cleanSrc;
   }, [currentSrc, isProxied, isSupabase, isGoogle, isDropbox, isValidSrc]);
 
   // Remove fill from props to avoid passing it to the DOM if it's not needed

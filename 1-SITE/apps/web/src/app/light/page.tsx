@@ -1,6 +1,7 @@
 "use client";
 
 import { ContainerInstrument, HeadingInstrument, SectionInstrument, TextInstrument } from "@/components/ui/LayoutInstruments";
+import { VoiceglotImage } from "@/components/ui/VoiceglotImage";
 import { MarketManagerServer as MarketManager } from "@/lib/system/market-manager-server";
 import { Suspense, useEffect, useMemo, useState } from 'react';
 import nextDynamic from "next/dynamic";
@@ -69,9 +70,10 @@ const LightVoiceCard = ({ actor, onSelect }: { actor: Actor, onSelect: (a: Actor
     >
       <div className="relative aspect-square bg-va-black overflow-hidden">
         {actor.photo_url && (
-          <img 
+          <VoiceglotImage 
             src={actor.photo_url} 
             alt={actor.display_name}
+            fill
             className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity duration-700"
           />
         )}

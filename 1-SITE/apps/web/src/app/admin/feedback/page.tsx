@@ -9,6 +9,7 @@ import {
   ButtonInstrument 
 } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
+import { VoiceglotImage } from '@/components/ui/VoiceglotImage';
 import { ArrowLeft, LayoutDashboard, MessageSquare, Star, RefreshCw, ChevronRight, User } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
@@ -80,9 +81,9 @@ export default function FeedbackPage() {
               <ContainerInstrument key={review.id} className="bg-white p-8 rounded-[40px] border border-black/[0.03] shadow-sm group hover:border-primary/20 transition-all">
                 <div className="flex justify-between items-start">
                   <div className="flex gap-6">
-                    <div className="w-16 h-16 bg-va-black/5 rounded-2xl flex items-center justify-center shrink-0">
+                    <div className="w-16 h-16 bg-va-black/5 rounded-2xl flex items-center justify-center shrink-0 overflow-hidden">
                       {review.authorPhotoUrl ? (
-                        <img src={review.authorPhotoUrl} alt={review.authorName} className="w-full h-full object-cover rounded-2xl" />
+                        <VoiceglotImage src={review.authorPhotoUrl} alt={review.authorName} width={64} height={64} className="w-full h-full object-cover rounded-2xl" />
                       ) : (
                         <User className="text-va-black/20" size={32} />
                       )}
