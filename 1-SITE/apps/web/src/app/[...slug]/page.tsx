@@ -241,31 +241,40 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
 
     // 2. Probeer een Stem te vinden
     try {
-      const { ServerWatchdog } = await import('@/lib/services/server-watchdog');
-      await ServerWatchdog.report({
-        error: `[SmartRouter] Metadata check for actor: ${firstSegment}`,
-        component: 'SmartRouter',
-        level: 'info',
-        url: params.slug.join('/')
-      });
+      const { db, systemEvents } = await import('@/lib/system/voices-config');
+      if (db && systemEvents) {
+        await db.insert(systemEvents).values({
+          level: 'info',
+          source: 'SmartRouter',
+          message: `[SmartRouter] Metadata check for actor: ${firstSegment}`,
+          details: { segments: params.slug, lang, cleanSlug },
+          createdAt: new Date().toISOString()
+        }).catch(() => null);
+      }
 
       const actor = await getActor(firstSegment, lang).catch(async (err) => {
-        await ServerWatchdog.report({
-          error: `[SmartRouter] Metadata actor fetch failed for ${firstSegment}: ${err.message}`,
-          component: 'SmartRouter',
-          level: 'warn',
-          url: params.slug.join('/')
-        });
+        if (db && systemEvents) {
+          await db.insert(systemEvents).values({
+            level: 'warn',
+            source: 'SmartRouter',
+            message: `[SmartRouter] Metadata actor fetch failed for ${firstSegment}: ${err.message}`,
+            details: { segments: params.slug, lang, cleanSlug },
+            createdAt: new Date().toISOString()
+          }).catch(() => null);
+        }
         return null;
       });
       
       if (actor) {
-        await ServerWatchdog.report({
-          error: `[SmartRouter] Metadata actor found: ${actor.first_name} (${actor.id})`,
-          component: 'SmartRouter',
-          level: 'info',
-          url: params.slug.join('/')
-        });
+        if (db && systemEvents) {
+          await db.insert(systemEvents).values({
+            level: 'info',
+            source: 'SmartRouter',
+            message: `[SmartRouter] Metadata actor found: ${actor.first_name} (${actor.id})`,
+            details: { actorId: actor.id, slug: actor.slug },
+            createdAt: new Date().toISOString()
+          }).catch(() => null);
+        }
         const title = await getTranslatedSEO(`seo.actor.${actor.id}.title`, `${actor.first_name || actor.first_name} - Voice-over Stem | ${market.name}`);
         const description = await getTranslatedSEO(`seo.actor.${actor.id}.description`, actor.bio || `Ontdek de stem van ${actor.first_name || actor.first_name} op ${market.name}.`);
         const schema = generateActorSchema(actor, market.name, host);
@@ -576,24 +585,42 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
     // 2. Check voor Stem
     try {
       const { ServerWatchdog } = await import('@/lib/services/server-watchdog');
-      await ServerWatchdog.report({
-        error: `[SmartRouter] Content check for actor: ${firstSegment}`,
-        component: 'SmartRouter',
-        level: 'info',
-        url: segments.join('/')
-      });
+      
+      // 🛡️ CHRIS-PROTOCOL: Direct DB logging fallback (Atomic Pulse)
+      const { db, systemEvents } = await import('@/lib/system/voices-config');
+      if (db && systemEvents) {
+        await db.insert(systemEvents).values({
+          level: 'info',
+          source: 'SmartRouter',
+          message: `[SmartRouter] Content check for actor: ${firstSegment}`,
+          details: { segments, lang, cleanSlug },
+          createdAt: new Date().toISOString()
+        }).catch(() => null);
+      }
 
       const actor = await getActor(firstSegment, lang).catch(async (err) => {
-        await ServerWatchdog.report({
-          error: `[SmartRouter] Content actor fetch failed for ${firstSegment}: ${err.message}`,
-          component: 'SmartRouter',
-          level: 'warn',
-          url: segments.join('/')
-        });
+        if (db && systemEvents) {
+          await db.insert(systemEvents).values({
+            level: 'warn',
+            source: 'SmartRouter',
+            message: `[SmartRouter] Content actor fetch failed for ${firstSegment}: ${err.message}`,
+            details: { segments, lang, cleanSlug },
+            createdAt: new Date().toISOString()
+          }).catch(() => null);
+        }
         return null;
       });
 
       if (actor) {
+        if (db && systemEvents) {
+          await db.insert(systemEvents).values({
+            level: 'info',
+            source: 'SmartRouter',
+            message: `[SmartRouter] Actor found: ${actor.first_name} (${actor.id})`,
+            details: { actorId: actor.id, slug: actor.slug },
+            createdAt: new Date().toISOString()
+          }).catch(() => null);
+        }
         //  CHRIS-PROTOCOL: Map journey slug to internal journey type
         const journeyMap: Record<string, JourneyType> = {
           'telefoon': 'telephony',
@@ -604,13 +631,6 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
           'reclame': 'commercial'
         };
         const mappedJourney = journey ? journeyMap[journey.toLowerCase()] : undefined;
-
-        await ServerWatchdog.report({
-          error: `[SmartRouter] Actor found: ${actor.first_name} (${actor.id})`,
-          component: 'SmartRouter',
-          level: 'info',
-          url: segments.join('/')
-        });
 
         return (
           <VoiceDetailClient actor={actor} initialJourney={mappedJourney || journey} initialMedium={medium} />
