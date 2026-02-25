@@ -561,7 +561,7 @@ export class StudioDataBridge {
 
   /**
    * Haalt een specifieke editie op basis van ID
-   *  VOICES OS: Gebruikt SDK voor stabiliteit
+   *  VOICES OS: Gebruikt SDK voor stabiliteit - 1 Truth Handshake (No Mapping)
    */
   static async getEditionById(id: number) {
     try {
@@ -580,13 +580,9 @@ export class StudioDataBridge {
       if (error) throw error;
 
       if (data) {
-        // 🛡️ CHRIS-PROTOCOL: Safe relationship mapping & Bridge compatibility
+        // 🛡️ CHRIS-PROTOCOL: Raw data return (One Truth)
         return {
           ...data,
-          workshopId: data.workshop_id,
-          locationId: data.location_id,
-          instructorId: data.instructor_id,
-          createdAt: data.created_at,
           workshop: Array.isArray(data.workshop) ? data.workshop[0] : (data.workshop || null),
           location: Array.isArray(data.location) ? data.location[0] : (data.location || null),
           instructor: Array.isArray(data.instructor) ? data.instructor[0] : (data.instructor || null)
@@ -601,7 +597,7 @@ export class StudioDataBridge {
 
   /**
    * Haalt alle deelnemers op voor een specifieke workshop editie
-   *  VOICES OS: Gebruikt SDK voor stabiliteit (1 Truth Handshake)
+   *  VOICES OS: Gebruikt SDK voor stabiliteit - 1 Truth Handshake (No Mapping)
    */
   static async getParticipantsByEdition(editionId: number) {
     try {
@@ -620,45 +616,13 @@ export class StudioDataBridge {
       if (error) throw error;
 
       return (data || []).map(item => {
-        // 🛡️ CHRIS-PROTOCOL: Safe order mapping
         const orderData = Array.isArray(item.order) ? item.order[0] : (item.order || null);
         if (orderData && Array.isArray(orderData.user)) {
           orderData.user = orderData.user[0] || null;
         }
-
-        // 🛡️ CHRIS-PROTOCOL: Bridge mapping (Snake to Camel for UI compatibility)
         return {
           ...item,
-          orderId: item.order_id,
-          productId: item.product_id,
-          actorId: item.actor_id,
-          deliveryStatus: item.delivery_status,
-          deliveryFileUrl: item.delivery_file_url,
-          metaData: item.meta_data, // UI verwacht metaData
-          createdAt: item.created_at,
-          order: orderData ? {
-            ...orderData,
-            wpOrderId: orderData.wp_order_id,
-            userId: orderData.user_id,
-            totalTax: orderData.total_tax,
-            totalProfit: orderData.total_profit,
-            totalCost: orderData.total_cost,
-            iapContext: orderData.iap_context,
-            billingVatNumber: orderData.billing_vat_number,
-            yukiInvoiceId: orderData.yuki_invoice_id,
-            dropboxFolderUrl: orderData.dropbox_folder_url,
-            isPrivate: orderData.is_private,
-            createdAt: orderData.created_at,
-            rawMeta: orderData.raw_meta, // UI verwacht rawMeta
-            displayOrderId: orderData.display_order_id,
-            expectedDeliveryDate: orderData.expected_delivery_date,
-            viesValidatedAt: orderData.vies_validated_at,
-            viesCountryCode: orderData.vies_country_code,
-            ipAddress: orderData.ip_address,
-            isQuote: orderData.is_quote,
-            quoteMessage: orderData.quote_message,
-            quoteSentAt: orderData.quote_sent_at
-          } : null
+          order: orderData
         };
       });
     } catch (error) {

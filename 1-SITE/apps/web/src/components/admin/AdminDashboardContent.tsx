@@ -95,7 +95,7 @@ export default function AdminDashboardContent() {
             type: log.level === 'error' ? 'ai' : log.source === 'mail' ? 'mail' : 'approval',
             title: log.message,
             user: log.source,
-            time: new Date(log.createdAt).toLocaleTimeString('nl-BE', { hour: '2-digit', minute: '2-digit' }),
+            time: new Date(log.created_at || log.createdAt).toLocaleTimeString('nl-BE', { hour: '2-digit', minute: '2-digit' }),
             icon: log.source === 'mail' ? <Mail size={14} /> : log.level === 'error' ? <Brain size={14} /> : <Bell size={14} />
           })));
         }

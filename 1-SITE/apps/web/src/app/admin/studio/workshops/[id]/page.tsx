@@ -98,8 +98,8 @@ export default async function AdminEditionDetailPage({ params }: { params: { id:
 
   const stats = participants.reduce((acc: any, p: any) => {
     const price = parseFloat(p.price || '0');
-    // 🛡️ CHRIS-PROTOCOL: Case-insensitive status check
-    const isRefunded = p.order?.status?.includes('refunded') || p.metaData?.refunded;
+    // 🛡️ CHRIS-PROTOCOL: 1 Truth Handshake (snake_case)
+    const isRefunded = p.order?.status?.includes('refunded') || p.meta_data?.refunded;
     if (isRefunded) { acc.refundedCount++; acc.refundedAmount += price; }
     else { acc.paidCount++; acc.netRevenue += price; }
     return acc;
@@ -156,9 +156,9 @@ export default async function AdminEditionDetailPage({ params }: { params: { id:
               <div className="p-20 text-center text-black/20 italic">Geen deelnemers gevonden voor deze editie.</div>
             ) : participants.map((p: any) => {
               const order = p.order || {};
-              const orderMeta = order.rawMeta || {};
-              const pInfo = p.metaData?.participant_info || {};
-              const isRefunded = order.status?.includes('refunded') || p.metaData?.refunded;
+              const orderMeta = order.raw_meta || {};
+              const pInfo = p.meta_data?.participant_info || {};
+              const isRefunded = order.status?.includes('refunded') || p.meta_data?.refunded;
               
               return (
                 <ContainerInstrument key={p.id} className={cn("p-8 transition-colors group", isRefunded ? "bg-amber-50/30" : "hover:bg-va-off-white/30")}>
@@ -187,7 +187,7 @@ export default async function AdminEditionDetailPage({ params }: { params: { id:
                                 {isRefunded ? <AlertTriangle className="text-amber-500" size={16} /> : <CheckCircle2 className="text-green-500" size={16} />}
                                 <TextInstrument className={cn("text-[13px] font-black", isRefunded ? "text-amber-600" : "text-green-600")}>{parseFloat(p.price || '0').toFixed(2)}</TextInstrument>
                             </div>
-                            <Link href={`/admin/orders/${order.id}`} className="text-[11px] font-black tracking-widest text-black/20 hover:text-primary flex items-center justify-end gap-1">WC #{order.wpOrderId || order.id} <ExternalLink size={10} /></Link>
+                            <Link href={`/admin/orders/${order.id}`} className="text-[11px] font-black tracking-widest text-black/20 hover:text-primary flex items-center justify-end gap-1">WC #{order.wp_order_id || order.id} <ExternalLink size={10} /></Link>
                         </div>
                         
                         <div className="flex flex-col gap-2">
