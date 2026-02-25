@@ -723,6 +723,14 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
 
     // 3. Check voor Stem (Legacy Fallback by Slug)
     try {
+      // 🛡️ CHRIS-PROTOCOL: Strict Slug Mandate (v2.14.603)
+      // We staan alleen legacy fallback toe voor single-segment slugs (bijv. /johfrah).
+      // Paden met meerdere segmenten (bijv. /voice/video) MOETEN in de registry staan.
+      if (segments.length > 1) {
+        console.error(` [SmartRouter] Multi-segment path "${lookupSlug}" not in registry. Blocking legacy fallback.`);
+        return notFound();
+      }
+
       const actor = await getActor(lookupSlug, lang).catch((err) => {
         console.error(` [SmartRouter] getActor failed for "${lookupSlug}":`, err.message);
         return null;
