@@ -115,6 +115,7 @@ export default function AdminDashboardContent() {
     { label: <VoiceglotText  translationKey="admin.stats.approvals" defaultText="Wachtrij" />, value: '...', icon: <Bell strokeWidth={1.5} size={20} />, trend: 'Actie nodig', color: 'text-orange-500', href: '/admin/approvals' },
     { label: <VoiceglotText  translationKey="admin.stats.finance" defaultText="Financieel" />, value: 'Overzicht', icon: <Euro strokeWidth={1.5} size={20} />, trend: 'Kassa', color: 'text-green-500', href: '/admin/finance' },
     { label: <VoiceglotText  translationKey="admin.stats.workshops" defaultText="Workshops" />, value: '...', icon: <Calendar strokeWidth={1.5} size={20} />, trend: 'Studio', color: 'text-purple-500', href: '/admin/studio/workshops' },
+    { label: <VoiceglotText  translationKey="admin.stats.ademing" defaultText="Ademing" />, value: '...', icon: <Zap strokeWidth={1.5} size={20} />, trend: 'Meditatie', color: 'text-green-400', href: '/admin/ademing' },
     { label: <VoiceglotText  translationKey="admin.stats.voices" defaultText="Stemmen" />, value: '...', icon: <Mic strokeWidth={1.5} size={20} />, trend: 'Demos', color: 'text-va-black/40', href: '/admin/voices' },
     { label: <VoiceglotText  translationKey="admin.stats.artists" defaultText="Artiesten" />, value: 'Actief', icon: <Music strokeWidth={1.5} size={20} />, trend: 'Portfolio', color: 'text-pink-500', href: '/admin/artists' },
     { label: <VoiceglotText  translationKey="admin.stats.agents" defaultText="Assistenten" />, value: 'Actief', icon: <Bot strokeWidth={1.5} size={20} />, trend: 'Beheer', color: 'text-primary', href: '/admin/agents' },
@@ -352,6 +353,22 @@ export default function AdminDashboardContent() {
             <VoiceglotText translationKey="admin.agents.cta" defaultText="Open Beheer" />
           </Link>
           <ContainerInstrument className="absolute -bottom-10 -right-10 w-40 h-40 bg-primary/10 rounded-[20px] blur-[40px]" />
+        </BentoCard>
+
+        {/* Ademing Beheer */}
+        <BentoCard span="sm" className="bg-white border border-black/5 p-10 h-[400px] flex flex-col justify-between group hover:border-primary/20 transition-all rounded-[20px]">
+          <ContainerInstrument>
+            <Zap strokeWidth={1.5} className="text-green-400 mb-8" size={32} />
+            <HeadingInstrument level={2} className="text-2xl font-light tracking-tight mb-4 text-va-black">
+              Ademing.be
+            </HeadingInstrument>
+            <TextInstrument className="text-va-black/40 text-[15px] font-light leading-relaxed">
+              Beheer de meditaties, begeleiders en content voor het Ademing platform.
+            </TextInstrument>
+          </ContainerInstrument>
+          <Link href="/admin/ademing" className="va-btn-pro !bg-va-black w-fit !rounded-[10px]">
+            Open Ademing Beheer
+          </Link>
         </BentoCard>
       </BentoGrid>
 

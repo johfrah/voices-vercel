@@ -37,6 +37,7 @@ export const AdminHeader = () => {
         </Link>
         
         <nav className="flex items-center gap-8">
+          <Link href="/admin/ademing" className="text-[13px] font-light tracking-widest text-va-black/40 hover:text-primary transition-colors uppercase">Ademing</Link>
           <Link href="/admin/orders" className="text-[13px] font-light tracking-widest text-va-black/40 hover:text-primary transition-colors uppercase">Orders</Link>
           <Link href="/admin/users" className="text-[13px] font-light tracking-widest text-va-black/40 hover:text-primary transition-colors uppercase">Users</Link>
           <Link href="/admin/settings" className="text-[13px] font-light tracking-widest text-va-black/40 hover:text-primary transition-colors uppercase">Settings</Link>

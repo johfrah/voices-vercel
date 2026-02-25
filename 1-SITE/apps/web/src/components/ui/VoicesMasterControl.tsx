@@ -416,6 +416,40 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
     return result;
   }, [mappedLanguages, t]);
 
+  const availableFilters = useMemo(() => {
+    const langs = new Set<string>();
+    const genders = new Set<string>();
+    const styles = new Set<string>();
+
+    actors.forEach(a => {
+      // Language
+      if (a.native_lang_label) langs.add(a.native_lang_label);
+      else if (a.native_lang) {
+        const label = MarketManager.getLanguageLabel(a.native_lang);
+        if (label) langs.add(label);
+      }
+
+      // Gender
+      if (a.gender) {
+        genders.add(a.gender); // We store the code/raw value, but will display translated label
+      }
+
+      // Styles (Tones)
+      if (a.tone_of_voice) {
+        a.tone_of_voice.split(',').forEach(s => {
+          const trimmed = s.trim();
+          if (trimmed) styles.add(trimmed);
+        });
+      }
+    });
+
+    return {
+      languages: Array.from(langs).sort(),
+      genders: Array.from(genders).sort(),
+      styles: Array.from(styles).sort()
+    };
+  }, [actors]);
+
   return (
     <ContainerInstrument className={cn("w-full mx-auto space-y-8 px-0", !minimalMode && "max-w-[1440px]")}>
       {/*  THE MASTER CONTROL BOX - CHRIS-PROTOCOL: Always show journey selector in script phase as it influences input style */}
@@ -539,11 +573,11 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                                 updateFilters({ languageIds: newIds });
                                 
                                 // Sync with CheckoutContext
-                                const labels = newIds.map(id => languagesData.find(l => l.id === id)?.label).filter(Boolean) as string[];
+                                const labels = newIds.map(id => filteredLanguagesData.find(l => l.id === id)?.label).filter(Boolean) as string[];
                                 updateSecondaryLanguages(labels, newIds);
                               } else {
                                 // Resolve label to ID if possible
-                                const langMatch = languagesData.find(l => l.label === lang || l.code === lang);
+                                const langMatch = filteredLanguagesData.find(l => l.label === lang || l.code === lang);
                                 if (langMatch) {
                                   const langId = langMatch.id;
                                   const currentIds = state.filters.languageIds || [state.filters.languageId].filter(Boolean) as number[];
@@ -556,7 +590,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                                   updateFilters({ languageIds: newIds });
                                   
                                   // Sync with CheckoutContext
-                                  const labels = newIds.map(id => languagesData.find(l => l.id === id)?.label).filter(Boolean) as string[];
+                                  const labels = newIds.map(id => filteredLanguagesData.find(l => l.id === id)?.label).filter(Boolean) as string[];
                                   updateSecondaryLanguages(labels, newIds);
                                   return;
                                 }
@@ -616,10 +650,10 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                       {state.currentStep === 'voice' ? (
                         <div className="flex-1 h-full flex flex-col justify-center relative group/gender">
                           <VoicesDropdown 
-                            options={gendersData.length > 0 
+                            options={filteredGendersData.length > 0 
                               ? [
                                   { label: t('gender.everyone', language === 'fr' ? 'Tout le monde' : language === 'en' ? 'Everyone' : 'Iedereen'), value: '', icon: Users },
-                                  ...gendersData.map(g => ({
+                                  ...filteredGendersData.map(g => ({
                                     label: g.label,
                                     value: g.id, //  CHRIS-PROTOCOL: Use ID for Handshake Truth
                                     code: g.code,
@@ -631,7 +665,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                             value={state.filters.genderId || state.filters.gender || ''}
                             onChange={(val) => {
                               if (typeof val === 'number') {
-                                const optMatch = gendersData.find(g => g.id === val);
+                                const optMatch = filteredGendersData.find(g => g.id === val);
                                 updateFilters({ 
                                   genderId: val,
                                   gender: optMatch?.code || undefined 
@@ -794,8 +828,8 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                           <VoicesDropdown
                             searchable
                             rounding="right"
-                            options={countriesData.length > 0 
-                              ? countriesData.map((c: any) => ({
+                            options={filteredCountriesData.length > 0 
+                              ? filteredCountriesData.map((c: any) => ({
                                   label: t(`country.${c.code.toLowerCase()}`, c.label),
                                   value: c.id,
                                   code: c.code
@@ -818,7 +852,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                               const firstVal = vals[0];
                               
                               if (typeof firstVal === 'number') {
-                                const match = countriesData.find((c: any) => c.id === firstVal);
+                                const match = filteredCountriesData.find((c: any) => c.id === firstVal);
                                 updateFilters({ 
                                   countryId: firstVal,
                                   country: match?.code || undefined,
@@ -868,7 +902,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
       {/* De Filter Sheet (Mobile & Advanced) */}
       {!minimalMode && (
         <AgencyFilterSheet
-          filters={filters}
+          filters={availableFilters}
           activeParams={{
             language: state.filters.language || '',
             gender: state.filters.gender || '',

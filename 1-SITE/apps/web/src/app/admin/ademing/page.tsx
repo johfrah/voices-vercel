@@ -37,7 +37,6 @@ export default function AdemingAdminPage() {
   }, []);
 
   const checkAuth = async () => {
-    const supabase = createClient(supabaseUrl, supabaseKey);
     const { data: { user } } = await supabase.auth.getUser();
     
     if (!user) {
@@ -86,7 +85,8 @@ export default function AdemingAdminPage() {
     return null;
   }
 
-  if (loading || isAuthorized === null) return <LoadingScreenInstrument message="Ademing content laden..." />;
+  if (isAuthorized === null) return <LoadingScreenInstrument message="Toegang controleren..." />;
+  if (loading && tracks.length === 0) return <LoadingScreenInstrument message="Ademing content laden..." />;
 
   return (
     <PageWrapperInstrument className="min-h-screen bg-va-off-white p-8 pt-24">

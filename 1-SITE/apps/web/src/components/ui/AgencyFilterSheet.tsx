@@ -171,7 +171,7 @@ export const AgencyFilterSheet: React.FC<{
                     <HeadingInstrument level={3} className="text-[15px] font-light tracking-widest Raleway"><VoiceglotText  translationKey="auto.agencyfiltersheet.geslacht.aa3dc2" defaultText="Geslacht" /></HeadingInstrument>
                   </ContainerInstrument>
                   <ContainerInstrument className="grid grid-cols-2 gap-3">
-                    {['Mannelijk', 'Vrouwelijk'].map(gender => (
+                    {filters.genders.map(gender => (
                       <FilterChip strokeWidth={1.5} 
                         key={gender} 
                         label={t(`common.gender.${gender.toLowerCase()}`, gender)} 

@@ -101,10 +101,11 @@ export const ReviewsInstrument: React.FC<{
     const interval = setInterval(() => {
       if (scrollRef.current) {
         const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
-        if (scrollLeft + clientWidth >= scrollWidth - 10) {
-          scrollRef.current.scrollTo({ left: 0, behavior: 'smooth' });
+        // 🛡️ CHRIS-PROTOCOL: Smooth loop logic (v2.14.756)
+        if (scrollLeft + clientWidth >= scrollWidth - 5) {
+          scrollRef.current.scrollTo({ left: 0, behavior: 'auto' });
         } else {
-          scrollRef.current.scrollBy({ left: 1, behavior: 'auto' });
+          scrollRef.current.scrollBy({ left: 0.5, behavior: 'auto' });
         }
       }
     }, 30); // Zeer trage, vloeiende beweging
@@ -402,11 +403,11 @@ export const ReviewsInstrument: React.FC<{
             <div 
               key={review.id || i} 
               className={cn(
-                "min-w-[320px] md:min-w-[400px] snap-center relative group/card-container flex self-stretch cursor-grab active:cursor-grabbing",
+                "min-w-[320px] md:min-w-[450px] snap-center relative group/card-container flex self-stretch cursor-grab active:cursor-grabbing",
                 review.status === 'hidden' && "opacity-40 grayscale"
               )}
             >
-              <BentoCard span="sm" className="bg-white border border-black/[0.03] p-10 flex flex-col justify-between h-full max-h-[450px] shadow-aura hover:shadow-aura-lg transition-all duration-700 rounded-[40px] relative overflow-hidden group/card">
+              <BentoCard span="sm" className="bg-white border border-black/[0.03] p-10 flex flex-col justify-between h-full min-h-[400px] max-h-[500px] shadow-aura hover:shadow-aura-lg transition-all duration-700 rounded-[40px] relative overflow-hidden group/card">
                 
                 {/*  SPOTLIGHT ADMIN OVERLAY (CHRIS-PROTOCOL) */}
                 {isEditMode && (
@@ -486,6 +487,7 @@ export const ReviewsInstrument: React.FC<{
                           mediaId={review.mediaId}
                           alt={review.name || review.authorName} 
                           fill
+                          priority={i < 3}
                           className="w-full h-full object-cover" 
                         />
                       ) : (
