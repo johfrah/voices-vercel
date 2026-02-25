@@ -332,7 +332,15 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
         demos: proxiedDemos,
         actor_videos: proxiedVideos,
         rates: actor.rates || {},
-        email: actor.email || ''
+        email: actor.email || '',
+        status: actor.status || 'live',
+        experience_level: actor.experience_level || 'pro',
+        clients: actor.clients || '',
+        tone_of_voice: actor.tone_of_voice || '',
+        cutoff_time: actor.cutoff_time || '18:00',
+        delivery_days_min: actor.delivery_days_min || 1,
+        delivery_days_max: actor.delivery_days_max || 3,
+        portfolio_tier: actor.portfolio_tier || 'none'
       };
     });
 
