@@ -127,24 +127,29 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
           .eq('status', 'live')
           .eq('is_public', true);
           
-        // 🛡️ NUCLEAR HANDSHAKE: ID-First Filtering
+        // 🛡️ NUCLEAR HANDSHAKE: ID-First Filtering (v2.14.679)
+        // We use the database as the source of truth for language IDs.
         if (language || lang) {
           const targetLang = (language || lang).toLowerCase();
+          
           if (!isNaN(parseInt(targetLang))) {
             query = query.eq('native_language_id', parseInt(targetLang));
           } else if (targetLang !== 'all') {
-            // 🛡️ CHRIS-PROTOCOL: Handshake Truth (v2.14.673)
-            // We map common codes/labels to IDs to ensure we filter by the source of truth.
-            const langMap: Record<string, number> = {
-              'nl-be': 1, 'vlaams': 1, 'nederlands': 2, 'nl-nl': 2,
-              'fr-be': 3, 'frans (be)': 3, 'fr-fr': 4, 'frans (fr)': 4,
-              'en-gb': 5, 'engels': 5, 'en-us': 6, 'de-de': 7, 'duits': 7,
-              'es-es': 8, 'spaans': 8, 'it-it': 9, 'italiaans': 9,
-              'pl-pl': 10, 'pools': 10, 'da-dk': 11, 'deens': 11,
-              'pt-pt': 12, 'portugees': 12, 'sv-se': 13, 'zweeds': 13
-            };
-            const mappedId = langMap[targetLang];
-            if (mappedId) query = query.eq('native_language_id', mappedId);
+            // 🛡️ CHRIS-PROTOCOL: Dynamic Handshake Truth
+            // We fetch languages once and cache them globally for the duration of the request/process.
+            const { data: allLangs } = await supabase.from('languages').select('id, code, label');
+            if (allLangs) {
+              const match = allLangs.find(l => 
+                l.code.toLowerCase() === targetLang || 
+                l.label.toLowerCase() === targetLang
+              );
+              if (match) {
+                query = query.eq('native_language_id', match.id);
+              } else {
+                // Fallback to legacy string match if ID lookup fails
+                query = query.eq('native_lang', targetLang);
+              }
+            }
           }
         }
 
@@ -249,13 +254,14 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
     const langLookup = new Map<number, { code: string, label: string }>();
     allLangsData?.forEach(l => langLookup.set(l.id, { code: l.code, label: l.label }));
 
-    // We prime the MarketManager with real data from Supabase to kill hardcoded maps.
-    MarketManager.setLanguages(allLangsData || []);
+    // 🛡️ CHRIS-PROTOCOL: Handshake Truth (v2.14.679)
+    // We prime the global cache for other server functions, but avoid modifying 
+    // the MarketManager directly during a render pass to prevent hydration issues.
     const g = global as any;
-    g.handshakeLanguages = allLangsData || [];
-    g.handshakeStatuses = allStatusesData || [];
-    g.handshakeExperience = allExperienceData || [];
-    g.handshakeCountries = allCountriesData || [];
+    if (allLangsData) g.handshakeLanguages = allLangsData;
+    if (allStatusesData) g.handshakeStatuses = allStatusesData;
+    if (allExperienceData) g.handshakeExperience = allExperienceData;
+    if (allCountriesData) g.handshakeCountries = allCountriesData;
 
     // Create lookup maps for performance
     const nativeLangMap = new Map<number, number>();

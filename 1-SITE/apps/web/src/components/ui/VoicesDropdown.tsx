@@ -233,8 +233,17 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
 
     const opt = options.find(o => {
       const v = typeof o === 'string' ? o : o.value;
-      if (typeof v !== 'string' || typeof value !== 'string') return v === value;
-      return v.toLowerCase() === value.toLowerCase();
+      //  CHRIS-PROTOCOL: Antifragile Mapping (v2.14.677)
+      // We check both the primary value and the langCode (if available)
+      // to ensure ISO codes map correctly to human-friendly labels.
+      const lc = typeof o === 'object' ? (o as any).langCode : undefined;
+      
+      if (typeof value === 'string' && value.includes('-')) {
+        if (lc && lc.toLowerCase() === value.toLowerCase()) return true;
+        if (typeof v === 'string' && v.toLowerCase() === value.toLowerCase()) return true;
+      }
+      
+      return v === value;
     });
     const label = typeof opt === 'string' ? opt : opt?.label || value;
     if (!label) return placeholder;

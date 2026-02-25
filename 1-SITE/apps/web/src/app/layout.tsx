@@ -338,7 +338,7 @@ export default async function RootLayout({
         <Providers lang={lang} market={market} initialTranslations={translations} initialJourney={initialJourney} initialUsage={initialUsage}>
           <SafeErrorGuard>
             <PageWrapperInstrument>
-              <Suspense fallback={<LoadingScreenInstrument />}>
+              <Suspense fallback={<LoadingScreenInstrument text="Voices laden..." />}>
                 {children}
               </Suspense>
             </PageWrapperInstrument>
