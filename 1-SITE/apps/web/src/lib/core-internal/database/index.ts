@@ -25,18 +25,11 @@ const getDb = () => {
       
       // CHRIS-PROTOCOL: Direct DB Host for Stability (v2.17)
       // The Supabase Pooler (6543) is currently unstable. We bypass it and use the direct host.
-      if (connectionString.includes('pooler.supabase.com')) {
-        console.error(' [getDb] DETECTED POOLER: Bypassing for stability...');
-        connectionString = connectionString.replace('aws-1-eu-west-1.pooler.supabase.com', 'db.vcbxyyjsxuquytcsskpj.supabase.co');
-        connectionString = connectionString.replace(':6543', ':5432');
-        connectionString = connectionString.replace('postgres.vcbxyyjsxuquytcsskpj', 'postgres');
-        // Behoud de query params (zoals pgbouncer=true) niet bij direct host
-        connectionString = connectionString.split('?')[0]; 
-        console.error(' [getDb] TARGET HOST: db.vcbxyyjsxuquytcsskpj.supabase.co:5432');
-      } else if (connectionString.includes('aws-1-eu-west-1.pooler.supabase.com')) {
-        // Extra check voor alternatieve pooler formaten
-        console.error(' [getDb] DETECTED POOLER (ALT): Bypassing...');
+      if (connectionString.includes('pooler.supabase.com') || connectionString.includes('vcbxyyjsxuquytcsskpj')) {
+        console.error(' [getDb] DETECTED POOLER/SUPABASE: Bypassing for stability...');
+        // Forceer de direct host URL
         connectionString = 'postgresql://postgres.vcbxyyjsxuquytcsskpj:VoicesHeadless20267654323456@db.vcbxyyjsxuquytcsskpj.supabase.co:5432/postgres';
+        console.error(' [getDb] TARGET HOST FORCED: db.vcbxyyjsxuquytcsskpj.supabase.co:5432');
       }
 
       // LEX-MANDATE: IPv6 is unstable on some build machines. Force IPv4 if direct host.
