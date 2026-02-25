@@ -426,8 +426,17 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
             'telefoon': 'telephony', 'telefooncentrale': 'telephony', 'telephony': 'telephony',
             'video': 'video', 'commercial': 'commercial', 'reclame': 'commercial'
           };
-          const mappedJourney = journey ? journeyMap[journey.toLowerCase()] : undefined;
-          return <VoiceDetailClient actor={actor} initialJourney={mappedJourney || journey} initialMedium={medium} />;
+          
+          // 🛡️ CHRIS-PROTOCOL: Robust Journey Detection for Hierarchical Slugs
+          // If the lookupSlug is hierarchical (e.g. voice/johfrah), segments[1] is 'johfrah', not the journey.
+          // We need to look at the segment AFTER the resolved slug.
+          const lookupSegments = lookupSlug.split('/');
+          const nextSegment = cleanSegments[lookupSegments.length];
+          const mappedJourney = nextSegment ? journeyMap[nextSegment.toLowerCase()] : undefined;
+          
+          console.error(` [SmartRouter] Actor Journey Detection: nextSegment=${nextSegment}, mapped=${mappedJourney}`);
+          
+          return <VoiceDetailClient actor={actor} initialJourney={mappedJourney || (nextSegment as any)} initialMedium={cleanSegments[lookupSegments.length + 1]} />;
         }
       }
 

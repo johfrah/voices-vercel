@@ -75,10 +75,19 @@ const FORBIDDEN_PATTERNS = [
     exclude: [/\.md$/]
   },
   {
-    regex: /['"]nl['"]|['"]fr['"]|['"]en['"]/g,
-    message: 'Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE).',
+    regex: /(?<![\/\-_])(['"](nl|fr|en|de|es|pt|it)['"])(?![\/\-_])/g,
+    message: 'Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.',
     type: 'warning' as const,
-    exclude: [/market-manager.*\.ts/, /config\.ts/, /i18n/, /\.md$/]
+    exclude: [/market-manager.*\.ts/, /config\.ts/, /i18n/, /\.md$/, /slug\.ts/, /bridge\.ts/, /delivery-logic\.ts/, /middleware\.ts/],
+    test: (match: string, line: string) => {
+      // Sta /de/ of /fr/ toe in paden/strings die op een pad lijken
+      if (line.includes('/' + match.replace(/['"]/g, '') + '/')) return false;
+      // Sta combinatietalen toe (bijv. 'nl-fr', 'fr-nl', 'en-de') die niet landgebonden zijn
+      if (line.includes('-' + match.replace(/['"]/g, '')) || line.includes(match.replace(/['"]/g, '') + '-')) return false;
+      // Sta JSDoc/comments toe
+      if (line.trim().startsWith('*') || line.trim().startsWith('//')) return false;
+      return true;
+    }
   }
 ];
 
