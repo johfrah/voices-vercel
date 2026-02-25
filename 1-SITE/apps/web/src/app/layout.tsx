@@ -145,8 +145,8 @@ export async function generateMetadata(): Promise<Metadata> {
     icon: '/assets/ademing/favicon.ico',
     apple: '/assets/ademing/apple-touch-icon.png',
   } : {
-    icon: '/favicon.ico',
-    apple: '/apple-touch-icon.png',
+    icon: '/favicon.svg',
+    apple: '/favicon.svg',
   };
 
   return {

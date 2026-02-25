@@ -67,7 +67,7 @@ const PriceCountUp = ({ value }: { value: number }) => {
     return () => controls.stop();
   }, [value, displayValue]);
 
-  return <span>{SlimmeKassa.format(displayValue)}</span>;
+  return <TextInstrument as="span">{SlimmeKassa.format(displayValue)}</TextInstrument>;
 };
 
 /**
@@ -686,12 +686,12 @@ export default function ConfiguratorPageClient({
     return parts.map((part, i) => {
       if (part.startsWith('(') && part.endsWith(')')) {
         return (
-          <span key={i} className="text-primary italic bg-primary/5 rounded px-1 border border-primary/10">
+          <TextInstrument as="span" key={i} className="text-primary italic bg-primary/5 rounded px-1 border border-primary/10">
             {part}
-          </span>
+          </TextInstrument>
         );
       }
-      return <span key={i}>{part}</span>;
+      return <TextInstrument as="span" key={i}>{part}</TextInstrument>;
     });
   };
 
@@ -726,9 +726,17 @@ export default function ConfiguratorPageClient({
     }, 250);
   };
 
-  const handleMediaToggle = (mediaId: string) => {
+  const handleMediaToggle = (mediaId: string | number) => {
     const currentMedia = state.media || [];
-    const baseId = mediaId.split('_')[0];
+    
+    // Resolve ID to code if needed for state.media (which currently expects codes)
+    let targetCode = String(mediaId);
+    if (typeof mediaId === 'number') {
+      const match = commercialMediaOptions.find(o => o.id === mediaId);
+      if (match) targetCode = match.code;
+    }
+
+    const baseId = targetCode.split('_')[0];
     const existingMedia = currentMedia.find(m => m.startsWith(baseId));
     
     let newMedia: string[];
@@ -740,7 +748,7 @@ export default function ConfiguratorPageClient({
         newMedia = ['online'];
       }
     } else {
-      newMedia = [...currentMedia, mediaId];
+      newMedia = [...currentMedia, targetCode];
     }
     
     updateMedia(newMedia);
@@ -755,12 +763,32 @@ export default function ConfiguratorPageClient({
     { id: 'commercial', label: 'Commercial', icon: Megaphone, key: 'journey.commercial', description: 'Radio, TV, Ads' },
   ];
 
-  const commercialMediaOptions = [
-    { id: 'online', label: 'Online / Social', icon: Video, description: 'Web, Social Media' },
-    { id: 'radio_national', label: 'Radio', icon: Radio, description: 'Landelijke Radio', hasRegions: true },
-    { id: 'tv_national', label: 'TV', icon: Tv, description: 'Landelijke TV', hasRegions: true },
-    { id: 'podcast', label: 'Podcast', icon: Mic, description: 'In-podcast Ads' },
-  ];
+  const commercialMediaOptions = useMemo(() => {
+    // 🛡️ CHRIS-PROTOCOL: Handshake Truth (v2.14.739)
+    // We prioritize database-driven media types from dynamicConfig.
+    if (dynamicConfig?.mediaTypes && dynamicConfig.mediaTypes.length > 0) {
+      const baseIcons: Record<string, any> = { online: Video, podcast: Mic, radio: Radio, tv: Tv };
+      return dynamicConfig.mediaTypes.map((mt: any) => {
+        const baseId = mt.code.split('_')[0];
+        return {
+          id: mt.id,
+          code: mt.code,
+          label: mt.label,
+          icon: baseIcons[baseId] || Video,
+          description: mt.description,
+          hasRegions: mt.has_regions
+        };
+      });
+    }
+
+    // Emergency Fallback
+    return [
+      { id: 'online', code: 'online', label: 'Online / Social', icon: Video, description: 'Web, Social Media' },
+      { id: 'radio_national', code: 'radio_national', label: 'Radio', icon: Radio, description: 'Landelijke Radio', hasRegions: true },
+      { id: 'tv_national', code: 'tv_national', label: 'TV', icon: Tv, description: 'Landelijke TV', hasRegions: true },
+      { id: 'podcast', code: 'podcast', label: 'Podcast', icon: Mic, description: 'In-podcast Ads' },
+    ];
+  }, [dynamicConfig]);
 
   const regions = [
     { id: 'Nationaal', label: 'Nationaal' },
@@ -913,81 +941,81 @@ export default function ConfiguratorPageClient({
 
     return (
       <ContainerInstrument className="bg-white rounded-[20px] p-8 text-va-black shadow-aura border border-black/[0.03] relative overflow-hidden">
-        <div className="space-y-6 relative z-10">
-          <div className="space-y-4">
-            <div className="flex items-center justify-between border-b border-black/[0.03] pb-2">
-              <span className="text-[11px] font-bold tracking-widest text-va-black/30 uppercase">
+        <ContainerInstrument plain className="space-y-6 relative z-10">
+          <ContainerInstrument plain className="space-y-4">
+            <ContainerInstrument plain className="flex items-center justify-between border-b border-black/[0.03] pb-2">
+              <TextInstrument className="text-[11px] font-bold tracking-widest text-va-black/30 uppercase">
                 <VoiceglotText translationKey="configurator.price_breakdown" defaultText="Opbouw prijs" />
-              </span>
-            </div>
-            <div className="space-y-3">
-              <div className="space-y-3">
+              </TextInstrument>
+            </ContainerInstrument>
+            <ContainerInstrument plain className="space-y-3">
+              <ContainerInstrument plain className="space-y-3">
                 {state.usage === 'telefonie' ? (
                   <>
-                    <div className="flex justify-between text-[14px] items-center">
-                      <span className="text-va-black/60 font-medium">
+                    <ContainerInstrument plain className="flex justify-between text-[14px] items-center">
+                      <TextInstrument className="text-va-black/60 font-medium">
                         <VoiceglotText translationKey="pricing.base_telephony" defaultText="Basistarief (Telefoon)" />
-                      </span>
-                      <span className="font-bold text-va-black">{SlimmeKassa.format((state.pricingConfig?.telephonyBasePrice || 8900) / 100)}</span>
-                    </div>
+                      </TextInstrument>
+                      <TextInstrument className="font-bold text-va-black">{SlimmeKassa.format((state.pricingConfig?.telephonyBasePrice || 8900) / 100)}</TextInstrument>
+                    </ContainerInstrument>
                     {state.pricing.wordSurcharge > 0 && wordCount > 25 && (
-                      <div className="flex justify-between text-[14px] items-center">
-                        <span className="text-va-black/60 font-medium">
+                      <ContainerInstrument plain className="flex justify-between text-[14px] items-center">
+                        <TextInstrument className="text-va-black/60 font-medium">
                           <VoiceglotText translationKey="pricing.production_fee" defaultText="Productie & Verwerking" />
-                        </span>
-                        <span className="font-bold text-va-black">+{SlimmeKassa.format(state.pricing.wordSurcharge)}</span>
-                      </div>
+                        </TextInstrument>
+                        <TextInstrument className="font-bold text-va-black">+{SlimmeKassa.format(state.pricing.wordSurcharge)}</TextInstrument>
+                      </ContainerInstrument>
                     )}
                     {state.usage === 'telefonie' && state.pricing.musicSurcharge > 0 && (
-                      <div className="flex justify-between text-[14px] items-center">
-                        <span className="text-va-black/60 font-medium">
+                      <ContainerInstrument plain className="flex justify-between text-[14px] items-center">
+                        <TextInstrument className="text-va-black/60 font-medium">
                           <VoiceglotText translationKey="pricing.music_mix" defaultText="Muziek & Mixage" />
-                        </span>
-                        <span className="font-bold text-va-black">+{SlimmeKassa.format(state.pricing.musicSurcharge)}</span>
-                      </div>
+                        </TextInstrument>
+                        <TextInstrument className="font-bold text-va-black">+{SlimmeKassa.format(state.pricing.musicSurcharge)}</TextInstrument>
+                      </ContainerInstrument>
                     )}
                   </>
                 ) : (
                   <>
-                    <div className="flex justify-between text-[14px] items-center">
-                      <span className="text-va-black/60 font-medium">
+                    <ContainerInstrument plain className="flex justify-between text-[14px] items-center">
+                      <TextInstrument className="text-va-black/60 font-medium">
                         {state.usage === 'commercial' ? (
-                          <div className="flex flex-col">
-                            <span><VoiceglotText translationKey="pricing.base_recording" defaultText="Basistarief (Opname)" /></span>
-                            <span className="text-[9px] text-va-black/30 font-light italic -mt-1">
+                          <ContainerInstrument plain className="flex flex-col">
+                            <TextInstrument as="span"><VoiceglotText translationKey="pricing.base_recording" defaultText="Basistarief (Opname)" /></TextInstrument>
+                            <TextInstrument as="span" className="text-[9px] text-va-black/30 font-light italic -mt-1">
                               <VoiceglotText translationKey="pricing.base_recording_sub" defaultText="Vergoeding voor de opnamesessie" />
-                            </span>
-                          </div>
+                            </TextInstrument>
+                          </ContainerInstrument>
                         ) : <VoiceglotText translationKey="pricing.base_video" defaultText="Basistarief (Video)" />}
-                      </span>
-                      <span className="font-bold text-va-black">{SlimmeKassa.format(state.pricing.base)}</span>
-                    </div>
+                      </TextInstrument>
+                      <TextInstrument className="font-bold text-va-black">{SlimmeKassa.format(state.pricing.base)}</TextInstrument>
+                    </ContainerInstrument>
                     {state.pricing.wordSurcharge > 0 && (
-                      <div className="flex justify-between text-[14px] items-center">
-                        <span className="text-va-black/60 font-medium">
+                      <ContainerInstrument plain className="flex justify-between text-[14px] items-center">
+                        <TextInstrument className="text-va-black/60 font-medium">
                           <VoiceglotText translationKey="pricing.extra_words" defaultText="Extra woorden" /> ({Math.max(0, effectiveWordCount - (state.usage === 'unpaid' ? 200 : 0))})
-                        </span>
-                        <span className="font-bold text-va-black">+{SlimmeKassa.format(state.pricing.wordSurcharge)}</span>
-                      </div>
+                        </TextInstrument>
+                        <TextInstrument className="font-bold text-va-black">+{SlimmeKassa.format(state.pricing.wordSurcharge)}</TextInstrument>
+                      </ContainerInstrument>
                     )}
                     {state.pricing.musicSurcharge > 0 && (
-                      <div className="flex justify-between text-[13px]">
-                        <span className="text-va-black/40 font-light">
+                      <ContainerInstrument plain className="flex justify-between text-[13px]">
+                        <TextInstrument className="text-va-black/40 font-light">
                           <VoiceglotText translationKey="pricing.music_mixing" defaultText="Music Mixing" />
-                        </span>
-                        <span className="font-medium">+{SlimmeKassa.format(state.pricing.musicSurcharge)}</span>
-                      </div>
+                        </TextInstrument>
+                        <TextInstrument className="font-medium">+{SlimmeKassa.format(state.pricing.musicSurcharge)}</TextInstrument>
+                      </ContainerInstrument>
                     )}
                   </>
                 )}
-              </div>
+              </ContainerInstrument>
               {state.usage === 'commercial' && state.pricing.mediaSurcharge > 0 && (
-                <div className="space-y-1.5 pt-1">
-                  <div className="text-[10px] font-black text-va-black/20 uppercase tracking-widest mb-1">
+                <ContainerInstrument plain className="space-y-1.5 pt-1">
+                  <TextInstrument className="text-[10px] font-black text-va-black/20 uppercase tracking-widest mb-1">
                     <VoiceglotText translationKey="pricing.license_usage" defaultText="Licenties voor gebruik" />
-                  </div>
+                  </TextInstrument>
                   {state.media?.map((mediaId) => {
-                    const opt = commercialMediaOptions.find(o => o.id === mediaId);
+                    const opt = commercialMediaOptions.find(o => o.code === mediaId || o.id === mediaId);
                     const detail = state.spotsDetail?.[mediaId] || 1;
                     const years = state.yearsDetail?.[mediaId] || 1;
                     const isPodcast = mediaId === 'podcast';
@@ -1007,10 +1035,10 @@ export default function ConfiguratorPageClient({
                     const combinationDiscount = typeof breakdown === 'object' ? breakdown.discount : 0;
 
                     return (
-                      <div key={mediaId} className="space-y-1 pl-3 border-l-2 border-primary/20 bg-primary/[0.02] py-2 pr-2 rounded-r-lg">
-                        <div className="flex justify-between text-[13px] items-start">
-                          <span className="text-va-black font-medium leading-snug">
-                            {fullLabel} <span className="text-[10px] text-va-black/40 block font-normal tracking-wide">
+                      <ContainerInstrument key={mediaId} plain className="space-y-1 pl-3 border-l-2 border-primary/20 bg-primary/[0.02] py-2 pr-2 rounded-r-lg">
+                        <ContainerInstrument plain className="flex justify-between text-[13px] items-start">
+                          <TextInstrument className="text-va-black font-medium leading-snug">
+                            {fullLabel} <TextInstrument as="span" className="text-[10px] text-va-black/40 block font-normal tracking-wide">
                               {detail}x {detail === 1 ? t('common.spot', 'spot') : t('common.spots', 'spots')} • {isPodcast ? (
                                 years === 0.25 ? t('common.3_months', "3 maanden") :
                                 years === 0.5 ? t('common.6_months', "6 maanden") :
@@ -1019,64 +1047,64 @@ export default function ConfiguratorPageClient({
                               ) : (
                                 years === 1 ? t('common.1_year', "1 jaar") : t('common.years_count', `${years} jaar`, { count: years })
                               )}
-                            </span>
-                          </span>
-                          <span className="font-bold text-va-black whitespace-nowrap ml-2">
+                            </TextInstrument>
+                          </TextInstrument>
+                          <TextInstrument className="font-bold text-va-black whitespace-nowrap ml-2">
                             {itemPrice > 0 ? `+${SlimmeKassa.format(itemPrice)}` : SlimmeKassa.format(0)}
-                          </span>
-                        </div>
+                          </TextInstrument>
+                        </ContainerInstrument>
                         {combinationDiscount > 0 && (
-                          <div className="flex justify-between text-[10px] text-green-600 font-bold italic pt-1 border-t border-green-600/10">
-                            <span><VoiceglotText translationKey="pricing.combo_discount" defaultText="Combinatiekorting" /></span>
-                            <span>-{SlimmeKassa.format(combinationDiscount)}</span>
-                          </div>
+                          <ContainerInstrument plain className="flex justify-between text-[10px] text-green-600 font-bold italic pt-1 border-t border-green-600/10">
+                            <TextInstrument as="span"><VoiceglotText translationKey="pricing.combo_discount" defaultText="Combinatiekorting" /></TextInstrument>
+                            <TextInstrument as="span">-{SlimmeKassa.format(combinationDiscount)}</TextInstrument>
+                          </ContainerInstrument>
                         )}
-                      </div>
+                      </ContainerInstrument>
                     );
                   })}
                   {state.media && state.media.length > 1 && (
-                    <div className="flex justify-between text-[13px] pt-1 mt-1 border-t border-black/[0.03]">
-                      <span className="text-va-black/40 font-light">
+                    <ContainerInstrument plain className="flex justify-between text-[13px] pt-1 mt-1 border-t border-black/[0.03]">
+                      <TextInstrument className="text-va-black/40 font-light">
                         <VoiceglotText translationKey="pricing.total_buyout" defaultText="Totaal Buyout" />
-                      </span>
-                      <span className="font-medium">+{SlimmeKassa.format(state.pricing.mediaSurcharge)}</span>
-                    </div>
+                      </TextInstrument>
+                      <TextInstrument className="font-medium">+{SlimmeKassa.format(state.pricing.mediaSurcharge)}</TextInstrument>
+                    </ContainerInstrument>
                   )}
-                </div>
+                </ContainerInstrument>
               )}
               {state.liveSession && (
-                <div className="flex justify-between text-[13px]">
-                  <span className="text-va-black/40 font-light">
+                <ContainerInstrument plain className="flex justify-between text-[13px]">
+                  <TextInstrument className="text-va-black/40 font-light">
                     <VoiceglotText translationKey="pricing.live_direction" defaultText="Live Regie" />
-                  </span>
-                  <span className="font-medium">+{SlimmeKassa.format(liveRegiePrice)}</span>
-                </div>
+                  </TextInstrument>
+                  <TextInstrument className="font-medium">+{SlimmeKassa.format(liveRegiePrice)}</TextInstrument>
+                </ContainerInstrument>
               )}
-            </div>
-          </div>
-          <div className="space-y-1 pt-4 border-t border-black/[0.03] text-right">
-            <div className="text-[10px] font-bold tracking-[0.2em] text-va-black/20 uppercase">
+            </ContainerInstrument>
+          </ContainerInstrument>
+          <ContainerInstrument plain className="space-y-1 pt-4 border-t border-black/[0.03] text-right">
+            <TextInstrument className="text-[10px] font-bold tracking-[0.2em] text-va-black/20 uppercase">
               <VoiceglotText translationKey="common.total_excl_vat" defaultText="Totaal (excl. BTW)" />
-            </div>
-            <div className="text-4xl font-light tracking-tighter text-va-black">
+            </TextInstrument>
+            <ContainerInstrument plain className="text-4xl font-light tracking-tighter text-va-black">
               <PriceCountUp value={state.pricing.total} />
-            </div>
-            {state.pricing.legalDisclaimer && <div className="text-[10px] text-va-black/40 font-light italic mt-2 leading-tight">{state.pricing.legalDisclaimer}</div>}
-          </div>
+            </ContainerInstrument>
+            {state.pricing.legalDisclaimer && <TextInstrument className="text-[10px] text-va-black/40 font-light italic mt-2 leading-tight">{state.pricing.legalDisclaimer}</TextInstrument>}
+          </ContainerInstrument>
 
             {/* Trust Badges (Bob-methode) */}
-          <div className="pt-4 space-y-3 border-t border-black/[0.03]">
+          <ContainerInstrument plain className="pt-4 space-y-3 border-t border-black/[0.03]">
             {usps.map((usp) => (
-              <div key={usp.key} className="flex items-center gap-3">
+              <ContainerInstrument key={usp.key} plain className="flex items-center gap-3">
                 <usp.icon size={14} className="text-green-500" strokeWidth={1.5} />
                 <TextInstrument className="text-[12px] font-medium text-va-black/60">
                   <VoiceglotText translationKey={`configurator.trust.${usp.key}`} defaultText={usp.text} />
                 </TextInstrument>
-              </div>
+              </ContainerInstrument>
             ))}
-          </div>
+          </ContainerInstrument>
 
-          <div className="pt-4 space-y-3">
+          <ContainerInstrument plain className="pt-4 space-y-3">
             <button 
               onClick={() => handleAddToCartWithEmail('checkout')} 
               disabled={!state.selectedActor || isProcessing} 
@@ -1091,9 +1119,9 @@ export default function ConfiguratorPageClient({
                 <><VoiceglotText translationKey="action.order" defaultText="Bestellen" /> <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" /></>
               )}
             </button>
-          </div>
-        </div>
-        <div className="absolute -bottom-20 -right-20 w-40 h-40 bg-primary/5 blur-[80px] rounded-full" />
+          </ContainerInstrument>
+        </ContainerInstrument>
+        <ContainerInstrument plain className="absolute -bottom-20 -right-20 w-40 h-40 bg-primary/5 blur-[80px] rounded-full" />
       </ContainerInstrument>
     );
   };

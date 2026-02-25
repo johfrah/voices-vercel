@@ -159,6 +159,7 @@ function HomeContent({
         languageIds: masterControlState.filters.languageIds,
         gender: masterControlState.filters.gender,
         media: masterControlState.filters.media,
+        mediaIds: masterControlState.filters.mediaIds, // 🛡️ CHRIS-PROTOCOL: Handshake Truth (v2.14.740)
         country: masterControlState.filters.country,
         countryId: masterControlState.filters.countryId,
         toneIds: masterControlState.filters.toneIds,
@@ -643,6 +644,13 @@ export default function Home() {
         if (langs.results) {
           MarketManager.setLanguages(langs.results);
           console.log('[Home] MarketManager primed with', langs.results.length, 'languages');
+        }
+
+        // 🛡️ CHRIS-PROTOCOL: Prime Global Registries for Engines (v2.14.740)
+        if (typeof global !== 'undefined') {
+          if (langs.results) (global as any).handshakeLanguages = langs.results;
+          if (mediaTypes.results) (global as any).handshakeMediaTypes = mediaTypes.results;
+          if (genders.results) (global as any).handshakeGenders = genders.results;
         }
 
         setDynamicConfigData({

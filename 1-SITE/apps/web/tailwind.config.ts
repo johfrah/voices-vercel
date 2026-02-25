@@ -11,7 +11,11 @@ const config: Config = {
       colors: {
         "va-primary": "#E91E63",
         "va-primary-dark": "#C2185B",
-        "va-background": "hsl(35, 25%, 98%)",
+        "va-background": "hsl(var(--va-surface))",
+        "va-surface": "hsl(var(--va-surface))",
+        "va-card": "hsl(var(--va-card))",
+        "va-text": "hsl(var(--va-text))",
+        "va-border": "hsl(var(--va-border))",
         "va-dark": "#1A1A1A",
         "va-dark-soft": "#2D2D2D",
         // Legacy support

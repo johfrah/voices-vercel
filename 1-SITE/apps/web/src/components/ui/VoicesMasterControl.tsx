@@ -136,9 +136,13 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
   useEffect(() => {
     if (!languagesData || languagesData.length === 0) return;
 
-    // 🛡️ CHRIS-PROTOCOL: Prime MarketManager if not already primed
+    // 🛡️ CHRIS-PROTOCOL: Prime MarketManager and Global Registries (v2.14.740)
     if (languagesData.length > 0) {
       MarketManager.setLanguages(languagesData);
+    }
+    
+    if (mediaTypesData && mediaTypesData.length > 0 && typeof global !== 'undefined') {
+      (global as any).handshakeMediaTypes = mediaTypesData;
     }
 
     // 🛡️ CHRIS-PROTOCOL: Handshake Truth Sync (v2.14.734)
@@ -688,7 +692,8 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
 
                               updateFilters({ 
                                 spotsDetail: newSpotsDetail,
-                                media: mappedMedia
+                                media: mappedMedia,
+                                mediaIds: mediaIds // 🛡️ CHRIS-PROTOCOL: Handshake Truth (v2.14.740)
                               });
                             }}
                             yearsValue={state.filters.yearsDetail || {}}

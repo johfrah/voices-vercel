@@ -1,0 +1,20 @@
+<svg viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="loader_grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color: #FF0084; stop-opacity: 1;" />
+      <stop offset="100%" style="stop-color: #FF0084; stop-opacity: 1;" />
+    </linearGradient>
+  </defs>
+  <style>
+    .loader-bar {
+      fill: url(#loader_grad);
+    }
+  </style>
+  <g transform="translate(500, 500) scale(0.8)">
+    <rect x="-40" y="-300" width="80" height="600" rx="40" ry="40" class="loader-bar" />
+    <rect x="-240" y="-150" width="90" height="300" rx="45" ry="45" class="loader-bar" />
+    <rect x="150" y="-150" width="90" height="300" rx="45" ry="45" class="loader-bar" />
+    <rect x="330" y="-50" width="80" height="100" rx="40" ry="40" class="loader-bar" />
+    <rect x="-410" y="-50" width="80" height="100" rx="40" ry="40" class="loader-bar" />
+  </g>
+</svg>

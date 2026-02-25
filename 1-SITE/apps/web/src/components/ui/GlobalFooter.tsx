@@ -9,6 +9,7 @@ import { MarketManagerServer as MarketManager } from '@/lib/system/market-manage
 import { isOfficeOpen, formatOpeningHours, getNextOpeningTime } from '@/lib/utils/delivery-logic';
 import Image from 'next/image';
 import { VoicesLink } from './VoicesLink';
+import { ThemeToggle } from './ademing/ThemeToggle';
 import React, { useEffect, useRef, useState, useMemo } from 'react';
 import toast from 'react-hot-toast';
 
@@ -872,6 +873,7 @@ export default function GlobalFooter() {
           </ContainerInstrument>
           
           <ContainerInstrument className="flex items-center gap-8">
+            <ThemeToggle />
             <ContainerInstrument className="flex items-center gap-3 px-4 py-2 bg-va-black/5 rounded-full border border-black/5">
               {(() => {
                 const isOpen = generalSettings?.opening_hours ? isOfficeOpen(generalSettings.opening_hours) : true;

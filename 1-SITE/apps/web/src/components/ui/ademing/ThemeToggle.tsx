@@ -18,9 +18,11 @@ export const ThemeToggle = () => {
     if (isDark) {
       root.classList.remove("dark");
       localStorage.setItem("theme", "light");
+      document.cookie = "theme=light; path=/; max-age=31536000";
     } else {
       root.classList.add("dark");
       localStorage.setItem("theme", "dark");
+      document.cookie = "theme=dark; path=/; max-age=31536000";
     }
     setIsDark(!isDark);
   };
