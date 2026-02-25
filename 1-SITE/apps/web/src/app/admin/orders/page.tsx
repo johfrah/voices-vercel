@@ -25,7 +25,9 @@ import {
   FileText,
   User,
   MoreHorizontal,
-  Plus
+  Plus,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState, useCallback } from 'react';
@@ -35,7 +37,6 @@ import { nl } from 'date-fns/locale';
 export const dynamic = 'force-dynamic';
 
 interface Order {
-
   id: number;
   wpOrderId: number;
   displayOrderId: string | null;
@@ -52,6 +53,13 @@ interface Order {
   } | null;
 }
 
+interface PaginationData {
+  page: number;
+  limit: number;
+  totalInDb: number;
+  totalPages: number;
+}
+
 export default function BestellingenPage() {
   const { logAction } = useAdminTracking();
   const [orders, setOrders] = useState<Order[]>([]);
@@ -59,33 +67,35 @@ export default function BestellingenPage() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('all');
+  const [pagination, setPagination] = useState<PaginationData | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
 
-  const fetchOrders = useCallback(async (silent = false) => {
+  const fetchOrders = useCallback(async (page = 1, silent = false) => {
     if (!silent) setIsLoading(true);
     else setIsRefreshing(true);
     
     try {
-      const res = await fetch(`/api/admin/orders/?t=${Date.now()}`);
+      const res = await fetch(`/api/admin/orders/?page=${page}&limit=50&t=${Date.now()}`);
       console.log('🚀 [Admin Orders] API Response Status:', res.status);
       
       if (res.ok) {
         const data = await res.json();
         
-        // 🕵️ CHRIS-PROTOCOL: Godmode Debug Visibility (v2.14.578)
         if (data._debug) {
-          console.log('🚨 [GODMODE DEBUG] API sees 0 orders. Context:', data._debug);
+          console.log('🚨 [GODMODE DEBUG] API Context:', data._debug);
         } else if (data._error) {
           console.error('🚨 [GODMODE ERROR] API Critical:', data._error);
         }
 
-        const ordersList = Array.isArray(data) ? data : (data.orders || []);
+        const ordersList = data.orders || [];
+        setOrders(ordersList);
+        setPagination(data.pagination || null);
+        setCurrentPage(page);
 
         console.log('📦 [Admin Orders] Data received:', {
           count: ordersList.length,
-          sample: ordersList.slice(0, 2),
-          totalInDb: ordersList.length
+          pagination: data.pagination
         });
-        setOrders(ordersList);
       } else {
         const errorText = await res.text();
         console.error('❌ [Admin Orders] API Error:', errorText);
@@ -99,7 +109,7 @@ export default function BestellingenPage() {
   }, []);
 
   useEffect(() => {
-    fetchOrders();
+    fetchOrders(1);
   }, [fetchOrders]);
 
   const filteredOrders = orders.filter(order => {
@@ -190,7 +200,7 @@ export default function BestellingenPage() {
         </SectionInstrument>
 
         {/* Orders Table */}
-        <div className="bg-white rounded-[20px] border border-black/[0.03] shadow-sm overflow-hidden">
+        <div className="bg-white rounded-[20px] border border-black/[0.03] shadow-sm overflow-hidden mb-8">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-va-off-white/50 border-b border-black/[0.03]">
@@ -276,6 +286,51 @@ export default function BestellingenPage() {
             </tbody>
           </table>
         </div>
+
+        {/* Pagination UI */}
+        {pagination && pagination.totalPages > 1 && (
+          <div className="flex items-center justify-between bg-white px-8 py-4 rounded-[20px] border border-black/[0.03] shadow-sm">
+            <div className="text-[13px] font-light text-va-black/40">
+              Toont <span className="font-medium text-va-black">{(currentPage - 1) * pagination.limit + 1}</span> tot <span className="font-medium text-va-black">{Math.min(currentPage * pagination.limit, pagination.totalInDb)}</span> van <span className="font-medium text-va-black">{pagination.totalInDb}</span> bestellingen
+            </div>
+            <div className="flex items-center gap-2">
+              <button 
+                onClick={() => fetchOrders(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="p-2 rounded-[8px] border border-black/[0.03] disabled:opacity-30 hover:bg-va-off-white transition-all"
+              >
+                <ChevronLeft size={18} strokeWidth={1.5} />
+              </button>
+              <div className="flex items-center gap-1">
+                {[...Array(Math.min(5, pagination.totalPages))].map((_, i) => {
+                  let pageNum = currentPage;
+                  if (currentPage <= 3) pageNum = i + 1;
+                  else if (currentPage >= pagination.totalPages - 2) pageNum = pagination.totalPages - 4 + i;
+                  else pageNum = currentPage - 2 + i;
+
+                  if (pageNum <= 0 || pageNum > pagination.totalPages) return null;
+
+                  return (
+                    <button
+                      key={pageNum}
+                      onClick={() => fetchOrders(pageNum)}
+                      className={`w-10 h-10 rounded-[8px] text-[13px] font-light transition-all ${currentPage === pageNum ? 'bg-va-black text-white shadow-md' : 'hover:bg-va-off-white text-va-black/40'}`}
+                    >
+                      {pageNum}
+                    </button>
+                  );
+                })}
+              </div>
+              <button 
+                onClick={() => fetchOrders(currentPage + 1)}
+                disabled={currentPage === pagination.totalPages}
+                className="p-2 rounded-[8px] border border-black/[0.03] disabled:opacity-30 hover:bg-va-off-white transition-all"
+              >
+                <ChevronRight size={18} strokeWidth={1.5} />
+              </button>
+            </div>
+          </div>
+        )}
       </ContainerInstrument>
 
       {/* Fixed Action Dock */}
@@ -283,7 +338,7 @@ export default function BestellingenPage() {
         <ButtonInstrument 
           onClick={() => {
             logAction('orders_refresh');
-            fetchOrders(true);
+            fetchOrders(currentPage, true);
           }}
           className="va-btn-pro !bg-va-black flex items-center gap-2"
         >
@@ -305,7 +360,7 @@ export default function BestellingenPage() {
               "persona": "Architect",
               "journey": "admin",
               "intent": "order_management",
-              "capabilities": ["view_orders", "filter_orders", "manage_status"],
+              "capabilities": ["view_orders", "filter_orders", "manage_status", "pagination"],
               "lexicon": ["Bestellingen", "Orders", "Transacties", "Offertes"],
               "visual_dna": ["Bento Grid", "Liquid DNA", "Chris-Protocol"]
             }
