@@ -69,9 +69,14 @@ export async function GET(request: NextRequest) {
     //  ASSET MANDATE 2026: Alle assets MOETEN in /assets/ staan.
     // We staan /wp-content/ tijdelijk nog toe voor legacy fallbacks, 
     // maar de proxy logt dit als een waarschuwing.
-    if (cleanPath.includes('voices.be')) {
-      cleanPath = cleanPath.replace(/https?:\/\/(www\.)?voices\.be/, '');
-    }
+    const { MarketManagerServer: MarketManager } = require('@/lib/system/market-manager-server');
+    const marketDomains = Object.values(MarketManager.getMarketDomains());
+    
+    marketDomains.forEach(d => {
+      const domain = d.replace('https://', '').replace('www.', '');
+      const regex = new RegExp(`https?:\/\/(www\.)?${domain.replace('.', '\\.')}`, 'g');
+      cleanPath = cleanPath.replace(regex, '');
+    });
 
     //  ALLOWED PATHS: /assets/, /wp-content/, or Supabase agency/ and active/ paths
     const isAllowed = 

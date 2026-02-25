@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
       });
 
       const { MarketManagerServer: MarketManager } = await import('@/lib/system/market-manager-server');
-      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || MarketManager.getMarketDomains()['BE'] || 'https://www.voices.be';
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || MarketManager.getMarketDomains()['BE'] || `https://${MarketManager.getMarketDomains()['BE']?.replace('https://', '') || 'www.voices.be'}`;
       const generatedLink = `${baseUrl}/checkout?partner_code=${code}&email=${encodeURIComponent(email)}`;
 
       return NextResponse.json({

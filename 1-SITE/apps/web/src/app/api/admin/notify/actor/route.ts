@@ -37,11 +37,11 @@ export async function POST(request: NextRequest) {
     // 3. Haal klant details op
     const [customer] = await db.select().from(users).where(eq(users.id, order.user_id as number)).limit(1);
 
-    const host = request.headers.get('host') || 'www.voices.be';
     const { MarketManagerServer: MarketManager } = require('@/lib/system/market-manager-server');
+    const host = request.headers.get('host') || MarketManager.getMarketDomains()['BE']?.replace('https://', '');
     const market = MarketManager.getCurrentMarket(host);
     const domains = MarketManager.getMarketDomains();
-    const canonicalHost = domains[market.market_code]?.replace('https://', '') || 'www.voices.be';
+    const canonicalHost = domains[market.market_code]?.replace('https://', '') || (MarketManager.getMarketDomains()['BE']?.replace('https://', '') || 'www.voices.be');
     const finalHost = host || canonicalHost;
 
     // 4. Verstuur de mail via VUME

@@ -34,11 +34,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Order not found' }, { status: 404 });
     }
 
-    const host = request.headers.get('host') || 'www.voices.be';
     const { MarketManagerServer: MarketManager } = require('@/lib/system/market-manager-server');
+    const host = request.headers.get('host') || MarketManager.getMarketDomains()['BE']?.replace('https://', '');
     const market = MarketManager.getCurrentMarket(host);
     const domains = MarketManager.getMarketDomains();
-    const canonicalHost = domains[market.market_code]?.replace('https://', '') || 'www.voices.be';
+    const canonicalHost = domains[market.market_code]?.replace('https://', '') || (MarketManager.getMarketDomains()['BE']?.replace('https://', '') || 'www.voices.be');
     const finalHost = host || canonicalHost;
 
     // 3. Verstuur de reminder via VUME

@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
       total: orders.total,
       status: orders.status,
       journey: orders.journey,
-      market: orders.market, // 🌍 Toegevoegd voor debug
+      market: orders.market,
       createdAt: orders.createdAt,
       isQuote: orders.isQuote,
       user: {
@@ -38,7 +38,8 @@ export async function GET(request: NextRequest) {
     .orderBy(desc(orders.createdAt))
     .limit(250);
 
-    // 🛡️ CHRIS-PROTOCOL: Ultra-Robust Data Sanitization (v2.14.553)
+    // 🛡️ CHRIS-PROTOCOL: Godmode Data Access (v2.14.554)
+    // We verwijderen ALLE filters. Wat in de database zit, komt op je scherm.
     const sanitizedOrders = allOrders.map(order => {
       try {
         return {
@@ -48,7 +49,7 @@ export async function GET(request: NextRequest) {
           total: order.total?.toString() || "0.00",
           status: order.status || 'pending',
           journey: order.journey || 'agency',
-          market: order.market || 'UNKNOWN', // 🌍 Debugging
+          market: order.market || 'ALL',
           createdAt: order.createdAt instanceof Date 
             ? order.createdAt.toISOString() 
             : (typeof order.createdAt === 'string' ? order.createdAt : new Date().toISOString()),
@@ -56,17 +57,14 @@ export async function GET(request: NextRequest) {
           user: order.user ? {
             first_name: order.user.first_name || "",
             last_name: order.user.last_name || "",
-            email: order.user.email || (order.user.email ? order.user.email : "unknown@voices.be"),
+            email: order.user.email || "unknown@voices.be",
             companyName: order.user.companyName || ""
           } : null
         };
       } catch (innerError) {
-        console.error(`[Admin Orders] Skipping corrupt order ID ${order?.id}:`, innerError);
         return null;
       }
     }).filter(Boolean);
-
-    console.log(`[Admin Orders GET] Fetched ${sanitizedOrders.length} orders. Markets found: ${[...new Set(sanitizedOrders.map(o => o.market))].join(', ')}`);
 
     return NextResponse.json(sanitizedOrders);
   } catch (error) {
