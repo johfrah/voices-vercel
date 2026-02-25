@@ -113,17 +113,20 @@ export default function LightPage() {
       .then(data => {
         if (data?.results) {
           // 🛡️ CHRIS-PROTOCOL: Sorteer op menu_order en voice_score
-          // We forceren Serge en Marilyn bovenaan door hun menu_order virtueel te verlagen
+          // We gebruiken de exacte database-waarden voor Johfrah en Christina
           const sorted = data.results.sort((a: any, b: any) => {
-            const nameA = a.display_name || '';
-            const nameB = b.display_name || '';
+            // Sorteer eerst op menu_order (ASC)
+            const orderA = a.menu_order ?? 9999;
+            const orderB = b.menu_order ?? 9999;
             
-            // Forceer Serge en Marilyn naar de absolute top
-            const orderA = nameA.match(/Serge|Marilyn/i) ? -1000 : (a.menu_order || 0);
-            const orderB = nameB.match(/Serge|Marilyn/i) ? -1000 : (b.menu_order || 0);
-
-            if (orderA !== orderB) return orderA - orderB;
-            return (b.voice_score || 0) - (a.voice_score || 0);
+            if (orderA !== orderB) {
+              return orderA - orderB;
+            }
+            
+            // Dan op voice_score (DESC)
+            const scoreA = b.voice_score ?? 0;
+            const scoreB = a.voice_score ?? 0;
+            return scoreA - scoreB;
           });
 
           const mapped = sorted.map((a: any) => ({
