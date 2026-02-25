@@ -258,12 +258,12 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
     if (!journeysData || journeysData.length === 0) {
       return [
         { id: 'telephony', icon: (props: any) => <IconInstrument name="phone" {...props} />, label: 'Telefonie', subLabel: 'Voicemail & IVR', key: 'journey.telephony', color: 'text-primary' },
-        { id: 'video', icon: (props: any) => <IconInstrument name="video" {...props} />, label: 'Video', subLabel: 'Corporate & Website', key: 'journey.video', color: 'text-primary' },
-        { id: 'commercial', icon: (props: any) => <IconInstrument name="megaphone" {...props} />, label: 'Advertentie', subLabel: 'Radio, TV & Online Ads', key: 'journey.commercial', color: 'text-primary' },
+        { id: 'video', icon: (props: any) => <IconInstrument name="video" {...props} />, label: 'Voice-over', subLabel: 'Corporate & Website', key: 'journey.video', color: 'text-primary' },
+        { id: 'commercial', icon: (props: any) => <IconInstrument name="megaphone" {...props} />, label: 'Commercial', subLabel: 'Radio, TV & Online Ads', key: 'journey.commercial', color: 'text-primary' },
       ];
     }
 
-    return journeysData
+    const filteredJourneys = journeysData
       .filter(fj => allowedCodes.includes(fj.code))
       .map(fj => {
         const frontendId = mapping[fj.code] || fj.code;
@@ -276,6 +276,16 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
           color: fj.color || 'text-primary'
         };
       });
+
+    // 🛡️ CHRIS-PROTOCOL: Final Filter (v2.14.762)
+    // We only allow the 3 core journeys: telephony, video (voice-over), and commercial.
+    const coreIds = ['telephony', 'video', 'commercial'];
+    const finalJourneys = filteredJourneys.filter(j => coreIds.includes(j.id));
+
+    // Ensure we have exactly these 3 and in the right order
+    const orderedJourneys = coreIds.map(id => finalJourneys.find(j => j.id === id)).filter(Boolean) as any[];
+
+    return orderedJourneys;
   }, [journeysData]);
 
   // Use state.journey or checkoutState.usage to determine active journey
