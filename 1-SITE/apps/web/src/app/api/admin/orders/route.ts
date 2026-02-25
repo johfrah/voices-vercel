@@ -53,7 +53,8 @@ export async function GET(request: NextRequest) {
       // 🚀 NUCLEAR PAGINATION: Direct SQL voor snelheid en stabiliteit
       // We proberen het ZONDER public. prefix om te zien of dat het probleem is op Vercel
       const rawResult = await db.execute(sql`
-        SELECT * FROM orders 
+        SELECT id, wp_order_id, user_id, total, total_tax, status, journey, market, iap_context, raw_meta, display_order_id, total_cost, total_profit, expected_delivery_date, billing_vat_number, yuki_invoice_id, dropbox_folder_url, is_quote, quote_message, quote_sent_at, internal_notes, is_private, is_manually_edited, vies_validated_at, vies_country_code, ip_address, created_at
+        FROM orders 
         ORDER BY created_at DESC 
         LIMIT ${limit} OFFSET ${offset}
       `);

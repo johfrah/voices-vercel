@@ -49,7 +49,7 @@ export function VersionGuard({ currentVersion }: { currentVersion: string }) {
     const checkVersion = async () => {
       try {
         // We halen de versie op via een lichte API call of de root headers
-        const res = await fetch(`/api/admin/config?type=general&t=${Date.now()}`, { 
+        const res = await fetch(`/api/admin/config/?type=general&t=${Date.now()}`, { 
           cache: 'no-store',
           headers: { 'X-Version-Check': 'true' }
         });
