@@ -257,7 +257,7 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
 
         <audio 
           ref={audioRef} 
-          src={demo.audio_url}
+          src={demo.audio_url || (demo.id ? `/api/admin/actors/demos/${demo.id}/stream` : undefined)}
           onTimeUpdate={handleTimeUpdate} 
           onLoadedMetadata={handleLoadedMetadata}
           onEnded={() => setIsPlaying(false)}

@@ -24,6 +24,7 @@ import Link from 'next/link';
 import React, { useEffect, useState, useCallback } from 'react';
 import { format } from 'date-fns';
 import { nl } from 'date-fns/locale';
+import { cn } from '@/lib/utils/index';
 
 export const dynamic = 'force-dynamic';
 
