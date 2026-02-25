@@ -83,39 +83,62 @@ export async function GET(request: NextRequest) {
 
         // 🛡️ CHRIS-PROTOCOL: User Resolution Fix (v2.14.628)
         // We moeten zowel wp_user_id als het interne user_id checken
+        // 🛡️ CHRIS-PROTOCOL: User Resolution & Silent Creation (v2.14.630)
         const userId = order.user_id || order.userId;
+        let dbUser = null;
+
         if (userId) {
           try {
-            // Check eerst op intern ID, dan op wp_user_id
-            let dbUser = await db.select().from(users).where(eq(users.id, userId)).limit(1).then(res => res[0]);
+            dbUser = await db.select().from(users).where(eq(users.id, userId)).limit(1).then(res => res[0]);
             if (!dbUser && userId > 1000) {
               dbUser = await db.select().from(users).where(eq(users.wpUserId, userId)).limit(1).then(res => res[0]);
-            }
-            
-            if (dbUser) {
-              customerInfo = {
-                first_name: dbUser.first_name || "",
-                last_name: dbUser.last_name || "",
-                email: dbUser.email || `unknown@${defaultDomain}`,
-                companyName: dbUser.companyName || ""
-              };
             }
           } catch (e) {}
         }
 
-        const rawMeta = null; // NUCLEAR: orders_v2 has no raw_meta rugzak
-        if (customerInfo.first_name === "Guest" && rawMeta) {
+        // 🚀 SILENT USER CREATION: Als er geen user is, maar we hebben wel de rugzak (voor email)
+        if (!dbUser) {
           try {
-            const meta = typeof rawMeta === 'string' ? JSON.parse(rawMeta) : rawMeta;
-            if (meta.billing) {
-              customerInfo = {
-                first_name: meta.billing.first_name || customerInfo.first_name,
-                last_name: meta.billing.last_name || customerInfo.last_name,
-                email: meta.billing.email || customerInfo.email,
-                companyName: meta.billing.company || customerInfo.companyName
-              };
+            // Haal de rugzak op als we die niet hebben
+            const [bloat] = await db.select().from(ordersLegacyBloat).where(eq(ordersLegacyBloat.wpOrderId, order.id)).limit(1);
+            const rawMeta = bloat?.rawMeta;
+
+            if (rawMeta) {
+              const meta = typeof rawMeta === 'string' ? JSON.parse(rawMeta) : rawMeta;
+              const email = meta.billing?.email || meta._billing_email;
+              
+              if (email) {
+                // Check of de user stiekem al bestaat op email
+                dbUser = await db.select().from(users).where(eq(users.email, email)).limit(1).then(res => res[0]);
+                
+                if (!dbUser) {
+                  // Maak de user silent aan (Nuclear Mode)
+                  const [newUser] = await db.insert(users).values({
+                    email: email,
+                    first_name: meta.billing?.first_name || meta._billing_first_name || "Guest",
+                    last_name: meta.billing?.last_name || meta._billing_last_name || "",
+                    companyName: meta.billing?.company || meta._billing_company || "",
+                    wpUserId: userId || null,
+                    role: 'guest',
+                    createdAt: new Date()
+                  }).returning();
+                  dbUser = newUser;
+                  console.log(`👤 Silent User Created: ${email} for Order ${order.id}`);
+                }
+              }
             }
-          } catch (e) {}
+          } catch (e) {
+            console.error(`❌ Silent User Creation Failed for Order ${order.id}:`, e);
+          }
+        }
+
+        if (dbUser) {
+          customerInfo = {
+            first_name: dbUser.first_name || "",
+            last_name: dbUser.last_name || "",
+            email: dbUser.email || `unknown@${defaultDomain}`,
+            companyName: dbUser.companyName || ""
+          };
         }
 
         return {
