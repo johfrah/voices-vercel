@@ -340,21 +340,25 @@ export default async function SmartRoutePage({ params }: { params: SmartRoutePar
 }
 
 async function SmartRouteContent({ segments }: { segments: string[] }) {
+  console.error(` [SmartRouter] SmartRouteContent START for: ${segments.join('/')}`);
   try {
     const headersList = headers();
     const lang = headersList.get('x-voices-lang') || 'nl';
     const normalizedSlug = normalizeSlug(segments);
     
     // 🛡️ CHRIS-PROTOCOL: Strip language prefix if present (e.g. /nl/johfrah -> johfrah)
-    // The middleware might have rewritten the URL, but segments still contain the full path.
     const cleanSlug = stripLanguagePrefix(normalizedSlug);
     const cleanSegments = cleanSlug.split('/').filter(Boolean);
+
+    console.error(` [SmartRouter] Resolved segments: ${cleanSegments.join(', ')} (lang: ${lang})`);
 
     // Resolve de slug naar de originele versie
     const resolved = await resolveSlug(cleanSlug, lang);
     const firstSegment = resolved ? resolved.originalSlug : (cleanSegments[0] || segments[0]);
     const journey = cleanSegments[1] || segments[1];
     const medium = cleanSegments[2] || segments[2];
+
+    console.error(` [SmartRouter] Handshake attempt for actor: "${firstSegment}"`);
 
     // 1. Artist Journey (Youssef Mandate)
     try {
