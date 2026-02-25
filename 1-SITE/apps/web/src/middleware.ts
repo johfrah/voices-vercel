@@ -86,7 +86,7 @@ export async function middleware(request: NextRequest) {
   const forceUnderConstruction = process.env.NEXT_PUBLIC_UNDER_CONSTRUCTION === 'true';
   
   // 🛡️ CHRIS-PROTOCOL: MarketManager is the source of truth for domains
-  const isUnderConstruction = false; // Bob: De gate staat nu definitief open voor de lancering! 🚀🏗️
+  const isUnderConstruction = true; // Bob: De gate staat nu definitief open voor de lancering! 🚀🏗️
 
   // 1.8 LEGACY REDIRECTS (v2.24)
   // Vang oude URL-structuren op en stuur ze naar de nieuwe canonieke paden.
@@ -154,6 +154,7 @@ export async function middleware(request: NextRequest) {
                          host.includes('youssefzaki.eu') ||
                          host.includes('johfrai.be') ||
                          host.includes('localhost') || // LOCAL TEST BYPASS
+                         pathname.startsWith('/light') || // LIGHT VERSION BYPASS
                          url.searchParams.get('moby') === 'true' ||
                          url.searchParams.get('launch') === 'true' ||
                          url.searchParams.get('bob') === 'true'; // BOB BYPASS
