@@ -13,75 +13,55 @@ import { createClient } from '@/utils/supabase/server';
  */
 
 export async function GET(request: NextRequest) {
-  // 🛡️ CHRIS-PROTOCOL: Bypass Auth for Debugging (v2.14.565)
-  // We loggen de auth status maar laten de query ALTIJD doorgaan om data-leegte te debuggen.
+  // 🛡️ CHRIS-PROTOCOL: Bypass Auth for Debugging (v2.14.571)
   const supabase = createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  console.log(`🔐 [API DEBUG] Auth check: user=${user?.email || 'none'}`);
+  const { data: { user: authUser } } = await supabase.auth.getUser();
+  console.log(`🔐 [API DEBUG] Auth check: user=${authUser?.email || 'none'}`);
 
   try {
-    const allOrders = await db.select({
-      id: orders.id,
-      wpOrderId: orders.wpOrderId,
-      displayOrderId: orders.displayOrderId,
-      total: orders.total,
-      status: orders.status,
-      journey: orders.journey,
-      market: orders.market,
-      createdAt: orders.createdAt,
-      isQuote: orders.isQuote,
-      rawMeta: orders.rawMeta,
-      userId: orders.user_id, // 🛡️ CHRIS-PROTOCOL: Explicitly select user_id for debug
-      user: {
-        id: users.id, // 🛡️ CHRIS-PROTOCOL: Explicitly select user.id for debug
-        first_name: users.first_name,
-        last_name: users.last_name,
-        email: users.email,
-        companyName: users.companyName
-      }
-    })
-    .from(orders)
-    .leftJoin(users, eq(orders.user_id, users.id))
-    .orderBy(desc(orders.createdAt))
-    .limit(250);
+    // 🛡️ CHRIS-PROTOCOL: 1 TRUTH MANDATE (v2.14.571)
+    // We stoppen met JOINs die data kunnen verbergen. We halen de orders PUUR op.
+    const allOrders = await db.select().from(orders).orderBy(desc(orders.createdAt)).limit(250);
 
-    console.log(`🚀 [API DEBUG] Raw orders fetched from DB: ${allOrders.length}`);
-    if (allOrders.length > 0) {
-      console.log(`📦 [API DEBUG] Sample Order 0: ID=${allOrders[0].id}, WP=${allOrders[0].wpOrderId}, UserID=${allOrders[0].userId}, JoinedUser=${allOrders[0].user?.id || 'NULL'}`);
-    }
+    console.log(`🚀 [API DEBUG] 1 TRUTH: Raw orders fetched from DB: ${allOrders.length}`);
     
-    if (allOrders.length === 0) {
-      console.log('⚠️ [API DEBUG] NO ORDERS FOUND IN DB QUERY. Checking raw count...');
+    // 🛡️ CHRIS-PROTOCOL: Godmode Data Access (v2.14.571)
+    const sanitizedOrders = await Promise.all(allOrders.map(async (order, index) => {
       try {
-        const rawOrders = await db.select().from(orders).limit(5);
-        console.log(`📊 [API DEBUG] Raw orders sample count: ${rawOrders.length}`);
-        if (rawOrders.length > 0) {
-          console.log(`📦 [API DEBUG] Raw sample: ${JSON.stringify(rawOrders[0])}`);
-        }
-      } catch (rawErr) {
-        console.error('❌ [API DEBUG] Raw select failed:', rawErr);
-      }
-    }
+        // 🕵️ GUEST & USER RESOLVER: Haal klantgegevens op zonder de query te breken
+        let customerInfo = {
+          first_name: "Guest",
+          last_name: "",
+          email: "guest@voices.be",
+          companyName: ""
+        };
 
-    // 🛡️ CHRIS-PROTOCOL: Godmode Data Access (v2.14.570)
-    const sanitizedOrders = allOrders.map((order, index) => {
-      try {
-        // 🕵️ GUEST ORDER LOGIC: Als er geen user_id is, proberen we de klantgegevens uit rawMeta te vissen.
-        let guestInfo = null;
-        if (!order.user && order.rawMeta) {
+        // 1. Probeer via user_id lookup (indien aanwezig)
+        if (order.user_id) {
+          const [dbUser] = await db.select().from(users).where(eq(users.id, order.user_id)).limit(1);
+          if (dbUser) {
+            customerInfo = {
+              first_name: dbUser.first_name || "",
+              last_name: dbUser.last_name || "",
+              email: dbUser.email || "unknown@voices.be",
+              companyName: dbUser.companyName || ""
+            };
+          }
+        }
+
+        // 2. Fallback naar rawMeta (voor Guests of incomplete users)
+        if (customerInfo.first_name === "Guest" && order.rawMeta) {
           try {
             const meta = typeof order.rawMeta === 'string' ? JSON.parse(order.rawMeta) : order.rawMeta;
             if (meta.billing) {
-              guestInfo = {
-                first_name: meta.billing.first_name || "Guest",
-                last_name: meta.billing.last_name || "",
-                email: meta.billing.email || "guest@voices.be",
-                companyName: meta.billing.company || ""
+              customerInfo = {
+                first_name: meta.billing.first_name || customerInfo.first_name,
+                last_name: meta.billing.last_name || customerInfo.last_name,
+                email: meta.billing.email || customerInfo.email,
+                companyName: meta.billing.company || customerInfo.companyName
               };
             }
-          } catch (e) {
-            // Meta parsing failed, fallback naar default guest
-          }
+          } catch (e) {}
         }
 
         const sanitized = {
@@ -101,18 +81,29 @@ export async function GET(request: NextRequest) {
             return new Date().toISOString();
           })(),
           isQuote: !!order.isQuote,
-          user: order.user ? {
-            first_name: order.user.first_name || "",
-            last_name: order.user.last_name || "",
-            email: order.user.email || "unknown@voices.be",
-            companyName: order.user.companyName || ""
-          } : (guestInfo || {
-            first_name: "Guest",
-            last_name: "",
-            email: "guest@voices.be",
-            companyName: ""
-          })
+          user: customerInfo
         };
+        
+        if (index < 2) {
+          console.log(`📦 [API DEBUG] Sanitized order ${index}: ${sanitized.id} - ${sanitized.user.email}`);
+        }
+        
+        return sanitized;
+      } catch (innerError) {
+        console.error(`❌ [API DEBUG] Error sanitizing order at index ${index}:`, innerError);
+        return null;
+      }
+    }));
+
+    const finalOrders = sanitizedOrders.filter(Boolean);
+    console.log(`✅ [API DEBUG] Final sanitized count: ${finalOrders.length}`);
+
+    return NextResponse.json(finalOrders);
+  } catch (error) {
+    console.error('[Admin Orders GET Critical Error]:', error);
+    return NextResponse.json([], { status: 200 });
+  }
+}
         
         if (index < 2) {
           console.log(`📦 [API DEBUG] Sanitized order ${index}: ${sanitized.id} - ${sanitized.total}`);
