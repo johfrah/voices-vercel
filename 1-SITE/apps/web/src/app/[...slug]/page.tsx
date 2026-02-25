@@ -191,22 +191,11 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
   const siteUrl = domains[market.market_code] || `https://${host || (MarketManager.getMarketDomains()['BE']?.replace('https://', '') || 'www.voices.be')}`;
   
   // 🛡️ NUCLEAR HANDSHAKE: Resolve via Slug Registry for Metadata
-  let lookupSlug = cleanSegments[0];
-  const systemPrefixes = ['voice', 'stem', 'voix', 'stimme', 'artist', 'artiest', 'studio', 'academy', 'music', 'muziek', 'faq', 'provider', 'demos', 'blog', 'article', 'tone-of-voice', 'nl', 'fr', 'en', 'de', 'es', 'it', 'pt', 'pl', 'da', 'sv', 'fi', 'nb', 'tr', 'hr', 'ca'];
+  let lookupSlug = cleanSegments.join('/').toLowerCase();
   
-  // 🛡️ CHRIS-PROTOCOL: Map translated prefixes to internal canonical types
-  const prefixMap: Record<string, string> = {
-    'stem': 'voice', 'voix': 'voice', 'stimme': 'voice',
-    'artiest': 'artist',
-    'muziek': 'music'
-  };
-
-  // If the slug has multiple parts, we check if the first part is a system prefix
-  if (systemPrefixes.includes(lookupSlug?.toLowerCase()) && cleanSegments[1]) {
-    const canonicalPrefix = prefixMap[lookupSlug.toLowerCase()] || lookupSlug.toLowerCase();
-    lookupSlug = `${canonicalPrefix}/${cleanSegments.slice(1).join('/').toLowerCase()}`;
-  }
-
+  // Special case: if there's only one segment and it's a known prefix, we might need to handle it
+  // But with multilingual registry, the full path should be in the database.
+  
   const resolved = await resolveSlugFromRegistry(lookupSlug, market.market_code);
   const firstSegment = lookupSlug;
 
@@ -391,35 +380,10 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
     const host = headersList.get('host') || '';
     const market = MarketManager.getCurrentMarket(host);
     
-    // 1. Detect prefix and shift if needed
-    let lookupSlug = cleanSegments[0];
+    // 1. Full Path Lookup (Multilingual Registry Handshake)
+    let lookupSlug = cleanSegments.join('/').toLowerCase();
     let journey = cleanSegments[1];
     let medium = cleanSegments[2];
-
-    const systemPrefixes = ['voice', 'stem', 'voix', 'stimme', 'artist', 'artiest', 'studio', 'academy', 'music', 'muziek', 'faq', 'provider', 'demos', 'blog', 'article', 'tone-of-voice', 'nl', 'fr', 'en', 'de', 'es', 'it', 'pt', 'pl', 'da', 'sv', 'fi', 'nb', 'tr', 'hr', 'ca'];
-    
-    // 🛡️ CHRIS-PROTOCOL: Map translated prefixes to internal canonical types
-    const prefixMap: Record<string, string> = {
-      'stem': 'voice', 'voix': 'voice', 'stimme': 'voice',
-      'artiest': 'artist',
-      'muziek': 'music'
-    };
-
-    if (systemPrefixes.includes(lookupSlug?.toLowerCase()) && journey) {
-      console.error(` [SmartRouter] System prefix detected: ${lookupSlug}.`);
-      
-      const canonicalPrefix = prefixMap[lookupSlug.toLowerCase()] || lookupSlug.toLowerCase();
-      
-      // For all hierarchical prefixes, we use the full path for registry lookup
-      // e.g. /voix/johfrah -> lookup "voice/johfrah"
-      lookupSlug = `${canonicalPrefix}/${cleanSegments.slice(1).join('/').toLowerCase()}`;
-      
-      // Shift journey/medium for actor detail logic if it's a voice prefix
-      if (['voice', 'stem', 'voix', 'stimme'].includes(cleanSegments[0].toLowerCase())) {
-        journey = medium;
-        medium = cleanSegments[3];
-      }
-    }
 
     const resolved = await resolveSlugFromRegistry(lookupSlug, market.market_code);
 
@@ -431,6 +395,13 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
       }
 
       console.error(` [SmartRouter] Handshake SUCCESS: ${resolved.routing_type} (ID: ${resolved.entity_id})`);
+      
+      // Shift journey/medium for actor detail logic if it's a voice-like prefix
+      // We detect this by checking if the resolved type is actor and there are more segments
+      if (resolved.routing_type === 'actor' && cleanSegments.length > 1) {
+        journey = cleanSegments[1];
+        medium = cleanSegments[2];
+      }
       
       // 🛡️ CHRIS-PROTOCOL: Log handshake success
       try {
