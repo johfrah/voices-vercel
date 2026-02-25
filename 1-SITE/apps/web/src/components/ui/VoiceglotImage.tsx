@@ -192,6 +192,35 @@ export const VoiceglotImage: React.FC<VoiceglotImageProps> = ({
   // Remove fill from props to avoid passing it to the DOM if it's not needed
   const { fill, ...otherProps } = props;
 
+  // 🛡️ CHRIS-PROTOCOL: Animated SVG Inlining (v2.14.653)
+  // Standard <img> tags (and next/image) often fail to play internal SVG animations.
+  // We explicitly inline the animated logo to ensure the waveform and dot bounce work.
+  const isAnimatedLogo = finalSrc?.includes('Voices-LOGO-Animated.svg');
+
+  if (isAnimatedLogo && !isEditMode) {
+    return (
+      <div 
+        className={cn("relative", isFill && "w-full h-full", className)}
+        style={{ width: props.width, height: props.height }}
+      >
+        <div 
+          className="w-full h-full flex items-center justify-center"
+          dangerouslySetInnerHTML={{ 
+            __html: `
+              <svg viewBox="0 0 3000 1179.28" class="w-full h-full" style="display: block;">
+                <use href="${finalSrc}#Layer_1"></use>
+                <style>
+                  /* Force running state when inlined if needed, or let the SVG's internal hover logic work */
+                  svg:hover .bar, svg:hover .dot { animation-play-state: running !important; }
+                </style>
+              </svg>
+            `
+          }}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className={cn(
       "relative group/image-edit", 
