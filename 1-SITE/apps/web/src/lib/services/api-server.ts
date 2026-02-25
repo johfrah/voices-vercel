@@ -235,6 +235,11 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
     const actorLangsRes = await supabase.from('actor_languages').select('*').in('actor_id', actorIds);
     const actorLangsData = actorLangsRes.data || [];
 
+    // 🛡️ CHRIS-PROTOCOL: Fetch all languages for Handshake Truth mapping (v2.14.656)
+    const { data: allLangsData } = await supabase.from('languages').select('*');
+    const langLookup = new Map<number, { code: string, label: string }>();
+    allLangsData?.forEach(l => langLookup.set(l.id, { code: l.code, label: l.label }));
+
     // Create lookup maps for performance
     const nativeLangMap = new Map<number, number>();
     const extraLangsMap = new Map<number, number[]>();
@@ -318,6 +323,9 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
         type: v.type || 'portfolio'
       }));
 
+      const nativeLangId = nativeLangMap.get(actor.id) || actor.native_language_id || null;
+      const nativeLangInfo = nativeLangId ? langLookup.get(nativeLangId) : null;
+
       return {
         id: actor.wp_product_id || actor.id,
         display_name: actor.first_name,
@@ -325,7 +333,9 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
         last_name: actor.last_name || '',
         slug: actor.slug || actor.first_name?.toLowerCase(),
         gender: actor.gender,
-        native_lang_id: nativeLangMap.get(actor.id) || actor.native_language_id || null,
+        native_lang_id: nativeLangId,
+        native_lang: nativeLangInfo?.code || actor.native_lang || '',
+        native_lang_label: nativeLangInfo?.label || actor.native_lang_label || '',
         photo_url: photoUrl,
         starting_price: parseFloat(actor.price_unpaid || '0'),
         voice_score: actor.voice_score || 10,
@@ -336,7 +346,6 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
         tagline: (actor.tagline || '').replace(/<[^>]*>?/gm, '').trim(),
         delivery_days_min: actor.delivery_days_min || 1,
         delivery_days_max: actor.delivery_days_max || 3,
-        native_lang_id: nativeLangMap.get(actor.id) || null,
         extra_lang_ids: extraLangsMap.get(actor.id) || [],
         demos: proxiedDemos,
         actor_videos: proxiedVideos,
@@ -347,8 +356,6 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
         clients: actor.clients || '',
         tone_of_voice: actor.tone_of_voice || '',
         cutoff_time: actor.cutoff_time || '18:00',
-        delivery_days_min: actor.delivery_days_min || 1,
-        delivery_days_max: actor.delivery_days_max || 3,
         portfolio_tier: actor.portfolio_tier || 'none'
       };
     });
@@ -555,6 +562,21 @@ async function processActorData(actor: any, slug: string): Promise<Actor> {
 
   console.error(` [api-server] processActorData SUCCESS for ${actor.first_name}`);
 
+  // 🛡️ CHRIS-PROTOCOL: Fetch language details for Handshake Truth (v2.14.656)
+  let nativeLang = actor.native_lang || '';
+  let nativeLangLabel = actor.native_lang_label || '';
+  
+  if (actor.native_language_id) {
+    try {
+      const { db: directDb, languages: langsTable } = await import('@/lib/system/voices-config');
+      const [langInfo] = await directDb.select().from(langsTable).where(eq(langsTable.id, actor.native_language_id)).limit(1);
+      if (langInfo) {
+        nativeLang = langInfo.code;
+        nativeLangLabel = langInfo.label;
+      }
+    } catch (e) {}
+  }
+
   return {
     ...actor,
     id: actor.wp_product_id || actor.id,
@@ -562,6 +584,8 @@ async function processActorData(actor: any, slug: string): Promise<Actor> {
     first_name: actor.first_name,
     last_name: actor.last_name || '',
     native_lang_id: actor.native_language_id,
+    native_lang: nativeLang,
+    native_lang_label: nativeLangLabel,
     photo_url: photoUrl,
     starting_price: parseFloat(actor.price_unpaid || '0'),
     voice_score: actor.voice_score || 10,

@@ -22,7 +22,13 @@ export async function PATCH(
   }
 
   try {
-    const body = await request.json();
+    let body: any = {};
+    try {
+      body = await request.json();
+    } catch (e) {
+      console.warn(' [AdminActorAPI] Failed to parse request body');
+    }
+
     const auth = await requireAdmin();
     if (auth instanceof NextResponse) return auth;
 
