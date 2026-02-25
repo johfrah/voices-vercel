@@ -52,6 +52,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
   const [fetchedLanguages, setFetchedLanguages] = useState<any[]>([]);
   const [fetchedGenders, setFetchedGenders] = useState<any[]>([]);
   const [fetchedJourneys, setFetchedJourneys] = useState<any[]>([]);
+  const [fetchedMediaTypes, setFetchedMediaTypes] = useState<any[]>([]);
 
   useEffect(() => {
     setMounted(true);
@@ -81,6 +82,15 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
         if (data.results) setFetchedJourneys(data.results);
       })
       .catch(err => console.error('[VoicesMasterControl] Failed to fetch journeys:', err));
+
+    //  CHRIS-PROTOCOL: Handshake Truth (Source of Truth)
+    // Fetch media types directly from database.
+    fetch('/api/admin/config?type=media_types')
+      .then(res => res.json())
+      .then(data => {
+        if (data.results) setFetchedMediaTypes(data.results);
+      })
+      .catch(err => console.error('[VoicesMasterControl] Failed to fetch media types:', err));
   }, []);
 
   const handleReorderClick = (language: string) => {
@@ -564,12 +574,26 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                           <VoicesDropdown 
                             stepperMode
                             rounding={state.currentStep !== 'voice' ? 'left' : 'none'}
-                            options={[
-                              { id: 'online', label: t('media.online_socials', 'Online & Socials'), value: 'online', icon: Globe, subLabel: t('media.online_socials.sub', 'YouTube, Meta, LinkedIn') },
-                              { id: 'podcast', label: t('media.podcast', 'Podcast'), value: 'podcast', icon: Mic2, subLabel: t('media.podcast.sub', 'Pre-roll, Mid-roll') },
-                              { id: 'radio', label: t('media.radio', 'Radio'), value: 'radio', icon: Radio, subLabel: t('media.radio.sub', 'Landelijke of regionale zenders'), hasRegions: true },
-                              { id: 'tv', label: t('media.television', 'TV'), value: 'tv', icon: Tv, subLabel: t('media.television.sub', 'Landelijke of regionale zenders'), hasRegions: true }
-                            ] as any}
+                            options={fetchedMediaTypes.length > 0 
+                              ? fetchedMediaTypes.map(fmt => {
+                                  const baseId = fmt.code.split('_')[0];
+                                  const baseIcons: Record<string, any> = { online: Globe, podcast: Mic2, radio: Radio, tv: Tv };
+                                  return {
+                                    id: fmt.code,
+                                    label: fmt.label,
+                                    value: fmt.code,
+                                    icon: baseIcons[baseId] || Globe,
+                                    subLabel: fmt.description,
+                                    hasRegions: fmt.hasRegions
+                                  };
+                                })
+                              : [
+                                  { id: 'online', label: t('media.online_socials', 'Online & Socials'), value: 'online', icon: Globe, subLabel: t('media.online_socials.sub', 'YouTube, Meta, LinkedIn') },
+                                  { id: 'podcast', label: t('media.podcast', 'Podcast'), value: 'podcast', icon: Mic2, subLabel: t('media.podcast.sub', 'Pre-roll, Mid-roll') },
+                                  { id: 'radio', label: t('media.radio', 'Radio'), value: 'radio', icon: Radio, subLabel: t('media.radio.sub', 'Landelijke of regionale zenders'), hasRegions: true },
+                                  { id: 'tv', label: t('media.television', 'TV'), value: 'tv', icon: Tv, subLabel: t('media.television.sub', 'Landelijke of regionale zenders'), hasRegions: true }
+                                ]
+                            }
                             value={(() => {
                               const val = state.filters.spotsDetail || {};
                               const mappedVal: Record<string, number> = {};

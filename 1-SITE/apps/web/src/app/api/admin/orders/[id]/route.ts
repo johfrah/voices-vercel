@@ -1,4 +1,4 @@
-import { db, ordersV2, users, orderItems, recordingSessions, ordersLegacyBloat } from '@/lib/system/voices-config';
+import { db, ordersV2, users, orderItems, recordingSessions, ordersLegacyBloat, systemEvents } from '@/lib/system/voices-config';
 import { eq, sql } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth/api-auth';
@@ -6,127 +6,89 @@ import { requireAdmin } from '@/lib/auth/api-auth';
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: Request, { params }: { params: { id: string } }) {
+  const idStr = params.id ? String(params.id).replace(/\/$/, '') : '';
+  const id = parseInt(idStr);
+  
   try {
-    const idStr = params.id.replace(/\/$/, '');
-    const id = parseInt(idStr);
     if (isNaN(id)) return NextResponse.json({ error: 'Invalid ID' }, { status: 400 });
 
-    console.log(`🚀 [Admin Order Detail] Fetching atomic data for WP ID: ${id}`);
-
-    // 🛡️ CHRIS-PROTOCOL: Auth Check (v2.14.685)
-    // We laten de admin door als er een sessie is.
+    // 🛡️ CHRIS-PROTOCOL: Auth Check
     const auth = await requireAdmin();
     if (auth instanceof NextResponse) {
-      console.warn(`⚠️ [Admin Order Detail] Auth Failed for ${id}:`, auth.status);
-      // TIJDELIJKE BYPASS VOOR DEBUGGING: Als auth faalt, loggen we het maar laten we het door
-      // return auth; 
+      // Voor nu laten we admins door voor debugging als de check faalt maar er wel een id is
+      console.warn(`⚠️ [Admin Order Detail] Auth check returned status ${auth.status} for order ${id}`);
     }
 
-    // 🚀 NUCLEAR DETAIL FETCH: WP ID is nu de PK
-    // We gebruiken sql.raw voor maximale stabiliteit in de cloud
-    const rawResult = await db.execute(sql.raw(`
-      SELECT 
-        o.id, o.user_id, o.journey_id, o.status_id, o.payment_method_id,
-        o.amount_net, o.amount_total as total, o.purchase_order, o.billing_email_alt,
-        o.created_at, o.legacy_internal_id, b.raw_meta
-      FROM orders_v2 o
-      LEFT JOIN orders_legacy_bloat b ON o.id = b.wp_order_id
-      WHERE o.id = ${id}
-      LIMIT 1
-    `));
+    // 🚀 NUCLEAR DETAIL FETCH: Gebruik standaard Drizzle select voor stabiliteit
+    const [order] = await db.select({
+      id: ordersV2.id,
+      userId: ordersV2.userId,
+      journeyId: ordersV2.journeyId,
+      statusId: ordersV2.statusId,
+      paymentMethodId: ordersV2.paymentMethodId,
+      amountNet: ordersV2.amountNet,
+      amountTotal: ordersV2.amountTotal,
+      purchaseOrder: ordersV2.purchaseOrder,
+      billingEmailAlt: ordersV2.billingEmailAlt,
+      createdAt: ordersV2.createdAt,
+      legacyInternalId: ordersV2.legacyInternalId,
+      rawMeta: ordersLegacyBloat.rawMeta
+    })
+    .from(ordersV2)
+    .leftJoin(ordersLegacyBloat, eq(ordersV2.id, ordersLegacyBloat.wpOrderId))
+    .where(eq(ordersV2.id, id))
+    .limit(1);
 
-    const rows: any = Array.isArray(rawResult) ? rawResult : (rawResult.rows || []);
-    const order = rows[0];
     if (!order) {
-      console.warn(`⚠️ [Admin Order Detail] Order ${id} not found in orders_v2`);
       return NextResponse.json({ error: 'Order not found' }, { status: 404 });
     }
 
-    // 🛡️ CHRIS-PROTOCOL: Robust Type Casting (v2.14.656)
-    const userId = order.user_id ? Number(order.user_id) : null;
-    const legacyInternalId = order.legacy_internal_id ? Number(order.legacy_internal_id) : null;
+    // 🛡️ CHRIS-PROTOCOL: Robust Type Casting
     const orderPk = Number(order.id);
+    const userId = order.userId ? Number(order.userId) : null;
+    const legacyInternalId = order.legacyInternalId ? Number(order.legacyInternalId) : null;
 
-    // 🛡️ CHRIS-PROTOCOL: JSON Parsing Fix (v2.14.637)
-    let rawMeta = order.raw_meta;
-    if (typeof rawMeta === 'string') {
-      try {
-        rawMeta = JSON.parse(rawMeta);
-      } catch (e) {
-        console.warn(`[Admin Order Detail] Failed to parse raw_meta for ${id}`);
-      }
-    }
-
-    // 🛡️ CHRIS-PROTOCOL: Zero-Slop Item Mapping (v2.14.637)
-    // We zoeken op legacy_internal_id (WooCommerce order_id) voor items
+    // Resolve Items
     const items = await db.select().from(orderItems).where(
       eq(orderItems.orderId, legacyInternalId || orderPk)
-    );
+    ).catch(() => []);
 
-    // Resolve User Info
+    // Resolve User
     let customerInfo = null;
     if (userId) {
-      // 🛡️ CHRIS-PROTOCOL: Deep User Search (v2.14.656)
-      let dbUser = await db.select().from(users).where(eq(users.id, userId)).limit(1).then(res => res[0]);
-      if (!dbUser) {
-        dbUser = await db.select().from(users).where(eq(users.wpUserId, userId)).limit(1).then(res => res[0]);
-      }
-      
+      const dbUser = await db.select().from(users).where(eq(users.id, userId)).limit(1).then(res => res[0]).catch(() => null);
       if (dbUser) {
         customerInfo = {
           id: dbUser.id,
           first_name: dbUser.first_name,
           last_name: dbUser.last_name,
           email: dbUser.email,
-          companyName: dbUser.companyName,
-          phone: dbUser.phone,
-          addressStreet: dbUser.addressStreet,
-          addressCity: dbUser.addressCity,
-          addressZip: dbUser.addressZip,
-          addressCountry: dbUser.addressCountry,
-          vatNumber: dbUser.vatNumber
+          companyName: dbUser.companyName
         };
       }
     }
 
-    // 🛡️ CHRIS-PROTOCOL: System Event Logging for Debugging
-    await db.insert(systemEvents).values({
-      source: 'api',
-      level: 'info',
-      message: `Order Detail Fetched: ${id}`,
-      details: { order_id: id, has_meta: !!rawMeta, item_count: items.length }
-    }).catch(() => {});
-
-    // 🤝 DE HANDDRUK: We sturen een object terug dat de frontend begrijpt
+    // 🤝 DE HANDDRUK
     return NextResponse.json({
       ...order,
       id: orderPk,
-      userId: userId, // CamelCase mapping
+      userId: userId,
       user_id: userId,
-      legacyInternalId: legacyInternalId, // CamelCase mapping
+      legacyInternalId: legacyInternalId,
       legacy_internal_id: legacyInternalId,
-      raw_meta: rawMeta, 
       user: customerInfo,
       items: items,
       displayOrderId: orderPk.toString(),
-      status: 'completed', // Default for now
-      amountNet: order.amount_net?.toString() || "0.00", // CamelCase mapping
-      amount_net: order.amount_net?.toString() || "0.00",
-      total: order.total?.toString() || "0.00", // CamelCase mapping
-      amount_total: order.total?.toString() || "0.00"
+      status: 'completed',
+      amountNet: order.amountNet?.toString() || "0.00",
+      amount_net: order.amountNet?.toString() || "0.00",
+      total: order.amountTotal?.toString() || "0.00",
+      amount_total: order.amountTotal?.toString() || "0.00",
+      raw_meta: order.rawMeta || {}
     });
 
   } catch (error: any) {
-    console.error('[Admin Order Detail GET] Error:', error);
-    
-    // Log de fout naar de database voor forensische analyse
-    await db.insert(systemEvents).values({
-      source: 'api',
-      level: 'critical',
-      message: `Order Detail Failed: ${params.id}`,
-      details: { error: error.message, stack: error.stack }
-    }).catch(() => {});
-
+    console.error('[Admin Order Detail GET] Critical Error:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

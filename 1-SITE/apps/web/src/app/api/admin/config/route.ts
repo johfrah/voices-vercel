@@ -1,4 +1,4 @@
-import { db, appConfigs, languages } from '@/lib/system/voices-config';
+import { db, appConfigs, languages, genders, journeys, mediaTypes } from '@/lib/system/voices-config';
 import { eq, asc, desc, and, or, ilike, sql } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
 import { getActor, getActors, getMusicLibrary } from '@/lib/services/api-server';
@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
   const type = searchParams.get('type');
 
   // appConfigs en overige types: admin only
-  const publicTypes = ['actor', 'actors', 'music', 'navigation', 'telephony', 'general', 'languages', 'genders', 'journeys'];
+  const publicTypes = ['actor', 'actors', 'music', 'navigation', 'telephony', 'general', 'languages', 'genders', 'journeys', 'media_types'];
   if (!type || !publicTypes.includes(type)) {
     const auth = await requireAdmin();
     if (auth instanceof NextResponse) return auth;
@@ -67,13 +67,13 @@ export async function GET(request: NextRequest) {
         const config = await dbWithTimeout(db.select().from(appConfigs).where(eq(appConfigs.key, 'general_settings')).limit(1));
         return NextResponse.json({
           general_settings: config[0]?.value || {},
-          _version: '2.14.695'
+          _version: '2.14.700'
         });
       } catch (err: any) {
         console.warn(`[Admin Config] General settings fetch failed, returning empty: ${err.message}`);
         return NextResponse.json({
           general_settings: {},
-          _version: '2.14.695'
+          _version: '2.14.700'
         });
       }
     }
@@ -90,6 +90,11 @@ export async function GET(request: NextRequest) {
 
     if (type === 'journeys') {
       const results = await dbWithTimeout(db.select().from(journeys).orderBy(asc(journeys.label))).catch(() => []);
+      return NextResponse.json({ results });
+    }
+
+    if (type === 'media_types') {
+      const results = await dbWithTimeout(db.select().from(mediaTypes).orderBy(asc(mediaTypes.label))).catch(() => []);
       return NextResponse.json({ results });
     }
 
