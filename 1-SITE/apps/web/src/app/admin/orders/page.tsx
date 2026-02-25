@@ -70,12 +70,22 @@ export default function BestellingenPage() {
       
       if (res.ok) {
         const data = await res.json();
+        
+        // 🕵️ CHRIS-PROTOCOL: Godmode Debug Visibility (v2.14.578)
+        if (data._debug) {
+          console.log('🚨 [GODMODE DEBUG] API sees 0 orders. Context:', data._debug);
+        } else if (data._error) {
+          console.error('🚨 [GODMODE ERROR] API Critical:', data._error);
+        }
+
+        const ordersList = Array.isArray(data) ? data : (data.orders || []);
+
         console.log('📦 [Admin Orders] Data received:', {
-          count: data.length,
-          sample: data.slice(0, 2),
-          totalInDb: data.length // Voorlopig even gelijk aan count
+          count: ordersList.length,
+          sample: ordersList.slice(0, 2),
+          totalInDb: ordersList.length
         });
-        setOrders(data);
+        setOrders(ordersList);
       } else {
         const errorText = await res.text();
         console.error('❌ [Admin Orders] API Error:', errorText);
