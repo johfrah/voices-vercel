@@ -1,12 +1,12 @@
 "use client";
 
-import Image from 'next/image';
 import Link from 'next/link';
-import { useMarket } from '@/contexts/VoicesMasterControlContext';
+import { useTranslation } from '@/contexts/TranslationContext';
 import { ContainerInstrument } from '@/components/ui/LayoutInstruments';
+import { VoiceglotImage } from '@/components/ui/VoiceglotImage';
 
 export const AdminHeader = () => {
-  const { market } = useMarket();
+  const { market } = useTranslation();
   
   return (
     <header className="fixed top-0 left-0 right-0 h-[80px] bg-white/80 backdrop-blur-md border-b border-black/[0.03] z-[150] flex items-center px-8">
@@ -14,12 +14,13 @@ export const AdminHeader = () => {
         <Link href="/admin" className="flex items-center gap-4 group">
           <div className="relative w-10 h-10 bg-va-black rounded-[10px] flex items-center justify-center overflow-hidden transition-transform group-hover:scale-105">
             {market?.logo_url ? (
-              <Image 
+              <VoiceglotImage 
                 src={market.logo_url} 
                 alt="Logo" 
                 width={40} 
                 height={40} 
                 className="object-contain p-1 invert brightness-0"
+                priority
               />
             ) : (
               <div className="text-white font-bold text-xl">V</div>
