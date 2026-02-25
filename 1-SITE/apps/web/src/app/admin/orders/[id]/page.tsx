@@ -131,11 +131,11 @@ export default function OrderDetailPage() {
 
               <div className="h-[1px] bg-black/[0.03]" />
 
-              {/* REGIEKAMER */}
+              {/* REGIE */}
               <div className="bg-va-off-white/50 rounded-[20px] p-8 border border-primary/10 space-y-6">
                 <div className="flex items-center gap-3 text-primary">
                   <Zap size={20} strokeWidth={1.5} />
-                  <HeadingInstrument level={3} className="text-[13px] font-light tracking-[0.2em] uppercase">Regiekamer</HeadingInstrument>
+                  <HeadingInstrument level={3} className="text-[13px] font-light tracking-[0.2em] uppercase">Regie</HeadingInstrument>
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -147,7 +147,7 @@ export default function OrderDetailPage() {
                         <ShieldCheck size={18} strokeWidth={1.5} />
                       </div>
                       <div className="text-left">
-                        <div className="text-[15px] font-light tracking-tight">Check Script</div>
+                        <div className="text-[15px] font-light tracking-tight">Script nakijken</div>
                         <div className="text-[11px] font-light text-va-black/40 tracking-tight">Kwaliteitscontrole & verzenden</div>
                       </div>
                     </div>
@@ -162,7 +162,7 @@ export default function OrderDetailPage() {
                         <CheckCircle2 size={18} strokeWidth={1.5} />
                       </div>
                       <div className="text-left">
-                        <div className="text-[15px] font-light tracking-tight">Opleveren</div>
+                        <div className="text-[15px] font-light tracking-tight">Verzenden</div>
                         <div className="text-[11px] font-light text-va-black/40 tracking-tight">Audio is klaar voor de klant</div>
                       </div>
                     </div>
@@ -171,9 +171,9 @@ export default function OrderDetailPage() {
                 </div>
               </div>
 
-              {/* Briefing Section */}
+              {/* Productie & Script */}
               <div className="space-y-6">
-                <HeadingInstrument level={3} className="text-[13px] font-light tracking-[0.2em] text-va-black/20 uppercase">Productie & Briefing</HeadingInstrument>
+                <HeadingInstrument level={3} className="text-[13px] font-light tracking-[0.2em] text-va-black/20 uppercase">Productie & Script</HeadingInstrument>
                 <div className="bg-va-off-white/20 p-8 rounded-[20px] border border-black/[0.02] space-y-6">
                   {order.production?.briefing?.text ? (
                     <div className="space-y-4">
@@ -190,7 +190,7 @@ export default function OrderDetailPage() {
                       )}
                     </div>
                   ) : (
-                    <div className="text-[15px] italic text-va-black/20">Geen briefing gevonden voor deze bestelling.</div>
+                    <div className="text-[15px] italic text-va-black/20">Geen script gevonden voor deze bestelling.</div>
                   )}
                 </div>
               </div>

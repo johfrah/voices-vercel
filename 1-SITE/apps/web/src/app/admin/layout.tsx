@@ -49,7 +49,7 @@ export default async function AdminLayout({
               "persona": "Architect",
               "journey": "admin",
               "intent": "system_management",
-              "lexicon": ["Admin", "Zelfherstellend", "Klantprofiel", "Indeling"],
+              "lexicon": ["Admin", "Zelfherstellend", "Klantprofiel", "Overzicht"],
               "visual_dna": ["Bento Grid", "Liquid DNA", "Spatial Growth"]
             }
           })

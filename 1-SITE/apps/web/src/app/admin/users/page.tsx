@@ -221,7 +221,7 @@ export default function AdminUsersPage() {
               "journey": "admin",
               "intent": "user_management",
               "capabilities": ["view_users", "edit_users", "manage_roles"],
-              "lexicon": ["Klantprofiel", "Freedom Machine", "Community"],
+              "lexicon": ["Klantprofiel", "Overzicht", "Community"],
               "visual_dna": ["Bento Grid", "Liquid DNA"]
             }
           })

@@ -48,15 +48,15 @@ export default function MediaEnginePage() {
           <ContainerInstrument className="flex justify-between items-start">
             <ContainerInstrument>
               <ContainerInstrument className="inline-block bg-primary/10 text-primary text-[13px] font-black px-3 py-1 rounded-full mb-6 tracking-widest uppercase">
-                Asset Intelligence
+                Bestanden
               </ContainerInstrument>
               
               <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter mb-4">
-                Media Engine
+                Audiopost Studio
               </HeadingInstrument>
               
               <TextInstrument className="text-xl text-black/40 font-medium tracking-tight max-w-2xl">
-                Centraal beheer van alle video, audio en document assets binnen de Freedom Machine.
+                Centraal beheer van alle video, audio en documenten binnen het platform.
               </TextInstrument>
             </ContainerInstrument>
 
@@ -66,7 +66,7 @@ export default function MediaEnginePage() {
               disabled={loading}
             >
               <RefreshCw strokeWidth={1.5} size={16} className={loading ? 'animate-spin' : ''} />
-              Engine Vernieuwen
+              Bestanden Vernieuwen
             </ButtonInstrument>
           </ContainerInstrument>
         </SectionInstrument>
@@ -75,13 +75,13 @@ export default function MediaEnginePage() {
         <ContainerInstrument className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
           <ContainerInstrument className="bg-white p-8 rounded-[30px] border border-black/[0.03] shadow-sm">
             <Film className="text-primary mb-4" size={24} />
-            <TextInstrument className="text-[13px] font-black tracking-widest text-black/20 uppercase mb-1">Video Assets</TextInstrument>
+            <TextInstrument className="text-[13px] font-black tracking-widest text-black/20 uppercase mb-1">Video</TextInstrument>
             <HeadingInstrument level={3} className="text-3xl font-light">{data?.stats?.video || 0}</HeadingInstrument>
           </ContainerInstrument>
 
           <ContainerInstrument className="bg-white p-8 rounded-[30px] border border-black/[0.03] shadow-sm">
             <Music className="text-va-black/40 mb-4" size={24} />
-            <TextInstrument className="text-[13px] font-black tracking-widest text-black/20 uppercase mb-1">Audio Assets</TextInstrument>
+            <TextInstrument className="text-[13px] font-black tracking-widest text-black/20 uppercase mb-1">Audio</TextInstrument>
             <HeadingInstrument level={3} className="text-3xl font-light">{data?.stats?.audio || 0}</HeadingInstrument>
           </ContainerInstrument>
 

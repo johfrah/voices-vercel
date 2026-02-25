@@ -46,15 +46,15 @@ export default function OpenAIIntelligencePage() {
           <ContainerInstrument className="flex justify-between items-start">
             <ContainerInstrument>
               <ContainerInstrument className="inline-block bg-primary/10 text-primary text-[13px] font-black px-3 py-1 rounded-full mb-6 tracking-widest uppercase">
-                AI Engine Control
+                AI Instellingen
               </ContainerInstrument>
               
               <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter mb-4">
-                OpenAI Intelligence
+                Slimme Assistent
               </HeadingInstrument>
               
               <TextInstrument className="text-xl text-black/40 font-medium tracking-tight max-w-2xl">
-                Configureer de AI-modellen, prompts en cognitieve parameters van de Freedom Machine.
+                Configureer de AI-modellen, instructies en parameters van het platform.
               </TextInstrument>
             </ContainerInstrument>
 
@@ -109,9 +109,9 @@ export default function OpenAIIntelligencePage() {
           <ContainerInstrument className="bg-va-black p-8 rounded-[40px] border border-white/5 shadow-2xl flex flex-col justify-between">
             <div>
               <Zap className="text-primary mb-6" size={32} />
-              <HeadingInstrument level={3} className="text-2xl font-light text-white mb-2">AI Health Check</HeadingInstrument>
+              <HeadingInstrument level={3} className="text-2xl font-light text-white mb-2">Systeem Check</HeadingInstrument>
               <TextInstrument className="text-white/40 text-[15px] font-medium leading-relaxed mb-8">
-                Voer een volledige audit uit op alle AI-koppelingen en verifieer de responstijden van de Freedom Machine.
+                Voer een volledige audit uit op alle AI-koppelingen en verifieer de responstijden van het platform.
               </TextInstrument>
             </div>
             <ButtonInstrument className="w-full py-4 bg-primary text-va-black rounded-2xl text-[13px] font-black uppercase tracking-widest hover:scale-[1.02] transition-all">

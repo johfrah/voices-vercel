@@ -88,21 +88,21 @@ const journeyInstructions: Record<string, string[]> = {
 
 const menuItems: MenuItem[] = [
   //  CORE & OPERATIONS
-  { title: 'Command Center', icon: Zap, href: '/admin/dashboard', color: 'text-yellow-500', group: 'Core', journey: 'all' },
-  { title: 'Mailbox', icon: MessageSquare, href: '/admin/mailbox', color: 'text-primary', group: 'Core', badge: 3, journey: 'all' },
-  { title: 'Workshop Dashboard', icon: Calendar, href: '/admin/studio/workshops', color: 'text-purple-500', group: 'Core', journey: 'studio' },
+  { title: 'Dashboard', icon: Zap, href: '/admin/dashboard', color: 'text-yellow-500', group: 'Core', journey: 'all' },
+  { title: 'Postvak', icon: MessageSquare, href: '/admin/mailbox', color: 'text-primary', group: 'Core', badge: 3, journey: 'all' },
+  { title: 'Workshop Overzicht', icon: Calendar, href: '/admin/studio/workshops', color: 'text-purple-500', group: 'Core', journey: 'studio' },
   { title: 'Datamatch Monitor', icon: Activity, href: '/admin/datamatch', color: 'text-blue-400', group: 'Core', journey: 'all' },
-  { title: 'Analytics Hub', icon: TrendingUp, href: '/admin/analytics', color: 'text-orange-500', group: 'Core', journey: 'all' },
+  { title: 'Statistieken', icon: TrendingUp, href: '/admin/analytics', color: 'text-orange-500', group: 'Core', journey: 'all' },
   { title: 'Klant Inzichten', icon: Brain, href: '/admin/insights', color: 'text-pink-500', group: 'Core', journey: 'all' },
 
   //  CONTENT & JOURNEYS
-  { title: 'Article Manager', icon: FileText, href: '/admin/articles', color: 'text-blue-500', group: 'Content', journey: 'all' },
-  { title: 'Journey Orchestrator', icon: Target, href: '/admin/journeys', color: 'text-primary', group: 'Content', journey: 'all' },
+  { title: 'Artikelen', icon: FileText, href: '/admin/articles', color: 'text-blue-500', group: 'Content', journey: 'all' },
+  { title: 'Journey Beheer', icon: Target, href: '/admin/journeys', color: 'text-primary', group: 'Content', journey: 'all' },
   { title: 'Audiopost Studio', icon: Video, href: '/admin/media', color: 'text-va-black/40', group: 'Content', journey: 'all' },
 
-  //  ANALYTICS & INTELLIGENCE
+  //  ANALYTICS & INZICHTEN
   { title: 'UTM Attribution', icon: BarChart3, href: '/admin/marketing/utm', color: 'text-orange-500', group: 'Analytics', journey: 'all' },
-  { title: 'Bezoekers Inzichten', icon: Activity, href: '/admin/marketing/visitors', color: 'text-emerald-500', group: 'Analytics', journey: 'all' },
+  { title: 'Bezoekers', icon: Activity, href: '/admin/marketing/visitors', color: 'text-emerald-500', group: 'Analytics', journey: 'all' },
   { title: 'Klantprofielen', icon: Users, href: '/admin/users', color: 'text-blue-400', group: 'Analytics', journey: 'all' },
   { title: 'CTA AB Test', icon: MousePointer2, href: '/admin/marketing/ab-test', color: 'text-primary', group: 'Analytics', journey: 'all' },
   { title: 'Trends & SWOT', icon: TrendingUp, href: '/admin/marketing/trends', color: 'text-indigo-500', group: 'Analytics', journey: 'all' },
@@ -116,27 +116,27 @@ const menuItems: MenuItem[] = [
   { title: 'Omzet Monitor', icon: TrendingUp, href: '/admin/finance/revenue', color: 'text-green-500', group: 'Financieel', journey: 'all' },
 
   //  AGENCY & VOICES
-  { title: 'Voice Manager', icon: Mic, href: '/admin/voices', color: 'text-purple-500', group: 'Agency', journey: 'agency' },
+  { title: 'Stemmenbeheer', icon: Mic, href: '/admin/voices', color: 'text-purple-500', group: 'Agency', journey: 'agency' },
   { title: 'Product Catalogus', icon: Database, href: '/admin/catalog', color: 'text-va-black', group: 'Agency', journey: 'agency' },
   { title: 'Demo Beheer', icon: Music, href: '/admin/demos', color: 'text-blue-500', group: 'Agency', journey: 'agency' },
   { title: 'Vakanties', icon: Clock, href: '/admin/vacations', color: 'text-red-400', group: 'Agency', journey: 'agency' },
-  { title: 'Artist Dashboard', icon: Briefcase, href: '/admin/artists', color: 'text-slate-600', group: 'Agency', journey: 'agency' },
+  { title: 'Artiesten', icon: Briefcase, href: '/admin/artists', color: 'text-slate-600', group: 'Agency', journey: 'agency' },
 
   //  STUDIO & WORKSHOPS
-  { title: 'Workshop Manager', icon: Calendar, href: '/admin/workshops', color: 'text-primary', group: 'Studio', journey: 'studio' },
+  { title: 'Workshops', icon: Calendar, href: '/admin/workshops', color: 'text-primary', group: 'Studio', journey: 'studio' },
   { title: 'Deelnemers', icon: Users, href: '/admin/participants', color: 'text-green-500', group: 'Studio', journey: 'studio' },
   { title: 'Workshop Funnel', icon: Target, href: '/admin/funnel', color: 'text-orange-400', group: 'Studio', journey: 'studio' },
   { title: 'Feedback', icon: Smile, href: '/admin/feedback', color: 'text-yellow-500', group: 'Studio', journey: 'studio' },
-  { title: 'Meetings', icon: Clock, href: '/admin/meetings', color: 'text-blue-400', group: 'Studio', journey: 'studio' },
+  { title: 'Afspraken', icon: Clock, href: '/admin/meetings', color: 'text-blue-400', group: 'Studio', journey: 'studio' },
 
   //  ACADEMY
-  { title: 'Academy Dashboard', icon: GraduationCap, href: '/admin/academy', color: 'text-primary', group: 'Academy', journey: 'academy' },
-  { title: 'Lessen Beheer', icon: FileText, href: '/admin/academy/lessons', color: 'text-blue-500', group: 'Academy', journey: 'academy' },
+  { title: 'Academy Overzicht', icon: GraduationCap, href: '/admin/academy', color: 'text-primary', group: 'Academy', journey: 'academy' },
+  { title: 'Lessen', icon: FileText, href: '/admin/academy/lessons', color: 'text-blue-500', group: 'Academy', journey: 'academy' },
 
   //  SYSTEMS
-  { title: 'Systeem Instellingen', icon: Settings, href: '/admin/settings', color: 'text-va-black/40', group: 'Systems', journey: 'all' },
-  { title: 'Market SEO Manager', icon: Globe, href: '/admin/settings/markets', color: 'text-emerald-600', group: 'Systems', journey: 'all' },
-  { title: 'Voiceglot Registry', icon: Globe, href: '/admin/voiceglot', color: 'text-blue-600', group: 'Systems', journey: 'all' },
+  { title: 'Instellingen', icon: Settings, href: '/admin/settings', color: 'text-va-black/40', group: 'Systems', journey: 'all' },
+  { title: 'Markten & SEO', icon: Globe, href: '/admin/settings/markets', color: 'text-emerald-600', group: 'Systems', journey: 'all' },
+  { title: 'Vertalingen (Voiceglot)', icon: Globe, href: '/admin/voiceglot', color: 'text-blue-600', group: 'Systems', journey: 'all' },
   { title: 'AI Instellingen', icon: Brain, href: '/admin/ai-settings', color: 'text-pink-400', group: 'Systems', journey: 'all' },
   { title: 'Core Locks', icon: Lock, href: '/admin/locks', color: 'text-red-500', group: 'Systems', journey: 'all' },
   { title: 'Vault', icon: Database, href: '/admin/vault', color: 'text-va-black/40', group: 'Systems', journey: 'all' },

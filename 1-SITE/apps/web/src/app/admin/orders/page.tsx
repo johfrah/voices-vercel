@@ -191,7 +191,7 @@ export default function BestellingenPage() {
           <div className="flex justify-between items-end">
             <div className="space-y-4">
               <ContainerInstrument className="inline-block bg-primary/10 text-primary text-[13px] font-light px-3 py-1 rounded-full tracking-widest">
-                <VoiceglotText translationKey="admin.orders.badge" defaultText="Order Dashboard" />
+                <VoiceglotText translationKey="admin.orders.badge" defaultText="Bestellingen" />
               </ContainerInstrument>
               <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter flex items-center gap-4">
                 <VoiceglotText translationKey="admin.orders.title" defaultText="Bestellingen" />
@@ -363,7 +363,7 @@ export default function BestellingenPage() {
                         {isExpanding ? (
                           <div className="flex items-center gap-3 text-va-black/20 font-light italic">
                             <Loader2 className="animate-spin" size={16} />
-                            Order Intelligentie ophalen...
+                            Gegevens ophalen...
                           </div>
                         ) : expandedOrderData ? (
                           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 animate-in fade-in slide-in-from-left duration-500">
@@ -393,9 +393,9 @@ export default function BestellingenPage() {
                               </div>
                             </div>
 
-                            {/* 🎭 PRODUCTIE & BRIEFING (V2) */}
+                            {/* 🎭 PRODUCTIE & SCRIPT (V2) */}
                             <div className="md:col-span-2 space-y-4">
-                              <HeadingInstrument level={4} className="text-[10px] font-bold tracking-[0.2em] text-va-black/20 uppercase Raleway">Productie & Briefing</HeadingInstrument>
+                              <HeadingInstrument level={4} className="text-[10px] font-bold tracking-[0.2em] text-va-black/20 uppercase Raleway">Productie & Script</HeadingInstrument>
                               <div className="bg-white p-5 rounded-[15px] border border-black/[0.03] shadow-sm space-y-4 min-h-[140px]">
                                 {expandedOrderData.production?.briefing?.text ? (
                                   <div className="space-y-3">
@@ -416,7 +416,7 @@ export default function BestellingenPage() {
                                     )}
                                   </div>
                                 ) : (
-                                  <div className="text-[13px] italic text-va-black/20 flex items-center justify-center h-full">Geen briefing gevonden.</div>
+                                  <div className="text-[13px] italic text-va-black/20 flex items-center justify-center h-full">Geen script gevonden.</div>
                                 )}
                               </div>
                               
@@ -431,7 +431,7 @@ export default function BestellingenPage() {
 
                             {/* ⚡ ACTIES (V2) */}
                             <div className="space-y-4">
-                              <HeadingInstrument level={4} className="text-[10px] font-bold tracking-[0.2em] text-va-black/20 uppercase">Regiekamer Acties</HeadingInstrument>
+                              <HeadingInstrument level={4} className="text-[10px] font-bold tracking-[0.2em] text-va-black/20 uppercase">Regie Acties</HeadingInstrument>
                               <div className="flex flex-col gap-2">
                                 {expandedOrderData.actions?.needsPO && (
                                   <button className="w-full py-2.5 px-4 bg-orange-500 text-white rounded-[10px] text-[12px] font-medium hover:bg-orange-600 transition-all shadow-sm flex items-center justify-center gap-2">

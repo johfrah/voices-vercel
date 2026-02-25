@@ -75,11 +75,11 @@ export default function LiveVisitorDashboard() {
           <ContainerInstrument className="flex items-center gap-2 text-primary">
             <Activity strokeWidth={1.5} size={16} />
             <TextInstrument as="span" className="text-[15px] font-light tracking-[0.2em]">
-              <VoiceglotText  translationKey="admin.visitors.badge" defaultText="Live Intelligence" />
+              <VoiceglotText  translationKey="admin.visitors.badge" defaultText="Live Statistieken" />
             </TextInstrument>
           </ContainerInstrument>
           <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter ">
-            <VoiceglotText  translationKey="admin.visitors.title" defaultText="Visitor Dashboard" />
+            <VoiceglotText  translationKey="admin.visitors.title" defaultText="Bezoekers" />
           </HeadingInstrument>
         </ContainerInstrument>
         
@@ -100,7 +100,7 @@ export default function LiveVisitorDashboard() {
       <SectionInstrument className="bg-white border border-black/5 rounded-[20px] overflow-hidden shadow-sm">
         <ContainerInstrument className="p-8 border-b border-black/5 flex justify-between items-center">
           <HeadingInstrument level={2} className="text-xl font-light tracking-tight">
-            <VoiceglotText  translationKey="admin.visitors.table_title" defaultText="Intelligence Playlist" />
+            <VoiceglotText  translationKey="admin.visitors.table_title" defaultText="Recente Bezoeken" />
           </HeadingInstrument>
           <ContainerInstrument className="flex items-center gap-4">
             <ContainerInstrument className="flex items-center gap-2">
@@ -219,9 +219,9 @@ export default function LiveVisitorDashboard() {
 
         <ContainerInstrument className="bg-white border border-black/5 p-10 rounded-[20px]">
           <Users strokeWidth={1.5} className="text-va-black/20 mb-6" size={32} />
-          <HeadingInstrument level={2} className="text-2xl font-light tracking-tight mb-4"><VoiceglotText  translationKey="auto.page.customer_dna.d578eb" defaultText="Customer DNA" /><TextInstrument className="text-va-black/40 text-[15px] font-light leading-relaxed mb-6"><VoiceglotText  translationKey="auto.page.80__van_de_huidige_b.6971bf" defaultText="80% van de huidige bezoekers zijn &apos;Decision Makers&apos; binnen de Agency journey." /></TextInstrument></HeadingInstrument>
+          <HeadingInstrument level={2} className="text-2xl font-light tracking-tight mb-4"><VoiceglotText  translationKey="auto.page.customer_dna.d578eb" defaultText="Klantprofielen" /><TextInstrument className="text-va-black/40 text-[15px] font-light leading-relaxed mb-6"><VoiceglotText  translationKey="auto.page.80__van_de_huidige_b.6971bf" defaultText="80% van de huidige bezoekers zijn beslissingsnemers binnen de Agency journey." /></TextInstrument></HeadingInstrument>
           <Link  href="/admin/users" className="text-[15px] font-light tracking-widest text-va-black/40 flex items-center gap-2">
-            User DNA Dashboard <ArrowRight strokeWidth={1.5} size={12} />
+            Klantprofielen Overzicht <ArrowRight strokeWidth={1.5} size={12} />
           </Link>
         </ContainerInstrument>
 
@@ -253,14 +253,14 @@ export default function LiveVisitorDashboard() {
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "AdminPage",
-            "name": "Visitor Dashboard",
+            "name": "Bezoekers",
             "description": "Real-time monitoring van website bezoekers.",
             "_llm_context": {
               "persona": "Architect",
               "journey": "admin",
-              "intent": "visitor_intelligence",
+              "intent": "visitor_insights",
               "capabilities": ["view_visitors", "view_stats", "analyze_behavior"],
-              "lexicon": ["Visitor Dashboard", "Live Intelligence", "Mat Radar"],
+              "lexicon": ["Bezoekers", "Inzichten", "Radar"],
               "visual_dna": ["Bento Grid", "Liquid DNA"]
             }
           })
