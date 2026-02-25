@@ -64,21 +64,27 @@ function HomeContent({ actors: initialActors, reviews, reviewStats, dynamicConfi
   const [customerDNA, setCustomerDNA] = useState<any>(null);
   const [actors, setActors] = useState<Actor[]>(initialActors);
 
-  const [market, setMarket] = useState('BE');
+  const [marketCode, setMarketCode] = useState(marketConfig.market_code || 'BE');
 
   //  CHRIS-PROTOCOL: Avoid hydration mismatch by setting market after mount
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      setMarket(MarketManager.getCurrentMarket().market_code);
+      setMarketCode(MarketManager.getCurrentMarket().market_code);
     }
   }, []);
 
-  const marketConfig = useMemo(() => {
+  const currentMarketConfig = useMemo(() => {
     //  CHRIS-PROTOCOL: Use a safe default for SSR to prevent hydration error #419
     const defaultHost = MarketManager.getMarketDomains()['BE']?.replace('https://', '') || 'voices.be';
-    const currentHost = typeof window !== 'undefined' ? window.location.host : defaultHost;
-    return MarketManager.getCurrentMarket(currentHost);
-  }, []);
+    
+    // 🛡️ CHRIS-PROTOCOL: Force consistency between SSR and Client during hydration
+    // We use the market from the state if available (client-side), otherwise we derive it.
+    if (typeof window !== 'undefined' && marketCode && marketCode !== marketConfig.market_code) {
+      return MarketManager.getCurrentMarket(window.location.host);
+    }
+    
+    return marketConfig;
+  }, [marketCode, marketConfig]);
 
   //  CHRIS-PROTOCOL: Sync local state with initial props
   useEffect(() => {
@@ -154,7 +160,7 @@ function HomeContent({ actors: initialActors, reviews, reviewStats, dynamicConfi
           language: masterControlState.filters.language,
           languageId: masterControlState.filters.languageId,
           country: masterControlState.filters.country,
-          market: market
+          market: marketCode
         },
         shown_count: results.length,
         shown_names: results.map(a => `${a.display_name} (Native: ${a.native_lang || '?'}, Country: ${a.country || '?'})`),
@@ -327,12 +333,12 @@ function HomeContent({ actors: initialActors, reviews, reviewStats, dynamicConfi
           <ContainerInstrument plain className="mb-20 text-center max-w-4xl mx-auto space-y-8 px-4 md:px-6">
             <HeadingInstrument level={1} className="text-6xl md:text-8xl font-light tracking-tighter leading-[0.9] text-va-black">
               <VoiceglotText 
-                translationKey={`home.hero.title_v4_${masterControlState.journey}_${market}`} 
+                translationKey={`home.hero.title_v4_${masterControlState.journey}_${marketCode}`} 
                 defaultText={
                   masterControlState.journey === 'telephony' 
                     ? "Maak jouw *telefooncentrale* menselijk."
                     : masterControlState.journey === 'video'
-                    ? (market === 'BE' ? "De mooiste *voice-overs* van België." : market === 'NLNL' ? "De mooiste *voice-overs* van Nederland." : market === 'FR' ? "Les meilleures *voix-off* de France." : "De mooiste *voice-overs* voor jouw video.")
+                    ? (marketCode === 'BE' ? "De mooiste *voice-overs* van België." : marketCode === 'NLNL' ? "De mooiste *voice-overs* van Nederland." : marketCode === 'FR' ? "Les meilleures *voix-off* de France." : "De mooiste *voice-overs* voor jouw video.")
                     : masterControlState.journey === 'commercial'
                     ? "Scoor met *high-end* commercials."
                     : "Vind de *stem* voor jouw verhaal."
@@ -497,10 +503,10 @@ function HomeContent({ actors: initialActors, reviews, reviewStats, dynamicConfi
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
         "@context": "https://schema.org",
         "@type": "Organization",
-        "name": marketConfig.name,
-        "url": MarketManager.getMarketDomains()[marketConfig.market_code] || `https://${marketConfig.market_code === 'BE' ? (MarketManager.getMarketDomains()['BE']?.replace('https://', '') || 'www.voices.be') : (MarketManager.getMarketDomains()['NL']?.replace('https://', '') || 'www.voices.nl')}`,
-        "logo": `${MarketManager.getMarketDomains()[marketConfig.market_code] || `https://${marketConfig.market_code === 'BE' ? (MarketManager.getMarketDomains()['BE']?.replace('https://', '') || 'www.voices.be') : (MarketManager.getMarketDomains()['NL']?.replace('https://', '') || 'www.voices.nl')}`}${marketConfig.logo_url}`,
-        "description": marketConfig.seo_data?.description || "Castingbureau voor stemacteurs en voice-overs.",
+        "name": currentMarketConfig.name,
+        "url": MarketManager.getMarketDomains()[currentMarketConfig.market_code] || `https://${currentMarketConfig.market_code === 'BE' ? (MarketManager.getMarketDomains()['BE']?.replace('https://', '') || 'www.voices.be') : (MarketManager.getMarketDomains()['NL']?.replace('https://', '') || 'www.voices.nl')}`,
+        "logo": `${MarketManager.getMarketDomains()[currentMarketConfig.market_code] || `https://${currentMarketConfig.market_code === 'BE' ? (MarketManager.getMarketDomains()['BE']?.replace('https://', '') || 'www.voices.be') : (MarketManager.getMarketDomains()['NL']?.replace('https://', '') || 'www.voices.nl')}`}${currentMarketConfig.logo_url}`,
+        "description": currentMarketConfig.seo_data?.description || "Castingbureau voor stemacteurs en voice-overs.",
         "aggregateRating": {
           "@type": "AggregateRating",
           "ratingValue": reviewStats?.averageRating || 4.9,

@@ -33,7 +33,7 @@ export function Providers({
   initialUsage?: any;
 }) {
   const pathname = usePathname();
-  const currentVersion = '2.14.557';
+  const currentVersion = '2.14.558';
 
   
   //  CHRIS-PROTOCOL: Initialize Client Logger for real-time error reporting
@@ -46,7 +46,7 @@ export function Providers({
   // to prevent Hydration Mismatch errors (#419, #425).
   // We use the 'lang' prop directly instead of calculating it from pathname
   // to ensure consistency between SSR and Client.
-  const activeLang = lang || 'nl-BE';
+  const activeLang = lang || (market.primary_language || 'nl-BE');
 
   return (
     <WatchdogProvider>

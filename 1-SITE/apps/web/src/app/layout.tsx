@@ -228,7 +228,7 @@ export default async function RootLayout({
   
   const htmlClass = `${raleway.className} ${inter.className} theme-${market.theme} ${raleway.variable}`;
   const bodyClass = "pb-24 md:pb-0 touch-manipulation va-main-layout pt-[80px] md:pt-[110px]";
-  const lang = langHeader || (pathname.includes('/artist/youssef') || market.market_code === 'ARTIST' ? 'en' : (market.language || 'nl'));
+  const lang = langHeader || (pathname.includes('/artist/youssef') || market.market_code === 'ARTIST' ? 'en-EU' : (market.primary_language || 'nl-BE'));
 
   if (isAdminRoute) {
     return (
