@@ -45,20 +45,26 @@ export class MarketDatabaseService {
     try {
       // 🛡️ CHRIS-PROTOCOL: Race against a 2-second timeout to prevent 504 Gateway Timeout
       const fetchPromise = (async () => {
-        console.log(` [MarketDatabaseService] Cache miss for ${cacheKey}, querying DB...`);
-        const { db } = await import('@db');
-        const { marketConfigs } = await import('@db/schema');
-        const { eq } = await import('drizzle-orm');
+        console.log(` [MarketDatabaseService] Cache miss for ${cacheKey}, querying DB via SDK...`);
+        const { createClient } = await import('@supabase/supabase-js');
+        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+        const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+        const supabase = createClient(supabaseUrl, supabaseKey);
 
-        const [dbConfig] = await db
-          .select()
-          .from(marketConfigs)
-          .where(eq(marketConfigs.market, staticConfig.market_code))
-          .limit(1);
+        const { data: dbConfig, error } = await supabase
+          .from('market_configs')
+          .select('*')
+          .eq('market', staticConfig.market_code)
+          .single();
+
+        if (error) {
+          console.warn(` [MarketDatabaseService] SDK Fetch failed for ${cacheKey}:`, error.message);
+          return staticConfig;
+        }
 
         if (dbConfig) {
           const loc = dbConfig.localization as any;
-          const social = dbConfig.socialLinks as any;
+          const social = dbConfig.social_links as any; // SDK returns snake_case
           
           const finalConfig: MarketConfig = {
             ...staticConfig,
@@ -71,18 +77,18 @@ export class MarketDatabaseService {
             currency: loc?.currency || staticConfig.currency,
             theme: (dbConfig.theme as any) || staticConfig.theme,
             address: dbConfig.address || staticConfig.address,
-            vat_number: dbConfig.vatNumber || staticConfig.vat_number,
+            vat_number: dbConfig.vat_number || staticConfig.vat_number,
             social_links: social || staticConfig.social_links,
             seo_data: {
               title: dbConfig.title || undefined,
               description: dbConfig.description || undefined,
-              og_image: dbConfig.ogImage || undefined,
-              schema_type: (dbConfig as any).schemaType || (
+              og_image: dbConfig.og_image || undefined,
+              schema_type: (dbConfig as any).schema_type || (
                 staticConfig.market_code === 'ADEMING' ? 'Organization' : 
                 (staticConfig.market_code === 'PORTFOLIO' || staticConfig.market_code === 'ARTIST') ? 'Person' : 'Organization'
               ),
               locale_code: loc?.locale || MarketManager.getLanguageCode(staticConfig.primary_language),
-              canonical_domain: (dbConfig as any).canonicalDomain || staticConfig.logo_url // Fallback logic
+              canonical_domain: (dbConfig as any).canonical_domain || staticConfig.logo_url // Fallback logic
             }
           };
 
@@ -131,19 +137,28 @@ export class MarketDatabaseService {
     try {
       // 🛡️ CHRIS-PROTOCOL: Race against a 2-second timeout
       const fetchPromise = (async () => {
-        console.log(` [MarketDatabaseService] Locales cache miss, querying DB...`);
-        const { db } = await import('@db');
-        const { marketConfigs } = await import('@db/schema');
+        console.log(` [MarketDatabaseService] Locales cache miss, querying DB via SDK...`);
+        const { createClient } = await import('@supabase/supabase-js');
+        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+        const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+        const supabase = createClient(supabaseUrl, supabaseKey);
 
-        const allMarkets = await db.select().from(marketConfigs);
+        const { data: allMarkets, error } = await supabase
+          .from('market_configs')
+          .select('*');
+
+        if (error) {
+          console.warn(' [MarketDatabaseService] Locales SDK Fetch failed:', error.message);
+          return fallbackLocales;
+        }
+
         const locales: Record<string, string> = {};
-        
         const staticDomains = MarketManager.getMarketDomains();
 
-        allMarkets.forEach(m => {
+        (allMarkets || []).forEach(m => {
           const loc = m.localization as any;
           const locale = loc?.locale || MarketManager.getLanguageCode(m.market === 'BE' ? 'nl-BE' : m.market === 'NLNL' ? 'nl-NL' : m.market === 'FR' ? 'fr-FR' : m.market === 'ES' ? 'es-ES' : m.market === 'PT' ? 'pt-PT' : m.market === 'EU' ? 'en-GB' : 'nl-BE');
-          const domain = (m as any).canonicalDomain || staticDomains[m.market] || `https://www.voices.be`;
+          const domain = (m as any).canonical_domain || staticDomains[m.market] || `https://www.voices.be`;
           if (locale) {
             locales[locale] = domain;
           }
