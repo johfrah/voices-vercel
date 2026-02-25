@@ -63,13 +63,13 @@ function generateActorSchema(actor: any, marketName: string = 'Voices', host: st
     '72u': 'P3D'
   };
   
-  const deliveryType = actor.delivery_config?.type || (actor.deliveryDaysMin === 0 ? 'sameday' : '24h');
+  const deliveryType = actor.delivery_config?.type || (actor.delivery_days_min === 0 ? 'sameday' : '24h');
   const deliveryDuration = deliveryMap[deliveryType] || 'P1D';
 
   return {
     '@context': 'https://schema.org',
     '@type': 'Service',
-    'name': `${actor.firstName} - Voice-over Stem`,
+    'name': `${actor.first_name} - Voice-over Stem`,
     'description': actor.bio || actor.tagline,
     'provider': {
       '@type': 'LocalBusiness',
@@ -90,7 +90,7 @@ function generateActorSchema(actor: any, marketName: string = 'Voices', host: st
     },
     // Custom Nuclear Enrichment for LLMs
     'additionalType': 'https://schema.org/VoiceoverService',
-    'identifier': actor.wpProductId || actor.id
+    'identifier': actor.wp_product_id || actor.id
   };
 }
 
@@ -243,8 +243,8 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
   try {
     const actor = await getActor(firstSegment, lang);
     if (actor) {
-      const title = await getTranslatedSEO(`seo.actor.${actor.id}.title`, `${actor.first_name || actor.firstName} - Voice-over Stem | ${market.name}`);
-      const description = await getTranslatedSEO(`seo.actor.${actor.id}.description`, actor.bio || `Ontdek de stem van ${actor.first_name || actor.firstName} op ${market.name}.`);
+      const title = await getTranslatedSEO(`seo.actor.${actor.id}.title`, `${actor.first_name || actor.first_name} - Voice-over Stem | ${market.name}`);
+      const description = await getTranslatedSEO(`seo.actor.${actor.id}.description`, actor.bio || `Ontdek de stem van ${actor.first_name || actor.first_name} op ${market.name}.`);
       const schema = generateActorSchema(actor, market.name, host);
 
       return {
@@ -365,10 +365,10 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
       const mappedActors = actors.map((actor: any) => ({
         id: actor.id,
         display_name: actor.display_name,
-        first_name: actor.first_name || actor.firstName,
-        last_name: actor.last_name || actor.lastName,
-        firstName: actor.firstName || actor.first_name,
-        lastName: actor.lastName || actor.last_name,
+        first_name: actor.first_name || actor.first_name,
+        last_name: actor.last_name || actor.last_name,
+        first_name: actor.first_name || actor.first_name,
+        last_name: actor.last_name || actor.last_name,
         email: actor.email,
         photo_url: actor.photo_url,
         voice_score: actor.voice_score,
@@ -454,7 +454,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
             'position': i + 1,
             'item': {
               '@type': 'Service',
-              'name': item.actor.first_name || item.actor.firstName,
+              'name': item.actor.first_name || item.actor.first_name,
               'provider': {
                 '@type': 'LocalBusiness',
                 'name': market.name
@@ -491,24 +491,24 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
                         {item.actor.photo_id ? (
                           <Image 
                             src={`/api/proxy/?path=${encodeURIComponent(item.actor.dropbox_url || '')}`} 
-                            alt={item.actor.first_name || item.actor.firstName}
+                            alt={item.actor.first_name || item.actor.first_name}
                             fill
                             className="object-cover"
                           />
-                        ) : (item.actor.first_name || item.actor.firstName)[0]}
+                        ) : (item.actor.first_name || item.actor.first_name)[0]}
                       </div>
                       <div>
-                        <HeadingInstrument level={3} className="text-2xl font-light">{item.actor.first_name || item.actor.firstName}</HeadingInstrument>
+                        <HeadingInstrument level={3} className="text-2xl font-light">{item.actor.first_name || item.actor.first_name}</HeadingInstrument>
                         <div className="flex items-center justify-between mt-1">
                           <TextInstrument className="text-[15px] text-va-black/40">
                             <VoiceglotText 
-                              translationKey={`common.language.${(item.actor.native_lang || item.actor.nativeLang)?.toLowerCase() || 'nl'}`} 
-                              defaultText={MarketManager.getLanguageLabel(item.actor.native_lang || item.actor.nativeLang || 'nl')} 
+                              translationKey={`common.language.${(item.actor.native_lang || item.actor.native_lang)?.toLowerCase() || 'nl'}`} 
+                              defaultText={MarketManager.getLanguageLabel(item.actor.native_lang || item.actor.native_lang || 'nl')} 
                             />
                           </TextInstrument>
                           {showRates && (
                             <TextInstrument className="text-[15px] font-bold text-primary">
-                              €{parseFloat(item.actor.price_unpaid || item.actor.priceUnpaid || '0').toFixed(2)}
+                              €{parseFloat(item.actor.price_unpaid || item.actor.price_unpaid || '0').toFixed(2)}
                             </TextInstrument>
                           )}
                         </div>

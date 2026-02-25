@@ -26,15 +26,15 @@ export async function GET(request: NextRequest) {
     // 1. Zoek Acteurs
     const foundActors = await db.select({
       id: actors.id,
-      firstName: actors.firstName,
-      lastName: actors.lastName,
+      first_name: actors.first_name,
+      last_name: actors.last_name,
       slug: actors.slug,
       status: actors.status
     })
     .from(actors)
     .where(or(
-      ilike(actors.firstName, searchPattern),
-      ilike(actors.lastName, searchPattern),
+      ilike(actors.first_name, searchPattern),
+      ilike(actors.last_name, searchPattern),
       ilike(actors.slug, searchPattern)
     ))
     .limit(5);
@@ -57,15 +57,15 @@ export async function GET(request: NextRequest) {
     // 3. Zoek Gebruikers / Klanten
     const foundUsers = await db.select({
       id: users.id,
-      firstName: users.firstName,
-      lastName: users.lastName,
+      first_name: users.first_name,
+      last_name: users.last_name,
       email: users.email,
       companyName: users.companyName
     })
     .from(users)
     .where(or(
-      ilike(users.firstName, searchPattern),
-      ilike(users.lastName, searchPattern),
+      ilike(users.first_name, searchPattern),
+      ilike(users.last_name, searchPattern),
       ilike(users.email, searchPattern),
       ilike(users.companyName, searchPattern)
     ))
@@ -89,7 +89,7 @@ export async function GET(request: NextRequest) {
     const results = [
       ...foundActors.map(a => ({
         type: 'actor',
-        title: `${a.firstName} ${a.lastName || ''}`,
+        title: `${a.first_name} ${a.last_name || ''}`,
         subtitle: `Stemacteur • ${a.status}`,
         href: `/admin/voices?id=${a.id}`,
         id: a.id
@@ -103,7 +103,7 @@ export async function GET(request: NextRequest) {
       })),
       ...foundUsers.map(u => ({
         type: 'user',
-        title: u.companyName || `${u.firstName} ${u.lastName || ''}`,
+        title: u.companyName || `${u.first_name} ${u.last_name || ''}`,
         subtitle: `Klant • ${u.email}`,
         href: `/admin/users?id=${u.id}`,
         id: u.id

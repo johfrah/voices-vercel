@@ -228,7 +228,7 @@ export const ActorReorderModal = ({ isOpen, onClose, language, actors: initialAc
       // Map new order to menu_order values (1-based)
       const orders = items.map((item, idx) => ({
         id: item.id,
-        menuOrder: idx + 1
+        menu_order: idx + 1
       }));
 
       const res = await fetch('/api/admin/actors/reorder', {

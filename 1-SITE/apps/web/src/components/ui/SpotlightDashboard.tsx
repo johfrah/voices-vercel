@@ -157,7 +157,7 @@ export const SpotlightDashboard: React.FC = () => {
   const { t } = useTranslation();
   const { playClick, playSwell } = useSonicDNA();
 
-  const handleImpersonate = async (userId: string) => {
+  const handleImpersonate = async (user_id: string) => {
     const toastId = toast.loading('Ghost Mode wordt geactiveerd...');
     try {
       const res = await impersonate(userId);

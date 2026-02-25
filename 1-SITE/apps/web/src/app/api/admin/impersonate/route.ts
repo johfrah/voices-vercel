@@ -33,7 +33,7 @@ export async function POST(request: Request) {
   // We gebruiken de admin API om een magic link of sign-in te simuleren
   // Voor nu gebruiken we de admin.createSession methode van Supabase
   const { data: session, error: sessionError } = await supabase.auth.admin.createSession({
-    userId: targetUserId,
+    user_id: targetUserId,
   });
 
   if (sessionError || !session) {

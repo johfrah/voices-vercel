@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 3. Haal klant details op
-    const [customer] = await db.select().from(users).where(eq(users.id, order.userId as number)).limit(1);
+    const [customer] = await db.select().from(users).where(eq(users.id, order.user_id as number)).limit(1);
 
     const host = request.headers.get('host') || 'www.voices.be';
     const { MarketManagerServer: MarketManager } = require('@/lib/system/market-manager-server');
@@ -47,9 +47,9 @@ export async function POST(request: NextRequest) {
       subject: `🎙️ Nieuwe Opdracht: #${order.displayOrderId || order.wpOrderId} - ${market.name}`,
       template: 'actor-assignment',
       context: {
-        actorName: actor.firstName,
+        actorName: actor.first_name,
         orderId: order.displayOrderId || order.wpOrderId?.toString(),
-        clientName: customer ? `${customer.firstName} ${customer.lastName}` : 'Klant',
+        clientName: customer ? `${customer.first_name} ${customer.last_name}` : 'Klant',
         clientCompany: customer?.companyName,
         usageType: itemData?.usage || 'Voice-over',
         script: itemData?.script || 'Zie bijlage/dashboard',

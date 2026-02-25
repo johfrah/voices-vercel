@@ -66,19 +66,19 @@ export const SortableActorRow: React.FC<SortableActorRowProps> = ({
           {actor.photo_url ? (
             <Image src={actor.photo_url} alt="" fill className="object-cover" />
           ) : (
-            actor.firstName?.charAt(0) || '?'
+            actor.first_name?.charAt(0) || '?'
           )}
         </ContainerInstrument>
 
         <ContainerInstrument className="flex-1">
           <ContainerInstrument className="flex items-center gap-2">
             <HeadingInstrument level={3} className="text-xl font-light tracking-tight">
-              {actor.firstName} {actor.lastName}
+              {actor.first_name} {actor.last_name}
             </HeadingInstrument>
-            <TextInstrument as="span" className="text-[15px] font-light text-va-black/20 tracking-widest">#{actor.wpProductId || actor.id}</TextInstrument>
+            <TextInstrument as="span" className="text-[15px] font-light text-va-black/20 tracking-widest">#{actor.wp_product_id || actor.id}</TextInstrument>
           </ContainerInstrument>
           <TextInstrument className="text-[15px] font-light text-primary tracking-[0.2em] mt-1 uppercase">
-            {actor.nativeLang} native
+            {actor.native_lang} native
           </TextInstrument>
         </ContainerInstrument>
 
@@ -104,13 +104,13 @@ export const SortableActorRow: React.FC<SortableActorRowProps> = ({
             {isEditMode ? (
               <InputInstrument 
                 type="text" 
-                value={actor.priceUnpaid || ''}
+                value={actor.price_unpaid || ''}
                 onChange={(e) => onPriceChange(actor.id, e.target.value)}
                 onBlur={() => playClick('success')}
                 className="bg-primary/5 border-none p-0 w-20 focus:ring-0 text-lg font-light"
               />
             ) : (
-              <TextInstrument as="span">{actor.priceUnpaid}</TextInstrument>
+              <TextInstrument as="span">{actor.price_unpaid}</TextInstrument>
             )}
           </ContainerInstrument>
         </ContainerInstrument>
@@ -120,9 +120,9 @@ export const SortableActorRow: React.FC<SortableActorRowProps> = ({
           <TextInstrument className="text-[11px] font-light text-va-black/30 tracking-widest mb-1 uppercase">Score</TextInstrument>
           <ContainerInstrument className="flex items-center gap-2 justify-end">
             <ContainerInstrument className="w-24 h-1.5 bg-va-off-white rounded-full overflow-hidden">
-              <ContainerInstrument className="h-full bg-primary" style={{ width: `${Math.min(100, (actor.voiceScore || 10) * 10)}%` }} />
+              <ContainerInstrument className="h-full bg-primary" style={{ width: `${Math.min(100, (actor.voice_score || 10) * 10)}%` }} />
             </ContainerInstrument>
-            <TextInstrument as="span" className="text-[15px] font-light">{actor.voiceScore || 10}</TextInstrument>
+            <TextInstrument as="span" className="text-[15px] font-light">{actor.voice_score || 10}</TextInstrument>
           </ContainerInstrument>
         </ContainerInstrument>
 

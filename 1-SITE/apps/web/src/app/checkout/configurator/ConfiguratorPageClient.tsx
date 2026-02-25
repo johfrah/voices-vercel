@@ -118,7 +118,7 @@ export default function ConfiguratorPageClient({
       
       // Bouw de mooie URL
       const baseUrl = window.location.origin;
-      const slug = state.selectedActor?.slug || state.selectedActor?.firstName?.toLowerCase();
+      const slug = state.selectedActor?.slug || state.selectedActor?.first_name?.toLowerCase();
       
       const journeyMap: Record<string, string> = {
         'telefonie': 'telefoon',

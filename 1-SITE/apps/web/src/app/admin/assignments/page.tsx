@@ -26,7 +26,7 @@ async function getAssignments() {
     })
     .from(orderItems)
     .innerJoin(orders, eq(orderItems.orderId, orders.id))
-    .leftJoin(users, eq(orders.userId, users.id))
+    .leftJoin(users, eq(orders.user_id, users.id))
     .where(eq(orders.journey, 'agency'))
     .orderBy(desc(orderItems.createdAt));
 
@@ -39,7 +39,7 @@ async function getAssignments() {
     } as any);
 
     const actorsMap = new Map(actorsData.map(a => [a.id, a]));
-    const actorsByWpProductIdMap = new Map(actorsData.map(a => [a.wpProductId, a]));
+    const actorsByWpProductIdMap = new Map(actorsData.map(a => [a.wp_product_id, a]));
 
     return assignmentsData.map(({ item, order, customer }) => {
       const hasInvoice = invoices.some(inv => inv.actorId === item.actorId && inv.aiMetadata && (inv.aiMetadata as any).mailSubject?.includes(item.orderId?.toString()));
@@ -56,10 +56,10 @@ async function getAssignments() {
       return {
         ...item,
         hasInvoice,
-        userId: order.userId,
-        customerName: `${customer?.firstName || ''} ${customer?.lastName || ''}`.trim() || customer?.email || 'Onbekende Klant',
+        user_id: order.user_id,
+        customerName: `${customer?.first_name || ''} ${customer?.last_name || ''}`.trim() || customer?.email || 'Onbekende Klant',
         customerCompany: customer?.companyName || '',
-        actorName: `${(actor as any)?.firstName || ''} ${(actor as any)?.lastName || ''}`.trim() || item.name || 'Onbekende Acteur',
+        actorName: `${(actor as any)?.first_name || ''} ${(actor as any)?.last_name || ''}`.trim() || item.name || 'Onbekende Acteur',
         displayOrderId: order.wpOrderId || item.orderId,
         budget: item.price,
         cost: item.cost,
@@ -103,7 +103,7 @@ export default async function ActorAssignmentDashboard() {
                 <ContainerInstrument className="min-w-[200px]">
                   <TextInstrument className="text-[15px] font-light"><VoiceglotText  translationKey={`actor.${item.actorId}.name`} defaultText={item.actorName} noTranslate={true} /></TextInstrument>
                   <TextInstrument className="text-[15px] text-black/40 font-light tracking-wider">
-                    <VoiceglotText  translationKey="common.order" defaultText="Order" />#{item.displayOrderId}  <VoiceglotText  translationKey={`user.${item.userId}.name`} defaultText={item.customerName} noTranslate={true} />
+                    <VoiceglotText  translationKey="common.order" defaultText="Order" />#{item.displayOrderId}  <VoiceglotText  translationKey={`user.${item.user_id}.name`} defaultText={item.customerName} noTranslate={true} />
                     {item.customerCompany && ` (${item.customerCompany})`}
                   </TextInstrument>
                   <TextInstrument className="text-[15px] text-va-primary font-light mt-1">

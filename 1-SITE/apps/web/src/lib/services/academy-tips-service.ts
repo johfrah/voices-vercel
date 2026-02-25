@@ -12,11 +12,11 @@ export const AcademyTipsService = {
    * Haal een relevante tip op voor een gebruiker
    * Gebaseerd op hun huidige voortgang (hoofdstuk)
    */
-  async getDailyTip(userId: number) {
+  async getDailyTip(user_id: number) {
     // 1. Zoek het huidige hoofdstuk van de student
     const [latestProgress] = await db.select()
       .from(courseProgress)
-      .where(eq(courseProgress.userId, userId))
+      .where(eq(courseProgress.user_id, userId))
       .orderBy(sql`${courseProgress.lessonId} DESC`)
       .limit(1);
 

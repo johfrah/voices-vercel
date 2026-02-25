@@ -35,8 +35,8 @@ export const dynamic = 'force-dynamic';
 
 interface UserOption {
   id: number;
-  firstName: string | null;
-  lastName: string | null;
+  first_name: string | null;
+  last_name: string | null;
   email: string;
   companyName: string | null;
 }
@@ -117,7 +117,7 @@ export default function NewOrderPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          userId: selectedUserId,
+          user_id: selectedUserId,
           journey,
           items,
           internalNotes,
@@ -186,7 +186,7 @@ export default function NewOrderPage() {
                   <option value="">-- Kies een klant --</option>
                   {users.map(u => (
                     <option key={u.id} value={u.id}>
-                      {u.firstName} {u.lastName} ({u.companyName || u.email})
+                      {u.first_name} {u.last_name} ({u.companyName || u.email})
                     </option>
                   ))}
                   <option value="new">+ Nieuwe Klant Aanmaken</option>

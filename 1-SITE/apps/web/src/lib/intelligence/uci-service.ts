@@ -20,8 +20,8 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 export interface Customer360 {
   id: number;
   email: string;
-  firstName: string | null;
-  lastName: string | null;
+  first_name: string | null;
+  last_name: string | null;
   company: {
     name: string | null;
     vatNumber: string | null;
@@ -77,8 +77,8 @@ export class UCIService {
           user = {
             ...data,
             wpUserId: data.wp_user_id,
-            firstName: data.first_name,
-            lastName: data.last_name,
+            first_name: data.first_name,
+            last_name: data.last_name,
             companyName: data.company_name,
             companySector: data.company_sector,
             companySize: data.company_size,
@@ -94,7 +94,7 @@ export class UCIService {
             addressZip: data.address_zip,
             addressCity: data.address_city,
             addressCountry: data.address_country,
-            isManuallyEdited: data.is_manually_edited,
+            is_manually_edited: data.is_manually_edited,
             howHeard: data.how_heard,
             updatedAt: data.updated_at
           };
@@ -115,7 +115,7 @@ export class UCIService {
         const [ordersResult, utmResult] = await Promise.all([
           // Orders query - Optimized with index-ready userId filter
           db.query.orders.findMany({
-            where: eq(orders.userId, user.id),
+            where: eq(orders.user_id, user.id),
             with: {
               items: true
             },
@@ -131,7 +131,7 @@ export class UCIService {
           db
             .select()
             .from(utmTouchpoints)
-            .where(eq(utmTouchpoints.userId, user.id))
+            .where(eq(utmTouchpoints.user_id, user.id))
             .orderBy(desc(utmTouchpoints.createdAt))
             .limit(10)
             .catch(async (err) => {
@@ -162,8 +162,8 @@ export class UCIService {
       return {
         id: user.id,
         email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
+        first_name: user.first_name,
+        last_name: user.last_name,
         company: {
           name: user.companyName,
           vatNumber: user.vatNumber,
@@ -207,7 +207,7 @@ export class UCIService {
   /**
    * Update de intelligentie van een klant op basis van AI-analyse
    */
-  static async updateInsights(userId: number, insights: any) {
+  static async updateInsights(user_id: number, insights: any) {
     return await db
       .update(users)
       .set({ 

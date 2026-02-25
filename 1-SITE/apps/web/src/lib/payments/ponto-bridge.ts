@@ -151,7 +151,7 @@ export class PontoBridge {
       .select({
         orderId: orders.id,
         total: orders.total,
-        userId: orders.userId,
+        user_id: orders.user_id,
         yukiInvoiceId: orders.yukiInvoiceId
       })
       .from(orders)
@@ -160,15 +160,15 @@ export class PontoBridge {
     if (pendingOrders.length === 0) return [];
 
     // Haal de IBANs van de acteurs op
-    const userIds = pendingOrders.map(o => o.userId).filter(Boolean) as number[];
+    const userIds = pendingOrders.map(o => o.user_id).filter(Boolean) as number[];
     const actors = await db.select().from(users).where(inArray(users.id, userIds));
 
     return pendingOrders.map(order => {
-      const actor = actors.find(a => a.id === order.userId);
+      const actor = actors.find(a => a.id === order.user_id);
       return {
         orderId: order.orderId,
         amount: parseFloat(order.total || '0'),
-        name: `${actor?.firstName} ${actor?.lastName}`,
+        name: `${actor?.first_name} ${actor?.last_name}`,
         iban: actor?.iban || '',
         reference: `VOICES-PAYOUT-${order.orderId}`
       };

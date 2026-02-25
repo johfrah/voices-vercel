@@ -31,21 +31,21 @@ export async function GET(request: NextRequest) {
         totalRevenue: sum(orders.total),
       })
       .from(orders)
-      .where(eq(orders.userId, partner.id))
+      .where(eq(orders.user_id, partner.id))
       .catch(() => []);
 
     // 3. Haal recente orders op
     const recentOrders = await db
       .select()
       .from(orders)
-      .where(eq(orders.userId, partner.id))
+      .where(eq(orders.user_id, partner.id))
       .orderBy(sql`${orders.createdAt} DESC`)
       .limit(5)
       .catch(() => []);
 
     return NextResponse.json({
       partner: {
-        name: partner.companyName || partner.firstName,
+        name: partner.companyName || partner.first_name,
         slug: partnerSlug,
         coupon_code: 'PARTNER2026',
       },

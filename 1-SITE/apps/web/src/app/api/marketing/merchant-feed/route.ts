@@ -34,7 +34,7 @@ export async function GET() {
       db.query.actors.findMany({
         where: eq(actors.status, 'live'),
         with: {
-          actorLanguages: { with: { language: true } },
+          actor_languages: { with: { language: true } },
           actorTones: { with: { tone: true } }
         }
       }),
@@ -54,9 +54,9 @@ export async function GET() {
 
     // --- STEMACTEURS ---
     allActors.forEach(actor => {
-      const nativeLang = actor.actorLanguages?.find(al => al.isNative)?.language?.label || actor.nativeLang;
+      const nativeLang = actor.actor_languages?.find(al => al.isNative)?.language?.label || actor.native_lang;
       const tones = actor.actorTones?.map(at => at.tone?.label).join(', ');
-      const title = `Stemacteur: ${actor.firstName} (${nativeLang})`;
+      const title = `Stemacteur: ${actor.first_name} (${nativeLang})`;
       const description = actor.tagline || actor.bio || `Professionele stemacteur voor al uw projecten.`;
       
       xml += `
@@ -65,10 +65,10 @@ export async function GET() {
       <g:title>${escapeXml(title)}</g:title>
       <g:description>${escapeXml(description)}</g:description>
       <g:link>${baseUrl}/voice/${actor.slug}</g:link>
-      <g:image_link>${actor.photoId ? `${baseUrl}/api/proxy?path=media/${actor.photoId}` : ''}</g:image_link>
+      <g:image_link>${actor.photo_id ? `${baseUrl}/api/proxy?path=media/${actor.photo_id}` : ''}</g:image_link>
       <g:condition>new</g:condition>
       <g:availability>in stock</g:availability>
-      <g:price>${actor.priceUnpaid || '0'} EUR</g:price>
+      <g:price>${actor.price_unpaid || '0'} EUR</g:price>
       <g:google_product_category>Diensten > Media-ontwerp en -productie</g:google_product_category>
       <g:custom_label_0>Voice Actor</g:custom_label_0>
       <g:custom_label_1>${escapeXml(nativeLang)}</g:custom_label_1>

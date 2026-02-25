@@ -44,7 +44,7 @@ export async function runMasterSync() {
         const allActors = await db.select().from(actors);
         
         for (const actor of allActors) {
-            const actorId = actor.wpProductId || actor.id;
+            const actorId = actor.wp_product_id || actor.id;
             const actorFolderPattern = `-A-${actorId}`;
             
             // 1. SCAN & MAP MEDIA
@@ -53,13 +53,13 @@ export async function runMasterSync() {
             // maar voor de 'Big Bang' doen we een grondige scan.
             
             // Simuleer de scan voor dit blueprint (recursieve walk is zwaar, we focussen op de logica)
-            console.log(` Processing Actor: ${actor.firstName} (ID: ${actorId})`);
+            console.log(` Processing Actor: ${actor.first_name} (ID: ${actorId})`);
 
             // 2. PRICING ALIGNMENT (BIJBEL-COMMERCE-RULES)
             // We zorgen dat de tarieven in de database 100% kloppen.
             // Als er geen tarieven zijn, markeren we dit als 'pending' voor handmatige review.
             if (!actor.rates || Object.keys(actor.rates as object).length === 0) {
-                console.log(` ⚠️ No rates found for ${actor.firstName}. Skipping price update to avoid slop.`);
+                console.log(` ⚠️ No rates found for ${actor.first_name}. Skipping price update to avoid slop.`);
                 // We zetten geen default prijzen meer (Chris-Protocol)
             }
 
@@ -67,7 +67,7 @@ export async function runMasterSync() {
             // Alleen acteurs met een foto en minimaal 1 demo gaan op 'live'
             // Voor nu activeren we ze allemaal die we verwerkt hebben als test.
             await db.update(actors).set({ 
-                isPublic: true,
+                is_public: true,
                 status: 'live'
             }).where(eq(actors.id, actor.id));
             

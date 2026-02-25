@@ -36,7 +36,7 @@ export async function POST(
     // In een echte productie-omgeving zouden we dit naar een queue sturen
     const results = await Promise.all(participants.map(async (p) => {
       const user = p.order?.user;
-      const participantName = `${user?.firstName || ''} ${user?.lastName || ''}`.trim() || (p.order?.rawMeta as any)?.billing_first_name || 'Deelnemer';
+      const participantName = `${user?.first_name || ''} ${user?.last_name || ''}`.trim() || (p.order?.rawMeta as any)?.billing_first_name || 'Deelnemer';
       
       const certData = {
         participantName,
@@ -56,8 +56,8 @@ export async function POST(
       console.log(` Review request scheduled for ${user?.email || 'unknown'}`);
 
       //  4. Audio Link Trigger (Mock)
-      if (p.dropboxUrl) {
-        console.log(` Audio link ${p.dropboxUrl} sent to ${user?.email || 'unknown'}`);
+      if (p.dropbox_url) {
+        console.log(` Audio link ${p.dropbox_url} sent to ${user?.email || 'unknown'}`);
       }
       
       return { email: user?.email, success: true };

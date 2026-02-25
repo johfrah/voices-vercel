@@ -75,8 +75,8 @@ export async function GET(request: NextRequest) {
       recentActivity: recentActivity?.map(u => ({
         id: u.id,
         email: u.email,
-        firstName: u.first_name,
-        lastName: u.last_name,
+        first_name: u.first_name,
+        last_name: u.last_name,
         lastActive: u.last_active,
         journeyState: u.journey_state
       })),

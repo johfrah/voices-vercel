@@ -15,9 +15,9 @@ export class MusicDeliveryService {
     try {
       // 1. Haal order en klantgegevens op
       const [order] = await db.select().from(orders).where(eq(orders.id, orderId)).limit(1);
-      if (!order || !order.userId) return;
+      if (!order || !order.user_id) return;
 
-      const [user] = await db.select().from(users).where(eq(users.id, order.userId)).limit(1);
+      const [user] = await db.select().from(users).where(eq(users.id, order.user_id)).limit(1);
       if (!user) return;
 
       // 2. Check of er muziek in de order zit
@@ -57,7 +57,7 @@ export class MusicDeliveryService {
       const dropbox = DropboxService.getInstance();
       await dropbox.syncToControlFolder(
         orderId.toString(),
-        `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Klant',
+        `${user.first_name || ''} ${user.last_name || ''}`.trim() || 'Klant',
         `Muzieklicentie - ${track.altText || track.fileName}`
       );
 

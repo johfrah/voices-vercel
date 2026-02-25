@@ -47,7 +47,7 @@ export class DbService {
       // 1. Bereid de update voor
       const updateData = {
         ...data,
-        isManuallyEdited: true,
+        is_manually_edited: true,
         updatedAt: new Date(),
         // @ts-ignore
         lastEditedBy: userId
@@ -74,7 +74,7 @@ export class DbService {
     return await db.transaction(async (tx) => {
       const insertData = {
         ...data,
-        isManuallyEdited: true,
+        is_manually_edited: true,
         createdAt: new Date(),
         updatedAt: new Date(),
         // @ts-ignore

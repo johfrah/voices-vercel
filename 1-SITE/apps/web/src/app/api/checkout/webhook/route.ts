@@ -112,7 +112,7 @@ export async function POST(request: NextRequest) {
                     amount: order.total,
                     artistName: 'Youssef Zaki',
                     message: donationContext.message,
-                    customer: { firstName: donationContext.donorName }
+                    customer: { first_name: donationContext.donorName }
                   }
                 })
               });
@@ -157,7 +157,7 @@ export async function POST(request: NextRequest) {
 
           // 🛡️ CHRIS-PROTOCOL: AUTOMATED CUSTOMER CONFIRMATION (v2.14.328)
           if (order) {
-            const [user] = await tx.select().from(users).where(eq(users.id, order.userId as number)).limit(1);
+            const [user] = await tx.select().from(users).where(eq(users.id, order.user_id as number)).limit(1);
             if (user) {
               (async () => {
                 try {
@@ -166,7 +166,7 @@ export async function POST(request: NextRequest) {
                     subject: `Bestelling Bevestigd: #${orderId} - Voices.be`,
                     template: 'order-confirmation',
                     context: {
-                      userName: user.firstName || 'Klant',
+                      userName: user.first_name || 'Klant',
                       orderId: orderId.toString(),
                       total: parseFloat(order.total || '0'),
                       items: items.map(i => ({
@@ -203,8 +203,8 @@ export async function POST(request: NextRequest) {
         // We maken GEEN automatische Yuki factuur meer aan.
         // De admin triggert dit handmatig na controle.
 
-        if (payment.metadata.userId) {
-          const userId = parseInt(payment.metadata.userId);
+        if (payment.metadata.user_id) {
+          const userId = parseInt(payment.metadata.user_id);
           
           // Verhoog order count en spent in user DNA
           await tx.update(users)
@@ -245,7 +245,7 @@ export async function POST(request: NextRequest) {
                 amount: payment.amount.value,
                 company: payment.metadata.company,
                 items: (order.rawMeta as any)?.items || [],
-                customer: { firstName: payment.metadata.givenName, lastName: payment.metadata.familyName }
+                customer: { first_name: payment.metadata.givenName, last_name: payment.metadata.familyName }
               }
             })
           });

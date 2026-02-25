@@ -40,7 +40,7 @@ export async function PATCH(
     const updateData: any = {};
     if (body.title !== undefined) updateData.name = body.title;
     if (body.category !== undefined) updateData.type = body.category;
-    if (body.isPublic !== undefined) updateData.is_public = body.isPublic;
+    if (body.is_public !== undefined) updateData.is_public = body.is_public;
 
     const { data, error } = await supabase
       .from('actor_demos')

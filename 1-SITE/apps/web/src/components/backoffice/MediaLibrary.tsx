@@ -44,7 +44,7 @@ interface MediaItem {
   journey: string;
   category: string;
   labels: string[] | null;
-  isPublic: boolean;
+  is_public: boolean;
   isOrphan: boolean;
   relations: { type: string, name: string }[];
   createdAt: string;
@@ -52,8 +52,8 @@ interface MediaItem {
 
 interface Actor {
   id: number;
-  firstName: string;
-  lastName: string;
+  first_name: string;
+  last_name: string;
 }
 
 export const MediaLibrary: React.FC = () => {
@@ -185,14 +185,14 @@ export const MediaLibrary: React.FC = () => {
         body: formData,
       });
       if (res.ok) {
-        setMedia(media.map(m => m.id === id ? { ...m, isPublic: !currentStatus } : m));
+        setMedia(media.map(m => m.id === id ? { ...m, is_public: !currentStatus } : m));
       }
     } catch (e) {
       console.error('Visibility update failed', e);
     }
   };
 
-  const handleBulkVisibility = async (isPublic: boolean) => {
+  const handleBulkVisibility = async (is_public: boolean) => {
     playClick('deep');
     const formData = new FormData();
     formData.append('action', 'bulk-visibility');
@@ -278,7 +278,7 @@ export const MediaLibrary: React.FC = () => {
                   selectedActorId === actor.id ? 'bg-primary text-white' : 'hover:bg-va-off-white text-va-black/60'
                 )}
               >
-                <TextInstrument>{actor.firstName} {actor.lastName}</TextInstrument>
+                <TextInstrument>{actor.first_name} {actor.last_name}</TextInstrument>
                 <ChevronRight size={12} strokeWidth={1.5} className={cn("opacity-0 group-hover:opacity-100 transition-opacity", selectedActorId === actor.id ? 'opacity-100' : '')} />
               </ButtonInstrument>
             ))}
@@ -344,7 +344,7 @@ export const MediaLibrary: React.FC = () => {
                 <ImageIcon   size={20}  />
               </ContainerInstrument>
               <HeadingInstrument level={2} className="text-3xl font-light tracking-tight">
-                {selectedActorId ? `${actors.find(a => a.id === selectedActorId)?.firstName}'s Portfolio` : <VoiceglotText  translationKey="media.engine_title" defaultText="Media Engine" />}
+                {selectedActorId ? `${actors.find(a => a.id === selectedActorId)?.first_name}'s Portfolio` : <VoiceglotText  translationKey="media.engine_title" defaultText="Media Engine" />}
               </HeadingInstrument>
             </ContainerInstrument>
             <TextInstrument className="text-va-black/40 font-light max-w-md text-[15px]">
@@ -513,14 +513,14 @@ export const MediaLibrary: React.FC = () => {
                   {/* Status Badges */}
                   <ContainerInstrument className="absolute top-6 left-6 flex flex-col gap-2 z-10">
                     <ButtonInstrument 
-                      onClick={(e) => { e.stopPropagation(); toggleVisibility(item.id, item.isPublic); }}
+                      onClick={(e) => { e.stopPropagation(); toggleVisibility(item.id, item.is_public); }}
                       className={cn(
                         "px-3 py-1 backdrop-blur-md rounded-full text-[15px] font-light uppercase tracking-widest transition-all flex items-center gap-1 border-none",
-                        item.isPublic ? 'bg-emerald-500/80 text-white' : 'bg-va-black/80 text-white'
+                        item.is_public ? 'bg-emerald-500/80 text-white' : 'bg-va-black/80 text-white'
                       )}
                     >
-                      {item.isPublic ? <Eye size={10} strokeWidth={1.5} /> : <EyeOff size={10} strokeWidth={1.5} />}
-                      {item.isPublic ? 'Public' : 'Private'}
+                      {item.is_public ? <Eye size={10} strokeWidth={1.5} /> : <EyeOff size={10} strokeWidth={1.5} />}
+                      {item.is_public ? 'Public' : 'Private'}
                     </ButtonInstrument>
                     {item.isOrphan && (
                       <ContainerInstrument className="px-3 py-1 bg-orange-500/80 backdrop-blur-md text-white rounded-full text-[15px] font-light tracking-widest flex items-center gap-1">

@@ -44,7 +44,7 @@ interface TelegramUpdate {
   edited_message?: { from?: { id: number }; chat: { id: number }; text?: string };
 }
 
-function isAllowedUser(userId: number): boolean {
+function isAllowedUser(user_id: number): boolean {
   const allowed = process.env.TELEGRAM_ALLOWED_USER_IDS;
   if (!allowed?.trim()) return true; // No whitelist = allow all (dev/optional)
   const ids = allowed.split(',').map((s) => s.trim()).filter(Boolean);

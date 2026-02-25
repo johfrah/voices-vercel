@@ -72,7 +72,7 @@ export const CheckoutPayloadSchema = z.object({
   metadata: z.object({
     words: z.coerce.number().default(0),
     prompts: z.coerce.number().default(0),
-    userId: z.coerce.number().optional(),
+    user_id: z.coerce.number().optional(),
   }).optional(),
 });
 

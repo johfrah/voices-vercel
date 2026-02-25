@@ -25,12 +25,12 @@ async function mapAudioDemos() {
     
     // We doen een recursieve scan voor de map van deze specifieke acteur
     // Gebruik makend van de 'A-[id]' conventie die we zien in de mappenstructuur
-    const actorFolderPattern = `-A-${actor.wpProductId || actor.id}`;
+    const actorFolderPattern = `-A-${actor.wp_product_id || actor.id}`;
     
     // Scan de mappen (dit is een gesimplificeerde versie, in realiteit zou je globben)
     // Voor nu focussen we op de logica van het mappen naar de database
     
-    console.log(` Scanning for actor: ${actor.firstName} (ID: ${actor.id}, WP: ${actor.wpProductId})`);
+    console.log(` Scanning for actor: ${actor.first_name} (ID: ${actor.id}, WP: ${actor.wp_product_id})`);
     
     // TODO: Implementeer recursieve folder search voor actorFolderPattern
     // Voor deze demo/script focus ik op de database injectie logica

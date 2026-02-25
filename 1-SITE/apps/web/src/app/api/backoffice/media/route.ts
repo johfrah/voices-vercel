@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
 
     //  RELATION TRACKING LOGIC
     const [actorsData, demosData, articlesData, ademingData] = await Promise.all([
-      db.select({ id: actors.id, name: actors.firstName, photoId: actors.photoId, logoId: actors.logoId, youtubeUrl: actors.youtubeUrl }).from(actors),
+      db.select({ id: actors.id, name: actors.first_name, photo_id: actors.photo_id, logo_id: actors.logo_id, youtubeUrl: actors.youtubeUrl }).from(actors),
       db.select({ id: actorDemos.id, name: actorDemos.name, mediaId: actorDemos.mediaId, actorId: actorDemos.actorId }).from(actorDemos),
       db.select({ id: contentArticles.id, title: contentArticles.title, featuredImageId: contentArticles.featuredImageId }).from(contentArticles),
       db.select({ id: ademingTracks.id, title: ademingTracks.title, mediaId: ademingTracks.mediaId }).from(ademingTracks)
@@ -30,13 +30,13 @@ export async function GET(request: NextRequest) {
     const relationsMap: Record<number, { type: string, name: string }[]> = {};
 
     actorsData.forEach(a => {
-      if (a.photoId) {
-        if (!relationsMap[a.photoId]) relationsMap[a.photoId] = [];
-        relationsMap[a.photoId].push({ type: 'Actor Photo', name: a.name });
+      if (a.photo_id) {
+        if (!relationsMap[a.photo_id]) relationsMap[a.photo_id] = [];
+        relationsMap[a.photo_id].push({ type: 'Actor Photo', name: a.name });
       }
-      if (a.logoId) {
-        if (!relationsMap[a.logoId]) relationsMap[a.logoId] = [];
-        relationsMap[a.logoId].push({ type: 'Actor Logo', name: a.name });
+      if (a.logo_id) {
+        if (!relationsMap[a.logo_id]) relationsMap[a.logo_id] = [];
+        relationsMap[a.logo_id].push({ type: 'Actor Logo', name: a.name });
       }
     });
 
@@ -69,8 +69,8 @@ export async function GET(request: NextRequest) {
       
       // We halen alle media IDs op die bij deze acteur horen
       const linkedMediaIds = new Set<number>();
-      if (actor?.photoId) linkedMediaIds.add(actor.photoId);
-      if (actor?.logoId) linkedMediaIds.add(actor.logoId);
+      if (actor?.photo_id) linkedMediaIds.add(actor.photo_id);
+      if (actor?.logo_id) linkedMediaIds.add(actor.logo_id);
       demosData.filter(d => d.actorId === id && d.mediaId).forEach(d => linkedMediaIds.add(d.mediaId!));
 
       if (linkedMediaIds.size === 0) return NextResponse.json({ results: [], youtubeUrl: actor?.youtubeUrl });
@@ -158,7 +158,7 @@ export async function POST(request: NextRequest) {
       const ids = JSON.parse(formData.get('ids') as string) as number[];
       const isPublic = formData.get('isPublic') === 'true';
       await db.transaction(async (tx) => {
-        await tx.update(media).set({ isPublic, isManuallyEdited: true }).where(inArray(media.id, ids));
+        await tx.update(media).set({ isPublic, is_manually_edited: true }).where(inArray(media.id, ids));
       });
       return NextResponse.json({ success: true });
     }
@@ -167,7 +167,7 @@ export async function POST(request: NextRequest) {
       const id = parseInt(formData.get('id') as string);
       const isPublic = formData.get('isPublic') === 'true';
       await db.transaction(async (tx) => {
-        await tx.update(media).set({ isPublic, isManuallyEdited: true }).where(eq(media.id, id));
+        await tx.update(media).set({ isPublic, is_manually_edited: true }).where(eq(media.id, id));
       });
       return NextResponse.json({ success: true });
     }
@@ -201,7 +201,7 @@ export async function POST(request: NextRequest) {
         category,
         labels,
         isPublic,
-        isManuallyEdited: true,
+        is_manually_edited: true,
         metadata: {}
       }).returning();
     });

@@ -20,14 +20,14 @@ export async function GET(request: NextRequest) {
       textEn: reviews.textEn,
       status: reviews.language, // reviews table doesn't have a status column in schema, using language as proxy or just omitting
       createdAt: reviews.createdAt,
-      actorFirstName: actors.firstName,
-      actorLastName: actors.lastName,
-      userFirstName: users.firstName,
-      userLastName: users.lastName
+      actorFirstName: actors.first_name,
+      actorLastName: actors.last_name,
+      userFirstName: users.first_name,
+      userLastName: users.last_name
     })
     .from(reviews)
     .leftJoin(actors, sql`${reviews.iapContext}->>'actorId' = ${actors.id.toString()}`)
-    .leftJoin(users, eq(reviews.authorName, users.firstName)) // This join is weak, but authors in reviews are often strings
+    .leftJoin(users, eq(reviews.authorName, users.first_name)) // This join is weak, but authors in reviews are often strings
     .orderBy(desc(reviews.createdAt))
     .catch(() => []);
 

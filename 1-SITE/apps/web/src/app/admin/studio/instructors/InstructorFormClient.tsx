@@ -6,14 +6,14 @@ import { useRouter } from "next/navigation";
 
 export default function InstructorFormClient({ initialData }: { initialData?: any }) {
   const [formData, setFormData] = useState(initialData || {
-    firstName: '',
-    lastName: '',
+    first_name: '',
+    last_name: '',
     name: '', // Legacy field
     slug: '',
     tagline: '',
     bio: '',
     vatNumber: '',
-    isPublic: true
+    is_public: true
   });
   const [isSaving, setIsSaving] = useState(false);
   const router = useRouter();
@@ -25,8 +25,8 @@ export default function InstructorFormClient({ initialData }: { initialData?: an
     // Automatisch legacy 'name' veld vullen
     const fullData = {
       ...formData,
-      name: `${formData.firstName} ${formData.lastName}`.trim(),
-      slug: `${formData.firstName}-${formData.lastName}`.toLowerCase().replace(/ /g, '-')
+      name: `${formData.first_name} ${formData.last_name}`.trim(),
+      slug: `${formData.first_name}-${formData.last_name}`.toLowerCase().replace(/ /g, '-')
     };
 
     try {
@@ -37,7 +37,7 @@ export default function InstructorFormClient({ initialData }: { initialData?: an
       });
       if (res.ok) {
         router.refresh();
-        if (!initialData) setFormData({ firstName: '', lastName: '', name: '', slug: '', tagline: '', bio: '', vatNumber: '', isPublic: true });
+        if (!initialData) setFormData({ first_name: '', last_name: '', name: '', slug: '', tagline: '', bio: '', vatNumber: '', is_public: true });
       }
     } catch (err) {
       console.error("Save failed", err);
@@ -55,8 +55,8 @@ export default function InstructorFormClient({ initialData }: { initialData?: an
             <input 
               type="text" 
               required
-              value={formData.firstName}
-              onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+              value={formData.first_name}
+              onChange={(e) => setFormData({ ...formData, first_name: e.target.value })}
               className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white focus:border-primary/50 outline-none transition-all"
             />
           </div>
@@ -65,8 +65,8 @@ export default function InstructorFormClient({ initialData }: { initialData?: an
             <input 
               type="text" 
               required
-              value={formData.lastName}
-              onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+              value={formData.last_name}
+              onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
               className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white focus:border-primary/50 outline-none transition-all"
             />
           </div>

@@ -17,7 +17,7 @@ export const SecurityService = {
   /**
    * Controleer of een gebruiker toegang heeft tot een les
    */
-  async checkAccess(userId: number, courseId: number) {
+  async checkAccess(user_id: number, courseId: number) {
     let user: any = null;
     try {
       const [dbUser] = await db.select().from(users).where(eq(users.id, userId)).limit(1);
@@ -42,7 +42,7 @@ export const SecurityService = {
   /**
    * Registreer een device fingerprint om sharing te detecteren
    */
-  async trackDevice(userId: number, fingerprint: string) {
+  async trackDevice(user_id: number, fingerprint: string) {
     let user: any = null;
     try {
       const [dbUser] = await db.select().from(users).where(eq(users.id, userId)).limit(1);

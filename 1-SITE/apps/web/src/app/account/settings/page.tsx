@@ -68,7 +68,7 @@ export default function SettingsPage() {
               </div>
               <div>
                 <HeadingInstrument level={3} className="text-2xl tracking-tight font-medium">
-                  {auth.user?.firstName} {auth.user?.lastName}
+                  {auth.user?.first_name} {auth.user?.last_name}
                 </HeadingInstrument>
                 <TextInstrument className="text-va-black/40 text-[13px] tracking-widest uppercase">
                   <VoiceglotText 
@@ -130,10 +130,10 @@ export default function SettingsPage() {
                 <div className="flex items-center justify-between p-3 bg-va-off-white rounded-xl border border-black/5">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center text-[10px] font-bold text-primary">
-                      {auth.user?.firstName?.substring(0, 1)}{auth.user?.lastName?.substring(0, 1)}
+                      {auth.user?.first_name?.substring(0, 1)}{auth.user?.last_name?.substring(0, 1)}
                     </div>
                     <TextInstrument className="text-[13px] font-medium">
-                      {auth.user?.firstName} {auth.user?.lastName} (Admin)
+                      {auth.user?.first_name} {auth.user?.last_name} (Admin)
                     </TextInstrument>
                   </div>
                 </div>
@@ -169,7 +169,7 @@ export default function SettingsPage() {
                       <VoiceglotText translationKey="form.label.first_name" defaultText="Voornaam" />
                     </LabelInstrument>
                     <InputInstrument 
-                      value={auth.user?.firstName || ''}
+                      value={auth.user?.first_name || ''}
                       readOnly
                       className="bg-va-off-white/50"
                     />
@@ -179,7 +179,7 @@ export default function SettingsPage() {
                       <VoiceglotText translationKey="form.label.last_name" defaultText="Achternaam" />
                     </LabelInstrument>
                     <InputInstrument 
-                      value={auth.user?.lastName || ''}
+                      value={auth.user?.last_name || ''}
                       readOnly
                       className="bg-va-off-white/50"
                     />

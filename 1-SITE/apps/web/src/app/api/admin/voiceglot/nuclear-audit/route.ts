@@ -84,7 +84,7 @@ export async function POST(request: NextRequest) {
               translatedText: cleanImproved,
               updatedAt: new Date(),
               lastAuditedAt: new Date(),
-              isManuallyEdited: false,
+              is_manually_edited: false,
               auditLog: sql`COALESCE(audit_log, '[]'::jsonb) || ${JSON.stringify(auditEntry)}::jsonb`
             })
             .where(eq(translations.id, row.id));

@@ -29,7 +29,7 @@ export async function GET(request: Request) {
 
     // 2. Order Historie
     const userOrders = await db.select().from(orders)
-      .where(eq(orders.userId, userId))
+      .where(eq(orders.user_id, userId))
       .orderBy(desc(orders.createdAt))
       .limit(5);
 
@@ -50,7 +50,7 @@ export async function GET(request: Request) {
 
     // 6. Check of het een Actor is (ook op basis van email als userId link mist)
     let actor = await db.query.actors.findFirst({
-      where: eq(actors.userId, userId)
+      where: eq(actors.user_id, userId)
     });
 
     if (!actor && email) {

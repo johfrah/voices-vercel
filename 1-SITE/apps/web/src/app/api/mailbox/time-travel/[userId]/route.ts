@@ -7,8 +7,8 @@ import { NextResponse } from 'next/server';
  * 
  * Doel: Haalt de emotionele geschiedenis en 'Vibe Check' op van een klant.
  */
-export async function GET(request: Request, { params }: { params: { userId: string } }) {
-  const userId = parseInt(params.userId);
+export async function GET(request: Request, { params }: { params: { user_id: string } }) {
+  const userId = parseInt(params.user_id);
   if (isNaN(userId)) return NextResponse.json({ error: 'Invalid userId' }, { status: 400 });
 
   try {

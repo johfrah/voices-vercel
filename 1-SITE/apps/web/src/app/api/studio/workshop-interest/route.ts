@@ -33,8 +33,8 @@ export async function POST(request: Request) {
     const [result] = await db
       .insert(workshopInterest)
       .values({
-        firstName: String(firstName).trim(),
-        lastName: String(lastName).trim(),
+        first_name: String(firstName).trim(),
+        last_name: String(lastName).trim(),
         email: String(email).trim(),
         profession: profession?.trim() || null,
         age: age ? parseInt(String(age), 10) : null,

@@ -57,12 +57,12 @@ export async function GET(request: NextRequest) {
     try {
       topPerformers = await db
         .select({
-          name: sql`${users.firstName} || ' ' || ${users.lastName}`,
+          name: sql`${users.first_name} || ' ' || ${users.last_name}`,
           totalProfit: sql`SUM(${orders.totalProfit})`,
           orderCount: sql`COUNT(${orders.id})`
         })
         .from(orders)
-        .innerJoin(users, eq(orders.userId, users.id))
+        .innerJoin(users, eq(orders.user_id, users.id))
         .groupBy(users.id)
         .orderBy(sql`SUM(${orders.totalProfit}) DESC`)
         .limit(5);

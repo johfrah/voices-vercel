@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
     }
 
     const analysis = await IntentLearningEngine.learnFromInteraction({
-      userId: numericUserId,
+      user_id: numericUserId,
       visitorHash: visitorHash || 'anonymous',
       type,
       content,

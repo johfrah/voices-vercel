@@ -47,33 +47,33 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
     status: actor.status || 'live',
     delivery_days_max: actor.delivery_days_max || 1,
     cutoff_time: actor.cutoff_time || '18:00',
-    native_lang: (actor as any).native_lang || (actor as any).nativeLang || '',
-    native_lang_id: (actor as any).native_lang_id || (actor as any).nativeLangId || null,
-    extra_langs: (actor as any).extra_langs || (actor as any).extraLangs || '',
-    extra_lang_ids: (actor as any).extra_lang_ids || (actor as any).extraLangIds || [],
-    native_lang_label: actor.native_lang_label || (actor as any).nativeLangLabel || (actor as any).native_lang_label || '',
-    dropbox_url: actor.dropbox_url || actor.photo_url || '',
-    photo_id: (actor as any).photo_id || (actor as any).photoId || null,
+    native_lang: actor.native_lang || '',
+    native_lang_id: actor.native_lang_id || null,
+    extra_langs: actor.extra_langs || '',
+    extra_lang_ids: actor.extra_lang_ids || [],
+    native_lang_label: actor.native_lang_label || '',
+    dropbox_url: actor.dropbox_url || '',
+    photo_id: actor.photo_id || null,
     demos: actor.demos || [],
-    first_name: actor.first_name || actor.firstName || '',
-    last_name: actor.last_name || actor.lastName || '',
+    first_name: actor.first_name || '',
+    last_name: actor.last_name || '',
     email: actor.email || (actor as any).user?.email || '',
     gender: actor.gender || 'male',
-    experience_level: actor.experience_level || actor.experienceLevel || 'pro',
-    holiday_from: (actor as any).holiday_from || (actor as any).holidayFrom || '',
-    holiday_till: (actor as any).holiday_till || (actor as any).holidayTill || '',
-    price_online: (actor as any).price_online || (actor as any).priceOnline || '',
-    price_live_regie: (actor as any).price_live_regie || (actor as any).priceLiveRegie || '',
-    rates: actor.rates || (actor as any).rates || { GLOBAL: {} },
-    delivery_config: (actor as any).delivery_config || (actor as any).deliveryConfig || { type: '24h', cutoff: '18:00', weekly_on: ['mon', 'tue', 'wed', 'thu', 'fri'] },
-    studio_specs: (actor as any).studio_specs || (actor as any).studioSpecs || { microphone: '', preamp: '', interface: '', booth: '' },
-    connectivity: (actor as any).connectivity || { source_connect: false, zoom: false, cleanfeed: false, session_link: false },
-    portfolio_photos: (actor as any).portfolio_photos || [],
-    actor_videos: (actor as any).actor_videos || (actor as any).actorVideos || [],
+    experience_level: actor.experience_level || 'pro',
+    holiday_from: actor.holiday_from || '',
+    holiday_till: actor.holiday_till || '',
+    price_online: actor.price_online || '',
+    price_live_regie: actor.price_live_regie || '',
+    rates: actor.rates || { GLOBAL: {} },
+    delivery_config: actor.delivery_config || { type: '24h', cutoff: '18:00', weekly_on: ['mon', 'tue', 'wed', 'thu', 'fri'] },
+    studio_specs: actor.studio_specs || { microphone: '', preamp: '', interface: '', booth: '' },
+    connectivity: actor.connectivity || { source_connect: false, zoom: false, cleanfeed: false, session_link: false },
+    portfolio_photos: actor.portfolio_photos || [],
+    actor_videos: actor.actor_videos || [],
     reviews: actor.reviews || [],
-    portfolio_tier: (actor as any).portfolio_tier || (actor as any).portfolioTier || 'none',
-    pending_bio: (actor as any).pending_bio || (actor as any).pendingBio || null,
-    pending_tagline: (actor as any).pending_tagline || (actor as any).pendingTagline || null
+    portfolio_tier: actor.portfolio_tier || 'none',
+    pending_bio: actor.pending_bio || null,
+    pending_tagline: actor.pending_tagline || null
   });
 
   //  CHRIS-PROTOCOL: If native_lang is a label (like "Vlaams"), try to find the code in taxonomies
@@ -230,7 +230,7 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
     return Math.floor(price * EARNINGS_FACTOR);
   };
 
-  const [showLiveRegie, setShowLiveRegie] = useState(!!(actor as any).priceLiveRegie || !!(actor as any).price_live_regie);
+  const [showLiveRegie, setShowLiveRegie] = useState(!!(actor as any).price_live_regie || !!(actor as any).price_live_regie);
 
   const RateIntelligence = ({ value, label, isPlaceholder = false }: { value: string | number, label: string, isPlaceholder?: boolean }) => {
     const numValue = typeof value === 'string' ? parseFloat(value) : value;
@@ -352,7 +352,7 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
         radio_local: (actor as any).price_radio_local || (actor as any).price_radio_local,
         podcast: (actor as any).price_podcast || (actor as any).price_podcast,
         social_media: (actor as any).price_social_media || (actor as any).price_social_media,
-        online: (actor as any).price_online || (actor as any).priceOnline
+        online: (actor as any).price_online || (actor as any).price_online
       };
 
       Object.entries(legacyFields).forEach(([key, val]) => {
@@ -397,21 +397,21 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
         native_lang_label: actor.native_lang_label || (actor as any).native_lang_label || '',
         photo_url: actor.photo_url || '',
         demos: actor.demos || [],
-        first_name: actor.first_name || actor.firstName || (actor as any).display_name || '',
-        last_name: actor.last_name || actor.lastName || '',
+        first_name: actor.first_name || actor.first_name || (actor as any).display_name || '',
+        last_name: actor.last_name || actor.last_name || '',
         email: actor.email || (actor as any).user?.email || '',
         gender: actor.gender || 'male',
-        experience_level: actor.experience_level || actor.experienceLevel || 'pro',
-        holiday_from: (actor as any).holiday_from || (actor as any).holidayFrom || '',
-        holiday_till: (actor as any).holiday_till || (actor as any).holidayTill || '',
-        price_live_regie: (actor as any).price_live_regie || (actor as any).priceLiveRegie || '',
+        experience_level: actor.experience_level || actor.experience_level || 'pro',
+        holiday_from: (actor as any).holiday_from || (actor as any).holiday_from || '',
+        holiday_till: (actor as any).holiday_till || (actor as any).holiday_till || '',
+        price_live_regie: (actor as any).price_live_regie || (actor as any).price_live_regie || '',
         rates: initialRates,
         delivery_config: (actor as any).delivery_config || (actor as any).deliveryConfig || { type: '24h', cutoff: '18:00', weekly_on: ['mon', 'tue', 'wed', 'thu', 'fri'] },
-        photo_id: (actor as any).photo_id || (actor as any).photoId || null,
-        price_online: (actor as any).price_online || (actor as any).priceOnline || '',
-        actor_videos: (actor as any).actor_videos || (actor as any).actorVideos || [],
-        pending_bio: (actor as any).pending_bio || (actor as any).pendingBio || null,
-        pending_tagline: (actor as any).pending_tagline || (actor as any).pendingTagline || null
+        photo_id: (actor as any).photo_id || (actor as any).photo_id || null,
+        price_online: (actor as any).price_online || (actor as any).price_online || '',
+        actor_videos: (actor as any).actor_videos || (actor as any).actor_videos || [],
+        pending_bio: (actor as any).pending_bio || (actor as any).pending_bio || null,
+        pending_tagline: (actor as any).pending_tagline || (actor as any).pending_tagline || null
       });
       setMessage(null);
     }

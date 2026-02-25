@@ -13,12 +13,12 @@ export async function GET(request: NextRequest) {
     if (search) {
       // @ts-ignore
       query = query.where(or(
-        ilike(actors.firstName, `%${search}%`),
-        ilike(actors.lastName, `%${search}%`)
+        ilike(actors.first_name, `%${search}%`),
+        ilike(actors.last_name, `%${search}%`)
       ));
     }
 
-    const results = await query.orderBy(desc(actors.voiceScore)).limit(50);
+    const results = await query.orderBy(desc(actors.voice_score)).limit(50);
     return NextResponse.json(results);
   } catch (error) {
     return NextResponse.json({ error: 'Kon acteurs niet ophalen' }, { status: 500 });

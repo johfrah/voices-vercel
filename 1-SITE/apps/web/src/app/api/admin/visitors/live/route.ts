@@ -55,8 +55,8 @@ export async function GET(req: NextRequest) {
         createdAt: new Date(s.created_at),
         updatedAt: new Date(s.updated_at),
         user: s.user ? {
-          firstName: s.user.first_name,
-          lastName: s.user.last_name,
+          first_name: s.user.first_name,
+          last_name: s.user.last_name,
           email: s.user.email
         } : null
       }));
@@ -71,8 +71,8 @@ export async function GET(req: NextRequest) {
       eventCount: session.eventCount,
       ipAddress: session.ipAddress,
       user: session.user ? {
-        firstName: session.user.firstName,
-        lastName: session.user.lastName,
+        first_name: session.user.first_name,
+        last_name: session.user.last_name,
         email: session.user.email
       } : null,
       updatedAt: session.updatedAt

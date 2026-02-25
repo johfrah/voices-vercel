@@ -83,8 +83,8 @@ export class ReviewIntelligence {
     if (insights) {
       await db.update(actors)
         .set({ 
-          aiTags: insights.topTags.join(', '),
-          voiceScore: Math.round(insights.averageRating * 2) // Normaliseer naar 1-10
+          ai_tags: insights.topTags.join(', '),
+          voice_score: Math.round(insights.averageRating * 2) // Normaliseer naar 1-10
         })
         .where(eq(actors.id, actorId));
     }

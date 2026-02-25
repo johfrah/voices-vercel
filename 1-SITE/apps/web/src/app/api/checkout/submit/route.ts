@@ -122,14 +122,14 @@ export async function POST(request: Request) {
     const amount = Math.round(serverCalculatedSubtotal * (1 + taxRate) * 100) / 100;
 
     // 4. User Management
-    let userId = metadata?.userId;
+    let userId = metadata?.user_id;
     if (email) {
       const { data: user } = await sdkClient.from('users').select('id').eq('email', email).single();
       if (user) {
         userId = user.id;
       } else {
         const { data: newUser } = await sdkClient.from('users').insert({
-          email, firstName: first_name, lastName: last_name, phone, companyName: company,
+          email, first_name: first_name, last_name: last_name, phone, companyName: company,
           vatNumber: vat_number, addressStreet: address_street, addressZip: postal_code,
           addressCity: city, addressCountry: country || 'BE', role: 'customer'
         }).select().single();

@@ -47,12 +47,12 @@ interface OrderDetail {
   journey: string;
   createdAt: string;
   isQuote: boolean;
-  internalNotes: string | null;
+  internal_notes: string | null;
   rawMeta: any;
   user: {
     id: number;
-    firstName: string | null;
-    lastName: string | null;
+    first_name: string | null;
+    last_name: string | null;
     email: string;
     companyName: string | null;
     phone: string | null;
@@ -336,7 +336,7 @@ export default function OrderDetailPage() {
                 <div className="flex items-start gap-3">
                   <User size={16} className="text-primary mt-1" strokeWidth={1.5} />
                   <div>
-                    <div className="text-[15px] font-light tracking-tight">{order.user?.firstName} {order.user?.lastName}</div>
+                    <div className="text-[15px] font-light tracking-tight">{order.user?.first_name} {order.user?.last_name}</div>
                     <div className="text-[12px] font-light text-va-black/40 tracking-tight">{order.user?.companyName || 'Particulier'}</div>
                   </div>
                 </div>
@@ -381,7 +381,7 @@ export default function OrderDetailPage() {
               <textarea 
                 className="w-full h-32 p-4 bg-va-off-white/50 border border-black/[0.03] rounded-[10px] text-[14px] font-light focus:ring-1 focus:ring-primary/30 outline-none resize-none transition-all"
                 placeholder="Voeg een notitie toe voor het team..."
-                defaultValue={order.internalNotes || ''}
+                defaultValue={order.internal_notes || ''}
               />
               <ButtonInstrument className="w-full va-btn-pro !bg-va-black">Opslaan</ButtonInstrument>
             </div>

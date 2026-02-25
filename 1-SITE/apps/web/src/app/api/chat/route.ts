@@ -392,7 +392,7 @@ SLIMME KASSA REGELS:
         let convId = conversationId;
         if (!convId) {
           const [newConv] = await tx.insert(chatConversations).values({
-            userId: senderType === 'user' ? senderId : null,
+            user_id: senderType === 'user' ? senderId : null,
             status: 'open',
             iapContext: params.iapContext || {}
           }).returning({ id: chatConversations.id });
@@ -490,7 +490,7 @@ async function handleGetConversations(params: any) {
     const results = await db
       .select()
       .from(chatConversations)
-      .where(eq(chatConversations.userId, userId))
+      .where(eq(chatConversations.user_id, userId))
       .orderBy(desc(chatConversations.updatedAt));
 
     return NextResponse.json(results);

@@ -16,8 +16,8 @@ export async function GET() {
       createdAt: orders.createdAt
     })
     .from(orders)
-    .innerJoin(users, eq(orders.userId, users.id))
-    .where(ilike(users.lastName, '%Benbassat%'));
+    .innerJoin(users, eq(orders.user_id, users.id))
+    .where(ilike(users.last_name, '%Benbassat%'));
 
     const allRefunds = await db.select().from(refunds).limit(10);
 

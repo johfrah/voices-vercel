@@ -26,13 +26,13 @@ export async function GET() {
     
     try {
       allActors = await db.query.actors.findMany({
-        orderBy: (actors, { asc }) => [asc(actors.menuOrder), asc(actors.firstName)],
+        orderBy: (actors, { asc }) => [asc(actors.menu_order), asc(actors.first_name)],
         with: {
           demos: true,
-          actorVideos: true,
-          actorLanguages: true,
-          statusRel: true,
-          experienceLevelRel: true
+          actor_videos: true,
+          actor_languages: true,
+          status_rel: true,
+          experience_level_rel: true
         }
       });
     } catch (dbErr) {
@@ -47,8 +47,8 @@ export async function GET() {
         .select(`
           *,
           demos:actor_demos(*),
-          actorVideos:actor_videos(*),
-          actorLanguages:actor_languages(*)
+          actor_videos:actor_videos(*),
+          actor_languages:actor_languages(*)
         `)
         .order('menu_order', { ascending: true })
         .order('first_name', { ascending: true });
@@ -60,39 +60,30 @@ export async function GET() {
       
       allActors = (data || []).map(a => ({
         ...a,
-        firstName: a.first_name,
-        lastName: a.last_name,
-        menuOrder: a.menu_order,
-        wpProductId: a.wp_product_id,
-        photoId: a.photo_id,
-        voiceScore: a.voice_score || 10,
-        priceUnpaid: a.price_unpaid || 0,
-        nativeLang: a.native_lang,
+        first_name: a.first_name,
+        last_name: a.last_name,
+        menu_order: a.menu_order,
+        wp_product_id: a.wp_product_id,
+        photo_id: a.photo_id,
+        voice_score: a.voice_score || 10,
+        price_unpaid: a.price_unpaid || 0,
+        native_lang: a.native_lang,
         photo_url: a.dropbox_url,
         demos: a.demos || [],
-        actorVideos: a.actorVideos || [],
-        actorLanguages: a.actorLanguages || []
+        actor_videos: a.actor_videos || [],
+        actor_languages: a.actor_languages || []
       }));
     }
 
     //  CHRIS-PROTOCOL: Map relational languages to flat ID fields for frontend compatibility
     const mappedActors = (allActors || []).map(actor => {
-      const actorLangs = (actor as any).actorLanguages || (actor as any).actor_languages || [];
+      const actorLangs = (actor as any).actor_languages || [];
       
-      const nativeLink = actorLangs.find((al: any) => al.isNative || al.is_native);
-      const extraLinks = actorLangs.filter((al: any) => !al.isNative && !al.is_native);
+      const nativeLink = actorLangs.find((al: any) => al.is_native);
+      const extraLinks = actorLangs.filter((al: any) => !al.is_native);
       
-      //  CHRIS-PROTOCOL: Ensure frontend fields are correctly mapped from DB fields
-      const firstName = actor.firstName || actor.first_name;
-      const lastName = actor.lastName || actor.last_name;
-      const menuOrder = actor.menuOrder ?? actor.menu_order ?? 0;
-      const wpProductId = actor.wpProductId || actor.wp_product_id;
-      const photoId = actor.photoId || actor.photo_id;
-      const voiceScore = actor.voiceScore ?? actor.voice_score ?? 10;
-      const priceUnpaid = actor.priceUnpaid ?? actor.price_unpaid ?? 0;
-      const nativeLang = actor.nativeLang || actor.native_lang;
-      const nativeLangId = actor.nativeLangId || actor.native_lang_id || nativeLink?.languageId || nativeLink?.language_id || null;
-      let photo_url = actor.photo_url || actor.dropbox_url;
+      //  CHRIS-PROTOCOL: 1-to-1 Mapping (Atomic)
+      let photo_url = actor.dropbox_url;
 
       //  CHRIS-PROTOCOL: Apply proxy prefix for local paths to ensure photos load in admin
       if (photo_url && !photo_url.startsWith('http') && !photo_url.startsWith('/api/proxy') && !photo_url.startsWith('/assets')) {
@@ -101,19 +92,11 @@ export async function GET() {
 
       return {
         ...actor,
-        firstName,
-        lastName,
-        menuOrder,
-        wpProductId,
-        photoId,
-        voiceScore,
-        priceUnpaid,
-        nativeLang,
         photo_url,
-        native_lang_id: nativeLangId,
-        extra_lang_ids: extraLinks.map((al: any) => al.languageId || al.language_id).filter(Boolean),
-        status_rel: actor.statusRel,
-        experience_level_rel: actor.experienceLevelRel,
+        native_lang_id: actor.native_lang_id || nativeLink?.language_id || null,
+        extra_lang_ids: extraLinks.map((al: any) => al.language_id).filter(Boolean),
+        status_rel: actor.status_rel,
+        experience_level_rel: actor.experience_level_rel,
         attributes: (actor.attributes || []).map((a: any) => a.attribute)
       };
     });

@@ -56,8 +56,8 @@ export default function ArtistDetailAdminPage({ params }: { params: { id: string
         // Parse extra metadata
         let metadata = {};
         try {
-          if (found.extraLangs && found.extraLangs.startsWith('{')) {
-            metadata = JSON.parse(found.extraLangs);
+          if (found.extra_langs && found.extra_langs.startsWith('{')) {
+            metadata = JSON.parse(found.extra_langs);
           }
         } catch (e) {}
         
@@ -196,7 +196,7 @@ export default function ArtistDetailAdminPage({ params }: { params: { id: string
               </div>
               <div>
                 <HeadingInstrument level={1} className="text-5xl font-light tracking-tighter">
-                  {artist.firstName} {artist.lastName}
+                  {artist.first_name} {artist.last_name}
                 </HeadingInstrument>
                 <div className="flex items-center gap-4 mt-2">
                   <span className="px-3 py-1 bg-primary/10 text-primary rounded-full text-[10px] font-black uppercase tracking-widest">
@@ -252,16 +252,16 @@ export default function ArtistDetailAdminPage({ params }: { params: { id: string
                 <div>
                   <label className="block text-[10px] font-black uppercase tracking-widest text-va-black/30 mb-3 ml-1">Voornaam</label>
                   <InputInstrument 
-                    value={artist.firstName}
-                    onChange={(e) => setArtist({...artist, firstName: e.target.value})}
+                    value={artist.first_name}
+                    onChange={(e) => setArtist({...artist, first_name: e.target.value})}
                     className="bg-va-off-white border-none rounded-xl p-4 w-full focus:ring-2 focus:ring-primary/20"
                   />
                 </div>
                 <div>
                   <label className="block text-[10px] font-black uppercase tracking-widest text-va-black/30 mb-3 ml-1">Achternaam</label>
                   <InputInstrument 
-                    value={artist.lastName}
-                    onChange={(e) => setArtist({...artist, lastName: e.target.value})}
+                    value={artist.last_name}
+                    onChange={(e) => setArtist({...artist, last_name: e.target.value})}
                     className="bg-va-off-white border-none rounded-xl p-4 w-full focus:ring-2 focus:ring-primary/20"
                   />
                 </div>
@@ -288,8 +288,8 @@ export default function ArtistDetailAdminPage({ params }: { params: { id: string
                   <label className="block text-[10px] font-black uppercase tracking-widest text-va-black/30 mb-3 ml-1">Huidige Support (€)</label>
                   <InputInstrument 
                     type="number"
-                    value={artist.priceUnpaid || 0}
-                    onChange={(e) => setArtist({...artist, priceUnpaid: e.target.value})}
+                    value={artist.price_unpaid || 0}
+                    onChange={(e) => setArtist({...artist, price_unpaid: e.target.value})}
                     className="bg-va-off-white border-none rounded-xl p-4 w-full focus:ring-2 focus:ring-primary/20"
                   />
                 </div>

@@ -34,13 +34,13 @@ export class AcademyDataBridge {
   /**
    * Haalt de volledige Academy dashboard configuratie op (100% Native)
    */
-  static async getDashboardData(userId: number): Promise<AcademyDashboardData                 & { _nuclear: boolean }> {
+  static async getDashboardData(user_id: number): Promise<AcademyDashboardData                 & { _nuclear: boolean }> {
     try {
       // 1. Haal alle lessen op
       const allLessons = await db.select().from(lessons).orderBy(asc(lessons.displayOrder));
       
       // 2. Haal voortgang op voor de gebruiker
-      const progress = await db.select().from(courseProgress).where(eq(courseProgress.userId, userId));
+      const progress = await db.select().from(courseProgress).where(eq(courseProgress.user_id, userId));
 
       const mappedLessons: Lesson[] = allLessons.map(lesson => {
         const userProgress = progress.find(p => p.lessonId === lesson.id);
@@ -75,12 +75,12 @@ export class AcademyDataBridge {
   /**
    * Berekent student voortgang (Native Logic)
    */
-  static async getStudentProgress(userId: number): Promise<StudentProgress> {
+  static async getStudentProgress(user_id: number): Promise<StudentProgress> {
     try {
       const [allLessonsCount] = await db.select({ value: count() }).from(lessons);
       const [completedCount] = await db.select({ value: count() })
         .from(courseProgress)
-        .where(and(eq(courseProgress.userId, userId), eq(courseProgress.status, 'completed')));
+        .where(and(eq(courseProgress.user_id, userId), eq(courseProgress.status, 'completed')));
 
       const total = allLessonsCount.value || 1;
       const completed = completedCount.value || 0;
@@ -105,9 +105,9 @@ export class AcademyDataBridge {
   /**
    * Haalt feedback op voor inzendingen (Native Logic)
    */
-  static async getFeedback(userId: number, lessonId?: number): Promise<SubmissionFeedback[]> {
+  static async getFeedback(user_id: number, lessonId?: number): Promise<SubmissionFeedback[]> {
     try {
-      let query = db.select().from(courseSubmissions).where(eq(courseSubmissions.userId, userId));
+      let query = db.select().from(courseSubmissions).where(eq(courseSubmissions.user_id, userId));
       
       if (lessonId) {
         // @ts-ignore

@@ -37,14 +37,14 @@ import { ActorEditDrawer } from '@/components/admin/ActorEditDrawer';
 
 interface ActorRecord {
   id: number;
-  wpProductId: number | null;
-  firstName: string;
-  lastName: string | null;
+  wp_product_id: number | null;
+  first_name: string;
+  last_name: string | null;
   status: string;
-  priceUnpaid: string | null;
-  voiceScore: number | null;
-  nativeLang: string | null;
-  menuOrder: number;
+  price_unpaid: string | null;
+  voice_score: number | null;
+  native_lang: string | null;
+  menu_order: number;
   photo_url?: string;
 }
 
@@ -99,9 +99,9 @@ export default function VoiceManagerPage() {
 
   const filteredActors = useMemo(() => {
     return actors.filter(a => 
-      `${a.firstName} ${a.lastName}`.toLowerCase().includes(search.toLowerCase()) ||
+      `${a.first_name} ${a.last_name}`.toLowerCase().includes(search.toLowerCase()) ||
       a.id.toString().includes(search) ||
-      a.wpProductId?.toString().includes(search)
+      a.wp_product_id?.toString().includes(search)
     );
   }, [actors, search]);
 
@@ -129,7 +129,7 @@ export default function VoiceManagerPage() {
     const newStatus = actor.status === 'live' ? 'pending' : 'live';
     
     // Optimistic update
-    setActors(prev => prev.map(a => a.id === id ? { ...a, status: newStatus, isPublic: newStatus === 'live' } : a));
+    setActors(prev => prev.map(a => a.id === id ? { ...a, status: newStatus, is_public: newStatus === 'live' } : a));
 
     try {
       const res = await fetch(`/api/admin/actors/${id}`, {
@@ -141,7 +141,7 @@ export default function VoiceManagerPage() {
         })
       });
       if (!res.ok) throw new Error('Failed to update status');
-      toast.success(`${actor.firstName} is nu ${newStatus}`);
+      toast.success(`${actor.first_name} is nu ${newStatus}`);
     } catch (error) {
       toast.error('Status update mislukt');
       // Revert
@@ -152,7 +152,7 @@ export default function VoiceManagerPage() {
   };
 
   const handlePriceChange = (id: number, val: string) => {
-    setActors(prev => prev.map(a => a.id === id ? { ...a, priceUnpaid: val } : a));
+    setActors(prev => prev.map(a => a.id === id ? { ...a, price_unpaid: val } : a));
     setHasChanges(true);
   };
 
@@ -162,10 +162,10 @@ export default function VoiceManagerPage() {
       const res = await fetch(`/api/admin/actors/${actor.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ price_unpaid: actor.priceUnpaid })
+        body: JSON.stringify({ price_unpaid: actor.price_unpaid })
       });
       if (!res.ok) throw new Error('Failed to save actor');
-      toast.success(`${actor.firstName} opgeslagen`);
+      toast.success(`${actor.first_name} opgeslagen`);
     } catch (error) {
       toast.error('Opslaan mislukt');
     }
@@ -177,7 +177,7 @@ export default function VoiceManagerPage() {
     
     const orders = actors.map((a, index) => ({
       id: a.id,
-      menuOrder: index + 1
+      menu_order: index + 1
     }));
 
     try {

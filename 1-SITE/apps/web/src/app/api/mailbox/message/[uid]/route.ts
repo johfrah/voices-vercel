@@ -39,7 +39,7 @@ export async function GET(
       // 1. Gelinkt zijn aan dit customerId
       // 2. OF gelinkt zijn aan dit accountId en rond dezelfde tijd zijn aangemaakt
       const atts = await db.query.vaultFiles.findMany({
-        where: sql`${vaultFiles.customerId} = ${(m.iapContext as any)?.userId || 0} 
+        where: sql`${vaultFiles.customerId} = ${(m.iapContext as any)?.user_id || 0} 
                    OR (${vaultFiles.accountId} = ${m.accountId} 
                        AND ABS(EXTRACT(EPOCH FROM ${vaultFiles.createdAt}) - EXTRACT(EPOCH FROM ${m.date})) < 600)`,
         orderBy: (vaultFiles, { desc }) => [desc(vaultFiles.createdAt)],

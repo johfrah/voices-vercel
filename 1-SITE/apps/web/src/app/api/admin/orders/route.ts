@@ -25,14 +25,14 @@ export async function GET(request: NextRequest) {
       createdAt: orders.createdAt,
       isQuote: orders.isQuote,
       user: {
-        firstName: users.firstName,
-        lastName: users.lastName,
+        first_name: users.first_name,
+        last_name: users.last_name,
         email: users.email,
         companyName: users.companyName
       }
     })
     .from(orders)
-    .leftJoin(users, eq(orders.userId, users.id))
+    .leftJoin(users, eq(orders.user_id, users.id))
     .orderBy(desc(orders.createdAt))
     .limit(50);
 
@@ -70,7 +70,7 @@ export async function POST(request: NextRequest) {
       totalTax: totalTax.toString(),
       status: status || 'pending',
       internalNotes,
-      isManuallyEdited: true,
+      is_manually_edited: true,
       market: 'BE', // Default
       createdAt: new Date(),
     }).returning();
@@ -82,7 +82,7 @@ export async function POST(request: NextRequest) {
       quantity: item.quantity,
       price: item.price.toString(),
       createdAt: new Date(),
-      isManuallyEdited: true,
+      is_manually_edited: true,
     }));
 
     await db.insert(orderItems).values(orderItemsToInsert);
@@ -134,7 +134,7 @@ export async function PATCH(request: NextRequest) {
 
     const updateData: any = {};
     if (status) updateData.status = status;
-    if (internalNotes) updateData.internalNotes = internalNotes;
+    if (internalNotes) updateData.internal_notes = internalNotes;
     updateData.updatedAt = new Date();
 
     const [updatedOrder] = await db.update(orders)
@@ -144,7 +144,7 @@ export async function PATCH(request: NextRequest) {
 
     // 🔔 NOTIFICATION ENGINE (2026)
     // Wanneer de status verandert, maken we een notificatie aan voor de klant.
-    if (status && updatedOrder.userId) {
+    if (status && updatedOrder.user_id) {
       try {
         const statusLabels: Record<string, string> = {
           'completed': 'Bestelling voltooid',
@@ -158,7 +158,7 @@ export async function PATCH(request: NextRequest) {
         const message = `De status van je bestelling #${updatedOrder.displayOrderId || updatedOrder.id} is gewijzigd naar ${status}.`;
 
         await db.insert(notifications).values({
-          userId: updatedOrder.userId,
+          user_id: updatedOrder.user_id,
           type: 'order_update',
           title,
           message,

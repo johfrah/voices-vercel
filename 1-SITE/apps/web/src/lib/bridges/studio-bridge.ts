@@ -409,7 +409,7 @@ export class StudioDataBridge {
    * Haalt alle inschrijvingen op voor een specifieke gebruiker
    *  VOICES OS: Silent User Support
    */
-  static async getRegistrationsByUserId(userId: number) {
+  static async getRegistrationsByUserId(user_id: number) {
     try {
       return await db.select({
         orderId: orders.id,
@@ -420,7 +420,7 @@ export class StudioDataBridge {
       })
       .from(orders)
       .leftJoin(orderItems, eq(orders.id, orderItems.orderId))
-      .where(eq(orders.userId, userId))
+      .where(eq(orders.user_id, userId))
       .groupBy(orders.id);
     } catch (error) {
       console.error("Core Logic Error (User Registrations):", error);
@@ -467,7 +467,7 @@ export class StudioDataBridge {
   static async getInstructors() {
     try {
       return await db.query.instructors.findMany({
-        where: eq(instructors.isPublic, true),
+        where: eq(instructors.is_public, true),
         with: {
           photo: true
         }
@@ -521,16 +521,16 @@ export class StudioDataBridge {
    * Haalt de instructeur-data op voor een specifieke User ID
    *  VOICES OS: Voor het Instructor Dashboard
    */
-  static async getInstructorByUserId(userId: number) {
+  static async getInstructorByUserId(user_id: number) {
     try {
       return await db.query.instructors.findFirst({
-        where: eq(instructors.userId, userId),
+        where: eq(instructors.user_id, userId),
         with: {
           photo: true
         }
       });
     } catch (error) {
-      console.error('Error fetching instructor by userId:', error);
+      console.error('Error fetching instructor by user_id:', error);
       return null;
     }
   }

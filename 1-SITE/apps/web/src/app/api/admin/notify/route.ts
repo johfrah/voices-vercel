@@ -94,7 +94,7 @@ export async function POST(request: NextRequest) {
         </div>
       ` : (items || []).map((item: any) => `
         <div style="padding: 15px; background: #f9f9f9; border-radius: 12px; margin-bottom: 10px; border: 1px solid #eee;">
-          <div style="font-weight: bold; color: #1a1a1a;">${item.actor?.display_name || item.actor?.firstName || 'Stemopname'}</div>
+          <div style="font-weight: bold; color: #1a1a1a;">${item.actor?.display_name || item.actor?.first_name || 'Stemopname'}</div>
           <div style="font-size: 13px; color: #666; margin-top: 4px;">
             ${item.usage === 'commercial' ? 'Commercial' : item.usage === 'telefonie' ? 'Telefoon' : 'Online Video'} 
             • €${(item.pricing?.total || 0).toFixed(2)}
@@ -113,7 +113,7 @@ export async function POST(request: NextRequest) {
         subject = `✅ Betaling: #${orderId} - ${company || email}`;
         title = 'Nieuwe Betaling Ontvangen';
       } else if (isDonation) {
-        subject = `💖 Donatie: #${orderId} - ${customer?.firstName || 'Supporter'} voor ${artistName}`;
+        subject = `💖 Donatie: #${orderId} - ${customer?.first_name || 'Supporter'} voor ${artistName}`;
         title = 'Nieuwe Donatie Ontvangen';
       }
 
@@ -130,7 +130,7 @@ export async function POST(request: NextRequest) {
           <div style="margin-bottom: 30px;">
             <div style="font-size: 14px; text-transform: uppercase; letter-spacing: 0.1em; color: #bbbbbb; margin-bottom: 10px;">${isDonation ? 'Donateur' : 'Klantgegevens'}</div>
             <div style="font-size: 18px; color: #1a1a1a; font-weight: 400;">
-              ${customer?.firstName || ''} ${customer?.lastName || ''}<br/>
+              ${customer?.first_name || ''} ${customer?.last_name || ''}<br/>
               <a href="mailto:${email}" style="color: #ff4f00; text-decoration: none;">${email}</a><br/>
               ${company ? `<strong>${company}</strong><br/>` : ''}
               ${customer?.phone ? `Tel: ${customer.phone}` : ''}

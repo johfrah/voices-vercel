@@ -28,7 +28,7 @@ export async function POST(req: Request) {
     await db.update(pageLayouts)
       .set({ 
         layoutJson,
-        isManuallyEdited: true,
+        is_manually_edited: true,
         updatedAt: new Date()
       })
       .where(eq(pageLayouts.slug, slug));

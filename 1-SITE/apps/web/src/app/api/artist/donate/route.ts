@@ -20,7 +20,7 @@ export async function POST(request: Request) {
 
     // 1. Registreer de donatie-intentie in de database (als een speciale order)
     const [order] = await db.insert(orders).values({
-      userId: null, // Donateurs hoeven niet ingelogd te zijn
+      user_id: null, // Donateurs hoeven niet ingelogd te zijn
       total: amount.toString(),
       status: 'pending',
       journey: 'artist_donation',

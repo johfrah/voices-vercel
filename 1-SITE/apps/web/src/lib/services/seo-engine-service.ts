@@ -86,7 +86,7 @@ export class SEOEngineService {
     // Add Actors
     const liveActors = await db.select().from(actors).where(eq(actors.status, 'live'));
     liveActors.forEach(a => {
-      entries.push({ url: `/voice/${a.firstName.toLowerCase()}`, lastMod: a.updatedAt || new Date(), priority: 0.6 });
+      entries.push({ url: `/voice/${a.first_name.toLowerCase()}`, lastMod: a.updatedAt || new Date(), priority: 0.6 });
     });
 
     return entries;

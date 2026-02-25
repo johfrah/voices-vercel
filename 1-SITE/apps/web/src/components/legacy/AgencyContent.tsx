@@ -104,7 +104,7 @@ export function AgencyContent({ mappedActors, filters }: { mappedActors: any[], 
   // zorgen we dat de URL altijd de juiste slug en journey bevat.
   useEffect(() => {
     if (state.currentStep === 'script' && checkoutState.selectedActor) {
-      const slug = checkoutState.selectedActor.slug || checkoutState.selectedActor.firstName?.toLowerCase();
+      const slug = checkoutState.selectedActor.slug || checkoutState.selectedActor.first_name?.toLowerCase();
       const journeyMap: Record<string, string> = {
         'telefonie': 'telefoon',
         'unpaid': 'video',
@@ -144,7 +144,7 @@ export function AgencyContent({ mappedActors, filters }: { mappedActors: any[], 
       'commercial': 'commercial'
     };
     const journey = journeyMap[checkoutState.usage] || 'video';
-    const slug = actor.slug || actor.firstName?.toLowerCase();
+    const slug = actor.slug || actor.first_name?.toLowerCase();
     
     // We navigeren naar de nieuwe URL, maar Next.js handelt dit af als een SPA transitie
     // CHRIS-PROTOCOL: Ensure we use the correct hierarchy /[slug]/[journey]

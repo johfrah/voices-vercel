@@ -33,8 +33,8 @@ export const ZeroLossCheckoutInstrument = ({
   const { t } = useTranslation();
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
+    first_name: '',
+    last_name: '',
     email: '',
     phone: '',
     company: '',
@@ -86,7 +86,7 @@ export const ZeroLossCheckoutInstrument = ({
                     <ContainerInstrument className="relative">
                       <User strokeWidth={1.5} className="absolute left-6 top-1/2 -translate-y-1/2 text-va-black/20" size={18} />
                         <InputInstrument 
-                        value={formData.firstName}
+                        value={formData.first_name}
                         onChange={(e) => { handleInputChange('firstName', e.target.value); }}
                         className="w-full pl-14 pr-6 py-5 rounded-[24px] bg-va-off-white border-none focus:ring-2 focus:ring-primary/20 transition-all font-light text-[15px]" 
                         placeholder={t('common.placeholder.first_name', "Julie")} 
@@ -96,7 +96,7 @@ export const ZeroLossCheckoutInstrument = ({
                   <ContainerInstrument className="space-y-2">
                     <TextInstrument as="label" className="text-[15px] font-medium tracking-widest text-va-black/30 ml-4"><VoiceglotText  translationKey="auto.zerolosscheckoutinstrument.familienaam.b88d3a" defaultText="Familienaam" /></TextInstrument>
                     <InputInstrument 
-                      value={formData.lastName}
+                      value={formData.last_name}
                       onChange={(e) => { handleInputChange('lastName', e.target.value); }}
                       className="w-full px-6 py-5 rounded-[24px] bg-va-off-white border-none focus:ring-2 focus:ring-primary/20 transition-all font-light text-[15px]" 
                       placeholder={t('common.placeholder.last_name', "Vandamme")} 
@@ -120,7 +120,7 @@ export const ZeroLossCheckoutInstrument = ({
 
                 <ButtonInstrument 
                   onClick={() => { nextStep(); }}
-                  disabled={!formData.email || !formData.firstName}
+                  disabled={!formData.email || !formData.first_name}
                   className="w-full py-6 rounded-[24px] bg-va-black text-white text-[15px] font-light tracking-widest hover:bg-primary transition-all flex items-center justify-center gap-2 group disabled:opacity-20"
                 >
                   <VoiceglotText translationKey="common.next_step" defaultText="Volgende stap" /> <ArrowRight strokeWidth={1.5} size={16} className="group-hover:translate-x-1 transition-transform" />

@@ -43,7 +43,7 @@ export async function POST(request: Request) {
 
     // 4. TODO: Verstuur e-mails (Klant & Admin)
     // In een volledige implementatie zouden we hier de SmartmailService of een EmailService aanroepen.
-    console.log(` E-mail verzonden naar ${appt.userId || 'bezoeker'} over annulering van afspraak op ${appt.startTime}`);
+    console.log(` E-mail verzonden naar ${appt.user_id || 'bezoeker'} over annulering van afspraak op ${appt.startTime}`);
 
     return NextResponse.json({ 
       success: true, 

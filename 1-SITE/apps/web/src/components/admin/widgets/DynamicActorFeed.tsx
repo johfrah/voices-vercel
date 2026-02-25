@@ -8,12 +8,12 @@ import React, { useEffect, useState } from 'react';
 
 interface Actor {
   id: number;
-  firstName: string;
-  lastName: string;
+  first_name: string;
+  last_name: string;
   photoUrl: string;
   startingPrice: number;
-  voiceScore: number;
-  nativeLang: string;
+  voice_score: number;
+  native_lang: string;
 }
 
 interface DynamicActorFeedProps {
@@ -45,12 +45,12 @@ export const DynamicActorFeed: React.FC<DynamicActorFeedProps> = ({
         // We mappen de data naar ons interne formaat
         setActors(data.results.slice(0, limit).map((a: any) => ({
           id: a.id,
-          firstName: a.first_name,
-          lastName: a.last_name,
+          first_name: a.first_name,
+          last_name: a.last_name,
           photoUrl: a.photo_url || '/assets/common/placeholders/placeholder-voice.jpg',
           startingPrice: a.starting_price,
-          voiceScore: a.voice_score,
-          nativeLang: a.native_lang
+          voice_score: a.voice_score,
+          native_lang: a.native_lang
         })));
       } catch (error) {
         console.error('Failed to fetch actors for widget:', error);
@@ -93,16 +93,16 @@ export const DynamicActorFeed: React.FC<DynamicActorFeedProps> = ({
           <div className="w-12 h-12 rounded-xl bg-va-off-white overflow-hidden relative shadow-inner">
             <Image  
               src={actor.photoUrl} 
-              alt={actor.firstName} 
+              alt={actor.first_name} 
               fill
               className="object-cover grayscale group-hover:grayscale-0 transition-all duration-700" 
             />
           </div>
           
           <div className="flex-1">
-            <h4 className="text-[15px] font-light tracking-tight">{actor.firstName}</h4>
+            <h4 className="text-[15px] font-light tracking-tight">{actor.first_name}</h4>
             <div className="flex items-center gap-2 mt-1">
-              <span className="text-[15px] font-black text-primary tracking-widest">{actor.nativeLang}</span>
+              <span className="text-[15px] font-black text-primary tracking-widest">{actor.native_lang}</span>
               <div className="flex gap-0.5">
                 {[...Array(5)].map((_, i) => (
                   <Star strokeWidth={1.5} key={i} size={6} fill={i < 4 ? "currentColor" : "none"} className="text-yellow-500" />

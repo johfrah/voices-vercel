@@ -157,7 +157,7 @@ export default function VaultBrowserPage() {
                     {file.customer && (
                       <ContainerInstrument className="flex items-center gap-2 text-[15px] text-va-black/40 font-light">
                         <User strokeWidth={1.5} size={10} />
-                        {file.customer.firstName} {file.customer.lastName}
+                        {file.customer.first_name} {file.customer.last_name}
                       </ContainerInstrument>
                     )}
 

@@ -47,7 +47,7 @@ export async function GET(request: NextRequest) {
     if (type === 'patterns') {
       // 1. Haal orderhistorie op met items en categorien
       const userOrders = await db.query.orders.findMany({
-        where: eq(orders.userId, uid),
+        where: eq(orders.user_id, uid),
         with: {
           items: true
         },
@@ -64,12 +64,12 @@ export async function GET(request: NextRequest) {
         .select({ actorId: orderItems.actorId })
         .from(orderItems)
         .innerJoin(orders, eq(orderItems.orderId, orders.id))
-        .where(eq(orders.userId, uid))
+        .where(eq(orders.user_id, uid))
         .limit(5);
 
       // Hier zouden we de 'voice_affinity' tabel kunnen gebruiken voor 'Godmode' matching
       return NextResponse.json({
-        userId: uid,
+        user_id: uid,
         recommendedActors: [], // To be populated by affinity engine
         reason: "Based on your recent orders"
       });

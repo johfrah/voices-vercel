@@ -45,8 +45,8 @@ export async function GET(request: Request) {
         const { data } = await supabase.from('users').select('*').eq('email', email).single();
         if (data) {
           return [{
-            firstName: data.first_name,
-            lastName: data.last_name,
+            first_name: data.first_name,
+            last_name: data.last_name,
             phone: data.phone,
             companyName: data.company_name,
             vatNumber: data.vat_number,
@@ -70,8 +70,8 @@ export async function GET(request: Request) {
     // 3. Return sanitized user data
     return NextResponse.json({
       user: {
-        firstName: user.firstName,
-        lastName: user.lastName,
+        first_name: user.first_name,
+        last_name: user.last_name,
         phone: user.phone,
         companyName: user.companyName,
         vatNumber: user.vatNumber,

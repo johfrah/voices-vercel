@@ -36,7 +36,7 @@ export class IntelligenceBoost {
     let createdCount = 0;
 
     for (const order of studioOrders) {
-      if (!order.userId) {
+      if (!order.user_id) {
         // We moeten de email vinden uit de raw_meta of via een join (in een echte sync)
         // Voor nu gaan we ervan uit dat de email in de rawMeta zit van de order
         const email = (order.rawMeta as any)?.billing_email;
@@ -62,8 +62,8 @@ export class IntelligenceBoost {
 
           const [newUser] = await db.insert(users).values({
             email: email,
-            firstName: meta.billing_first_name || '',
-            lastName: meta.billing_last_name || '',
+            first_name: meta.billing_first_name || '',
+            last_name: meta.billing_last_name || '',
             role: 'guest',
             customerType: 'workshop_participant',
             subroles: ['workshop_participant'],
@@ -81,7 +81,7 @@ export class IntelligenceBoost {
 
         // 3. Koppel de order aan de user
         await db.update(orders)
-          .set({ userId: matchedUser.id })
+          .set({ user_id: matchedUser.id })
           .where(eq(orders.id, order.id));
       }
     }
@@ -106,11 +106,11 @@ export class IntelligenceBoost {
       // Haal gekoppelde actor data op
       const [actor] = await db.select()
         .from(actors)
-        .where(eq(actors.userId, user.id))
+        .where(eq(actors.user_id, user.id))
         .limit(1);
 
       if (actor) {
-        const score = actor.voiceScore || 1000;
+        const score = actor.voice_score || 1000;
         const status = actor.status || 'live';
         const isSpotlight = (actor as any).isSpotlight === true || score <= 50;
 
@@ -149,9 +149,9 @@ export class IntelligenceBoost {
         const rates = (actor.rates as any) || {};
         const approvedFlows = (actor as any).approvedFlows || ['commercial', 'corporate', 'telephony'];
 
-        const hasIvr = approvedFlows.includes('telephony') && (rates.BE?.price_ivr > 0 || parseFloat(actor.priceIvr || '0') > 0);
-        const hasOnline = approvedFlows.includes('commercial') && (rates.BE?.price_online_media > 0 || parseFloat(actor.priceOnline || '0') > 0);
-        const hasUnpaid = approvedFlows.includes('corporate') && (rates.BE?.price_unpaid_media > 0 || parseFloat(actor.priceUnpaid || '0') > 0);
+        const hasIvr = approvedFlows.includes('telephony') && (rates.BE?.price_ivr > 0 || parseFloat(actor.price_ivr || '0') > 0);
+        const hasOnline = approvedFlows.includes('commercial') && (rates.BE?.price_online_media > 0 || parseFloat(actor.price_online || '0') > 0);
+        const hasUnpaid = approvedFlows.includes('corporate') && (rates.BE?.price_unpaid_media > 0 || parseFloat(actor.price_unpaid || '0') > 0);
 
         if (hasIvr) {
           if (!newSubroles.includes('agency_voiceover_telephony')) newSubroles.push('agency_voiceover_telephony');
@@ -235,8 +235,8 @@ export class IntelligenceBoost {
       const [idA, idB] = pair.split('-').map(Number);
       
       // Find internal actor IDs from WP Product IDs
-      const [actorA] = await db.select({ id: actors.id }).from(actors).where(eq(actors.wpProductId, idA)).limit(1);
-      const [actorB] = await db.select({ id: actors.id }).from(actors).where(eq(actors.wpProductId, idB)).limit(1);
+      const [actorA] = await db.select({ id: actors.id }).from(actors).where(eq(actors.wp_product_id, idA)).limit(1);
+      const [actorB] = await db.select({ id: actors.id }).from(actors).where(eq(actors.wp_product_id, idB)).limit(1);
       
       if (actorA && actorB) {
         await db.insert(voiceAffinity).values({

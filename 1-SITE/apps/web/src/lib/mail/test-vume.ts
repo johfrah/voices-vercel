@@ -16,13 +16,13 @@ export async function sendTestMails(recipient: string) {
   try {
     // 1. Test Magic Link (Auth Journey) - Gebruik echte user data
     const [realUser] = await db.select().from(users).orderBy(desc(users.createdAt)).limit(1);
-    // const realUser = { firstName: 'Johfrah' };
+    // const realUser = { first_name: 'Johfrah' };
     await VumeEngine.send({
       to: recipient,
       subject: ' Test: Inloggen op Voices.be (Real Data)',
       template: 'magic-link',
       context: {
-        name: realUser?.firstName || 'Johfrah',
+        name: realUser?.first_name || 'Johfrah',
         link: 'https://voices.be/account/callback?token=test-token',
         language: 'nl'
       },
@@ -49,7 +49,7 @@ export async function sendTestMails(recipient: string) {
       subject: ' Test: Je plek in de studio (Real Data)',
       template: 'studio-experience',
       context: {
-        name: realUser?.firstName || 'Johfrah',
+        name: realUser?.first_name || 'Johfrah',
         workshopName: realEdition?.workshopTitle || 'Masterclass Stemacteren',
         date: realEdition ? new Date(realEdition.date).toLocaleDateString('nl-BE', { day: 'numeric', month: 'long', year: 'numeric' }) : '25 februari 2026',
         time: '14:00',
@@ -76,7 +76,7 @@ export async function sendTestMails(recipient: string) {
       subject: ' Test: Factuur goed ontvangen (Real Data)',
       template: 'invoice-reply',
       context: {
-        userName: realUser?.firstName || 'Johfrah',
+        userName: realUser?.first_name || 'Johfrah',
         invoiceNumber: realOrder?.invoiceNumber || 'INV-2026-001',
         amount: realOrder ? parseFloat(realOrder.total || '0') : 1250.50,
         language: 'nl'

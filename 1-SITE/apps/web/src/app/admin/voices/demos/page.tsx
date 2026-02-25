@@ -64,8 +64,8 @@ interface DemoRecord {
   name: string;
   url: string;
   type: string | null;
-  isPublic: boolean;
-  menuOrder: number;
+  is_public: boolean;
+  menu_order: number;
   actorName: string;
   actorStatus: string;
 }
@@ -113,7 +113,7 @@ function SortableDemoRow({
         body: JSON.stringify({ 
           title: demo.name,
           category: demo.type,
-          isPublic: demo.isPublic
+          is_public: demo.is_public
         })
       });
       if (res.ok) {
@@ -219,17 +219,17 @@ function SortableDemoRow({
           <TextInstrument className="text-[10px] font-black uppercase tracking-widest text-va-black/20 mb-1">Status</TextInstrument>
           <button 
             onClick={() => {
-              const newVal = !demo.isPublic;
-              onUpdate(demo.id, { isPublic: newVal });
+              const newVal = !demo.is_public;
+              onUpdate(demo.id, { is_public: newVal });
               // Direct opslaan bij toggelen van status
               setTimeout(handleInlineSave, 100);
             }}
             className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${
-              demo.isPublic ? 'bg-green-500/10 text-green-600' : 'bg-va-black/5 text-va-black/40'
+              demo.is_public ? 'bg-green-500/10 text-green-600' : 'bg-va-black/5 text-va-black/40'
             }`}
           >
-            {isSaving ? <Loader2 size={10} className="animate-spin" /> : (demo.isPublic ? <CheckCircle2 size={10} /> : <Clock size={10} />)}
-            {demo.isPublic ? 'Public' : 'Hidden'}
+            {isSaving ? <Loader2 size={10} className="animate-spin" /> : (demo.is_public ? <CheckCircle2 size={10} /> : <Clock size={10} />)}
+            {demo.is_public ? 'Public' : 'Hidden'}
           </button>
         </div>
 
@@ -288,14 +288,14 @@ export default function DemoManagerPage() {
             actor.demos.forEach((demo: any) => {
               allDemos.push({
                 ...demo,
-                actorName: `${actor.firstName} ${actor.lastName || ''}`.trim(),
+                actorName: `${actor.first_name} ${actor.last_name || ''}`.trim(),
                 actorStatus: actor.status
               });
             });
           }
         });
         // Sort by actor name and then menu order
-        allDemos.sort((a, b) => a.actorName.localeCompare(b.actorName) || a.menuOrder - b.menuOrder);
+        allDemos.sort((a, b) => a.actorName.localeCompare(b.actorName) || a.menu_order - b.menu_order);
         setDemos(allDemos);
       }
     } catch (error) {
@@ -335,7 +335,7 @@ export default function DemoManagerPage() {
         const newIndex = items.findIndex((i) => i.id === over.id);
         const newItems = arrayMove(items, oldIndex, newIndex);
         // Update menuOrder for the moved items
-        return newItems.map((item, index) => ({ ...item, menuOrder: index }));
+        return newItems.map((item, index) => ({ ...item, menu_order: index }));
       });
       setHasChanges(true);
       playClick('success');
@@ -375,7 +375,7 @@ export default function DemoManagerPage() {
           body: JSON.stringify({ 
             title: demo.name,
             category: demo.type,
-            isPublic: demo.isPublic
+            is_public: demo.is_public
           })
         })
       );

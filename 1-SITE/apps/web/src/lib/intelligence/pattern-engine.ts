@@ -22,12 +22,12 @@ export class VoicyPatternEngine {
   /**
    * Analyseert de order-historie van een klant voor terugkerende patronen.
    */
-  static async analyzeCustomerPatterns(userId: number) {
+  static async analyzeCustomerPatterns(user_id: number) {
     // 1. Haal alle succesvolle orders op voor deze gebruiker
     const userOrders = await db.select()
       .from(orders)
       .where(and(
-        eq(orders.userId, userId),
+        eq(orders.user_id, userId),
         sql`${orders.status} IN ('completed', 'processing')`
       ))
       .orderBy(desc(orders.createdAt));

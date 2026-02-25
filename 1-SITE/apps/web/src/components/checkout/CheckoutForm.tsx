@@ -214,8 +214,8 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
             if (userData && userData.user) {
               playClick('pro');
               const updates = {
-                first_name: userData.user.firstName || '',
-                last_name: userData.user.lastName || '',
+                first_name: userData.user.first_name || '',
+                last_name: userData.user.last_name || '',
                 phone: userData.user.phone || '',
                 company: userData.user.companyName || '',
                 vat_number: userData.user.vatNumber || '',
@@ -329,7 +329,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
         metadata: {
           words: wordCount,
           prompts: state.prompts || 0,
-          userId: (state as any).metadata?.userId
+          user_id: (state as any).metadata?.user_id
         }
       };
 

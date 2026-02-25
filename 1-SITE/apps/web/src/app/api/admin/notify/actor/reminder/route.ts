@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
       subject: `⚠️ Reminder: Deadline voor #${order.displayOrderId || order.wpOrderId} - ${market.name}`,
       template: 'actor-reminder',
       context: {
-        actorName: actor.firstName,
+        actorName: actor.first_name,
         orderId: order.displayOrderId || order.wpOrderId?.toString(),
         usageType: itemData?.usage || 'Voice-over',
         deliveryTime: actor.deliveryTime || 'binnen 48 uur',

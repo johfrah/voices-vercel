@@ -158,7 +158,7 @@ export async function POST(request: NextRequest) {
         <div style="margin-bottom: 30px;">
           <h3 style="font-size: 14px; text-transform: uppercase; letter-spacing: 0.1em; color: #ccc;">Geselecteerde Stemmen (${selectedActors.length})</h3>
           <ul style="list-style: none; padding: 0;">
-            ${selectedActors.map((a: any) => `<li style="padding: 8px 0; border-bottom: 1px solid #f5f5f5;">${a.firstName || a.display_name}</li>`).join('')}
+            ${selectedActors.map((a: any) => `<li style="padding: 8px 0; border-bottom: 1px solid #f5f5f5;">${a.first_name || a.display_name}</li>`).join('')}
           </ul>
         </div>
 

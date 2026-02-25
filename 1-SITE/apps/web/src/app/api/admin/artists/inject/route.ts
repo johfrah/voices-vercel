@@ -35,24 +35,24 @@ export async function POST(request: Request) {
     const result = await db.insert(actors).values({
       slug,
       firstName,
-      lastName: lastName || '',
+      last_name: lastName || '',
       email,
       bio,
       tagline: 'Artist',
       status: 'live',
-      isPublic: true,
-      dropboxUrl: photo_url,
+      is_public: true,
+      dropbox_url: photo_url,
       website,
       youtubeUrl,
       linkedin,
-      priceUnpaid: String(donation_current || 0),
+      price_unpaid: String(donation_current || 0),
       // We use internalNotes or a custom field for vision if needed, 
       // but for now we'll store it in bio or a pending field if schema allows
-      pendingBio: vision, 
-      voiceScore: 100, // High score for artists
+      pending_bio: vision, 
+      voice_score: 100, // High score for artists
       createdAt: new Date(),
       updatedAt: new Date(),
-      extraLangs: JSON.stringify({ donation_goal }) // Store goal in extraLangs as JSON for now if no field exists
+      extra_langs: JSON.stringify({ donation_goal }) // Store goal in extraLangs as JSON for now if no field exists
     }).returning();
 
     return NextResponse.json({ 

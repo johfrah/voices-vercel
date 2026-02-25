@@ -58,8 +58,8 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
   const hasDates = dates.length > 0;
 
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
+    first_name: '',
+    last_name: '',
     email: '',
     age: '',
     profession: ''
@@ -86,8 +86,8 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
 
     // Update customer info in context
     updateCustomer({
-      first_name: formData.firstName,
-      last_name: formData.lastName,
+      first_name: formData.first_name,
+      last_name: formData.last_name,
       email: formData.email
     });
 
@@ -232,14 +232,14 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
         <ContainerInstrument plain className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <InputInstrument 
             placeholder={t('common.placeholder.first_name', "Voornaam")}
-            value={formData.firstName}
-            onChange={(e) => setFormData({...formData, firstName: e.target.value})}
+            value={formData.first_name}
+            onChange={(e) => setFormData({...formData, first_name: e.target.value})}
             className="w-full p-4 bg-va-off-white border border-va-black/5 rounded-[10px] text-[15px] font-light outline-none focus:border-primary/30 transition-all"
           />
           <InputInstrument 
             placeholder={t('common.placeholder.last_name', "Familienaam")}
-            value={formData.lastName}
-            onChange={(e) => setFormData({...formData, lastName: e.target.value})}
+            value={formData.last_name}
+            onChange={(e) => setFormData({...formData, last_name: e.target.value})}
             className="w-full p-4 bg-va-off-white border border-va-black/5 rounded-[10px] text-[15px] font-light outline-none focus:border-primary/30 transition-all"
           />
           

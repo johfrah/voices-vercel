@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
         webhookUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/api/checkout/webhook`, // Moet publiek bereikbaar zijn
         metadata: {
           orderId: order.id,
-          userId: userId
+          user_id: userId
         }
       });
 

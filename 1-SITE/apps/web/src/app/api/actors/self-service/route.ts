@@ -17,15 +17,15 @@ export async function PATCH(request: NextRequest) {
 
     //  NUCLEAR LOCK: Alleen updaten als niet handmatig gelockt door admin
     const [actor] = await db.select().from(actors).where(eq(actors.id, actorId)).limit(1);
-    if (actor?.isManuallyEdited) {
+    if (actor?.is_manually_edited) {
       return NextResponse.json({ error: 'Actor profile is locked by admin' }, { status: 403 });
     }
 
     const updateData: any = { updatedAt: new Date() };
     if (availability) updateData.availability = availability;
     if (rates) updateData.rates = rates;
-    if (bio) updateData.pendingBio = bio; // Gaat naar pending voor review
-    if (tagline) updateData.pendingTagline = tagline;
+    if (bio) updateData.pending_bio = bio; // Gaat naar pending voor review
+    if (tagline) updateData.pending_tagline = tagline;
 
     await db.update(actors).set(updateData).where(eq(actors.id, actorId));
 

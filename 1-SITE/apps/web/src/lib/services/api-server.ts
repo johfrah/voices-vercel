@@ -49,7 +49,7 @@ export async function getArtist(slug: string, lang: string = 'nl'): Promise<any>
   // Map to unified Artist object for UI
   return {
     ...artist,
-    display_name: artist.display_name || artist.first_name || artist.displayName || artist.firstName,
+    display_name: artist.display_name || artist.first_name || artist.displayName || artist.first_name,
     photo_url: artist.photo_url || artist.photoUrl,
     bio: translatedBio.replace(/<[^>]*>?/gm, '').trim(),
     donation_goal: artist.donation_goal || artist.donationGoal || 0,
@@ -174,39 +174,39 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
         
         dbResults = (sdkData || []).map(a => ({
           ...a,
-          firstName: a.first_name,
-          lastName: a.last_name,
-          nativeLang: a.native_lang,
+          first_name: a.first_name,
+          last_name: a.last_name,
+          native_lang: a.native_lang,
           countryId: a.country_id,
-          wpProductId: a.wp_product_id,
-          photoId: a.photo_id,
-          voiceScore: a.voice_score,
+          wp_product_id: a.wp_product_id,
+          photo_id: a.photo_id,
+          voice_score: a.voice_score,
           totalSales: a.total_sales,
-          priceUnpaid: a.price_unpaid,
-          priceOnline: a.price_online,
-          priceIvr: a.price_ivr,
-          priceLiveRegie: a.price_live_regie,
-          dropboxUrl: a.dropbox_url,
-          isAi: a.is_ai,
-          elevenlabsId: a.elevenlabs_id,
-          internalNotes: a.internal_notes,
+          price_unpaid: a.price_unpaid,
+          price_online: a.price_online,
+          price_ivr: a.price_ivr,
+          price_live_regie: a.price_live_regie,
+          dropbox_url: a.dropbox_url,
+          is_ai: a.is_ai,
+          elevenlabs_id: a.elevenlabs_id,
+          internal_notes: a.internal_notes,
           createdAt: a.created_at,
           updatedAt: a.updated_at,
           youtubeUrl: a.youtube_url,
-          menuOrder: a.menu_order,
-          deliveryDaysMin: a.delivery_days_min,
-          deliveryDaysMax: a.delivery_days_max,
-          cutoffTime: a.cutoff_time,
-          samedayDelivery: a.sameday_delivery,
-          pendingBio: a.pending_bio,
-          pendingTagline: a.pending_tagline,
-          experienceLevel: a.experience_level,
-          studioSpecs: a.studio_specs,
-          isManuallyEdited: a.is_manually_edited,
-          birthYear: a.birth_year,
-          aiTags: a.ai_tags,
-          deliveryDateMin: a.delivery_date_min,
-          deliveryDateMinPriority: a.delivery_date_min_priority
+          menu_order: a.menu_order,
+          delivery_days_min: a.delivery_days_min,
+          delivery_days_max: a.delivery_days_max,
+          cutoff_time: a.cutoff_time,
+          sameday_delivery: a.sameday_delivery,
+          pending_bio: a.pending_bio,
+          pending_tagline: a.pending_tagline,
+          experience_level: a.experience_level,
+          studio_specs: a.studio_specs,
+          is_manually_edited: a.is_manually_edited,
+          birth_year: a.birth_year,
+          ai_tags: a.ai_tags,
+          delivery_date_min: a.delivery_date_min,
+          delivery_date_min_priority: a.delivery_date_min_priority
         }));
       } catch (dbError) {
         console.error(' [getActors] SDK Query failed:', dbError);
@@ -214,7 +214,7 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
         throw dbError;
       }
 
-    const photoIds = Array.from(new Set(dbResults.map(a => a.photoId).filter(Boolean).map(id => Number(id))));
+    const photoIds = Array.from(new Set(dbResults.map(a => a.photo_id).filter(Boolean).map(id => Number(id))));
     const actorIds = dbResults.map(a => a.id);
     
     // Fetch secondary data via SDK for stability
@@ -282,10 +282,10 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
       let photoUrl = '';
       
       //  CHRIS-PROTOCOL: Priority for manually uploaded photo (dropboxUrl)
-      if (actor.dropboxUrl) {
-        photoUrl = actor.dropboxUrl.startsWith('http') ? actor.dropboxUrl : `/api/proxy/?path=${encodeURIComponent(actor.dropboxUrl)}`;
-      } else if (actor.photoId) {
-        const mediaItem = mediaResults.find((m: any) => m.id === actor.photoId);
+      if (actor.dropbox_url) {
+        photoUrl = actor.dropbox_url.startsWith('http') ? actor.dropbox_url : `/api/proxy/?path=${encodeURIComponent(actor.dropbox_url)}`;
+      } else if (actor.photo_id) {
+        const mediaItem = mediaResults.find((m: any) => m.id === actor.photo_id);
         if (mediaItem) {
           const fp = mediaItem.file_path || mediaItem.filePath;
           if (fp) photoUrl = fp.startsWith('http') ? fp : `${SUPABASE_STORAGE_URL}/${fp}`;
@@ -310,23 +310,23 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
       }));
 
       return {
-        id: actor.wpProductId || actor.id,
-        display_name: actor.firstName,
-        first_name: actor.firstName,
-        last_name: actor.lastName || '',
-        slug: actor.slug || actor.firstName?.toLowerCase(),
+        id: actor.wp_product_id || actor.id,
+        display_name: actor.first_name,
+        first_name: actor.first_name,
+        last_name: actor.last_name || '',
+        slug: actor.slug || actor.first_name?.toLowerCase(),
         gender: actor.gender,
-        native_lang: actor.nativeLang,
+        native_lang: actor.native_lang,
         photo_url: photoUrl,
-        starting_price: parseFloat(actor.priceUnpaid || '0'),
-        voice_score: actor.voiceScore || 10,
+        starting_price: parseFloat(actor.price_unpaid || '0'),
+        voice_score: actor.voice_score || 10,
         total_sales: actor.totalSales || 0,
-        menu_order: actor.menuOrder || 0,
-        ai_enabled: actor.isAi,
+        menu_order: actor.menu_order || 0,
+        ai_enabled: actor.is_ai,
         bio: (actor.bio || '').replace(/<[^>]*>?/gm, '').trim(),
         tagline: (actor.tagline || '').replace(/<[^>]*>?/gm, '').trim(),
-        delivery_days_min: actor.deliveryDaysMin || 1,
-        delivery_days_max: actor.deliveryDaysMax || 3,
+        delivery_days_min: actor.delivery_days_min || 1,
+        delivery_days_max: actor.delivery_days_max || 3,
         native_lang_id: nativeLangMap.get(actor.id) || null,
         extra_lang_ids: extraLangsMap.get(actor.id) || [],
         demos: proxiedDemos,

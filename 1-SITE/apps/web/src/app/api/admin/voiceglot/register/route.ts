@@ -126,7 +126,7 @@ export async function POST(request: NextRequest) {
                 originalText: sourceText,
                 translatedText: cleanTranslation,
                 status: 'active',
-                isManuallyEdited: false,
+                is_manually_edited: false,
                 updatedAt: new Date()
               }).onConflictDoUpdate({
                 target: [translations.translationKey, translations.lang],

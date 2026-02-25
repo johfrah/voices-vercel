@@ -115,7 +115,7 @@ async function seed() {
     // 2. Update Actors and their Language links
     for (const entry of SOURCE_OF_TRUTH) {
       // Find actor by wpProductId
-      const [actor] = await db.select().from(actors).where(eq(actors.wpProductId, entry.id));
+      const [actor] = await db.select().from(actors).where(eq(actors.wp_product_id, entry.id));
       
       if (!actor) {
         console.warn(`⚠️ Actor ${entry.name} (ID: ${entry.id}) not found in database. Skipping.`);
@@ -127,14 +127,14 @@ async function seed() {
       // Update actor
       await db.update(actors)
         .set({
-          nativeLang: langMap[entry.nativeId],
+          native_lang: langMap[entry.nativeId],
           country: entry.country.toLowerCase(),
           status: 'live',
-          isPublic: true,
-          isManuallyEdited: true, // Lock dit profiel!
+          is_public: true,
+          is_manually_edited: true, // Lock dit profiel!
           updatedAt: new Date() as any
         })
-        .where(eq(actors.wpProductId, entry.id));
+        .where(eq(actors.wp_product_id, entry.id));
 
       // Clear existing language links
       await db.delete(actorLanguages).where(eq(actorLanguages.actorId, actor.id));

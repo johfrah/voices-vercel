@@ -127,7 +127,7 @@ export const PricingSummary: React.FC<{
         metadata: {
           words: wordCount,
           prompts: state.prompts || 0,
-          userId: (state as any).metadata?.userId
+          user_id: (state as any).metadata?.user_id
         }
       };
 
@@ -341,9 +341,9 @@ export const PricingSummary: React.FC<{
                               </LabelInstrument>
                               {(() => {
                                 const delivery = calculateDeliveryDate({
-                                  deliveryDaysMin: itemObj.actor?.delivery_days_min || 1,
-                                  deliveryDaysMax: itemObj.actor?.delivery_days_max || 3,
-                                  cutoffTime: itemObj.actor?.cutoff_time || '18:00',
+                                  delivery_days_min: itemObj.actor?.delivery_days_min || 1,
+                                  delivery_days_max: itemObj.actor?.delivery_days_max || 3,
+                                  cutoff_time: itemObj.actor?.cutoff_time || '18:00',
                                   availability: itemObj.actor?.availability || []
                                 });
                                 return (

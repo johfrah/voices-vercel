@@ -11,8 +11,8 @@ import { DbService } from "../services/db-service";
  */
 
 export interface InterestRegistration {
-  firstName: string;
-  lastName: string;
+  first_name: string;
+  last_name: string;
   email: string;
   phone?: string;
   workshopIds: number[];
@@ -29,8 +29,8 @@ export class WaitlistService {
     return await db.transaction(async (tx) => {
       // 1. Maak de registratie aan via DbService (simulatie)
       const [result] = await tx.insert(workshopInterest).values({
-        firstName: data.firstName,
-        lastName: data.lastName,
+        first_name: data.first_name,
+        last_name: data.last_name,
         email: data.email,
         phone: data.phone,
         productIds: data.workshopIds.join(','),

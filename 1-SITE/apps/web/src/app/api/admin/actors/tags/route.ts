@@ -21,12 +21,12 @@ export async function GET() {
   if (auth instanceof NextResponse) return auth;
 
   try {
-    const allActors = await db.select({ toneOfVoice: actors.toneOfVoice }).from(actors);
+    const allActors = await db.select({ tone_of_voice: actors.tone_of_voice }).from(actors);
     
     const tagsSet = new Set<string>();
     allActors.forEach(a => {
-      if (a.toneOfVoice) {
-        a.toneOfVoice.split(',').forEach(tag => {
+      if (a.tone_of_voice) {
+        a.tone_of_voice.split(',').forEach(tag => {
           const trimmed = tag.trim();
           if (trimmed) tagsSet.add(trimmed);
         });

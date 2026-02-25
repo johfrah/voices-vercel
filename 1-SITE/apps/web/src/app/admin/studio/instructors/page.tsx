@@ -49,14 +49,14 @@ export default async function AdminInstructorsPage() {
               <div className="flex justify-between items-start">
                 <div className="flex gap-6">
                   <div className="w-20 h-20 bg-va-off-white rounded-2xl flex items-center justify-center text-black/20 overflow-hidden">
-                    {ins.photoId ? (
+                    {ins.photo_id ? (
                       <Image src={`/assets/${ins.photo?.filePath}`} className="w-full h-full object-cover" alt={ins.name} width={80} height={80} />
                     ) : (
                       <User size={40} strokeWidth={1} />
                     )}
                   </div>
                   <div>
-                    <HeadingInstrument level={3} className="text-2xl font-light">{ins.firstName} {ins.lastName}</HeadingInstrument>
+                    <HeadingInstrument level={3} className="text-2xl font-light">{ins.first_name} {ins.last_name}</HeadingInstrument>
                     <TextInstrument className="text-primary font-bold text-[13px] tracking-widest uppercase mt-1">{ins.tagline || 'Geen tagline'}</TextInstrument>
                     
                     <div className="flex gap-4 mt-4">

@@ -46,7 +46,7 @@ Hier is je Core Intelligence Brief voor vandaag.
 - **Forecast:** De data voorspelt een stabiele week met een verwachte groei van 12% op de Studio-tak.
 
 ##  Hot Leads (Top 3 "Burning")
-${newLeads.slice(0, 3).map(l => `- **${l.firstName || 'Anoniem'}**: ${l.leadVibe} vibe uit ${l.sourceType} (Sector: ${ (l.iapContext as any)?.sector || 'Onbekend' })`).join('\n')}
+${newLeads.slice(0, 3).map(l => `- **${l.first_name || 'Anoniem'}**: ${l.leadVibe} vibe uit ${l.sourceType} (Sector: ${ (l.iapContext as any)?.sector || 'Onbekend' })`).join('\n')}
 
 ##  Watchdog Status
 ${criticalEvents.length > 0 

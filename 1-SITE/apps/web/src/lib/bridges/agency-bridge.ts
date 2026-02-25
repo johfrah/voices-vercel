@@ -57,23 +57,23 @@ export class AgencyDataBridge {
       console.log(' Johfrah AI allowed (Telephony or Explicit Search)');
     } else {
       // In alle andere gevallen (inclusief Studio): GEEN AI promotie van Johfrah
-      conditions.push(sql`${actors.firstName} NOT ILIKE 'Johfrah%' OR ${actors.isAi} = false`);
-      conditions.push(eq(actors.isAi, false));
+      conditions.push(sql`${actors.first_name} NOT ILIKE 'Johfrah%' OR ${actors.is_ai} = false`);
+      conditions.push(eq(actors.is_ai, false));
     }
 
     //  Kirsten Duplicate Prevention (DB Level)
     // Als we zoeken op Kirsten, zorgen we dat we alleen de master (wpProductId 40) pakken
     if (search && search.toLowerCase().includes('kirsten')) {
       conditions.push(or(
-        eq(actors.wpProductId, 40),
-        sql`${actors.wpProductId} IS NOT NULL` // Voorkom records zonder WP ID als er een WP ID versie bestaat
+        eq(actors.wp_product_id, 40),
+        sql`${actors.wp_product_id} IS NOT NULL` // Voorkom records zonder WP ID als er een WP ID versie bestaat
       ));
     }
 
     if (language) {
       conditions.push(or(
-        like(actors.nativeLang, `%${language}%`),
-        like(actors.extraLangs, `%${language}%`)
+        like(actors.native_lang, `%${language}%`),
+        like(actors.extra_langs, `%${language}%`)
       ));
     }
 
@@ -83,9 +83,9 @@ export class AgencyDataBridge {
 
     if (search) {
       conditions.push(or(
-        like(actors.firstName, `%${search}%`),
+        like(actors.first_name, `%${search}%`),
         like(actors.tagline, `%${search}%`),
-        like(actors.aiTags, `%${search}%`)
+        like(actors.ai_tags, `%${search}%`)
       ));
     }
 
@@ -94,7 +94,7 @@ export class AgencyDataBridge {
 
     // 2. Haal demo's en media op voor deze actors
     const actorIds = results.map(a => a.id);
-    const photoIds = results.map(a => a.photoId).filter(Boolean);
+    const photoIds = results.map(a => a.photo_id).filter(Boolean);
     
     const [demos, mediaResults] = await Promise.all([
       actorIds.length > 0 
@@ -126,39 +126,39 @@ export class AgencyDataBridge {
       let photoUrl: string | null = null;
       
       // Try to find a local optimized version first based on actor ID
-      const actorId = actor.wpProductId || actor.id;
+      const actorId = actor.wp_product_id || actor.id;
       
       //  MOBY MANDATE: Use the new voicecards directory with strict naming convention
-      const localVoicecardPath = `/assets/visuals/active/voicecards/${actorId}-${actor.firstName?.toLowerCase()}-photo-square-1.jpg`;
+      const localVoicecardPath = `/assets/visuals/active/voicecards/${actorId}-${actor.first_name?.toLowerCase()}-photo-square-1.jpg`;
       
       // Default fallback chain
       photoUrl = localVoicecardPath; 
 
-      if (actor.photoId) {
-        const mediaItem = mediaResults.find(m => m.id === actor.photoId);
+      if (actor.photo_id) {
+        const mediaItem = mediaResults.find(m => m.id === actor.photo_id);
         if (mediaItem) {
           const resolvedPath = mediaItem.filePath.startsWith('http') ? mediaItem.filePath : `${ASSET_BASE_URL.replace(/\/$/, '')}/${mediaItem.filePath.replace(/^\//, '')}`;
           // If we have a photoId, it's a strong manual link, but we still prefer the localVoicecardPath if it exists (checked on frontend)
           if (!photoUrl) photoUrl = resolvedPath;
         }
       }
-      if ((!photoUrl || photoUrl === localVoicecardPath) && actor.dropboxUrl) {
-        photoUrl = actor.dropboxUrl.startsWith('http') ? actor.dropboxUrl : `${ASSET_BASE_URL}${actor.dropboxUrl}`;
+      if ((!photoUrl || photoUrl === localVoicecardPath) && actor.dropbox_url) {
+        photoUrl = actor.dropbox_url.startsWith('http') ? actor.dropbox_url : `${ASSET_BASE_URL}${actor.dropbox_url}`;
       }
 
       return {
-        id: actor.wpProductId || actor.id,
-        display_name: actor.firstName,
-        first_name: actor.firstName,
+        id: actor.wp_product_id || actor.id,
+        display_name: actor.first_name,
+        first_name: actor.first_name,
         gender: actor.gender,
-        native_lang: actor.nativeLang,
+        native_lang: actor.native_lang,
         country: actor.country,
         photo_url: photoUrl,
         local_photo_path: localVoicecardPath, // Pass the path for fallback logic
-        starting_price: parseFloat(actor.priceUnpaid || '0'),
-        voice_score: actor.voiceScore,
+        starting_price: parseFloat(actor.price_unpaid || '0'),
+        voice_score: actor.voice_score,
         tagline: actor.tagline,
-        ai_enabled: actor.isAi,
+        ai_enabled: actor.is_ai,
         demos: actorDemosList
       };
     });

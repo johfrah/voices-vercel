@@ -74,11 +74,11 @@ export default async function AdminEditionDetailPage({ params }: { params: { id:
                 <ContainerInstrument key={p.id} className="p-8 flex flex-col md:flex-row justify-between items-center gap-6 group">
                   <ContainerInstrument className="flex items-center gap-6">
                     <ContainerInstrument className="w-12 h-12 rounded-2xl bg-black text-white flex items-center justify-center font-light text-lg">
-                      {user?.firstName?.charAt(0)}{user?.lastName?.charAt(0)}
+                      {user?.first_name?.charAt(0)}{user?.last_name?.charAt(0)}
                     </ContainerInstrument>
                     <ContainerInstrument>
                       <ContainerInstrument className="text-xl font-light tracking-tight">
-                        {user?.firstName} {user?.lastName}
+                        {user?.first_name} {user?.last_name}
                       </ContainerInstrument>
                       <ContainerInstrument className="text-[15px] font-light text-black/30 tracking-widest mt-1">
                         {user?.email}
@@ -87,7 +87,7 @@ export default async function AdminEditionDetailPage({ params }: { params: { id:
                   </ContainerInstrument>
 
                   <ContainerInstrument className="flex items-center gap-4">
-                    {p.dropboxUrl ? (
+                    {p.dropbox_url ? (
                       <ContainerInstrument className="flex items-center gap-2 text-green-500 text-[15px] font-light tracking-widest">
                         <CheckCircle2 strokeWidth={1.5} size={14} /><VoiceglotText  translationKey="auto.page.audio_live.4d370c" defaultText="Audio Live" /></ContainerInstrument>
                     ) : (

@@ -41,8 +41,8 @@ export default function GlobalFooter() {
 
   const actor = checkoutState.selectedActor;
   const actorName = actor?.display_name || 'Johfrah Lefebvre';
-  const actorFirstName = actor?.firstName || actor?.first_name || actorName.split(' ')[0];
-  const actorLastName = actor?.lastName || actor?.last_name || actorName.split(' ').slice(1).join(' ');
+  const actorFirstName = actor?.first_name || actor?.first_name || actorName.split(' ')[0];
+  const actorLastName = actor?.last_name || actor?.last_name || actorName.split(' ').slice(1).join(' ');
 
   const averageRating = reviewStats?.averageRating || "4.9";
   const totalReviews = reviewStats?.totalCount || "390";

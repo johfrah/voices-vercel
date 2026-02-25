@@ -33,7 +33,7 @@ export async function POST(req: Request) {
         program: data.program,
         meta: data.meta,
         date: new Date(), // Default date
-        wpProductId: nextId // Keep sync
+        wp_product_id: nextId // Keep sync
       });
 
     return NextResponse.json({ success: true, id: nextId });

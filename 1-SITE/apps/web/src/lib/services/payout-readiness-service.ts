@@ -82,7 +82,7 @@ export class PayoutReadinessService {
         type: 'payment',
         priority: 'normal',
         status: 'pending',
-        reasoning: `Automatische match: Klant heeft audio goedgekeurd voor Order ${(item.order as any)?.wpOrderId || item.orderId} en factuur van ${actor?.firstName} is ontvangen.`,
+        reasoning: `Automatische match: Klant heeft audio goedgekeurd voor Order ${(item.order as any)?.wpOrderId || item.orderId} en factuur van ${actor?.first_name} is ontvangen.`,
         iapContext: {
           orderId: item.orderId,
           actorId: item.actorId,
@@ -91,8 +91,8 @@ export class PayoutReadinessService {
         payload: {
           amount: parseFloat(item.cost || "0"),
           recipient_iban: actor?.user?.iban,
-          recipient_name: `${actor?.firstName || ''} ${actor?.lastName || ''}`,
-          reference: `VOICES-ORDER-${(item.order as any)?.wpOrderId || item.orderId}-${actor?.firstName || ''}`,
+          recipient_name: `${actor?.first_name || ''} ${actor?.last_name || ''}`,
+          reference: `VOICES-ORDER-${(item.order as any)?.wpOrderId || item.orderId}-${actor?.first_name || ''}`,
           order_id: item.orderId,
           order_item_id: item.id,
           invoice_vault_id: invoice.id

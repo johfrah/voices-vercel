@@ -122,16 +122,16 @@ export const ActorEditDrawer: React.FC<ActorEditDrawerProps> = ({
                 <Image src={actor.photo_url} alt="" fill className="object-cover" />
               ) : (
                 <div className="absolute inset-0 flex items-center justify-center text-va-black/10 text-2xl font-light">
-                  {actor.firstName?.charAt(0)}
+                  {actor.first_name?.charAt(0)}
                 </div>
               )}
             </div>
             <div>
               <HeadingInstrument level={2} className="text-3xl font-light tracking-tighter">
-                {actor.firstName} {actor.lastName}
+                {actor.first_name} {actor.last_name}
               </HeadingInstrument>
               <TextInstrument className="text-[13px] font-light text-va-black/30 tracking-widest uppercase mt-1">
-                ID: #{actor.wpProductId || actor.id}
+                ID: #{actor.wp_product_id || actor.id}
               </TextInstrument>
             </div>
           </div>
@@ -174,16 +174,16 @@ export const ActorEditDrawer: React.FC<ActorEditDrawerProps> = ({
                 <div className="space-y-2">
                   <LabelInstrument>Voornaam</LabelInstrument>
                   <InputInstrument 
-                    value={actor.firstName || ''} 
-                    onChange={(e) => setActor({...actor, firstName: e.target.value})}
+                    value={actor.first_name || ''} 
+                    onChange={(e) => setActor({...actor, first_name: e.target.value})}
                     className="w-full"
                   />
                 </div>
                 <div className="space-y-2">
                   <LabelInstrument>Achternaam</LabelInstrument>
                   <InputInstrument 
-                    value={actor.lastName || ''} 
-                    onChange={(e) => setActor({...actor, lastName: e.target.value})}
+                    value={actor.last_name || ''} 
+                    onChange={(e) => setActor({...actor, last_name: e.target.value})}
                     className="w-full"
                   />
                 </div>
@@ -260,8 +260,8 @@ export const ActorEditDrawer: React.FC<ActorEditDrawerProps> = ({
                 <div className="space-y-2">
                   <LabelInstrument>Tarief (Basis)</LabelInstrument>
                   <InputInstrument 
-                    value={actor.priceUnpaid || ''} 
-                    onChange={(e) => setActor({...actor, priceUnpaid: e.target.value})}
+                    value={actor.price_unpaid || ''} 
+                    onChange={(e) => setActor({...actor, price_unpaid: e.target.value})}
                     className="w-full"
                   />
                 </div>
@@ -271,8 +271,8 @@ export const ActorEditDrawer: React.FC<ActorEditDrawerProps> = ({
                     type="number"
                     min="1"
                     max="10"
-                    value={actor.voiceScore || 10} 
-                    onChange={(e) => setActor({...actor, voiceScore: parseInt(e.target.value)})}
+                    value={actor.voice_score || 10} 
+                    onChange={(e) => setActor({...actor, voice_score: parseInt(e.target.value)})}
                     className="w-full"
                   />
                 </div>

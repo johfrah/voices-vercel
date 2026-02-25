@@ -110,13 +110,13 @@ function HomeContent({ actors: initialActors, reviews, reviewStats, dynamicConfi
     
     //  CHRIS-PROTOCOL: Ensure we have a clean photo_url for the UI
     let finalPhotoUrl = updatedActor.photo_url;
-    if (updatedActor.photoId && !finalPhotoUrl?.includes('/api/proxy')) {
+    if (updatedActor.photo_id && !finalPhotoUrl?.includes('/api/proxy')) {
       // If we only have a photoId or a raw path, proxy it immediately
       finalPhotoUrl = `/api/proxy/?path=${encodeURIComponent(updatedActor.photo_url || '')}`;
     }
 
     setActors(prev => prev.map(a => {
-      if (a.id === updatedActor.id || a.wpProductId === updatedActor.id || a.id === updatedActor.wpProductId) {
+      if (a.id === updatedActor.id || a.wp_product_id === updatedActor.id || a.id === updatedActor.wp_product_id) {
         return {
           ...a,
           ...updatedActor,

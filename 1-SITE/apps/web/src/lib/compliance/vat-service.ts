@@ -99,7 +99,7 @@ export class VatService {
   /**
    * Slaat een gevalideerd BTW-nummer op bij een gebruiker via DbService
    */
-  static async saveVatToUser(userId: number, vatNumber: string) {
+  static async saveVatToUser(user_id: number, vatNumber: string) {
     const validation = await this.validateVat(vatNumber);
     
     if (validation.valid) {

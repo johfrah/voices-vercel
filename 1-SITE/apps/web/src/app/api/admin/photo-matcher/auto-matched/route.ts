@@ -22,10 +22,10 @@ export async function GET() {
       fileName: media.fileName,
       filePath: media.filePath,
       actorId: actors.id,
-      actorName: sql<string>`${actors.firstName} || ' ' || ${actors.lastName}`
+      actorName: sql<string>`${actors.first_name} || ' ' || ${actors.last_name}`
     })
     .from(media)
-    .leftJoin(actors, eq(actors.photoId, media.id))
+    .leftJoin(actors, eq(actors.photo_id, media.id))
     .where(sql`metadata->>'autoMatched' = 'true'`)
     .limit(100)
     .catch(() => []);

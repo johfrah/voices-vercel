@@ -115,10 +115,10 @@ export default function KlantInzichtenPage() {
                     <div key={user.id} className="flex items-center justify-between p-4 hover:bg-va-off-white rounded-2xl transition-colors">
                       <div className="flex items-center gap-4">
                         <div className="w-10 h-10 bg-va-black text-white rounded-full flex items-center justify-center font-light">
-                          {user.firstName?.[0]}{user.lastName?.[0]}
+                          {user.first_name?.[0]}{user.last_name?.[0]}
                         </div>
                         <div>
-                          <TextInstrument className="font-bold text-va-black">{user.firstName} {user.lastName}</TextInstrument>
+                          <TextInstrument className="font-bold text-va-black">{user.first_name} {user.last_name}</TextInstrument>
                           <TextInstrument className="text-[13px] text-black/40">{user.email}</TextInstrument>
                         </div>
                       </div>

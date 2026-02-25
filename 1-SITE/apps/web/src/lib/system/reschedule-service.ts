@@ -74,7 +74,7 @@ export class RescheduleService {
 
       await DbService.updateRecord(orders, orderId, {
         expectedDeliveryDate: newDate,
-        internalNotes: note ? `${order.internalNotes || ''}\n[Reschedule]: ${note}` : order.internalNotes,
+        internal_notes: note ? `${order.internal_notes || ''}\n[Reschedule]: ${note}` : order.internal_notes,
         status: 'processing' // Reset status indien nodig
       });
 

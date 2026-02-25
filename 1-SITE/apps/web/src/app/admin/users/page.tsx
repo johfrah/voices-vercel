@@ -169,7 +169,7 @@ export default function AdminUsersPage() {
                   <ContainerInstrument className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button 
                       onClick={async () => {
-                        logAction('users_impersonate', { userId: user.id });
+                        logAction('users_impersonate', { user_id: user.id });
                         const res = await impersonate(user.id);
                         if (!res.success) toast.error(res.error || 'Ghost Mode mislukt');
                       }} 
@@ -178,10 +178,10 @@ export default function AdminUsersPage() {
                     >
                       <Ghost strokeWidth={1.5} size={14} />
                     </button>
-                    <button onClick={() => logAction('users_edit', { userId: user.id })} className="p-2 hover:bg-va-off-white rounded-[10px] transition-colors text-va-black/40 hover:text-primary">
+                    <button onClick={() => logAction('users_edit', { user_id: user.id })} className="p-2 hover:bg-va-off-white rounded-[10px] transition-colors text-va-black/40 hover:text-primary">
                       <Edit3 strokeWidth={1.5} size={14} />
                     </button>
-                    <button onClick={() => logAction('users_mail', { userId: user.id })} className="p-2 hover:bg-va-off-white rounded-[10px] transition-colors text-va-black/40 hover:text-primary">
+                    <button onClick={() => logAction('users_mail', { user_id: user.id })} className="p-2 hover:bg-va-off-white rounded-[10px] transition-colors text-va-black/40 hover:text-primary">
                       <Mail strokeWidth={1.5} size={14} />
                     </button>
                     <button className="p-2 hover:bg-va-off-white rounded-[10px] transition-colors text-va-black/40 hover:text-primary">

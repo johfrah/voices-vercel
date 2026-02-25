@@ -72,11 +72,11 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
   useEffect(() => {
     const handleGlobalUpdate = (e: CustomEvent<{ actor: Actor }>) => {
       const updatedActor = e.detail?.actor;
-      if (updatedActor && (updatedActor.id === voice.id || updatedActor.wpProductId === voice.id)) {
+      if (updatedActor && (updatedActor.id === voice.id || updatedActor.wp_product_id === voice.id)) {
         console.log(`[VoiceCard] Received global update for ${voice.display_name}`);
         
         // Ensure photo_url is correctly proxied if it's a raw path
-        let finalPhotoUrl = updatedActor.photo_url || (updatedActor as any).dropboxUrl;
+        let finalPhotoUrl = updatedActor.photo_url || (updatedActor as any).dropbox_url;
         if (finalPhotoUrl && !finalPhotoUrl.startsWith('http') && !finalPhotoUrl.startsWith('/api/proxy') && !finalPhotoUrl.startsWith('/assets')) {
           finalPhotoUrl = `/api/proxy/?path=${encodeURIComponent(finalPhotoUrl)}`;
         }
@@ -309,7 +309,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
   }, []);
 
   const deliveryInfo = useMemo(() => {
-    if (!voice) return { deliveryDaysMin: 1, deliveryDaysMax: 1, formattedShort: '' };
+    if (!voice) return { delivery_days_min: 1, delivery_days_max: 1, formattedShort: '' };
     
     // NUCLEAR GOD MODE: Gebruik direct de database datum voor de UI
     if (voice.delivery_date_min) {
@@ -323,8 +323,8 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
       const y = date.getFullYear();
       
       return {
-        deliveryDaysMin: voice.delivery_days_min || 1,
-        deliveryDaysMax: voice.delivery_days_max || 1,
+        delivery_days_min: voice.delivery_days_min || 1,
+        delivery_days_max: voice.delivery_days_max || 1,
         formattedShort: isToday ? "VANDAAG" : `${d}/${m}/${y}`,
         isToday
       };
@@ -332,12 +332,12 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
 
     // Fallback naar live berekening indien DB veld leeg is (zou niet mogen gebeuren)
     return calculateDeliveryDate({
-      deliveryDaysMin: voice.delivery_days_min || 1,
-      deliveryDaysMax: voice.delivery_days_max || 1,
-      cutoffTime: voice.cutoff_time || '18:00',
+      delivery_days_min: voice.delivery_days_min || 1,
+      delivery_days_max: voice.delivery_days_max || 1,
+      cutoff_time: voice.cutoff_time || '18:00',
       availability: voice.availability,
-      holidayFrom: voice.holiday_from,
-      holidayTill: voice.holiday_till,
+      holiday_from: voice.holiday_from,
+      holiday_till: voice.holiday_till,
       delivery_config: voice.delivery_config
     });
   }, [voice]);
@@ -727,7 +727,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
           {!compact && (
             <div className={cn(
               "flex flex-col items-end justify-center px-2 md:px-2.5 py-0.5 md:py-1 rounded-lg md:rounded-xl border transition-colors duration-500",
-              (deliveryInfo as any).isToday || deliveryInfo.deliveryDaysMax <= 1 
+              (deliveryInfo as any).isToday || deliveryInfo.delivery_days_max <= 1 
                 ? "bg-green-500/5 border-green-500/10 text-green-600" 
                 : "bg-blue-500/5 border-blue-500/10 text-blue-600"
             )}>

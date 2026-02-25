@@ -113,10 +113,10 @@ export const CastingDock = () => {
                     onClick={(e) => removeActor(e, actorItem)}
                   >
                     {(actorItem.photo_url && actorItem.photo_url !== 'NULL') || (actorItem.photoUrl && actorItem.photoUrl !== 'NULL') ? (
-                      <Image src={actorItem.photo_url || actorItem.photoUrl} alt={actorItem.firstName || actorItem.display_name} fill className="object-cover transition-transform group-hover:scale-110" />
+                      <Image src={actorItem.photo_url || actorItem.photoUrl} alt={actorItem.first_name || actorItem.display_name} fill className="object-cover transition-transform group-hover:scale-110" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-va-black font-bold text-sm">
-                        {(actorItem.firstName || actorItem.display_name || 'S')[0]}
+                        {(actorItem.first_name || actorItem.display_name || 'S')[0]}
                       </div>
                     )}
                     {/* Remove Overlay on Hover */}

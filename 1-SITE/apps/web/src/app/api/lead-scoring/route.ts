@@ -17,7 +17,7 @@ export async function POST(request: Request) {
     // 1. Fetch user touchpoints from Supabase
     const touchpoints = await db.select()
       .from(utmTouchpoints)
-      .where(eq(utmTouchpoints.userId, userId));
+      .where(eq(utmTouchpoints.user_id, userId));
 
     // 2. Scoring Logic (Predictive)
     let score = 0;

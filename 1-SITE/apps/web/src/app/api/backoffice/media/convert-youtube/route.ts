@@ -60,8 +60,8 @@ export async function POST(request: NextRequest) {
         journey: 'agency',
         category: 'voices',
         labels: ['youtube-converted'],
-        isPublic: true,
-        isManuallyEdited: true,
+        is_public: true,
+        is_manually_edited: true,
         metadata: {
           originalYoutubeUrl: youtubeUrl,
           title: info.videoDetails.title,
@@ -73,8 +73,8 @@ export async function POST(request: NextRequest) {
       await tx.update(actors)
         .set({ 
           youtubeUrl: `local:${newMedia.id}`, // Markeer als lokaal
-          isManuallyEdited: true,
-          internalNotes: sql`${actors.internalNotes} || '\nYouTube video geconverteerd naar media ID: ' || ${newMedia.id}`
+          is_manually_edited: true,
+          internal_notes: sql`${actors.internal_notes} || '\nYouTube video geconverteerd naar media ID: ' || ${newMedia.id}`
         })
         .where(eq(actors.id, actorId));
 

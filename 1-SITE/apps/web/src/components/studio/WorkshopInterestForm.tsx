@@ -42,8 +42,8 @@ export const WorkshopInterestForm: React.FC = () => {
 
   const [step, setStep] = useState<1 | 2>(1);
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
+    first_name: '',
+    last_name: '',
     email: '',
     profession: '',
     age: '',
@@ -68,8 +68,8 @@ export const WorkshopInterestForm: React.FC = () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          firstName: formData.firstName,
-          lastName: formData.lastName,
+          first_name: formData.first_name,
+          last_name: formData.last_name,
           email: formData.email,
           selectedWorkshops,
           profession: formData.profession || undefined,
@@ -166,8 +166,8 @@ export const WorkshopInterestForm: React.FC = () => {
                   required 
                   placeholder={t('common.placeholder.first_name', 'Jouw voornaam')} 
                   className="w-full"
-                  value={formData.firstName}
-                  onChange={(e) => setFormData({...formData, firstName: e.target.value})}
+                  value={formData.first_name}
+                  onChange={(e) => setFormData({...formData, first_name: e.target.value})}
                 />
               </ContainerInstrument>
               <ContainerInstrument className="space-y-2">
@@ -176,8 +176,8 @@ export const WorkshopInterestForm: React.FC = () => {
                   required 
                   placeholder={t('common.placeholder.last_name', 'Jouw familienaam')} 
                   className="w-full"
-                  value={formData.lastName}
-                  onChange={(e) => setFormData({...formData, lastName: e.target.value})}
+                  value={formData.last_name}
+                  onChange={(e) => setFormData({...formData, last_name: e.target.value})}
                 />
               </ContainerInstrument>
               <ContainerInstrument className="space-y-2 md:col-span-2">

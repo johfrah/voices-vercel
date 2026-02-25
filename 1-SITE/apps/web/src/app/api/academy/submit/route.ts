@@ -42,7 +42,7 @@ export async function POST(request: Request) {
     // 2. Register in Database via Atomic Transaction
     const result = await db.transaction(async (tx) => {
       const [submission] = await tx.insert(courseSubmissions).values({
-        userId: parseInt(userId),
+        user_id: parseInt(userId),
         lessonId: parseInt(lessonId),
         filePath: uploadData.path,
         status: 'pending',
@@ -67,7 +67,7 @@ export async function POST(request: Request) {
       const dropbox = DropboxService.getInstance();
       await dropbox.syncToControlFolder(
         `ACADEMY-${result.id}`,
-        `${user.firstName || user.first_name || 'Student'} ${user.lastName || user.last_name || ''}`.trim(),
+        `${user.first_name || user.first_name || 'Student'} ${user.last_name || user.last_name || ''}`.trim(),
         `Les ${lessonId} Inzending`
       );
     }

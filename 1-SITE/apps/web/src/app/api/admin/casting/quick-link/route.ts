@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
       const names = rawNames.split(/[\n,]/).map(n => n.trim()).filter(Boolean);
       if (names.length > 0) {
         const foundActors = await db.query.actors.findMany({
-          where: or(...names.map(n => ilike(actors.firstName, `%${n}%`))),
+          where: or(...names.map(n => ilike(actors.first_name, `%${n}%`))),
           columns: { id: true }
         });
         finalActorIds = [...new Set([...finalActorIds, ...foundActors.map(a => a.id)])];
@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
     const [newList] = await db.insert(castingLists).values({
       name: `${projectName} - ${new Date().toLocaleDateString('nl-BE')}`,
       hash: sessionHash,
-      isPublic: true, // Admin links zijn direct deelbaar
+      is_public: true, // Admin links zijn direct deelbaar
       settings: {
         isAdminGenerated: true,
         createdAt: new Date().toISOString()

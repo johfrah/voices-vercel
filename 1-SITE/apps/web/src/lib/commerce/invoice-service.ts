@@ -37,8 +37,8 @@ export class InvoiceService {
 
       const items = await db.select().from(orderItems).where(eq(orderItems.orderId, orderId));
       
-      const [user] = order.userId 
-        ? await db.select().from(users).where(eq(users.id, order.userId))
+      const [user] = order.user_id 
+        ? await db.select().from(users).where(eq(users.id, order.user_id))
         : [null];
 
       // 2. Bereid de factuurdata voor (Peppol-ready)

@@ -244,7 +244,7 @@ export default function VoiceglotMasterPage() {
 
       if (res.ok) {
         setTranslations(prev => prev.map(item => 
-          item.id === trans.id ? { ...item, translatedText: editingText, isLocked: true, isManuallyEdited: true } : item
+          item.id === trans.id ? { ...item, translatedText: editingText, isLocked: true, is_manually_edited: true } : item
         ));
         toast.success('Vertaling bijgewerkt en vergrendeld');
         setEditingId(null);

@@ -49,17 +49,17 @@ interface ActorProfileFormProps {
 export const ActorProfileForm = ({ initialData, mode, onSave }: ActorProfileFormProps) => {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
-    firstName: initialData?.first_name || '',
-    lastName: initialData?.last_name || '',
+    first_name: initialData?.first_name || '',
+    last_name: initialData?.last_name || '',
     gender: initialData?.gender || '',
     countryId: initialData?.country_id || '',
     nativeLangId: initialData?.native_lang_id || '',
     extraLangIds: initialData?.extra_lang_ids || [] as number[],
     toneIds: initialData?.tone_ids || [] as number[],
-    deliveryDaysMin: initialData?.deliveryDaysMin || 1,
-    deliveryDaysMax: initialData?.deliveryDaysMax || 3,
-    cutoffTime: initialData?.cutoffTime || '18:00',
-    allowFreeTrial: initialData?.allowFreeTrial ?? true,
+    delivery_days_min: initialData?.delivery_days_min || 1,
+    delivery_days_max: initialData?.delivery_days_max || 3,
+    cutoff_time: initialData?.cutoff_time || '18:00',
+    allow_free_trial: initialData?.allow_free_trial ?? true,
     ...initialData
   });
 
@@ -165,7 +165,7 @@ export const ActorProfileForm = ({ initialData, mode, onSave }: ActorProfileForm
                   <VoiceglotText translationKey="form.label.first_name" defaultText="Voornaam" />
                 </LabelInstrument>
                 <InputInstrument 
-                  value={formData.firstName}
+                  value={formData.first_name}
                   onChange={(e) => updateField('firstName', e.target.value)}
                   placeholder={t('form.placeholder.first_name_example', "Bijv. Serge")}
                 />
@@ -175,7 +175,7 @@ export const ActorProfileForm = ({ initialData, mode, onSave }: ActorProfileForm
                   <VoiceglotText translationKey="form.label.last_name" defaultText="Achternaam" />
                 </LabelInstrument>
                 <InputInstrument 
-                  value={formData.lastName}
+                  value={formData.last_name}
                   onChange={(e) => updateField('lastName', e.target.value)}
                   placeholder={t('form.placeholder.last_name_example', "Bijv. Heyninck")}
                 />
@@ -405,7 +405,7 @@ export const ActorProfileForm = ({ initialData, mode, onSave }: ActorProfileForm
                   <InputInstrument 
                     type="number"
                     min={1}
-                    value={formData.deliveryDaysMin}
+                    value={formData.delivery_days_min}
                     onChange={(e) => updateField('deliveryDaysMin', parseInt(e.target.value))}
                   />
                 </div>
@@ -416,7 +416,7 @@ export const ActorProfileForm = ({ initialData, mode, onSave }: ActorProfileForm
                   <InputInstrument 
                     type="number"
                     min={1}
-                    value={formData.deliveryDaysMax}
+                    value={formData.delivery_days_max}
                     onChange={(e) => updateField('deliveryDaysMax', parseInt(e.target.value))}
                   />
                 </div>
@@ -428,7 +428,7 @@ export const ActorProfileForm = ({ initialData, mode, onSave }: ActorProfileForm
                 </LabelInstrument>
                 <InputInstrument 
                   type="time"
-                  value={formData.cutoffTime}
+                  value={formData.cutoff_time}
                   onChange={(e) => updateField('cutoffTime', e.target.value)}
                 />
               </div>

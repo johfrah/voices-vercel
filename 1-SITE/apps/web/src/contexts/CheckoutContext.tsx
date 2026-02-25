@@ -683,7 +683,7 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     const cartTotal = state.items.reduce((sum, item) => sum + (item.pricing?.total ?? item.pricing?.subtotal ?? 0), 0);
     // 🛡️ KELLY-FIX: Alleen de huidige selectie optellen als we NIET in de details/payment stap zitten
     // De bezoeker ziet het item al in de lijst (state.items), dus we mogen het niet dubbel tellen.
-    const isAlreadyInCart = state.selectedActor && state.items.some(item => (item.actor?.id === state.selectedActor?.id || item.actor?.wpProductId === state.selectedActor?.id));
+    const isAlreadyInCart = state.selectedActor && state.items.some(item => (item.actor?.id === state.selectedActor?.id || item.actor?.wp_product_id === state.selectedActor?.id));
     const isEditing = state.selectedActor && state.items.length === 0; // Als items leeg is maar er is een actor, zijn we waarschijnlijk aan het editen
     const currentSelectionTotal = (state.selectedActor && (state.step === 'briefing' || isEditing) && !isAlreadyInCart) ? state.pricing.total : 0;
     return cartTotal + currentSelectionTotal;

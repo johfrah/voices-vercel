@@ -15,12 +15,12 @@ export async function GET(request: NextRequest) {
 
   try {
     if (action === 'tracks') {
-      const tracks = await db.select().from(ademingTracks).where(eq(ademingTracks.isPublic, true));
+      const tracks = await db.select().from(ademingTracks).where(eq(ademingTracks.is_public, true));
       return NextResponse.json(tracks);
     }
 
     if (action === 'stats' && userId) {
-      const [stats] = await db.select().from(ademingStats).where(eq(ademingStats.userId, parseInt(userId))).limit(1);
+      const [stats] = await db.select().from(ademingStats).where(eq(ademingStats.user_id, parseInt(userId))).limit(1);
       return NextResponse.json(stats || { streakDays: 0, totalListenSeconds: 0 });
     }
 
@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
       const reflections = await db
         .select()
         .from(ademingReflections)
-        .where(eq(ademingReflections.userId, parseInt(userId)))
+        .where(eq(ademingReflections.user_id, parseInt(userId)))
         .orderBy(desc(ademingReflections.createdAt));
       return NextResponse.json(reflections);
     }

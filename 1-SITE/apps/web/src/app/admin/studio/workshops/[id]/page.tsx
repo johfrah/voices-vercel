@@ -105,10 +105,10 @@ export default async function AdminEditionDetailPage({ params }: { params: { id:
                   <div className="grid grid-cols-12 gap-6 items-center">
                     <div className="col-span-4 flex items-center gap-4">
                         <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center font-black text-sm", isRefunded ? "bg-amber-200 text-amber-800" : "bg-black text-white")}>
-                            {pInfo.firstName?.charAt(0)}{pInfo.lastName?.charAt(0)}
+                            {pInfo.first_name?.charAt(0)}{pInfo.last_name?.charAt(0)}
                         </div>
                         <div>
-                            <TextInstrument className="font-black tracking-tight block">{pInfo.firstName} {pInfo.lastName}</TextInstrument>
+                            <TextInstrument className="font-black tracking-tight block">{pInfo.first_name} {pInfo.last_name}</TextInstrument>
                             <TextInstrument className="text-[13px] text-black/40 font-medium">{pInfo.email}</TextInstrument>
                         </div>
                     </div>

@@ -503,8 +503,8 @@ export const VoicyChatV2: React.FC = () => {
                 id: 'proactive-burning',
                 role: 'assistant',
                 content: isPortfolioJourney 
-                  ? `Welkom terug, ${data.firstName}! Kan ik je helpen met een nieuwe boeking of heb je een vraag over mijn tarieven?`
-                  : `Welkom terug, ${data.firstName}! Ik zie dat je een trouwe klant bent. Kan ik je helpen met een nieuwe boeking voor ${data.dna.topJourneys[0] || 'je project'}?`,
+                  ? `Welkom terug, ${data.first_name}! Kan ik je helpen met een nieuwe boeking of heb je een vraag over mijn tarieven?`
+                  : `Welkom terug, ${data.first_name}! Ik zie dat je een trouwe klant bent. Kan ik je helpen met een nieuwe boeking voor ${data.dna.topJourneys[0] || 'je project'}?`,
                 timestamp: new Date().toISOString()
               }]);
             }
@@ -1596,9 +1596,9 @@ export const VoicyChatV2: React.FC = () => {
                   <ContainerInstrument plain className="p-4 bg-va-black text-white rounded-[24px] space-y-3">
                     <HeadingInstrument level={5} className="text-[15px] font-light tracking-widest opacity-40"><VoiceglotText  translationKey="account.dna.title" defaultText="Klant DNA" /></HeadingInstrument>
                     <ContainerInstrument plain className="flex items-center gap-3">
-                      <ContainerInstrument plain className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center font-light">{customer360.firstName?.[0]}</ContainerInstrument>
+                      <ContainerInstrument plain className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center font-light">{customer360.first_name?.[0]}</ContainerInstrument>
                       <ContainerInstrument plain>
-                        <TextInstrument className="text-[15px] font-light"><VoiceglotText  translationKey={`user.${customer360.id}.name`} defaultText={`${customer360.firstName} ${customer360.lastName}`} noTranslate={true} /></TextInstrument>
+                        <TextInstrument className="text-[15px] font-light"><VoiceglotText  translationKey={`user.${customer360.id}.name`} defaultText={`${customer360.first_name} ${customer360.last_name}`} noTranslate={true} /></TextInstrument>
                         <TextInstrument className="text-[15px] font-light opacity-40">
                           {customer360.intelligence?.leadVibe || 'cold'} <VoiceglotText  translationKey="common.vibe" defaultText="Vibe" />
                         </TextInstrument>

@@ -12,7 +12,7 @@ interface Tip {
   category: 'morning' | 'commute' | 'practice' | 'mindset';
 }
 
-export const AcademyTipWidget: React.FC<{ userId: number }> = ({ userId }) => {
+export const AcademyTipWidget: React.FC<{ user_id: number }> = ({ userId }) => {
   const [tip, setTip] = useState<Tip | null>(null);
   const [loading, setLoading] = useState(true);
 

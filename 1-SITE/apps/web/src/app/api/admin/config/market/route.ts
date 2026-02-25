@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
       await db.update(marketConfigs)
         .set({ 
           ...updateData,
-          isManuallyEdited: true,
+          is_manually_edited: true,
           updatedAt: new Date()
         })
         .where(eq(marketConfigs.market, market));
@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
         .values({
           market,
           ...updateData,
-          isManuallyEdited: true,
+          is_manually_edited: true,
           updatedAt: new Date()
         });
     }

@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
         const execSSH = (cmd: string) => execSync(`ssh voices-prod "${cmd}"`).toString();
         const actorDirs = execSSH(`find ${serverAssetsRoot} -maxdepth 2 -type d`).split('\n');
         
-        const wpId = actor.wpProductId ? String(actor.wpProductId) : null;
+        const wpId = actor.wp_product_id ? String(actor.wp_product_id) : null;
         targetSubDir = (wpId ? actorDirs.find((d: string) => d.includes(wpId)) : null) 
           || actorDirs.find((d: string) => d.includes(actor.slug || ''))
           || targetSubDir;
@@ -96,11 +96,11 @@ export async function POST(request: NextRequest) {
 
     // 5. Koppelen aan Actor indien van toepassing
     if (actor) {
-      await db.update(actors).set({ photoId: newMedia.id }).where(eq(actors.id, actor.id));
-      if (actor.userId) {
+      await db.update(actors).set({ photo_id: newMedia.id }).where(eq(actors.id, actor.id));
+      if (actor.user_id) {
         await db.update(users)
           .set({ preferences: sql`jsonb_set(COALESCE(preferences, '{}'::jsonb), '{photoId}', ${newMedia.id})` })
-          .where(eq(users.id, actor.userId));
+          .where(eq(users.id, actor.user_id));
       }
     }
 

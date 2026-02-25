@@ -28,7 +28,7 @@ export class ContactEnrichmentService {
   /**
    * Scant de tekst van een mail op zoek naar contactgegevens.
    */
-  async enrichFromText(userId: number, text: string): Promise<void> {
+  async enrichFromText(user_id: number, text: string): Promise<void> {
     if (!text || text.length < 50) return;
 
     try {

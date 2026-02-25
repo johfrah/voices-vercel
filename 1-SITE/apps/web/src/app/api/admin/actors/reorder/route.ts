@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
   if (auth instanceof NextResponse) return auth;
 
   try {
-    const { orders } = await request.json(); // Array of { id: number, menuOrder: number }
+    const { orders } = await request.json(); // Array of { id: number, menu_order: number }
 
     if (!orders || !Array.isArray(orders)) {
       return NextResponse.json({ error: 'Invalid orders data' }, { status: 400 });
@@ -33,8 +33,8 @@ export async function POST(request: NextRequest) {
     await db.transaction(async (tx) => {
       for (const item of orders) {
         await tx.update(actors)
-          .set({ menuOrder: item.menuOrder, updatedAt: new Date() })
-          .where(or(eq(actors.id, item.id), eq(actors.wpProductId, item.id)));
+          .set({ menu_order: item.menu_order, updatedAt: new Date() })
+          .where(or(eq(actors.id, item.id), eq(actors.wp_product_id, item.id)));
       }
     });
 

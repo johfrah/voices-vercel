@@ -133,13 +133,13 @@ export default function VisitorPlayerPage() {
             </ContainerInstrument>
             
             {session.user && (
-              <Link  href={`/admin/users/${session.userId}`} className="flex items-center gap-4 bg-va-black text-white p-6 rounded-[24px] shadow-lg hover:bg-primary transition-all group">
+              <Link  href={`/admin/users/${session.user_id}`} className="flex items-center gap-4 bg-va-black text-white p-6 rounded-[24px] shadow-lg hover:bg-primary transition-all group">
                 <ContainerInstrument className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center font-black text-[15px]">
-                  {session.user.firstName?.[0]}{session.user.lastName?.[0]}
+                  {session.user.first_name?.[0]}{session.user.last_name?.[0]}
                 </ContainerInstrument>
                 <ContainerInstrument>
                   <TextInstrument className="text-[15px] font-black tracking-widest"><VoiceglotText  translationKey="auto.page.bekijk_dna.9a6c88" defaultText="Bekijk DNA" /></TextInstrument>
-                  <TextInstrument className="text-[15px] font-bold text-white/60 group-hover:text-white">{session.user.firstName} {session.user.lastName}</TextInstrument>
+                  <TextInstrument className="text-[15px] font-bold text-white/60 group-hover:text-white">{session.user.first_name} {session.user.last_name}</TextInstrument>
                 </ContainerInstrument>
               </Link>
             )}
@@ -219,7 +219,7 @@ export default function VisitorPlayerPage() {
                     )}
                   </ContainerInstrument>
                   <TextInstrument className="text-[15px] font-bold truncate mb-1">
-                    {s.user?.firstName ? `${s.user.firstName} ${s.user.lastName}` : 'Anonieme Bezoeker'}
+                    {s.user?.first_name ? `${s.user.first_name} ${s.user.last_name}` : 'Anonieme Bezoeker'}
                   </TextInstrument>
                   <TextInstrument className="text-[15px] text-va-black/30 font-medium truncate">
                     {s.url?.replace('https://www.voices.be', '') || '/'}

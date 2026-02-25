@@ -45,8 +45,8 @@ interface Order {
   createdAt: string;
   isQuote: boolean;
   user: {
-    firstName: string | null;
-    lastName: string | null;
+    first_name: string | null;
+    last_name: string | null;
     email: string;
     companyName: string | null;
   } | null;
@@ -91,8 +91,8 @@ export default function BestellingenPage() {
       (order.wpOrderId?.toString().includes(searchLower) ?? false) ||
       (order.user?.email?.toLowerCase().includes(searchLower) ?? false) ||
       (order.user?.companyName?.toLowerCase().includes(searchLower) ?? false) ||
-      (order.user?.firstName?.toLowerCase().includes(searchLower) ?? false) ||
-      (order.user?.lastName?.toLowerCase().includes(searchLower) ?? false);
+      (order.user?.first_name?.toLowerCase().includes(searchLower) ?? false) ||
+      (order.user?.last_name?.toLowerCase().includes(searchLower) ?? false);
     
     const matchesFilter = filter === 'all' || order.status === filter;
     
@@ -198,7 +198,7 @@ export default function BestellingenPage() {
                       </div>
                       <div className="flex flex-col">
                         <span className="text-[15px] font-light text-va-black tracking-tight">
-                          {order.user?.firstName} {order.user?.lastName}
+                          {order.user?.first_name} {order.user?.last_name}
                         </span>
                         <span className="text-[12px] font-light text-va-black/40 tracking-tight">
                           {order.user?.companyName || order.user?.email}

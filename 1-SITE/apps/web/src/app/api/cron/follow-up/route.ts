@@ -30,7 +30,7 @@ export async function GET() {
     // 2. Zoek orders van 7 dagen geleden
     const recentOrders = await db.select({
       id: orders.id,
-      userId: orders.userId,
+      user_id: orders.user_id,
       createdAt: orders.createdAt,
       rawMeta: orders.rawMeta
     })
@@ -46,12 +46,12 @@ export async function GET() {
     let readyCount = 0;
 
     for (const order of recentOrders) {
-      if (!order.userId) continue;
+      if (!order.user_id) continue;
 
       // 3. Check of dit de EERSTE en ENIGE order is
       const userOrders = await db.select({ count: count() })
         .from(orders)
-        .where(eq(orders.userId, order.userId));
+        .where(eq(orders.user_id, order.user_id));
       
       const isNewCustomer = userOrders[0].count === 1;
 

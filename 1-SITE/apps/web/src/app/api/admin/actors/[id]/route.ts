@@ -66,21 +66,35 @@ export async function PATCH(
       process.env.SUPABASE_SERVICE_ROLE_KEY!
     );
 
-    // 🛡️ CHRIS-PROTOCOL: Forensic Mapping (Form -> Snake Case DB)
+    // 🛡️ CHRIS-PROTOCOL: Atomic Mapping (1-to-1 with Snake Case Schema)
     const updateData: any = {};
     
-    // Basic Info
-    if (body.first_name || body.firstName) updateData.firstName = body.first_name || body.firstName;
-    if (body.last_name || body.lastName) updateData.lastName = body.last_name || body.lastName;
-    if (body.email) updateData.email = body.email;
-    if (body.gender) updateData.gender = body.gender;
-    if (body.tone_of_voice || body.toneOfVoice) updateData.toneOfVoice = body.tone_of_voice || body.toneOfVoice;
-    if (body.clients) updateData.clients = body.clients;
-    if (body.voice_score || body.voiceScore) updateData.voiceScore = parseInt(body.voice_score || body.voiceScore);
-    if (body.menu_order || body.menuOrder) updateData.menuOrder = parseInt(body.menu_order || body.menuOrder);
-    if (body.is_public !== undefined) updateData.isPublic = body.is_public;
-    if (body.is_ai !== undefined) updateData.isAi = body.is_ai;
-    
+    // List of fields that can be directly mapped from body to updateData
+    const directFields = [
+      'first_name', 'last_name', 'email', 'gender', 'tone_of_voice', 'clients', 
+      'voice_score', 'menu_order', 'is_public', 'is_ai', 'dropbox_url', 
+      'photo_id', 'studio_specs', 'connectivity', 'holiday_from', 'holiday_till',
+      'delivery_days_min', 'delivery_days_max', 'cutoff_time', 'rates',
+      'price_live_regie', 'price_online', 'price_ivr', 'price_unpaid',
+      'portfolio_tier'
+    ];
+
+    directFields.forEach(field => {
+      if (body[field] !== undefined) {
+        // Handle numeric conversions
+        if (['voice_score', 'menu_order', 'photo_id', 'delivery_days_min', 'delivery_days_max'].includes(field)) {
+          updateData[field] = body[field] !== null ? parseInt(body[field]) : null;
+        } 
+        // Handle string conversions for prices
+        else if (['price_live_regie', 'price_online', 'price_ivr', 'price_unpaid'].includes(field)) {
+          updateData[field] = body[field] !== null ? String(body[field]) : null;
+        }
+        else {
+          updateData[field] = body[field];
+        }
+      }
+    });
+
     // 🛡️ CHRIS-PROTOCOL: Status Mapping Fix (v2.14.509)
     if (body.status) {
       let status = body.status.toLowerCase();
@@ -95,49 +109,28 @@ export async function PATCH(
       }
     }
 
-    // Delivery
-    if (body.delivery_days_min !== undefined) updateData.deliveryDaysMin = body.delivery_days_min;
-    if (body.delivery_days_max !== undefined) updateData.deliveryDaysMax = body.delivery_days_max;
-    if (body.delivery_days_min === 0) updateData.samedayDelivery = true;
-    if (body.cutoff_time) updateData.cutoffTime = body.cutoff_time;
-
-    // Bio & Tagline (HITL)
+    // Bio & Tagline (HITL Logic)
     if (isSuperAdmin) {
       if (body.bio !== undefined) updateData.bio = body.bio;
       if (body.tagline !== undefined) updateData.tagline = body.tagline;
-      updateData.pendingBio = null;
-      updateData.pendingTagline = null;
+      updateData.pending_bio = null;
+      updateData.pending_tagline = null;
     } else {
-      if (body.bio !== undefined) updateData.pendingBio = body.bio;
-      if (body.tagline !== undefined) updateData.pendingTagline = body.tagline;
+      if (body.bio !== undefined) updateData.pending_bio = body.bio;
+      if (body.tagline !== undefined) updateData.pending_tagline = body.tagline;
     }
 
-    // Rates
-    if (body.rates) updateData.rates = body.rates;
-    if (body.price_live_regie !== undefined) updateData.priceLiveRegie = body.price_live_regie ? String(body.price_live_regie) : null;
-    if (body.price_online !== undefined) updateData.priceOnline = body.price_online ? String(body.price_online) : null;
-    if (body.price_ivr !== undefined) updateData.priceIvr = body.price_ivr ? String(body.price_ivr) : null;
-    if (body.price_unpaid !== undefined) updateData.priceUnpaid = body.price_unpaid ? String(body.price_unpaid) : null;
+    if (body.delivery_days_min === 0) updateData.sameday_delivery = true;
 
-    // Assets
-    if (body.dropbox_url) updateData.dropboxUrl = body.dropbox_url;
-    if (body.photo_id) updateData.photoId = parseInt(body.photo_id);
-
-    // Complex Data
-    if (body.studio_specs) updateData.studioSpecs = body.studio_specs;
-    if (body.connectivity) updateData.connectivity = body.connectivity;
-    if (body.holiday_from) updateData.holidayFrom = body.holiday_from;
-    if (body.holiday_till) updateData.holidayTill = body.holiday_till;
-
-    updateData.isManuallyEdited = true;
-    updateData.updatedAt = new Date().toISOString();
+    updateData.is_manually_edited = true;
+    updateData.updated_at = new Date().toISOString();
 
     // 🛡️ CHRIS-PROTOCOL: Atomic Drizzle Update
-    console.log(`🚀 [ATOMIC-PATCH] Updating actor ${id} via Drizzle...`);
+    console.log(`🚀 [ATOMIC-PATCH] Updating actor ${id} via Drizzle (1-to-1)...`);
     
     const [actorResult] = await db.update(actors)
       .set(updateData)
-      .where(or(eq(actors.id, id), eq(actors.wpProductId, id)))
+      .where(or(eq(actors.id, id), eq(actors.wp_product_id, id)))
       .returning();
 
     if (!actorResult) {

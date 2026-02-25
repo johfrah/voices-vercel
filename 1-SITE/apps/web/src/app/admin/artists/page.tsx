@@ -94,7 +94,7 @@ export default function ArtistAdminPage() {
                   <div className="flex justify-between items-start mb-6">
                     <div className="w-16 h-16 rounded-2xl bg-va-off-white overflow-hidden relative">
                       {artist.photo_url ? (
-                        <Image src={artist.photo_url} alt={artist.firstName} fill className="object-cover" />
+                        <Image src={artist.photo_url} alt={artist.first_name} fill className="object-cover" />
                       ) : (
                         <Users className="absolute inset-0 m-auto text-va-black/10" size={24} />
                       )}
@@ -105,7 +105,7 @@ export default function ArtistAdminPage() {
                   </div>
                   
                   <HeadingInstrument level={3} className="text-2xl font-light tracking-tight mb-2">
-                    {artist.firstName} {artist.lastName}
+                    {artist.first_name} {artist.last_name}
                   </HeadingInstrument>
                   
                   <div className="flex items-center gap-4 mb-8 text-va-black/40 text-sm font-medium">
@@ -115,7 +115,7 @@ export default function ArtistAdminPage() {
                     </div>
                     <div className="flex items-center gap-1">
                       <Heart size={14} className="text-primary" />
-                      €{artist.priceUnpaid || 0} support
+                      €{artist.price_unpaid || 0} support
                     </div>
                   </div>
 

@@ -41,12 +41,12 @@ export class CertificateService {
   static async getCertificateData(orderId: number, itemId: number): Promise<CertificateData | null> {
     const [order] = await db.select().from(orders).where(eq(orders.id, orderId));
     const [item] = await db.select().from(orderItems).where(eq(orderItems.id, itemId));
-    const [user] = order?.userId ? await db.select().from(users).where(eq(users.id, order.userId)) : [null];
+    const [user] = order?.user_id ? await db.select().from(users).where(eq(users.id, order.user_id)) : [null];
 
     if (!order || !item) return null;
 
     return {
-      participantName: `${user?.firstName || ''} ${user?.lastName || ''}`.trim() || (order.rawMeta as any)?.billing_first_name || 'Deelnemer',
+      participantName: `${user?.first_name || ''} ${user?.last_name || ''}`.trim() || (order.rawMeta as any)?.billing_first_name || 'Deelnemer',
       workshopTitle: item.name,
       instructorName: 'Voices Studio', // Wordt dynamisch via workshop tabel
       date: order.createdAt || new Date(),

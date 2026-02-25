@@ -20,8 +20,8 @@ export interface DeliveryInfo {
   formatted: string;
   formattedShort: string;
   isRange: boolean;
-  deliveryDaysMin: number;
-  deliveryDaysMax: number;
+  delivery_days_min: number;
+  delivery_days_max: number;
 }
 
 /**
@@ -271,9 +271,9 @@ export function getNextOpeningTime(
  */
 export function calculateDeliveryDate(
   actor: {
-    deliveryDaysMin: number;
-    deliveryDaysMax: number;
-    cutoffTime: string;
+    delivery_days_min: number;
+    delivery_days_max: number;
+    cutoff_time: string;
     availability?: any[];
     holidayFrom?: string | null;
     holidayTill?: string | null;
@@ -288,14 +288,14 @@ export function calculateDeliveryDate(
   
   //  CHRIS-PROTOCOL: Combine availability array with flat holiday fields
   const effectiveAvailability = [...(actor.availability || [])];
-  if (actor.holidayFrom && actor.holidayTill) {
-    effectiveAvailability.push({ start: actor.holidayFrom, end: actor.holidayTill });
+  if (actor.holiday_from && actor.holiday_till) {
+    effectiveAvailability.push({ start: actor.holiday_from, end: actor.holiday_till });
   }
 
   // NUCLEAR GOD MODE: Gebruik de nieuwe delivery_config indien aanwezig
   const config = actor.delivery_config || {
-    type: actor.deliveryDaysMin === 0 ? 'sameday' : (actor.deliveryDaysMax <= 1 ? '24h' : '72u'),
-    cutoff: actor.cutoffTime || '18:00',
+    type: actor.delivery_days_min === 0 ? 'sameday' : (actor.delivery_days_max <= 1 ? '24h' : '72u'),
+    cutoff: actor.cutoff_time || '18:00',
     weekly_on: ['mon', 'tue', 'wed', 'thu', 'fri']
   };
 
@@ -345,8 +345,8 @@ export function calculateDeliveryDate(
   };
 
   // Map config type naar dagen indien niet expliciet opgegeven
-  let daysMin = actor.deliveryDaysMin;
-  let daysMax = actor.deliveryDaysMax;
+  let daysMin = actor.delivery_days_min;
+  let daysMax = actor.delivery_days_max;
 
   if (config.type === 'sameday') {
     daysMin = 0;
@@ -407,7 +407,7 @@ export function calculateDeliveryDate(
     formatted,
     formattedShort: formatShortDate(dateMin),
     isRange: !!dateMax,
-    deliveryDaysMin: daysMin,
-    deliveryDaysMax: daysMax
+    delivery_days_min: daysMin,
+    delivery_days_max: daysMax
   };
 }

@@ -34,7 +34,7 @@ export async function POST(request: Request) {
     
     const draftPayload = {
       customerId: file.customerId,
-      customerName: file.customer ? `${file.customer.firstName} ${file.customer.lastName}` : 'Onbekende Klant',
+      customerName: file.customer ? `${file.customer.first_name} ${file.customer.last_name}` : 'Onbekende Klant',
       items: [
         {
           description: `Voice-over opname: ${file.originalName}`,

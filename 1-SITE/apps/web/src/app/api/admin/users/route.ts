@@ -14,8 +14,8 @@ export async function GET(request: NextRequest) {
   try {
     const allUsers = await db.select({
       id: users.id,
-      firstName: users.firstName,
-      lastName: users.lastName,
+      first_name: users.first_name,
+      last_name: users.last_name,
       email: users.email,
       companyName: users.companyName,
       createdAt: users.createdAt

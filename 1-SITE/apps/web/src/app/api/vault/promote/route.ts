@@ -40,7 +40,7 @@ export async function POST(request: Request) {
     // Voor nu gebruiken we een tijdelijk pad in de assets folder, 
     // in een echte omgeving zou dit naar de Dropbox sync folder gaan.
     const ASSETS_ROOT = '/Users/voices/Library/CloudStorage/Dropbox/voices-headless/next-experience/public/assets';
-    const actorSlug = actor.slug || `${actor.firstName}-${actor.id}`;
+    const actorSlug = actor.slug || `${actor.first_name}-${actor.id}`;
     const targetDir = path.join(ASSETS_ROOT, 'voices', actorSlug);
     
     if (!fs.existsSync(targetDir)) {
@@ -63,7 +63,7 @@ export async function POST(request: Request) {
         fileSize: vaultFile.fileSize,
         category: 'voices',
         journey: 'agency',
-        isPublic: true
+        is_public: true
       }).returning({ id: media.id });
 
       const mediaId = newMedia[0].id;
@@ -75,7 +75,7 @@ export async function POST(request: Request) {
         name: demoName || vaultFile.originalName || 'Nieuwe Demo',
         url: `/assets/voices/${actorSlug}/${targetFileName}`,
         type: demoType || 'demo',
-        isPublic: true
+        is_public: true
       });
 
       // C. Update Vault File status

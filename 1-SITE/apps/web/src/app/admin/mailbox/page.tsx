@@ -113,7 +113,7 @@ export default function MailboxPage() {
     finally { setIsFaqLoading(false); }
   }, [dateRange.start, dateRange.end]);
 
-  const fetchCustomerDna = React.useCallback(async (userId: number) => {
+  const fetchCustomerDna = React.useCallback(async (user_id: number) => {
     try {
       const data = await AdminService.getCustomerDna(userId);
       setCustomerDna(data);
@@ -142,7 +142,7 @@ export default function MailboxPage() {
       }]
     });
 
-    if (mail.iapContext?.userId) {
+    if (mail.iapContext?.user_id) {
       const isOwner = mail.sender.toLowerCase().includes(activeAccount.toLowerCase());
       
       if (isOwner && mail.recipient) {
@@ -155,7 +155,7 @@ export default function MailboxPage() {
           setCustomerDna(null);
         }
       } else {
-        fetchCustomerDna(mail.iapContext.userId);
+        fetchCustomerDna(mail.iapContext.user_id);
       }
     } else {
       setCustomerDna(null);

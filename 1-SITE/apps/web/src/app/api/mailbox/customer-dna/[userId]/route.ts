@@ -11,12 +11,12 @@ import { requireAdmin } from '@/lib/auth/api-auth';
  */
 export async function GET(
   request: Request,
-  { params }: { params: { userId: string } }
+  { params }: { params: { user_id: string } }
 ) {
   const auth = await requireAdmin();
   if (auth instanceof NextResponse) return auth;
 
-  const userId = parseInt(params.userId);
+  const userId = parseInt(params.user_id);
 
   if (isNaN(userId)) {
     return NextResponse.json({ error: 'Invalid User ID' }, { status: 400 });
@@ -35,7 +35,7 @@ export async function GET(
     // 2. Order Historie
     // We gebruiken de ruwe database query om de ontbrekende kolom 'market' te vermijden als die nog in de cache zit
     const userOrders = await db.select().from(orders)
-      .where(eq(orders.userId, userId))
+      .where(eq(orders.user_id, userId))
       .orderBy(desc(orders.createdAt))
       .limit(5);
 
@@ -57,7 +57,7 @@ export async function GET(
 
     // 6. Check of het een Actor is (ook op basis van email als userId link mist)
     let actor = await db.query.actors.findFirst({
-      where: eq(actors.userId, userId)
+      where: eq(actors.user_id, userId)
     });
 
     if (!actor && user.email) {
@@ -70,7 +70,7 @@ export async function GET(
     let actorAssignments: any[] = [];
     if (actor) {
       actorAssignments = await db.query.orderItems.findMany({
-        where: eq(orders.userId, actor.id), // Let op: in order_items is actorId de link naar actors.id
+        where: eq(orders.user_id, actor.id), // Let op: in order_items is actorId de link naar actors.id
         with: {
           order: true
         },

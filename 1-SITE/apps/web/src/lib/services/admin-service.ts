@@ -87,7 +87,7 @@ export class AdminService {
   /**
    * Haalt Customer DNA op.
    */
-  static async getCustomerDna(userId: number) {
+  static async getCustomerDna(user_id: number) {
     const res = await fetch(`${this.BASE_URL}/customer-dna/${userId}`);
     if (!res.ok) throw new Error(`Failed to fetch customer DNA: ${res.statusText}`);
     return res.json();

@@ -117,7 +117,7 @@ export class ContentEngine {
         let processedContent = this.injectFragments(dbArticle.content || "");
         processedContent = this.localizeDomain(processedContent, locale);
 
-        const sections = this.parseSections(processedContent, dbArticle.isManuallyEdited || false);
+        const sections = this.parseSections(processedContent, dbArticle.is_manually_edited || false);
 
         rawPage = {
           title: this.localizeDomain(dbArticle.title, locale),
@@ -127,7 +127,7 @@ export class ContentEngine {
           fase: iapContext.fase,
           sections,
           metadata: iapContext,
-          noTranslate: dbArticle.isManuallyEdited || false
+          noTranslate: dbArticle.is_manually_edited || false
         };
       }
     } catch (dbError) {

@@ -11,7 +11,7 @@ export async function GET(request: Request) {
 
   try {
     // 1. Find Johfrah
-    const [johfrah] = await db.select().from(actors).where(like(actors.firstName, 'Johfrah%')).limit(1);
+    const [johfrah] = await db.select().from(actors).where(like(actors.first_name, 'Johfrah%')).limit(1);
     
     if (!johfrah) {
       return NextResponse.json({ error: 'Johfrah not found' }, { status: 404 });

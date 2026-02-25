@@ -57,7 +57,7 @@ export async function POST(req: Request) {
           .set({
             translatedText: text,
             status: 'active',
-            isManuallyEdited: true,
+            is_manually_edited: true,
             updatedAt: new Date(),
           })
           .where(eq(translations.id, existing[0].id));
@@ -68,7 +68,7 @@ export async function POST(req: Request) {
           lang: lang,
           translatedText: text,
           status: 'active',
-          isManuallyEdited: true,
+          is_manually_edited: true,
           updatedAt: new Date(),
         });
       }

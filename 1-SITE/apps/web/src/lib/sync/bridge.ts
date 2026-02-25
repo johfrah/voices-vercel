@@ -84,8 +84,8 @@ function getMarketAndLang(countryRaw: string, langRaw: string) {
 }
 
 function getExactAssetPath(actor: any, demo?: any, type: 'demo' | 'photo' | 'videostill' = 'demo') {
-  const { market, lang } = getMarketAndLang(actor.country || actor.nativeLang, actor.nativeLang);
-  const firstName = (actor.firstName || actor.first_name || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+  const { market, lang } = getMarketAndLang(actor.country || actor.native_lang, actor.native_lang);
+  const firstName = (actor.first_name || actor.first_name || '').toLowerCase().replace(/[^a-z0-9]/g, '');
   const genderRaw = (actor.gender || '').toLowerCase();
   const gender = (genderRaw.includes('vrouw') || genderRaw === 'female') ? 'female' : 'male';
   
@@ -94,7 +94,7 @@ function getExactAssetPath(actor: any, demo?: any, type: 'demo' | 'photo' | 'vid
   if (status === 'live' || status === 'publish') statusLabel = 'A';
   if (status === 'trash' || status === 'rejected') statusLabel = 'C';
 
-  const displayId = actor.wpProductId || actor.wp_product_id || actor.id;
+  const displayId = actor.wp_product_id || actor.wp_product_id || actor.id;
   const actorDir = `/assets/agency/voices/${market}/${lang}/${gender}/${firstName}-${statusLabel}-${displayId}`;
   
   if (type === 'photo') {
@@ -107,7 +107,7 @@ function getExactAssetPath(actor: any, demo?: any, type: 'demo' | 'photo' | 'vid
 
   if (demo) {
     const demoName = (demo.name || 'demo').toLowerCase().replace(/[^a-z0-9]/g, '-');
-    const nativeLang = (actor.nativeLang || actor.native_lang || 'nederlands').toLowerCase();
+    const nativeLang = (actor.native_lang || actor.native_lang || 'nederlands').toLowerCase();
     const langLabel = langToLabel[nativeLang] || 'voiceover';
     return `${actorDir}/demos/${firstName}-${langLabel}-voiceover-${demoName}.mp3`;
   }
@@ -156,8 +156,8 @@ export async function syncAllData() {
         await db.insert(users).values({
           wpUserId: Number(user.id),
           email: user.email,
-          firstName: user.first_name,
-          lastName: user.last_name,
+          first_name: user.first_name,
+          last_name: user.last_name,
           phone: user.billing_phone,
           companyName: user.billing_company,
           vatNumber: user.billing_vat_number,
@@ -192,49 +192,49 @@ export async function syncAllData() {
         }
 
         const cleanedNativeLang = getCleanedLang(actor.native_lang, actor.country, actor.extra_langs || '');
-        const [existingActor] = await db.select().from(actors).where(eq(actors.wpProductId, actor.product_id)).limit(1);
+        const [existingActor] = await db.select().from(actors).where(eq(actors.wp_product_id, actor.product_id)).limit(1);
         
-        if (existingActor?.isManuallyEdited) continue;
+        if (existingActor?.is_manually_edited) continue;
 
         const photoPath = actor.photo_url || getExactAssetPath(actor, null, 'photo');
 
         await db.insert(actors).values({
-          wpProductId: Number(actor.product_id),
-          firstName: actor.first_name,
-          lastName: actor.last_name,
+          wp_product_id: Number(actor.product_id),
+          first_name: actor.first_name,
+          last_name: actor.last_name,
           email: actor.email,
           gender: actor.gender,
-          nativeLang: cleanedNativeLang,
+          native_lang: cleanedNativeLang,
           country: actor.country,
           status: actor.status || 'live',
-          isPublic: actor.status === 'live',
-          voiceScore: actor.voice_score,
-          menuOrder: actor.menu_order || 0,
-          priceUnpaid: actor.price_unpaid?.toString(),
-          priceOnline: actor.price_online?.toString(),
-          priceIvr: actor.price_ivr?.toString(),
-          priceLiveRegie: actor.price_live_regie?.toString(),
+          is_public: actor.status === 'live',
+          voice_score: actor.voice_score,
+          menu_order: actor.menu_order || 0,
+          price_unpaid: actor.price_unpaid?.toString(),
+          price_online: actor.price_online?.toString(),
+          price_ivr: actor.price_ivr?.toString(),
+          price_live_regie: actor.price_live_regie?.toString(),
           rates: ratesObj,
-          dropboxUrl: photoPath,
-          isManuallyEdited: false,
+          dropbox_url: photoPath,
+          is_manually_edited: false,
           updatedAt: new Date().toISOString() as any
         }).onConflictDoUpdate({
-          target: actors.wpProductId,
+          target: actors.wp_product_id,
           set: { 
-            voiceScore: actor.voice_score, 
-            dropboxUrl: photoPath, 
+            voice_score: actor.voice_score, 
+            dropbox_url: photoPath, 
             rates: ratesObj,
             email: actor.email,
-            nativeLang: cleanedNativeLang,
-            priceUnpaid: actor.price_unpaid?.toString(),
-            priceOnline: actor.price_online?.toString(),
-            priceIvr: actor.price_ivr?.toString(),
-            priceLiveRegie: actor.price_live_regie?.toString(),
+            native_lang: cleanedNativeLang,
+            price_unpaid: actor.price_unpaid?.toString(),
+            price_online: actor.price_online?.toString(),
+            price_ivr: actor.price_ivr?.toString(),
+            price_live_regie: actor.price_live_regie?.toString(),
             updatedAt: new Date().toISOString() as any 
           }
         });
 
-        const [dbActor] = await db.select().from(actors).where(eq(actors.wpProductId, actor.product_id)).limit(1);
+        const [dbActor] = await db.select().from(actors).where(eq(actors.wp_product_id, actor.product_id)).limit(1);
 
         if (dbActor && actor.demos) {
           for (const demo of actor.demos) {
@@ -245,7 +245,7 @@ export async function syncAllData() {
               name: demo.name,
               url: finalUrl,
               type: demo.type || 'demo',
-              isPublic: true
+              is_public: true
             }).onConflictDoUpdate({
               target: actorDemos.wpId,
               set: { url: finalUrl }

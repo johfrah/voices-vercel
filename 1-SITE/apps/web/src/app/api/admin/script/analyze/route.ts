@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
         
         const actorData = await db.select().from(actorsTable).where(eq(actorsTable.id, id)).limit(1);
         if (actorData[0]) {
-          actorInfo = `De geselecteerde stem is ${actorData[0].firstName}. Deze stem spreekt: Native ${actorData[0].nativeLang}${actorData[0].extraLangs ? `, Extra: ${actorData[0].extraLangs}` : ''}.`;
+          actorInfo = `De geselecteerde stem is ${actorData[0].first_name}. Deze stem spreekt: Native ${actorData[0].native_lang}${actorData[0].extra_langs ? `, Extra: ${actorData[0].extra_langs}` : ''}.`;
         }
       } catch (dbErr) {
         console.warn('[Script Analyze] Actor fetch failed, proceeding without actor context:', dbErr);

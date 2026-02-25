@@ -59,8 +59,8 @@ export async function POST(request: Request) {
       fileSize: file.size,
       journey: journey,
       category: category,
-      isPublic: true,
-      isManuallyEdited: true,
+      is_public: true,
+      is_manually_edited: true,
       updatedAt: new Date()
     }).returning();
 

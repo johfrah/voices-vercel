@@ -40,7 +40,7 @@ export class CheckoutService {
 
       // 2. Maak de order aan in de database
       const [newOrder] = await db.insert(orders).values({
-        userId: data.userId,
+        user_id: data.user_id,
         journey: data.journey,
         market: data.market,
         status: 'pending',

@@ -225,7 +225,7 @@ export class SlimmeKassa {
       }
 
       const selectedCountries = input.countries || [input.country || 'BE'];
-      const nativeLang = (input.actorRates as any)?.nativeLang || (input.actorRates as any)?.native_lang || 'nl-BE';
+      const nativeLang = (input.actorRates as any)?.native_lang || (input.actorRates as any)?.native_lang || 'nl-BE';
       const nativeCountry = nativeLang.split('-')[1]?.toUpperCase() || 'BE';
       const selectedMedia = [...(input.mediaTypes || [])];
       
@@ -471,7 +471,7 @@ export class SlimmeKassa {
     const countryRates = (rates && typeof rates === 'object') ? (rates[country] || {}) : {};
     const globalRates = (rates && typeof rates === 'object') ? (rates['GLOBAL'] || rates['global'] || {}) : {};
     
-    const nativeLang = actor.native_lang || actor.nativeLang || 'nl-BE';
+    const nativeLang = actor.native_lang || actor.native_lang || 'nl-BE';
     const nativeCountry = nativeLang.split('-')[1]?.toUpperCase() || 'BE';
     const nativeRates = (rates && typeof rates === 'object') ? (rates[nativeCountry] || {}) : {};
 

@@ -6,7 +6,7 @@ import { createClient } from '@/utils/supabase/client';
 
 export interface Notification {
   id: number;
-  userId: number;
+  user_id: number;
   type: string;
   title: string;
   message: string;
@@ -59,7 +59,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
         if (!error && data) {
           setNotifications(data.map(n => ({
             id: n.id,
-            userId: n.user_id,
+            user_id: n.user_id,
             type: n.type,
             title: n.title,
             message: n.message,

@@ -51,8 +51,8 @@ export const CollaborativeStudio = ({
 
   // Fallback data voor demo mode
   const displayAuditions = auditions.length > 0 ? auditions : (mode === 'demo' ? [
-    { id: 1, actor: { firstName: 'Thomas' }, duration: '0:30', status: 'ready', auditionFileUrl: '/demo1.mp3', actorNote: 'Iets meer energie in de tweede zin.' },
-    { id: 2, actor: { firstName: 'Sarah' }, duration: '0:45', status: 'pending', auditionFileUrl: null }
+    { id: 1, actor: { first_name: 'Thomas' }, duration: '0:30', status: 'ready', auditionFileUrl: '/demo1.mp3', actorNote: 'Iets meer energie in de tweede zin.' },
+    { id: 2, actor: { first_name: 'Sarah' }, duration: '0:45', status: 'pending', auditionFileUrl: null }
   ] : []);
 
   const handleAuditionUpload = async (actorId: number, file: File) => {
@@ -61,7 +61,7 @@ export const CollaborativeStudio = ({
     const optimisticAudition = {
       id: tempId,
       actorId: actorId,
-      actor: displayAuditions.find(a => a.actorId === actorId)?.actor || { firstName: '...' },
+      actor: displayAuditions.find(a => a.actorId === actorId)?.actor || { first_name: '...' },
       status: 'pending',
       auditionFileUrl: null,
       isOptimistic: true
@@ -132,16 +132,16 @@ export const CollaborativeStudio = ({
                           {audition.actor?.photoUrl ? (
                             <Image 
                               src={audition.actor.photoUrl} 
-                              alt={audition.actor.firstName} 
+                              alt={audition.actor.first_name} 
                               fill 
                               className="object-cover"
                             />
                           ) : (
-                            <TextInstrument>{audition.actor?.firstName?.[0] || '?'}</TextInstrument>
+                            <TextInstrument>{audition.actor?.first_name?.[0] || '?'}</TextInstrument>
                           )}
                         </ContainerInstrument>
                         <TextInstrument className="font-medium text-va-black text-[15px] md:text-base">
-                          {audition.actor?.firstName}
+                          {audition.actor?.first_name}
                         </TextInstrument>
                       </ContainerInstrument>
                       <ContainerInstrument className="flex items-center gap-3 md:gap-4">

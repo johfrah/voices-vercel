@@ -13,8 +13,8 @@ export interface YukiInvoiceData {
   invoiceDate?: string; //  LEGACY: Ondersteuning voor specifieke factuurdatum
   paymentId?: string;   //  LEGACY: Mollie Transactie ID of PO referentie
   customer: {
-    firstName: string;
-    lastName: string;
+    first_name: string;
+    last_name: string;
     email: string;
     companyName?: string;
     vatNumber?: string;
@@ -94,7 +94,7 @@ export class YukiService {
       const xml = create({ version: '1.0', encoding: 'UTF-8' })
         .ele('Contacts', { xmlns: 'urn:xmlns:http://www.theyukicompany.com:contacts' })
           .ele('Contact')
-            .ele('FullName').txt(customer.companyName || `${customer.firstName} ${customer.lastName}`).up()
+            .ele('FullName').txt(customer.companyName || `${customer.first_name} ${customer.last_name}`).up()
             .ele('VATNumber').txt(customer.vatNumber || '').up()
             .ele('ContactType').txt(customer.vatNumber ? 'Company' : 'Person').up()
             .ele('CountryCode').txt(customer.countryCode).up()
@@ -103,8 +103,8 @@ export class YukiService {
             .ele('AddressLine_1').txt(customer.address || '').up()
             //  LEGACY: ContactPerson blok is essentieel voor Yuki
             .ele('ContactPerson')
-              .ele('FirstName').txt(customer.firstName).up()
-              .ele('LastName').txt(customer.lastName).up()
+              .ele('FirstName').txt(customer.first_name).up()
+              .ele('LastName').txt(customer.last_name).up()
               .ele('EmailAddress').txt(customer.email).up()
             .up()
           .up()
@@ -172,7 +172,7 @@ export class YukiService {
               ` | Voices-OS-2026`
             ).up()
             .ele('Contact')
-              .ele('FullName').txt(data.customer.companyName || `${data.customer.firstName} ${data.customer.lastName}`).up()
+              .ele('FullName').txt(data.customer.companyName || `${data.customer.first_name} ${data.customer.last_name}`).up()
               .ele('VATNumber').txt(data.customer.vatNumber || '').up()
               .ele('ContactType').txt(data.customer.vatNumber ? 'Company' : 'Person').up()
               .ele('CountryCode').txt(data.customer.countryCode).up()

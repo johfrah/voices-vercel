@@ -47,43 +47,43 @@ export async function POST() {
       const updateData: any = {};
 
       // FIX A: photo_id mismatch (proxied URL maar geen ID)
-      if (actor.dropboxUrl?.includes('/api/proxy') && !actor.photoId) {
-        const fileNameMatch = actor.dropboxUrl.match(/path=([^&]+)/);
+      if (actor.dropbox_url?.includes('/api/proxy') && !actor.photo_id) {
+        const fileNameMatch = actor.dropbox_url.match(/path=([^&]+)/);
         if (fileNameMatch) {
           const decodedPath = decodeURIComponent(fileNameMatch[1]);
           const fileName = decodedPath.split('/').pop();
           
           const matchingMedia = mediaItems.find(m => m.fileName === fileName || m.filePath === decodedPath);
           if (matchingMedia) {
-            updateData.photoId = matchingMedia.id;
+            updateData.photo_id = matchingMedia.id;
             needsUpdate = true;
-            logs.push(`Linked photoId ${matchingMedia.id} to actor ${actor.firstName}`);
+            logs.push(`Linked photoId ${matchingMedia.id} to actor ${actor.first_name}`);
           }
         }
       }
 
       // FIX B: Dubbele proxy URLs
-      if (actor.dropboxUrl?.includes('/api/proxy') && actor.dropboxUrl.includes('http')) {
-        const urlObj = new URL(actor.dropboxUrl);
-        updateData.dropboxUrl = urlObj.pathname + urlObj.search;
+      if (actor.dropbox_url?.includes('/api/proxy') && actor.dropbox_url.includes('http')) {
+        const urlObj = new URL(actor.dropbox_url);
+        updateData.dropbox_url = urlObj.pathname + urlObj.search;
         needsUpdate = true;
-        logs.push(`Cleaned double proxy for ${actor.firstName}`);
+        logs.push(`Cleaned double proxy for ${actor.first_name}`);
       }
 
       // FIX C: photo_id bestaat maar dropbox_url is leeg of oud
-      if (actor.photoId && (!actor.dropboxUrl || actor.dropboxUrl.includes('dropbox.com'))) {
-        const [mediaItem] = await db.select().from(media).where(eq(media.id, actor.photoId)).limit(1);
+      if (actor.photo_id && (!actor.dropbox_url || actor.dropbox_url.includes('dropbox.com'))) {
+        const [mediaItem] = await db.select().from(media).where(eq(media.id, actor.photo_id)).limit(1);
         if (mediaItem) {
-          updateData.dropboxUrl = `/api/proxy/?path=${encodeURIComponent(mediaItem.filePath)}`;
+          updateData.dropbox_url = `/api/proxy/?path=${encodeURIComponent(mediaItem.filePath)}`;
           needsUpdate = true;
-          logs.push(`Fixed dropboxUrl from photoId for ${actor.firstName}`);
+          logs.push(`Fixed dropboxUrl from photoId for ${actor.first_name}`);
         }
       }
 
       if (needsUpdate) {
         await db.update(actors).set({
           ...updateData,
-          isManuallyEdited: true,
+          is_manually_edited: true,
           updatedAt: new Date()
         }).where(eq(actors.id, actor.id));
         repairedCount++;

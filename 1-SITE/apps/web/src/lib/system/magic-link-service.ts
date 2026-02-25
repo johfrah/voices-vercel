@@ -13,7 +13,7 @@ export class MagicLinkService {
   /**
    * Genereert een unieke token voor een gebruiker die 24 uur geldig is.
    */
-  static async generateToken(userId: string): Promise<string> {
+  static async generateToken(user_id: string): Promise<string> {
     const token = uuidv4();
     const expiresAt = new Date();
     expiresAt.setHours(expiresAt.getHours() + 24);

@@ -10,8 +10,8 @@ import {
 } from '@/components/ui/LayoutInstruments';
 
 interface CustomerInstrumentProps {
-  firstName: string;
-  lastName: string;
+  first_name: string;
+  last_name: string;
   email: string;
   company?: string;
   totalSpent: string | number;
