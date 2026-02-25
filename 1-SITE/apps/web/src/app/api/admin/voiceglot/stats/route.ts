@@ -36,12 +36,17 @@ export async function GET(request: NextRequest) {
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     // 1. Check Cache
-    const cachedConfig = await db.select().from(appConfigs).where(eq(appConfigs.key, CACHE_KEY)).limit(1).catch(() => []);
+    const { data: cachedConfig, error: cacheFetchErr } = await supabase
+      .from('app_configs')
+      .select('*')
+      .eq('key', CACHE_KEY)
+      .limit(1);
+    
     const now = new Date().getTime();
     
-    if (cachedConfig.length > 0) {
+    if (cachedConfig && cachedConfig.length > 0) {
       const cacheData = cachedConfig[0].value as any;
-      const cacheAge = now - new Date(cachedConfig[0].updatedAt || 0).getTime();
+      const cacheAge = now - new Date(cachedConfig[0].updated_at || 0).getTime();
       if (cacheAge < CACHE_TTL) {
         return NextResponse.json({ ...cacheData, isCached: true });
       }
@@ -118,9 +123,11 @@ export async function GET(request: NextRequest) {
 
     // 3. Update Cache
     try {
-      await db.insert(appConfigs)
-        .values({ key: CACHE_KEY, value: freshData, updatedAt: new Date() })
-        .onConflictDoUpdate({ target: appConfigs.key, set: { value: freshData, updatedAt: new Date() }});
+      await supabase.from('app_configs').upsert({
+        key: CACHE_KEY,
+        value: freshData,
+        updated_at: new Date().toISOString()
+      });
     } catch (cacheErr) {
       console.error('Cache update failed:', cacheErr);
     }

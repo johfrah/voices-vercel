@@ -33,12 +33,12 @@ export async function GET(request: Request) {
     let userRecord: any = null;
 
     if (userId) {
-      const [u] = await db.select().from(users).where(eq(users.id, userId)).limit(1);
+      const [u] = await db.select({ id: users.id, email: users.email }).from(users).where(eq(users.id, userId)).limit(1);
       userRecord = u;
     } 
     
     if (!userRecord && tokenEmail) {
-      const [u] = await db.select().from(users).where(eq(users.email, tokenEmail)).limit(1);
+      const [u] = await db.select({ id: users.id, email: users.email }).from(users).where(eq(users.email, tokenEmail)).limit(1);
       userRecord = u;
     }
 

@@ -63,8 +63,6 @@ export const actorTones = pgTable('actor_tones', {
 export const users = pgTable('users', {
   id: serial('id').primaryKey(),
   wpUserId: bigint('wp_user_id', { mode: 'number' }).unique(),
-  wp_id: bigint('wp_id', { mode: 'number' }), // Keep legacy ID to avoid data loss prompts
-  photoId: integer('photo_id'), // Keep legacy ID to avoid data loss prompts
   email: text('email').notNull().unique(),
   firstName: text('first_name'),
   lastName: text('last_name'),
