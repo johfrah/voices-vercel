@@ -1,11 +1,12 @@
 "use client";
 
 import { useEditMode } from '@/contexts/EditModeContext';
+import { VoicesMasterControlContext } from '@/contexts/VoicesMasterControlContext';
 import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import { cn } from '@/lib/utils';
 import { Image as ImageIcon, Loader2, Upload } from 'lucide-react';
 import Image, { ImageProps } from 'next/image';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useContext } from 'react';
 
 interface VoiceglotImageProps extends Omit<ImageProps, 'src'> {
   src: string;
@@ -30,6 +31,8 @@ export const VoiceglotImage: React.FC<VoiceglotImageProps> = ({
   ...props 
 }) => {
   const { isEditMode } = useEditMode();
+  const masterControl = useContext(VoicesMasterControlContext);
+  const isMuted = masterControl?.state?.isMuted ?? false;
   const { playClick, playSwell } = useSonicDNA();
   const [isUploading, setIsUploading] = useState(false);
   const [currentSrc, setCurrentSrc] = useState(src);

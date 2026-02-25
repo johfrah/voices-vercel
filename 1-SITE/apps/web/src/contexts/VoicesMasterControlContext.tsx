@@ -52,7 +52,7 @@ const JOURNEY_USAGE_MAP: Record<JourneyType, UsageType> = {
   commercial: 'commercial',
 };
 
-const VoicesMasterControlContext = createContext<VoicesMasterControlContextType | undefined>(undefined);
+export const VoicesMasterControlContext = createContext<VoicesMasterControlContextType | undefined>(undefined);
 
 export const useMasterControl = () => {
   const context = useContext(VoicesMasterControlContext);

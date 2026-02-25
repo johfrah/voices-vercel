@@ -43,6 +43,11 @@ export default function LightPage() {
       if (!res.ok) throw new Error('Failed to fetch actors');
       const data = await res.json();
       
+      if (!data || !data.results) {
+        setActors([]);
+        return;
+      }
+
       const mappedActors = data.results.map((actor: any) => {
         let photoUrl = actor.photo_url;
         if (photoUrl && !photoUrl.startsWith('http') && !photoUrl.startsWith('/api/proxy') && !photoUrl.startsWith('/assets')) {
@@ -72,16 +77,20 @@ export default function LightPage() {
   }, [actors, selectedLanguage]);
 
   const languageOptions = useMemo(() => {
-    const market = MarketManager.getCurrentMarket();
-    const options = [
-      { label: t('filter.all_languages', 'Alle talen'), value: 'all', icon: Globe },
-      ...market.supported_languages.map(l => ({
-        label: MarketManager.getLanguageLabel(l),
-        value: l,
-        langCode: MarketManager.getLanguageCode(l)
-      }))
-    ];
-    return options;
+    try {
+      const market = MarketManager.getCurrentMarket();
+      const options = [
+        { label: t('filter.all_languages', 'Alle talen'), value: 'all', icon: Globe },
+        ...market.supported_languages.map(l => ({
+          label: MarketManager.getLanguageLabel(l),
+          value: l,
+          langCode: MarketManager.getLanguageCode(l)
+        }))
+      ];
+      return options;
+    } catch (e) {
+      return [{ label: t('filter.all_languages', 'Alle talen'), value: 'all', icon: Globe }];
+    }
   }, [t]);
 
   if (!mounted) return null;

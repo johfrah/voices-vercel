@@ -2,10 +2,11 @@
 
 import { useEditMode } from '@/contexts/EditModeContext';
 import { useTranslation } from '@/contexts/TranslationContext';
+import { VoicesMasterControlContext } from '@/contexts/VoicesMasterControlContext';
 import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import { cn } from '@/lib/utils';
 import { Lock, Sparkles } from 'lucide-react';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useContext } from 'react';
 import { SlopFilter } from '@/lib/engines/slop-filter';
 import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
 
@@ -43,6 +44,8 @@ export const VoiceglotText: React.FC<VoiceglotTextProps> = ({
   const { isEditMode } = useEditMode();
   const { playClick, playSwell } = useSonicDNA();
   const { t, language } = useTranslation();
+  const masterControl = useContext(VoicesMasterControlContext);
+  const isMuted = masterControl?.state?.isMuted ?? false;
   
   // 🛡️ CHRIS-PROTOCOL: Nuclear Hydration Guard (v2.14.199)
   // We renderen ALTIJD de defaultText op de server om hydration mismatches te voorkomen.

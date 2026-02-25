@@ -1,7 +1,7 @@
 "use client";
 
-import { useCallback } from 'react';
-import { useMasterControl } from '@/contexts/VoicesMasterControlContext';
+import { useCallback, useContext } from 'react';
+import { VoicesMasterControlContext } from '@/contexts/VoicesMasterControlContext';
 
 /**
  *  SONIC DNA ENGINE - 2026 EDITION
@@ -142,17 +142,18 @@ class SonicDNA {
 export const sonicDNA = new SonicDNA();
 
 export const useSonicDNA = () => {
-  const { state } = useMasterControl();
+  const masterControl = useContext(VoicesMasterControlContext);
+  const state = masterControl?.state;
   
-  const playClick = useCallback((type?: any) => {
-    sonicDNA.setMuted(state.isMuted);
+  const playClick = useCallback((type: 'soft' | 'pro' | 'pop' | 'success' | 'lock' | 'unlock' = 'soft') => {
+    if (state?.isMuted) return;
     return sonicDNA.playClick(type);
-  }, [state.isMuted]);
+  }, [state?.isMuted]);
 
   const playSwell = useCallback(() => {
-    sonicDNA.setMuted(state.isMuted);
+    if (state?.isMuted) return;
     return sonicDNA.playSwell();
-  }, [state.isMuted]);
+  }, [state?.isMuted]);
   
   return {
     playClick,
