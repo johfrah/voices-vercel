@@ -29,15 +29,21 @@ export async function GET(request: NextRequest) {
     // 🛡️ CHRIS-PROTOCOL: 1 TRUTH MANDATE (v2.14.638)
     // We halen eerst het totaal aantal orders op voor de paginering UI
     // NUCLEAR: We gebruiken nu de schone orders_v2 tabel
-    // 🛡️ CHRIS-PROTOCOL: RAW SQL COUNT (v2.14.645)
+    // 🛡️ CHRIS-PROTOCOL: RAW SQL COUNT (v2.14.646)
     // We gebruiken db.execute met een string om Drizzle abstractie volledig te passeren
+    // 🛡️ CHRIS-PROTOCOL: Explicit Row Parsing (v2.14.646)
     const countResult = await db.execute(sql.raw('SELECT count(*) as value FROM orders_v2'));
-    const countRows = Array.isArray(countResult) ? countResult : (countResult.rows || []);
-    const totalInDb = Number(countRows[0]?.value || 0);
+    const countRows: any = Array.isArray(countResult) ? countResult : (countResult.rows || []);
+    
+    // 🛡️ CHRIS-PROTOCOL: Debugging Log for Count
+    console.log(`📊 [Admin Orders API] Count Rows:`, JSON.stringify(countRows));
+    
+    // Sommige drivers geven de value terug als string, andere als number
+    const totalInDb = countRows[0] ? Number(countRows[0].value || countRows[0].count || 0) : 0;
 
     let allOrders: any[] = [];
     let debugInfo: any = {
-      version: '2.14.645',
+      version: '2.14.646',
       db_host: process.env.DATABASE_URL?.split('@')[1]?.split('/')[0] || 'unknown',
       page,
       limit,
@@ -47,9 +53,9 @@ export async function GET(request: NextRequest) {
     };
 
     try {
-      // 🚀 NUCLEAR RAW SQL FETCH (v2.14.645)
+      // 🚀 NUCLEAR RAW SQL FETCH (v2.14.646)
       // We passeren de Drizzle abstractie voor maximale zekerheid
-      // 🛡️ CHRIS-PROTOCOL: Snake Case Mapping (v2.14.645)
+      // 🛡️ CHRIS-PROTOCOL: Snake Case Mapping (v2.14.646)
       const rawOrdersResult = await db.execute(sql.raw(`
         SELECT 
           id, user_id, journey_id, status_id, payment_method_id, 
@@ -61,8 +67,10 @@ export async function GET(request: NextRequest) {
       `));
 
       // 🛡️ CHRIS-PROTOCOL: Robust Result Parsing
-      const rows = Array.isArray(rawOrdersResult) ? rawOrdersResult : (rawOrdersResult.rows || []);
+      const rows: any = Array.isArray(rawOrdersResult) ? rawOrdersResult : (rawOrdersResult.rows || []);
       
+      console.log(`📦 [Admin Orders API] Raw Rows Count: ${rows.length}`);
+
       // Map snake_case database columns naar de camelCase properties die de rest van de route verwacht
       allOrders = rows.map((row: any) => ({
         id: row.id,
