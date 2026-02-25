@@ -241,8 +241,14 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
 
     // 2. Probeer een Stem te vinden
     try {
-      const actor = await getActor(firstSegment, lang).catch(() => null);
+      console.log(` [SmartRouter] Metadata check for actor: ${firstSegment}`);
+      const actor = await getActor(firstSegment, lang).catch((err) => {
+        console.warn(` [SmartRouter] Metadata actor fetch failed for ${firstSegment}:`, err.message);
+        return null;
+      });
+      
       if (actor) {
+        console.log(` [SmartRouter] Metadata actor found: ${actor.first_name} (${actor.id})`);
         const title = await getTranslatedSEO(`seo.actor.${actor.id}.title`, `${actor.first_name || actor.first_name} - Voice-over Stem | ${market.name}`);
         const description = await getTranslatedSEO(`seo.actor.${actor.id}.description`, actor.bio || `Ontdek de stem van ${actor.first_name || actor.first_name} op ${market.name}.`);
         const schema = generateActorSchema(actor, market.name, host);
@@ -552,7 +558,12 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
 
     // 2. Check voor Stem
     try {
-      const actor = await getActor(firstSegment, lang).catch(() => null);
+      console.log(` [SmartRouter] Content check for actor: ${firstSegment}`);
+      const actor = await getActor(firstSegment, lang).catch((err) => {
+        console.warn(` [SmartRouter] Content actor fetch failed for ${firstSegment}:`, err.message);
+        return null;
+      });
+
       if (actor) {
         //  CHRIS-PROTOCOL: Map journey slug to internal journey type
         const journeyMap: Record<string, JourneyType> = {
