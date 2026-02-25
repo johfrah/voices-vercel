@@ -91,7 +91,7 @@ export default function AgentControlCenter() {
         body: JSON.stringify({
           id: selectedAgent.id,
           systemPrompt: editPrompt,
-          changeNote: changeNote || 'Handmatige update via Control Center'
+          changeNote: changeNote || 'Handmatige update via beheer'
         })
       });
 
@@ -105,13 +105,13 @@ export default function AgentControlCenter() {
         throw new Error('Save failed');
       }
     } catch (e) {
-      toast.error('Fout bij opslaan van prompt.');
+      toast.error('Fout bij opslaan van instructies.');
     } finally {
       setIsSaving(false);
     }
   };
 
-  if (isLoading) return <LoadingScreenInstrument message="AI Intelligentie initialiseren..." />;
+  if (isLoading) return <LoadingScreenInstrument message="Gegevens ophalen..." />;
 
   return (
     <PageWrapperInstrument className="min-h-screen bg-va-off-white p-8 pt-24">
@@ -126,13 +126,13 @@ export default function AgentControlCenter() {
           <div className="flex justify-between items-end">
             <div className="space-y-4">
               <ContainerInstrument className="inline-block bg-primary/10 text-primary text-[13px] font-light px-3 py-1 rounded-full tracking-widest">
-                <VoiceglotText translationKey="admin.agents.badge" defaultText="Intelligence Hub" />
+                <VoiceglotText translationKey="admin.agents.badge" defaultText="Assistent Beheer" />
               </ContainerInstrument>
               <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter">
-                <VoiceglotText translationKey="admin.agents.title" defaultText="Agent Control" />
+                <VoiceglotText translationKey="admin.agents.title" defaultText="Slimme Assistenten" />
               </HeadingInstrument>
               <TextInstrument className="text-xl text-black/40 font-light tracking-tight max-w-2xl">
-                <VoiceglotText translationKey="admin.agents.subtitle" defaultText="Beheer de kern-intelligentie en instructies van alle AI-agents in het Voices ecosysteem." />
+                <VoiceglotText translationKey="admin.agents.subtitle" defaultText="Beheer de instructies van alle AI-assistenten binnen het platform." />
               </TextInstrument>
             </div>
           </div>
@@ -263,7 +263,7 @@ export default function AgentControlCenter() {
                       className="va-btn-pro !bg-va-black flex items-center gap-3 px-10 py-4"
                     >
                       {isSaving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} strokeWidth={1.5} />}
-                      <span className="font-bold tracking-widest text-[12px] uppercase">Update Intelligence</span>
+                      <span className="font-bold tracking-widest text-[12px] uppercase">Instructies Bijwerken</span>
                     </ButtonInstrument>
                   </div>
                 </motion.div>
@@ -282,14 +282,14 @@ export default function AgentControlCenter() {
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "AdminPage",
-            "name": "Agent Control Center",
-            "description": "Beheer van AI-agent intelligentie en system prompts.",
+            "name": "Assistent Beheer",
+            "description": "Beheer van AI-assistenten en instructies.",
             "_llm_context": {
               "persona": "Architect",
               "journey": "admin",
               "intent": "agent_management",
               "capabilities": ["edit_prompts", "version_control", "system_monitoring"],
-              "lexicon": ["Agent", "Prompt", "Intelligence", "HITL"],
+              "lexicon": ["Assistent", "Instructies", "Inzichten"],
               "visual_dna": ["Code Editor", "Sidebar Navigation", "Chris-Protocol"]
             }
           })
