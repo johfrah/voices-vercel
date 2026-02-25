@@ -28,23 +28,23 @@ export const AdemingBento = ({ tracks, initialTrack }: AdemingBentoProps) => {
     <div className="min-h-screen bg-background text-foreground font-sans selection:bg-primary/20">
       <AdemingNav />
       
-      <main className="pt-20">
+      <main>
         <AdemingHero />
 
-        {/* Main Container */}
-        <div className="max-w-6xl mx-auto px-4 space-y-24 py-16">
+        {/* Main Container - Literal max-width 6xl from kelder */}
+        <div className="max-w-6xl mx-auto px-6 space-y-32 py-24">
           
-          {/* Filters Section */}
-          <section className="bg-gradient-to-br from-primary/5 via-background to-primary/10 rounded-[32px] p-8 md:p-12 border border-primary/10 shadow-soft">
-            <div className="mb-10 text-center space-y-3">
-              <h2 className="text-3xl md:text-4xl font-serif font-bold">
+          {/* Filters Section - Original spacing and depth */}
+          <section className="bg-gradient-to-br from-primary/5 via-background to-primary/10 rounded-[40px] p-10 md:p-16 border border-primary/10 shadow-soft animate-fade-in">
+            <div className="mb-12 text-center space-y-4">
+              <h2 className="text-4xl md:text-5xl font-serif font-bold tracking-tight">
                 <VoiceglotText translationKey="home.filters.title" defaultText="Vind jouw perfecte meditatie" />
               </h2>
-              <p className="text-muted-foreground text-lg">
+              <p className="text-muted-foreground text-xl font-light">
                 <VoiceglotText translationKey="home.filters.subtitle" defaultText="Kies wat je zoekt en ontdek meditaties op maat" />
               </p>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <VoicesDropdown 
                 placeholder="🎯 Kies een thema"
                 options={[
@@ -55,7 +55,7 @@ export const AdemingBento = ({ tracks, initialTrack }: AdemingBentoProps) => {
                 ]}
                 value={selectedTheme || "all"}
                 onChange={(v: string) => setSelectedTheme(v === "all" ? null : v)}
-                className="bg-white/50 backdrop-blur-sm rounded-2xl border-2 border-transparent hover:border-primary/50 transition-all"
+                className="bg-white/60 backdrop-blur-md rounded-3xl border-2 border-transparent hover:border-primary/30 transition-all h-16 text-lg"
               />
 
               <VoicesDropdown 
@@ -69,7 +69,7 @@ export const AdemingBento = ({ tracks, initialTrack }: AdemingBentoProps) => {
                 ]}
                 value={selectedElement || "all"}
                 onChange={(v: string) => setSelectedElement(v === "all" ? null : v)}
-                className="bg-white/50 backdrop-blur-sm rounded-2xl border-2 border-transparent hover:border-primary/50 transition-all"
+                className="bg-white/60 backdrop-blur-md rounded-3xl border-2 border-transparent hover:border-primary/30 transition-all h-16 text-lg"
               />
 
               <VoicesDropdown 
@@ -82,7 +82,7 @@ export const AdemingBento = ({ tracks, initialTrack }: AdemingBentoProps) => {
                 ]}
                 value="all"
                 onChange={() => {}}
-                className="bg-white/50 backdrop-blur-sm rounded-2xl border-2 border-transparent hover:border-primary/50 transition-all"
+                className="bg-white/60 backdrop-blur-md rounded-3xl border-2 border-transparent hover:border-primary/30 transition-all h-16 text-lg"
               />
 
               <VoicesDropdown 
@@ -94,22 +94,22 @@ export const AdemingBento = ({ tracks, initialTrack }: AdemingBentoProps) => {
                 ]}
                 value="all"
                 onChange={() => {}}
-                className="bg-white/50 backdrop-blur-sm rounded-2xl border-2 border-transparent hover:border-primary/50 transition-all"
+                className="bg-white/60 backdrop-blur-md rounded-3xl border-2 border-transparent hover:border-primary/30 transition-all h-16 text-lg"
               />
             </div>
           </section>
 
           {/* Featured Meditations Section */}
-          <section>
-            <div className="mb-12 space-y-3 text-center">
-              <h2 className="text-4xl md:text-5xl font-serif font-bold">
+          <section className="animate-fade-in" style={{ animationDelay: '0.2s' }}>
+            <div className="mb-16 space-y-4 text-center">
+              <h2 className="text-4xl md:text-6xl font-serif font-bold tracking-tight">
                 <VoiceglotText translationKey="home.featured.title" defaultText="Uitgelichte meditaties" />
               </h2>
-              <p className="text-xl text-muted-foreground">
+              <p className="text-2xl text-muted-foreground font-light">
                 <VoiceglotText translationKey="home.featured.subtitle" defaultText="Onze aanbevolen meditaties om mee te beginnen" />
               </p>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
               {publishedTracks.slice(0, 3).map((track) => (
                 <AdemingTrackCard 
                   key={track.id} 
@@ -120,17 +120,17 @@ export const AdemingBento = ({ tracks, initialTrack }: AdemingBentoProps) => {
             </div>
           </section>
 
-          {/* Meet Julie and Johfrah */}
-          <section>
-            <div className="mb-12 space-y-3 text-center">
-              <h2 className="text-4xl md:text-5xl font-serif font-bold">
+          {/* Meet Julie and Johfrah - Original CreatorBio style */}
+          <section className="animate-fade-in" style={{ animationDelay: '0.4s' }}>
+            <div className="mb-16 space-y-4 text-center">
+              <h2 className="text-4xl md:text-6xl font-serif font-bold tracking-tight">
                 <VoiceglotText translationKey="home.creators.title" defaultText="Maak kennis met Julie en Johfrah" />
               </h2>
-              <p className="text-xl text-muted-foreground">
+              <p className="text-2xl text-muted-foreground font-light">
                 <VoiceglotText translationKey="home.creators.subtitle" defaultText="Ontmoet de stemmen achter de meditaties" />
               </p>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
               {[
                 {
                   name: "Julie",
@@ -145,14 +145,17 @@ export const AdemingBento = ({ tracks, initialTrack }: AdemingBentoProps) => {
                   avatar: "/assets/ademing/avatar-johfrah.jpg"
                 }
               ].map((maker) => (
-                <div key={maker.name} className="bg-white p-6 rounded-[32px] shadow-soft border border-primary/5 hover:shadow-medium transition-all group cursor-pointer">
-                  <div className="flex gap-6">
-                    <div className="h-20 w-20 rounded-full overflow-hidden flex-shrink-0 border-2 border-primary/10">
+                <div key={maker.name} className="bg-white p-10 rounded-[48px] shadow-soft border border-primary/5 hover:shadow-medium hover:-translate-y-1 transition-all duration-500 group cursor-pointer">
+                  <div className="flex flex-col md:flex-row gap-10 items-center md:items-start text-center md:text-left">
+                    <div className="h-32 w-32 rounded-full overflow-hidden flex-shrink-0 border-4 border-primary/10 shadow-medium group-hover:scale-105 transition-transform duration-500">
                       <img src={maker.avatar} alt={maker.name} className="h-full w-full object-cover" />
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-serif font-bold text-2xl mb-2 group-hover:text-primary transition-colors">{maker.fullName}</h3>
-                      <p className="text-muted-foreground leading-relaxed line-clamp-2">{maker.bio}</p>
+                    <div className="flex-1 space-y-4">
+                      <h3 className="font-serif font-bold text-3xl group-hover:text-primary transition-colors">{maker.fullName}</h3>
+                      <p className="text-muted-foreground text-lg leading-relaxed">{maker.bio}</p>
+                      <div className="pt-2 flex items-center justify-center md:justify-start gap-2 text-primary font-bold text-sm uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0">
+                        Bekijk profiel <ArrowRight size={16} />
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -163,19 +166,21 @@ export const AdemingBento = ({ tracks, initialTrack }: AdemingBentoProps) => {
         </div>
 
         {/* Testimonials - Full width */}
-        <Testimonials />
+        <div className="animate-fade-in" style={{ animationDelay: '0.6s' }}>
+          <Testimonials />
+        </div>
 
-        {/* Breathing Exercise - Full width */}
-        <section className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-background to-primary/10 py-32 px-6">
-          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/3 rounded-full blur-3xl" />
-          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-primary/5 rounded-full blur-3xl" />
+        {/* Breathing Exercise - Full width with original spacing */}
+        <section className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-background to-primary/10 py-48 px-6 mt-32 animate-fade-in" style={{ animationDelay: '0.8s' }}>
+          <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-primary/3 rounded-full blur-3xl animate-breathe-glow" />
+          <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-primary/5 rounded-full blur-3xl animate-breathe-glow" style={{ animationDelay: '-3s' }} />
           
           <div className="max-w-4xl mx-auto relative">
-            <div className="text-center mb-16 space-y-4">
-              <h2 className="text-4xl md:text-5xl font-serif font-bold">
+            <div className="text-center mb-20 space-y-6">
+              <h2 className="text-5xl md:text-7xl font-serif font-bold tracking-tight">
                 <VoiceglotText translationKey="home.breathing.title" defaultText="Neem even een bewuste adem" />
               </h2>
-              <p className="text-xl text-muted-foreground">
+              <p className="text-2xl text-muted-foreground font-light max-w-2xl mx-auto leading-relaxed">
                 <VoiceglotText translationKey="home.breathing.subtitle" defaultText="Probeer deze korte ademhalingsoefening en ervaar direct de kracht van bewust ademen" />
               </p>
             </div>
@@ -195,18 +200,18 @@ export const AdemingBento = ({ tracks, initialTrack }: AdemingBentoProps) => {
         )}
       </AnimatePresence>
 
-      {/* Simple Footer */}
-      <footer className="bg-background border-t border-border py-20 px-6">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-12">
-          <div className="font-serif text-3xl font-semibold opacity-40">ademing</div>
-          <div className="flex flex-wrap justify-center gap-10 text-sm font-bold uppercase tracking-[0.2em] text-muted-foreground">
+      {/* Simple Footer - Original Ademing branding */}
+      <footer className="bg-background border-t border-border py-32 px-6">
+        <div className="max-w-7xl mx-auto flex flex-col items-center gap-16">
+          <div className="font-serif text-5xl font-semibold opacity-60 tracking-tighter animate-breathe-wave-subtle">ademing</div>
+          <div className="flex flex-wrap justify-center gap-12 text-sm font-bold uppercase tracking-[0.3em] text-muted-foreground/60">
             <a href="#" className="hover:text-primary transition-colors">Over ons</a>
             <a href="#" className="hover:text-primary transition-colors">Contact</a>
             <a href="#" className="hover:text-primary transition-colors">Privacy</a>
             <a href="#" className="hover:text-primary transition-colors">Mijn meditaties</a>
           </div>
-          <div className="text-sm text-muted-foreground opacity-60 font-medium">
-            © 2026 Ademing. Alle rechten voorbehouden.
+          <div className="text-sm text-muted-foreground/40 font-medium tracking-widest">
+            © 2026 ADEMING. EEN ZACHTE PLEK VOOR JEZELF.
           </div>
         </div>
       </footer>

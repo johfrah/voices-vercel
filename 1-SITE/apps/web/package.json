@@ -1,6 +1,6 @@
 {
   "name": "voices-experience-layer",
-  "version": "2.14.717",
+  "version": "2.14.718",
   "private": true,
   "scripts": {
     "dev": "PORT=3000 next dev",
@@ -31,6 +31,7 @@
     "@dnd-kit/utilities": "^3.2.2",
     "@google/generative-ai": "^0.24.1",
     "@octokit/rest": "^22.0.1",
+    "@radix-ui/react-dialog": "^1.1.15",
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.95.3",
     "@types/fluent-ffmpeg": "^2.1.28",
@@ -45,6 +46,7 @@
     "autoprefixer": "^10.4.24",
     "basic-ftp": "^5.1.0",
     "capacitor-voice-recorder": "^7.0.6",
+    "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "date-fns": "^4.1.0",
