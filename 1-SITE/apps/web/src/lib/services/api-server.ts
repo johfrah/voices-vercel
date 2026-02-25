@@ -405,52 +405,69 @@ export async function getArticle(slug: string, lang: string = 'nl'): Promise<any
 
 export async function getActor(slug: string, lang: string = 'nl'): Promise<Actor> {
   const cleanSlug = slug?.trim().toLowerCase();
-  console.error(` [api-server] getActor lookup START: "${cleanSlug}"`);
+  console.error(` [api-server] getActor lookup START: "${cleanSlug}" (lang: ${lang})`);
   
   if (!cleanSlug) throw new Error("Slug is required");
 
-  // 🛡️ CHRIS-PROTOCOL: Nuclear Direct Match for Johfrah (v2.14.543)
+  // 🛡️ CHRIS-PROTOCOL: Nuclear Direct Match for Johfrah (v2.14.546)
   const isJohfrah = cleanSlug === 'johfrah' || cleanSlug === 'johfrah-lefebvre';
 
   try {
     // 1. Primary lookup by slug - DRIZZLE FIRST (Atomic Pulse)
     console.error(` [api-server] Executing Drizzle query for slug: ${cleanSlug}`);
-    const [actor] = await db.select().from(actors).where(eq(actors.slug, cleanSlug)).limit(1);
-
-    if (actor) {
-      console.error(` [api-server] SUCCESS: Found actor ${actor.first_name} by slug (Drizzle).`);
-      return processActorData(actor, cleanSlug);
-    }
-
-    // 2. Fallback by first_name
-    console.warn(` [api-server] Slug match failed, trying first_name fallback (Drizzle)...`);
-    const [fallbackActor] = await db.select().from(actors).where(ilike(actors.first_name, cleanSlug)).limit(1);
     
-    if (fallbackActor) {
-      console.error(` [api-server] SUCCESS: Found actor ${fallbackActor.first_name} by first_name (Drizzle).`);
-      return processActorData(fallbackActor, cleanSlug);
-    }
+    // Sherlock: We use a direct query to avoid Proxy issues if possible
+    const { db: directDb, actors: actorsTable } = await import('@/lib/system/voices-config');
+    
+    if (directDb) {
+      const results = await directDb.select().from(actorsTable).where(eq(actorsTable.slug, cleanSlug)).limit(1);
+      const actor = results[0];
 
-    // 3. Last resort: Johfrah ID match
-    if (isJohfrah) {
-      console.error(` [api-server] NUCLEAR FALLBACK: Fetching Johfrah by ID 1760 (Drizzle)`);
-      const [finalActor] = await db.select().from(actors).where(eq(actors.id, 1760)).limit(1);
+      if (actor) {
+        console.error(` [api-server] SUCCESS: Found actor ${actor.first_name} by slug (Drizzle).`);
+        return processActorData(actor, cleanSlug);
+      }
+
+      // 2. Fallback by first_name
+      console.warn(` [api-server] Slug match failed, trying first_name fallback (Drizzle)...`);
+      const fallbackResults = await directDb.select().from(actorsTable).where(ilike(actorsTable.first_name, cleanSlug)).limit(1);
+      const fallbackActor = fallbackResults[0];
       
-      if (finalActor) {
-        return processActorData(finalActor, cleanSlug);
+      if (fallbackActor) {
+        console.error(` [api-server] SUCCESS: Found actor ${fallbackActor.first_name} by first_name (Drizzle).`);
+        return processActorData(fallbackActor, cleanSlug);
+      }
+
+      // 3. Last resort: Johfrah ID match
+      if (isJohfrah) {
+        console.error(` [api-server] NUCLEAR FALLBACK: Fetching Johfrah by ID 1760 (Drizzle)`);
+        const finalResults = await directDb.select().from(actorsTable).where(eq(actorsTable.id, 1760)).limit(1);
+        const finalActor = finalResults[0];
+        
+        if (finalActor) {
+          return processActorData(finalActor, cleanSlug);
+        }
       }
     }
   } catch (err: any) {
     console.error(` [api-server] Drizzle failed, falling back to Supabase SDK:`, err.message);
-    
-    // SDK Fallback (v2.14.543)
+  }
+
+  // SDK Fallback (v2.14.546)
+  try {
+    console.error(` [api-server] Executing Supabase SDK fallback for slug: ${cleanSlug}`);
     const { data: sdkActor } = await supabase
       .from('actors')
       .select('*')
       .eq('slug', cleanSlug)
       .maybeSingle();
     
-    if (sdkActor) return processActorData(sdkActor, cleanSlug);
+    if (sdkActor) {
+      console.error(` [api-server] SUCCESS: Found actor ${sdkActor.first_name} by slug (SDK).`);
+      return processActorData(sdkActor, cleanSlug);
+    }
+  } catch (sdkErr: any) {
+    console.error(` [api-server] Supabase SDK fallback failed:`, sdkErr.message);
   }
 
   console.error(` [api-server] Actor NOT FOUND for slug: "${cleanSlug}"`);
