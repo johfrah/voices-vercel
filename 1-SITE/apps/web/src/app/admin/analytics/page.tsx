@@ -163,7 +163,7 @@ export default function AnalyticsHubPage() {
               AI Insights
             </HeadingInstrument>
             <TextInstrument className="text-white/40 text-[15px] font-light leading-relaxed mb-6">
-              Voicy analyseert momenteel de conversie-paden. De Agency journey vertoont een stijgende lijn in B2B aanvragen vanuit de Franse markt.
+              {stats?.aiInsight || "Voicy analyseert momenteel de conversie-paden..."}
             </TextInstrument>
           </ContainerInstrument>
           

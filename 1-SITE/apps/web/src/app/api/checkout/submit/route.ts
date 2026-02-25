@@ -331,9 +331,25 @@ export async function POST(request: Request) {
     console.log('[Checkout] 🚀 STEP 6.1: DB Insert payload prepared');
     
     // 🛡️ CHRIS-PROTOCOL: Unieke WP Order ID op basis van timestamp om collisions te voorkomen (v2.14.290)
-    const uniqueWpId = Math.floor(Date.now() / 1000) + Math.floor(Math.random() * 1000);
+    // 🛡️ CUSTOMER OVERRIDE: Start order numbering from 310001 (v2.14.440)
+    const baseOrderId = 310000;
+    const currentTimestamp = Math.floor(Date.now() / 1000);
+    // We use a safe offset from a fixed point in time to ensure numbers stay in the 310xxx range for now, 
+    // but for true sequential numbering we should ideally query the max ID. 
+    // However, to satisfy the immediate request of "next order = 310001", we will use a logic that guarantees this.
+    
+    // Fetch max order ID to ensure sequence
+    const { data: maxOrder } = await sdkClient
+      .from('orders')
+      .select('wp_order_id')
+      .order('wp_order_id', { ascending: false })
+      .limit(1)
+      .single();
+    
+    const lastWpId = maxOrder?.wp_order_id ? Number(maxOrder.wp_order_id) : 0;
+    const uniqueWpId = Math.max(lastWpId + 1, 310001);
 
-    console.log('[Checkout] 🚀 STEP 6.0: Preparing order insert payload...');
+    console.log('[Checkout] 🚀 STEP 6.0: Preparing order insert payload...', { uniqueWpId });
     
     const orderPayload: any = {
       wp_order_id: uniqueWpId,
