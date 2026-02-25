@@ -35,7 +35,7 @@ export const AdemingNav = () => {
     { label: 'Bibliotheek', icon: Library, path: '/bibliotheek' },
     { label: 'Favorieten', icon: Heart, path: '/favorieten' },
     { label: 'Retreats', icon: Calendar, path: '/retreats' },
-    { label: 'Profiel', icon: UserCircle, path: '/account' },
+    { label: 'Profiel', icon: UserCircle, path: '/mijn-ademing' },
   ];
 
   return (
@@ -134,7 +134,7 @@ export const AdemingNav = () => {
           <Link href="/bibliotheek" className="p-3 hover:bg-black/5 rounded-full transition-all hidden md:flex active:scale-90">
             <Library className="w-6 h-6" strokeWidth={1.5} />
           </Link>
-          <Link href="/account" className="p-3 hover:bg-black/5 rounded-full transition-all active:scale-90 bg-primary/5 text-primary">
+          <Link href="/mijn-ademing" className="p-3 hover:bg-black/5 rounded-full transition-all active:scale-90 bg-primary/5 text-primary">
             <UserCircle className="w-6 h-6" strokeWidth={2} />
           </Link>
         </div>

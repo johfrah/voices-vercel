@@ -18,7 +18,7 @@ import { ContainerInstrument, HeadingInstrument, TextInstrument, SectionInstrume
 interface AdemingBentoProps {
   tracks: any[];
   initialTrack?: any;
-  mode?: 'home' | 'library' | 'favorites' | 'search';
+  mode?: 'home' | 'library' | 'favorites' | 'search' | 'profile';
 }
 
 export const AdemingBento = ({ tracks, initialTrack, mode = 'home' }: AdemingBentoProps) => {
@@ -49,15 +49,17 @@ export const AdemingBento = ({ tracks, initialTrack, mode = 'home' }: AdemingBen
           {mode !== 'home' && (
             <SectionInstrument className="animate-fade-in">
               <ContainerInstrument plain className="text-center space-y-6">
-                <HeadingInstrument level={1} className="text-6xl md:text-8xl font-serif font-bold tracking-tight">
+                <HeadingInstrument level={1} className="text-5xl md:text-7xl font-serif font-bold tracking-tight">
                   {mode === 'library' && <VoiceglotText translationKey="library.title" defaultText="Bibliotheek" />}
                   {mode === 'favorites' && <VoiceglotText translationKey="favorites.title" defaultText="Favorieten" />}
                   {mode === 'search' && <VoiceglotText translationKey="search.title" defaultText="Ontdekken" />}
+                  {mode === 'profile' && <VoiceglotText translationKey="profile.title" defaultText="Mijn Ademing" />}
                 </HeadingInstrument>
-                <TextInstrument className="text-muted-foreground text-2xl font-light max-w-2xl mx-auto leading-relaxed">
+                <TextInstrument className="text-muted-foreground text-xl font-light max-w-2xl mx-auto leading-relaxed">
                   {mode === 'library' && <VoiceglotText translationKey="library.subtitle" defaultText="Jouw persoonlijke verzameling van rust" />}
                   {mode === 'favorites' && <VoiceglotText translationKey="favorites.subtitle" defaultText="De meditaties die je het meest raken" />}
                   {mode === 'search' && <VoiceglotText translationKey="search.subtitle" defaultText="Vind de perfecte begeleiding voor dit moment" />}
+                  {mode === 'profile' && <VoiceglotText translationKey="profile.subtitle" defaultText="Jouw persoonlijke reis en instellingen" />}
                 </TextInstrument>
               </ContainerInstrument>
             </SectionInstrument>
@@ -65,12 +67,12 @@ export const AdemingBento = ({ tracks, initialTrack, mode = 'home' }: AdemingBen
 
           {/* Filters Section - Visible on home and search */}
           {(mode === 'home' || mode === 'search') && (
-            <SectionInstrument className="bg-gradient-to-br from-primary/5 via-background to-primary/10 rounded-[48px] p-12 md:p-24 border border-primary/10 shadow-soft animate-fade-in hover:shadow-medium transition-all duration-1000">
-              <ContainerInstrument plain className="mb-16 text-center space-y-6">
-                <HeadingInstrument level={2} className="text-5xl md:text-7xl font-serif font-bold tracking-tight animate-gentle-float">
+            <SectionInstrument className="bg-gradient-to-br from-primary/5 via-background to-primary/10 rounded-[48px] p-12 md:p-20 border border-primary/10 shadow-soft animate-fade-in hover:shadow-medium transition-all duration-1000">
+              <ContainerInstrument plain className="mb-12 text-center space-y-4">
+                <HeadingInstrument level={2} className="text-4xl md:text-6xl font-serif font-bold tracking-tight animate-gentle-float">
                   <VoiceglotText translationKey="home.filters.title" defaultText="Vind jouw perfecte meditatie" />
                 </HeadingInstrument>
-                <TextInstrument className="text-muted-foreground text-2xl font-light max-w-2xl mx-auto leading-relaxed">
+                <TextInstrument className="text-muted-foreground text-xl font-light max-w-2xl mx-auto leading-relaxed">
                   <VoiceglotText translationKey="home.filters.subtitle" defaultText="Kies wat je zoekt en ontdek meditaties op maat" />
                 </TextInstrument>
               </ContainerInstrument>
@@ -133,11 +135,11 @@ export const AdemingBento = ({ tracks, initialTrack, mode = 'home' }: AdemingBen
           {/* Tracks Grid Section */}
           <SectionInstrument className="animate-fade-in" style={{ animationDelay: '0.2s' }}>
             {mode === 'home' && (
-              <ContainerInstrument plain className="mb-24 space-y-6 text-center">
-                <HeadingInstrument level={2} className="text-5xl md:text-7xl font-serif font-bold tracking-tight">
+              <ContainerInstrument plain className="mb-16 space-y-4 text-center">
+                <HeadingInstrument level={2} className="text-4xl md:text-6xl font-serif font-bold tracking-tight">
                   <VoiceglotText translationKey="home.featured.title" defaultText="Uitgelichte meditaties" />
                 </HeadingInstrument>
-                <TextInstrument className="text-2xl text-muted-foreground font-light max-w-2xl mx-auto leading-relaxed">
+                <TextInstrument className="text-xl text-muted-foreground font-light max-w-2xl mx-auto leading-relaxed">
                   <VoiceglotText translationKey="home.featured.subtitle" defaultText="Onze aanbevolen meditaties om mee te beginnen" />
                 </TextInstrument>
               </ContainerInstrument>
@@ -164,11 +166,11 @@ export const AdemingBento = ({ tracks, initialTrack, mode = 'home' }: AdemingBen
             <>
               {/* Meet Julie and Johfrah - Original CreatorBio style */}
               <SectionInstrument className="animate-fade-in" style={{ animationDelay: '0.4s' }}>
-                <ContainerInstrument plain className="mb-16 space-y-4 text-center">
-                  <HeadingInstrument level={2} className="text-5xl md:text-7xl font-serif font-bold tracking-tight">
+                <ContainerInstrument plain className="mb-12 space-y-2 text-center">
+                  <HeadingInstrument level={2} className="text-4xl md:text-6xl font-serif font-bold tracking-tight">
                     <VoiceglotText translationKey="home.creators.title" defaultText="Maak kennis met Julie en Johfrah" />
                   </HeadingInstrument>
-                  <TextInstrument className="text-2xl text-muted-foreground font-light max-w-2xl mx-auto">
+                  <TextInstrument className="text-xl text-muted-foreground font-light max-w-2xl mx-auto">
                     <VoiceglotText translationKey="home.creators.subtitle" defaultText="Ontmoet de stemmen achter de meditaties" />
                   </TextInstrument>
                 </ContainerInstrument>
@@ -231,16 +233,16 @@ export const AdemingBento = ({ tracks, initialTrack, mode = 'home' }: AdemingBen
               </ContainerInstrument>
 
               {/* Breathing Exercise - Full width with original spacing */}
-              <SectionInstrument className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-background to-primary/10 py-48 px-6 mt-32 animate-fade-in" style={{ animationDelay: '0.8s' }}>
+              <SectionInstrument className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-background to-primary/10 py-32 px-6 mt-32 animate-fade-in" style={{ animationDelay: '0.8s' }}>
                 <ContainerInstrument plain className="absolute top-0 right-0 w-[800px] h-[800px] bg-primary/3 rounded-full blur-3xl animate-breathe-glow" />
                 <ContainerInstrument plain className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-primary/5 rounded-full blur-3xl animate-breathe-glow" style={{ animationDelay: '-3s' }} />
                 
                 <ContainerInstrument className="max-w-4xl mx-auto relative">
-                  <ContainerInstrument plain className="text-center mb-20 space-y-6">
-                    <HeadingInstrument level={2} className="text-5xl md:text-7xl font-serif font-bold tracking-tight">
+                  <ContainerInstrument plain className="text-center mb-16 space-y-4">
+                    <HeadingInstrument level={2} className="text-4xl md:text-6xl font-serif font-bold tracking-tight">
                       <VoiceglotText translationKey="home.breathing.title" defaultText="Neem even een bewuste adem" />
                     </HeadingInstrument>
-                    <TextInstrument className="text-2xl text-muted-foreground font-light max-w-2xl mx-auto leading-relaxed">
+                    <TextInstrument className="text-xl text-muted-foreground font-light max-w-2xl mx-auto leading-relaxed">
                       <VoiceglotText translationKey="home.breathing.subtitle" defaultText="Probeer deze korte ademhalingsoefening en ervaar direct de kracht van bewust ademen" />
                     </TextInstrument>
                   </ContainerInstrument>

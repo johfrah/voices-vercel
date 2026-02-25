@@ -439,6 +439,15 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
         );
       }
 
+      if (ademingSlug === 'mijn-ademing') {
+        return (
+          <PageWrapperInstrument className="bg-va-off-white">
+            <Suspense fallback={null}><LiquidBackground /></Suspense>
+            <AdemingBento tracks={tracks} mode="profile" />
+          </PageWrapperInstrument>
+        );
+      }
+
       // Handle deep meditation routes on ademing.be
       if (cleanSegments.length > 0) {
         const meditationSlug = cleanSegments[cleanSegments.length - 1];

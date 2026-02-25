@@ -155,6 +155,15 @@ export const ReviewsInstrument: React.FC<{
       .map(([word]) => word);
   }, [localReviews]);
 
+  // 🛡️ CHRIS-PROTOCOL: Sector Discovery (v2.14.764)
+  const availableSectors = useMemo(() => {
+    const s = new Set<string>();
+    localReviews.forEach(r => {
+      if (r.sector && r.sector !== 'general') s.add(r.sector);
+    });
+    return Array.from(s).sort();
+  }, [localReviews]);
+
   const checkScroll = () => {
     if (scrollRef.current) {
       const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
@@ -248,7 +257,7 @@ export const ReviewsInstrument: React.FC<{
           {!hideFilters && (
             <div className="flex flex-wrap items-center gap-4 mt-8">
               <div className="flex flex-wrap gap-2">
-                {sectors.map(sectorName => (
+                {availableSectors.map(sectorName => (
                   <button
                     key={sectorName}
                     onClick={() => setSelectedSector(selectedSector === sectorName ? null : sectorName)}

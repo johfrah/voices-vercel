@@ -33,8 +33,8 @@
   --accent-foreground: 28 12% 25%;
 
   /* Borders & inputs - heel subtiel */
-  --border: 35 20% 92%;
-  --input: 35 20% 92%;
+  --border: 160 28% 48% / 0.1;
+  --input: 160 28% 48% / 0.05;
   --ring: 160 28% 48%;
 
   /* Element kleuren - kern van Ademing identiteit */
@@ -56,12 +56,32 @@
   --theme-routine-soft: 160 28% 94%;
 
   /* Shadows - extra zachte, natuurlijke schaduwen */
-  --shadow-soft: 0 2px 12px hsla(28, 12%, 25%, 0.06);
-  --shadow-medium: 0 4px 20px hsla(28, 12%, 25%, 0.09);
-  --shadow-large: 0 8px 40px hsla(28, 12%, 25%, 0.12);
+  --shadow-soft: 0 2px 12px hsla(160, 28%, 48%, 0.08);
+  --shadow-medium: 0 4px 20px hsla(160, 28%, 48%, 0.12);
+  --shadow-large: 0 8px 40px hsla(160, 28%, 48%, 0.15);
 
   /* Typography Override */
   --font-serif: 'Cormorant Garamond', serif;
+}
+
+.theme-ademing.dark {
+  --background: 160 20% 4%;
+  --foreground: 160 10% 90%;
+  --card: 160 20% 6%;
+  --card-foreground: 160 10% 90%;
+  --popover: 160 20% 6%;
+  --popover-foreground: 160 10% 90%;
+  --primary: 160 28% 48%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 160 20% 10%;
+  --secondary-foreground: 160 10% 90%;
+  --muted: 160 20% 8%;
+  --muted-foreground: 160 10% 60%;
+  --accent: 160 28% 48% / 0.2;
+  --accent-foreground: 160 10% 90%;
+  --border: 160 28% 48% / 0.2;
+  --input: 160 28% 48% / 0.1;
+  --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.4);
 }
 
 .theme-ademing h1, 
