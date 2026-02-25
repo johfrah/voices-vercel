@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
+import toast from 'react-hot-toast';
 
 /**
  * 🛡️ NUCLEAR VERSION GUARD (BOB-METHOD 2026)
@@ -16,6 +17,34 @@ export function VersionGuard({ currentVersion }: { currentVersion: string }) {
   useEffect(() => {
     // 🛡️ CHRIS-PROTOCOL: Alleen checken op client-side
     if (typeof window === 'undefined') return;
+
+    // 🛡️ CHRIS-PROTOCOL: Manual Cache Wiper (CMD + SHIFT + X)
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key.toLowerCase() === 'x') {
+        e.preventDefault();
+        toast.loading('Nuclear Cache Wipe gestart...', { duration: 2000 });
+        
+        // 1. Clear LocalStorage & SessionStorage
+        localStorage.clear();
+        sessionStorage.clear();
+        
+        // 2. Unregister all Service Workers
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.getRegistrations().then((registrations) => {
+            for (const registration of registrations) {
+              registration.unregister();
+            }
+          });
+        }
+
+        // 3. Force Hard Reload with cache buster
+        setTimeout(() => {
+          window.location.href = window.location.origin + window.location.pathname + '?wipe=' + Date.now();
+        }, 1000);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
 
     const checkVersion = async () => {
       try {
@@ -62,6 +91,8 @@ export function VersionGuard({ currentVersion }: { currentVersion: string }) {
       lastCheck.current = now;
       checkVersion();
     }
+
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, [pathname, currentVersion]);
 
   return null;
