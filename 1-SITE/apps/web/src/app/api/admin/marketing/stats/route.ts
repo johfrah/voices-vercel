@@ -54,27 +54,24 @@ export async function GET(request: NextRequest) {
       return acc
     }, {})
 
-    // 3. Market verdeling
-    const { data: marketData, error: marketError } = await supabase
-      .from('visitors')
-      .select('market')
-      .gte('last_visit_at', today.toISOString())
-
-    if (marketError) {
-      console.error(' Market Error:', marketError)
+    // 4. AI Insight Generation (Dynamic)
+    let aiInsight = "Voicy analyseert momenteel de conversie-paden. Geen opvallende trends gedetecteerd voor vandaag.";
+    
+    if (totalToday > 0) {
+      const topMarket = Object.entries(marketStats).sort((a: any, b: any) => b[1] - a[1])[0];
+      const topJourney = Object.entries(journeyStats).sort((a: any, b: any) => b[1] - a[1])[0];
+      
+      if (topMarket && topJourney) {
+        aiInsight = `Voicy ziet een sterke focus op de ${topJourney[0]} journey vanuit de ${topMarket[0]} markt. Dit vertegenwoordigt ${Math.round((Number(topJourney[1]) / totalToday) * 100)}% van het huidige verkeer.`;
+      }
     }
-
-    const marketStats = (marketData || []).reduce((acc: any, curr: any) => {
-      const m = curr.market || 'unknown'
-      acc[m] = (acc[m] || 0) + 1
-      return acc
-    }, {})
 
     return NextResponse.json({ 
       stats: {
         totalToday,
         journeys: journeyStats,
-        markets: marketStats
+        markets: marketStats,
+        aiInsight
       },
       timestamp: new Date().toISOString()
     })

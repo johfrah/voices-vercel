@@ -78,43 +78,42 @@ export async function generateMetadata(): Promise<Metadata> {
   if (pathname.startsWith('/studio')) lookupHost = `${cleanHost}/studio`;
   else if (pathname.startsWith('/academy')) lookupHost = `${cleanHost}/academy`;
 
-  const market = await getMarketSafe(lookupHost);
+  //  CHRIS-PROTOCOL: Parallel Pulse Fetching (v2.14.440)
+  // We fetch market, locales and translations in parallel to minimize TTFB
+  const [market, alternateLanguages, translations] = await Promise.all([
+    getMarketSafe(lookupHost),
+    (async () => {
+      try {
+        const localesPromise = MarketDatabaseService.getAllLocalesAsync();
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Locales Timeout')), 2500)
+        );
+        return await Promise.race([localesPromise, timeoutPromise]) as any;
+      } catch (err) {
+        console.error(' generateMetadata: Failed to load locales:', err);
+        return {
+          'nl-BE': MarketManagerServer.getMarketDomains()['BE'],
+          'nl-NL': MarketManagerServer.getMarketDomains()['NLNL'],
+          'fr-FR': MarketManagerServer.getMarketDomains()['FR'],
+          'en-EU': MarketManagerServer.getMarketDomains()['EU']
+        };
+      }
+    })(),
+    (async () => {
+      try {
+        const translationPromise = getTranslationsServer(langHeader || 'nl');
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Translation Timeout')), 2500)
+        );
+        return await Promise.race([translationPromise, timeoutPromise]) as any;
+      } catch (err) {
+        console.error(' generateMetadata: Failed to load translations:', err);
+        return {};
+      }
+    })()
+  ]);
+
   const baseUrl = `https://${market.market_code === 'BE' ? MarketManagerServer.getMarketDomains()['BE'].replace('https://', '') : (market.market_code === 'NLNL' ? 'www.voices.nl' : cleanHost)}`;
-
-  // 🛡️ VISIONARY MANDATE: Title and description exclusively from market data
-  const title = market.seo_data?.title || (
-    market.market_code === 'ADEMING' ? "Ademing | Kom tot rust" : 
-    market.market_code === 'PORTFOLIO' ? "Johfrah | De stem achter het verhaal" :
-    market.market_code === 'ARTIST' ? `${market.name} | The voice of a new generation` :
-    market.market_code === 'BE' ? "Voices | Het Vriendelijkste Stemmenbureau van België" :
-    market.market_code === 'NLNL' ? "Voices | Het Vriendelijkste Stemmenbureau van Nederland" :
-    `${market.name} | Het Vriendelijkste Stemmenbureau`
-  );
-
-  const description = market.seo_data?.description || (
-    market.market_code === 'ADEMING' ? "Adem in. Kom tot rust." :
-    market.market_code === 'PORTFOLIO' ? "De stem achter het verhaal." :
-    "Een warm en vertrouwd geluid voor elk project."
-  );
-
-  //  CHRIS-PROTOCOL: Dynamically generate alternate languages from MarketManager (Data-Driven)
-  let alternateLanguages = {};
-  try {
-    //  CHRIS-PROTOCOL: Voeg een timeout toe aan de locales fetch in metadata
-    const localesPromise = MarketDatabaseService.getAllLocalesAsync();
-    const timeoutPromise = new Promise((_, reject) => 
-      setTimeout(() => reject(new Error('Locales Timeout')), 3000)
-    );
-    alternateLanguages = await Promise.race([localesPromise, timeoutPromise]) as any;
-  } catch (err) {
-    console.error(' generateMetadata: Failed to load locales (timeout or error):', err);
-    alternateLanguages = {
-      'nl-BE': MarketManagerServer.getMarketDomains()['BE'],
-      'nl-NL': MarketManagerServer.getMarketDomains()['NLNL'],
-      'fr-FR': MarketManagerServer.getMarketDomains()['FR'],
-      'en-EU': MarketManagerServer.getMarketDomains()['EU']
-    };
-  }
 
   return {
     title: {
@@ -173,7 +172,22 @@ export default async function RootLayout({
   if (pathname.startsWith('/studio')) lookupHost = `${cleanHost}/studio`;
   else if (pathname.startsWith('/academy')) lookupHost = `${cleanHost}/academy`;
 
-  const market = await getMarketSafe(lookupHost);
+  //  CHRIS-PROTOCOL: Parallel Pulse Fetching (v2.14.440)
+  const [market, translations] = await Promise.all([
+    getMarketSafe(lookupHost),
+    (async () => {
+      try {
+        const translationPromise = getTranslationsServer(langHeader || 'nl');
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Translation Timeout')), 2500)
+        );
+        return await Promise.race([translationPromise, timeoutPromise]) as any;
+      } catch (err) {
+        console.error(' RootLayout: Failed to load translations:', err);
+        return {};
+      }
+    })()
+  ]);
   
   // 🛡️ CHRIS-PROTOCOL: Journey Detection for Provider Injection
   // We extract the journey from the URL segments to prevent Hydration Mismatch (#419)
@@ -198,24 +212,10 @@ export default async function RootLayout({
     pathname === '/under-construction' ||
     pathname === '/under-construction/';
   
-  const langHeader = headersList.get('x-voices-lang');
   const isYoussefJourney = pathname.includes('/artist/youssef') || market.market_code === 'ARTIST';
   
   const lang = langHeader || (isYoussefJourney ? 'en' : (market.language || 'nl'));
   
-  //  CHRIS-PROTOCOL: Safe translation loading to prevent 500 on root layout
-  let translations = {};
-  try {
-    //  CHRIS-PROTOCOL: Voeg een timeout toe aan de server-side translation fetch
-    const translationPromise = getTranslationsServer(lang);
-    const timeoutPromise = new Promise((_, reject) => 
-      setTimeout(() => reject(new Error('Translation Timeout')), 3000)
-    );
-    translations = await Promise.race([translationPromise, timeoutPromise]) as any;
-  } catch (err: any) {
-    console.error(' RootLayout: Failed to load translations (timeout or error):', err);
-  }
-
   const isArtistJourney = market.market_code === 'ARTIST' || pathname.includes('/artist/') || pathname.includes('/voice/');
   const showVoicy = market.has_voicy !== false && !isArtistJourney && !isUnderConstruction;
   const showTopBar = !isUnderConstruction;
