@@ -1,4 +1,4 @@
-import { db, translations, translationRegistry } from '@/lib/system/db';
+import { db, translations, translationRegistry } from '@/lib/system/voices-config';
 import { eq } from 'drizzle-orm';
 import { GeminiService } from '@/lib/services/gemini-service';
 import { NextResponse } from 'next/server';

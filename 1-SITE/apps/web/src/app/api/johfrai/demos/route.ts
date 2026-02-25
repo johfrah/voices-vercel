@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import { db } from '@/lib/system/db';
-import { actorDemos, actors, media } from '@/lib/system/db';
+import { db } from '@/lib/system/voices-config';
+import { actorDemos, actors, media } from '@/lib/system/voices-config';
 import { and, eq, like, sql } from 'drizzle-orm';
 
 export async function GET(request: Request) {

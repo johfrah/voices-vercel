@@ -1,11 +1,11 @@
-import { db } from '@/lib/system/db';
+import { db } from '@/lib/system/voices-config';
 export { db };
 import {
     actorDemos,
     actors,
     instructors,
     users
-} from '@/lib/system/db';
+} from '@/lib/system/voices-config';
 import { eq } from 'drizzle-orm';
 import * as fs from 'fs';
 import * as path from 'path';

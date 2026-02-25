@@ -1,4 +1,4 @@
-import { db, systemKnowledge } from '@/lib/system/db';
+import { db, systemKnowledge } from '@/lib/system/voices-config';
 import { eq } from 'drizzle-orm';
 
 export interface ViesCompanyData {

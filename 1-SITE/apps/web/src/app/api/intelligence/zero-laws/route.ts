@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db, orders, orderItems, actors } from '@/lib/system/db';
+import { db, orders, orderItems, actors } from '@/lib/system/voices-config';
 import { eq, desc } from 'drizzle-orm';
 import { VoicyPatternEngine } from '@/lib/intelligence/pattern-engine';
 import { createClient } from '@/utils/supabase/server';

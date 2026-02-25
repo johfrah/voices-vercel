@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db, actors, media, users, instructors } from '@/lib/system/db';
+import { db, actors, media, users, instructors } from '@/lib/system/voices-config';
 import { eq, sql } from 'drizzle-orm';
 import * as path from 'path';
 import { execSync } from 'child_process';

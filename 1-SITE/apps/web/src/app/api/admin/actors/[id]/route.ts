@@ -1,5 +1,5 @@
 import { NextResponse, NextRequest } from 'next/server';
-import { db, actors } from '@/lib/system/db';
+import { db, actors } from '@/lib/system/voices-config';
 import { eq, or } from 'drizzle-orm';
 import { requireAdmin } from '@/lib/auth/api-auth';
 
@@ -30,7 +30,7 @@ export async function PATCH(
     // 🛡️ CHRIS-PROTOCOL: Nuclear Version Guard (v2.14.192)
     // Detect version mismatch from headers or payload to prevent "cache slop"
     const clientVersion = request.headers.get('X-Voices-Version') || body._version;
-    const serverVersion = '2.14.501';
+    const serverVersion = '2.14.503';
     
     if (clientVersion && clientVersion !== serverVersion) {
       console.warn(` [Version Guard] Mismatch detected: Client ${clientVersion} vs Server ${serverVersion}`);

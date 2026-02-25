@@ -1,4 +1,4 @@
-import { db, mailContent } from '@/lib/system/db';
+import { db, mailContent } from '@/lib/system/voices-config';
 import { eq, sql, desc } from 'drizzle-orm';
 import { ShadowPersonaService } from '@/lib/services/shadow-persona-service';
 import { VectorService } from '@/lib/services/vector-service';

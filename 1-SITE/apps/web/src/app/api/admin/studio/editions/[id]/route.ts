@@ -1,5 +1,5 @@
-import { db } from '@/lib/system/db';
-import { workshopEditions } from '@/lib/system/db';
+import { db } from '@/lib/system/voices-config';
+import { workshopEditions } from '@/lib/system/voices-config';
 import { eq } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth/api-auth';

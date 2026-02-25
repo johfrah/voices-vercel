@@ -1,4 +1,4 @@
-import { db, appConfigs, languages } from '@/lib/system/db';
+import { db, appConfigs, languages } from '@/lib/system/voices-config';
 import { eq } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 import { voicesConfig } from '@/lib/utils/edge-config';

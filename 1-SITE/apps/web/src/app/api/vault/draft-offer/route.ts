@@ -1,4 +1,4 @@
-import { db, vaultFiles, users, approvalQueue } from '@/lib/system/db';
+import { db, vaultFiles, users, approvalQueue } from '@/lib/system/voices-config';
 import { eq } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 

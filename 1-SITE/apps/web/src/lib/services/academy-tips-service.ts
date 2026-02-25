@@ -1,4 +1,4 @@
-import { db, academyTips, courseProgress } from '@/lib/system/db';
+import { db, academyTips, courseProgress } from '@/lib/system/voices-config';
 import { eq, and, sql } from "drizzle-orm";
 
 /**

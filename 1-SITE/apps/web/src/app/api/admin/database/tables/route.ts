@@ -1,7 +1,7 @@
-import { db } from '@/lib/system/db';
+import { db } from '@/lib/system/voices-config';
 import { sql } from "drizzle-orm";
 import { NextResponse } from "next/server";
-import * as schema from '@/lib/system/db';
+import * as schema from '@/lib/system/voices-config';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;

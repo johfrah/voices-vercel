@@ -1,4 +1,4 @@
-import { db, workshopEditions, orderItems, orders } from '@/lib/system/db';
+import { db, workshopEditions, orderItems, orders } from '@/lib/system/voices-config';
 import { eq, and, sql, or, desc } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { getServerUser, isAdminUser } from "@/lib/auth/server-auth";

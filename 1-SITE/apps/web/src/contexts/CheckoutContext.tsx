@@ -239,8 +239,13 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           console.error('Failed to parse checkout state from localStorage', e);
         }
       }
-      // 🛡️ CHRIS-PROTOCOL: Set hydrated flag AFTER state restoration
-      setIsHydrated(true);
+      
+      // 🛡️ CHRIS-PROTOCOL: Set hydrated flag AFTER state restoration (v2.14.503)
+      // We use a small timeout to ensure the state update has been processed by React
+      // before we signal that hydration is complete.
+      setTimeout(() => {
+        setIsHydrated(true);
+      }, 0);
     }
   }, []);
 

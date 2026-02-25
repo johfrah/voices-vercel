@@ -1,7 +1,7 @@
 import { GeminiService } from '@/lib/services/gemini-service';
 import { KnowledgeService } from '@/lib/services/knowledge-service';
-import { db } from '@/lib/system/db';
-import { chatConversations, chatMessages, faq } from '@/lib/system/db';
+import { db } from '@/lib/system/voices-config';
+import { chatConversations, chatMessages, faq } from '@/lib/system/voices-config';
 import { desc, eq, ilike, or } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
 

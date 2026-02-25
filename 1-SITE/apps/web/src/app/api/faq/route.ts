@@ -1,4 +1,4 @@
-import { db, faq } from '@/lib/system/db';
+import { db, faq } from '@/lib/system/voices-config';
 import { desc, eq, or } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';

@@ -1,6 +1,6 @@
 import * as soap from 'soap';
 import { create } from 'xmlbuilder2';
-import { db, systemEvents } from '@/lib/system/db';
+import { db, systemEvents } from '@/lib/system/voices-config';
 
 /**
  *  YUKI NUCLEAR SERVICE (2026)

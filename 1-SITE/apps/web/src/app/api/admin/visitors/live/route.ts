@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/system/db';
-import { voicejarSessions } from '@/lib/system/db';
+import { db } from '@/lib/system/voices-config';
+import { voicejarSessions } from '@/lib/system/voices-config';
 import { desc, gt, and, eq } from 'drizzle-orm';
 import { requireAdmin } from '@/lib/auth/api-auth';
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';

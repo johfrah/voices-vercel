@@ -1,5 +1,5 @@
-import { db } from '@/lib/system/db';
-import { vaultFiles, media, actorDemos, actors } from '@/lib/system/db';
+import { db } from '@/lib/system/voices-config';
+import { vaultFiles, media, actorDemos, actors } from '@/lib/system/voices-config';
 import { eq } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 import * as fs from 'fs';

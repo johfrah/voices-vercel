@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { db, orders, users, refunds } from '@/lib/system/db';
+import { db, orders, users, refunds } from '@/lib/system/voices-config';
 import { eq, ilike, inArray } from "drizzle-orm";
 
 export async function GET() {

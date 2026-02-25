@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { db, lessons } from '@/lib/system/db';
+import { db, lessons } from '@/lib/system/voices-config';
 import { eq } from 'drizzle-orm';
 
 export async function GET() {

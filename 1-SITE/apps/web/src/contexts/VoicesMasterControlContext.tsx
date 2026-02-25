@@ -100,7 +100,6 @@ export const VoicesMasterControlProvider: React.FC<{
   // 🛡️ CHRIS-PROTOCOL: Initialize state from URL/LocalStorage ONLY on client-side
   // to prevent Hydration Mismatch errors (#419).
   useEffect(() => {
-    if (isClient) return; // Only run once
     setIsClient(true);
     
     const host = window.location.host;
@@ -181,7 +180,7 @@ export const VoicesMasterControlProvider: React.FC<{
     // Sync with checkout context
     if (newState.usage) updateUsage(newState.usage);
     if (newState.filters.media) updateMedia(newState.filters.media);
-  }, [searchParams, pathname, voicesState.current_journey, updateUsage, updateMedia, isClient]);
+  }, [searchParams, pathname, voicesState.current_journey, updateUsage, updateMedia]);
 
   const detectStateFromUrl = useCallback((url: string) => {
     const segments = url.split('/').filter(Boolean);

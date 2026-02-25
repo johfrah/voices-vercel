@@ -1,6 +1,6 @@
 import { OpenAIService } from '@/lib/services/openai-service';
-import { db } from '@/lib/system/db';
-import { translations } from '@/lib/system/db';
+import { db } from '@/lib/system/voices-config';
+import { translations } from '@/lib/system/voices-config';
 import { and, eq, ilike, not, or, sql } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
 

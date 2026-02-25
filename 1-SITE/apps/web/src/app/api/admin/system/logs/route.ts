@@ -1,4 +1,4 @@
-import { db, systemEvents } from '@/lib/system/db';
+import { db, systemEvents } from '@/lib/system/voices-config';
 import { desc, eq, and, gte, sql } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";

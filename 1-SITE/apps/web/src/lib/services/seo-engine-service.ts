@@ -1,4 +1,4 @@
-import { db, faq, actors, workshops, contentArticles } from '@/lib/system/db';
+import { db, faq, actors, workshops, contentArticles } from '@/lib/system/voices-config';
 import { eq, and } from 'drizzle-orm';
 import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
 

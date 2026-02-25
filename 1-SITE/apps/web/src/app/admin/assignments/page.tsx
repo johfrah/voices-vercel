@@ -7,7 +7,7 @@ import {
   TextInstrument
 } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
-import { db, orderItems, orders, users, vaultFiles } from '@/lib/system/db';
+import { db, orderItems, orders, users, vaultFiles } from '@/lib/system/voices-config';
 import { clsx } from 'clsx';
 import { format } from 'date-fns';
 import { nl } from 'date-fns/locale';

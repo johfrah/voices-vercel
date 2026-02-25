@@ -1,4 +1,4 @@
-import { db, actors } from '@/lib/system/db';
+import { db, actors } from '@/lib/system/voices-config';
 import { eq, or } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth/api-auth';

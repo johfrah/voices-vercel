@@ -1,4 +1,4 @@
-import { db, courseSubmissions, users } from '@/lib/system/db';
+import { db, courseSubmissions, users } from '@/lib/system/voices-config';
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
 import { DropboxService } from '@/lib/services/dropbox-service';

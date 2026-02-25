@@ -1,5 +1,5 @@
-import { db } from '@/lib/system/db';
-import { quizSteps } from '@/lib/system/db';
+import { db } from '@/lib/system/voices-config';
+import { quizSteps } from '@/lib/system/voices-config';
 import { eq, asc } from "drizzle-orm";
 
 /**

@@ -23,13 +23,13 @@ export const VOICES_CONFIG = {
   assets: {
     baseUrl: '/assets',
     logos: {
-      be: '/assets/common/branding/Voices-LOGO-Animated.svg',
+      be: '/assets/common/branding/Voices-LOGO.svg',
       nl: '/assets/common/branding/Voices_LOGO_NL.svg',
       fr: '/assets/common/branding/Voices_LOGO_FR.svg',
       eu: '/assets/common/branding/Voices_LOGO_EU.svg',
       es: '/assets/common/branding/Voices_LOGO_ES.svg',
       pt: '/assets/common/branding/Voices_LOGO_PT.svg',
-      ademing: '/assets/common/branding/Voices-LOGO-Animated.svg',
+      ademing: '/assets/common/branding/Voices-LOGO.svg',
       johfrah: '/assets/common/branding/johfrah.be_LOGO.svg',
     },
     placeholders: {

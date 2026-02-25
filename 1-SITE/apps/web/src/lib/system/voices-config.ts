@@ -4,7 +4,7 @@
  * 
  * ☢️ STATUS: SHARED - Safe for Browser and Server.
  * 
- * 🛡️ CHRIS-PROTOCOL: Nuclear Internal Bridge (v2.14.501)
+ * 🛡️ CHRIS-PROTOCOL: Nuclear Internal Bridge (v2.14.503)
  * This file exports both configuration and schema, ensuring Vercel
  * can resolve all database entities within the app source tree.
  */

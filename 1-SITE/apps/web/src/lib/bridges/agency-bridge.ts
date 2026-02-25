@@ -1,5 +1,5 @@
-import { db } from '@/lib/system/db';
-import { actorDemos, actors } from '@/lib/system/db';
+import { db } from '@/lib/system/voices-config';
+import { actorDemos, actors } from '@/lib/system/voices-config';
 import { and, eq, like, or, sql } from "drizzle-orm";
 import { Actor, SearchResults } from "../services/api";
 

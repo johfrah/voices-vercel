@@ -1,4 +1,4 @@
-import { db, media } from '@/lib/system/db';
+import { db, media } from '@/lib/system/voices-config';
 import { ilike, or, and, eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { getServerUser, isAdminUser } from "@/lib/auth/server-auth";
