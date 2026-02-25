@@ -98,6 +98,11 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ results });
     }
 
+    if (type === 'countries') {
+      const results = await dbWithTimeout(db.select().from(countries).orderBy(asc(countries.displayOrder))).catch(() => []);
+      return NextResponse.json({ results });
+    }
+
     if (type === 'actor') {
       const slug = searchParams.get('slug');
       const lang = searchParams.get('lang') || 'nl';

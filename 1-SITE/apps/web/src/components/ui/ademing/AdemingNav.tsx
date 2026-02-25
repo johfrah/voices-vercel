@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { Logo } from "./Logo";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { ThemeToggle } from "./ThemeToggle";
 import {
   Sheet,
   SheetContent,
@@ -126,6 +127,7 @@ export const AdemingNav = () => {
 
         {/* Right: User/Actions */}
         <div className="flex items-center justify-end gap-3">
+          <ThemeToggle />
           <Link href="/favorieten" className="p-3 hover:bg-black/5 rounded-full transition-all hidden md:flex active:scale-90">
             <Heart className="w-6 h-6" strokeWidth={1.5} />
           </Link>

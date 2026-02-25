@@ -64,11 +64,12 @@ export function Providers({
                   }}
                   toastOptions={{
                     style: market.market_code === 'ADEMING' ? {
-                      background: '#FAF9F6',
-                      color: '#1A1A1A',
-                      borderRadius: '24px',
-                      border: '1px solid rgba(0,0,0,0.05)',
+                      background: 'hsl(160 28% 98%)',
+                      color: 'hsl(160 28% 25%)',
+                      borderRadius: '32px',
+                      border: '2px solid hsl(160 28% 48% / 0.1)',
                       fontFamily: 'var(--font-cormorant), serif',
+                      boxShadow: '0 8px 32px rgba(123, 168, 150, 0.15)',
                     } : undefined
                   }}
                 />

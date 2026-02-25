@@ -374,13 +374,13 @@ export const LoadingScreenInstrument = ({
   text?: string;
 }) => {
   return (
-    <div className="fixed inset-0 bg-va-off-white z-[9999] flex flex-col items-center justify-center">
+    <div className="fixed inset-0 bg-background z-[9999] flex flex-col items-center justify-center">
       <div className="relative w-32 h-32">
         <svg viewBox="0 0 1000 1000" className="w-full h-full">
           <defs>
             <linearGradient id="loader_grad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" style={{ stopColor: 'var(--primary)', stopOpacity: 1 }} />
-              <stop offset="100%" style={{ stopColor: 'var(--primary)', stopOpacity: 1 }} />
+              <stop offset="0%" style={{ stopColor: 'var(--primary, #FF0084)', stopOpacity: 1 }} />
+              <stop offset="100%" style={{ stopColor: 'var(--primary, #FF0084)', stopOpacity: 1 }} />
             </linearGradient>
           </defs>
           <style>{`

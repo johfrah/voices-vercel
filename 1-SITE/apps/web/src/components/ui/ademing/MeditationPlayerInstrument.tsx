@@ -33,10 +33,11 @@ export const MeditationPlayerInstrument = ({
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [showControls, setShowControls] = useState(true);
-  const [bgElement, setBgElement] = useState<string | null>(null);
   const [videoOpacity, setVideoOpacity] = useState(1);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const avatarRef = useRef<HTMLDivElement | null>(null);
+  const [avatarCenter, setAvatarCenter] = useState<{x: number, y: number} | null>(null);
   const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Auto-hide controls
@@ -56,6 +57,22 @@ export const MeditationPlayerInstrument = ({
       window.removeEventListener('touchstart', handleActivity);
     };
   }, []);
+
+  // Track avatar position for waveform centering
+  useEffect(() => {
+    const updateAvatarPosition = () => {
+      if (avatarRef.current) {
+        const rect = avatarRef.current.getBoundingClientRect();
+        setAvatarCenter({
+          x: rect.left + rect.width / 2,
+          y: rect.top + rect.height / 2
+        });
+      }
+    };
+    updateAvatarPosition();
+    window.addEventListener('resize', updateAvatarPosition);
+    return () => window.removeEventListener('resize', updateAvatarPosition);
+  }, [isPlaying]);
 
   // Video setup: slow motion and smooth loop crossfade
   useEffect(() => {
@@ -108,6 +125,13 @@ export const MeditationPlayerInstrument = ({
       exit={{ opacity: 0 }}
       className="fixed inset-0 z-[300] bg-black text-white overflow-hidden"
     >
+      {/* Audio waveform fullscreen behind everything */}
+      <AudioWaveform 
+        isPlaying={isPlaying} 
+        centerX={avatarCenter?.x}
+        centerY={avatarCenter?.y}
+      />
+
       {/* Background Layer (Video or Cover) */}
       <div className="absolute inset-0 z-0">
         {track.video_background_url ? (
@@ -120,31 +144,31 @@ export const MeditationPlayerInstrument = ({
               muted 
               playsInline
               className={cn(
-                "w-full h-full object-cover transition-all duration-500",
-                !isPlaying && "blur-md scale-105"
+                "w-full h-full object-cover transition-all duration-1000",
+                !isPlaying && "blur-xl scale-110"
               )}
-              style={{ opacity: videoOpacity * 0.4 }}
+              style={{ opacity: videoOpacity * 0.5 }}
             />
             <div 
               className="absolute inset-0 pointer-events-none"
               style={{
-                background: 'radial-gradient(circle at center, transparent 0%, transparent 40%, rgba(0,0,0,0.3) 70%, rgba(0,0,0,0.6) 100%)'
+                background: 'radial-gradient(circle at center, transparent 0%, transparent 40%, rgba(0,0,0,0.4) 70%, rgba(0,0,0,0.8) 100%)'
               }}
             />
           </>
         ) : (
           <div 
             className={cn(
-              "w-full h-full bg-cover bg-center transition-all duration-500",
-              !isPlaying && "blur-md scale-105"
+              "w-full h-full bg-cover bg-center transition-all duration-1000",
+              !isPlaying && "blur-xl scale-110"
             )}
             style={{ 
               backgroundImage: `url(${track.cover_image_url})`,
-              opacity: 0.3
+              opacity: 0.4
             }}
           />
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/60" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-black/70" />
       </div>
 
       {/* Visual Effects Layer */}
@@ -161,7 +185,7 @@ export const MeditationPlayerInstrument = ({
       />
 
       {/* UI Layer */}
-      <div className="relative z-10 h-full flex flex-col p-8 md:p-12">
+      <div className="relative z-10 h-full flex flex-col p-8 md:p-16">
         {/* Header */}
         <AnimatePresence>
           {showControls && (
@@ -171,26 +195,26 @@ export const MeditationPlayerInstrument = ({
               exit={{ y: -20, opacity: 0 }}
               className="flex justify-between items-start"
             >
-              <div className="space-y-1">
-                <span className="text-primary font-bold text-[10px] uppercase tracking-[0.3em]">
+              <div className="space-y-2">
+                <span className="text-primary font-bold text-xs uppercase tracking-[0.4em] animate-pulse">
                   {track.theme || 'Meditatie'}
                 </span>
-                <h2 className="text-3xl md:text-5xl font-serif font-bold text-white tracking-tight">
+                <h2 className="text-4xl md:text-6xl font-serif font-bold text-white tracking-tighter">
                   {track.title}
                 </h2>
               </div>
-              <div className="flex gap-3">
+              <div className="flex gap-4">
                 <button 
                   onClick={onClose}
-                  className="w-12 h-12 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center hover:bg-black/60 transition-all"
+                  className="w-14 h-14 rounded-full bg-white/10 backdrop-blur-xl border border-white/20 flex items-center justify-center hover:bg-white/20 transition-all active:scale-90"
                 >
-                  <Minimize2 size={20} strokeWidth={1.5} />
+                  <Minimize2 size={24} strokeWidth={1.5} />
                 </button>
                 <button 
                   onClick={onClose}
-                  className="w-12 h-12 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center hover:bg-black/60 transition-all"
+                  className="w-14 h-14 rounded-full bg-white/10 backdrop-blur-xl border border-white/20 flex items-center justify-center hover:bg-white/20 transition-all active:scale-90"
                 >
-                  <X size={24} strokeWidth={1.5} />
+                  <X size={28} strokeWidth={1.5} />
                 </button>
               </div>
             </motion.div>
@@ -201,10 +225,10 @@ export const MeditationPlayerInstrument = ({
         <AnimatePresence>
           {showControls && (
             <motion.div 
-              initial={{ x: 20, opacity: 0 }}
+              initial={{ x: 40, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
-              exit={{ x: 20, opacity: 0 }}
-              className="absolute top-1/2 right-8 -translate-y-1/2 flex flex-col gap-4 z-30"
+              exit={{ x: 40, opacity: 0 }}
+              className="absolute top-1/2 right-12 -translate-y-1/2 flex flex-col gap-6 z-30"
             >
               {[
                 { icon: Heart, label: 'Favoriet' },
@@ -217,10 +241,10 @@ export const MeditationPlayerInstrument = ({
               ].map((item, i) => (
                 <button 
                   key={i}
-                  className="w-12 h-12 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center hover:bg-black/60 hover:scale-110 transition-all group relative"
+                  className="w-14 h-14 rounded-full bg-black/40 backdrop-blur-xl border border-white/10 flex items-center justify-center hover:bg-primary hover:border-primary hover:scale-110 transition-all group relative active:scale-90"
                 >
-                  <item.icon size={20} strokeWidth={1.5} />
-                  <span className="absolute right-full mr-4 px-2 py-1 rounded bg-black/80 text-[10px] font-bold uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
+                  <item.icon size={24} strokeWidth={1.5} />
+                  <span className="absolute right-full mr-6 px-3 py-1.5 rounded-xl bg-black/80 text-[10px] font-bold uppercase tracking-[0.2em] opacity-0 group-hover:opacity-100 transition-all pointer-events-none whitespace-nowrap translate-x-4 group-hover:translate-x-0">
                     {item.label}
                   </span>
                 </button>
@@ -229,23 +253,18 @@ export const MeditationPlayerInstrument = ({
           )}
         </AnimatePresence>
 
-        {/* Center - Waveform & Avatar */}
+        {/* Center - Avatar & Waveform */}
         <div className="flex-1 flex flex-col items-center justify-center relative">
-          <div className="relative w-full max-w-lg h-64 flex items-center justify-center">
-             <div className="absolute inset-0 z-0">
-               <AudioWaveform isPlaying={isPlaying} />
-             </div>
-             <div className={cn(
-               "relative z-10 w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-white/10 overflow-hidden shadow-2xl transition-all duration-1000",
-               isPlaying ? "scale-110 border-primary/40" : "scale-100"
-             )}>
-               <img src={track.cover_image_url} alt="" className="w-full h-full object-cover" />
-             </div>
+          <div ref={avatarRef} className={cn(
+            "relative z-10 w-48 h-48 md:w-64 md:h-64 rounded-full border-8 border-white/10 overflow-hidden shadow-[0_0_80px_rgba(0,0,0,0.5)] transition-all duration-1000",
+            isPlaying ? "scale-110 border-primary/20" : "scale-100"
+          )}>
+            <img src={track.cover_image_url} alt="" className="w-full h-full object-cover" />
           </div>
           
           {/* Subtitles / Intentions */}
-          <div className="mt-12 max-w-2xl text-center">
-            <p className="text-xl md:text-2xl font-serif italic text-white/80 leading-relaxed">
+          <div className="mt-20 max-w-3xl text-center px-6">
+            <p className="text-2xl md:text-4xl font-serif italic text-white/90 leading-relaxed drop-shadow-2xl animate-gentle-pulse">
               "Laat je adem de weg wijzen naar binnen."
             </p>
           </div>
@@ -255,37 +274,37 @@ export const MeditationPlayerInstrument = ({
         <AnimatePresence>
           {showControls && (
             <motion.div 
-              initial={{ y: 20, opacity: 0 }}
+              initial={{ y: 40, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              exit={{ y: 20, opacity: 0 }}
-              className="space-y-8"
+              exit={{ y: 40, opacity: 0 }}
+              className="space-y-12"
             >
               {/* Progress Bar */}
-              <div className="space-y-2">
-                <div className="h-1 w-full bg-white/10 rounded-full overflow-hidden relative group cursor-pointer">
+              <div className="space-y-4">
+                <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden relative group cursor-pointer">
                   <div 
-                    className="h-full bg-primary transition-all duration-100" 
+                    className="h-full bg-primary transition-all duration-100 shadow-[0_0_20px_rgba(var(--primary),0.5)]" 
                     style={{ width: `${(currentTime / duration) * 100}%` }}
                   />
                 </div>
-                <div className="flex justify-between text-[10px] font-bold text-white/40 uppercase tracking-widest">
+                <div className="flex justify-between text-xs font-bold text-white/40 uppercase tracking-[0.3em]">
                   <span>{formatTime(currentTime)}</span>
                   <span>{formatTime(duration)}</span>
                 </div>
               </div>
 
               {/* Main Controls */}
-              <div className="flex items-center justify-center gap-8 md:gap-12">
-                <button className="text-white/40 hover:text-white transition-colors"><ChevronLeft size={32} strokeWidth={1.5} /></button>
+              <div className="flex items-center justify-center gap-12 md:gap-20">
+                <button className="text-white/40 hover:text-white transition-all hover:scale-110 active:scale-90"><ChevronLeft size={48} strokeWidth={1} /></button>
                 
                 <button 
                   onClick={togglePlay}
-                  className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-white text-black flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-2xl"
+                  className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-white text-black flex items-center justify-center hover:scale-105 active:scale-90 transition-all shadow-[0_0_50px_rgba(255,255,255,0.2)] group"
                 >
-                  {isPlaying ? <Pause size={32} fill="currentColor" /> : <Play size={32} fill="currentColor" className="ml-2" />}
+                  {isPlaying ? <Pause size={48} fill="currentColor" /> : <Play size={48} fill="currentColor" className="ml-2 group-hover:scale-110 transition-transform" />}
                 </button>
 
-                <button className="text-white/40 hover:text-white transition-colors"><ChevronRight size={32} strokeWidth={1.5} /></button>
+                <button className="text-white/40 hover:text-white transition-all hover:scale-110 active:scale-90"><ChevronRight size={48} strokeWidth={1} /></button>
               </div>
             </motion.div>
           )}
