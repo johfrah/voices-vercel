@@ -19,15 +19,14 @@
     ],
     "paths": {
       "@/*": ["./src/*"],
-      "@config/*": ["../../packages/config/*"],
-      "@config/market-manager": ["../../packages/config/market-manager.ts"],
-      "@db": ["../../packages/database/src/index.ts"],
-      "@db/*": ["../../packages/database/src/*"],
+      "@config/*": ["./src/lib/core-internal/*"],
+      "@db": ["./src/lib/core-internal/database/index.ts"],
+      "@db/*": ["./src/lib/core-internal/database/*"],
       "@db-service": ["./src/lib/db-service.ts"],
-      "@database/*": ["../../packages/database/*"],
-      "@legacy/*": ["../../legacy/*"],
-      "@voices/database": ["../../packages/database/src/index.ts"],
-      "@voices/database/*": ["../../packages/database/src/*"]
+      "@database/*": ["./src/lib/core-internal/database/*"],
+      "@legacy/*": ["./../../legacy/*"],
+      "@voices/database": ["./src/lib/core-internal/database/index.ts"],
+      "@voices/database/*": ["./src/lib/core-internal/database/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
