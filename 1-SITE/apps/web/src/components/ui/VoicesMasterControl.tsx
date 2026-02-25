@@ -28,7 +28,19 @@ const ICON_MAP: Record<string, any> = {
   star: Star,
   clock: Clock,
   type: Type,
-  search: SearchIcon
+  search: SearchIcon,
+  // Flags
+  FlagBE: FlagBE,
+  FlagNL: FlagNL,
+  FlagFR: FlagFR,
+  FlagUK: FlagUK,
+  FlagUS: FlagUS,
+  FlagDE: FlagDE,
+  FlagES: FlagES,
+  FlagIT: FlagIT,
+  FlagPL: FlagPL,
+  FlagDK: FlagDK,
+  FlagPT: FlagPT
 };
 import { AgencyFilterSheet } from './AgencyFilterSheet';
 import { ContainerInstrument, FlagBE, FlagDE, FlagDK, FlagES, FlagFR, FlagIT, FlagNL, FlagPL, FlagPT, FlagUK, FlagUS, TextInstrument } from './LayoutInstruments';
@@ -46,15 +58,26 @@ interface VoicesMasterControlProps {
     genders: string[];
     styles: string[];
   };
-  availableExtraLangs?: string[];
+  availableExtraLangs?: string[]; 
   minimalMode?: boolean; //  Added minimalMode for portfolio use
+  
+  // 🛡️ CHRIS-PROTOCOL: Handshake Truth Props (v2.14.714)
+  // These props replace the internal useEffect fetching for a pure "Instrument" architecture.
+  languagesData?: any[];
+  gendersData?: any[];
+  journeysData?: any[];
+  mediaTypesData?: any[];
 }
 
-export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
-  actors = [],
-  filters = { languages: [], genders: [], styles: [] },
+export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({ 
+  actors = [], 
+  filters = { languages: [], genders: [], styles: [] }, 
   availableExtraLangs = [],
-  minimalMode = false
+  minimalMode = false,
+  languagesData = [],
+  gendersData = [],
+  journeysData = [],
+  mediaTypesData = []
 }) => {
   const { playClick, playSwell } = useSonicDNA();
   const { t, language } = useTranslation();
@@ -66,48 +89,9 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
   const [isReorderModalOpen, setIsReorderModalOpen] = useState(false);
   const [reorderLanguage, setReorderLanguage] = useState('');
   const [mounted, setMounted] = useState(false);
-  const [fetchedLanguages, setFetchedLanguages] = useState<any[]>([]);
-  const [fetchedGenders, setFetchedGenders] = useState<any[]>([]);
-  const [fetchedJourneys, setFetchedJourneys] = useState<any[]>([]);
-  const [fetchedMediaTypes, setFetchedMediaTypes] = useState<any[]>([]);
 
   useEffect(() => {
     setMounted(true);
-    //  CHRIS-PROTOCOL: Handshake Truth (Source of Truth)
-    // Fetch languages directly from database to ensure IDs and Labels match.
-    fetch('/api/admin/config?type=languages')
-      .then(res => res.json())
-      .then(data => {
-        if (data.results) setFetchedLanguages(data.results);
-      })
-      .catch(err => console.error('[VoicesMasterControl] Failed to fetch languages:', err));
-
-    //  CHRIS-PROTOCOL: Handshake Truth (Source of Truth)
-    // Fetch genders directly from database.
-    fetch('/api/admin/config?type=genders')
-      .then(res => res.json())
-      .then(data => {
-        if (data.results) setFetchedGenders(data.results);
-      })
-      .catch(err => console.error('[VoicesMasterControl] Failed to fetch genders:', err));
-
-    //  CHRIS-PROTOCOL: Handshake Truth (Source of Truth)
-    // Fetch journeys directly from database.
-    fetch('/api/admin/config?type=journeys')
-      .then(res => res.json())
-      .then(data => {
-        if (data.results) setFetchedJourneys(data.results);
-      })
-      .catch(err => console.error('[VoicesMasterControl] Failed to fetch journeys:', err));
-
-    //  CHRIS-PROTOCOL: Handshake Truth (Source of Truth)
-    // Fetch media types directly from database.
-    fetch('/api/admin/config?type=media_types')
-      .then(res => res.json())
-      .then(data => {
-        if (data.results) setFetchedMediaTypes(data.results);
-      })
-      .catch(err => console.error('[VoicesMasterControl] Failed to fetch media types:', err));
   }, []);
 
   const handleReorderClick = (language: string) => {
@@ -138,53 +122,52 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
 
   const journeys = useMemo(() => {
     const baseJourneys = [
-      {
-        id: 'telephony',
-        icon: Phone,
-        label: 'Telefonie',
+      { 
+        id: 'telephony', 
+        icon: Phone, 
+        label: 'Telefonie', 
         subLabel: 'Voicemail & IVR',
-        key: 'journey.telephony',
-        color: 'text-primary'
+        key: 'journey.telephony', 
+        color: 'text-primary' 
       },
-      {
-        id: 'video',
-        icon: Video,
-        label: 'Video',
+      { 
+        id: 'video', 
+        icon: Video, 
+        label: 'Video', 
         subLabel: 'Corporate & Website',
-        key: 'journey.video',
-        color: 'text-primary'
+        key: 'journey.video', 
+        color: 'text-primary' 
       },
-      {
-        id: 'commercial',
-        icon: Megaphone,
-        label: 'Advertentie',
+      { 
+        id: 'commercial', 
+        icon: Megaphone, 
+        label: 'Advertentie', 
         subLabel: 'Radio, TV & Online Ads',
-        key: 'journey.commercial',
-        color: 'text-primary'
+        key: 'journey.commercial', 
+        color: 'text-primary' 
       },
     ];
 
-    if (fetchedJourneys.length === 0) return baseJourneys;
+    if (journeysData.length === 0) return baseJourneys;
 
-    //  CHRIS-PROTOCOL: Handshake Truth Mapping (v2.14.713)
+    //  CHRIS-PROTOCOL: Handshake Truth Mapping (v2.14.714)
     // We ONLY show the 3 main Agency journeys in the MasterControl.
-    // We now pull icons and colors directly from the database journeys table.
     const allowedCodes = ['telephony', 'video', 'commercial'];
     
-    return fetchedJourneys
+    return journeysData
       .filter(fj => allowedCodes.includes(fj.code))
       .map(fj => {
         const base = baseJourneys.find(bj => bj.id === fj.code || bj.key === `journey.${fj.code}`);
         return {
           id: fj.code,
-          icon: ICON_MAP[fj.icon] || base?.icon || Globe,
+          icon: base?.icon || Globe,
           label: fj.label,
           subLabel: fj.description || base?.subLabel || '',
           key: base?.key || `journey.${fj.code}`,
-          color: fj.color || base?.color || 'text-primary'
+          color: base?.color || 'text-primary'
         };
       });
-  }, [fetchedJourneys]);
+  }, [journeysData]);
 
   // Use state.journey or checkoutState.usage to determine active journey
   const activeJourneyId = useMemo(() => {
@@ -202,53 +185,46 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
   const sortedLanguages = useMemo(() => {
     const host = typeof window !== 'undefined' ? window.location.host : (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || MarketManager.getMarketDomains()['BE'].replace('https://', ''));
     const market = MarketManager.getCurrentMarket(host);
-
-    // 🛡️ CHRIS-PROTOCOL: Map extra languages available for each primary language
+    
+  // 🛡️ CHRIS-PROTOCOL: Map extra languages available for each primary language
     const getExtraLangsFor = (primary: string, primaryValue: any) => {
       const lowPrimary = String(primary || '').toLowerCase();
       const lowPrimaryValue = String(primaryValue || '').toLowerCase();
-
+      
       //  CHRIS-PROTOCOL: Combinations don't have extra langs
       if (lowPrimaryValue.includes(',')) return [];
 
       const primaryCode = MarketManager.getLanguageCode(lowPrimaryValue);
       const extraLangsSet = new Set<string>();
-
+      
       if (actors && Array.isArray(actors)) {
         actors.forEach(a => {
           const actorNative = a.native_lang?.toLowerCase();
           const actorNativeId = a.native_lang_id || a.native_language_id;
-
+          
           //  CHRIS-PROTOCOL: Match native language by ID or code/label
           const isMatch = (typeof primaryValue === 'number' && actorNativeId === primaryValue) ||
-            actorNative === primaryCode ||
-            actorNative === lowPrimaryValue ||
-            (primaryCode === 'nl-be' && (actorNative === 'vlaams' || actorNative === 'nl-be')) ||
-            (primaryCode === 'nl-nl' && (actorNative === 'nederlands' || actorNative === 'nl-nl'));
+                         actorNative === primaryCode || 
+                         actorNative === lowPrimaryValue ||
+                         (primaryCode === 'nl-be' && (actorNative === 'vlaams' || actorNative === 'nl-be')) ||
+                         (primaryCode === 'nl-nl' && (actorNative === 'nederlands' || actorNative === 'nl-nl'));
 
           if (isMatch) {
             if (a.extra_langs) {
               a.extra_langs.split(',').forEach((l: string) => {
                 const trimmed = l.trim();
                 const lowTrimmed = trimmed.toLowerCase();
-
+                
                 //  CHRIS-PROTOCOL: Exclude native language and its variations from extra languages
-                const isPrimary = lowTrimmed === lowPrimary || lowTrimmed === lowPrimaryValue ||
-                  lowTrimmed === primaryCode ||
-                  lowPrimary.includes(lowTrimmed) || lowTrimmed.includes(lowPrimary);
-
+                const isPrimary = lowTrimmed === lowPrimary || lowTrimmed === lowPrimaryValue || 
+                                 lowTrimmed === primaryCode ||
+                                 lowPrimary.includes(lowTrimmed) || lowTrimmed.includes(lowPrimary);
+                
                 //  CHRIS-PROTOCOL: Vlaams is a unique native type (nl-BE). 
                 // Non-natives (like FR or NL-NL) can offer "Nederlands" as extra, but NEVER "Vlaams".
                 const isVlaamsExtra = lowTrimmed === 'vlaams' || lowTrimmed === 'nl-be';
-
+                
                 if (trimmed && trimmed !== 'null' && !isPrimary && !isVlaamsExtra) {
-                  // 🛡️ CHRIS-PROTOCOL: Handshake Truth (ID-First)
-                  // We zoeken de taal op in de actors data om het ID te vinden
-                  const actorWithLang = actors.find(act =>
-                    act.extra_lang_ids &&
-                    act.extra_langs?.toLowerCase().includes(trimmed)
-                  );
-
                   const label = MarketManager.getLanguageLabel(trimmed);
                   extraLangsSet.add(label);
                 }
@@ -261,50 +237,31 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
       return result;
     };
 
-    const languageConfig = fetchedLanguages.length > 0
-      ? fetchedLanguages.map(l => ({
-        label: l.label,
-        value: l.id,
-        langCode: l.code,
-        popular: market.popular_languages.some(pl =>
-          pl.toLowerCase() === l.code.toLowerCase() ||
-          pl.toLowerCase() === l.label.toLowerCase()
-        )
-      }))
-      : [
-        { label: MarketManager.getLanguageLabel('nl-be'), value: 1, langCode: 'nl-be', popular: market.popular_languages.includes('nl-be') || market.popular_languages.includes('Vlaams') },
-        { label: MarketManager.getLanguageLabel('nl-nl'), value: 2, langCode: 'nl-nl', popular: market.popular_languages.includes('nl-nl') || market.popular_languages.includes('Nederlands') },
-        { label: MarketManager.getLanguageLabel('fr-be'), value: 3, langCode: 'fr-be', popular: (market.popular_languages.includes('fr-be') || market.popular_languages.includes('Frans')) && market.market_code === 'BE' },
-        { label: MarketManager.getLanguageLabel('fr-fr'), value: 4, langCode: 'fr-fr', popular: (market.popular_languages.includes('fr-fr') || market.popular_languages.includes('Frans')) && market.market_code !== 'BE' },
-        { label: MarketManager.getLanguageLabel('en-gb'), value: 5, langCode: 'en-gb', popular: market.popular_languages.includes('en-gb') || market.popular_languages.includes('Engels') || market.popular_languages.includes('English') },
-        { label: MarketManager.getLanguageLabel('en-us'), value: 6, langCode: 'en-us', popular: market.popular_languages.includes('en-us') },
-        { label: MarketManager.getLanguageLabel('de-de'), value: 7, langCode: 'de-de', popular: market.popular_languages.includes('de-de') || market.popular_languages.includes('Duits') || market.popular_languages.includes('German') },
-        { label: MarketManager.getLanguageLabel('es-es'), value: 8, langCode: 'es-es', popular: market.popular_languages.includes('es-es') || market.popular_languages.includes('Spaans') || market.popular_languages.includes('Spanish') },
-        { label: MarketManager.getLanguageLabel('it-it'), value: 9, langCode: 'it-it', popular: market.popular_languages.includes('it-it') || market.popular_languages.includes('Italiaans') || market.popular_languages.includes('Italian') },
-        { label: MarketManager.getLanguageLabel('pl-pl'), value: 10, langCode: 'pl-pl', popular: market.popular_languages.includes('pl-pl') || market.popular_languages.includes('Pools') || market.popular_languages.includes('Polish') },
-        { label: MarketManager.getLanguageLabel('da-dk'), value: 11, langCode: 'da-dk', popular: market.popular_languages.includes('da-dk') || market.popular_languages.includes('Deens') || market.popular_languages.includes('Danish') },
-        { label: MarketManager.getLanguageLabel('pt-pt'), value: 12, langCode: 'pt-pt', popular: market.popular_languages.includes('pt-pt') || market.popular_languages.includes('Portugees') || market.popular_languages.includes('Portuguese') },
-        { label: MarketManager.getLanguageLabel('sv-se'), value: 43, langCode: 'sv-se', popular: market.popular_languages.includes('sv-se') || market.popular_languages.includes('Zweeds') || market.popular_languages.includes('Swedish') },
-        { label: MarketManager.getLanguageLabel('ca-es'), value: 42, langCode: 'ca-es', popular: market.popular_languages.includes('ca-es') },
-        { label: MarketManager.getLanguageLabel('fi-fi'), value: 44, langCode: 'fi-fi', popular: market.popular_languages.includes('fi-fi') },
-        { label: MarketManager.getLanguageLabel('nb-no'), value: 45, langCode: 'nb-no', popular: market.popular_languages.includes('nb-no') },
-        { label: MarketManager.getLanguageLabel('tr-tr'), value: 46, langCode: 'tr-tr', popular: market.popular_languages.includes('tr-tr') },
-        { label: MarketManager.getLanguageLabel('hr-hr'), value: 47, langCode: 'hr-hr', popular: market.popular_languages.includes('hr-hr') },
-      ];
+    const languageConfig = languagesData.length > 0 
+      ? languagesData.map(l => ({
+          label: l.label,
+          value: l.id,
+          langCode: l.code,
+          popular: market.popular_languages.some(pl => 
+            pl.toLowerCase() === l.code.toLowerCase() || 
+            pl.toLowerCase() === l.label.toLowerCase()
+          )
+        }))
+      : [];
 
     const mappedConfig = languageConfig.map(langObj => ({
       ...langObj,
       icon: (langObj.langCode === 'nl-be' || langObj.langCode === 'fr-be') ? FlagBE :
-        (langObj.langCode === 'nl-nl') ? FlagNL :
-          (langObj.langCode === 'fr-fr') ? FlagFR :
+            (langObj.langCode === 'nl-nl') ? FlagNL :
+            (langObj.langCode === 'fr-fr') ? FlagFR :
             (langObj.langCode === 'en-gb') ? FlagUK :
-              (langObj.langCode === 'en-us') ? FlagUS :
-                (langObj.langCode === 'de-de') ? FlagDE :
-                  (langObj.langCode === 'es-es') ? FlagES :
-                    (langObj.langCode === 'it-it') ? FlagIT :
-                      (langObj.langCode === 'pl-pl') ? FlagPL :
-                        (langObj.langCode === 'da-dk') ? FlagDK :
-                          (langObj.langCode === 'pt-pt') ? FlagPT : Globe,
+            (langObj.langCode === 'en-us') ? FlagUS :
+            (langObj.langCode === 'de-de') ? FlagDE :
+            (langObj.langCode === 'es-es') ? FlagES :
+            (langObj.langCode === 'it-it') ? FlagIT :
+            (langObj.langCode === 'pl-pl') ? FlagPL :
+            (langObj.langCode === 'da-dk') ? FlagDK :
+            (langObj.langCode === 'pt-pt') ? FlagPT : Globe,
       availableExtraLangs: activeJourneyId === 'telephony' ? getExtraLangsFor(langObj.label, langObj.value) : []
     }));
 
@@ -314,23 +271,23 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
     const sortFn = (a: any, b: any) => {
       //  CHRIS-PROTOCOL: Universal Market-specific priority sorting (Bob-methode)
       const primaryLangCode = MarketManager.getLanguageCode(market.primary_language);
-
+      
       const getPriority = (code: string) => {
         if (code === primaryLangCode) return 1;
-
+        
         const popularIndex = market.popular_languages.findIndex(l => MarketManager.getLanguageCode(l) === code);
         if (popularIndex !== -1) return 2 + popularIndex;
-
+        
         if (code.startsWith('en')) return 50;
-
+        
         return 100;
       };
-
+      
       const scoreA = getPriority(a.langCode);
       const scoreB = getPriority(b.langCode);
-
+      
       if (scoreA !== scoreB) return scoreA - scoreB;
-
+      
       // Specifieke fix voor Frans (BE) vs Frans (FR) in de Belgische markt
       if (market.market_code === 'BE' && a.langCode.startsWith('fr') && b.langCode.startsWith('fr')) {
         if (a.icon === FlagBE) return -1;
@@ -348,7 +305,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
     ];
 
     return result;
-  }, [state.journey, actors, t]);
+  }, [languagesData, activeJourneyId, actors, t]);
 
   return (
     <ContainerInstrument className={cn("w-full mx-auto space-y-8 px-0", !minimalMode && "max-w-[1440px]")}>
@@ -536,35 +493,31 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                       {/* Gender Segment - CHRIS-PROTOCOL: Hide in script flow */}
                       {state.currentStep === 'voice' ? (
                         <div className="flex-1 h-full flex flex-col justify-center relative group/gender">
-                          <VoicesDropdown
-                            options={fetchedGenders.length > 0
+                          <VoicesDropdown 
+                            options={gendersData.length > 0 
                               ? [
-                                { label: t('gender.everyone', language === 'fr' ? 'Tout le monde' : language === 'en' ? 'Everyone' : 'Iedereen'), value: '', icon: Users },
-                                ...fetchedGenders.map(g => ({
-                                  label: g.label,
-                                  value: g.id, //  CHRIS-PROTOCOL: Use ID for Handshake Truth
-                                  code: g.code,
-                                  icon: User
-                                }))
-                              ]
-                              : [
-                                { label: t('gender.everyone', language === 'fr' ? 'Tout le monde' : language === 'en' ? 'Everyone' : 'Iedereen'), value: '', icon: Users },
-                                { label: t('gender.male', language === 'fr' ? 'Masculin' : language === 'en' ? 'Male' : 'Mannelijk'), value: 'male', icon: User },
-                                { label: t('gender.female', language === 'fr' ? 'Féminin' : language === 'en' ? 'Female' : 'Vrouwelijk'), value: 'female', icon: User },
-                              ]
+                                  { label: t('gender.everyone', language === 'fr' ? 'Tout le monde' : language === 'en' ? 'Everyone' : 'Iedereen'), value: '', icon: Users },
+                                  ...gendersData.map(g => ({
+                                    label: g.label,
+                                    value: g.id, //  CHRIS-PROTOCOL: Use ID for Handshake Truth
+                                    code: g.code,
+                                    icon: User
+                                  }))
+                                ]
+                              : []
                             }
                             value={state.filters.genderId || state.filters.gender || ''}
                             onChange={(val) => {
                               if (typeof val === 'number') {
-                                const optMatch = fetchedGenders.find(g => g.id === val);
-                                updateFilters({
+                                const optMatch = gendersData.find(g => g.id === val);
+                                updateFilters({ 
                                   genderId: val,
-                                  gender: optMatch?.code || undefined
+                                  gender: optMatch?.code || undefined 
                                 });
                               } else {
-                                updateFilters({
+                                updateFilters({ 
                                   genderId: undefined,
-                                  gender: val || undefined
+                                  gender: val || undefined 
                                 });
                               }
                             }}
@@ -596,73 +549,72 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                           <VoicesDropdown
                             stepperMode
                             rounding={state.currentStep !== 'voice' ? 'left' : 'none'}
-                            options={fetchedMediaTypes.length > 0
+                            options={fetchedMediaTypes.length > 0 
                               ? fetchedMediaTypes.map(fmt => {
-                                const baseId = fmt.code.split('_')[0];
-                                const baseIcons: Record<string, any> = { online: Globe, podcast: Mic2, radio: Radio, tv: Tv };
-                                return {
-                                  id: fmt.code,
-                                  label: fmt.label,
-                                  value: fmt.code,
-                                  icon: baseIcons[baseId] || Globe,
-                                  subLabel: fmt.description,
-                                  hasRegions: fmt.hasRegions
-                                };
-                              })
+                                  const baseId = fmt.code.split('_')[0];
+                                  return {
+                                    id: fmt.id, // 🛡️ CHRIS-PROTOCOL: Use ID for Handshake Truth (v2.14.714)
+                                    label: fmt.label,
+                                    value: fmt.id,
+                                    code: fmt.code,
+                                    icon: ICON_MAP[fmt.icon] || Globe,
+                                    subLabel: fmt.description,
+                                    hasRegions: fmt.hasRegions
+                                  };
+                                })
                               : [
-                                { id: 'online', label: t('media.online_socials', 'Online & Socials'), value: 'online', icon: Globe, subLabel: t('media.online_socials.sub', 'YouTube, Meta, LinkedIn') },
-                                { id: 'podcast', label: t('media.podcast', 'Podcast'), value: 'podcast', icon: Mic2, subLabel: t('media.podcast.sub', 'Pre-roll, Mid-roll') },
-                                { id: 'radio', label: t('media.radio', 'Radio'), value: 'radio', icon: Radio, subLabel: t('media.radio.sub', 'Landelijke of regionale zenders'), hasRegions: true },
-                                { id: 'tv', label: t('media.television', 'TV'), value: 'tv', icon: Tv, subLabel: t('media.television.sub', 'Landelijke of regionale zenders'), hasRegions: true }
-                              ]
+                                  { id: 1, label: t('media.online_socials', 'Online & Socials'), value: 1, code: 'online', icon: Globe, subLabel: t('media.online_socials.sub', 'YouTube, Meta, LinkedIn') },
+                                  { id: 2, label: t('media.podcast', 'Podcast'), value: 2, code: 'podcast', icon: Mic2, subLabel: t('media.podcast.sub', 'Pre-roll, Mid-roll') },
+                                  { id: 3, label: t('media.radio', 'Radio'), value: 3, code: 'radio_national', icon: Radio, subLabel: t('media.radio.sub', 'Landelijke of regionale zenders'), hasRegions: true },
+                                  { id: 5, label: t('media.television', 'TV'), value: 5, code: 'tv_national', icon: Tv, subLabel: t('media.television.sub', 'Landelijke of regionale zenders'), hasRegions: true }
+                                ]
                             }
                             value={(() => {
                               const val = state.filters.spotsDetail || {};
                               const mappedVal: Record<string, number> = {};
                               Object.keys(val).forEach(k => {
-                                if (k.startsWith('radio_')) mappedVal['radio'] = val[k];
-                                else if (k.startsWith('tv_')) mappedVal['tv'] = val[k];
-                                else mappedVal[k] = val[k];
+                                // 🛡️ CHRIS-PROTOCOL: Map code back to ID for UI display
+                                const match = fetchedMediaTypes.find(fmt => fmt.code === k || (k.startsWith('radio_') && fmt.code.startsWith('radio_')) || (k.startsWith('tv_') && fmt.code.startsWith('tv_')));
+                                if (match) mappedVal[match.id] = val[k];
+                                else if (k === 'online') mappedVal[1] = val[k];
+                                else if (k === 'podcast') mappedVal[2] = val[k];
+                                else if (k.startsWith('radio_')) mappedVal[3] = val[k];
+                                else if (k.startsWith('tv_')) mappedVal[5] = val[k];
                               });
                               return mappedVal;
                             })()}
                             onChange={(val) => {
-                              const mediaKeys = Object.keys(val);
-
+                              const mediaIds = Object.keys(val).map(Number);
+                              
                               //  KELLY-MANDATE: Always require at least one media type for commercial journey
-                              if (mediaKeys.length === 0) {
-                                console.warn("[MasterControl] Attempted to clear all media types. Reverting to 'online'.");
-                                updateFilters({
+                              if (mediaIds.length === 0) {
+                                updateFilters({ 
                                   spotsDetail: { online: 1 },
                                   media: ['online']
                                 });
                                 return;
                               }
 
-                              const mappedMedia = mediaKeys.map(k => {
-                                if (k === 'radio' || k === 'tv') {
-                                  const region = state.filters.mediaRegion?.[k] || 'national';
-                                  return `${k}_${region}`;
-                                }
-                                return k;
-                              });
-
-                              console.log("[MasterControl] Mapped Media:", mappedMedia);
-
-                              // Map the spots detail to the new keys
+                              const mappedMedia: string[] = [];
                               const newSpotsDetail: Record<string, number> = {};
-                              mediaKeys.forEach(k => {
-                                if (k === 'radio' || k === 'tv') {
-                                  const region = state.filters.mediaRegion?.[k] || 'national';
-                                  newSpotsDetail[`${k}_${region}`] = val[k];
-                                } else {
-                                  newSpotsDetail[k] = val[k];
+
+                              mediaIds.forEach(id => {
+                                const fmt = fetchedMediaTypes.find(f => f.id === id);
+                                if (fmt) {
+                                  let code = fmt.code;
+                                  if (code.startsWith('radio_') || code.startsWith('tv_')) {
+                                    const base = code.split('_')[0];
+                                    const region = state.filters.mediaRegion?.[base] || 'national';
+                                    code = `${base}_${region}`;
+                                  }
+                                  mappedMedia.push(code);
+                                  newSpotsDetail[code] = val[id];
                                 }
                               });
 
-                              updateFilters({
+                              updateFilters({ 
                                 spotsDetail: newSpotsDetail,
-                                media: mappedMedia as string[]
+                                media: mappedMedia
                               });
                             }}
                             yearsValue={state.filters.yearsDetail || {}}

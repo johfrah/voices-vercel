@@ -62,6 +62,7 @@ export const languages = pgTable('languages', {
   id: serial('id').primaryKey(),
   code: text('code').unique().notNull(),
   label: text('label').notNull(),
+  icon: text('icon'), // flag component name or asset path
   isPopular: boolean('is_popular').default(false),
   isNativeOnly: boolean('is_native_only').default(false),
   createdAt: timestamp('created_at').defaultNow(),

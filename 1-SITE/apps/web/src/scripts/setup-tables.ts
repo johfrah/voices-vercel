@@ -88,6 +88,29 @@ async function setupTables() {
       ON CONFLICT (code) DO NOTHING
     `);
 
+    // 6b. Update Languages with Icons
+    console.log('🌐 Updating languages with icons...');
+    await db.execute(sql`ALTER TABLE languages ADD COLUMN IF NOT EXISTS icon TEXT`);
+    
+    const languageIcons = [
+      { code: 'nl-be', icon: 'FlagBE' },
+      { code: 'fr-be', icon: 'FlagBE' },
+      { code: 'nl-nl', icon: 'FlagNL' },
+      { code: 'fr-fr', icon: 'FlagFR' },
+      { code: 'en-gb', icon: 'FlagUK' },
+      { code: 'en-us', icon: 'FlagUS' },
+      { code: 'de-de', icon: 'FlagDE' },
+      { code: 'es-es', icon: 'FlagES' },
+      { code: 'it-it', icon: 'FlagIT' },
+      { code: 'pl-pl', icon: 'FlagPL' },
+      { code: 'da-dk', icon: 'FlagDK' },
+      { code: 'pt-pt', icon: 'FlagPT' }
+    ];
+
+    for (const lang of languageIcons) {
+      await db.execute(sql`UPDATE languages SET icon = ${lang.icon} WHERE code = ${lang.code}`);
+    }
+
     // 7. Add missing columns to actors
     console.log('🎙️ Adding missing columns to actors...');
     await db.execute(sql`ALTER TABLE actors ADD COLUMN IF NOT EXISTS gender_id INTEGER REFERENCES genders(id)`);
