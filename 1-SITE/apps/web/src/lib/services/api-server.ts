@@ -240,7 +240,9 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
     const langLookup = new Map<number, { code: string, label: string }>();
     allLangsData?.forEach(l => langLookup.set(l.id, { code: l.code, label: l.label }));
 
-    // 🛡️ CHRIS-PROTOCOL: Global Language Cache for UI (v2.14.666)
+    // 🛡️ CHRIS-PROTOCOL: Global Language Cache for UI (v2.14.667)
+    // We prime the MarketManager with real data from Supabase to kill hardcoded maps.
+    MarketManager.setLanguages(allLangsData || []);
     const g = global as any;
     g.handshakeLanguages = allLangsData || [];
 

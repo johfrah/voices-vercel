@@ -20,10 +20,8 @@ import { useGlobalAudio } from "@/contexts/GlobalAudioContext";
 import nextDynamic from "next/dynamic";
 
 // Nuclear Loading for heavy visual components
-// const AudioWaveform = nextDynamic(() => import("./AudioWaveform").then(mod => mod.AudioWaveform), { ssr: false });
-// const FloatingParticles = nextDynamic(() => import("./FloatingParticles").then(mod => mod.FloatingParticles), { ssr: false });
-
-const FloatingParticles = ({ element, isPlaying }: { element?: string, isPlaying: boolean }) => null;
+const AudioWaveform = nextDynamic(() => import("./AudioWaveform").then(mod => mod.AudioWaveform), { ssr: false });
+const FloatingParticles = nextDynamic(() => import("./FloatingParticles").then(mod => mod.FloatingParticles), { ssr: false });
 
 interface MeditationPlayerInstrumentProps {
   track: any;
@@ -154,10 +152,12 @@ export const MeditationPlayerInstrument = ({
 
         {/* Center - Waveform & Avatar */}
         <div className="flex-1 flex flex-col items-center justify-center relative">
-          <div className="relative w-48 h-48 md:w-64 md:h-48 flex items-center justify-center">
-             {/* Waveform would go here, centered around the content */}
+          <div className="relative w-full max-w-lg h-64 flex items-center justify-center">
+             <div className="absolute inset-0 z-0">
+               <AudioWaveform isPlaying={isPlaying} />
+             </div>
              <div className={cn(
-               "w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-white/10 overflow-hidden shadow-2xl transition-all duration-1000",
+               "relative z-10 w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-white/10 overflow-hidden shadow-2xl transition-all duration-1000",
                isPlaying ? "scale-110 border-primary/40" : "scale-100"
              )}>
                <img src={track.cover_image_url} alt="" className="w-full h-full object-cover" />
