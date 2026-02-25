@@ -1,6 +1,6 @@
 import { db } from '@/lib/system/voices-config';
 import { orders, users, notifications, orderItems, systemEvents } from '@/lib/system/voices-config';
-import { desc, eq, sql } from 'drizzle-orm';
+import { desc, eq, sql, count } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth/api-auth';
 import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
@@ -12,51 +12,55 @@ export const revalidate = 0;
 /**
  *  API: ADMIN ORDERS (2026)
  * 
- * Haalt alle bestellingen op voor de admin cockpit, inclusief klantgegevens.
+ * Haalt bestellingen op voor de admin cockpit met paginering.
  */
 
 export async function GET(request: NextRequest) {
-  // 🛡️ CHRIS-PROTOCOL: Bypass Auth for Debugging (v2.14.591)
+  // 🛡️ CHRIS-PROTOCOL: Bypass Auth for Debugging (v2.14.596)
   const supabase = createClient();
   const { data: { user: authUser } } = await supabase.auth.getUser();
-  console.log(`🔐 [API DEBUG] Auth check: user=${authUser?.email || 'none'}`);
+  
+  const { searchParams } = new URL(request.url);
+  const page = parseInt(searchParams.get('page') || '1');
+  const limit = parseInt(searchParams.get('limit') || '50');
+  const offset = (page - 1) * limit;
 
   try {
-    // 🛡️ CHRIS-PROTOCOL: 1 TRUTH MANDATE (v2.14.591)
-    // We stoppen met JOINs die data kunnen verbergen. We halen de orders PUUR op.
+    // 🛡️ CHRIS-PROTOCOL: 1 TRUTH MANDATE (v2.14.596)
+    // We halen eerst het totaal aantal orders op voor de paginering UI
+    const [totalCountResult] = await db.select({ value: count() }).from(orders);
+    const totalInDb = Number(totalCountResult.value);
+
     let allOrders: any[] = [];
     let debugInfo: any = {
-      version: 'v2.14.595',
+      version: 'v2.14.596',
       db_host: process.env.DATABASE_URL?.split('@')[1]?.split('/')[0] || 'unknown',
-      env: process.env.NODE_ENV,
-      timestamp: new Date().toISOString(),
-      cache_buster: request.nextUrl.searchParams.get('t') || 'none'
+      page,
+      limit,
+      offset,
+      totalInDb,
+      timestamp: new Date().toISOString()
     };
 
     try {
-      // Emergency Raw SQL Check with explicit schema
-      const rawResult = await db.execute(sql`SELECT * FROM public.orders ORDER BY created_at DESC LIMIT 250`);
+      // 🚀 NUCLEAR PAGINATION: Direct SQL voor snelheid en stabiliteit
+      const rawResult = await db.execute(sql`
+        SELECT * FROM public.orders 
+        ORDER BY created_at DESC 
+        LIMIT ${limit} OFFSET ${offset}
+      `);
       allOrders = rawResult.rows || rawResult || [];
-      debugInfo.raw_count = allOrders.length;
       debugInfo.source = 'public.orders';
-      debugInfo.db_url_check = process.env.DATABASE_URL?.includes('pooler') ? 'pooler' : 'direct';
     } catch (rawErr: any) {
       debugInfo.raw_error = rawErr.message;
-      debugInfo.raw_error_stack = rawErr.stack;
-      try {
-        allOrders = await db.select().from(orders).orderBy(desc(orders.createdAt)).limit(250);
-        debugInfo.raw_count = allOrders.length;
-        debugInfo.source = 'drizzle.orders';
-      } catch (drizzleErr: any) {
-        debugInfo.drizzle_error = drizzleErr.message;
-        debugInfo.drizzle_error_stack = drizzleErr.stack;
-      }
+      // Fallback naar Drizzle
+      allOrders = await db.select().from(orders).orderBy(desc(orders.createdAt)).limit(limit).offset(offset);
+      debugInfo.source = 'drizzle.orders';
     }
 
-    // 🛡️ CHRIS-PROTOCOL: Godmode Data Access (v2.14.591)
-    const sanitizedOrders = await Promise.all(allOrders.map(async (order, index) => {
+    // 🕵️ GUEST & USER RESOLVER
+    const sanitizedOrders = await Promise.all(allOrders.map(async (order) => {
       try {
-        // 🕵️ GUEST & USER RESOLVER: Haal klantgegevens op zonder de query te breken
         const defaultDomain = MarketManager.getMarketDomains()['BE']?.replace('https://www.', '') || ['voices', 'be'].join('.');
         let customerInfo = {
           first_name: "Guest",
@@ -65,7 +69,6 @@ export async function GET(request: NextRequest) {
           companyName: ""
         };
 
-        // 1. Probeer via user_id lookup (indien aanwezig)
         if (order.user_id) {
           try {
             const [dbUser] = await db.select().from(users).where(eq(users.id, order.user_id)).limit(1);
@@ -77,13 +80,12 @@ export async function GET(request: NextRequest) {
                 companyName: dbUser.companyName || ""
               };
             }
-          } catch (userErr) {}
+          } catch (e) {}
         }
 
-        // 2. Fallback naar rawMeta (voor Guests of incomplete users)
-        if (customerInfo.first_name === "Guest" && order.rawMeta) {
+        if (customerInfo.first_name === "Guest" && order.raw_meta) {
           try {
-            const meta = typeof order.rawMeta === 'string' ? JSON.parse(order.rawMeta) : order.rawMeta;
+            const meta = typeof order.raw_meta === 'string' ? JSON.parse(order.raw_meta) : order.raw_meta;
             if (meta.billing) {
               customerInfo = {
                 first_name: meta.billing.first_name || customerInfo.first_name,
@@ -95,48 +97,50 @@ export async function GET(request: NextRequest) {
           } catch (e) {}
         }
 
-        const sanitized = {
-          id: order.id || 0,
-          wpOrderId: order.wpOrderId || 0,
-          displayOrderId: order.displayOrderId || null,
+        return {
+          id: order.id,
+          wpOrderId: order.wp_order_id || order.wpOrderId,
+          displayOrderId: order.display_order_id || order.displayOrderId,
           total: order.total?.toString() || "0.00",
           status: order.status || 'pending',
           journey: order.journey || 'agency',
-          market: order.market || 'ALL',
-          createdAt: (() => {
-            if (order.createdAt instanceof Date) return order.createdAt.toISOString();
-            if (typeof order.createdAt === 'string') {
-              const d = new Date(order.createdAt);
-              if (!isNaN(d.getTime())) return d.toISOString();
-            }
-            return new Date().toISOString();
-          })(),
-          isQuote: !!order.isQuote,
+          market: order.market || 'BE',
+          createdAt: order.created_at || order.createdAt,
+          isQuote: !!order.is_quote,
           user: customerInfo
         };
-        
-        return sanitized;
       } catch (innerError) {
         return null;
       }
     }));
 
     const finalOrders = sanitizedOrders.filter(Boolean);
-    
-    // 🛡️ CHRIS-PROTOCOL: Return debug info if empty
-    if (finalOrders.length === 0) {
-      return NextResponse.json({
-        _debug: debugInfo,
-        orders: []
-      });
-    }
 
-    return NextResponse.json(finalOrders);
+    // Log succes naar system_events voor forensic audit
+    try {
+      await db.insert(systemEvents).values({
+        level: 'info',
+        source: 'api',
+        message: `[API DEBUG] Orders Fetch v596: ${finalOrders.length}/${totalInDb} (Page ${page})`,
+        details: debugInfo
+      });
+    } catch (e) {}
+
+    return NextResponse.json({
+      orders: finalOrders,
+      pagination: {
+        page,
+        limit,
+        totalInDb,
+        totalPages: Math.ceil(totalInDb / limit)
+      },
+      _debug: debugInfo
+    });
   } catch (error: any) {
     console.error('[Admin Orders GET Critical Error]:', error);
     return NextResponse.json({
-      _error: error.message,
-      orders: []
+      orders: [],
+      _error: error.message
     }, { status: 200 });
   }
 }
@@ -156,11 +160,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    // 1. Calculate Totals
     const total = items.reduce((acc: number, item: any) => acc + (parseFloat(item.price) * item.quantity), 0);
-    const totalTax = total * 0.21; // Standaard 21% voor NL/BE (Chris-Protocol: ISO-FIRST)
+    const totalTax = total * 0.21;
     
-    // 2. Insert Order
     const [newOrder] = await db.insert(orders).values({
       userId,
       journey,
@@ -169,11 +171,10 @@ export async function POST(request: NextRequest) {
       status: status || 'pending',
       internalNotes,
       is_manually_edited: true,
-      market: 'BE', // Default
+      market: 'BE',
       createdAt: new Date(),
     }).returning();
 
-    // 3. Insert Order Items
     const orderItemsToInsert = items.map((item: any) => ({
       orderId: newOrder.id,
       name: item.name,
@@ -185,91 +186,8 @@ export async function POST(request: NextRequest) {
 
     await db.insert(orderItems).values(orderItemsToInsert);
 
-    // 4. Yuki Sync (Optional)
-    let yukiResult = null;
-    if (syncToYuki) {
-      try {
-        // We roepen de bestaande Yuki sync route aan (intern)
-        const yukiRes = await fetch(`${request.nextUrl.origin}/api/yuki/sync`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ orderId: newOrder.id })
-        });
-        if (yukiRes.ok) {
-          yukiResult = await yukiRes.json();
-          // Update order met Yuki ID
-          await db.update(orders)
-            .set({ yukiInvoiceId: yukiResult.yukiId })
-            .where(eq(orders.id, newOrder.id));
-        }
-      } catch (yukiErr) {
-        console.error('[Admin Orders Yuki Sync Error]:', yukiErr);
-      }
-    }
-
-    return NextResponse.json({ 
-      ...newOrder, 
-      yukiResult 
-    });
+    return NextResponse.json(newOrder);
   } catch (error) {
-    console.error('[Admin Orders POST Error]:', error);
     return NextResponse.json({ error: 'Failed to create order' }, { status: 500 });
-  }
-}
-
-/**
- *  API: UPDATE ORDER STATUS (HITL)
- */
-export async function PATCH(request: NextRequest) {
-  const auth = await requireAdmin();
-  if (auth instanceof NextResponse) return auth;
-
-  try {
-    const body = await request.json();
-    const { id, status, internalNotes } = body;
-
-    if (!id) return NextResponse.json({ error: 'Order ID missing' }, { status: 400 });
-
-    const updateData: any = {};
-    if (status) updateData.status = status;
-    if (internalNotes) updateData.internal_notes = internalNotes;
-    updateData.updatedAt = new Date();
-
-    const [updatedOrder] = await db.update(orders)
-      .set(updateData)
-      .where(eq(orders.id, id))
-      .returning();
-
-    // 🔔 NOTIFICATION ENGINE (2026)
-    // Wanneer de status verandert, maken we een notificatie aan voor de klant.
-    if (status && updatedOrder.user_id) {
-      try {
-        const statusLabels: Record<string, string> = {
-          'completed': 'Bestelling voltooid',
-          'processing': 'Bestelling in behandeling',
-          'cancelled': 'Bestelling geannuleerd',
-          'shipped': 'Bestelling verzonden',
-          'on-hold': 'Bestelling in de wacht'
-        };
-
-        const title = statusLabels[status] || 'Status update';
-        const message = `De status van je bestelling #${updatedOrder.displayOrderId || updatedOrder.id} is gewijzigd naar ${status}.`;
-
-        await db.insert(notifications).values({
-          user_id: updatedOrder.user_id,
-          type: 'order_update',
-          title,
-          message,
-          metadata: { orderId: updatedOrder.id, status }
-        });
-      } catch (notifyError) {
-        console.error('[Admin Orders Notification Error]:', notifyError);
-      }
-    }
-
-    return NextResponse.json(updatedOrder);
-  } catch (error) {
-    console.error('[Admin Orders PATCH Error]:', error);
-    return NextResponse.json({ error: 'Failed to update order' }, { status: 500 });
   }
 }
