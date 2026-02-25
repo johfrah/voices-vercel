@@ -31,7 +31,9 @@ export async function GET(request: NextRequest) {
       createdAt: orders.createdAt,
       isQuote: orders.isQuote,
       rawMeta: orders.rawMeta,
+      userId: orders.user_id, // 🛡️ CHRIS-PROTOCOL: Explicitly select user_id for debug
       user: {
+        id: users.id, // 🛡️ CHRIS-PROTOCOL: Explicitly select user.id for debug
         first_name: users.first_name,
         last_name: users.last_name,
         email: users.email,
@@ -44,6 +46,10 @@ export async function GET(request: NextRequest) {
     .limit(250);
 
     console.log(`🚀 [API DEBUG] Raw orders fetched from DB: ${allOrders.length}`);
+    if (allOrders.length > 0) {
+      console.log(`📦 [API DEBUG] Sample Order 0: ID=${allOrders[0].id}, WP=${allOrders[0].wpOrderId}, UserID=${allOrders[0].userId}, JoinedUser=${allOrders[0].user?.id || 'NULL'}`);
+    }
+    
     if (allOrders.length === 0) {
       console.log('⚠️ [API DEBUG] NO ORDERS FOUND IN DB QUERY. Checking raw count...');
       try {
@@ -57,7 +63,7 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // 🛡️ CHRIS-PROTOCOL: Godmode Data Access (v2.14.568)
+    // 🛡️ CHRIS-PROTOCOL: Godmode Data Access (v2.14.570)
     const sanitizedOrders = allOrders.map((order, index) => {
       try {
         // 🕵️ GUEST ORDER LOGIC: Als er geen user_id is, proberen we de klantgegevens uit rawMeta te vissen.
