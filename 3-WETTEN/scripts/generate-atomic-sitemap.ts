@@ -25,18 +25,17 @@ async function generateAtomicSitemap() {
   const { data: actors } = await supabase.from('actors').select('id, slug, first_name, last_name').eq('status', 'live').eq('is_public', true);
   actors?.forEach(a => {
     // 🛡️ CHRIS-PROTOCOL: No last names in slugs (mark-labrand -> mark-l)
-    let actorSlug = a.slug;
-    if (!actorSlug || actorSlug.includes('-')) {
-      const firstName = a.first_name?.toLowerCase().trim();
-      const lastInitial = a.last_name ? a.last_name.trim().charAt(0).toLowerCase() : '';
-      actorSlug = lastInitial ? `${firstName}-${lastInitial}` : firstName;
-    }
-    sitemap.push({ slug: actorSlug, type: 'actor', entity_id: a.id, journey: 'agency', name: `${a.first_name} ${a.last_name || ''}` });
+    const firstName = a.first_name?.toLowerCase().trim();
+    const lastInitial = a.last_name ? a.last_name.trim().charAt(0).toLowerCase() : '';
+    const canonicalActorSlug = lastInitial ? `${firstName}-${lastInitial}` : firstName;
     
-    // Add legacy slug redirect if it was different
-    if (a.slug && a.slug !== actorSlug) {
-      sitemap.push({ slug: a.slug, type: 'actor', entity_id: a.id, journey: 'agency', name: `${a.first_name} ${a.last_name || ''}`, canonical_slug: actorSlug });
+    // If the current slug is not the canonical one, we register it as a redirect
+    if (a.slug && a.slug.toLowerCase() !== canonicalActorSlug) {
+      sitemap.push({ slug: a.slug.toLowerCase(), type: 'actor', entity_id: a.id, journey: 'agency', name: `${a.first_name} ${a.last_name || ''}`, canonical_slug: canonicalActorSlug });
     }
+    
+    // Always register the canonical slug
+    sitemap.push({ slug: canonicalActorSlug, type: 'actor', entity_id: a.id, journey: 'agency', name: `${a.first_name} ${a.last_name || ''}` });
   });
 
   // 2. Artists (Artist Journey)
@@ -86,9 +85,21 @@ async function generateAtomicSitemap() {
   });
 
   // 6. Categories (Languages, Countries, Attributes)
+  const slugify = (text: string) => {
+    return text
+      .toString()
+      .normalize('NFD')                   // split accented characters into their base characters and diacritical marks
+      .replace(/[\u0300-\u036f]/g, '')   // remove all the accents
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, '-')               // replace spaces with -
+      .replace(/[^\w\-]+/g, '')           // remove all non-word chars
+      .replace(/\-\-+/g, '-');            // replace multiple - with single -
+  };
+
   const { data: langs } = await supabase.from('languages').select('id, code, label');
   langs?.forEach(l => {
-    const descriptiveSlug = `voice-overs/${l.label.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
+    const descriptiveSlug = `voice-overs/${slugify(l.label)}`;
     sitemap.push({ slug: descriptiveSlug, type: 'language', entity_id: l.id, journey: 'agency', name: `Language: ${l.label}` });
     // Redirect old code-based slug
     sitemap.push({ slug: l.code.toLowerCase(), type: 'language', entity_id: l.id, journey: 'agency', name: `Language: ${l.label}`, canonical_slug: descriptiveSlug });
@@ -96,7 +107,7 @@ async function generateAtomicSitemap() {
 
   const { data: countries } = await supabase.from('countries').select('id, code, label');
   countries?.forEach(c => {
-    const descriptiveSlug = `voice-overs/${c.label.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
+    const descriptiveSlug = `voice-overs/${slugify(c.label)}`;
     sitemap.push({ slug: descriptiveSlug, type: 'country', entity_id: c.id, journey: 'agency', name: `Country: ${c.label}` });
     // Redirect old code-based slug
     sitemap.push({ slug: c.code.toLowerCase(), type: 'country', entity_id: c.id, journey: 'agency', name: `Country: ${c.label}`, canonical_slug: descriptiveSlug });
@@ -104,7 +115,7 @@ async function generateAtomicSitemap() {
 
   const { data: attrs } = await supabase.from('actor_attributes').select('id, code, label');
   attrs?.forEach(at => {
-    const descriptiveSlug = `stemmen/${at.label.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
+    const descriptiveSlug = `stemmen/${slugify(at.label)}`;
     sitemap.push({ slug: descriptiveSlug, type: 'attribute', entity_id: at.id, journey: 'agency', name: `Attribute: ${at.label}` });
     // Redirect old code-based slug
     sitemap.push({ slug: at.code.toLowerCase(), type: 'attribute', entity_id: at.id, journey: 'agency', name: `Attribute: ${at.label}`, canonical_slug: descriptiveSlug });

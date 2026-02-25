@@ -13,57 +13,39 @@ import { createClient } from '@/utils/supabase/server';
  */
 
 export async function GET(request: NextRequest) {
-  // 🛡️ CHRIS-PROTOCOL: Bypass Auth for Debugging (v2.14.572)
+  // 🛡️ CHRIS-PROTOCOL: Bypass Auth for Debugging (v2.14.577)
   const supabase = createClient();
   const { data: { user: authUser } } = await supabase.auth.getUser();
   console.log(`🔐 [API DEBUG] Auth check: user=${authUser?.email || 'none'}`);
 
   try {
-    // 🛡️ CHRIS-PROTOCOL: 1 TRUTH MANDATE (v2.14.575)
+    // 🛡️ CHRIS-PROTOCOL: 1 TRUTH MANDATE (v2.14.577)
     // We stoppen met JOINs die data kunnen verbergen. We halen de orders PUUR op.
     let allOrders: any[] = [];
+    let debugInfo: any = {
+      version: 'v2.14.577',
+      db_host: process.env.DATABASE_URL?.split('@')[1]?.split('/')[0] || 'unknown',
+      env: process.env.NODE_ENV
+    };
+
     try {
       // Emergency Raw SQL Check with explicit schema
       const rawResult = await db.execute(sql`SELECT * FROM public.orders ORDER BY created_at DESC LIMIT 250`);
       allOrders = rawResult.rows || rawResult || [];
-      console.log(`🚀 [API DEBUG] 1 TRUTH (RAW SQL): Fetched ${allOrders.length} records from public.orders`);
-    } catch (rawErr) {
-      console.error('❌ [API DEBUG] Raw SQL failed for public.orders:', rawErr);
+      debugInfo.raw_count = allOrders.length;
+      debugInfo.source = 'public.orders';
+    } catch (rawErr: any) {
+      debugInfo.raw_error = rawErr.message;
       try {
-        const rawResult = await db.execute(sql`SELECT * FROM orders ORDER BY created_at DESC LIMIT 250`);
-        allOrders = rawResult.rows || rawResult || [];
-      } catch (e) {
         allOrders = await db.select().from(orders).orderBy(desc(orders.createdAt)).limit(250);
+        debugInfo.raw_count = allOrders.length;
+        debugInfo.source = 'drizzle.orders';
+      } catch (drizzleErr: any) {
+        debugInfo.drizzle_error = drizzleErr.message;
       }
     }
 
-    // 🛡️ CHRIS-PROTOCOL: Force Log to DB for Forensic Visibility
-    try {
-      await db.insert(systemEvents).values({
-        level: 'info',
-        source: 'api',
-        message: `[API DEBUG] Orders Fetch (v575): ${allOrders.length} records`,
-        details: { 
-          count: allOrders.length, 
-          version: 'v2.14.575',
-          firstOrderId: allOrders[0]?.id || null,
-          db_host: process.env.DATABASE_URL?.split('@')[1]?.split('/')[0] || 'unknown',
-          env: process.env.NODE_ENV
-        }
-      });
-    } catch (logErr) {}
-
-    // 🛡️ CHRIS-PROTOCOL: Emergency DB Check
-    if (allOrders.length === 0) {
-      const rawCount = await db.select({ count: orders.id }).from(orders).limit(1);
-      console.log(`🚨 [API DEBUG] EMERGENCY: Orders table check: ${rawCount.length > 0 ? 'Table exists but empty' : 'Table might not exist or inaccessible'}`);
-      
-      // Check schema search path
-      const schemaCheck = await db.execute('SELECT current_schema(), current_database()');
-      console.log(`🚨 [API DEBUG] DB CONTEXT: ${JSON.stringify(schemaCheck)}`);
-    }
-    
-    // 🛡️ CHRIS-PROTOCOL: Godmode Data Access (v2.14.572)
+    // 🛡️ CHRIS-PROTOCOL: Godmode Data Access (v2.14.577)
     const sanitizedOrders = await Promise.all(allOrders.map(async (order, index) => {
       try {
         // 🕵️ GUEST & USER RESOLVER: Haal klantgegevens op zonder de query te breken
@@ -87,9 +69,7 @@ export async function GET(request: NextRequest) {
                 companyName: dbUser.companyName || ""
               };
             }
-          } catch (userErr) {
-            console.error(`❌ [API DEBUG] User lookup failed for user_id ${order.user_id}:`, userErr);
-          }
+          } catch (userErr) {}
         }
 
         // 2. Fallback naar rawMeta (voor Guests of incomplete users)
@@ -127,24 +107,29 @@ export async function GET(request: NextRequest) {
           user: customerInfo
         };
         
-        if (index < 2) {
-          console.log(`📦 [API DEBUG] Sanitized order ${index}: ${sanitized.id} - ${sanitized.user.email}`);
-        }
-        
         return sanitized;
       } catch (innerError) {
-        console.error(`❌ [API DEBUG] Error sanitizing order at index ${index}:`, innerError);
         return null;
       }
     }));
 
     const finalOrders = sanitizedOrders.filter(Boolean);
-    console.log(`✅ [API DEBUG] Final sanitized count: ${finalOrders.length}`);
+    
+    // 🛡️ CHRIS-PROTOCOL: Return debug info if empty
+    if (finalOrders.length === 0) {
+      return NextResponse.json({
+        _debug: debugInfo,
+        orders: []
+      });
+    }
 
     return NextResponse.json(finalOrders);
-  } catch (error) {
+  } catch (error: any) {
     console.error('[Admin Orders GET Critical Error]:', error);
-    return NextResponse.json([], { status: 200 });
+    return NextResponse.json({
+      _error: error.message,
+      orders: []
+    }, { status: 200 });
   }
 }
 
