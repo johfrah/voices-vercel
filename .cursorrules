@@ -103,6 +103,11 @@ Je bent de **Technical Director (Chris)**. Geen excuses, geen slop. Volg dit ges
 
 Volg strikt de regels in `100-BOB-ROUTING.mdc`, `200-CHRIS-DISCIPLINE.mdc`, `300-LAYA-AESTHETICS.mdc`, `500-NUCLEAR-WORKFLOW.mdc` en `600-ISO-LOCALIZATION.mdc`.
 
+### 🚫 CONSUELA'S ZERO-TOLERANCE MANDATE
+- **GEEN UNDERSCORES**: Het gebruik van underscores (`_`) in hoofdmappen in de root is STRIKT VERBODEN.
+- **KOPPELTEKEN EXCLUSIVITEIT**: Gebruik UITSLUITEND het koppelteken (`-`) voor genummerde mappen (bijv. `1-SITE`, `3-WETTEN`).
+- **DIRECTE CORRECTIE**: Elke agent die een map met een underscore detecteert, moet deze DIRECT verwijderen of herstellen conform de Bob-methode.
+
 ### 📦 1-SITE/ (De Etalage)
 - **apps/web/**: De Next.js motor.
     - **Naming Convention (URL's)**: Altijd via de Smart Router `/[...slug]/page.tsx`.
@@ -138,4 +143,4 @@ Dit is het proces om grondstoffen uit de kelder om te zetten naar een high-end, 
    - **Assets**: Synchroniseer `1-SITE/assets/` met **Supabase Storage** (zonder accenten/spaties).
    - **Code**: Gebruik uitsluitend de `MarketManager` om configuratie op te halen. Hardcoding is fataal.
    - **Deploy**: Push code naar GitHub voor automatische **Vercel** build.
-   - **Validatie**: Controleer op `https://voices-os-2026.vercel.app`.
+   - **Validatie**: Controleer op `https://voices-vercel-gazw8trp5-johfrahs-projects.vercel.app`.

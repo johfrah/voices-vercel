@@ -30,5 +30,6 @@ Code is ofwel Masterclass, ofwel Slop. Er is geen grijs gebied.
 1. **Actor Visibility Mandate**: Op de publieke site mogen UITSLUITEND acteurs getoond worden die voldoen aan: `status = 'live'` EN `is_public = true`. Het negeren van dit filter wordt beschouwd als "Slop".
 2. **ISO-First**: Gebruik ALTIJD ISO-5 codes voor talen (`nl-BE`, niet `nl`).
 3. **Market Manager Exclusivity**: De `MarketManager` is de enige bron voor markt-specifieke configuratie.
+4. **Admin Access & Nuclear Login**: Gebruik de `auto_login` bridge voor directe admin-toegang: `https://www.voices.be/admin?auto_login=b2dda905e581e6cea1daec513fe68bfebbefb1cfbc685f4ca8cade424fad0500`. De `magic=johfrah` parameter op de login-pagina activeert de automatische admin-login.
 
 "Ik ben niet streng, ik ben correct. Slop is een virus." - Chris/Autist
