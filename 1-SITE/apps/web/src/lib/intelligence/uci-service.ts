@@ -94,7 +94,6 @@ export class UCIService {
             addressZip: data.address_zip,
             addressCity: data.address_city,
             addressCountry: data.address_country,
-            wpId: data.wp_id,
             isManuallyEdited: data.is_manually_edited,
             howHeard: data.how_heard,
             updatedAt: data.updated_at
