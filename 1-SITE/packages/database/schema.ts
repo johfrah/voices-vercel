@@ -15,6 +15,22 @@ export const experienceLevel = pgEnum("experience_level", ['beginner', 'intermed
 
 export const auditionStatus = pgEnum("audition_status", ['invited', 'uploaded', 'rejected', 'selected', 'converted'])
 
+export const slugRegistry = pgTable("slug_registry", {
+	id: serial().primaryKey().notNull(),
+	slug: text().notNull(),
+	routingType: text("routing_type").notNull(), // actor, artist, article, workshop, language, attribute, country, music, blog
+	entityId: integer("entity_id").notNull(),
+	journey: text().default('agency'),
+	marketCode: text("market_code").default('ALL'),
+	canonicalSlug: text("canonical_slug"),
+	legacySlugs: jsonb("legacy_slugs").default([]),
+	isActive: boolean("is_active").default(true),
+	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow(),
+	updatedAt: timestamp("updated_at", { mode: 'string' }).defaultNow(),
+}, (table) => [
+	unique("slug_registry_slug_market_journey_key").on(table.slug, table.marketCode, table.journey),
+]);
+
 export const languages = pgTable("languages", {
 	id: serial().primaryKey().notNull(),
 	code: text().unique().notNull(),
@@ -915,14 +931,12 @@ export const actors = pgTable("actors", {
 	first_name: text("first_name").notNull(),
 	last_name: text("last_name"),
 	gender: gender(),
-	native_lang: text("native_lang"),
+	native_language_id: integer("native_language_id"),
 	country_id: integer("country_id"),
 	delivery_time: text("delivery_time"),
-	extra_langs: text("extra_langs"),
 	bio: text(),
 	why_voices: text("why_voices"),
 	tagline: text(),
-	tone_of_voice: text("tone_of_voice"),
 	photo_id: integer("photo_id"),
 	logo_id: integer("logo_id"),
 	voice_score: integer("voice_score").default(10),
@@ -1334,7 +1348,7 @@ export const artists = pgTable("artists", {
 	slug: text().unique().notNull(),
 	email: text(),
 	gender: gender(),
-	native_lang: text("native_lang"),
+	native_language_id: integer("native_language_id"),
 	bio: text(),
 	photoUrl: text("photo_url"),
 	iapContext: jsonb("iap_context"),

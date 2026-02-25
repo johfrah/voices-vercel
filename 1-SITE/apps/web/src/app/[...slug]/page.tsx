@@ -122,11 +122,11 @@ function generateArtistSchema(artist: any, host: string = '') {
  * 🧠 SLUG RESOLVER (NUCLEAR 2026)
  * Zoekt de entiteit op basis van de slug_registry (Handshake Truth).
  */
-async function resolveSlugFromRegistry(slug: string, marketCode: string = 'ALL', journey: string = 'agency'): Promise<{ entity_id: number, routing_type: string, journey: string } | null> {
+async function resolveSlugFromRegistry(slug: string, marketCode: string = 'ALL', journey: string = 'agency'): Promise<{ entity_id: number, routing_type: string, journey: string, canonical_slug?: string } | null> {
   try {
     const { data: entry, error } = await supabase
       .from('slug_registry')
-      .select('entity_id, routing_type, journey')
+      .select('entity_id, routing_type, journey, canonical_slug')
       .eq('slug', slug.toLowerCase())
       .or(`market_code.eq.${marketCode},market_code.eq.ALL`)
       .eq('is_active', true)
@@ -137,7 +137,8 @@ async function resolveSlugFromRegistry(slug: string, marketCode: string = 'ALL',
       return {
         entity_id: Number(entry.entity_id),
         routing_type: entry.routing_type,
-        journey: entry.journey
+        journey: entry.journey,
+        canonical_slug: entry.canonical_slug
       };
     }
   } catch (err) {
@@ -410,6 +411,12 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
     const resolved = await resolveSlugFromRegistry(lookupSlug, market.market_code);
 
     if (resolved) {
+      // 🛡️ CHRIS-PROTOCOL: Handle Redirects (Canonical Handshake)
+      if (resolved.canonical_slug && resolved.canonical_slug !== lookupSlug) {
+        console.error(` [SmartRouter] Redirecting legacy slug "${lookupSlug}" to canonical: "/${resolved.canonical_slug}"`);
+        return redirect(`/${resolved.canonical_slug}`);
+      }
+
       console.error(` [SmartRouter] Handshake SUCCESS: ${resolved.routing_type} (ID: ${resolved.entity_id})`);
       
       // 🛡️ CHRIS-PROTOCOL: Log handshake success

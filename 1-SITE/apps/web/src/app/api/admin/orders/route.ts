@@ -1,6 +1,6 @@
 import { db } from '@/lib/system/voices-config';
 import { orders, users, notifications, orderItems, systemEvents } from '@/lib/system/voices-config';
-import { desc, eq } from 'drizzle-orm';
+import { desc, eq, sql } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth/api-auth';
 import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
@@ -19,28 +19,34 @@ export async function GET(request: NextRequest) {
   console.log(`🔐 [API DEBUG] Auth check: user=${authUser?.email || 'none'}`);
 
   try {
-    // 🛡️ CHRIS-PROTOCOL: 1 TRUTH MANDATE (v2.14.573)
+    // 🛡️ CHRIS-PROTOCOL: 1 TRUTH MANDATE (v2.14.575)
     // We stoppen met JOINs die data kunnen verbergen. We halen de orders PUUR op.
-    const allOrders = await db.select().from(orders).orderBy(desc(orders.createdAt)).limit(250);
+    let allOrders: any[] = [];
+    try {
+      // Emergency Raw SQL Check
+      const rawResult = await db.execute(sql`SELECT * FROM orders ORDER BY created_at DESC LIMIT 250`);
+      allOrders = rawResult.rows || rawResult || [];
+      console.log(`🚀 [API DEBUG] 1 TRUTH (RAW SQL): Fetched ${allOrders.length} records`);
+    } catch (rawErr) {
+      console.error('❌ [API DEBUG] Raw SQL failed, falling back to Drizzle:', rawErr);
+      allOrders = await db.select().from(orders).orderBy(desc(orders.createdAt)).limit(250);
+    }
 
-    console.log(`🚀 [API DEBUG] 1 TRUTH: Raw orders fetched from DB: ${allOrders.length}`);
-    
     // 🛡️ CHRIS-PROTOCOL: Force Log to DB for Forensic Visibility
     try {
       await db.insert(systemEvents).values({
         level: 'info',
         source: 'api',
-        message: `[API DEBUG] Orders Fetch: ${allOrders.length} records`,
+        message: `[API DEBUG] Orders Fetch (v575): ${allOrders.length} records`,
         details: { 
           count: allOrders.length, 
-          version: 'v2.14.574',
+          version: 'v2.14.575',
           firstOrderId: allOrders[0]?.id || null,
-          db_host: process.env.DATABASE_URL?.split('@')[1]?.split('/')[0] || 'unknown'
+          db_host: process.env.DATABASE_URL?.split('@')[1]?.split('/')[0] || 'unknown',
+          env: process.env.NODE_ENV
         }
       });
-    } catch (logErr) {
-      console.error('Failed to log to system_events:', logErr);
-    }
+    } catch (logErr) {}
 
     // 🛡️ CHRIS-PROTOCOL: Emergency DB Check
     if (allOrders.length === 0) {
