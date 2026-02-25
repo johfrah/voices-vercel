@@ -35,7 +35,7 @@ export async function POST(request: Request) {
     const headersList = headers();
     const host = headersList.get('host') || MarketManager.getMarketDomains()['BE']?.replace('https://', '');
     const marketConfig = MarketManager.getCurrentMarket(host);
-    const baseUrl = MarketManager.getMarketDomains()[marketConfig.market_code] || `https://${host}`;
+    const baseUrl = MarketManager.getMarketDomains()[marketConfig.market_code] || `https://${host || MarketManager.getMarketDomains()['BE']?.replace('https://', '') || 'www.voices.be'}`;
     const ip = headersList.get('x-forwarded-for') || 'unknown';
 
     // 1. Validatie van de payload

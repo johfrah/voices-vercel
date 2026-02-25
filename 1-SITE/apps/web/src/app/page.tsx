@@ -75,7 +75,7 @@ function HomeContent({ actors: initialActors, reviews, reviewStats, dynamicConfi
 
   const marketConfig = useMemo(() => {
     //  CHRIS-PROTOCOL: Use a safe default for SSR to prevent hydration error #419
-    const defaultHost = 'voices.be';
+    const defaultHost = MarketManager.getMarketDomains()['BE']?.replace('https://', '') || 'voices.be';
     const currentHost = typeof window !== 'undefined' ? window.location.host : defaultHost;
     return MarketManager.getCurrentMarket(currentHost);
   }, []);

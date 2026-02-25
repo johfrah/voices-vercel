@@ -128,7 +128,7 @@ export async function POST(request: NextRequest) {
 
         const dna = dnaCache[lang] || '';
         const prompt = `
-          Senior translator for the Voices Engine. Translate from NL to ${lang}.
+          Senior translator for Voices. Translate from NL to ${lang}.
           MARKET DNA: ${dna}
           CONTEXT: ${item.context || 'General UI'}
           TEKST: "${sourceText}"

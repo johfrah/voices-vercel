@@ -54,9 +54,9 @@ export async function GET(request: NextRequest) {
         const url = new URL(cleanPath);
         // Als het van onze eigen domein komt, haal dan het pad eruit
         // 🛡️ CHRIS-PROTOCOL: Use MarketManager for domain checks
-        const { MarketManagerServer: MarketManager } = require('@/lib/system/market-manager-server');
-        const currentMarket = MarketManager.getCurrentMarket();
-        const marketDomains = Object.values(MarketManager.getMarketDomains());
+        const { MarketManagerServer } = require('@/lib/system/market-manager-server');
+        const currentMarket = MarketManagerServer.getCurrentMarket();
+        const marketDomains = Object.values(MarketManagerServer.getMarketDomains());
 
         if (marketDomains.some(d => url.hostname.includes(d.replace('https://', ''))) || url.hostname === 'localhost' || url.hostname === '127.0.0.1' || url.hostname.includes('vercel.app')) {
           cleanPath = url.pathname + url.search;
@@ -69,8 +69,8 @@ export async function GET(request: NextRequest) {
     //  ASSET MANDATE 2026: Alle assets MOETEN in /assets/ staan.
     // We staan /wp-content/ tijdelijk nog toe voor legacy fallbacks, 
     // maar de proxy logt dit als een waarschuwing.
-    const { MarketManagerServer: MarketManager } = require('@/lib/system/market-manager-server');
-    const marketDomains = Object.values(MarketManager.getMarketDomains());
+    const { MarketManagerServer } = require('@/lib/system/market-manager-server');
+    const marketDomains = Object.values(MarketManagerServer.getMarketDomains());
     
     marketDomains.forEach(d => {
       const domain = d.replace('https://', '').replace('www.', '');
@@ -102,8 +102,8 @@ export async function GET(request: NextRequest) {
     }
 
     // De backend URL (Combell PHP server of Supabase Storage)
-    const { MarketManagerServer: MarketManager } = require('@/lib/system/market-manager-server');
-    const requestHost = request.headers.get('host') || MarketManager.getCurrentMarket().market_code.toLowerCase() + '.be';
+    const { MarketManagerServer: MarketManagerInstance } = require('@/lib/system/market-manager-server');
+    const requestHost = request.headers.get('host') || MarketManagerInstance.getCurrentMarket().market_code.toLowerCase() + '.be';
     const protocol = request.headers.get('x-forwarded-proto') || 'https';
     let BACKEND_URL = process.env.BACKEND_URL || `${protocol}://${requestHost}`; 
     

@@ -12,10 +12,10 @@ export async function POST(request: NextRequest) {
     const formData = await request.formData();
     const audioFile = formData.get('audio') as File;
     const text = formData.get('text') as string;
-    const host = request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be');
+    const host = request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || MarketManager.getMarketDomains()['BE']?.replace('https://', ''));
     const market = MarketManager.getCurrentMarket(host);
     const domains = MarketManager.getMarketDomains();
-    const canonicalHost = domains[market.market_code]?.replace('https://', '') || 'www.voices.be';
+    const canonicalHost = domains[market.market_code]?.replace('https://', '') || (MarketManager.getMarketDomains()['BE']?.replace('https://', '') || 'www.voices.be');
     const finalHost = host || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || canonicalHost);
     const adminEmail = market.email;
     const email = formData.get('email') as string || adminEmail;

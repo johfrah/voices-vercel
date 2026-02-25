@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
       messages: [
         {
           role: "system",
-          content: `Je bent een professionele vertaler voor de Voices Engine, gespecialiseerd in telefonie en IVR systemen.
+          content: `Je bent een professionele vertaler voor Voices, gespecialiseerd in telefonie en IVR systemen.
           Vertaal de gegeven tekst naar de gevraagde talen: ${targetLangs.join(', ')}.
           
           STRICTE TELEFONIE GLOSSARY:

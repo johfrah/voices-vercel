@@ -99,7 +99,7 @@ export async function POST(request: NextRequest) {
               console.log(` Donation: Thank you email sent to ${donationContext.donorEmail}`);
 
               //  Notificatie naar Admin (Donatie specifiek)
-              const siteUrl = MarketManager.getMarketDomains()[market.market_code] || `https://www.voices.be`;
+              const siteUrl = MarketManager.getMarketDomains()[market.market_code] || `https://${MarketManager.getMarketDomains()['BE']?.replace('https://', '') || 'www.voices.be'}`;
               const fetchUrl = `${siteUrl}/api/admin/notify`;
               await fetch(fetchUrl, {
                 method: 'POST',

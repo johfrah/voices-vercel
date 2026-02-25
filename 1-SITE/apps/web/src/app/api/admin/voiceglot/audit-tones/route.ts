@@ -32,11 +32,11 @@ export async function GET(request: NextRequest) {
     const results = [];
 
     for (const row of toneTranslations) {
-      const prompt = `
-        Je bent een native speaker ${row.lang} en een expert in voice-over terminologie.
-        Audit de volgende vertaling van een stemkenmerk (tone of voice).
-        
-        CONTEXT: De Voices Engine is een premium voice-over agency.
+    const prompt = `
+      Je bent een native speaker ${row.lang} en een expert in voice-over terminologie.
+      Audit de volgende vertaling van een stemkenmerk (tone of voice).
+      
+      CONTEXT: Voices is een premium voice-over agency.
         DOEL: De term moet de klank van een stem accuraat en professioneel beschrijven voor een native speaker.
         LET OP: Vermijd termen die seksueel getint kunnen zijn (zoals 'chaud' in het Frans voor 'warm', gebruik liever 'chaleureux' of 'grave' als het om diepte gaat).
         

@@ -480,9 +480,10 @@ export const ReviewsInstrument: React.FC<{
                 <ContainerInstrument plain className="mt-8 pt-6 border-t border-black/5 flex items-center gap-4 relative z-10">
                   <div className="relative">
                     <ContainerInstrument plain className="w-12 h-12 rounded-xl bg-va-off-white flex items-center justify-center font-bold text-va-black/20 text-md border border-black/5 overflow-hidden relative shadow-sm group-hover/card:scale-105 transition-transform duration-700">
-                      {(review.authorPhoto || review.authorPhotoUrl || review.author_photo_url || review.authorUrl) ? (
+                      {(review.authorPhoto || review.authorPhotoUrl || review.author_photo_url || review.authorUrl || review.mediaId) ? (
                         <VoiceglotImage 
                           src={review.authorPhoto || review.authorPhotoUrl || review.author_photo_url || review.authorUrl} 
+                          mediaId={review.mediaId}
                           alt={review.name || review.authorName} 
                           fill
                           className="w-full h-full object-cover" 

@@ -262,6 +262,13 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
     const demosData = demosRes.data || [];
     const videosData = videosRes.data || [];
     const statsRaw = statsRes.data || [];
+
+    // 🛡️ CHRIS-PROTOCOL: Nuclear Review Media Resolution (v2.14.547)
+    // We fetch ALL media for reviews to ensure 1 Truth Handshake
+    const reviewMediaPaths = dbReviewsRaw.map((r: any) => r.author_photo_url).filter((p: string) => p && p.startsWith('reviews/'));
+    const { data: reviewMediaResults } = reviewMediaPaths.length > 0 
+      ? await supabase.from('media').select('id, file_path').in('file_path', reviewMediaPaths)
+      : { data: [] };
     
     // Calculate stats manually for stability
     const totalCount = statsRaw.length;
@@ -347,15 +354,19 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
       count: mappedResults.length,
       results: mappedResults as any,
       filters: { genders: ['Mannelijk', 'Vrouwelijk'], languages: [], styles: [] },
-      reviews: dbReviewsRaw.map((r: any) => ({
-        id: r.id,
-        name: r.author_name || r.authorName,
-        text: r.text_nl || r.text_en || '',
-        rating: r.rating,
-        provider: r.provider,
-        authorPhotoUrl: r.author_photo_url || r.authorPhotoUrl,
-        date: new Date(r.created_at || r.createdAt || Date.now()).toLocaleDateString('nl-BE')
-      })),
+      reviews: dbReviewsRaw.map((r: any) => {
+        const mediaItem = reviewMediaResults?.find((m: any) => m.file_path === r.author_photo_url);
+        return {
+          id: r.id,
+          name: r.author_name || r.authorName,
+          text: r.text_nl || r.text_en || '',
+          rating: r.rating,
+          provider: r.provider,
+          authorPhotoUrl: r.author_photo_url || r.authorPhotoUrl,
+          mediaId: mediaItem?.id || null, // 🛡️ CHRIS-PROTOCOL: 1 Truth Handshake
+          date: new Date(r.created_at || r.createdAt || Date.now()).toLocaleDateString('nl-BE')
+        };
+      }),
       reviewStats: { 
         averageRating: avgRating, 
         totalCount: totalCount, 
