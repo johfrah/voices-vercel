@@ -114,11 +114,19 @@ export const VoicesMasterControlProvider: React.FC<{
                    (voicesState.current_journey !== 'general' ? voicesState.current_journey as JourneyType : 'video');
     
     const initialLanguageParam = searchParams?.get('language');
+    const initialLanguageIdParam = searchParams?.get('languageId');
+    
     const initialLanguage = initialLanguageParam 
       ? initialLanguageParam 
       : (savedState.filters?.language || 'nl-be');
       
+    const initialLanguageId = initialLanguageIdParam 
+      ? parseInt(initialLanguageIdParam) 
+      : (savedState.filters?.languageId || null);
+      
     const initialLanguages = searchParams?.get('languages') ? searchParams?.get('languages')?.split(',') : (savedState.filters?.languages || [initialLanguage.toLowerCase()]);
+    const initialLanguageIds = searchParams?.get('languageIds') ? searchParams?.get('languageIds')?.split(',').map(Number) : (savedState.filters?.languageIds || (initialLanguageId ? [initialLanguageId] : []));
+
     const initialWordsParam = searchParams?.get('words');
     const initialWords = (initialWordsParam && parseInt(initialWordsParam) > 0) 
       ? parseInt(initialWordsParam) 
@@ -156,14 +164,18 @@ export const VoicesMasterControlProvider: React.FC<{
       isMuted: savedState.isMuted ?? false,
       filters: {
         language: initialLanguage,
+        languageId: initialLanguageId,
         languages: initialLanguages as string[],
+        languageIds: initialLanguageIds,
         gender: searchParams?.get('gender') || savedState.filters?.gender || null,
+        genderId: searchParams?.get('genderId') ? parseInt(searchParams.get('genderId')!) : (savedState.filters?.genderId || null),
         style: searchParams?.get('style') || savedState.filters?.style || null,
         sortBy: (searchParams?.get('sortBy') as any) || savedState.filters?.sortBy || 'popularity',
         words: initialWords,
         media: initialMedia,
         countries: savedState.filters?.countries || ['BE'],
         country: searchParams?.get('country') || savedState.filters?.country || 'BE',
+        countryId: searchParams?.get('countryId') ? parseInt(searchParams.get('countryId')!) : (savedState.filters?.countryId || null),
         spots: searchParams?.get('spots') ? parseInt(searchParams?.get('spots')!) : (savedState.filters?.spots || 1),
         years: searchParams?.get('years') ? parseInt(searchParams?.get('years')!) : (savedState.filters?.years || 1),
         spotsDetail: initialSpotsDetail,

@@ -102,22 +102,26 @@ export const AdemingBento = ({ tracks, initialTrack }: AdemingBentoProps) => {
 
           {/* Featured Meditations Section */}
           <section className="animate-fade-in" style={{ animationDelay: '0.2s' }}>
-            <div className="mb-16 space-y-4 text-center">
-              <h2 className="text-4xl md:text-6xl font-serif font-bold tracking-tight">
+            <div className="mb-24 space-y-6 text-center">
+              <h2 className="text-5xl md:text-7xl font-serif font-bold tracking-tight">
                 <VoiceglotText translationKey="home.featured.title" defaultText="Uitgelichte meditaties" />
               </h2>
-              <p className="text-2xl text-muted-foreground font-light">
+              <p className="text-2xl text-muted-foreground font-light max-w-2xl mx-auto leading-relaxed">
                 <VoiceglotText translationKey="home.featured.subtitle" defaultText="Onze aanbevolen meditaties om mee te beginnen" />
               </p>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-              {publishedTracks.slice(0, 3).map((track) => (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+              {publishedTracks.length > 0 ? publishedTracks.slice(0, 3).map((track) => (
                 <AdemingTrackCard 
                   key={track.id} 
                   track={track} 
                   onClick={() => setActiveTrack(track)}
                 />
-              ))}
+              )) : (
+                <div className="col-span-full py-20 text-center bg-white/40 backdrop-blur-md rounded-[48px] border border-primary/5">
+                  <p className="text-muted-foreground italic">Geen meditaties gevonden.</p>
+                </div>
+              )}
             </div>
           </section>
 

@@ -49,8 +49,9 @@ export const AdemingNav = () => {
         <div className="flex items-center gap-4">
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
-              <button className="p-3 hover:bg-black/5 rounded-full transition-all group active:scale-90">
-                <Menu className="w-7 h-7 animate-breathe-wave-subtle" />
+              <button className="p-4 hover:bg-black/5 rounded-full transition-all group active:scale-90 relative">
+                <Menu className="w-8 h-8 animate-breathe-wave-subtle" />
+                <span className="absolute -top-1 -right-1 w-4 h-4 bg-primary rounded-full border-2 border-background animate-pulse" />
               </button>
             </SheetTrigger>
             <SheetContent side="left" className="w-80 bg-background/95 backdrop-blur-xl border-r border-primary/5 p-0 overflow-y-auto">
