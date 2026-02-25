@@ -20,8 +20,10 @@ import { useGlobalAudio } from "@/contexts/GlobalAudioContext";
 import nextDynamic from "next/dynamic";
 
 // Nuclear Loading for heavy visual components
-const AudioWaveform = nextDynamic(() => import("./AudioWaveform").then(mod => mod.AudioWaveform), { ssr: false });
-const FloatingParticles = nextDynamic(() => import("./FloatingParticles").then(mod => mod.FloatingParticles), { ssr: false });
+// const AudioWaveform = nextDynamic(() => import("./AudioWaveform").then(mod => mod.AudioWaveform), { ssr: false });
+// const FloatingParticles = nextDynamic(() => import("./FloatingParticles").then(mod => mod.FloatingParticles), { ssr: false });
+
+const FloatingParticles = ({ element, isPlaying }: { element?: string, isPlaying: boolean }) => null;
 
 interface MeditationPlayerInstrumentProps {
   track: any;

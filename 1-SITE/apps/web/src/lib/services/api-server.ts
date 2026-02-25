@@ -240,6 +240,10 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
     const langLookup = new Map<number, { code: string, label: string }>();
     allLangsData?.forEach(l => langLookup.set(l.id, { code: l.code, label: l.label }));
 
+    // 🛡️ CHRIS-PROTOCOL: Global Language Cache for UI (v2.14.666)
+    const g = global as any;
+    g.handshakeLanguages = allLangsData || [];
+
     // Create lookup maps for performance
     const nativeLangMap = new Map<number, number>();
     const extraLangsMap = new Map<number, number[]>();
@@ -373,6 +377,7 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
       count: mappedResults.length,
       results: mappedResults as any,
       filters: { genders: ['Mannelijk', 'Vrouwelijk'], languages: [], styles: [] },
+      _handshake_languages: allLangsData || [], // 🛡️ CHRIS-PROTOCOL: Pass languages for UI mapping
       reviews: dbReviewsRaw.map((r: any) => {
         const mediaItem = reviewMediaResults?.find((m: any) => m.file_path === r.author_photo_url);
         return {

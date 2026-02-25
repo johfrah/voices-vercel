@@ -35,16 +35,16 @@ const VoiceFlag = ({ lang, size = 16 }: { lang?: string, size?: number }) => {
   const lowLang = lang.toLowerCase();
   
   if (lowLang.includes('be') || lowLang === 'vlaams' || lowLang === 'frans (be)') return <FlagBE size={size} />;
-  if (lowLang.includes('nl') || lowLang === 'nederlands') return <FlagNL size={size} />;
-  if (lowLang.includes('fr') || lowLang === 'frans' || lowLang === 'frans (fr)') return <FlagFR size={size} />;
-  if (lowLang.includes('de') || lowLang === 'duits') return <FlagDE size={size} />;
-  if (lowLang.includes('gb') || lowLang.includes('uk') || lowLang === 'engels') return <FlagUK size={size} />;
+  if (lowLang.includes('nl') || lowLang === 'nederlands' || lowLang === 'dutch') return <FlagNL size={size} />;
+  if (lowLang.includes('fr') || lowLang === 'frans' || lowLang === 'frans (fr)' || lowLang === 'french') return <FlagFR size={size} />;
+  if (lowLang.includes('de') || lowLang === 'duits' || lowLang === 'german') return <FlagDE size={size} />;
+  if (lowLang.includes('gb') || lowLang.includes('uk') || lowLang === 'engels' || lowLang === 'english') return <FlagUK size={size} />;
   if (lowLang.includes('us')) return <FlagUS size={size} />;
-  if (lowLang.includes('es') || lowLang === 'spaans') return <FlagES size={size} />;
-  if (lowLang.includes('it') || lowLang === 'italiaans') return <FlagIT size={size} />;
-  if (lowLang.includes('pl') || lowLang === 'pools') return <FlagPL size={size} />;
-  if (lowLang.includes('dk') || lowLang === 'deens') return <FlagDK size={size} />;
-  if (lowLang.includes('pt') || lowLang === 'portugees') return <FlagPT size={size} />;
+  if (lowLang.includes('es') || lowLang === 'spaans' || lowLang === 'spanish') return <FlagES size={size} />;
+  if (lowLang.includes('it') || lowLang === 'italiaans' || lowLang === 'italian') return <FlagIT size={size} />;
+  if (lowLang.includes('pl') || lowLang === 'pools' || lowLang === 'polish') return <FlagPL size={size} />;
+  if (lowLang.includes('dk') || lowLang === 'deens' || lowLang === 'danish') return <FlagDK size={size} />;
+  if (lowLang.includes('pt') || lowLang === 'portugees' || lowLang === 'portuguese') return <FlagPT size={size} />;
   
   return null;
 };

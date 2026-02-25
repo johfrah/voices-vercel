@@ -162,9 +162,16 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                 // Non-natives (like FR or NL-NL) can offer "Nederlands" as extra, but NEVER "Vlaams".
                 const isVlaamsExtra = lowTrimmed === 'vlaams' || lowTrimmed === 'nl-be';
                 
-                if (trimmed && !isPrimary && !isVlaamsExtra) {
-                  // Map to standard labels using centralized MarketManager
-                  extraLangsSet.add(MarketManager.getLanguageLabel(lowTrimmed));
+                if (trimmed && trimmed !== 'null' && !isPrimary && !isVlaamsExtra) {
+                  // 🛡️ CHRIS-PROTOCOL: Handshake Truth (ID-First)
+                  // We zoeken de taal op in de actors data om het ID te vinden
+                  const actorWithLang = actors.find(act => 
+                    act.extra_lang_ids && 
+                    act.extra_langs?.toLowerCase().includes(trimmed)
+                  );
+                  
+                  const label = MarketManager.getLanguageLabel(trimmed);
+                  extraLangsSet.add(label);
                 }
               });
             }

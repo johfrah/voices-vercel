@@ -162,6 +162,7 @@ export interface SearchResults {
   results: Actor[];
   filters: SearchFilters;
   reviews?: any[];
+  _handshake_languages?: any[]; // 🛡️ CHRIS-PROTOCOL: Relational languages for UI
   _nuclear?: boolean;
   _source?: string;
   _bridge_timestamp?: string;

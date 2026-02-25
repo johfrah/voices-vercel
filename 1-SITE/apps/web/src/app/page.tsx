@@ -198,6 +198,10 @@ function HomeContent({ actors: initialActors, reviews, reviewStats, dynamicConfi
           const trimmed = l.trim();
           const lowTrimmed = trimmed.toLowerCase();
           
+          // 🛡️ CHRIS-PROTOCOL: Handshake Truth (Zero-Slop)
+          // We negeren expliciet de "null" string die uit legacy data kan lekken.
+          if (trimmed === 'null' || !trimmed) return;
+
           //  CHRIS-PROTOCOL: Exclude native language and its variations from extra languages
           const isPrimary = lowTrimmed === primaryLang || 
                            lowTrimmed === primaryCode || 
@@ -210,7 +214,7 @@ function HomeContent({ actors: initialActors, reviews, reviewStats, dynamicConfi
           // Non-natives (like FR or NL-NL) can offer "Nederlands" as extra, but NEVER "Vlaams".
           const isVlaamsExtra = lowTrimmed === 'vlaams' || lowTrimmed === 'nl-be';
           
-          if (trimmed && !isPrimary && !isVlaamsExtra) {
+          if (!isPrimary && !isVlaamsExtra) {
             //  CHRIS-PROTOCOL: Map extra language names to standard labels with CAPITALIZATION
             const mapped = MarketManager.getLanguageLabel(trimmed);
             extraLangsSet.add(mapped);
