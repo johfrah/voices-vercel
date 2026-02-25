@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useState, useEffect } from "react";
-import { Plus, Search, Edit, Trash2, Eye, EyeOff, Sparkles, Music, Clock, User } from "lucide-react";
+import { Plus, Search, Edit, Trash2, Eye, EyeOff, Sparkles, Music, Clock, User, LayoutGrid, List } from "lucide-react";
 import { createClient } from "@supabase/supabase-js";
 import { useToast } from "@/hooks/use-toast";
 import { AdemingSmartUpload } from "@/components/ui/ademing/admin/AdemingSmartUpload";
@@ -29,6 +29,7 @@ export default function AdemingAdminPage() {
   const [isSmartUploadOpen, setIsSmartUploadOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [editingTrack, setEditingTrack] = useState<any | null>(null);
+  const [viewMode, setViewMode] = useState<'grid' | 'table'>('table');
   const { toast } = useToast();
 
   useEffect(() => {
