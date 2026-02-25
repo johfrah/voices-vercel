@@ -80,15 +80,19 @@ export const VoicesMasterControlProvider: React.FC<{
     usage: initialUsage || 'unpaid',
     isMuted: false,
     filters: {
-      language: 'nl-be',
-      languages: ['nl-be'],
+      language: null,
+      languageId: 1, // 🛡️ Handshake Truth: Default to Vlaams (ID 1)
+      languages: [],
+      languageIds: [1],
       gender: null,
+      genderId: null,
       style: null,
       sortBy: 'popularity',
       words: (initialJourney === 'telephony' ? 25 : (initialJourney === 'commercial' ? 100 : 200)),
       media: ['online'],
       countries: ['BE'],
       country: 'BE',
+      countryId: 1, // 🛡️ Handshake Truth: Default to België (ID 1)
       spots: 1,
       years: 1,
       liveSession: false,
@@ -104,6 +108,10 @@ export const VoicesMasterControlProvider: React.FC<{
     setIsClient(true);
     
     const host = window.location.host;
+    const market = MarketManager.getCurrentMarket(host);
+    const defaultLang = market.primary_language; // e.g. 'nl-BE'
+    const defaultLangId = market.primary_language_id; // e.g. 1
+    
     const saved = localStorage.getItem('voices_master_control');
     let savedState: any = {};
     try {
@@ -116,15 +124,15 @@ export const VoicesMasterControlProvider: React.FC<{
     const initialLanguageParam = searchParams?.get('language');
     const initialLanguageIdParam = searchParams?.get('languageId');
     
-    // 🛡️ CHRIS-PROTOCOL: Handshake Truth Initialization (v2.14.734)
-    // We try to resolve the ID from the code if only the code is present.
+    // 🛡️ CHRIS-PROTOCOL: Handshake Truth Initialization (v2.14.740)
+    // We strictly use the market's primary language ID as the fallback.
     let initialLanguage = initialLanguageParam 
       ? initialLanguageParam 
-      : (savedState.filters?.language || 'nl-be');
+      : (savedState.filters?.language || defaultLang);
     
     let initialLanguageId = initialLanguageIdParam 
       ? parseInt(initialLanguageIdParam) 
-      : (savedState.filters?.languageId || null);
+      : (savedState.filters?.languageId || defaultLangId);
 
     // If we have a code but no ID, and we are on the client, try a quick lookup in primed MarketManager
     if (initialLanguage && !initialLanguageId && typeof window !== 'undefined') {

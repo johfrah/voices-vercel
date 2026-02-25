@@ -9,7 +9,7 @@ import { BreathingInstrument } from './BreathingInstrument';
 import { MeditationPlayerInstrument } from './MeditationPlayerInstrument';
 import { VoiceglotText } from '../VoiceglotText';
 import { Testimonials } from './Testimonials';
-import { Moon, Zap, Clock, ArrowRight, Compass, Users, Instagram, Globe, User } from 'lucide-react';
+import { Moon, Zap, Clock, ArrowRight, Compass, Users, Instagram, Globe } from 'lucide-react';
 import { VoicesDropdown } from '../VoicesDropdown';
 import { ElementIcon } from './ElementIcon';
 import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
@@ -92,8 +92,8 @@ export const AdemingBento = ({ tracks, initialTrack }: AdemingBentoProps) => {
                 placeholder="👤 Kies begeleider"
                 options={[
                   { label: "Alle begeleiders", value: "all" },
-                  { label: "Julie", value: "julie", icon: User },
-                  { label: "Johfrah", value: "johfrah", icon: User }
+                  { label: "Julie", value: "julie" },
+                  { label: "Johfrah", value: "johfrah" }
                 ]}
                 value="all"
                 onChange={() => {}}

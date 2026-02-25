@@ -145,39 +145,29 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
       (global as any).handshakeMediaTypes = mediaTypesData;
     }
 
-    // 🛡️ CHRIS-PROTOCOL: Handshake Truth Sync (v2.14.734)
-    // If we have a language code but no ID, resolve it from the data.
+    // 🛡️ CHRIS-PROTOCOL: Handshake Truth Sync (v2.14.740)
+    // We strictly prioritize IDs. If we only have a code, we resolve it once and then stick to IDs.
     if (state.filters.language && !state.filters.languageId) {
       const match = languagesData.find(l => 
         l.code.toLowerCase() === state.filters.language?.toLowerCase() || 
-        l.label.toLowerCase() === state.filters.language?.toLowerCase() ||
-        MarketManager.getLanguageCode(l.label).toLowerCase() === state.filters.language?.toLowerCase()
+        l.label.toLowerCase() === state.filters.language?.toLowerCase()
       );
       if (match) {
-        console.log(`[VoicesMasterControl] Syncing languageId for ${state.filters.language} -> ${match.id}`);
-        updateFilters({ languageId: match.id, languageIds: [match.id] });
+        updateFilters({ languageId: match.id, languageIds: [match.id], language: null });
       }
     }
 
-    // Same for gender
     if (state.filters.gender && !state.filters.genderId && gendersData.length > 0) {
-      const match = gendersData.find(g => 
-        g.code.toLowerCase() === state.filters.gender?.toLowerCase() ||
-        g.label.toLowerCase() === state.filters.gender?.toLowerCase()
-      );
+      const match = gendersData.find(g => g.code.toLowerCase() === state.filters.gender?.toLowerCase());
       if (match) {
-        updateFilters({ genderId: match.id });
+        updateFilters({ genderId: match.id, gender: null });
       }
     }
 
-    // Same for country
     if (state.filters.country && !state.filters.countryId && countriesData.length > 0) {
-      const match = countriesData.find(c => 
-        c.code.toLowerCase() === state.filters.country?.toLowerCase() ||
-        c.label.toLowerCase() === state.filters.country?.toLowerCase()
-      );
+      const match = countriesData.find(c => c.code.toLowerCase() === state.filters.country?.toLowerCase());
       if (match) {
-        updateFilters({ countryId: match.id });
+        updateFilters({ countryId: match.id, country: null });
       }
     }
   }, [languagesData, gendersData, countriesData, state.filters.language, state.filters.gender, state.filters.country]);

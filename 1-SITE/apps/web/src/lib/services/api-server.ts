@@ -127,24 +127,39 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
           .eq('status', 'live')
           .eq('is_public', true);
           
-        // 🛡️ NUCLEAR HANDSHAKE: ID-First Filtering (v2.14.711)
+        // 🛡️ NUCLEAR HANDSHAKE: ID-First Filtering (v2.14.740)
         // We use the database as the source of truth for IDs.
-        if (language || lang) {
-          const targetLang = (language || lang).toLowerCase();
-          
-          if (!isNaN(parseInt(targetLang))) {
-            query = query.eq('native_language_id', parseInt(targetLang));
-          } else if (targetLang !== 'all') {
+        // If a specific languageId is provided, we use it.
+        // If only a string 'language' or 'lang' is provided, we resolve it to IDs.
+        const targetLangInput = params.languageId || language || lang;
+
+        if (targetLangInput && targetLangInput !== 'all' && targetLangInput !== 'any') {
+          if (!isNaN(parseInt(targetLangInput))) {
+            query = query.eq('native_language_id', parseInt(targetLangInput));
+          } else {
+            // Resolve string to ID(s)
+            const lowLang = targetLangInput.toLowerCase();
             const { data: allLangs } = await supabase.from('languages').select('id, code, label');
+            
             if (allLangs) {
-              const match = allLangs.find(l => 
-                l.code.toLowerCase() === targetLang || 
-                l.label.toLowerCase() === targetLang
-              );
-              if (match) {
-                query = query.eq('native_language_id', match.id);
+              // Special case: 'nl' should match both Vlaams (1) and Nederlands (2)
+              if (lowLang === 'nl') {
+                query = query.in('native_language_id', [1, 2]);
+              } else if (lowLang === 'fr') {
+                query = query.in('native_language_id', [3, 4]);
+              } else if (lowLang === 'en') {
+                query = query.in('native_language_id', [5, 6]);
               } else {
-                query = query.eq('native_lang', targetLang);
+                const match = allLangs.find(l => 
+                  l.code.toLowerCase() === lowLang || 
+                  l.label.toLowerCase() === lowLang
+                );
+                if (match) {
+                  query = query.eq('native_language_id', match.id);
+                } else {
+                  // Last resort fallback to legacy column if ID not found
+                  query = query.eq('native_lang', lowLang);
+                }
               }
             }
           }

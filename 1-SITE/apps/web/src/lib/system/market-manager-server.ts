@@ -15,6 +15,7 @@ export interface MarketConfig {
   market_code: string;
   language: string;
   primary_language: string;
+  primary_language_id: number;
   supported_languages: string[];
   popular_languages: string[];
   currency: string;
@@ -72,6 +73,7 @@ export class MarketManagerServer {
       market_code: 'BE',
       language: 'nl',
       primary_language: 'nl-BE',
+      primary_language_id: 1, // 🛡️ Handshake Truth: Vlaams
       supported_languages: ['nl-BE', 'nl-NL', 'fr-BE', 'en-GB', 'fr-FR', 'de-DE'],
       popular_languages: ['nl-BE', 'nl-NL', 'fr-BE', 'en-GB', 'fr-FR', 'de-DE'],
       name: 'Voices',
@@ -84,6 +86,7 @@ export class MarketManagerServer {
       market_code: 'NLNL',
       language: 'nl',
       primary_language: 'nl-NL',
+      primary_language_id: 2, // 🛡️ Handshake Truth: Nederlands
       supported_languages: ['nl-NL', 'nl-BE', 'en-GB', 'de-DE', 'fr-FR'],
       popular_languages: ['nl-NL', 'nl-BE', 'en-GB', 'de-DE', 'fr-FR'],
       name: 'Nederland',
@@ -95,6 +98,7 @@ export class MarketManagerServer {
       market_code: 'FR',
       language: 'fr',
       primary_language: 'fr-FR',
+      primary_language_id: 4, // 🛡️ Handshake Truth: Frans
       supported_languages: ['fr-FR', 'fr-BE', 'en-GB', 'nl-NL', 'nl-BE', 'de-DE'],
       popular_languages: ['fr-FR', 'fr-BE', 'en-GB', 'nl-NL', 'nl-BE', 'de-DE'],
       name: 'France',
@@ -106,6 +110,7 @@ export class MarketManagerServer {
       market_code: 'ES',
       language: 'es',
       primary_language: 'es-ES',
+      primary_language_id: 8, // 🛡️ Handshake Truth: Spaans
       supported_languages: ['es-ES', 'en-GB', 'fr-FR', 'pt-PT', 'it-IT'],
       popular_languages: ['es-ES', 'en-GB', 'pt-PT'],
       name: 'España',
@@ -117,6 +122,7 @@ export class MarketManagerServer {
       market_code: 'PT',
       language: 'pt',
       primary_language: 'pt-PT',
+      primary_language_id: 12, // 🛡️ Handshake Truth: Portugees
       supported_languages: ['pt-PT', 'en-GB', 'es-ES', 'fr-FR'],
       popular_languages: ['pt-PT', 'en-GB', 'es-ES'],
       name: 'Portugal',
@@ -128,6 +134,7 @@ export class MarketManagerServer {
       market_code: 'EU',
       language: 'en',
       primary_language: 'en-GB',
+      primary_language_id: 5, // 🛡️ Handshake Truth: Engels
       supported_languages: ['en-GB', 'de-DE', 'nl-BE', 'nl-NL', 'fr-BE', 'fr-FR'],
       popular_languages: ['en-GB', 'de-DE', 'fr-BE', 'fr-FR', 'nl-NL', 'nl-BE'],
       name: 'Europe',
@@ -319,6 +326,7 @@ export class MarketManagerServer {
       market_code: config.market_code || 'BE',
       language: config.language || 'nl',
       primary_language: this.getLanguageCode(config.primary_language || 'nl-BE'),
+      primary_language_id: (config as any).primary_language_id || 1,
       supported_languages: isoSupported.length > 0 ? isoSupported : ['nl-BE', 'nl-NL', 'en-GB', 'fr-FR', 'de-DE'],
       popular_languages: isoPopular.length > 0 ? isoPopular : ['nl-BE', 'nl-NL', 'en-GB', 'fr-FR', 'de-DE'],
       currency: config.currency || 'EUR',

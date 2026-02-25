@@ -86,52 +86,22 @@ export class VoiceFilterEngine {
     // 2. STRICT NATIVE LANGUAGE MATCHING (ID-First Mandate 2026)
     if (criteria.languageId != null) {
       result = result.filter(actor => {
-        if (actor.native_lang_id === criteria.languageId) return true;
-        if (actor.native_language_id === criteria.languageId) return true;
-
-        const targetLang = langRegistry.find((l: any) => l.id === criteria.languageId);
-        if (targetLang) {
-          const dbCode = MarketManager.getLanguageCode(actor.native_lang || '').toLowerCase();
-          if (dbCode === targetLang.code.toLowerCase()) return true;
-        }
-        return false;
-      });
-    } else if (criteria.language && criteria.language !== 'all') {
-      const lowLang = criteria.language.toLowerCase();
-      const dbCode = MarketManager.getLanguageCode(lowLang).toLowerCase();
-      const targetLang = langRegistry.find((l: any) => l.code.toLowerCase() === dbCode || l.label.toLowerCase() === lowLang || l.code.toLowerCase() === lowLang);
-
-      result = result.filter(actor => {
-        if (targetLang && (actor.native_lang_id === targetLang.id || actor.native_language_id === targetLang.id)) return true;
-        const actorNative = actor.native_lang?.toLowerCase();
-        return (actorNative === dbCode || actorNative === lowLang || this.isLanguageVariationMatch(dbCode, actorNative) || this.isLanguageVariationMatch(lowLang, actorNative));
+        // 🛡️ CHRIS-PROTOCOL: NATIVE-ONLY LOGIC (v2.14.740)
+        return actor.native_lang_id === criteria.languageId || actor.native_language_id === criteria.languageId;
       });
     }
 
     // 3. MULTI-LANGUAGE (Telephony specific - ID-First)
-    if (criteria.journey === 'telephony') {
-      const selectedIds = criteria.languageIds || [];
-      const selectedLangs = criteria.languages || [];
-
-      if (selectedIds.length > 1) {
-        result = result.filter(actor => {
-          if (actor.native_lang_id !== selectedIds[0]) return false;
-          const actorExtras = actor.extra_lang_ids || [];
-          return selectedIds.slice(1).every(id => actorExtras.includes(id));
-        });
-      } else if (selectedLangs.length > 1) {
-        result = result.filter(actor => {
-          const primaryCode = MarketManager.getLanguageCode(selectedLangs[0]).toLowerCase();
-          const actorNative = actor.native_lang?.toLowerCase();
-          if (actorNative !== primaryCode && !this.isLanguageVariationMatch(primaryCode, actorNative)) return false;
-
-          const actorAllLangs = [actor.native_lang, ...(actor.extra_langs ? actor.extra_langs.split(',').map(l => l.trim()) : [])].filter(Boolean).map(l => l.toLowerCase());
-          return selectedLangs.every(lang => {
-            const code = MarketManager.getLanguageCode(lang).toLowerCase();
-            return actorAllLangs.some(al => al === code || al === lang.toLowerCase() || al.includes(code));
-          });
-        });
-      }
+    if (criteria.journey === 'telephony' && criteria.languageIds && criteria.languageIds.length > 1) {
+      const selectedIds = criteria.languageIds;
+      result = result.filter(actor => {
+        // Moedertaal moet de eerste ID zijn
+        if ((actor.native_lang_id || actor.native_language_id) !== selectedIds[0]) return false;
+        
+        // Moet alle andere IDs in extra_lang_ids hebben
+        const actorExtras = actor.extra_lang_ids || [];
+        return selectedIds.slice(1).every(id => actorExtras.includes(id));
+      });
     }
 
     // 4. STYLE / TONE FILTERING (ID-First Mandate 2026)
@@ -144,20 +114,12 @@ export class VoiceFilterEngine {
 
     // 5. COUNTRY FILTERING (ID-First)
     if (criteria.countryId != null) {
-      result = result.filter(actor => actor.country_id === criteria.countryId);
+      result = result.filter(actor => (actor.country_id || (actor as any).countryId) === criteria.countryId);
     }
 
     // 6. GENDER (Handshake Truth v2.14.714)
     if (criteria.genderId != null) {
-      result = result.filter(actor => actor.gender_id === criteria.genderId);
-    } else if (criteria.gender && !['iedereen', 'everyone'].includes(criteria.gender.toLowerCase())) {
-      const lowGender = criteria.gender.toLowerCase();
-      result = result.filter(actor => {
-        const g = actor.gender?.toLowerCase() || '';
-        if (lowGender.includes('man')) return g === 'male' || g === 'mannelijk';
-        if (lowGender.includes('vrouw')) return g === 'female' || g === 'vrouwelijk';
-        return true;
-      });
+      result = result.filter(actor => (actor.gender_id || (actor as any).genderId) === criteria.genderId);
     }
 
     return this.sort(result, criteria.sortBy || 'popularity');
