@@ -79,6 +79,7 @@ export class VoiceFilterEngine {
         // De taalfilter is de moedertaal. Punt.
         // We matchen op de ID die vanuit de dropdown komt.
         if (actor.native_lang_id === criteria.languageId) return true;
+        if (actor.native_language_id === criteria.languageId) return true; // 🛡️ TRINITY-FIX: Handle both property names
 
         // 🛡️ FALLBACK: Als de ID-koppeling in de database ontbreekt (slop), 
         // kijken we naar de native_lang string als laatste redmiddel.
@@ -111,7 +112,24 @@ export class VoiceFilterEngine {
       const lowLang = criteria.language.toLowerCase();
       const dbCode = MarketManager.getLanguageCode(lowLang).toLowerCase();
       
+      // 🛡️ TRINITY-FIX: Map label to ID for robust matching
+      const labelToIdMap: Record<string, number> = {
+        'nl-be': 1, 'vlaams': 1,
+        'nl-nl': 2, 'nederlands': 2,
+        'fr-be': 3, 'frans (be)': 3,
+        'fr-fr': 4, 'frans': 4,
+        'en-gb': 5, 'engels': 5,
+        'en-us': 6,
+        'de-de': 7, 'duits': 7,
+        'es-es': 8, 'spaans': 8,
+        'it-it': 9, 'italiaans': 9
+      };
+      const targetId = labelToIdMap[dbCode] || labelToIdMap[lowLang];
+
       result = result.filter(actor => {
+        // 🛡️ CHRIS-PROTOCOL: Prioritize ID matching even in label branch
+        if (targetId && (actor.native_lang_id === targetId || actor.native_language_id === targetId)) return true;
+
         const actorNative = actor.native_lang?.toLowerCase();
         const actorNativeLabel = actor.native_lang_label?.toLowerCase();
         

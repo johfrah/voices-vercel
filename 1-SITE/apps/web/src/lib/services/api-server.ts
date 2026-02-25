@@ -418,7 +418,9 @@ export async function getArticle(slug: string, lang: string = 'nl'): Promise<any
 
 export async function getActor(slug: string, lang: string = 'nl'): Promise<Actor> {
   const cleanSlug = slug?.trim().toLowerCase();
-  console.error(` [api-server] getActor lookup START: "${cleanSlug}" (lang: ${lang})`);
+  const isNumericId = /^\d+$/.test(cleanSlug);
+  
+  console.error(` [api-server] getActor lookup START: "${cleanSlug}" (isId: ${isNumericId}, lang: ${lang})`);
   
   if (!cleanSlug) throw new Error("Slug is required");
 
@@ -426,29 +428,36 @@ export async function getActor(slug: string, lang: string = 'nl'): Promise<Actor
   const isJohfrah = cleanSlug === 'johfrah' || cleanSlug === 'johfrah-lefebvre';
 
   try {
-    // 1. Primary lookup by slug - DRIZZLE FIRST (Atomic Pulse)
-    console.error(` [api-server] Executing Drizzle query for slug: ${cleanSlug}`);
-    
-    // Sherlock: We use a direct query to avoid Proxy issues if possible
+    // 1. Primary lookup - DRIZZLE FIRST (Atomic Pulse)
     const { db: directDb, actors: actorsTable } = await import('@/lib/system/voices-config');
     
     if (directDb) {
-      const results = await directDb.select().from(actorsTable).where(eq(actorsTable.slug, cleanSlug)).limit(1);
+      let results;
+      if (isNumericId) {
+        console.error(` [api-server] Executing Drizzle query for ID: ${cleanSlug}`);
+        results = await directDb.select().from(actorsTable).where(eq(actorsTable.id, parseInt(cleanSlug))).limit(1);
+      } else {
+        console.error(` [api-server] Executing Drizzle query for slug: ${cleanSlug}`);
+        results = await directDb.select().from(actorsTable).where(eq(actorsTable.slug, cleanSlug)).limit(1);
+      }
+      
       const actor = results[0];
 
       if (actor) {
-        console.error(` [api-server] SUCCESS: Found actor ${actor.first_name} by slug (Drizzle).`);
+        console.error(` [api-server] SUCCESS: Found actor ${actor.first_name} by ${isNumericId ? 'ID' : 'slug'} (Drizzle).`);
         return processActorData(actor, cleanSlug);
       }
 
-      // 2. Fallback by first_name
-      console.warn(` [api-server] Slug match failed, trying first_name fallback (Drizzle)...`);
-      const fallbackResults = await directDb.select().from(actorsTable).where(ilike(actorsTable.first_name, cleanSlug)).limit(1);
-      const fallbackActor = fallbackResults[0];
-      
-      if (fallbackActor) {
-        console.error(` [api-server] SUCCESS: Found actor ${fallbackActor.first_name} by first_name (Drizzle).`);
-        return processActorData(fallbackActor, cleanSlug);
+      // 2. Fallback by first_name (Only if not numeric)
+      if (!isNumericId) {
+        console.warn(` [api-server] Slug match failed, trying first_name fallback (Drizzle)...`);
+        const fallbackResults = await directDb.select().from(actorsTable).where(ilike(actorsTable.first_name, cleanSlug)).limit(1);
+        const fallbackActor = fallbackResults[0];
+        
+        if (fallbackActor) {
+          console.error(` [api-server] SUCCESS: Found actor ${fallbackActor.first_name} by first_name (Drizzle).`);
+          return processActorData(fallbackActor, cleanSlug);
+        }
       }
 
       // 3. Last resort: Johfrah ID match
@@ -468,22 +477,26 @@ export async function getActor(slug: string, lang: string = 'nl'): Promise<Actor
 
   // SDK Fallback (v2.14.546)
   try {
-    console.error(` [api-server] Executing Supabase SDK fallback for slug: ${cleanSlug}`);
-    const { data: sdkActor } = await supabase
-      .from('actors')
-      .select('*')
-      .eq('slug', cleanSlug)
-      .maybeSingle();
+    console.error(` [api-server] Executing Supabase SDK fallback for ${isNumericId ? 'ID' : 'slug'}: ${cleanSlug}`);
+    const query = supabase.from('actors').select('*');
+    
+    if (isNumericId) {
+      query.eq('id', parseInt(cleanSlug));
+    } else {
+      query.eq('slug', cleanSlug);
+    }
+    
+    const { data: sdkActor } = await query.maybeSingle();
     
     if (sdkActor) {
-      console.error(` [api-server] SUCCESS: Found actor ${sdkActor.first_name} by slug (SDK).`);
+      console.error(` [api-server] SUCCESS: Found actor ${sdkActor.first_name} by ${isNumericId ? 'ID' : 'slug'} (SDK).`);
       return processActorData(sdkActor, cleanSlug);
     }
   } catch (sdkErr: any) {
     console.error(` [api-server] Supabase SDK fallback failed:`, sdkErr.message);
   }
 
-  console.error(` [api-server] Actor NOT FOUND for slug: "${cleanSlug}"`);
+  console.error(` [api-server] Actor NOT FOUND for ${isNumericId ? 'ID' : 'slug'}: "${cleanSlug}"`);
   throw new Error("Actor not found");
 }
 
