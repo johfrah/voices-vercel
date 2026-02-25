@@ -194,6 +194,23 @@ export default async function RootLayout({
   // 🛡️ CHRIS-PROTOCOL: Journey Detection for Provider Injection
   // We extract the journey from the URL segments to prevent Hydration Mismatch (#419)
   const segments = params.slug || pathname.split('/').filter(Boolean);
+  
+  // 🛡️ CHRIS-PROTOCOL: Force Client-Only rendering for Admin routes to prevent hydration mismatch (#419)
+  const isAdminRoute = pathname.startsWith('/admin') || segments[0] === 'admin';
+  if (isAdminRoute) {
+    return (
+      <html lang={lang} className={htmlClass} suppressHydrationWarning>
+        <body className={bodyClass}>
+          <Providers lang={lang} market={market} initialTranslations={translations} initialJourney={initialJourney} initialUsage={initialUsage}>
+            <Suspense fallback={<LoadingScreenInstrument message="Admin cockpit laden..." />}>
+              {children}
+            </Suspense>
+          </Providers>
+        </body>
+      </html>
+    );
+  }
+
   const journeySegment = segments[1]?.toLowerCase();
   const journeyMap: Record<string, any> = {
     'telefoon': 'telephony',

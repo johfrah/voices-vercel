@@ -28,7 +28,7 @@ export async function getServerUser(): Promise<ServerUser | null> {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user?.email) return null;
 
-  // 🛡️ CHRIS-PROTOCOL: Use SDK as primary source for Edge stability (v2.14.459)
+  // 🛡️ CHRIS-PROTOCOL: Use SDK as primary source for Edge stability (v2.14.462)
   try {
     if (!sdkClient) throw new Error('Supabase SDK client not initialized');
 
@@ -40,8 +40,9 @@ export async function getServerUser(): Promise<ServerUser | null> {
       .maybeSingle();
     
     if (data && !error) {
-      // FORCEER ROLE CHECK VOOR DEBUGGING
-      console.log(`[Auth] User ${user.email} role: ${data.role}`);
+      // 🛡️ CHRIS-PROTOCOL: Nuclear Role Logging (v2.14.462)
+      // We loggen dit naar de server console voor forensische audit
+      console.log(`[Auth] User ${user.email} verified with role: ${data.role}`);
       return { id: data.id, email: data.email, role: data.role };
     }
 
