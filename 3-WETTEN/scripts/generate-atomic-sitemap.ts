@@ -109,7 +109,8 @@ async function generateAtomicSitemap() {
     
     // Special case: if it's a generic language (e.g. 'en'), also register the short slug
     if (l.code.length === 2) {
-      sitemap.push({ slug: l.code.toLowerCase(), type: 'language', entity_id: l.id, journey: 'agency', name: `Language: ${l.label}` });
+      // Register /en -> /voice-overs/engels-algemeen
+      sitemap.push({ slug: l.code.toLowerCase(), type: 'language', entity_id: l.id, journey: 'agency', name: `Language: ${l.label}`, canonical_slug: descriptiveSlug });
     }
   });
 
@@ -117,8 +118,13 @@ async function generateAtomicSitemap() {
   countries?.forEach(c => {
     const descriptiveSlug = `voice-overs/${slugify(c.label)}`;
     sitemap.push({ slug: descriptiveSlug, type: 'country', entity_id: c.id, journey: 'agency', name: `Country: ${c.label}` });
-    // Redirect old code-based slug
-    sitemap.push({ slug: c.code.toLowerCase(), type: 'country', entity_id: c.id, journey: 'agency', name: `Country: ${c.label}`, canonical_slug: descriptiveSlug });
+    
+    // Redirect old code-based slug, but ONLY if it doesn't conflict with a 2-letter language code
+    // We check if the code is NOT one of our generic language codes
+    const genericLangCodes = ['nl', 'fr', 'en', 'de', 'es', 'it', 'pt', 'pl'];
+    if (!genericLangCodes.includes(c.code.toLowerCase())) {
+      sitemap.push({ slug: c.code.toLowerCase(), type: 'country', entity_id: c.id, journey: 'agency', name: `Country: ${c.label}`, canonical_slug: descriptiveSlug });
+    }
   });
 
   const { data: attrs } = await supabase.from('actor_attributes').select('id, code, label');

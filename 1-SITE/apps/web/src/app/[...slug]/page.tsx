@@ -392,13 +392,19 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
     let journey = cleanSegments[1];
     let medium = cleanSegments[2];
 
-    const systemPrefixes = ['voice', 'stem', 'voix', 'stimme', 'artist', 'artiest', 'studio', 'academy', 'music', 'muziek', 'faq', 'provider', 'demos'];
+    const systemPrefixes = ['voice', 'stem', 'voix', 'stimme', 'artist', 'artiest', 'studio', 'academy', 'music', 'muziek', 'faq', 'provider', 'demos', 'nl', 'fr', 'en', 'de', 'es', 'it', 'pt', 'pl'];
     if (systemPrefixes.includes(lookupSlug?.toLowerCase()) && journey) {
       console.error(` [SmartRouter] System prefix detected: ${lookupSlug}. Shifting.`);
       
       // Special case for faq/provider/demos: we keep the prefix in the lookup slug
       if (['faq', 'provider', 'demos'].includes(lookupSlug.toLowerCase())) {
         lookupSlug = `${lookupSlug.toLowerCase()}/${journey.toLowerCase()}`;
+        journey = medium;
+        medium = cleanSegments[3];
+      } else if (['nl', 'fr', 'en', 'de', 'es', 'it', 'pt', 'pl'].includes(lookupSlug.toLowerCase())) {
+        // Generic language prefix (e.g. /en/johfrah -> lookup johfrah)
+        // This handles cases where the language isn't handled by the middleware but is in the URL
+        lookupSlug = journey;
         journey = medium;
         medium = cleanSegments[3];
       } else {
