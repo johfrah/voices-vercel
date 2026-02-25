@@ -174,11 +174,24 @@ export const VoicesMasterControlProvider: React.FC<{
     };
 
     setState(newState);
+  }, [searchParams, pathname, voicesState.current_journey]);
+
+  // 🛡️ CHRIS-PROTOCOL: Decouple context sync from hydration (v2.14.629)
+  // This prevents React Error #419 by moving side-effects to a separate tick.
+  useEffect(() => {
+    if (!isClient) return;
+
+    const targetUsage = JOURNEY_USAGE_MAP[state.journey];
     
-    // Sync with checkout context
-    if (newState.usage) updateUsage(newState.usage);
-    if (newState.filters.media) updateMedia(newState.filters.media);
-  }, [searchParams, pathname, voicesState.current_journey, updateUsage, updateMedia]);
+    // Only sync if there is an actual difference to prevent infinite loops
+    if (checkoutState.usage !== targetUsage) {
+      updateUsage(targetUsage);
+    }
+    
+    if (state.filters.media && JSON.stringify(checkoutState.media) !== JSON.stringify(state.filters.media)) {
+      updateMedia(state.filters.media);
+    }
+  }, [isClient, state.journey, state.filters.media, checkoutState.usage, checkoutState.media, updateUsage, updateMedia]);
 
   const detectStateFromUrl = useCallback((url: string) => {
     const segments = url.split('/').filter(Boolean);
