@@ -75,11 +75,9 @@ export default function OrderDetailPage() {
   const fetchOrder = useCallback(async () => {
     setIsLoading(true);
     try {
-      // We hergebruiken de search API of maken een specifieke fetch
-      const res = await fetch(`/api/admin/orders`); 
+      const res = await fetch(`/api/admin/orders/${id}`); 
       if (res.ok) {
-        const data = await res.json();
-        const found = data.find((o: any) => o.id?.toString() === id);
+        const found = await res.json();
         
         // 🎙️ DELIVERY TIME LOGIC (Anti-Hallucinatie)
         // We verrijken de order data met de specifieke delivery van de acteur indien beschikbaar

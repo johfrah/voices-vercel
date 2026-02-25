@@ -33,7 +33,7 @@ export function Providers({
   initialUsage?: any;
 }) {
   const pathname = usePathname();
-  const currentVersion = '2.14.619';
+  const currentVersion = '2.14.620';
 
   
   //  CHRIS-PROTOCOL: Initialize Client Logger for real-time error reporting
