@@ -1,8 +1,9 @@
 "use client";
 
-import { Play, Heart, MessageCircle } from "lucide-react";
+import { Play, Heart, MessageCircle, Clock, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
+import { ElementIcon } from "./ElementIcon";
 
 interface AdemingTrackCardProps {
   track: any;
@@ -76,9 +77,10 @@ export const AdemingTrackCard = ({ track, onClick, variant = "default" }: Ademin
 
         {track.element && (
           <div className={cn(
-            "absolute top-6 left-6 px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-[0.2em] z-10 backdrop-blur-md border border-white/20",
+            "absolute top-6 left-6 px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-[0.2em] z-10 backdrop-blur-md border border-white/20 flex items-center gap-2",
             elementColors[track.element] || "bg-primary/20 text-white"
           )}>
+            <ElementIcon element={track.element} size={12} animated={false} className="text-current" />
             {track.element}
           </div>
         )}

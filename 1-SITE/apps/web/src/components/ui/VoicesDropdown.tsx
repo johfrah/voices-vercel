@@ -556,7 +556,11 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
                 const isSelected = Array.isArray(value)
                   ? value.some(v => typeof v === 'string' && typeof item.value === 'string' ? v.toLowerCase() === item.value.toLowerCase() : v === item.value)
                   : (typeof value === 'string' && typeof item.value === 'string' ? value.toLowerCase() === item.value.toLowerCase() : value === item.value);
+                
+                // 🛡️ CHRIS-PROTOCOL: Handshake Truth Icon Resolution (v2.14.728)
+                // We prioritize the icon from the item object, then fallback to VoiceFlag.
                 const IconComponent = item.icon;
+                const isFlag = typeof item.icon === 'string' && item.icon.startsWith('Flag');
 
                 return (
                   <div key={idx} className="flex flex-col">
@@ -569,13 +573,21 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
                       )}
                     >
                       <div className="flex items-center gap-4 min-w-0">
-                        {IconComponent && (
+                        {IconComponent ? (
                           <div className={cn("shrink-0", isSelected ? "text-primary" : "text-va-black/30")}>
                             {typeof IconComponent === 'string' ? (
-                              <VoiceglotImage src={IconComponent} width={18} height={18} alt="" />
+                              isFlag ? (
+                                <VoiceFlag lang={item.label} size={18} />
+                              ) : (
+                                <VoiceglotImage src={IconComponent} width={18} height={18} alt="" />
+                              )
                             ) : (
                               <IconComponent size={18} strokeWidth={1.5} />
                             )}
+                          </div>
+                        ) : (
+                          <div className="shrink-0">
+                            <VoiceFlag lang={item.label} size={18} />
                           </div>
                         )}
                         <div className="flex flex-col min-w-0">

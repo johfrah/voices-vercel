@@ -24,7 +24,7 @@ import toast from 'react-hot-toast';
  * "Code schrijven op basis van de vibe van het project."
  */
 export default function VibecodePage() {
-  const [code, setCode] = useState(`//  VIBECODE: Pas de logica van de Freedom Machine aan
+  const [code, setCode] = useState(`//  VIBECODE: Pas de logica van het platform aan
 // Intent: "Versnel de checkout vibe"
 
 export async function onBeforeCheckout(context) {
@@ -143,7 +143,7 @@ export async function onBeforeCheckout(context) {
             <VoiceglotText  translationKey="admin.back_to_dashboard" defaultText="Terug" />
           </Link>
           <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter ">
-            Cody <TextInstrument className="text-primary inline font-light"><VoiceglotText  translationKey="auto.page.engine.7bfa30" defaultText="Engine" /></TextInstrument>
+            Cody <TextInstrument className="text-primary inline font-light"><VoiceglotText  translationKey="auto.page.engine.7bfa30" defaultText="Studio" /></TextInstrument>
           </HeadingInstrument>
         </ContainerInstrument>
         
@@ -353,7 +353,7 @@ export async function onBeforeCheckout(context) {
                 <Zap strokeWidth={1.5} size={20} />
               </ContainerInstrument>
               <TextInstrument className="text-[15px] font-black tracking-widest text-va-black/30">
-                <VoiceglotText  translationKey="admin.vibecode.vibe_strength" defaultText="Vibe Strength" />
+                <VoiceglotText  translationKey="admin.vibecode.vibe_strength" defaultText="Systeem Kracht" />
               </TextInstrument>
             </ContainerInstrument>
             <HeadingInstrument level={3} className="text-4xl font-light tracking-tighter">98.4%</HeadingInstrument>
@@ -364,7 +364,7 @@ export async function onBeforeCheckout(context) {
 
           <BentoCard span="sm" className="bg-va-black text-white p-8 space-y-6">
             <HeadingInstrument level={4} className="text-[15px] font-light tracking-widest opacity-40">
-              <VoiceglotText  translationKey="auto.page.active_personas.8cbab4" defaultText="Active Personas" />
+              <VoiceglotText  translationKey="auto.page.active_personas.8cbab4" defaultText="Actieve Profielen" />
             </HeadingInstrument>
             <ContainerInstrument className="space-y-3">
               {['Musical Confidant', 'Nuclear Architect', 'Voice Over Pro'].map(p => (
@@ -405,7 +405,7 @@ export async function onBeforeCheckout(context) {
             <VoiceglotText  translationKey="admin.vibecode.protocol.title" defaultText="VIBECODE PROTOCOL" />
           </HeadingInstrument>
           <TextInstrument className="text-[15px] opacity-60 font-medium">
-            <VoiceglotText  translationKey="admin.vibecode.protocol.desc" defaultText="Vibecode overschrijft de standaard logica van de Freedom Machine. Wijzigingen zijn direct merkbaar voor alle gebruikers in de Shadow Layer. Gebruik met uiterste precisie." />
+            <VoiceglotText  translationKey="admin.vibecode.protocol.desc" defaultText="Vibecode overschrijft de standaard logica van het platform. Wijzigingen zijn direct merkbaar voor alle gebruikers. Gebruik met uiterste precisie." />
           </TextInstrument>
         </ContainerInstrument>
       </ContainerInstrument>

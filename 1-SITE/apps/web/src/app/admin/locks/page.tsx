@@ -46,15 +46,15 @@ export default function CoreLocksPage() {
           <ContainerInstrument className="flex justify-between items-start">
             <ContainerInstrument>
               <ContainerInstrument className="inline-block bg-red-500/10 text-red-500 text-[13px] font-black px-3 py-1 rounded-full mb-6 tracking-widest uppercase">
-                Security Intelligence
+                Beveiliging
               </ContainerInstrument>
               
               <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter mb-4">
-                Core Locks
+                Systeem Locks
               </HeadingInstrument>
               
               <TextInstrument className="text-xl text-black/40 font-medium tracking-tight max-w-2xl">
-                Beheer de beveiliging van kritieke platform onderdelen en voorkom ongewenste wijzigingen aan de Freedom Machine.
+                Beheer de beveiliging van kritieke platform onderdelen en voorkom ongewenste wijzigingen aan het systeem.
               </TextInstrument>
             </ContainerInstrument>
 

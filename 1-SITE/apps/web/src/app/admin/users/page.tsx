@@ -23,7 +23,7 @@ export const dynamic = 'force-dynamic';
 /**
  *  ADMIN USERS (NUCLEAR 2026)
  * 
- * "Beheer van de Freedom Machine community."
+ * "Beheer van de community."
  */
 export default function AdminUsersPage() {
   const { logAction } = useAdminTracking();
@@ -215,7 +215,7 @@ export default function AdminUsersPage() {
             "@context": "https://schema.org",
             "@type": "AdminPage",
             "name": "Klantprofielen",
-            "description": "Beheer van de Freedom Machine community.",
+            "description": "Beheer van de community.",
             "_llm_context": {
               "persona": "Architect",
               "journey": "admin",

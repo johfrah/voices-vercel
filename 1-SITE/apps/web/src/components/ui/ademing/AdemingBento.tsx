@@ -124,14 +124,14 @@ export const AdemingBento = ({ tracks, initialTrack }: AdemingBentoProps) => {
           {/* Meet Julie and Johfrah - Original CreatorBio style */}
           <section className="animate-fade-in" style={{ animationDelay: '0.4s' }}>
             <div className="mb-16 space-y-4 text-center">
-              <h2 className="text-4xl md:text-6xl font-serif font-bold tracking-tight">
+              <h2 className="text-5xl md:text-7xl font-serif font-bold tracking-tight">
                 <VoiceglotText translationKey="home.creators.title" defaultText="Maak kennis met Julie en Johfrah" />
               </h2>
-              <p className="text-2xl text-muted-foreground font-light">
+              <p className="text-2xl text-muted-foreground font-light max-w-2xl mx-auto">
                 <VoiceglotText translationKey="home.creators.subtitle" defaultText="Ontmoet de stemmen achter de meditaties" />
               </p>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
               {[
                 {
                   name: "Julie",
@@ -146,16 +146,16 @@ export const AdemingBento = ({ tracks, initialTrack }: AdemingBentoProps) => {
                   avatar: "/assets/ademing/avatar-johfrah.jpg"
                 }
               ].map((maker) => (
-                <div key={maker.name} className="bg-white p-10 rounded-[48px] shadow-soft border border-primary/5 hover:shadow-medium hover:-translate-y-1 transition-all duration-500 group cursor-pointer">
-                  <div className="flex flex-col md:flex-row gap-10 items-center md:items-start text-center md:text-left">
-                    <div className="h-32 w-32 rounded-full overflow-hidden flex-shrink-0 border-4 border-primary/10 shadow-medium group-hover:scale-105 transition-transform duration-500">
+                <div key={maker.name} className="bg-white p-12 rounded-[64px] shadow-soft border border-primary/5 hover:shadow-medium hover:-translate-y-2 transition-all duration-700 group cursor-pointer">
+                  <div className="flex flex-col md:flex-row gap-12 items-center md:items-start text-center md:text-left">
+                    <div className="h-40 w-40 rounded-full overflow-hidden flex-shrink-0 border-8 border-primary/5 shadow-medium group-hover:scale-105 transition-transform duration-700">
                       <img src={maker.avatar} alt={maker.name} className="h-full w-full object-cover" />
                     </div>
-                    <div className="flex-1 space-y-4">
-                      <h3 className="font-serif font-bold text-3xl group-hover:text-primary transition-colors">{maker.fullName}</h3>
-                      <p className="text-muted-foreground text-lg leading-relaxed">{maker.bio}</p>
-                      <div className="pt-2 flex items-center justify-center md:justify-start gap-2 text-primary font-bold text-sm uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0">
-                        Bekijk profiel <ArrowRight size={16} />
+                    <div className="flex-1 space-y-6">
+                      <h3 className="font-serif font-bold text-4xl group-hover:text-primary transition-colors">{maker.fullName}</h3>
+                      <p className="text-muted-foreground text-xl leading-relaxed font-light">{maker.bio}</p>
+                      <div className="pt-4 flex items-center justify-center md:justify-start gap-3 text-primary font-bold text-sm uppercase tracking-[0.2em] opacity-0 group-hover:opacity-100 transition-all translate-y-4 group-hover:translate-y-0">
+                        Bekijk profiel <ArrowRight size={20} />
                       </div>
                     </div>
                   </div>

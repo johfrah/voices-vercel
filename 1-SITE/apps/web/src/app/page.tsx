@@ -612,7 +612,7 @@ export default function Home() {
       }
     }, 10000);
     
-    // 🛡️ CHRIS-PROTOCOL: Handshake Truth Priming (v2.14.714)
+    // 🛡️ CHRIS-PROTOCOL: Handshake Truth Priming (v2.14.728)
     // Fetch both actors and the full database configuration for pure Handshake UI.
     Promise.all([
       fetch(fetchUrl, { signal: controller.signal }).then(res => {
@@ -633,8 +633,16 @@ export default function Home() {
         clearTimeout(timeoutId);
         if (!mounted) return;
         
-        console.log('[Home] Data received successfully');
+        console.log('[Home] Data received successfully', { 
+          langCount: langs.results?.length || 0,
+          genderCount: genders.results?.length || 0
+        });
         
+        // 🛡️ CHRIS-PROTOCOL: Prime MarketManager with real data for labels
+        if (langs.results) {
+          MarketManager.setLanguages(langs.results);
+        }
+
         setDynamicConfigData({
           languages: langs.results || [],
           genders: genders.results || [],

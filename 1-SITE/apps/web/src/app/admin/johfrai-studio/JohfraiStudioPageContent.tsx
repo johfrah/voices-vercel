@@ -105,7 +105,7 @@ export default function JohfraiStudioPageContent() {
           
           <ContainerInstrument className="flex items-center justify-between mb-6">
             <ContainerInstrument className="inline-block bg-primary/10 text-primary text-[13px] font-black px-3 py-1 rounded-full tracking-widest uppercase">
-              Private Voice Engine
+              Eigen Stemkloon
             </ContainerInstrument>
             
             <ContainerInstrument className={`flex items-center gap-2 px-3 py-1 rounded-full text-[12px] font-bold tracking-tight ${
@@ -117,7 +117,7 @@ export default function JohfraiStudioPageContent() {
                engineStatus === 'loading' ? <Loader2 size={14} className="animate-spin" /> : 
                <AlertCircle size={14} />}
               {engineStatus === 'online' ? 'Mac Mini Online' : 
-               engineStatus === 'loading' ? 'Engine Laden...' : 
+               engineStatus === 'loading' ? 'Laden...' : 
                'Mac Mini Offline'}
             </ContainerInstrument>
           </ContainerInstrument>

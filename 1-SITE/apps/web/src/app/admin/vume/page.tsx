@@ -110,7 +110,7 @@ export default function VumeAdminPage() {
               <ArrowLeft strokeWidth={1.5} size={14} /> Terug naar Dashboard
             </ButtonInstrument>
             <HeadingInstrument level={1} className="text-5xl font-light tracking-tighter flex items-center gap-4">
-              VUME <TextInstrument as="span" className="text-va-black/20 font-light">Unified Mail Engine</TextInstrument>
+              Audiopost Mail <TextInstrument as="span" className="text-va-black/20 font-light">Berichtenbeheer</TextInstrument>
             </HeadingInstrument>
           </ContainerInstrument>
 
@@ -201,12 +201,12 @@ export default function VumeAdminPage() {
               />
               <ButtonInstrument 
                 onClick={() => {
-                  alert('Feedback verzonden naar de AI Agents!');
+                  alert('Feedback verzonden!');
                   setFeedback('');
                 }}
                 className="w-full bg-primary text-white py-4 rounded-[10px] text-[15px] font-light tracking-widest flex items-center justify-center gap-2 hover:scale-[1.02] transition-all"
               >
-                <Zap strokeWidth={1.5} size={16} /> Update via AI
+                <Zap strokeWidth={1.5} size={16} /> Bijwerken via assistent
               </ButtonInstrument>
             </ContainerInstrument>
 

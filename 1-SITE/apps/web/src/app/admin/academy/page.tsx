@@ -48,15 +48,15 @@ export default function AcademyDashboardPage() {
           <ContainerInstrument className="flex justify-between items-start">
             <ContainerInstrument>
               <ContainerInstrument className="inline-block bg-primary/10 text-primary text-[13px] font-black px-3 py-1 rounded-full mb-6 tracking-widest uppercase">
-                Education Intelligence
+                Academy
               </ContainerInstrument>
               
               <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter mb-4">
-                Academy Dashboard
+                Academy Overzicht
               </HeadingInstrument>
               
               <TextInstrument className="text-xl text-black/40 font-medium tracking-tight max-w-2xl">
-                Beheer cursussen, volg studentenvoortgang en beoordeel inzendingen binnen de leeromgeving.
+                Beheer cursussen, volg studenten en beoordeel inzendingen binnen de leeromgeving.
               </TextInstrument>
             </ContainerInstrument>
 

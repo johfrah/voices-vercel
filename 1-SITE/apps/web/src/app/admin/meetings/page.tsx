@@ -48,15 +48,15 @@ export default function MeetingsPage() {
           <ContainerInstrument className="flex justify-between items-start">
             <ContainerInstrument>
               <ContainerInstrument className="inline-block bg-primary/10 text-primary text-[13px] font-black px-3 py-1 rounded-full mb-6 tracking-widest uppercase">
-                Operational Intelligence
+                Agenda
               </ContainerInstrument>
               
               <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter mb-4">
-                Meetings
+                Afspraken
               </HeadingInstrument>
               
               <TextInstrument className="text-xl text-black/40 font-medium tracking-tight max-w-2xl">
-                Beheer alle geplande studio-sessies, afspraken en agenda-items binnen het Voices ecosysteem.
+                Beheer alle geplande studio-sessies, afspraken en agenda-items binnen het platform.
               </TextInstrument>
             </ContainerInstrument>
 
