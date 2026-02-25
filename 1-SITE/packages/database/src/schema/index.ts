@@ -413,16 +413,14 @@ export const academyTips = pgTable('academy_tips', {
 
 // 📦 LEGACY BLOAT (The Rugzak)
 export const ordersLegacyBloat = pgTable('orders_legacy_bloat', {
-  id: serial('id').primaryKey(),
-  wpOrderId: bigint('wp_order_id', { mode: 'number' }).unique().notNull(),
+  wpOrderId: bigint('wp_order_id', { mode: 'number' }).primaryKey(),
   rawMeta: jsonb('raw_meta'),
   createdAt: timestamp('created_at').defaultNow(),
 });
 
 // 🛒 ORDERS V2 (Nuclear Clean)
 export const ordersV2 = pgTable('orders_v2', {
-  id: serial('id').primaryKey(),
-  wpOrderId: bigint('wp_order_id', { mode: 'number' }).unique(),
+  id: bigint('id', { mode: 'number' }).primaryKey(), // 🛡️ WP Order ID is nu de PK
   userId: integer('user_id').references(() => users.id),
   journeyId: integer('journey_id').references(() => journeys.id),
   statusId: integer('status_id').references(() => orderStatuses.id),
@@ -432,7 +430,6 @@ export const ordersV2 = pgTable('orders_v2', {
   purchaseOrder: text('purchase_order'),
   billingEmailAlt: text('billing_email_alt'),
   createdAt: timestamp('created_at'),
-  legacyBloatId: integer('legacy_bloat_id').references(() => ordersLegacyBloat.id),
 });
 
 // 🛒 COMMERCE

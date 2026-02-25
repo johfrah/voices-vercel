@@ -10,14 +10,14 @@ export async function GET(request: Request, { params }: { params: { id: string }
     const id = parseInt(params.id);
     if (isNaN(id)) return NextResponse.json({ error: 'Invalid ID' }, { status: 400 });
 
-    // 🚀 NUCLEAR DETAIL FETCH: Direct SQL voor snelheid en de rugzak-koppeling
+    // 🚀 NUCLEAR DETAIL FETCH: WP ID is nu de PK
     const rawResult = await db.execute(sql`
       SELECT 
-        o.id, o.wp_order_id, o.user_id, o.journey_id, o.status_id, o.payment_method_id,
+        o.id, o.user_id, o.journey_id, o.status_id, o.payment_method_id,
         o.amount_net, o.amount_total as total, o.purchase_order, o.billing_email_alt,
         o.created_at, b.raw_meta
       FROM orders_v2 o
-      LEFT JOIN orders_legacy_bloat b ON o.legacy_bloat_id = b.id
+      LEFT JOIN orders_legacy_bloat b ON o.id = b.wp_order_id
       WHERE o.id = ${id}
       LIMIT 1
     `);
@@ -26,18 +26,18 @@ export async function GET(request: Request, { params }: { params: { id: string }
     const order = rows[0];
     if (!order) return NextResponse.json({ error: 'Order not found' }, { status: 404 });
 
-    // 🛡️ CHRIS-PROTOCOL: Zero-Slop Item Mapping (v2.14.626)
-    // We moeten de items ophalen op basis van het wp_order_id voor legacy orders
-    const items = await db.select().from(orderItems).where(
-      order.wp_order_id 
-        ? eq(orderItems.orderId, parseInt(order.wp_order_id)) 
-        : eq(orderItems.orderId, order.id)
-    );
+    // Resolve Items (order.id is hier het WP ID)
+    const items = await db.select().from(orderItems).where(eq(orderItems.orderId, order.id));
 
     // Resolve User Info
     let customerInfo = null;
     if (order.user_id) {
-      const [dbUser] = await db.select().from(users).where(eq(users.id, order.user_id)).limit(1);
+      // Check eerst op intern ID, dan op wp_user_id (v2.14.628 logic)
+      let dbUser = await db.select().from(users).where(eq(users.id, order.user_id)).limit(1).then(res => res[0]);
+      if (!dbUser && order.user_id > 1000) {
+        dbUser = await db.select().from(users).where(eq(users.wpUserId, order.user_id)).limit(1).then(res => res[0]);
+      }
+      
       if (dbUser) {
         customerInfo = {
           id: dbUser.id,
@@ -59,7 +59,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
       ...order,
       user: customerInfo,
       items: items,
-      displayOrderId: order.wp_order_id?.toString(),
+      displayOrderId: order.id?.toString(),
       status: 'completed' // Default for now
     });
 

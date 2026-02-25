@@ -51,11 +51,10 @@ export async function GET(request: NextRequest) {
     };
 
     try {
-      // 🚀 NUCLEAR PAGINATION: Direct SQL voor snelheid en stabiliteit
-      // We gebruiken de schone orders_v2 tabel (Zero-Slop)
+      // 🚀 NUCLEAR PAGINATION: WP ID is nu de PK (id)
       const rawResult = await db.execute(sql`
         SELECT 
-          id, wp_order_id, user_id, journey_id, status_id, payment_method_id,
+          id, user_id, journey_id, status_id, payment_method_id,
           amount_net, amount_total as total, purchase_order, billing_email_alt,
           created_at
         FROM orders_v2 
@@ -121,13 +120,13 @@ export async function GET(request: NextRequest) {
 
         return {
           id: order.id,
-          wpOrderId: order.wp_order_id || order.wpOrderId,
-          displayOrderId: order.display_order_id || order.displayOrderId || (order.wp_order_id || order.wpOrderId)?.toString(),
+          wpOrderId: order.id, // id IS nu het wp_order_id
+          displayOrderId: order.id?.toString(),
           total: order.total?.toString() || "0.00",
           amountNet: order.amount_net?.toString() || order.amountNet?.toString() || "0.00",
           purchaseOrder: order.purchase_order || order.purchaseOrder || null,
           billingEmailAlt: order.billing_email_alt || order.billingEmailAlt || null,
-          status: order.status || 'completed', // Default for V2 migrated
+          status: order.status || 'completed', 
           journey: order.journey || 'agency',
           journeyId: order.journey_id || order.journeyId,
           statusId: order.status_id || order.statusId,

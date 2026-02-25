@@ -3,10 +3,9 @@ import { orders, ordersV2, ordersLegacyBloat } from '../../1-SITE/packages/datab
 import { eq, and, sql } from 'drizzle-orm';
 
 async function migrateToV2Tables() {
-  console.log('🚀 Starting Migration to Clean V2 Tables (December 2025)...');
+  console.log('🚀 Starting Migration to Clean V2 Tables (WP ID as PK)...');
 
   try {
-    // 1. Fetch December 2025 Orders from the "Hybrid" table
     const decemberOrders = await db.select().from(orders).where(
       and(
         sql`created_at >= '2025-12-01'`,
@@ -17,20 +16,25 @@ async function migrateToV2Tables() {
     console.log(`📊 Found ${decemberOrders.length} orders to migrate.`);
 
     for (const order of decemberOrders) {
-      console.log(`🕵️ Migrating Order ${order.id} (WP: ${order.wpOrderId})...`);
+      if (!order.wpOrderId) {
+        console.warn(`⚠️ Skipping Order ${order.id} - No WP Order ID found.`);
+        continue;
+      }
 
-      // A. Insert into Legacy Bloat (The Rugzak)
-      const [bloat] = await db.insert(ordersLegacyBloat).values({
+      console.log(`🕵️ Migrating Order ${order.wpOrderId}...`);
+
+      // A. Insert into Legacy Bloat (WP ID as PK)
+      await db.insert(ordersLegacyBloat).values({
         wpOrderId: order.wpOrderId,
         rawMeta: order.rawMeta
       }).onConflictDoUpdate({
         target: ordersLegacyBloat.wpOrderId,
         set: { rawMeta: order.rawMeta }
-      }).returning();
+      });
 
-      // B. Insert into Orders V2 (Clean)
+      // B. Insert into Orders V2 (WP ID as PK)
       await db.insert(ordersV2).values({
-        wpOrderId: order.wpOrderId,
+        id: order.wpOrderId, // 🛡️ WP ID is nu de ID
         userId: order.user_id,
         journeyId: order.journeyId,
         statusId: order.statusId,
@@ -39,10 +43,9 @@ async function migrateToV2Tables() {
         amountTotal: order.total,
         purchaseOrder: order.purchaseOrder,
         billingEmailAlt: order.billingEmailAlt,
-        createdAt: order.createdAt,
-        legacyBloatId: bloat.id
+        createdAt: order.createdAt
       }).onConflictDoUpdate({
-        target: ordersV2.wpOrderId,
+        target: ordersV2.id,
         set: {
           journeyId: order.journeyId,
           statusId: order.statusId,
@@ -50,8 +53,7 @@ async function migrateToV2Tables() {
           amountNet: order.amountNet,
           amountTotal: order.total,
           purchaseOrder: order.purchaseOrder,
-          billingEmailAlt: order.billingEmailAlt,
-          legacyBloatId: bloat.id
+          billingEmailAlt: order.billingEmailAlt
         }
       });
     }
