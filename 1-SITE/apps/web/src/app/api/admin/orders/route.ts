@@ -16,7 +16,7 @@ export const revalidate = 0;
  */
 
 export async function GET(request: NextRequest) {
-  // 🛡️ CHRIS-PROTOCOL: Bypass Auth for Debugging (v2.14.596)
+  // 🛡️ CHRIS-PROTOCOL: Bypass Auth for Debugging (v2.14.603)
   const supabase = createClient();
   const { data: { user: authUser } } = await supabase.auth.getUser();
   
@@ -26,12 +26,12 @@ export async function GET(request: NextRequest) {
   const offset = (page - 1) * limit;
 
   try {
-    // 🛡️ CHRIS-PROTOCOL: 1 TRUTH MANDATE (v2.14.596)
+    // 🛡️ CHRIS-PROTOCOL: 1 TRUTH MANDATE (v2.14.603)
     // We halen eerst het totaal aantal orders op voor de paginering UI
     const [totalCountResult] = await db.select({ value: count() }).from(orders).catch((err: any) => {
       console.error('[Admin Orders GET] Count query failed:', err);
-      // 🛡️ CHRIS-PROTOCOL: Fallback to direct SQL if Drizzle fails (v2.14.602)
-      return db.execute(sql`SELECT count(*) as value FROM public.orders`).then((res: any) => {
+      // 🛡️ CHRIS-PROTOCOL: Fallback to direct SQL if Drizzle fails (v2.14.603)
+      return db.execute(sql`SELECT count(*) as value FROM orders`).then((res: any) => {
         const rows = res.rows || res;
         return [{ value: rows[0]?.value || 0 }];
       }).catch(() => [{ value: 0 }]);
@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
 
     let allOrders: any[] = [];
     let debugInfo: any = {
-      version: 'v2.14.596',
+      version: 'v2.14.603',
       db_host: process.env.DATABASE_URL?.split('@')[1]?.split('/')[0] || 'unknown',
       page,
       limit,
@@ -51,13 +51,14 @@ export async function GET(request: NextRequest) {
 
     try {
       // 🚀 NUCLEAR PAGINATION: Direct SQL voor snelheid en stabiliteit
+      // We proberen het ZONDER public. prefix om te zien of dat het probleem is op Vercel
       const rawResult = await db.execute(sql`
-        SELECT * FROM public.orders 
+        SELECT * FROM orders 
         ORDER BY created_at DESC 
         LIMIT ${limit} OFFSET ${offset}
       `);
       allOrders = rawResult.rows || rawResult || [];
-      debugInfo.source = 'public.orders';
+      debugInfo.source = 'raw.orders';
     } catch (rawErr: any) {
       debugInfo.raw_error = rawErr.message;
       // Fallback naar Drizzle
@@ -76,9 +77,10 @@ export async function GET(request: NextRequest) {
           companyName: ""
         };
 
-        if (order.user_id) {
+        const userId = order.user_id || order.userId;
+        if (userId) {
           try {
-            const [dbUser] = await db.select().from(users).where(eq(users.id, order.user_id)).limit(1);
+            const [dbUser] = await db.select().from(users).where(eq(users.id, userId)).limit(1);
             if (dbUser) {
               customerInfo = {
                 first_name: dbUser.first_name || "",
@@ -90,9 +92,10 @@ export async function GET(request: NextRequest) {
           } catch (e) {}
         }
 
-        if (customerInfo.first_name === "Guest" && order.raw_meta) {
+        const rawMeta = order.raw_meta || order.rawMeta;
+        if (customerInfo.first_name === "Guest" && rawMeta) {
           try {
-            const meta = typeof order.raw_meta === 'string' ? JSON.parse(order.raw_meta) : order.raw_meta;
+            const meta = typeof rawMeta === 'string' ? JSON.parse(rawMeta) : rawMeta;
             if (meta.billing) {
               customerInfo = {
                 first_name: meta.billing.first_name || customerInfo.first_name,
@@ -113,7 +116,7 @@ export async function GET(request: NextRequest) {
           journey: order.journey || 'agency',
           market: order.market || 'BE',
           createdAt: order.created_at || order.createdAt,
-          isQuote: !!order.is_quote,
+          isQuote: !!(order.is_quote || order.isQuote),
           user: customerInfo
         };
       } catch (innerError) {
@@ -122,16 +125,6 @@ export async function GET(request: NextRequest) {
     }));
 
     const finalOrders = sanitizedOrders.filter(Boolean);
-
-    // Log succes naar system_events voor forensic audit
-    try {
-      await db.insert(systemEvents).values({
-        level: 'info',
-        source: 'api',
-        message: `[API DEBUG] Orders Fetch v596: ${finalOrders.length}/${totalInDb} (Page ${page})`,
-        details: debugInfo
-      });
-    } catch (e) {}
 
     return NextResponse.json({
       orders: finalOrders,
