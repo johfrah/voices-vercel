@@ -725,16 +725,18 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
 
     // 3. Check voor Stem (Legacy Fallback by Slug)
     try {
-      // 🛡️ CHRIS-PROTOCOL: Strict Slug Mandate (v2.14.603)
-      // We staan alleen legacy fallback toe voor single-segment slugs (bijv. /johfrah).
-      // Paden met meerdere segmenten (bijv. /voice/video) MOETEN in de registry staan.
-      if (segments.length > 1) {
-        console.error(` [SmartRouter] Multi-segment path "${lookupSlug}" not in registry. Blocking legacy fallback.`);
+      // 🛡️ CHRIS-PROTOCOL: Refined Slug Mandate (v2.14.611)
+      // We staan legacy fallback toe voor single-segment slugs (bijv. /johfrah).
+      // Voor multi-segment paden (bijv. /voice/video) checken we of het eerste segment een bekende prefix is.
+      const isKnownPrefix = MarketManager.isAgencySegment(segments[0]) || ['voice', 'artist', 'portfolio'].includes(segments[0]);
+      
+      if (segments.length > 1 && !isKnownPrefix) {
+        console.error(` [SmartRouter] Multi-segment path "${lookupSlug}" not in registry and no known prefix. Blocking legacy fallback.`);
         return notFound();
       }
 
-      const actor = await getActor(lookupSlug, lang).catch((err) => {
-        console.error(` [SmartRouter] getActor failed for "${lookupSlug}":`, err.message);
+      const actor = await getActor(segments[0], lang).catch((err) => {
+        console.error(` [SmartRouter] getActor failed for "${segments[0]}":`, err.message);
         return null;
       });
 

@@ -271,7 +271,7 @@ const DropdownItem = ({
   );
 };
 
-export default function GlobalNav() {
+export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: NavConfig }) {
   const pathname = usePathname();
   const { t } = useTranslation();
   const { playClick, playSwell } = useSonicDNA();
@@ -306,8 +306,8 @@ export default function GlobalNav() {
     markCustomerAsRead(id);
   };
   
-  const [navConfig, setNavConfig] = useState<NavConfig | null>(null);
-  const [links, setLinks] = useState<any[]>([]);
+  const [navConfig, setNavConfig] = useState<NavConfig | null>(initialNavConfig || null);
+  const [links, setLinks] = useState<any[]>(initialNavConfig?.links || []);
   const [isEditingLink, setIsEditingLink] = useState<number | null>(null);
   const [editValue, setEditValue] = useState('');
   const popoverRef = useRef<HTMLDivElement>(null);
@@ -327,6 +327,9 @@ export default function GlobalNav() {
     setMounted(true);
     
     const fetchNavConfig = async () => {
+      // 🛡️ CHRIS-PROTOCOL: Skip fetch if we already have initial config from server
+      if (initialNavConfig && links.length > 0) return;
+
       try {
         const res = await fetch(`/api/admin/config?type=navigation&journey=${getJourneyKey()}`);
         if (!res.ok) {

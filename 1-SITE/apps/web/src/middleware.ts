@@ -121,14 +121,14 @@ export async function middleware(request: NextRequest) {
 
   if (isOtherLegacyPath) {
     const tarievenUrl = url.clone();
-    tarievenUrl.pathname = '/tarieven';
+    tarievenUrl.pathname = '/tarieven/';
     // Behoud eventuele query params voor de calculator
     return NextResponse.redirect(tarievenUrl, 301);
   }
 
   if (isLegacyAgencyPath) {
     const tarievenUrl = url.clone();
-    tarievenUrl.pathname = '/tarieven';
+    tarievenUrl.pathname = '/tarieven/';
     // Behoud eventuele query params voor de calculator
     return NextResponse.redirect(tarievenUrl, 301);
   }
@@ -145,13 +145,13 @@ export async function middleware(request: NextRequest) {
     
     // Map legacy WP pages naar nieuwe Next.js routes
     if (page === 'dashboard-orders') {
-      adminUrl.pathname = '/admin/orders';
+      adminUrl.pathname = '/admin/orders/';
     } else if (page === 'dashboard-actors') {
-      adminUrl.pathname = '/admin/actors';
+      adminUrl.pathname = '/admin/actors/';
     } else if (page === 'dashboard-system') {
-      adminUrl.pathname = '/admin/system';
+      adminUrl.pathname = '/admin/system/';
     } else {
-      adminUrl.pathname = '/admin/dashboard';
+      adminUrl.pathname = '/admin/dashboard/';
     }
     
     adminUrl.searchParams.delete('auto_login');
@@ -203,13 +203,13 @@ export async function middleware(request: NextRequest) {
   // REDIRECT OLD AUTH PATHS TO UNIVERSAL ACCOUNT PAGE
   if (pathname === '/auth/login' || pathname === '/auth/login/') {
     const accountUrl = url.clone()
-    accountUrl.pathname = '/account/login'
+    accountUrl.pathname = '/account/login/'
     return NextResponse.redirect(accountUrl)
   }
 
   // REDIRECT OLD SIGNUP TO UNIVERSAL ACCOUNT
   if (pathname === '/auth/signup-legacy' || pathname === '/auth/signup') {
-    url.pathname = '/account/signup'
+    url.pathname = '/account/signup/'
     return NextResponse.redirect(url)
   }
 

@@ -25,6 +25,7 @@ import { Providers } from "./Providers";
 import { getTranslationsServer } from "@/lib/services/api-server";
 import { cn } from "@/lib/utils";
 import { SafeErrorGuard } from "@/components/ui/SafeErrorGuard";
+import { ConfigBridge } from "@/lib/utils/config-bridge";
 
 //  NUCLEAR LOADING MANDATE: Zware instrumenten dynamisch laden (ssr: false) voor 100ms LCP
 const JohfrahActionDock = dynamic(() => import("@/components/portfolio/JohfrahActionDock").then(mod => mod.JohfrahActionDock), { ssr: false, loading: () => null });
@@ -223,6 +224,19 @@ export default async function RootLayout({
   const initialJourney = journeySegment ? journeyMap[journeySegment] : undefined;
   const initialUsage = initialJourney ? (initialJourney === 'telephony' ? 'telefonie' : (initialJourney === 'commercial' ? 'commercial' : 'unpaid')) : undefined;
 
+  // 🛡️ CHRIS-PROTOCOL: Server-side Nav Config Fetching (v2.14.611)
+  const getJourneyKey = (marketCode: string) => {
+    switch (marketCode) {
+      case 'ADEMING': return 'ademing';
+      case 'PORTFOLIO': return 'portfolio';
+      case 'ARTIST': return 'artist';
+      case 'STUDIO': return 'studio';
+      case 'ACADEMY': return 'academy';
+      default: return 'agency';
+    }
+  };
+  const navConfig = await ConfigBridge.getNavConfig(getJourneyKey(market.market_code));
+
   // 🛡️ CHRIS-PROTOCOL: Force Client-Only rendering for Admin routes to prevent hydration mismatch (#419)
   const isAdminRoute = pathname.startsWith('/admin') || segments[0] === 'admin';
   
@@ -319,7 +333,7 @@ export default async function RootLayout({
               <div className="fixed top-0 left-0 right-0 z-[200]">
                 <Suspense fallback={<div className="h-10 bg-va-off-white/50 animate-pulse" />}>
                   {showTopBar && <TopBar />}
-                  {showGlobalNav && <GlobalNav />}
+                  {showGlobalNav && <GlobalNav initialNavConfig={navConfig || undefined} />}
                 </Suspense>
               </div>
               <Analytics />
