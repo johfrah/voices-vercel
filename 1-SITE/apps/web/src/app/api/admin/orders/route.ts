@@ -29,17 +29,23 @@ export async function GET(request: NextRequest) {
     // 🛡️ CHRIS-PROTOCOL: 1 TRUTH MANDATE (v2.14.638)
     // We halen eerst het totaal aantal orders op voor de paginering UI
     // NUCLEAR: We gebruiken nu de schone orders_v2 tabel
-    // 🛡️ CHRIS-PROTOCOL: DIRECT POSTGRES BYPASS (v2.14.647)
+    // 🛡️ CHRIS-PROTOCOL: DIRECT POSTGRES BYPASS (v2.14.651)
     // We gebruiken de onderliggende postgres client om Drizzle volledig te passeren
+    // We triggeren eerst de proxy om zeker te zijn dat de client geïnitialiseerd is
+    const dummy = db?.select; 
     const pg = (globalThis as any).postgresClient;
-    if (!pg) throw new Error("Postgres client not initialized");
+    
+    if (!pg) {
+      console.error("❌ [Admin Orders API] Postgres client NOT found in globalThis");
+      throw new Error("Database connection not initialized");
+    }
 
     const countResult = await pg.unsafe('SELECT count(*) as value FROM orders_v2');
     const totalInDb = Number(countResult[0]?.value || countResult[0]?.count || 0);
 
     let allOrders: any[] = [];
     let debugInfo: any = {
-      version: '2.14.650',
+      version: '2.14.651',
       db_host: process.env.DATABASE_URL?.split('@')[1]?.split('/')[0] || 'unknown',
       page,
       limit,
