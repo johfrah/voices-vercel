@@ -6,7 +6,7 @@
  */
 
 import { MarketManagerServer as MarketManager, MarketConfig } from './market-manager-server';
-import { VOICES_CONFIG } from '@/lib/system/voices-config';
+import { VOICES_CONFIG } from '@/lib/system/db';
 
 export class MarketDatabaseService {
   private static CACHE_TTL = 1000 * 60 * 60 * 24; // 24 hours (CHRIS-PROTOCOL: Nuclear Caching for SSR Performance)

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/system/voices-config';
-import { orders, systemEvents } from '@/lib/system/voices-config';
+import { db } from '@/lib/system/db';
+import { orders, systemEvents } from '@/lib/system/db';
 import { eq, sql } from 'drizzle-orm';
 import { CoreAutomationEngine, CoreEvent } from '@/lib/system/core-automation-engine';
 

@@ -1,5 +1,5 @@
-import { db } from '@/lib/system/voices-config';
-import { media } from '@/lib/system/voices-config';
+import { db } from '@/lib/system/db';
+import { media } from '@/lib/system/db';
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { getServerUser, isAdminUser } from "@/lib/auth/server-auth";

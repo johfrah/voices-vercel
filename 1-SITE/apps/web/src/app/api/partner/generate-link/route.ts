@@ -1,5 +1,5 @@
-import { db } from '@/lib/system/voices-config';
-import { vouchers } from '@/lib/system/voices-config';
+import { db } from '@/lib/system/db';
+import { vouchers } from '@/lib/system/db';
 import { NextRequest, NextResponse } from 'next/server';
 import { requirePartner } from '@/lib/auth/api-auth';
 

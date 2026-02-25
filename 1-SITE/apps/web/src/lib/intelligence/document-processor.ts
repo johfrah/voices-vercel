@@ -1,4 +1,4 @@
-import { db, orders } from '@/lib/system/voices-config';
+import { db, orders } from '@/lib/system/db';
 import { eq, inArray } from "drizzle-orm";
 
 /**

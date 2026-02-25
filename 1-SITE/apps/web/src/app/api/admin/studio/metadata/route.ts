@@ -1,4 +1,4 @@
-import { db, locations, instructors } from '@/lib/system/voices-config';
+import { db, locations, instructors } from '@/lib/system/db';
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth/api-auth';
 

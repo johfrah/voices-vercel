@@ -1,4 +1,4 @@
-import { db, appointments, systemEvents } from '@/lib/system/voices-config';
+import { db, appointments, systemEvents } from '@/lib/system/db';
 import { eq } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 

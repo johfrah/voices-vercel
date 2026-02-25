@@ -1,5 +1,5 @@
-import { db } from '@/lib/system/voices-config';
-import { actorDemos, actors } from '@/lib/system/voices-config';
+import { db } from '@/lib/system/db';
+import { actorDemos, actors } from '@/lib/system/db';
 import { eq } from "drizzle-orm";
 
 /**

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db, orders, users, partnerWidgets } from '@/lib/system/voices-config';
+import { db, orders, users, partnerWidgets } from '@/lib/system/db';
 import { eq, sql, count, sum } from 'drizzle-orm';
 import { requirePartner } from '@/lib/auth/api-auth';
 

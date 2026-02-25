@@ -1,4 +1,4 @@
-import { db, translations } from '@/lib/system/voices-config';
+import { db, translations } from '@/lib/system/db';
 import { eq, and } from 'drizzle-orm';
 import { createClient } from '@supabase/supabase-js';
 

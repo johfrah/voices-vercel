@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db, orders, orderItems, orderNotes } from '@/lib/system/voices-config';
+import { db, orders, orderItems, orderNotes } from '@/lib/system/db';
 import { MollieService } from '@/lib/payments/mollie';
 
 /**

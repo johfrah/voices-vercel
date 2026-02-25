@@ -1,4 +1,4 @@
-import { VOICES_CONFIG } from '@/lib/system/voices-config';
+import { VOICES_CONFIG } from '@/lib/system/db';
 
 /**
  *  MOLLIE NUCLEAR SERVICE (2026)

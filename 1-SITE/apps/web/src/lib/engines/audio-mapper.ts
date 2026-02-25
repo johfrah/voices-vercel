@@ -1,5 +1,5 @@
-import { db } from '@/lib/system/voices-config';
-import { actors } from '@/lib/system/voices-config';
+import { db } from '@/lib/system/db';
+import { actors } from '@/lib/system/db';
 import path from 'path';
 
 /**

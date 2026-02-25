@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/sync/bridge';
-import { actors } from '@/lib/system/voices-config';
+import { actors } from '@/lib/system/db';
 import { asc, eq } from 'drizzle-orm';
 import { requireAdmin } from '@/lib/auth/api-auth';
 import { createClient } from "@supabase/supabase-js";

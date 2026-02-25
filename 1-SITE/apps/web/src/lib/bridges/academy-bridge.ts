@@ -1,5 +1,5 @@
 import { AcademyDashboardData, Lesson } from "../services/api";
-import { db, lessons, courseProgress, courseSubmissions } from '@/lib/system/voices-config';
+import { db, lessons, courseProgress, courseSubmissions } from '@/lib/system/db';
 import { eq, sql, and, count, asc } from "drizzle-orm";
 
 /**

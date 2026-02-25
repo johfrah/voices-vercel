@@ -1,4 +1,4 @@
-import { db, systemKnowledge } from '@/lib/system/voices-config';
+import { db, systemKnowledge } from '@/lib/system/db';
 
 /**
  *  SENTIMENT ENGINE (ADULT VOICY)

@@ -1,4 +1,4 @@
-import { db, orderItems, orders, users } from '@/lib/system/voices-config';
+import { db, orderItems, orders, users } from '@/lib/system/db';
 import { eq, and, inArray } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 import { CertificateService } from "@/lib/system/certificate-service";

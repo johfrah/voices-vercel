@@ -1,4 +1,4 @@
-import { db, agentPrompts, agentPromptVersions } from '@/lib/system/voices-config';
+import { db, agentPrompts, agentPromptVersions } from '@/lib/system/db';
 import { desc, eq } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth/api-auth';

@@ -1,4 +1,4 @@
-import { db, actors } from '@/lib/system/voices-config';
+import { db, actors } from '@/lib/system/db';
 import { DbService } from '@/lib/services/db-service';
 import { desc, ilike, or } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';

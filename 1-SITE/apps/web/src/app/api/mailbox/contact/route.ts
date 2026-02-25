@@ -1,4 +1,4 @@
-import { db, centralLeads, chatConversations, chatMessages } from '@/lib/system/voices-config';
+import { db, centralLeads, chatConversations, chatMessages } from '@/lib/system/db';
 import { NextRequest, NextResponse } from 'next/server';
 
 /**

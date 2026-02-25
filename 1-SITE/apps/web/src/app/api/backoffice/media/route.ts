@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db, media, actors, actorDemos, contentArticles, ademingTracks } from '@/lib/system/voices-config';
+import { db, media, actors, actorDemos, contentArticles, ademingTracks } from '@/lib/system/db';
 import { eq, desc, asc, ilike, or, and, inArray, sql } from 'drizzle-orm';
 import fs from 'fs/promises';
 import path from 'path';

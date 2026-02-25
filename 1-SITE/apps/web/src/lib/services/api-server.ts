@@ -1,6 +1,6 @@
 import { MarketManagerServer as MarketManager } from "@/lib/system/market-manager-server";
 import { MarketDatabaseService } from "@/lib/system/market-manager-db";
-import { db, actors, actorDemos, actorVideos, contentArticles, contentBlocks, faq, lessons, media, products, reviews, translations } from "@/lib/system/voices-config";
+import { db, actors, actorDemos, actorVideos, contentArticles, contentBlocks, faq, lessons, media, products, reviews, translations } from "@/lib/system/db";
 import { createClient } from "@supabase/supabase-js";
 import { and, asc, desc, eq, ilike, or, sql } from "drizzle-orm";
 import {

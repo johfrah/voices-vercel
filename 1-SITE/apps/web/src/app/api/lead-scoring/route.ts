@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import { db } from '@/lib/system/voices-config';
-import { utmTouchpoints } from '@/lib/system/voices-config';
+import { db } from '@/lib/system/db';
+import { utmTouchpoints } from '@/lib/system/db';
 import { eq, count } from 'drizzle-orm';
 
 /**

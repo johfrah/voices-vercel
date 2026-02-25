@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/system/voices-config';
-import { reviews, actors } from '@/lib/system/voices-config';
+import { db } from '@/lib/system/db';
+import { reviews, actors } from '@/lib/system/db';
 import { eq, sql, desc } from 'drizzle-orm';
 import { requireAdmin } from '@/lib/auth/api-auth';
 

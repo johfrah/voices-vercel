@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { db, costs } from '@/lib/system/voices-config';
+import { db, costs } from '@/lib/system/db';
 import { eq } from "drizzle-orm";
 import { getServerUser, isAdminUser } from "@/lib/auth/server-auth";
 

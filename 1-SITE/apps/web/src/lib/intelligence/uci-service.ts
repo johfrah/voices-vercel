@@ -1,5 +1,5 @@
-import { db } from '@/lib/system/voices-config';
-import { users, orders, utmTouchpoints, reviews } from '@/lib/system/voices-config';
+import { db } from '@/lib/system/db';
+import { users, orders, utmTouchpoints, reviews } from '@/lib/system/db';
 import { eq, sql, desc, sum, count } from 'drizzle-orm';
 import { createClient } from '@supabase/supabase-js';
 

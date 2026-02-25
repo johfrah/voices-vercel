@@ -1,5 +1,5 @@
-import { db } from '@/lib/system/voices-config';
-import { castingLists, castingListItems, actors } from '@/lib/system/voices-config';
+import { db } from '@/lib/system/db';
+import { castingLists, castingListItems, actors } from '@/lib/system/db';
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth/api-auth';
 import { nanoid } from 'nanoid';

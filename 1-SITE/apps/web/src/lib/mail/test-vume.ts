@@ -1,4 +1,4 @@
-import { db, users, workshops, orders, workshopEditions, instructors } from '@/lib/system/voices-config';
+import { db, users, workshops, orders, workshopEditions, instructors } from '@/lib/system/db';
 import { eq, desc } from 'drizzle-orm';
 import { VumeEngine } from '@/lib/mail/VumeEngine';
 // MarketManager is used for domain resolution in the mail engine

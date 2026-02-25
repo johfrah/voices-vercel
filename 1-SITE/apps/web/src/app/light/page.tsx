@@ -112,21 +112,41 @@ export default function LightPage() {
       .then(res => res.json())
       .then(data => {
         if (data?.results) {
-          // 🛡️ CHRIS-PROTOCOL: Sorteer op menu_order en voice_score
-          // We gebruiken de exacte database-waarden voor Johfrah en Christina
+          // 🛡️ CHRIS-PROTOCOL: Nuclear Sorting Integrity (v2.14.500)
+          // We implementeren de EXACTE hiërarchie van de Voice Filter Engine.
+          const market = MarketManager.getCurrentMarket();
+          const primaryLang = market.primary_language.toLowerCase();
+
+          const getLangScore = (a: any) => {
+            const lang = (a.native_lang || '').toLowerCase();
+            if (lang === primaryLang || lang === 'vlaams' || lang === 'nl-be') return 1;
+            if (lang === 'engels' || lang === 'en-gb' || lang === 'en-us') return 2;
+            return 100;
+          };
+
           const sorted = data.results.sort((a: any, b: any) => {
-            // Sorteer eerst op menu_order (ASC)
-            const orderA = a.menu_order ?? 9999;
-            const orderB = b.menu_order ?? 9999;
-            
-            if (orderA !== orderB) {
-              return orderA - orderB;
-            }
-            
-            // Dan op voice_score (DESC)
-            const scoreA = b.voice_score ?? 0;
-            const scoreB = a.voice_score ?? 0;
-            return scoreA - scoreB;
+            // 1. menu_order (ASC, 0 is laagste prioriteit)
+            const orderA = a.menu_order || 999999;
+            const orderB = b.menu_order || 999999;
+            if (orderA !== orderB) return orderA - orderB;
+
+            // 2. Market Language Priority
+            const langA = getLangScore(a);
+            const langB = getLangScore(b);
+            if (langA !== langB) return langA - langB;
+
+            // 3. total_sales (DESC)
+            const salesA = a.total_sales || 0;
+            const salesB = b.total_sales || 0;
+            if (salesA !== salesB) return salesB - salesA;
+
+            // 4. voice_score (DESC)
+            const scoreA = a.voice_score || 0;
+            const scoreB = b.voice_score || 0;
+            if (scoreA !== scoreB) return scoreB - scoreA;
+
+            // 5. Alphabetical
+            return (a.display_name || '').localeCompare(b.display_name || '');
           });
 
           const mapped = sorted.map((a: any) => ({

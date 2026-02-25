@@ -1,6 +1,6 @@
 import ical from 'node-ical';
 import { addHours, addMinutes, format, isAfter, isBefore, parseISO, startOfDay, endOfDay } from 'date-fns';
-import { db, appointments } from '@/lib/system/voices-config';
+import { db, appointments } from '@/lib/system/db';
 import { eq, and, ne } from 'drizzle-orm';
 
 const ICLOUD_URL = 'https://p66-caldav.icloud.com/published/2/NjMzMjQ3MDA5NjMzMjQ3MGU_sLegwSHEot0vGCikjVp_XNhRFSCIqfLDAvExWJrjsa_Yrrnz6UO9TgPLKpU8OAN8Cobb6CFk1Aw7fq7CD84';

@@ -1,6 +1,6 @@
 import { YukiService } from '@/lib/services/yuki-service';
-import { db } from '@/lib/system/voices-config';
-import { yukiOutstanding } from '@/lib/system/voices-config';
+import { db } from '@/lib/system/db';
+import { yukiOutstanding } from '@/lib/system/db';
 import { NextResponse } from 'next/server';
 
 export const dynamic = 'force-dynamic';

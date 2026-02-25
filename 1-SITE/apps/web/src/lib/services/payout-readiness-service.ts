@@ -1,5 +1,5 @@
 import { and, eq } from 'drizzle-orm';
-import { db, approvalQueue, orderItems, vaultFiles } from '@/lib/system/voices-config';
+import { db, approvalQueue, orderItems, vaultFiles } from '@/lib/system/db';
 
 /**
  *  PAYOUT READINESS SERVICE (NUCLEAR 2026)

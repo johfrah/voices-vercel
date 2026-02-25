@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { db } from '@/lib/system/voices-config';
-import { workshops } from '@/lib/system/voices-config';
+import { db } from '@/lib/system/db';
+import { workshops } from '@/lib/system/db';
 import { getServerUser, isAdminUser } from "@/lib/auth/server-auth";
 
 export async function POST(req: Request) {

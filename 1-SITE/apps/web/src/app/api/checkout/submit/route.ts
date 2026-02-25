@@ -1,6 +1,6 @@
 import { VatService } from '@/lib/compliance/vat-service';
 import { LexCheck } from '@/lib/compliance/lex-check';
-import { db, orders, users, centralLeads, actors, notifications, orderItems, systemEvents } from '@/lib/system/voices-config';
+import { db, orders, users, centralLeads, actors, notifications, orderItems, systemEvents } from '@/lib/system/db';
 import { eq, inArray } from 'drizzle-orm';
 import { sign } from 'jsonwebtoken';
 import { headers } from 'next/headers';

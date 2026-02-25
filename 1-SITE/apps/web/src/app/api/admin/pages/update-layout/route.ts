@@ -1,4 +1,4 @@
-import { db, pageLayouts } from '@/lib/system/voices-config';
+import { db, pageLayouts } from '@/lib/system/db';
 import { DbService } from '@/lib/services/db-service';
 import { eq } from 'drizzle-orm';
 import { NextResponse } from 'next/server';

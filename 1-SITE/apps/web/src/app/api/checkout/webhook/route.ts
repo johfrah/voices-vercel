@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db, orders, orderNotes, users, orderItems, actors } from '@/lib/system/voices-config';
+import { db, orders, orderNotes, users, orderItems, actors } from '@/lib/system/db';
 import { eq, sql, inArray } from 'drizzle-orm';
 import { MollieService } from '@/lib/payments/mollie';
 import { UCIService } from '@/lib/intelligence/uci-service';

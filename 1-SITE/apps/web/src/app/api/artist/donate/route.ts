@@ -1,5 +1,5 @@
 import { MollieService } from '@/lib/payments/mollie';
-import { db, orders } from '@/lib/system/voices-config';
+import { db, orders } from '@/lib/system/db';
 import { NextResponse } from 'next/server';
 
 /**

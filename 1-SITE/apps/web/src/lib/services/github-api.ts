@@ -1,5 +1,5 @@
 import { Octokit } from '@octokit/rest';
-import { VOICES_CONFIG } from '@/lib/system/voices-config';
+import { VOICES_CONFIG } from '@/lib/system/db';
 
 //  SECURITY: GitHub Token Management
 const GITHUB_TOKEN = process.env.BOB_GITHUB_TOKEN;

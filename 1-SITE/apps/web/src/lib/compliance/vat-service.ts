@@ -1,5 +1,5 @@
-import { db } from '@/lib/system/voices-config';
-import { users, orders } from '@/lib/system/voices-config';
+import { db } from '@/lib/system/db';
+import { users, orders } from '@/lib/system/db';
 import { eq } from "drizzle-orm";
 import { DbService } from "../services/db-service";
 

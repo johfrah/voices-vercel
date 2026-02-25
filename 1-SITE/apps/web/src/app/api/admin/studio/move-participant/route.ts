@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { db } from '@/lib/system/voices-config';
-import { orderItems } from '@/lib/system/voices-config';
+import { db } from '@/lib/system/db';
+import { orderItems } from '@/lib/system/db';
 import { eq } from "drizzle-orm";
 import { getServerUser, isAdminUser } from "@/lib/auth/server-auth";
 

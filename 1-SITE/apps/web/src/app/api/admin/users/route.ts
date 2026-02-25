@@ -1,4 +1,4 @@
-import { db, users } from '@/lib/system/voices-config';
+import { db, users } from '@/lib/system/db';
 import { desc } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth/api-auth';

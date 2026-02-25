@@ -1,4 +1,4 @@
-import { db, orders, systemEvents } from '@/lib/system/voices-config';
+import { db, orders, systemEvents } from '@/lib/system/db';
 import { eq } from "drizzle-orm";
 import { InvoiceService } from "../commerce/invoice-service";
 import { SmartmailService } from "./smartmail-service";

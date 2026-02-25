@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PontoBridge, PayoutRecipient } from '@/lib/payments/ponto-bridge';
-import { db, systemEvents } from '@/lib/system/voices-config';
+import { db, systemEvents } from '@/lib/system/db';
 
 /**
  *  PONTO PAYOUT API (GODMODE)

@@ -1,5 +1,5 @@
-import { db } from '@/lib/system/voices-config';
-import { workshopInterest, workshops, systemEvents } from '@/lib/system/voices-config';
+import { db } from '@/lib/system/db';
+import { workshopInterest, workshops, systemEvents } from '@/lib/system/db';
 import { eq, sql } from "drizzle-orm";
 import { DbService } from "../services/db-service";
 
