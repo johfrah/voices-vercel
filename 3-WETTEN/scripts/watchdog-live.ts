@@ -90,6 +90,7 @@ const channel = supabase
     'postgres_changes',
     { event: 'INSERT', schema: 'public', table: 'system_events' },
     (payload) => {
+      console.log(chalk.yellow('🔔 Nieuw event ontvangen!'));
       logEvent(payload.new);
     }
   )
@@ -100,8 +101,10 @@ const channel = supabase
       // Heartbeat om de 30 seconden om te laten zien dat we nog live zijn
       setInterval(() => {
         const now = new Date().toLocaleTimeString();
-        process.stdout.write(chalk.dim(`[${now}] 💓 Heartbeat: Watchdog is live...\r`));
+        console.log(chalk.dim(`[${now}] 💓 Heartbeat: Watchdog is live...`));
       }, 30000);
+    } else {
+      console.log(chalk.yellow(`📡 Subscription status: ${status}`));
     }
   });
 
