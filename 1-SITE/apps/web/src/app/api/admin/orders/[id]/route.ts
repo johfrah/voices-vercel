@@ -69,13 +69,38 @@ export async function GET(request: Request, { params }: { params: { id: string }
     }
 
     // 🤝 DE HANDDRUK (Human-Centric Mapping)
-    const formattedItems = items.map((item: any) => ({
-      id: item.id,
-      name: item.name || 'Onbekend item',
-      quantity: item.quantity || 1,
-      price: item.price?.toString() || "0.00",
-      subtotal: (Number(item.price || 0) * Number(item.quantity || 1)).toFixed(2)
-    }));
+    const rawMeta = order.rawMeta || {};
+    
+    // 🔍 FINANCIAL INTELLIGENCE: COG & Margin (Punt 2 Scope)
+    const totalRevenue = Number(order.amountTotal || 0);
+    const totalNet = Number(order.amountNet || 0);
+    
+    // Zoek naar COG in items of meta
+    let totalCost = 0;
+    const formattedItems = items.map((item: any) => {
+      const itemMeta = item.meta_data || {};
+      const itemCost = Number(itemMeta._alg_wc_cog_item_cost || itemMeta._COG || 0);
+      totalCost += itemCost;
+      
+      return {
+        id: item.id,
+        name: item.name || 'Onbekend item',
+        quantity: item.quantity || 1,
+        price: item.price?.toString() || "0.00",
+        cost: itemCost.toFixed(2),
+        subtotal: (Number(item.price || 0) * Number(item.quantity || 1)).toFixed(2)
+      };
+    });
+
+    const margin = totalNet - totalCost;
+    const marginPercentage = totalNet > 0 ? Math.round((margin / totalNet) * 100) : 0;
+
+    // 🎭 PRODUCTION INTELLIGENCE: Briefing & Script (Punt 4 Scope)
+    const rawBriefing = rawMeta.briefing || rawMeta._billing_wo_briefing || "";
+    const hasRegieInstructions = rawBriefing.includes('(') && rawBriefing.includes(')');
+    
+    // 🎓 BERNY-FLOW: Participant Info (Punt 5 Scope)
+    const participants = rawMeta.participant_info || rawMeta._participants || null;
 
     const journeyMap: Record<number, string> = {
       1: 'Voices Agency',
@@ -94,7 +119,8 @@ export async function GET(request: Request, { params }: { params: { id: string }
       'failed': 'Mislukt',
       'wc-completed': 'Voltooid',
       'wc-processing': 'In behandeling',
-      'wc-pending': 'Wacht op betaling'
+      'wc-pending': 'Wacht op betaling',
+      'waiting-po': 'Wacht op PO-nummer'
     };
 
     const paymentMap: Record<number, string> = {
@@ -111,26 +137,49 @@ export async function GET(request: Request, { params }: { params: { id: string }
       date: order.createdAt,
       status: statusMap[order.statusId?.toString() || ''] || statusMap['completed'] || 'In behandeling',
       unit: journeyMap[Number(order.journeyId)] || 'Voices',
+      
+      // 🚦 ACTION-DRIVEN LOGIC (Punt 3 Scope)
+      actions: {
+        needsPO: order.statusId === 'waiting-po' || (!order.purchaseOrder && Number(order.journeyId) === 1),
+        canGeneratePaymentLink: ['pending', 'wc-pending', 'failed'].includes(order.statusId?.toString() || ''),
+        isYukiReady: !!order.amountTotal && order.statusId === 'completed'
+      },
+
       customer: customerInfo ? {
         name: `${customerInfo.first_name || ''} ${customerInfo.last_name || ''}`.trim(),
         email: customerInfo.email,
-        company: customerInfo.companyName
+        company: customerInfo.companyName,
+        vat: rawMeta._billing_vat_number || null
       } : null,
+
       billing: {
         email: order.billingEmailAlt || customerInfo?.email,
         purchaseOrder: order.purchaseOrder
       },
+
       finance: {
-        net: order.amountNet?.toString() || "0.00",
-        total: order.amountTotal?.toString() || "0.00",
-        vat: (Number(order.amountTotal || 0) - Number(order.amountNet || 0)).toFixed(2),
+        net: totalNet.toFixed(2),
+        vat: (totalRevenue - totalNet).toFixed(2),
+        total: totalRevenue.toFixed(2),
+        cost: totalCost.toFixed(2),
+        margin: margin.toFixed(2),
+        marginPercentage: `${marginPercentage}%`,
         method: paymentMap[Number(order.paymentMethodId)] || 'Online betaling'
       },
-      items: formattedItems,
-      briefing: order.rawMeta?.briefing || order.rawMeta?._billing_wo_briefing || null,
+
+      production: {
+        items: formattedItems,
+        briefing: {
+          text: rawBriefing,
+          hasInstructions: hasRegieInstructions,
+          audioLink: rawMeta.audiobriefing || null
+        },
+        participants: participants
+      },
+
       technical: {
         sourceId: legacyInternalId,
-        meta: order.rawMeta || {}
+        meta: rawMeta
       }
     });
 
