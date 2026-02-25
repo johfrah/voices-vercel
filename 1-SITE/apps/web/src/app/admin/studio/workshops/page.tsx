@@ -40,6 +40,8 @@ export default async function StudioAdminWorkshopsPage() {
   if (!isAdminUser(user)) redirect('/studio');
 
   const editions = await StudioDataBridge.getAllEditions();
+  const financeStats = await StudioDataBridge.getFinanceStats();
+  const totalParticipants = await StudioDataBridge.getTotalParticipantsCount();
   const now = new Date();
   
   // 1 Truth Handshake: Datum is de bron van waarheid, status is een label
@@ -106,7 +108,7 @@ export default async function StudioAdminWorkshopsPage() {
           <ContainerInstrument>
             <Users strokeWidth={1.5} className="text-primary mb-6" size={24} />
             <TextInstrument className="text-[15px] tracking-widest text-white/30 font-light"><VoiceglotText translationKey="admin.studio.total_participants" defaultText="Totaal unieke deelnemers" /></TextInstrument>
-            <HeadingInstrument level={3} className="text-4xl font-light tracking-tighter mt-2">114</HeadingInstrument>
+            <HeadingInstrument level={3} className="text-4xl font-light tracking-tighter mt-2">{totalParticipants}</HeadingInstrument>
           </ContainerInstrument>
         </BentoCard>
 
