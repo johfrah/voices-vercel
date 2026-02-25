@@ -3,6 +3,7 @@ import postgres from 'postgres';
 import { drizzle } from 'drizzle-orm/postgres-js';
 import * as dotenv from 'dotenv';
 import * as path from 'path';
+import * as fs from 'fs';
 
 // Sherlock: We gebruiken een lazy initializer voor de DB client om te voorkomen dat 
 // postgres.js wordt geïnitialiseerd in de Edge runtime (waar het niet werkt).
@@ -19,8 +20,16 @@ const getDb = () => {
     try {
       // 🛡️ CHRIS-PROTOCOL: Load env if not present (for standalone scripts)
       if (!process.env.DATABASE_URL) {
-        const envPath = path.resolve(__dirname, '../../../../1-SITE/apps/web/.env.local');
-        dotenv.config({ path: envPath });
+        const envPath = path.resolve(process.cwd(), '.env.local');
+        if (fs.existsSync(envPath)) {
+          dotenv.config({ path: envPath });
+        } else {
+          // Probeer ook een niveau hoger (voor scripts in src/scripts)
+          const parentEnvPath = path.resolve(process.cwd(), '../../.env.local');
+          if (fs.existsSync(parentEnvPath)) {
+            dotenv.config({ path: parentEnvPath });
+          }
+        }
       }
 
       let connectionString = process.env.DATABASE_URL!;
