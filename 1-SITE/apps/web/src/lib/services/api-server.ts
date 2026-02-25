@@ -331,7 +331,8 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
         extra_lang_ids: extraLangsMap.get(actor.id) || [],
         demos: proxiedDemos,
         actor_videos: proxiedVideos,
-        rates: actor.rates || {}
+        rates: actor.rates || {},
+        email: actor.email || ''
       };
     });
 
