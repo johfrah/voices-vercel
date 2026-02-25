@@ -480,14 +480,15 @@ export async function getActor(slug: string, lang: string = 'nl'): Promise<Actor
 async function processActorData(actor: any, slug: string): Promise<Actor> {
   console.error(` [api-server] processActorData START for ${actor.first_name} (ID: ${actor.id})`);
   
-  // Fetch relations via Drizzle for stability (v2.14.544)
+  // Fetch relations via Drizzle for stability (v2.14.548)
   let mappedDemos: any[] = [];
   let mappedVideos: any[] = [];
 
   try {
+    const { db: directDb, actorDemos: demosTable, actorVideos: videosTable } = await import('@/lib/system/voices-config');
     const [demos, videos] = await Promise.all([
-      db.select().from(actorDemos).where(and(eq(actorDemos.actorId, actor.id), eq(actorDemos.is_public, true))),
-      db.select().from(actorVideos).where(and(eq(actorVideos.actorId, actor.id), eq(actorVideos.is_public, true)))
+      directDb.select().from(demosTable).where(and(eq(demosTable.actorId, actor.id), eq(demosTable.is_public, true))),
+      directDb.select().from(videosTable).where(and(eq(videosTable.actorId, actor.id), eq(videosTable.is_public, true)))
     ]);
 
     mappedDemos = (demos || []).map((d: any) => ({
@@ -517,7 +518,8 @@ async function processActorData(actor: any, slug: string): Promise<Actor> {
     photoUrl = actor.dropbox_url.startsWith('http') ? actor.dropbox_url : `/api/proxy/?path=${encodeURIComponent(actor.dropbox_url)}`;
   } else if (actor.photo_id) {
     try {
-      const [mediaItem] = await db.select().from(media).where(eq(media.id, actor.photo_id)).limit(1);
+      const { db: directDb, media: mediaTable } = await import('@/lib/system/voices-config');
+      const [mediaItem] = await directDb.select().from(mediaTable).where(eq(mediaTable.id, actor.photo_id)).limit(1);
       if (mediaItem) {
         const fp = mediaItem.fileName || mediaItem.filePath; // Use fileName as fallback
         if (fp) photoUrl = fp.startsWith('http') ? fp : `${SUPABASE_STORAGE_URL}/${fp}`;
