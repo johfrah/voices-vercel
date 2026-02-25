@@ -10,7 +10,7 @@ export const revalidate = 0;
  * CUSTOM AUTH API (BOB-METHOD 2026)
  * 
  * Verstuurt een magic link via onze eigen VoicesMailEngine.
- * De link wijst nu DIRECT naar voices.be voor maximale betrouwbaarheid.
+ * De link wijst nu DIRECT naar de juiste market voor maximale betrouwbaarheid.
  */
 export async function POST(req: Request) {
   console.log('🚀 [Auth API] Magic Link request started');

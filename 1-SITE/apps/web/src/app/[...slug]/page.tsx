@@ -54,7 +54,7 @@ const StudioLaunchpad = nextDynamic(() => import("@/components/ui/StudioLaunchpa
 function generateActorSchema(actor: any, marketName: string = 'Voices', host: string = '') {
   const market = MarketManager.getCurrentMarket(host);
   const domains = MarketManager.getMarketDomains();
-  const siteUrl = domains[market.market_code] || `https://${host || (market.market_code === 'BE' ? 'www.voices.be' : 'www.voices.eu')}`;
+  const siteUrl = domains[market.market_code] || `https://${host || (market.market_code === 'BE' ? MarketManager.getMarketDomains()['BE']?.replace('https://', '') : 'www.voices.eu')}`;
   
   // Map internal delivery type to ISO 8601 duration
   const deliveryMap: Record<string, string> = {
@@ -101,7 +101,7 @@ function generateActorSchema(actor: any, marketName: string = 'Voices', host: st
 function generateArtistSchema(artist: any, host: string = '') {
   const market = MarketManager.getCurrentMarket(host);
   const domains = MarketManager.getMarketDomains();
-  const siteUrl = domains[market.market_code] || `https://www.voices.be`;
+  const siteUrl = domains[market.market_code] || `https://${host || 'www.voices.be'}`;
   return {
     "@context": "https://schema.org",
     "@type": "MusicGroup",
@@ -191,7 +191,7 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
   const cleanSlug = stripLanguagePrefix(normalizedSlug);
   const cleanSegments = cleanSlug.split('/').filter(Boolean);
 
-  const siteUrl = domains[market.market_code] || `https://www.voices.be`;
+  const siteUrl = domains[market.market_code] || `https://${host || 'www.voices.be'}`;
   
   // Resolve de slug naar de originele versie
   const resolved = await resolveSlug(cleanSlug, lang);
@@ -353,7 +353,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
   const cleanSlug = stripLanguagePrefix(normalizedSlug);
   const cleanSegments = cleanSlug.split('/').filter(Boolean);
 
-  // 🛡️ CHRIS-PROTOCOL: Log to database for forensic audit (v2.14.550)
+  // 🛡️ CHRIS-PROTOCOL: Log to database for forensic audit (v2.14.552)
   try {
     const { db: directDb, systemEvents } = await import('@/lib/system/voices-config');
     if (directDb && systemEvents) {
@@ -362,10 +362,11 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
         source: 'SmartRouter',
         message: `[SmartRouter] SmartRouteContent START for: ${normalizedSlug}`,
         details: { segments, lang, cleanSlug, cleanSegments },
-        createdAt: new Date().toISOString()
-      }).catch(() => null);
+      });
     }
-  } catch (e) {}
+  } catch (e: any) {
+    console.error(` [SmartRouter] DB logging failed: ${e.message}`);
+  }
 
   console.error(` [SmartRouter] SmartRouteContent START for: ${segments.join('/')}`);
   try {
@@ -386,10 +387,11 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
           source: 'SmartRouter',
           message: ` [SmartRouter] Handshake attempt for actor: "${firstSegment}"`,
           details: { firstSegment, journey, medium, lang },
-          createdAt: new Date().toISOString()
-        }).catch(() => null);
+        });
       }
-    } catch (e) {}
+    } catch (e: any) {
+      console.error(` [SmartRouter] DB logging failed: ${e.message}`);
+    }
 
     // 1. Artist Journey (Youssef Mandate)
     try {
@@ -638,10 +640,11 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
               source: 'SmartRouter',
               message: ` [SmartRouter] Handshake SUCCESS for ${actor.first_name}`,
               details: { actorId: actor.id, slug: actor.slug },
-              createdAt: new Date().toISOString()
-            }).catch(() => null);
+            });
           }
-        } catch (e) {}
+        } catch (e: any) {
+          console.error(` [SmartRouter] DB logging failed: ${e.message}`);
+        }
         //  CHRIS-PROTOCOL: Map journey slug to internal journey type
         const journeyMap: Record<string, JourneyType> = {
           'telefoon': 'telephony',

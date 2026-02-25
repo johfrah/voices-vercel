@@ -53,7 +53,7 @@ export async function GET(request: Request) {
     }
     const supabaseAdmin = createClient(url, key);
 
-    const host = request.headers.get('host') || 'www.voices.be';
+    const host = request.headers.get('host') || MarketManager.getMarketDomains()['BE']?.replace('https://', '');
     const { MarketManagerServer: MarketManager } = require('@/lib/system/market-manager-server');
     const market = MarketManager.getCurrentMarket(host);
     const siteUrl = MarketManager.getMarketDomains()[market.market_code] || `https://www.voices.be`;

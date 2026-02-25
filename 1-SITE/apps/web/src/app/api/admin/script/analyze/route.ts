@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
     }
 
     const prompt = `
-      Je bent de Script Intelligence van Voices.be. 
+      Je bent de Script Intelligence van de Voices Engine. 
       Analyseer het volgende script voor een voice-over opdracht.
       
       JOUW STIJL:

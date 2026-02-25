@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
     const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    const host = request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be');
+    const host = request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || MarketManager.getMarketDomains()['BE']?.replace('https://', ''));
     const market = MarketManager.getCurrentMarket(host);
     const adminEmail = process.env.ADMIN_EMAIL || market.email;
 
@@ -128,7 +128,7 @@ export async function POST(request: NextRequest) {
 
         const dna = dnaCache[lang] || '';
         const prompt = `
-          Senior translator for Voices.be. Translate from NL to ${lang}.
+          Senior translator for the Voices Engine. Translate from NL to ${lang}.
           MARKET DNA: ${dna}
           CONTEXT: ${item.context || 'General UI'}
           TEKST: "${sourceText}"

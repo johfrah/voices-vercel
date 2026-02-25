@@ -129,7 +129,7 @@ export async function POST(request: NextRequest) {
     // 6. Notificatie naar Johfrah (Admin Only)
     const { VoicesMailEngine } = await import('@/lib/services/voices-mail-engine');
     const mailEngine = VoicesMailEngine.getInstance();
-    const host = request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be');
+    const host = request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || MarketManager.getMarketDomains()['BE']?.replace('https://', ''));
     const market = MarketManager.getCurrentMarket(host);
     const siteUrl = MarketManager.getMarketDomains()[market.market_code] || `https://www.voices.be`;
 
