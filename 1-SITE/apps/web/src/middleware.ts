@@ -90,9 +90,13 @@ export async function middleware(request: NextRequest) {
 
   // 1.7.5 LIGHT MODE REDIRECT (NUCLEAR)
   const isAdmin = request.cookies.get('voices_role')?.value === 'admin' || request.cookies.get('sb-access-token') !== undefined;
-  if (isUnderConstruction && !isAdmin && !pathname.startsWith('/light') && !pathname.startsWith('/auth') && !pathname.startsWith('/api')) {
+  
+  // 🛡️ CHRIS-PROTOCOL: Bypass voor assets en API's is al geregeld bovenin de middleware.
+  // We forceren hier de redirect naar /light voor alle andere routes.
+  if (isUnderConstruction && !isAdmin && pathname !== '/light' && !pathname.startsWith('/auth') && !pathname.startsWith('/api')) {
     const lightUrl = url.clone();
     lightUrl.pathname = '/light';
+    console.log(` NUCLEAR REDIRECT: Forcing /light for ${pathname}`);
     return NextResponse.redirect(lightUrl);
   }
 
