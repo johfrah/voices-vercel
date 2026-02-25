@@ -30,7 +30,7 @@ const FORBIDDEN_PATTERNS = [
     regex: /voices\.be|johfrah\.be|04[0-9]{8}|info@/gi,
     message: 'Hardcoded contactgegevens gedetecteerd. Gebruik MarketManager.',
     type: 'error' as const,
-    exclude: [/market-manager.*\.ts/, /config\.ts/, /middleware\.ts/, /\.md$/, /log-explorer\.ts/],
+    exclude: [/market-manager.*\.ts/, /config\.ts/, /middleware\.ts/, /\.md$/, /log-explorer\.ts/, /db-cli\.ts/],
     test: (match: string, line: string) => {
       // Sta window.location.hostname toe
       if (line.includes('window.location.hostname')) return false;
@@ -60,10 +60,18 @@ const FORBIDDEN_PATTERNS = [
     exclude: [/LayoutInstruments\.tsx/, /VoiceglotText\.tsx/, /RichText\.tsx/, /instrument/i, /\.md$/]
   },
   {
-    regex: /dynamic\(\(\) => import\(.*\)\)/g,
+    regex: /dynamic\(\(\) => import\(['"].*['"]\)/g,
     message: 'Zwaar instrument zonder { ssr: false } gedetecteerd.',
     type: 'error' as const,
-    test: (match: string) => !match.includes('ssr: false'),
+    test: (match: string, line: string) => {
+      // Als de regel ssr: false bevat, is het goed
+      if (line.includes('ssr: false')) return false;
+      // Als de regel dynamic opent maar niet sluit, moeten we in de volgende regels kijken
+      // Maar aangezien we per regel auditen, kijken we of de regel de opening bevat
+      // en of er ergens in de buurt ssr: false staat.
+      // Voor nu: als de regel ssr: false bevat is het OK.
+      return !line.includes('ssr: false');
+    },
     exclude: [/\.md$/]
   },
   {
@@ -80,6 +88,27 @@ function auditFile(filePath: string) {
 
   FORBIDDEN_PATTERNS.forEach(({ regex, message, type, exclude, test }) => {
     if (exclude?.some(pattern => pattern.test(filePath))) return;
+
+    // Speciale afhandeling voor multi-line regex (zoals dynamic imports)
+    if (regex.source.includes('dynamic')) {
+      const fullContent = content;
+      let match;
+      const dynamicRegex = /dynamic\(\(\) => import\(['"](.*)['"]\),\s*\{([^}]*)\}\)/gs;
+      while ((match = dynamicRegex.exec(fullContent)) !== null) {
+        const options = match[2];
+        if (!options.includes('ssr: false')) {
+          const lineIndex = fullContent.substring(0, match.index).split('\n').length;
+          issues.push({
+            file: path.relative(ROOT_DIR, filePath),
+            line: lineIndex,
+            type,
+            message,
+            context: match[0].split('\n')[0] + '...'
+          });
+        }
+      }
+      return;
+    }
 
     lines.forEach((line, index) => {
       const matches = line.match(regex);

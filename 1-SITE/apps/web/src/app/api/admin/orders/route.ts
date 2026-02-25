@@ -38,11 +38,12 @@ export async function GET(request: NextRequest) {
     .orderBy(desc(orders.createdAt))
     .limit(250);
 
-    // 🛡️ CHRIS-PROTOCOL: Godmode Data Access (v2.14.554)
-    // We verwijderen ALLE filters. Wat in de database zit, komt op je scherm.
-    const sanitizedOrders = allOrders.map(order => {
+    console.log(`🚀 [API DEBUG] Raw orders fetched from DB: ${allOrders.length}`);
+
+    // 🛡️ CHRIS-PROTOCOL: Godmode Data Access (v2.14.562)
+    const sanitizedOrders = allOrders.map((order, index) => {
       try {
-        return {
+        const sanitized = {
           id: order.id || 0,
           wpOrderId: order.wpOrderId || 0,
           displayOrderId: order.displayOrderId || null,
@@ -57,14 +58,23 @@ export async function GET(request: NextRequest) {
           user: order.user ? {
             first_name: order.user.first_name || "",
             last_name: order.user.last_name || "",
-            email: order.user.email || `unknown@${MarketManager.getMarketDomains()['BE']?.replace('https://', '')}`,
+            email: order.user.email || "unknown@voices.be",
             companyName: order.user.companyName || ""
           } : null
         };
+        
+        if (index < 2) {
+          console.log(`📦 [API DEBUG] Sanitized order ${index}:`, JSON.stringify(sanitized));
+        }
+        
+        return sanitized;
       } catch (innerError) {
+        console.error(`❌ [API DEBUG] Error sanitizing order at index ${index}:`, innerError);
         return null;
       }
     }).filter(Boolean);
+
+    console.log(`✅ [API DEBUG] Final sanitized count: ${sanitizedOrders.length}`);
 
     return NextResponse.json(sanitizedOrders);
   } catch (error) {
