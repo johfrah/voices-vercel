@@ -1,31 +1,87 @@
 "use client";
 
 import { ContainerInstrument, HeadingInstrument, SectionInstrument, TextInstrument } from "@/components/ui/LayoutInstruments";
-import { VoiceCardSkeleton } from "@/components/ui/VoiceCardSkeleton";
-import { VoiceGrid } from "@/components/ui/VoiceGrid";
-import { VoiceglotText } from "@/components/ui/VoiceglotText";
-import { useSonicDNA } from "@/lib/engines/sonic-dna";
-import { AnimatePresence, motion } from "framer-motion";
+import { MarketManagerServer as MarketManager } from "@/lib/system/market-manager-server";
+import { Suspense, useEffect, useMemo, useState } from 'react';
+import nextDynamic from "next/dynamic";
+import { Globe, Mail, Play, Pause } from "lucide-react";
+import { VoicesDropdown } from "@/components/ui/VoicesDropdown";
 import { useTranslation } from "@/contexts/TranslationContext";
 import { Actor } from "@/types";
-import { MarketManagerServer as MarketManager } from "@/lib/system/market-manager-server";
-import { Suspense, useEffect, useMemo, useState, useCallback } from 'react';
-import nextDynamic from "next/dynamic";
-import { Globe, Mail } from "lucide-react";
-import { VoicesDropdown } from "@/components/ui/VoicesDropdown";
+import { cn } from "@/lib/utils";
 
 const LiquidBackground = nextDynamic(() => import("@/components/ui/LiquidBackground").then(mod => mod.LiquidBackground), { 
   ssr: false,
   loading: () => <div className="fixed inset-0 z-0 bg-va-off-white" />
 });
 
-export default function LightPage() {
-  const { t, language } = useTranslation();
-  const sonic = useSonicDNA();
-  const playClick = useCallback((type?: any) => {
-    try { sonic.playClick(type); } catch (e) {}
-  }, [sonic]);
+// Minimalistische Voice Card voor de Light versie (0 dependencies)
+const LightVoiceCard = ({ actor, onSelect }: { actor: Actor, onSelect: (a: Actor) => void }) => {
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
 
+  const togglePlay = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (isPlaying) {
+      audio?.pause();
+      setIsPlaying(false);
+    } else {
+      if (!audio && actor.demos?.[0]?.url) {
+        const newAudio = new Audio(actor.demos[0].url);
+        newAudio.onended = () => setIsPlaying(false);
+        setAudio(newAudio);
+        newAudio.play();
+      } else {
+        audio?.play();
+      }
+      setIsPlaying(true);
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      audio?.pause();
+    };
+  }, [audio]);
+
+  return (
+    <div 
+      onClick={() => onSelect(actor)}
+      className="group bg-white rounded-[20px] overflow-hidden shadow-aura border border-black/[0.02] flex flex-col cursor-pointer hover:scale-[1.02] transition-all duration-500"
+    >
+      <div className="relative aspect-square bg-va-black overflow-hidden">
+        {actor.photo_url && (
+          <img 
+            src={actor.photo_url} 
+            alt={actor.display_name}
+            className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity duration-700"
+          />
+        )}
+        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+          <button 
+            onClick={togglePlay}
+            className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-xl border border-white/30 flex items-center justify-center text-white"
+          >
+            {isPlaying ? <Pause fill="currentColor" /> : <Play className="ml-1" fill="currentColor" />}
+          </button>
+        </div>
+      </div>
+      <div className="p-6 flex flex-col gap-1">
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] font-bold text-primary uppercase tracking-widest">
+            {MarketManager.getLanguageLabel(actor.native_lang || '')}
+          </span>
+        </div>
+        <HeadingInstrument level={3} className="text-xl font-light tracking-tighter truncate">
+          {actor.display_name}
+        </HeadingInstrument>
+      </div>
+    </div>
+  );
+};
+
+export default function LightPage() {
+  const { t } = useTranslation();
   const [actors, setActors] = useState<Actor[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedLanguage, setSelectedLanguage] = useState<string>('all');
@@ -33,64 +89,35 @@ export default function LightPage() {
 
   useEffect(() => {
     setMounted(true);
-    fetchActors();
-  }, []);
-
-  const fetchActors = async () => {
-    try {
-      setIsLoading(true);
-      const res = await fetch('/api/actors/?lang=all');
-      if (!res.ok) throw new Error('Failed to fetch actors');
-      const data = await res.json();
-      
-      if (!data || !data.results) {
-        setActors([]);
-        return;
-      }
-
-      const mappedActors = data.results.map((actor: any) => {
-        let photoUrl = actor.photo_url;
-        if (photoUrl && !photoUrl.startsWith('http') && !photoUrl.startsWith('/api/proxy') && !photoUrl.startsWith('/assets')) {
-          photoUrl = `/api/proxy/?path=${encodeURIComponent(photoUrl)}`;
+    fetch('/api/actors/?lang=all')
+      .then(res => res.json())
+      .then(data => {
+        if (data?.results) {
+          const mapped = data.results.map((a: any) => ({
+            ...a,
+            photo_url: a.photo_url?.startsWith('http') ? a.photo_url : `/api/proxy/?path=${encodeURIComponent(a.photo_url || '')}`
+          }));
+          setActors(mapped);
         }
-        return {
-          ...actor,
-          photo_url: photoUrl,
-          native_lang_label: MarketManager.getLanguageLabel(actor.native_lang || ''),
-        };
-      });
-      setActors(mappedActors);
-    } catch (err) {
-      console.error('Error fetching actors:', err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+      })
+      .catch(console.error)
+      .finally(() => setIsLoading(false));
+  }, []);
 
   const filteredActors = useMemo(() => {
     if (selectedLanguage === 'all') return actors;
-    return actors.filter(a => {
-      const native = (a.native_lang || '').toLowerCase();
-      const selected = selectedLanguage.toLowerCase();
-      return native === selected || MarketManager.getLanguageCode(native) === MarketManager.getLanguageCode(selected);
-    });
+    return actors.filter(a => (a.native_lang || '').toLowerCase() === selectedLanguage.toLowerCase());
   }, [actors, selectedLanguage]);
 
   const languageOptions = useMemo(() => {
-    try {
-      const market = MarketManager.getCurrentMarket();
-      const options = [
-        { label: t('filter.all_languages', 'Alle talen'), value: 'all', icon: Globe },
-        ...market.supported_languages.map(l => ({
-          label: MarketManager.getLanguageLabel(l),
-          value: l,
-          langCode: MarketManager.getLanguageCode(l)
-        }))
-      ];
-      return options;
-    } catch (e) {
-      return [{ label: t('filter.all_languages', 'Alle talen'), value: 'all', icon: Globe }];
-    }
+    const market = MarketManager.getCurrentMarket();
+    return [
+      { label: t('filter.all_languages', 'Alle talen'), value: 'all', icon: Globe },
+      ...market.supported_languages.map(l => ({
+        label: MarketManager.getLanguageLabel(l),
+        value: l
+      }))
+    ];
   }, [t]);
 
   if (!mounted) return null;
@@ -103,84 +130,56 @@ export default function LightPage() {
 
       <SectionInstrument className="!pt-32 pb-32 relative z-50">
         <ContainerInstrument plain className="max-w-[1440px] mx-auto px-4 md:px-6">
-          
-          {/* Header */}
-          <ContainerInstrument plain className="mb-16 text-center max-w-4xl mx-auto space-y-6">
+          <div className="mb-16 text-center max-w-4xl mx-auto space-y-6">
             <HeadingInstrument level={1} className="text-5xl md:text-7xl font-light tracking-tighter leading-none text-va-black">
               Vind de perfecte <span className="text-primary italic">stem</span>.
             </HeadingInstrument>
-            <TextInstrument className="text-lg md:text-xl font-light text-va-black/40 max-w-2xl mx-auto">
-              Beluister onze stemmen en stuur een mailtje om direct te boeken. 
-              Snel, simpel en persoonlijk.
+            <TextInstrument className="text-lg md:text-xl font-light text-va-black/40">
+              Beluister onze stemmen en stuur een mailtje om direct te boeken.
             </TextInstrument>
-          </ContainerInstrument>
+          </div>
 
-          {/* Simple Filter */}
           <div className="max-w-md mx-auto mb-16">
-            <div className="bg-white rounded-[32px] p-2 shadow-aura border border-black/5">
-              <VoicesDropdown 
-                searchable
-                options={languageOptions}
-                value={selectedLanguage}
-                onChange={(val) => {
-                  playClick('pro');
-                  setSelectedLanguage(val as string);
-                }}
-                placeholder={t('filter.all_languages', 'Alle talen')}
-                label="Selecteer taal"
-                className="w-full h-16"
-              />
-            </div>
+            <VoicesDropdown 
+              searchable
+              options={languageOptions}
+              value={selectedLanguage}
+              onChange={(val) => setSelectedLanguage(val as string)}
+              placeholder="Alle talen"
+              label="Selecteer taal"
+              className="bg-white rounded-full shadow-aura"
+            />
           </div>
 
-          {/* Grid */}
-          <div className="relative min-h-[600px]">
-            <AnimatePresence mode="wait">
-              {isLoading ? (
-                <motion.div 
-                  key="loading"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5"
-                >
-                  {[...Array(10)].map((_, i) => (
-                    <VoiceCardSkeleton key={i} />
-                  ))}
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="grid"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5 }}
-                >
-                  <VoiceGrid 
-                    actors={filteredActors}
-                    onSelect={(actor) => {
-                      playClick('success');
-                      const adminEmail = MarketManager.getCurrentMarket().email;
-                      const subject = encodeURIComponent(`Boeking stem: ${actor.display_name}`);
-                      const body = encodeURIComponent(`Beste Johfrah,\n\nIk zou graag de stem van ${actor.display_name} willen boeken voor een project.\n\nMet vriendelijke groet,`);
-                      window.location.href = `mailto:${adminEmail}?subject=${subject}&body=${body}`;
-                    }}
-                  />
-                </motion.div>
-              )}
-            </AnimatePresence>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+            {isLoading ? (
+              [...Array(10)].map((_, i) => (
+                <div key={i} className="aspect-[4/5] bg-va-black/5 rounded-[20px] animate-pulse" />
+              ))
+            ) : (
+              filteredActors.map(actor => (
+                <LightVoiceCard 
+                  key={actor.id} 
+                  actor={actor} 
+                  onSelect={(a) => {
+                    const subject = encodeURIComponent(`Boeking stem: ${a.display_name}`);
+                    const body = encodeURIComponent(`Beste Johfrah,\n\nIk zou graag de stem van ${a.display_name} willen boeken.\n\nGroet,`);
+                    window.location.href = `mailto:${MarketManager.getCurrentMarket().email}?subject=${subject}&body=${body}`;
+                  }}
+                />
+              ))
+            )}
           </div>
 
-          {/* Footer CTA */}
           <div className="mt-32 text-center">
             <a 
               href={`mailto:${MarketManager.getCurrentMarket().email}`}
-              className="inline-flex items-center gap-3 px-8 py-4 bg-va-black text-white rounded-full hover:scale-105 transition-all shadow-xl group"
+              className="inline-flex items-center gap-3 px-10 py-5 bg-va-black text-white rounded-full font-bold tracking-widest uppercase text-sm hover:scale-105 transition-all shadow-2xl"
             >
-              <Mail size={20} className="group-hover:rotate-12 transition-transform" />
-              <span className="font-bold tracking-widest uppercase text-sm">Stuur een algemene aanvraag</span>
+              <Mail size={20} />
+              Stuur een algemene aanvraag
             </a>
           </div>
-
         </ContainerInstrument>
       </SectionInstrument>
     </main>

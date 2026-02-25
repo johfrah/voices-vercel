@@ -1,16 +1,12 @@
 "use client";
 
-import { ContainerInstrument, HeadingInstrument, PageWrapperInstrument, TextInstrument } from "@/components/ui/LayoutInstruments";
-import { VoiceglotText } from "@/components/ui/VoiceglotText";
-import { useSonicDNA } from "@/lib/engines/sonic-dna";
-import { motion } from "framer-motion";
-import { Mail, ArrowRight } from "lucide-react";
-import { Suspense } from "react";
-import nextDynamic from "next/dynamic";
-import { VoicesLink } from "@/components/ui/VoicesLink";
-import { useCallback } from 'react';
-
+import { ContainerInstrument, HeadingInstrument, TextInstrument } from "@/components/ui/LayoutInstruments";
 import { MarketManagerServer as MarketManager } from "@/lib/system/market-manager-server";
+import { Suspense } from "react";
+import { motion } from "framer-motion";
+import nextDynamic from "next/dynamic";
+import { Mail, ArrowRight } from "lucide-react";
+import { VoicesLink } from "@/components/ui/VoicesLink";
 
 const LiquidBackground = nextDynamic(() => import("@/components/ui/LiquidBackground").then(mod => mod.LiquidBackground), { 
   ssr: false,
@@ -18,11 +14,6 @@ const LiquidBackground = nextDynamic(() => import("@/components/ui/LiquidBackgro
 });
 
 export default function UnderConstructionPage() {
-  const sonic = useSonicDNA();
-  const playClick = useCallback((type?: any) => {
-    try { sonic.playClick(type); } catch (e) {}
-  }, [sonic]);
-
   return (
     <main className="min-h-screen bg-va-off-white relative flex items-center justify-center overflow-hidden">
       <Suspense fallback={null}>
@@ -60,7 +51,6 @@ export default function UnderConstructionPage() {
         >
           <VoicesLink 
             href="/light"
-            onClick={() => playClick('pro')}
             className="group bg-va-black text-white px-10 py-5 rounded-full font-bold tracking-widest uppercase text-sm flex items-center gap-3 hover:scale-105 transition-all shadow-2xl"
           >
             Bekijk stemmen (Light)
@@ -69,7 +59,6 @@ export default function UnderConstructionPage() {
 
           <a 
             href={`mailto:${MarketManager.getCurrentMarket().email}`}
-            onClick={() => playClick('soft')}
             className="group bg-white text-va-black border border-black/5 px-10 py-5 rounded-full font-bold tracking-widest uppercase text-sm flex items-center gap-3 hover:bg-va-off-white transition-all shadow-lg"
           >
             <Mail size={18} />
@@ -89,7 +78,6 @@ export default function UnderConstructionPage() {
         </motion.div>
       </ContainerInstrument>
 
-      {/* Decorative elements */}
       <div className="absolute -bottom-20 -left-20 w-96 h-96 bg-primary/5 rounded-full blur-[100px] -z-10" />
       <div className="absolute -top-20 -right-20 w-96 h-96 bg-primary/5 rounded-full blur-[100px] -z-10" />
     </main>
