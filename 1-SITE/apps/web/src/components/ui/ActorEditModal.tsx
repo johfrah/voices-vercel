@@ -567,6 +567,12 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
       extra_lang_ids: formData.extra_lang_ids
     };
 
+    console.log('🚀 [ActorEditModal] Forensic Save Trace:', {
+      actorId: actor.id,
+      formData: JSON.parse(JSON.stringify(formData)),
+      payload: JSON.parse(JSON.stringify(payload))
+    });
+
     try {
       const response = await fetch(`/api/admin/actors/${actor.id}`, {
         method: 'PATCH',

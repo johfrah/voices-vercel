@@ -215,6 +215,14 @@ export async function PATCH(
 
     console.log(` ADMIN: Executing Nuclear Update for actor ${id}:`, JSON.stringify(cleanUpdateData, null, 2));
 
+    // 🛡️ CHRIS-PROTOCOL: Forensic Mapping Log (Form -> DB)
+    console.log('🚀 [AdminActorPATCH] Forensic Mapping Trace:', {
+      actorId: id,
+      incomingBody: body,
+      mappedDbData: cleanUpdateData,
+      isSuperAdmin
+    });
+
     // Update the actor in the database
     let result;
     try {
