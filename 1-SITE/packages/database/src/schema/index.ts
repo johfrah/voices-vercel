@@ -35,6 +35,17 @@ export const orderStatuses = pgTable('order_statuses', {
   createdAt: timestamp('created_at').defaultNow(),
 });
 
+// 🎙️ ACTOR STATUSES
+export const actorStatuses = pgTable('actor_statuses', {
+  id: serial('id').primaryKey(),
+  code: text('code').unique().notNull(), // live, pending, rejected
+  label: text('label').notNull(), // Live, Wacht op goedkeuring, Afgewezen
+  color: text('color'), // #22c55e, etc
+  isPublic: boolean('is_public').default(false),
+  canOrder: boolean('can_order').default(false),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
 // 💳 PAYMENT METHODS
 export const paymentMethods = pgTable('payment_methods', {
   id: serial('id').primaryKey(),
@@ -58,6 +69,24 @@ export const countries = pgTable('countries', {
   id: serial('id').primaryKey(),
   code: text('code').unique().notNull(),
   label: text('label').notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+// 🚻 GENDERS
+export const genders = pgTable('genders', {
+  id: serial('id').primaryKey(),
+  code: text('code').unique().notNull(), // male, female, non-binary, boy, girl
+  label: text('label').notNull(), // Man, Vrouw, Non-binair, Jongen, Meisje
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+// 🎓 EXPERIENCE LEVELS
+export const experienceLevels = pgTable('experience_levels', {
+  id: serial('id').primaryKey(),
+  code: text('code').unique().notNull(), // junior, pro, senior, legend
+  label: text('label').notNull(), // Junior, Pro, Senior, Legend
+  basePriceModifier: decimal('base_price_modifier', { precision: 3, scale: 2 }).default('1.00'),
+  icon: text('icon'), // lucide icon name
   createdAt: timestamp('created_at').defaultNow(),
 });
 
@@ -155,8 +184,9 @@ export const actors = pgTable('actors', {
   last_name: text('last_name'),
   email: text('email'), // Added for silent user creation logic
   gender: genderEnum('gender'),
-  gender_new: genderEnum('gender_new'), // Temporary for migration
+  genderId: integer('gender_id').references(() => genders.id), // 🛡️ Handshake Truth
   native_lang: text('native_lang'),
+  nativeLanguageId: integer('native_language_id').references(() => languages.id), // 🛡️ Handshake Truth
   country: text('country'),
   countryId: integer('country_id').references(() => countries.id),
   deliveryTime: text('delivery_time'),
@@ -182,7 +212,7 @@ export const actors = pgTable('actors', {
   voice_score: integer('voice_score').default(10),
   totalSales: integer('total_sales').default(0),
   experience_level: experienceLevelEnum('experience_level').default('pro'),
-  experience_level_new: experienceLevelEnum('experience_level_new').default('pro'), // Temporary for migration
+  experienceLevelId: integer('experience_level_id').references(() => experienceLevels.id), // 🛡️ Handshake Truth
   studio_specs: jsonb('studio_specs').default({}), // 🎙️ Publiek: { microphone: string, preamp: string, interface: string, booth: string }
   connectivity: jsonb('connectivity').default({}), // 🌐 Publiek: { source_connect: boolean, zoom: boolean, cleanfeed: boolean, session_link: boolean }
   availability: jsonb('availability').default([]), // Array of objects: { start: string, end: string, reason: string }
@@ -194,6 +224,7 @@ export const actors = pgTable('actors', {
   rates: jsonb('rates').default({}), // Master Rates JSON: { "BE": { "online": 250, ... }, "FR": { ... } }
   dropbox_url: text('dropbox_url'),
   status: statusEnum('status').default('pending'), // 'live' = public, others = private, 'unavailable' = holiday
+  statusId: integer('status_id').references(() => actorStatuses.id), // 🛡️ Handshake Truth
   is_public: boolean('is_public').default(false), // Expliciete vlag voor frontend zichtbaarheid
   is_ai: boolean('is_ai').default(false),
   ai_tags: text('ai_tags'), // 🤖 AI-generated tags voor matching/search
@@ -1412,6 +1443,22 @@ export const actorsRelations = relations(actors, ({ one, many }) => ({
   user: one(users, {
     fields: [actors.user_id],
     references: [users.id],
+  }),
+  gender: one(genders, {
+    fields: [actors.genderId],
+    references: [genders.id],
+  }),
+  nativeLanguage: one(languages, {
+    fields: [actors.nativeLanguageId],
+    references: [languages.id],
+  }),
+  experienceLevel: one(experienceLevels, {
+    fields: [actors.experienceLevelId],
+    references: [experienceLevels.id],
+  }),
+  status: one(actorStatuses, {
+    fields: [actors.statusId],
+    references: [actorStatuses.id],
   }),
   demos: many(actorDemos),
   videos: many(actorVideos),
