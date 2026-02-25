@@ -27,7 +27,10 @@ export async function POST(request: NextRequest) {
 
     const host = request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be');
     const market = MarketManager.getCurrentMarket(host);
-    const siteUrl = MarketManager.getMarketDomains()[market.market_code] || `https://www.voices.be`;
+    const domains = MarketManager.getMarketDomains();
+    const canonicalHost = domains[market.market_code]?.replace('https://', '') || 'www.voices.be';
+    const finalHost = host || canonicalHost;
+    const siteUrl = domains[market.market_code] || `https://www.voices.be`;
     const adminEmail = market.email;
 
     // CHRIS-PROTOCOL: Skip emails if requested by user (logging to watchdog only)
@@ -71,7 +74,7 @@ export async function POST(request: NextRequest) {
         `,
         buttonText: 'Bekijk Dashboard',
         buttonUrl: `${siteUrl}/admin/dashboard`,
-        host: host
+        host: finalHost
       });
     }
 
@@ -159,7 +162,7 @@ export async function POST(request: NextRequest) {
         `,
         buttonText: isDonation ? 'Bekijk Donaties' : isQuote ? 'Open Offerte' : 'Beheer Bestelling',
         buttonUrl: isDonation ? `${siteUrl}/backoffice/donations` : `${siteUrl}/admin/orders?orderId=${orderId}`,
-        host: host
+        host: finalHost
       });
     }
 

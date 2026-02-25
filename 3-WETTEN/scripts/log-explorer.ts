@@ -71,11 +71,37 @@ async function run() {
     return;
   }
 
-  // Default: Live Watchdog
-  console.log(chalk.cyan.bold('\n🚀 NUCLEAR WATCHDOG: Live Stream gestart...'));
-  console.log(chalk.dim('Gebruik: log [audit|errors|digest <hash>]\n'));
+  // Default: Combined View
+  console.log(chalk.cyan.bold('\n🚀 NUCLEAR LOG EXPLORER: Full System Scan...'));
+  
+  // 1. Run Audit
+  console.log(chalk.bold.blue('\n--- 🛡️ AUDIT STATUS ---'));
+  const { execSync } = require('child_process');
+  try {
+    execSync('npx tsx 3-WETTEN/scripts/forensic-audit.ts', { stdio: 'inherit', cwd: ROOT_DIR });
+  } catch (e) {
+    console.log(chalk.dim('\n(Audit heeft fouten gevonden, zie hierboven)\n'));
+  }
 
-  // Subscription logic (uit watchdog-live.ts)
+  // 2. Show Recent Errors
+  console.log(chalk.bold.red('\n--- 🚨 RECENT DATABASE ERRORS (Last 10) ---'));
+  const { data: errorData } = await supabase
+    .from('system_events')
+    .select('*')
+    .in('level', ['error', 'critical'])
+    .order('created_at', { ascending: false })
+    .limit(10);
+  
+  if (errorData && errorData.length > 0) {
+    errorData.reverse().forEach(logEvent);
+  } else {
+    console.log(chalk.green('✅ Geen kritieke database errors gevonden.\n'));
+  }
+
+  // 3. Start Live Watchdog
+  console.log(chalk.bold.yellow('\n--- 🛰️ LIVE WATCHDOG STREAM ---'));
+  console.log(chalk.dim('Wachten op nieuwe events... (Ctrl+C om te stoppen)\n'));
+
   const channel = supabase
     .channel('system_events_realtime')
     .on(
@@ -84,15 +110,6 @@ async function run() {
       (payload) => logEvent(payload.new)
     )
     .subscribe();
-
-  // Toon laatste 10
-  const { data } = await supabase
-    .from('system_events')
-    .select('*')
-    .order('created_at', { ascending: false })
-    .limit(10);
-  
-  data?.reverse().forEach(logEvent);
 }
 
 function logEvent(event: any) {

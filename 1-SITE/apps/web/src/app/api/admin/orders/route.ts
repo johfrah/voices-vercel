@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
           user: order.user ? {
             first_name: order.user.first_name || "",
             last_name: order.user.last_name || "",
-            email: order.user.email || "unknown@voices.be",
+            email: order.user.email || `unknown@${MarketManager.getMarketDomains()[MarketManager.getCurrentMarket().market_code].replace('https://www.', '')}`,
             companyName: order.user.companyName || ""
           } : null
         };

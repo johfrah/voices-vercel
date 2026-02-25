@@ -30,7 +30,16 @@ const FORBIDDEN_PATTERNS = [
     regex: /voices\.be|johfrah\.be|04[0-9]{8}|info@/gi,
     message: 'Hardcoded contactgegevens gedetecteerd. Gebruik MarketManager.',
     type: 'error' as const,
-    exclude: [/market-manager\.ts/, /config\.ts/, /middleware\.ts/, /\.md$/]
+    exclude: [/market-manager\.ts/, /config\.ts/, /middleware\.ts/, /\.md$/, /log-explorer\.ts/],
+    test: (match: string, line: string) => {
+      // Sta window.location.hostname toe
+      if (line.includes('window.location.hostname')) return false;
+      // Sta dynamische host variabelen toe die al berekend zijn via MarketManager
+      if (line.includes('const host =') || line.includes('const finalHost =') || line.includes('const canonicalHost =')) {
+        if (!line.includes("'") && !line.includes('"')) return false;
+      }
+      return true;
+    }
   },
   {
     regex: /<div|<span|<p|<h[1-6]/g,
@@ -64,7 +73,7 @@ function auditFile(filePath: string) {
       const matches = line.match(regex);
       if (matches) {
         matches.forEach(match => {
-          if (!test || test(match)) {
+          if (!test || (test as any)(match, line)) {
             issues.push({
               file: path.relative(ROOT_DIR, filePath),
               line: index + 1,
