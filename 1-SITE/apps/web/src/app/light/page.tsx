@@ -151,7 +151,10 @@ export default function LightPage() {
 
           const mapped = sorted.map((a: any) => ({
             ...a,
-            photo_url: a.photo_url?.startsWith('http') ? a.photo_url : `/api/proxy/?path=${encodeURIComponent(a.photo_url || '')}`
+            // 🛡️ CHRIS-PROTOCOL: 1 Truth Asset Handshake (v2.14.537)
+            // The API already provides the correct photo_url based on media_id.
+            // We only apply proxy if it's a relative path that isn't already handled.
+            photo_url: a.photo_url
           }));
           setActors(mapped);
         }
