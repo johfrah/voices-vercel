@@ -67,34 +67,34 @@ export async function GET(request: NextRequest) {
         const config = await dbWithTimeout(db.select().from(appConfigs).where(eq(appConfigs.key, 'general_settings')).limit(1));
         return NextResponse.json({
           general_settings: config[0]?.value || {},
-          _version: '2.14.718'
+        _version: '2.14.721'
       });
     } catch (err: any) {
       console.warn(`[Admin Config] General settings fetch failed, returning empty: ${err.message}`);
       return NextResponse.json({
         general_settings: {},
-          _version: '2.14.718'
+        _version: '2.14.721'
       });
       }
     }
 
     if (type === 'languages') {
-      const results = await dbWithTimeout(db.select().from(languages).orderBy(asc(languages.label))).catch(() => []);
+      const results = await dbWithTimeout(db.select().from(languages).orderBy(asc(languages.displayOrder))).catch(() => []);
       return NextResponse.json({ results });
     }
 
     if (type === 'genders') {
-      const results = await dbWithTimeout(db.select().from(genders).orderBy(asc(genders.label))).catch(() => []);
+      const results = await dbWithTimeout(db.select().from(genders).orderBy(asc(genders.displayOrder))).catch(() => []);
       return NextResponse.json({ results });
     }
 
     if (type === 'journeys') {
-      const results = await dbWithTimeout(db.select().from(journeys).orderBy(asc(journeys.label))).catch(() => []);
+      const results = await dbWithTimeout(db.select().from(journeys).orderBy(asc(journeys.displayOrder))).catch(() => []);
       return NextResponse.json({ results });
     }
 
     if (type === 'media_types') {
-      const results = await dbWithTimeout(db.select().from(mediaTypes).orderBy(asc(mediaTypes.label))).catch(() => []);
+      const results = await dbWithTimeout(db.select().from(mediaTypes).orderBy(asc(mediaTypes.displayOrder))).catch(() => []);
       return NextResponse.json({ results });
     }
 

@@ -77,73 +77,40 @@ export class VoiceFilterEngine {
     if (criteria.languageId != null) {
       result = result.filter(actor => {
         // 🛡️ CHRIS-PROTOCOL: NATIVE-ONLY LOGIC
-        // De taalfilter is de moedertaal. Punt.
-        // We matchen op de ID die vanuit de dropdown komt.
         if (actor.native_lang_id === criteria.languageId) return true;
-        if (actor.native_language_id === criteria.languageId) return true; // 🛡️ TRINITY-FIX: Handle both property names
+        if (actor.native_language_id === criteria.languageId) return true;
 
-        // 🛡️ FALLBACK: Als de ID-koppeling in de database ontbreekt (slop), 
-        // kijken we naar de native_lang string als laatste redmiddel.
-        const dbCode = MarketManager.getLanguageCode(actor.native_lang || '').toLowerCase();
-        const targetCode = Object.entries({
-          1: 'nl-be', 2: 'nl-nl', 3: 'fr-be', 4: 'fr-fr', 
-          5: 'en-gb', 6: 'en-us', 7: 'de-de', 8: 'es-es',
-          9: 'it-it', 10: 'pl-pl', 11: 'da-dk'
-        }).find(([id]) => Number(id) === criteria.languageId)?.[1];
-
-        // 🛡️ BE-FIX: Voor de Belgische markt (ID 3) accepteren we ook algemene 'fr' 
-        // moedertaalsprekers die in België (BE) wonen.
-        // CHRIS-PROTOCOL: We checken strikt op country_id 1 (België) of country code 'be'.
-        if (criteria.languageId === 3 && (dbCode === 'fr' || dbCode === 'frans') && (actor.country_id === 1 || actor.country === 'be')) {
-          return true;
+        // 🛡️ CHRIS-PROTOCOL: Handshake Fallback (v2.14.716)
+        // We check the global registry for code-based matches if ID link is missing.
+        const g = global as any;
+        const registry = g.handshakeLanguages || [];
+        const targetLang = registry.find((l: any) => l.id === criteria.languageId);
+        
+        if (targetLang) {
+          const dbCode = MarketManager.getLanguageCode(actor.native_lang || '').toLowerCase();
+          if (dbCode === targetLang.code.toLowerCase()) return true;
         }
-
-        // 🛡️ FR-FIX: Voor de Franse markt (ID 4) accepteren we ook algemene 'fr'
-        // moedertaalsprekers die in Frankrijk (FR) wonen.
-        if (criteria.languageId === 4 && (dbCode === 'fr' || dbCode === 'frans') && (actor.country_id === 2 || actor.country === 'fr')) {
-          return true;
-        }
-
-        if (targetCode && dbCode === targetCode) return true;
 
         return false;
       });
     } else if (criteria.language && criteria.language !== 'all') {
-      // CHRIS-PROTOCOL: Fallback to label matching if ID is missing (Legacy/Initial Load)
+      // CHRIS-PROTOCOL: Fallback to label matching if ID is missing
       const lowLang = criteria.language.toLowerCase();
       const dbCode = MarketManager.getLanguageCode(lowLang).toLowerCase();
       
-      // 🛡️ TRINITY-FIX: Map label to ID for robust matching
-      const labelToIdMap: Record<string, number> = {
-        'nl-be': 1, 'vlaams': 1,
-        'nl-nl': 2, 'nederlands': 2,
-        'fr-be': 3, 'frans (be)': 3,
-        'fr-fr': 4, 'frans': 4,
-        'en-gb': 5, 'engels': 5,
-        'en-us': 6,
-        'de-de': 7, 'duits': 7,
-        'es-es': 8, 'spaans': 8,
-        'it-it': 9, 'italiaans': 9
-      };
-      const targetId = labelToIdMap[dbCode] || labelToIdMap[lowLang];
+      const g = global as any;
+      const registry = g.handshakeLanguages || [];
+      const targetLang = registry.find((l: any) => l.code.toLowerCase() === dbCode || l.label.toLowerCase() === lowLang);
 
       result = result.filter(actor => {
-        // 🛡️ CHRIS-PROTOCOL: Prioritize ID matching even in label branch
-        if (targetId && (actor.native_lang_id === targetId || actor.native_language_id === targetId)) return true;
+        if (targetLang && (actor.native_lang_id === targetLang.id || actor.native_language_id === targetLang.id)) return true;
 
         const actorNative = actor.native_lang?.toLowerCase();
-        const actorNativeLabel = actor.native_lang_label?.toLowerCase();
-        
-        // 🛡️ CHRIS-PROTOCOL: NATIVE-ONLY LOGIC
-        // De taalfilter is de moedertaal. Punt.
-        const isMatch = (
+        return (
           actorNative === dbCode || 
           actorNative === lowLang || 
-          actorNativeLabel === lowLang ||
           this.isLanguageVariationMatch(dbCode, actorNative)
         );
-
-        return isMatch;
       });
     }
 

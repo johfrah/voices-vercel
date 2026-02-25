@@ -8,11 +8,31 @@ import { CommercialMediaType, SlimmeKassa } from '@/lib/engines/pricing-engine';
 import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
 import { cn } from '@/lib/utils';
+import { Actor } from '@/types';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Clock, Globe, Megaphone, Mic2, Phone, Radio, Search as SearchIcon, Star, Tv, Type, User, Users, Video } from 'lucide-react';
+import { CheckCircle2, ChevronRight, Clock, Globe, Info, Loader2, Megaphone, Mic, Mic2, Minus, Music as MusicIcon, Paperclip, Pause, Phone, Play, Plus, Radio, Search as SearchIcon, ShieldCheck, ShoppingBag, Sparkles, Star, Tv, Type, Upload, User, Users, Video, X, Zap } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import React, { useEffect, useMemo, useState } from 'react';
 import { ActorReorderModal } from './ActorReorderModal';
+import { AgencyFilterSheet } from './AgencyFilterSheet';
+import { ContainerInstrument, FlagBE, FlagDE, FlagDK, FlagES, FlagFR, FlagIT, FlagNL, FlagPL, FlagPT, FlagUK, FlagUS, TextInstrument } from './LayoutInstruments';
+import { OrderStepsInstrument } from './OrderStepsInstrument';
+import { VoiceglotImage } from './VoiceglotImage';
+import { VoiceglotText } from './VoiceglotText';
+import { VoicesDropdown } from './VoicesDropdown';
+import { VoicesWordSlider } from './VoicesWordSlider';
+
+interface VoicesMasterControlProps {
+  actors?: Actor[];
+  filters?: any;
+  availableExtraLangs?: string[];
+  minimalMode?: boolean;
+  languagesData?: any[];
+  gendersData?: any[];
+  journeysData?: any[];
+  mediaTypesData?: any[];
+  countriesData?: any[];
+}
 
 // 🛡️ CHRIS-PROTOCOL: Icon Registry for Handshake Truth (v2.14.716)
 // We use a centralized IconInstrument to render icons from database strings.
@@ -87,12 +107,13 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
   languagesData = [],
   gendersData = [],
   journeysData = [],
-  mediaTypesData = []
+  mediaTypesData = [],
+  countriesData = []
 }) => {
   const { playClick, playSwell } = useSonicDNA();
   const { t, language } = useTranslation();
   const { state, updateJourney, updateFilters, updateStep, resetFilters } = useMasterControl();
-  const { state: checkoutState, updateUsage } = useCheckout();
+  const { state: checkoutState, updateUsage, updateSecondaryLanguages, updateCountry } = useCheckout();
   const { isAdmin } = useAuth();
   const pathname = usePathname();
   const [isSheetOpen, setIsSheetOpen] = useState(false);
@@ -164,11 +185,11 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
     return revMap[checkoutState.usage] || 'video';
   }, [state.journey, checkoutState.usage]);
 
-  const sortedLanguages = useMemo(() => {
+  const mappedLanguages = useMemo(() => {
     const host = typeof window !== 'undefined' ? window.location.host : (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || MarketManager.getMarketDomains()['BE'].replace('https://', ''));
     const market = MarketManager.getCurrentMarket(host);
     
-  // 🛡️ CHRIS-PROTOCOL: Map extra languages available for each primary language
+    // 🛡️ CHRIS-PROTOCOL: Map extra languages available for each primary language
     const getExtraLangsFor = (primary: string, primaryValue: any) => {
       const lowPrimary = String(primary || '').toLowerCase();
       const lowPrimaryValue = String(primaryValue || '').toLowerCase();
@@ -182,7 +203,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
       if (actors && Array.isArray(actors)) {
         actors.forEach(a => {
           const actorNative = a.native_lang?.toLowerCase();
-          const actorNativeId = a.native_lang_id || a.native_language_id;
+          const actorNativeId = a.native_lang_id;
           
           //  CHRIS-PROTOCOL: Match native language by ID or code/label
           const isMatch = (typeof primaryValue === 'number' && actorNativeId === primaryValue) ||
@@ -219,65 +240,60 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
       return result;
     };
 
-    const languageConfig = languagesData.length > 0 
-      ? languagesData.map(l => ({
-          label: l.label,
-          value: l.id,
-          langCode: l.code,
-          icon: ICON_MAP[l.icon] || Globe, // 🛡️ CHRIS-PROTOCOL: Handshake Truth (v2.14.714)
-          popular: market.popular_languages.some(pl => 
-            pl.toLowerCase() === l.code.toLowerCase() || 
-            pl.toLowerCase() === l.label.toLowerCase()
-          )
-        }))
-      : [];
+    const languageConfig = languagesData.map(l => ({
+      label: l.label,
+      value: l.id,
+      langCode: l.code,
+      icon: l.icon,
+      popular: l.isPopular || market.popular_languages.some(pl => 
+        pl.toLowerCase() === l.code.toLowerCase() || 
+        pl.toLowerCase() === l.label.toLowerCase()
+      )
+    }));
 
     const mappedConfig = languageConfig.map(langObj => ({
       ...langObj,
+      icon: (props: any) => {
+        if (langObj.icon && langObj.icon.startsWith('Flag')) {
+          const Flag = (langObj.icon === 'FlagBE') ? FlagBE :
+                       (langObj.icon === 'FlagNL') ? FlagNL :
+                       (langObj.icon === 'FlagFR') ? FlagFR :
+                       (langObj.icon === 'FlagUK') ? FlagUK :
+                       (langObj.icon === 'FlagUS') ? FlagUS :
+                       (langObj.icon === 'FlagDE') ? FlagDE :
+                       (langObj.icon === 'FlagES') ? FlagES :
+                       (langObj.icon === 'FlagIT') ? FlagIT :
+                       (langObj.icon === 'FlagPL') ? FlagPL :
+                       (langObj.icon === 'FlagDK') ? FlagDK :
+                       (langObj.icon === 'FlagPT') ? FlagPT : Globe;
+          return <Flag {...props} />;
+        }
+        return <IconInstrument name={langObj.icon || 'globe'} {...props} />;
+      },
       availableExtraLangs: activeJourneyId === 'telephony' ? getExtraLangsFor(langObj.label, langObj.value) : []
     }));
 
-    const popularLangs = mappedConfig.filter(l => l.popular);
-    const otherLangs = mappedConfig.filter(l => !l.popular);
+    return mappedConfig;
+  }, [languagesData, activeJourneyId, actors]);
 
-    const sortFn = (a: any, b: any) => {
-      //  CHRIS-PROTOCOL: Universal Market-specific priority sorting (Bob-methode)
-      const primaryLangCode = MarketManager.getLanguageCode(market.primary_language);
-      
-      const getPriority = (code: string) => {
-        if (code === primaryLangCode) return 1;
-        
-        const popularIndex = market.popular_languages.findIndex(l => MarketManager.getLanguageCode(l) === code);
-        if (popularIndex !== -1) return 2 + popularIndex;
-        
-        if (code.startsWith('en')) return 50;
-        
-        return 100;
-      };
-      
-      const scoreA = getPriority(a.langCode);
-      const scoreB = getPriority(b.langCode);
-      
-      if (scoreA !== scoreB) return scoreA - scoreB;
-      
-      // Specifieke fix voor Frans (BE) vs Frans (FR) in de Belgische markt
-      if (market.market_code === 'BE' && a.langCode.startsWith('fr') && b.langCode.startsWith('fr')) {
-        if (a.icon === FlagBE) return -1;
-        if (b.icon === FlagBE) return 1;
-      }
+  const sortedLanguages = useMemo(() => {
+    const host = typeof window !== 'undefined' ? window.location.host : (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || MarketManager.getMarketDomains()['BE'].replace('https://', ''));
+    const market = MarketManager.getCurrentMarket(host);
+    
+    const popularLangs = mappedLanguages.filter(l => l.popular);
+    const otherLangs = mappedLanguages.filter(l => !l.popular);
 
-      return a.label.localeCompare(b.label);
-    };
-
+    // 🛡️ CHRIS-PROTOCOL: Handshake Truth Sorting (v2.14.716)
+    // We trust the database display_order.
     const result = [
       { label: t('filter.popular_languages', 'POPULAIRE TALEN'), value: '', isHeader: true, popular: true },
-      ...popularLangs.sort(sortFn),
+      ...popularLangs,
       { label: t('filter.other_languages', 'OVERIGE TALEN'), value: '', isHeader: true },
-      ...otherLangs.sort(sortFn)
+      ...otherLangs
     ];
 
     return result;
-  }, [languagesData, activeJourneyId, actors, t]);
+  }, [mappedLanguages, t]);
 
   return (
     <ContainerInstrument className={cn("w-full mx-auto space-y-8 px-0", !minimalMode && "max-w-[1440px]")}>
@@ -326,13 +342,13 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                   <Icon size={20} strokeWidth={isActive ? 2 : 1.5} className={cn("transition-all duration-500 shrink-0 md:w-6 md:h-6", isActive && j.color)} />
                   <div className="flex flex-col">
                     <span className="text-[12px] md:text-[14px] font-bold tracking-widest leading-none mb-1 whitespace-nowrap">
-                      <VoiceglotText translationKey={j.key} defaultText={j.label} instrument="label" context={`Navigatie journey label: ${j.label}`} />
+                      <VoiceglotText translationKey={j.key} defaultText={j.label} />
                     </span>
                     <span className={cn(
                       "text-[9px] md:text-[10px] font-medium tracking-wider uppercase opacity-60 whitespace-nowrap",
                       isActive ? "text-white/80" : "text-va-black/40 group-hover/btn:text-va-black/60"
                     )}>
-                      <VoiceglotText translationKey={`${j.key}.sub`} defaultText={j.subLabel} instrument="label" context={`Navigatie journey sub-label: ${j.subLabel}`} />
+                      <VoiceglotText translationKey={`${j.key}.sub`} defaultText={j.subLabel} />
                     </span>
                   </div>
                   {isActive && <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse ml-auto hidden md:block" />}
@@ -393,21 +409,34 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                               if (isId) {
                                 const langId = Number(lang);
                                 const currentIds = state.filters.languageIds || [state.filters.languageId].filter(Boolean) as number[];
+                                let newIds: number[];
                                 if (currentIds.includes(langId)) {
-                                  updateFilters({ languageIds: currentIds.filter(id => id !== langId) });
+                                  newIds = currentIds.filter(id => id !== langId);
                                 } else {
-                                  updateFilters({ languageIds: [...currentIds, langId] });
+                                  newIds = [...currentIds, langId];
                                 }
+                                updateFilters({ languageIds: newIds });
+                                
+                                // Sync with CheckoutContext
+                                const labels = newIds.map(id => languagesData.find(l => l.id === id)?.label).filter(Boolean) as string[];
+                                updateSecondaryLanguages(labels, newIds);
                               } else {
                                 // Resolve label to ID if possible
-                                const langId = sortedLanguages.find(langOpt => typeof langOpt === 'object' && langOpt.label === lang)?.value;
-                                if (typeof langId === 'number') {
+                                const langMatch = languagesData.find(l => l.label === lang || l.code === lang);
+                                if (langMatch) {
+                                  const langId = langMatch.id;
                                   const currentIds = state.filters.languageIds || [state.filters.languageId].filter(Boolean) as number[];
+                                  let newIds: number[];
                                   if (currentIds.includes(langId)) {
-                                    updateFilters({ languageIds: currentIds.filter(id => id !== langId) });
+                                    newIds = currentIds.filter(id => id !== langId);
                                   } else {
-                                    updateFilters({ languageIds: [...currentIds, langId] });
+                                    newIds = [...currentIds, langId];
                                   }
+                                  updateFilters({ languageIds: newIds });
+                                  
+                                  // Sync with CheckoutContext
+                                  const labels = newIds.map(id => languagesData.find(l => l.id === id)?.label).filter(Boolean) as string[];
+                                  updateSecondaryLanguages(labels, newIds);
                                   return;
                                 }
 
@@ -423,7 +452,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                             onChange={(val) => {
                               if (typeof val === 'number') {
                                 //  CHRIS-PROTOCOL: ID-First Selection (Handshake Truth)
-                                const optMatch = sortedLanguages.find(langOpt => typeof langOpt === 'object' && langOpt.value === val);
+                                const optMatch = mappedLanguages.find(langOpt => langOpt.value === val);
                                 updateFilters({
                                   languageId: val,
                                   languageIds: [val],
@@ -438,7 +467,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                                 });
                               } else {
                                 // ISO Code or Label selected
-                                const optMatch = sortedLanguages.find(langOpt => typeof langOpt === 'object' && (langOpt.langCode === val || langOpt.value === val));
+                                const optMatch = mappedLanguages.find(langOpt => langOpt.langCode === val || langOpt.value === val);
                                 if (optMatch && typeof optMatch.value === 'number') {
                                   updateFilters({
                                     languageId: optMatch.value,
@@ -509,7 +538,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                           isVideo={state.journey === 'video'}
                           value={state.filters.words && state.filters.words >= 5 ? state.filters.words : (state.journey === 'telephony' ? 25 : 200)}
                           onChange={(val) => updateFilters({ words: val })}
-                          disabled={state.currentStep === 'script'}
+                          disabled={state.currentStep !== 'voice'}
                           label={t('filter.quantity', 'Hoeveelheid?')}
                           className="flex-1 h-full animate-in fade-in slide-in-from-left-4 duration-500"
                         />
@@ -643,21 +672,41 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                           <VoicesDropdown
                             searchable
                             rounding="right"
-                            options={[
-                              { label: t('country.be', language === 'fr' ? 'Belgique' : language === 'en' ? 'Belgium' : 'België'), value: 'BE' },
-                              { label: t('country.nl', language === 'fr' ? 'Pays-Bas' : language === 'en' ? 'Netherlands' : 'Nederland'), value: 'NL' },
-                              { label: t('country.fr', language === 'fr' ? 'France' : language === 'en' ? 'France' : 'Frankrijk'), value: 'FR' },
-                              { label: t('country.de', language === 'fr' ? 'Allemagne' : language === 'en' ? 'Germany' : 'Duitsland'), value: 'DE' },
-                              { label: t('country.uk', language === 'fr' ? 'Royaume-Uni' : language === 'en' ? 'United Kingdom' : 'Verenigd Koninkrijk'), value: 'UK' },
-                              { label: t('country.us', language === 'fr' ? 'États-Unis' : language === 'en' ? 'United States' : 'Verenigde Staten'), value: 'US' },
-                              { label: t('country.es', language === 'fr' ? 'Espagne' : language === 'en' ? 'Spain' : 'Spanje'), value: 'ES' },
-                              { label: t('country.pt', language === 'fr' ? 'Portugal' : language === 'en' ? 'Portugal' : 'Portugal'), value: 'PT' },
-                              { label: t('country.it', language === 'fr' ? 'Italie' : language === 'en' ? 'Italy' : 'Italië'), value: 'IT' },
-                            ]}
-                            value={state.filters.countries || [state.filters.country || 'BE']}
+                            options={countriesData.length > 0 
+                              ? countriesData.map((c: any) => ({
+                                  label: t(`country.${c.code.toLowerCase()}`, c.label),
+                                  value: c.id,
+                                  code: c.code
+                                }))
+                              : [
+                                  { label: t('country.be', language === 'fr' ? 'Belgique' : language === 'en' ? 'Belgium' : 'België'), value: 'BE' },
+                                  { label: t('country.nl', language === 'fr' ? 'Pays-Bas' : language === 'en' ? 'Netherlands' : 'Nederland'), value: 'NL' },
+                                  { label: t('country.fr', language === 'fr' ? 'France' : language === 'en' ? 'France' : 'Frankrijk'), value: 'FR' },
+                                  { label: t('country.de', language === 'fr' ? 'Allemagne' : language === 'en' ? 'Germany' : 'Duitsland'), value: 'DE' },
+                                  { label: t('country.uk', language === 'fr' ? 'Royaume-Uni' : language === 'en' ? 'United Kingdom' : 'Verenigd Koninkrijk'), value: 'UK' },
+                                  { label: t('country.us', language === 'fr' ? 'États-Unis' : language === 'en' ? 'United States' : 'Verenigde Staten'), value: 'US' },
+                                  { label: t('country.es', language === 'fr' ? 'Espagne' : language === 'en' ? 'Spain' : 'Spanje'), value: 'ES' },
+                                  { label: t('country.pt', language === 'fr' ? 'Portugal' : language === 'en' ? 'Portugal' : 'Portugal'), value: 'PT' },
+                                  { label: t('country.it', language === 'fr' ? 'Italie' : language === 'en' ? 'Italy' : 'Italië'), value: 'IT' },
+                                ]
+                            }
+                            value={state.filters.countryId || state.filters.countries || [state.filters.country || 'BE']}
                             onChange={(val) => {
-                              const countries = Array.isArray(val) ? val : (val ? [val] : []);
-                              updateFilters({ countries: countries as any });
+                              const vals = Array.isArray(val) ? val : (val ? [val] : []);
+                              const firstVal = vals[0];
+                              
+                              if (typeof firstVal === 'number') {
+                                const match = countriesData.find((c: any) => c.id === firstVal);
+                                updateFilters({ 
+                                  countryId: firstVal,
+                                  country: match?.code || undefined,
+                                  countries: vals as any
+                                });
+                                updateCountry(match?.code || 'BE', firstVal);
+                              } else {
+                                updateFilters({ countries: vals as any });
+                                updateCountry(vals as any);
+                              }
                             }}
                             placeholder={t('filter.select_countries', language === 'fr' ? 'Choisir pays' : language === 'en' ? 'Select countries' : 'Kies land(en)')}
                             label={t('filter.broadcast_area', language === 'fr' ? 'Zone de diffusion?' : language === 'en' ? 'Broadcast area?' : 'Uitzendgebied?')}

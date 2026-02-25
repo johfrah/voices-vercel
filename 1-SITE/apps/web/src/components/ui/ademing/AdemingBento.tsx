@@ -32,19 +32,19 @@ export const AdemingBento = ({ tracks, initialTrack }: AdemingBentoProps) => {
         <AdemingHero />
 
         {/* Main Container - Literal max-width 6xl from kelder */}
-        <div className="max-w-6xl mx-auto px-6 space-y-32 py-24">
+        <div className="max-w-6xl mx-auto px-6 space-y-40 py-32">
           
           {/* Filters Section - Original spacing and depth */}
-          <section className="bg-gradient-to-br from-primary/5 via-background to-primary/10 rounded-[40px] p-10 md:p-16 border border-primary/10 shadow-soft animate-fade-in">
-            <div className="mb-12 text-center space-y-4">
-              <h2 className="text-4xl md:text-5xl font-serif font-bold tracking-tight">
+          <section className="bg-gradient-to-br from-primary/5 via-background to-primary/10 rounded-[48px] p-12 md:p-24 border border-primary/10 shadow-soft animate-fade-in">
+            <div className="mb-16 text-center space-y-6">
+              <h2 className="text-5xl md:text-6xl font-serif font-bold tracking-tight">
                 <VoiceglotText translationKey="home.filters.title" defaultText="Vind jouw perfecte meditatie" />
               </h2>
-              <p className="text-muted-foreground text-xl font-light">
+              <p className="text-muted-foreground text-2xl font-light max-w-2xl mx-auto">
                 <VoiceglotText translationKey="home.filters.subtitle" defaultText="Kies wat je zoekt en ontdek meditaties op maat" />
               </p>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
               <VoicesDropdown 
                 placeholder="🎯 Kies een thema"
                 options={[

@@ -56,49 +56,57 @@ export const AdemingTrackCard = ({ track, onClick, variant = "default" }: Ademin
 
   return (
     <motion.div 
-      whileHover={{ y: -5 }}
+      whileHover={{ y: -8, scale: 1.02 }}
       onClick={onClick}
-      className="bg-white rounded-2xl overflow-hidden shadow-soft hover:shadow-medium transition-all cursor-pointer group"
+      className="bg-white rounded-[32px] overflow-hidden shadow-soft hover:shadow-medium transition-all duration-500 cursor-pointer group"
     >
-      <div className="relative aspect-square">
+      <div className="relative aspect-[4/5]">
         <img 
           src={track.cover_image_url} 
           alt="" 
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000" 
+          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" 
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent group-hover:from-black/70 transition-colors" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity" />
         
-        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all scale-75 group-hover:scale-100">
-          <div className="w-12 h-12 rounded-full bg-white text-black flex items-center justify-center shadow-lg">
-            <Play size={20} fill="currentColor" className="ml-1" />
+        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all scale-75 group-hover:scale-100 duration-500">
+          <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white flex items-center justify-center shadow-2xl">
+            <Play size={28} fill="currentColor" className="ml-1" />
           </div>
         </div>
 
         {track.element && (
           <div className={cn(
-            "absolute bottom-3 left-3 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest z-10",
-            elementColors[track.element] || "bg-primary text-white"
+            "absolute top-6 left-6 px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-[0.2em] z-10 backdrop-blur-md border border-white/20",
+            elementColors[track.element] || "bg-primary/20 text-white"
           )}>
             {track.element}
           </div>
         )}
       </div>
 
-      <div className="p-5 space-y-2">
-        <h3 className="font-serif text-xl font-semibold text-foreground line-clamp-1">
+      <div className="p-8 space-y-4">
+        <h3 className="font-serif text-2xl font-bold text-foreground line-clamp-1 group-hover:text-primary transition-colors">
           {track.title}
         </h3>
-        <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
+        <p className="text-muted-foreground line-clamp-2 leading-relaxed font-light">
           {track.short_description || "Een moment van rust."}
         </p>
         
-        <div className="pt-2 flex items-center justify-between">
-          <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest">
-            {track.maker || "Julie"}
-          </span>
-          <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest">
-            {track.duration ? `${Math.floor(track.duration / 60)} min` : "10 min"}
-          </span>
+        <div className="pt-4 flex items-center justify-between border-t border-black/5">
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
+              <User size={12} className="text-primary" />
+            </div>
+            <span className="text-[11px] font-bold text-va-black/40 uppercase tracking-widest">
+              {track.maker || "Julie"}
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Clock size={12} className="text-va-black/20" />
+            <span className="text-[11px] font-bold text-va-black/40 uppercase tracking-widest">
+              {track.duration ? `${Math.floor(track.duration / 60)} min` : "10 min"}
+            </span>
+          </div>
         </div>
       </div>
     </motion.div>

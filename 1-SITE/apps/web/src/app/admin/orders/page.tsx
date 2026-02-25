@@ -367,64 +367,97 @@ export default function BestellingenPage() {
                         {isExpanding ? (
                           <div className="flex items-center gap-3 text-va-black/20 font-light italic">
                             <Loader2 className="animate-spin" size={16} />
-                            Atomic data ophalen...
+                            Order Intelligentie ophalen...
                           </div>
                         ) : expandedOrderData ? (
-                          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 animate-in fade-in slide-in-from-left duration-500">
-                            {/* V2 Atomic Truth */}
-                            <div className="space-y-6">
-                              <HeadingInstrument level={4} className="text-[11px] font-bold tracking-[0.2em] text-primary uppercase">Nuclear V2 Truth</HeadingInstrument>
-                              <div className="bg-white p-6 rounded-[15px] border border-primary/10 shadow-sm space-y-4">
+                          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 animate-in fade-in slide-in-from-left duration-500">
+                            
+                            {/* 💰 FINANCIEEL (V2) */}
+                            <div className="space-y-4">
+                              <HeadingInstrument level={4} className="text-[10px] font-bold tracking-[0.2em] text-primary uppercase">Financieel Overzicht</HeadingInstrument>
+                              <div className="bg-white p-5 rounded-[15px] border border-primary/10 shadow-sm space-y-3">
                                 <div className="flex justify-between border-b border-black/5 pb-2">
-                                  <span className="text-[12px] text-va-black/40 font-light">Netto Bedrag</span>
-                                  <span className="text-[14px] font-medium">€{parseFloat(expandedOrderData.amount_net || 0).toFixed(2)}</span>
-                                </div>
-                                <div className="flex justify-between border-b border-black/5 pb-2">
-                                  <span className="text-[12px] text-va-black/40 font-light">Journey ID</span>
-                                  <span className="text-[14px] font-medium">{expandedOrderData.journey_id || 'N/A'}</span>
+                                  <span className="text-[12px] text-va-black/40 font-light">Netto Omzet</span>
+                                  <span className="text-[14px] font-medium">€{expandedOrderData.finance?.net || '0.00'}</span>
                                 </div>
                                 <div className="flex justify-between border-b border-black/5 pb-2">
-                                  <span className="text-[12px] text-va-black/40 font-light">PO Nummer</span>
-                                  <span className="text-[14px] font-medium text-primary">{expandedOrderData.purchase_order || '-'}</span>
+                                  <span className="text-[12px] text-va-black/40 font-light">Inkoop (COG)</span>
+                                  <span className="text-[14px] font-medium text-va-black/60">€{expandedOrderData.finance?.cost || '0.00'}</span>
                                 </div>
-                                <div className="flex justify-between">
-                                  <span className="text-[12px] text-va-black/40 font-light">Status ID</span>
-                                  <span className="text-[14px] font-medium">{expandedOrderData.status_id || '1 (Voltooid)'}</span>
+                                <div className="flex justify-between pt-1">
+                                  <span className="text-[12px] font-medium text-primary">Marge</span>
+                                  <div className="text-right">
+                                    <div className="text-[14px] font-bold text-primary">€{expandedOrderData.finance?.margin || '0.00'}</div>
+                                    <div className="text-[10px] text-primary/60 font-medium uppercase tracking-wider">{expandedOrderData.finance?.marginPercentage || '0%'}</div>
+                                  </div>
                                 </div>
+                              </div>
+                              <div className="text-[11px] text-va-black/30 font-light italic px-1">
+                                Betaalmethode: {expandedOrderData.finance?.method || 'Onbekend'}
                               </div>
                             </div>
 
-                            {/* Legacy Rugzak (Atomic) */}
-                            <div className="space-y-6">
-                              <HeadingInstrument level={4} className="text-[11px] font-bold tracking-[0.2em] text-va-black/20 uppercase">Legacy Rugzak (Raw)</HeadingInstrument>
-                              <div className="bg-va-off-white/50 p-6 rounded-[15px] border border-black/[0.03] space-y-4 max-h-[300px] overflow-y-auto scrollbar-hide">
-                                {expandedOrderData.raw_meta ? (
-                                  Object.entries(expandedOrderData.raw_meta).filter(([k]) => !k.startsWith('_')).map(([key, value]) => (
-                                    <div key={key} className="flex flex-col border-b border-black/5 pb-2">
-                                      <span className="text-[10px] text-va-black/30 uppercase tracking-wider">{key}</span>
-                                      <span className="text-[12px] font-light break-all">{typeof value === 'object' ? JSON.stringify(value) : String(value)}</span>
+                            {/* 🎭 PRODUCTIE & BRIEFING (V2) */}
+                            <div className="md:col-span-2 space-y-4">
+                              <HeadingInstrument level={4} className="text-[10px] font-bold tracking-[0.2em] text-va-black/20 uppercase Raleway">Productie & Briefing</HeadingInstrument>
+                              <div className="bg-white p-5 rounded-[15px] border border-black/[0.03] shadow-sm space-y-4 min-h-[140px]">
+                                {expandedOrderData.production?.briefing?.text ? (
+                                  <div className="space-y-3">
+                                    <div className="text-[13px] font-light leading-relaxed text-va-black/80 max-h-[120px] overflow-y-auto pr-2 custom-scrollbar">
+                                      {expandedOrderData.production.briefing.text.split('\n').map((line: string, i: number) => (
+                                        <p key={i} className="mb-2">
+                                          {line.split(/(\(.*?\))/g).map((part, j) => 
+                                            part.startsWith('(') && part.endsWith(')') ? 
+                                              <span key={j} className="text-primary font-medium bg-primary/5 px-1 rounded">{part}</span> : part
+                                          )}
+                                        </p>
+                                      ))}
                                     </div>
-                                  ))
+                                    {expandedOrderData.production.briefing.audioLink && (
+                                      <a href={expandedOrderData.production.briefing.audioLink} target="_blank" className="inline-flex items-center gap-2 text-[11px] text-primary hover:underline font-medium">
+                                        <ShoppingBag size={12} /> Audio Referentie Openen
+                                      </a>
+                                    )}
+                                  </div>
                                 ) : (
-                                  <div className="text-[12px] italic text-va-black/20">Geen rugzak data gevonden.</div>
+                                  <div className="text-[13px] italic text-va-black/20 flex items-center justify-center h-full">Geen briefing gevonden.</div>
                                 )}
                               </div>
+                              
+                              {/* Participant Info voor Studio/Academy */}
+                              {expandedOrderData.production?.participants && (
+                                <div className="bg-va-black/5 p-4 rounded-[12px] border border-black/5">
+                                  <div className="text-[10px] uppercase tracking-widest text-va-black/40 mb-1 font-bold">Deelnemers</div>
+                                  <div className="text-[12px] font-light">{typeof expandedOrderData.production.participants === 'string' ? expandedOrderData.production.participants : JSON.stringify(expandedOrderData.production.participants)}</div>
+                                </div>
+                              )}
                             </div>
 
-                            {/* Quick Actions */}
-                            <div className="space-y-6">
-                              <HeadingInstrument level={4} className="text-[11px] font-bold tracking-[0.2em] text-va-black/20 uppercase">Quick Actions</HeadingInstrument>
-                              <div className="grid grid-cols-1 gap-3">
-                                <ButtonInstrument as={Link} href={`/admin/orders/${order.id}`} className="va-btn-pro !bg-va-black w-full flex items-center justify-center gap-2">
-                                  <ExternalLink size={14} />
-                                  Volledige Detailpagina
-                                </ButtonInstrument>
-                                <ButtonInstrument className="va-btn-pro !bg-va-off-white !text-va-black/60 w-full flex items-center justify-center gap-2">
-                                  <FileText size={14} />
-                                  Download Factuur
-                                </ButtonInstrument>
+                            {/* ⚡ ACTIES (V2) */}
+                            <div className="space-y-4">
+                              <HeadingInstrument level={4} className="text-[10px] font-bold tracking-[0.2em] text-va-black/20 uppercase">Regiekamer Acties</HeadingInstrument>
+                              <div className="flex flex-col gap-2">
+                                {expandedOrderData.actions?.needsPO && (
+                                  <button className="w-full py-2.5 px-4 bg-orange-500 text-white rounded-[10px] text-[12px] font-medium hover:bg-orange-600 transition-all shadow-sm flex items-center justify-center gap-2">
+                                    <AlertCircle size={14} /> Vraag PO-nummer aan
+                                  </button>
+                                )}
+                                {expandedOrderData.actions?.canGeneratePaymentLink && (
+                                  <button className="w-full py-2.5 px-4 bg-primary text-white rounded-[10px] text-[12px] font-medium hover:bg-primary/90 transition-all shadow-sm flex items-center justify-center gap-2">
+                                    <ExternalLink size={14} /> Genereer Betaallink
+                                  </button>
+                                )}
+                                {expandedOrderData.actions?.isYukiReady && (
+                                  <button className="w-full py-2.5 px-4 bg-va-black text-white rounded-[10px] text-[12px] font-medium hover:bg-va-black/90 transition-all shadow-sm flex items-center justify-center gap-2">
+                                    <RefreshCw size={14} /> Push naar Yuki
+                                  </button>
+                                )}
+                                <Link href={`/admin/orders/${order.id}`} className="w-full py-2.5 px-4 bg-va-off-white text-va-black/60 rounded-[10px] text-[12px] font-medium hover:bg-va-off-white/80 transition-all text-center flex items-center justify-center gap-2">
+                                  <ExternalLink size={14} /> Volledige Detailpagina
+                                </Link>
                               </div>
                             </div>
+
                           </div>
                         ) : (
                           <div className="text-center text-red-500 italic">Fout bij laden van data.</div>

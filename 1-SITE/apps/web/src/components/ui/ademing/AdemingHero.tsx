@@ -43,29 +43,33 @@ export const AdemingHero = () => {
           </div>
 
           {/* Social proof - literal replication of kelder avatars */}
-          <div className="pt-16 flex flex-wrap items-center justify-center gap-10 text-sm text-muted-foreground animate-fade-in" style={{ animationDelay: '0.6s' }}>
-            <div className="flex items-center gap-4">
+          <div className="pt-20 flex flex-wrap items-center justify-center gap-12 text-sm text-muted-foreground animate-fade-in" style={{ animationDelay: '0.6s' }}>
+            <div className="flex items-center gap-6 bg-white/40 backdrop-blur-md px-8 py-4 rounded-full border border-primary/5 shadow-soft">
               <div className="flex -space-x-4">
                 {[1, 2, 3, 4].map((i) => (
                   <div 
                     key={i} 
-                    className="w-12 h-12 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 border-2 border-background shadow-soft flex items-center justify-center text-[10px] font-bold text-primary/40" 
+                    className="w-14 h-14 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 border-4 border-background shadow-soft flex items-center justify-center text-[10px] font-bold text-primary/40" 
                   >
-                    {i}
+                    <img src={`/assets/ademing/user-${i}.jpg`} alt="" className="w-full h-full object-cover rounded-full" onerror="this.style.display='none'" />
                   </div>
                 ))}
               </div>
-              <VoiceglotText 
-                translationKey="hero.social.users" 
-                defaultText="Meer dan 500 mensen vonden hun rust" 
-              />
+              <span className="text-lg font-medium">
+                <VoiceglotText 
+                  translationKey="hero.social.users" 
+                  defaultText="Meer dan 500 mensen vonden hun rust" 
+                />
+              </span>
             </div>
-            <div className="flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-primary animate-pulse" />
-              <VoiceglotText 
-                translationKey="hero.social.meditations" 
-                defaultText="50+ liefdevolle meditaties" 
-              />
+            <div className="flex items-center gap-3 bg-white/40 backdrop-blur-md px-8 py-4 rounded-full border border-primary/5 shadow-soft">
+              <Sparkles className="w-6 h-6 text-primary animate-pulse" />
+              <span className="text-lg font-medium">
+                <VoiceglotText 
+                  translationKey="hero.social.meditations" 
+                  defaultText="50+ liefdevolle meditaties" 
+                />
+              </span>
             </div>
           </div>
 

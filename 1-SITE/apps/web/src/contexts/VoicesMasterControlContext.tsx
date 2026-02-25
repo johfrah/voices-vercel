@@ -19,6 +19,7 @@ interface MasterControlState {
     languages?: string[];
     languageIds?: number[];
     gender: string | null;
+    genderId?: number | null;
     style: string | null;
     toneIds?: number[];
     sortBy: 'popularity' | 'delivery' | 'alphabetical' | 'alphabetical_az' | 'alphabetical_za';

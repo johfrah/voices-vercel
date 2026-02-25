@@ -33,7 +33,9 @@ interface CheckoutState {
   plan: PlanType;
   media: string[];
   country: string | string[]; // Updated to support array
+  countryId?: number; // 🛡️ Handshake Truth
   secondaryLanguages: string[]; // Added for telephony multi-language
+  secondaryLanguageIds?: number[]; // 🛡️ Handshake Truth
   prompts: number;
   spots: number;
   years: number;
@@ -102,8 +104,8 @@ interface CheckoutContextType {
   updateUsage: (usage: CheckoutState['usage']) => void;
   updatePlan: (plan: PlanType) => void;
   updateMedia: (media: CheckoutState['media']) => void;
-  updateCountry: (country: string | string[]) => void;
-  updateSecondaryLanguages: (languages: string[]) => void;
+  updateCountry: (country: string | string[], countryId?: number) => void;
+  updateSecondaryLanguages: (languages: string[], languageIds?: number[]) => void;
   updateSpots: (spots: number) => void;
   updateYears: (years: number) => void;
   updateSpotsDetail: (detail: Record<string, number>) => void;
@@ -371,8 +373,8 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       return newState;
     });
   }, []);
-  const updateCountry = useCallback((country: string | string[]) => setState(prev => ({ ...prev, country })), []);
-  const updateSecondaryLanguages = useCallback((languages: string[]) => setState(prev => ({ ...prev, secondaryLanguages: languages })), []);
+  const updateCountry = useCallback((country: string | string[], countryId?: number) => setState(prev => ({ ...prev, country, countryId })), []);
+  const updateSecondaryLanguages = useCallback((languages: string[], languageIds?: number[]) => setState(prev => ({ ...prev, secondaryLanguages: languages, secondaryLanguageIds: languageIds })), []);
   const updateSpots = useCallback((spots: number) => setState(prev => ({ ...prev, spots })), []);
   const updateYears = useCallback((years: number) => setState(prev => ({ ...prev, years })), []);
   const updateSpotsDetail = useCallback((detail: Record<string, number>) => setState(prev => ({ ...prev, spotsDetail: detail })), []);

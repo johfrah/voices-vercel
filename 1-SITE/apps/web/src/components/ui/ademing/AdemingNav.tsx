@@ -49,15 +49,17 @@ export const AdemingNav = () => {
         <div className="flex items-center gap-4">
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
-              <button className="p-2 hover:bg-black/5 rounded-full transition-colors group">
-                <Menu className="w-6 h-6 animate-breathe-wave-subtle" />
+              <button className="p-3 hover:bg-black/5 rounded-full transition-all group active:scale-90">
+                <Menu className="w-7 h-7 animate-breathe-wave-subtle" />
               </button>
             </SheetTrigger>
-            <SheetContent side="left" className="w-80 bg-background/95 backdrop-blur-xl border-r border-primary/5 p-8">
-              <div className="mb-12">
+            <SheetContent side="left" className="w-80 bg-background/95 backdrop-blur-xl border-r border-primary/5 p-0 overflow-y-auto">
+              <div className="p-8 border-b border-primary/5">
                 <Logo className="scale-90 origin-left" />
               </div>
-              <nav className="flex flex-col gap-2">
+              
+              <nav className="flex flex-col p-4 gap-1">
+                <p className="px-4 py-2 text-[10px] font-bold uppercase tracking-[0.2em] text-primary/40">Menu</p>
                 {navigationItems.map((item) => {
                   const isActive = pathname === item.path;
                   return (
@@ -66,20 +68,42 @@ export const AdemingNav = () => {
                       href={item.path}
                       onClick={() => setOpen(false)}
                       className={cn(
-                        "flex items-center gap-4 px-4 py-4 rounded-2xl transition-all duration-300",
+                        "flex items-center gap-4 px-4 py-3 rounded-2xl transition-all duration-300",
                         isActive 
                           ? "bg-primary/10 text-primary font-semibold shadow-soft" 
                           : "text-muted-foreground hover:bg-black/5 hover:translate-x-1"
                       )}
                     >
-                      <item.icon size={20} strokeWidth={isActive ? 2.5 : 1.5} />
-                      <span className="text-lg font-serif">{item.label}</span>
+                      <item.icon size={18} strokeWidth={isActive ? 2.5 : 1.5} />
+                      <span className="text-base font-serif">{item.label}</span>
                     </Link>
                   );
                 })}
               </nav>
-              <div className="absolute bottom-8 left-8 right-8">
-                <div className="p-6 rounded-[24px] bg-primary/5 border border-primary/10">
+
+              <div className="p-4 mt-4">
+                <p className="px-4 py-2 text-[10px] font-bold uppercase tracking-[0.2em] text-primary/40">Verkennen</p>
+                <div className="flex flex-col gap-1">
+                  {[
+                    { label: 'Thema\'s', icon: Sparkles, path: '/themas' },
+                    { label: 'Elementen', icon: Compass, path: '/elementen' },
+                    { label: 'Begeleiders', icon: Users, path: '/begeleiders' },
+                  ].map((item) => (
+                    <Link
+                      key={item.path}
+                      href={item.path}
+                      onClick={() => setOpen(false)}
+                      className="flex items-center gap-4 px-4 py-3 rounded-2xl text-muted-foreground hover:bg-black/5 transition-all"
+                    >
+                      <item.icon size={18} strokeWidth={1.5} />
+                      <span className="text-base font-serif">{item.label}</span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              <div className="mt-auto p-8">
+                <div className="p-6 rounded-[32px] bg-primary/5 border border-primary/10 shadow-soft">
                   <p className="text-xs font-bold uppercase tracking-widest text-primary/60 mb-2">Premium</p>
                   <p className="text-sm text-muted-foreground leading-relaxed mb-4">Ontgrendel alle meditaties en offline luisteren.</p>
                   <Link href="/premium" className="text-sm font-bold text-primary flex items-center gap-2 group">
@@ -96,10 +120,16 @@ export const AdemingNav = () => {
           <Logo />
         </div>
 
-        {/* Right: User/Account */}
-        <div className="flex items-center justify-end gap-2">
-          <Link href="/account" className="p-2 hover:bg-black/5 rounded-full transition-colors">
-            <User className="w-6 h-6" />
+        {/* Right: User/Actions */}
+        <div className="flex items-center justify-end gap-3">
+          <Link href="/favorieten" className="p-3 hover:bg-black/5 rounded-full transition-all hidden md:flex active:scale-90">
+            <Heart className="w-6 h-6" strokeWidth={1.5} />
+          </Link>
+          <Link href="/bibliotheek" className="p-3 hover:bg-black/5 rounded-full transition-all hidden md:flex active:scale-90">
+            <Library className="w-6 h-6" strokeWidth={1.5} />
+          </Link>
+          <Link href="/account" className="p-3 hover:bg-black/5 rounded-full transition-all active:scale-90 bg-primary/5 text-primary">
+            <User className="w-6 h-6" strokeWidth={2} />
           </Link>
         </div>
       </div>
