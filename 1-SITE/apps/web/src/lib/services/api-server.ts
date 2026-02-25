@@ -404,6 +404,7 @@ export async function getArticle(slug: string, lang: string = 'nl'): Promise<any
 }
 
 export async function getActor(slug: string, lang: string = 'nl'): Promise<Actor> {
+  console.error(` [api-server] getActor called for slug: "${slug}" (lang: ${lang})`);
   // 🛡️ CHRIS-PROTOCOL: Use SDK for consistency and field prioritization
   const cleanSlug = slug?.trim().toLowerCase();
   
