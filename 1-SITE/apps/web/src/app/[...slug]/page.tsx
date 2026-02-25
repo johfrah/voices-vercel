@@ -195,15 +195,13 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
   //  CHRIS-PROTOCOL: Helper voor meertalige SEO via Voiceglot
   const getTranslatedSEO = async (key: string, defaultText: string) => {
     try {
-      // 🛡️ CHRIS-PROTOCOL: Use SDK for stability (v2.14.273)
-      const { data: mapping } = await supabase
-        .from('translations')
-        .select('translated_text')
-        .eq('lang', lang)
-        .eq('translation_key', key)
-        .single();
-
-      return mapping?.translated_text || mapping?.translatedText || defaultText;
+      // 🛡️ CHRIS-PROTOCOL: Use Drizzle for stability in Metadata (v2.14.547)
+      const { db: directDb, translations: transTable } = await import('@/lib/system/voices-config');
+      if (directDb) {
+        const results = await directDb.select().from(transTable).where(and(eq(transTable.lang, lang), eq(transTable.translationKey, key))).limit(1);
+        return results[0]?.translatedText || defaultText;
+      }
+      return defaultText;
     } catch (e) {
       return defaultText;
     }
@@ -297,23 +295,23 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
 
   // 3. Probeer een CMS Artikel te vinden
   try {
-    // 🛡️ CHRIS-PROTOCOL: Use SDK for stability (v2.14.273)
-    const { data: page } = await supabase
-      .from('content_articles')
-      .select('*')
-      .eq('slug', firstSegment)
-      .single();
+    // 🛡️ CHRIS-PROTOCOL: Use Drizzle for stability in Metadata (v2.14.547)
+    const { db: directDb, contentArticles: articlesTable } = await import('@/lib/system/voices-config');
+    if (directDb) {
+      const results = await directDb.select().from(articlesTable).where(eq(articlesTable.slug, firstSegment)).limit(1);
+      const page = results[0];
 
-    if (page) {
-      const title = await getTranslatedSEO(`seo.page.${page.slug}.title`, `${page.title} | ${market.name}`);
-      const description = await getTranslatedSEO(`seo.page.${page.slug}.description`, page.description || `Ontdek meer over ${page.title} op ${market.name}.`);
-      return {
-        title,
-        description,
-        alternates: {
-          canonical: `${siteUrl}/${lang !== 'nl' ? lang + '/' : ''}${firstSegment}`,
-        }
-      };
+      if (page) {
+        const title = await getTranslatedSEO(`seo.page.${page.slug}.title`, `${page.title} | ${market.name}`);
+        const description = await getTranslatedSEO(`seo.page.${page.slug}.description`, page.excerpt || `Ontdek meer over ${page.title} op ${market.name}.`);
+        return {
+          title,
+          description,
+          alternates: {
+            canonical: `${siteUrl}/${lang !== 'nl' ? lang + '/' : ''}${firstSegment}`,
+          }
+        };
+      }
     }
   } catch (e) {
     // Fout bij CMS check
