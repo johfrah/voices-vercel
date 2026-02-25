@@ -10,8 +10,10 @@ export async function GET(request: Request, { params }: { params: { id: string }
     const id = parseInt(params.id);
     if (isNaN(id)) return NextResponse.json({ error: 'Invalid ID' }, { status: 400 });
 
+    console.log(`🚀 [Admin Order Detail] Fetching atomic data for WP ID: ${id}`);
+
     // 🚀 NUCLEAR DETAIL FETCH: WP ID is nu de PK
-    const rawResult = await db.execute(sql`
+    const rawResult = await db.execute(sql.raw(`
       SELECT 
         o.id, o.user_id, o.journey_id, o.status_id, o.payment_method_id,
         o.amount_net, o.amount_total as total, o.purchase_order, o.billing_email_alt,
@@ -20,11 +22,14 @@ export async function GET(request: Request, { params }: { params: { id: string }
       LEFT JOIN orders_legacy_bloat b ON o.id = b.wp_order_id
       WHERE o.id = ${id}
       LIMIT 1
-    `);
+    `));
 
-    const rows = Array.isArray(rawResult) ? rawResult : (rawResult.rows || []);
+    const rows: any = Array.isArray(rawResult) ? rawResult : (rawResult.rows || []);
     const order = rows[0];
-    if (!order) return NextResponse.json({ error: 'Order not found' }, { status: 404 });
+    if (!order) {
+      console.warn(`⚠️ [Admin Order Detail] Order ${id} not found in orders_v2`);
+      return NextResponse.json({ error: 'Order not found' }, { status: 404 });
+    }
 
     // 🛡️ CHRIS-PROTOCOL: JSON Parsing Fix (v2.14.637)
     // raw_meta kan als string of object binnenkomen afhankelijk van de driver
