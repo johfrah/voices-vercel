@@ -237,10 +237,13 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
       // We check both the primary value and the langCode (if available)
       // to ensure ISO codes map correctly to human-friendly labels.
       const lc = typeof o === 'object' ? (o as any).langCode : undefined;
+      const label = typeof o === 'object' ? o.label : o;
       
       if (typeof value === 'string' && value.includes('-')) {
         if (lc && lc.toLowerCase() === value.toLowerCase()) return true;
         if (typeof v === 'string' && v.toLowerCase() === value.toLowerCase()) return true;
+        // 🛡️ CHRIS-PROTOCOL: Final fallback for labels that might match the value
+        if (label && label.toLowerCase() === value.toLowerCase()) return true;
       }
       
       return v === value;

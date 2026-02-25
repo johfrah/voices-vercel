@@ -7,10 +7,15 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(request: Request, { params }: { params: { id: string } }) {
   try {
-    const id = parseInt(params.id);
+    const idStr = params.id.replace(/\/$/, '');
+    const id = parseInt(idStr);
     if (isNaN(id)) return NextResponse.json({ error: 'Invalid ID' }, { status: 400 });
 
     console.log(`🚀 [Admin Order Detail] Fetching atomic data for WP ID: ${id}`);
+
+    // 🛡️ CHRIS-PROTOCOL: Auth Check
+    const auth = await requireAdmin();
+    if (auth instanceof NextResponse) return auth;
 
     // 🚀 NUCLEAR DETAIL FETCH: WP ID is nu de PK
     // We gebruiken sql.raw voor maximale stabiliteit in de cloud

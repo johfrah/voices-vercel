@@ -16,11 +16,12 @@ export const revalidate = 0;
  */
 
 export async function GET(request: NextRequest) {
-  // 🛡️ CHRIS-PROTOCOL: Bypass Auth for Debugging (v2.14.603)
-  const supabase = createClient();
-  const { data: { user: authUser } } = await supabase.auth.getUser();
-  
-  const { searchParams } = new URL(request.url);
+  try {
+    // 🛡️ CHRIS-PROTOCOL: Auth Check
+    const auth = await requireAdmin();
+    if (auth instanceof NextResponse) return auth;
+
+    const { searchParams } = new URL(request.url);
   const page = parseInt(searchParams.get('page') || '1');
   const limit = parseInt(searchParams.get('limit') || '50');
   const offset = (page - 1) * limit;
