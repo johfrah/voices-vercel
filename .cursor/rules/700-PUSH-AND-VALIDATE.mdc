@@ -11,15 +11,18 @@ Dit protocol garandeert dat elke wijziging niet alleen wordt gepusht, maar ook d
 
 Vóór elke afronding van een taak MOET de agent de volgende stappen doorlopen:
 
-1.  **Pre-Vercel Check**: Voer `npm run check:pre-vercel` uit vanuit de root of `1-SITE/apps/web`. Dit voert een volledige build uit en scant op Nuclear Law schendingen.
-2.  **Versiebeheer (Version Sync Mandate)**: 
+1.  **Zero-Slop Pre-Flight**: 
+    - Voer ALTIJD `npm run type-check` uit in `1-SITE/apps/web`.
+    - Controleer handmatig ELKE import in de gewijzigde bestanden. Geen ontbrekende iconen of componenten.
+2.  **Pre-Vercel Check**: Voer `npm run check:pre-vercel` uit vanuit de root of `1-SITE/apps/web`. Dit voert een volledige build uit en scant op Nuclear Law schendingen.
+3.  **Versiebeheer (Version Sync Mandate)**: 
     - **Check Remote First**: Voer ALTIJD eerst `git fetch origin main` uit en controleer de laatste commit message/versie in de remote repository voordat je een nieuwe versie bepaalt.
     - Verhoog de `version` in `1-SITE/apps/web/package.json` op basis van de HOOGSTE bekende versie (lokaal of remote).
     - Synchroniseer deze versie EXACT in `1-SITE/apps/web/src/app/Providers.tsx` (`currentVersion`).
     - Synchroniseer deze versie EXACT in `1-SITE/apps/web/src/app/api/admin/config/route.ts` (`_version`).
     - Dit is cruciaal voor de `VersionGuard` om browser-reloads te forceren.
-3.  **Atomic Audit**: Voer de `000-ATOMIC-AUDIT.mdc` uit.
-4.  **Push**: Voer `git add . && git commit -m "vX.Y.Z: [Bericht]" && git push` uit.
+4.  **Atomic Audit**: Voer de `000-ATOMIC-AUDIT.mdc` uit.
+5.  **Push**: Voer `git add . && git commit -m "vX.Y.Z: [Bericht]" && git push` uit.
 5.  **Wacht op Build**: Wacht minimaal 60-90 seconden tot Vercel de build heeft voltooid.
 6.  **Forensische Audit**: Voer het validatie-script uit om de live logs te controleren:
     ```bash

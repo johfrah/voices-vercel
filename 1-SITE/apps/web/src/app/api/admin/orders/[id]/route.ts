@@ -26,6 +26,14 @@ export async function GET(request: Request, { params }: { params: { id: string }
     const order = rows[0];
     if (!order) return NextResponse.json({ error: 'Order not found' }, { status: 404 });
 
+    // 🛡️ CHRIS-PROTOCOL: Zero-Slop Item Mapping (v2.14.626)
+    // We moeten de items ophalen op basis van het wp_order_id voor legacy orders
+    const items = await db.select().from(orderItems).where(
+      order.wp_order_id 
+        ? eq(orderItems.orderId, parseInt(order.wp_order_id)) 
+        : eq(orderItems.orderId, order.id)
+    );
+
     // Resolve User Info
     let customerInfo = null;
     if (order.user_id) {
@@ -46,9 +54,6 @@ export async function GET(request: Request, { params }: { params: { id: string }
         };
       }
     }
-
-    // Resolve Items
-    const items = await db.select().from(orderItems).where(eq(orderItems.orderId, order.id));
 
     return NextResponse.json({
       ...order,
