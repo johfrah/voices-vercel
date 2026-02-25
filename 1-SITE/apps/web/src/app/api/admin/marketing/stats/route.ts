@@ -58,11 +58,10 @@ export async function GET(request: NextRequest) {
     let aiInsight = "Voicy analyseert momenteel de conversie-paden. Geen opvallende trends gedetecteerd voor vandaag.";
     
     if (totalToday > 0) {
-      const topMarket = Object.entries(marketStats).sort((a: any, b: any) => b[1] - a[1])[0];
       const topJourney = Object.entries(journeyStats).sort((a: any, b: any) => b[1] - a[1])[0];
       
-      if (topMarket && topJourney) {
-        aiInsight = `Voicy ziet een sterke focus op de ${topJourney[0]} journey vanuit de ${topMarket[0]} markt. Dit vertegenwoordigt ${Math.round((Number(topJourney[1]) / totalToday) * 100)}% van het huidige verkeer.`;
+      if (topJourney) {
+        aiInsight = `Voicy ziet een sterke focus op de ${topJourney[0]} journey. Dit vertegenwoordigt ${Math.round((Number(topJourney[1]) / totalToday) * 100)}% van het huidige verkeer.`;
       }
     }
 
@@ -70,7 +69,6 @@ export async function GET(request: NextRequest) {
       stats: {
         totalToday,
         journeys: journeyStats,
-        markets: marketStats,
         aiInsight
       },
       timestamp: new Date().toISOString()
