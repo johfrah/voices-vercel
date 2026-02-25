@@ -36,10 +36,21 @@ async function injectDecember2025() {
       else if (rawMeta.usage === 'telefonie') journeyId = journeyMap['agency_ivr'];
       else if (rawMeta.usage === 'commercial' || rawMeta.usage === 'paid') journeyId = journeyMap['agency_commercial'];
 
-      // 🚦 B. Map Status
-      let statusId = statusMap['completed'];
-      if (order.status === 'wc-refunded') statusId = statusMap['refunded'];
-      else if (order.status === 'wc-onbetaald') statusId = statusMap['unpaid'];
+      // 🚦 B. Map Status (Nuclear Logic: Workflow vs Transaction)
+      let statusId = statusMap['completed_paid']; // Default
+      
+      if (order.status === 'wc-completed') {
+        const isManual = ['bacs', 'manual_invoice', 'Invoice'].includes(rawMeta._payment_method);
+        const hasPaidDate = !!rawMeta._date_paid || !!rawMeta._paid_date;
+        
+        if (isManual && !hasPaidDate) {
+          statusId = statusMap['completed_unpaid']; // 🚩 Geleverd maar nog niet betaald
+        }
+      } else if (order.status === 'wc-pending' || order.status === 'wc-onbetaald') {
+        statusId = statusMap['awaiting_payment'];
+      } else if (order.status === 'wc-refunded') {
+        statusId = statusMap['refunded'];
+      }
 
       // 💳 C. Map Payment Method
       let paymentMethodId = null;

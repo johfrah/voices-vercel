@@ -163,8 +163,12 @@ export default function BestellingenPage() {
 
   const getStatusBadge = (status: string) => {
     switch (status) {
+      case 'completed_paid':
       case 'completed':
         return <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-green-50 text-green-600 text-[11px] font-medium tracking-widest uppercase"><CheckCircle2 size={10} /> Betaald</span>;
+      case 'completed_unpaid':
+        return <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-orange-50 text-orange-600 text-[11px] font-medium tracking-widest uppercase"><ShoppingBag size={10} /> Geleverd (Onbetaald)</span>;
+      case 'awaiting_payment':
       case 'pending':
         return <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-yellow-50 text-yellow-600 text-[11px] font-medium tracking-widest uppercase"><Clock size={10} /> Wachtend</span>;
       case 'quote-pending':

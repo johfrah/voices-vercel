@@ -142,6 +142,13 @@ export async function GET(request: NextRequest) {
           };
         }
 
+        // 🚦 V2 STATUS RESOLVER (v2.14.636)
+        let displayStatus = order.status || 'completed';
+        if (order.status_id) {
+          const [statusRow] = await db.select().from(orderStatuses).where(eq(orderStatuses.id, order.status_id)).limit(1);
+          if (statusRow) displayStatus = statusRow.code;
+        }
+
         return {
           id: order.id,
           wpOrderId: order.id, // id IS nu het wp_order_id
@@ -150,7 +157,7 @@ export async function GET(request: NextRequest) {
           amountNet: order.amount_net?.toString() || order.amountNet?.toString() || "0.00",
           purchaseOrder: order.purchase_order || order.purchaseOrder || null,
           billingEmailAlt: order.billing_email_alt || order.billingEmailAlt || null,
-          status: order.status || 'completed', 
+          status: displayStatus, 
           journey: order.journey || 'agency',
           journeyId: order.journey_id || order.journeyId,
           statusId: order.status_id || order.statusId,
