@@ -213,6 +213,7 @@ async function generateAtomicSitemap() {
   
   const registryEntries = sitemap.map(item => ({
     slug: item.slug.toLowerCase(),
+    routing_type: entityTypes?.find(t => t.id === item.entity_type_id)?.code || 'article',
     entity_type_id: item.entity_type_id,
     entity_id: item.entity_id,
     language_id: item.language_id,
