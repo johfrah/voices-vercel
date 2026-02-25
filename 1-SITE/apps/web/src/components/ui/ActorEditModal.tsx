@@ -809,7 +809,7 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
-                        <label className="text-[10px] font-bold text-va-black/40 uppercase tracking-widest px-1 italic">E-mail (Priv)</label>
+                        <label className="text-[10px] font-bold text-va-black/40 uppercase tracking-widest px-1 italic">E-mail (Privé)</label>
                         <input 
                           type="email"
                           value={formData.email}

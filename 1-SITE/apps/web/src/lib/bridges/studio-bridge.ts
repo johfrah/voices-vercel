@@ -565,6 +565,7 @@ export class StudioDataBridge {
    */
   static async getEditionById(id: number) {
     try {
+      console.log(` [StudioBridge] Fetching edition ${id} via SDK...`);
       const { data, error } = await supabase
         .from('workshop_editions')
         .select(`
@@ -579,11 +580,16 @@ export class StudioDataBridge {
       if (error) throw error;
 
       if (data) {
+        // 🛡️ CHRIS-PROTOCOL: Safe relationship mapping & Bridge compatibility
         return {
           ...data,
-          workshop: Array.isArray(data.workshop) ? data.workshop[0] : data.workshop,
-          location: Array.isArray(data.location) ? data.location[0] : data.location,
-          instructor: Array.isArray(data.instructor) ? data.instructor[0] : data.instructor
+          workshopId: data.workshop_id,
+          locationId: data.location_id,
+          instructorId: data.instructor_id,
+          createdAt: data.created_at,
+          workshop: Array.isArray(data.workshop) ? data.workshop[0] : (data.workshop || null),
+          location: Array.isArray(data.location) ? data.location[0] : (data.location || null),
+          instructor: Array.isArray(data.instructor) ? data.instructor[0] : (data.instructor || null)
         };
       }
       return null;
@@ -613,10 +619,48 @@ export class StudioDataBridge {
 
       if (error) throw error;
 
-      return (data || []).map(item => ({
-        ...item,
-        order: Array.isArray(item.order) ? item.order[0] : item.order
-      }));
+      return (data || []).map(item => {
+        // 🛡️ CHRIS-PROTOCOL: Safe order mapping
+        const orderData = Array.isArray(item.order) ? item.order[0] : (item.order || null);
+        if (orderData && Array.isArray(orderData.user)) {
+          orderData.user = orderData.user[0] || null;
+        }
+
+        // 🛡️ CHRIS-PROTOCOL: Bridge mapping (Snake to Camel for UI compatibility)
+        return {
+          ...item,
+          orderId: item.order_id,
+          productId: item.product_id,
+          actorId: item.actor_id,
+          deliveryStatus: item.delivery_status,
+          deliveryFileUrl: item.delivery_file_url,
+          metaData: item.meta_data, // UI verwacht metaData
+          createdAt: item.created_at,
+          order: orderData ? {
+            ...orderData,
+            wpOrderId: orderData.wp_order_id,
+            userId: orderData.user_id,
+            totalTax: orderData.total_tax,
+            totalProfit: orderData.total_profit,
+            totalCost: orderData.total_cost,
+            iapContext: orderData.iap_context,
+            billingVatNumber: orderData.billing_vat_number,
+            yukiInvoiceId: orderData.yuki_invoice_id,
+            dropboxFolderUrl: orderData.dropbox_folder_url,
+            isPrivate: orderData.is_private,
+            createdAt: orderData.created_at,
+            rawMeta: orderData.raw_meta, // UI verwacht rawMeta
+            displayOrderId: orderData.display_order_id,
+            expectedDeliveryDate: orderData.expected_delivery_date,
+            viesValidatedAt: orderData.vies_validated_at,
+            viesCountryCode: orderData.vies_country_code,
+            ipAddress: orderData.ip_address,
+            isQuote: orderData.is_quote,
+            quoteMessage: orderData.quote_message,
+            quoteSentAt: orderData.quote_sent_at
+          } : null
+        };
+      });
     } catch (error) {
       console.error('Error fetching participants by edition:', error);
       return [];
@@ -650,9 +694,12 @@ export class StudioDataBridge {
 
       return (editions || []).map(e => ({
         ...e,
-        workshop: Array.isArray(e.workshop) ? e.workshop[0] : e.workshop,
-        location: Array.isArray(e.location) ? e.location[0] : e.location,
-        instructor: Array.isArray(e.instructor) ? e.instructor[0] : e.instructor
+        workshopId: e.workshop_id,
+        locationId: e.location_id,
+        instructorId: e.instructor_id,
+        workshop: Array.isArray(e.workshop) ? e.workshop[0] : (e.workshop || null),
+        location: Array.isArray(e.location) ? e.location[0] : (e.location || null),
+        instructor: Array.isArray(e.instructor) ? e.instructor[0] : (e.instructor || null)
       }));
     } catch (error) {
       console.error('Error fetching all editions:', error);
