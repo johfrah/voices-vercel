@@ -587,13 +587,18 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
       console.error(` [SmartRouter] Content check for actor: ${firstSegment} (lang: ${lang})`);
       
       // 🛡️ CHRIS-PROTOCOL: Force direct lookup by slug first
-      const actor = await getActor(firstSegment, lang).catch((err) => {
+      const actor = await getActor(firstSegment, lang).catch(async (err) => {
         console.error(` [SmartRouter] Content actor fetch failed for ${firstSegment}:`, err.message);
+        // 🛡️ CHRIS-PROTOCOL: Try lowercase fallback for slug
+        if (firstSegment !== firstSegment.toLowerCase()) {
+          console.error(` [SmartRouter] Retrying with lowercase slug: ${firstSegment.toLowerCase()}`);
+          return await getActor(firstSegment.toLowerCase(), lang).catch(() => null);
+        }
         return null;
       });
 
       if (actor) {
-        console.error(` [SmartRouter] Actor found! rendering VoiceDetailClient for ${actor.first_name}`);
+        console.error(` [SmartRouter] Actor found! rendering VoiceDetailClient for ${actor.first_name} (ID: ${actor.id})`);
         //  CHRIS-PROTOCOL: Map journey slug to internal journey type
         const journeyMap: Record<string, JourneyType> = {
           'telefoon': 'telephony',
@@ -609,7 +614,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
           <VoiceDetailClient actor={actor} initialJourney={mappedJourney || journey} initialMedium={medium} />
         );
       } else {
-        console.error(` [SmartRouter] No actor found for ${firstSegment}. Proceeding to CMS check.`);
+        console.error(` [SmartRouter] No actor found for "${firstSegment}" after all attempts. Proceeding to CMS check.`);
       }
     } catch (e: any) {
       console.error("[SmartRouter] Actor check crashed:", e.message);
