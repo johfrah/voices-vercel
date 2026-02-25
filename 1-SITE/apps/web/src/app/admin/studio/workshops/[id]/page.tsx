@@ -86,23 +86,27 @@ export default async function AdminEditionDetailPage({ params }: { params: { id:
   const edition = await StudioDataBridge.getEditionById(editionId);
   if (!edition) notFound();
 
-  const participants = await StudioDataBridge.getParticipantsByEdition(editionId);
-  const allEditions = await StudioDataBridge.getAllEditions();
-  const availableEditions = allEditions.filter(e => e.status === 'upcoming' || e.id === editionId);
+  // 🛡️ CHRIS-PROTOCOL: Safe Data Retrieval (v2.14.531)
+  // We trekken alle data parallel om de 100ms LCP te garanderen.
+  const [participants, allEditions, editionCosts] = await Promise.all([
+    StudioDataBridge.getParticipantsByEdition(editionId),
+    StudioDataBridge.getAllEditions(),
+    StudioDataBridge.getCostsByEditionId(editionId)
+  ]);
 
-  // Haal kosten op uit de nieuwe centrale tabel
-  const editionCosts = await StudioDataBridge.getCostsByEditionId(editionId);
+  const availableEditions = allEditions.filter(e => e.status === 'upcoming' || e.id === editionId);
 
   const stats = participants.reduce((acc: any, p: any) => {
     const price = parseFloat(p.price || '0');
-    const isRefunded = p.order?.status === 'wc-refunded' || p.metaData?.refunded;
+    // 🛡️ CHRIS-PROTOCOL: Case-insensitive status check
+    const isRefunded = p.order?.status?.includes('refunded') || p.metaData?.refunded;
     if (isRefunded) { acc.refundedCount++; acc.refundedAmount += price; }
     else { acc.paidCount++; acc.netRevenue += price; }
     return acc;
   }, { paidCount: 0, refundedCount: 0, netRevenue: 0, refundedAmount: 0 });
 
   // Bereken winst (Netto omzet - Kosten)
-  const totalCosts = editionCosts.reduce((acc: number, c: any) => acc + (parseFloat(c.amount) || 0), 0);
+  const totalCosts = (editionCosts || []).reduce((acc: number, c: any) => acc + (parseFloat(c.amount) || 0), 0);
   const profit = stats.netRevenue - totalCosts;
 
   return (
@@ -114,10 +118,10 @@ export default async function AdminEditionDetailPage({ params }: { params: { id:
 
       <ContainerInstrument className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-12">
         <ContainerInstrument>
-          <TextInstrument className="text-[15px] font-black tracking-widest text-black/40 mb-2">EDITIE DETAILS #{edition.editionNumber || edition.id}</TextInstrument>
-          <HeadingInstrument level={1} className="text-5xl font-light tracking-tighter">{edition.workshop?.title}</HeadingInstrument>
+          <TextInstrument className="text-[15px] font-black tracking-widest text-black/40 mb-2">EDITIE DETAILS #{edition.id}</TextInstrument>
+          <HeadingInstrument level={1} className="text-5xl font-light tracking-tighter">{edition.workshop?.title || edition.title}</HeadingInstrument>
           <TextInstrument className="text-black/40 mt-2 font-medium flex items-center gap-4">
-            <span className="flex items-center gap-1"><Calendar size={14} className="text-black/20" /> {new Date(edition.date).toLocaleDateString('nl-BE', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+            <span className="flex items-center gap-1"><Calendar size={14} className="text-black/20" /> {edition.date ? new Date(edition.date).toLocaleDateString('nl-BE', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Geen datum'}</span>
             <span className="flex items-center gap-1"><MapPin size={14} className="text-black/20" /> {edition.location?.name || 'Gent'}</span>
             <span className="flex items-center gap-1"><User size={14} className="text-black/20" /> {edition.instructor?.name || 'Onbekend'}</span>
           </TextInstrument>
@@ -133,7 +137,7 @@ export default async function AdminEditionDetailPage({ params }: { params: { id:
             </div>
             <div className="bg-va-off-white px-6 py-4 rounded-2xl border border-black/5">
                 <TextInstrument className="text-[11px] font-black tracking-widest text-black/30 uppercase">Bezetting</TextInstrument>
-                <TextInstrument className="text-2xl font-light">{stats.paidCount}/{edition.capacity}</TextInstrument>
+                <TextInstrument className="text-2xl font-light">{stats.paidCount}/{edition.capacity || 8}</TextInstrument>
             </div>
         </ContainerInstrument>
       </ContainerInstrument>
@@ -148,22 +152,24 @@ export default async function AdminEditionDetailPage({ params }: { params: { id:
             </div>
           </ContainerInstrument>
           <ContainerInstrument className="divide-y divide-black/5">
-            {participants.map((p: any) => {
+            {participants.length === 0 ? (
+              <div className="p-20 text-center text-black/20 italic">Geen deelnemers gevonden voor deze editie.</div>
+            ) : participants.map((p: any) => {
               const order = p.order || {};
-              const orderMeta = typeof order.rawMeta === 'string' ? JSON.parse(order.rawMeta) : order.rawMeta;
-              const itemMeta = typeof p.metaData === 'string' ? JSON.parse(p.metaData) : p.metaData;
-              const pInfo = itemMeta?.participant_info || {};
-              const isRefunded = order.status === 'wc-refunded' || itemMeta?.refunded;
+              const orderMeta = order.rawMeta || {};
+              const pInfo = p.metaData?.participant_info || {};
+              const isRefunded = order.status?.includes('refunded') || p.metaData?.refunded;
+              
               return (
                 <ContainerInstrument key={p.id} className={cn("p-8 transition-colors group", isRefunded ? "bg-amber-50/30" : "hover:bg-va-off-white/30")}>
                   <div className="grid grid-cols-12 gap-6 items-center">
                     <div className="col-span-4 flex items-center gap-4">
                         <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center font-black text-sm", isRefunded ? "bg-amber-200 text-amber-800" : "bg-black text-white")}>
-                            {pInfo.first_name?.charAt(0)}{pInfo.last_name?.charAt(0)}
+                            {(pInfo.firstName || pInfo.first_name || '?').charAt(0)}{(pInfo.lastName || pInfo.last_name || '').charAt(0)}
                         </div>
                         <div>
-                            <TextInstrument className="font-black tracking-tight block">{pInfo.first_name} {pInfo.last_name}</TextInstrument>
-                            <TextInstrument className="text-[13px] text-black/40 font-medium">{pInfo.email}</TextInstrument>
+                            <TextInstrument className="font-black tracking-tight block">{pInfo.firstName || pInfo.first_name} {pInfo.lastName || pInfo.last_name}</TextInstrument>
+                            <TextInstrument className="text-[13px] text-black/40 font-medium">{pInfo.email || order.email}</TextInstrument>
                         </div>
                     </div>
                     <div className="col-span-3">
@@ -172,8 +178,8 @@ export default async function AdminEditionDetailPage({ params }: { params: { id:
                     </div>
                     <div className="col-span-3">
                         <TextInstrument className="text-[11px] font-black tracking-widest text-black/20 uppercase block mb-1">Betaler</TextInstrument>
-                        <TextInstrument className="text-[13px] font-bold block">{orderMeta?._billing_first_name} {orderMeta?._billing_last_name}</TextInstrument>
-                        <TextInstrument className="text-[12px] text-black/40 truncate block">{orderMeta?._billing_company || '-'}</TextInstrument>
+                        <TextInstrument className="text-[13px] font-bold block">{orderMeta._billing_first_name} {orderMeta._billing_last_name}</TextInstrument>
+                        <TextInstrument className="text-[12px] text-black/40 truncate block">{orderMeta._billing_company || '-'}</TextInstrument>
                     </div>
                     <div className="col-span-2 text-right flex items-center justify-end gap-4">
                         <div>
@@ -181,13 +187,13 @@ export default async function AdminEditionDetailPage({ params }: { params: { id:
                                 {isRefunded ? <AlertTriangle className="text-amber-500" size={16} /> : <CheckCircle2 className="text-green-500" size={16} />}
                                 <TextInstrument className={cn("text-[13px] font-black", isRefunded ? "text-amber-600" : "text-green-600")}>{parseFloat(p.price || '0').toFixed(2)}</TextInstrument>
                             </div>
-                            <Link href={`/admin/orders/${order.id}`} className="text-[11px] font-black tracking-widest text-black/20 hover:text-primary flex items-center justify-end gap-1">WC #{order.wpOrderId} <ExternalLink size={10} /></Link>
+                            <Link href={`/admin/orders/${order.id}`} className="text-[11px] font-black tracking-widest text-black/20 hover:text-primary flex items-center justify-end gap-1">WC #{order.wpOrderId || order.id} <ExternalLink size={10} /></Link>
                         </div>
                         
                         <div className="flex flex-col gap-2">
                             <CertificateDownloadButton 
                               orderItemId={p.id} 
-                              participantName={`${pInfo.first_name} ${pInfo.last_name}`} 
+                              participantName={`${pInfo.firstName || pInfo.first_name} ${pInfo.lastName || pInfo.last_name}`} 
                             />
                             <MoveParticipantClient 
                               orderItemId={p.id} 
