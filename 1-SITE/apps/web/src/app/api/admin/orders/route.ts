@@ -26,10 +26,11 @@ export async function GET(request: NextRequest) {
     // We stoppen met JOINs die data kunnen verbergen. We halen de orders PUUR op.
     let allOrders: any[] = [];
     let debugInfo: any = {
-      version: 'v2.14.591',
+      version: 'v2.14.595',
       db_host: process.env.DATABASE_URL?.split('@')[1]?.split('/')[0] || 'unknown',
       env: process.env.NODE_ENV,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      cache_buster: request.nextUrl.searchParams.get('t') || 'none'
     };
 
     try {
