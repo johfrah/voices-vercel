@@ -62,7 +62,7 @@ export async function GET(
     const certData = {
       participantName,
       workshopTitle,
-      instructorName: "Voices Studio",
+      instructorName: "Bernadette Timmermans & Johfrah Lefebvre",
       date,
       orderId: participant.orderId || 0
     };

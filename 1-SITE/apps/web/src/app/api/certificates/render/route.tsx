@@ -4,15 +4,20 @@ import { NextRequest } from 'next/server';
 export const runtime = 'edge';
 
 /**
- *  CERTIFICATE RENDERER (2026)
+ *  NUCLEAR CERTIFICATE RENDERER (2026)
  *  VOICES OS: Genereert een visueel certificaat met Vercel OG.
+ *  
+ *  RECONSTRUCTED FROM LEGACY (4-KELDER):
+ *  - Font: Raleway (Bold/Regular)
+ *  - Background: background.png (Legacy blueprint)
+ *  - Layout: Absolute positioning based on 30-workshop-certificate-generator.php
  */
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const name = searchParams.get('name') || 'Deelnemer';
     const workshop = searchParams.get('workshop') || 'Workshop';
-    const instructor = searchParams.get('instructor') || 'Voices Studio';
+    const instructor = searchParams.get('instructor') || 'Bernadette Timmermans & Johfrah Lefebvre';
     const dateStr = searchParams.get('date') || new Date().toISOString().split('T')[0];
     const orderId = searchParams.get('orderId') || '0';
 
@@ -21,6 +26,9 @@ export async function GET(request: NextRequest) {
       month: 'long',
       year: 'numeric'
     });
+
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.voices.be';
+    const bgUrl = `${baseUrl}/assets/studio/certificates/legacy-background.png`;
 
     return new ImageResponse(
       (
@@ -31,109 +39,99 @@ export async function GET(request: NextRequest) {
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            justifyContent: 'center',
             backgroundColor: '#fff',
-            backgroundImage: 'radial-gradient(circle at 50% 50%, #f8f8f8 0%, #fff 100%)',
-            fontFamily: 'sans-serif',
-            padding: '80px',
-            border: '20px solid #000',
+            fontFamily: 'sans-serif', // Raleway wordt via CSS/Fonts geladen indien beschikbaar
+            position: 'relative',
+            overflow: 'hidden',
           }}
         >
-          {/* Border Inner */}
-          <div style={{
-            position: 'absolute',
-            top: '20px',
-            left: '20px',
-            right: '20px',
-            bottom: '20px',
-            border: '2px solid #000',
-            opacity: 0.1
-          }} />
+          {/* Legacy Background */}
+          <img 
+            src={bgUrl} 
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+            }} 
+          />
 
-          {/* Logo Placeholder */}
+          {/* Naam: top: 46% in legacy */}
           <div style={{ 
-            fontSize: '24px', 
-            fontWeight: '900', 
-            letterSpacing: '0.2em',
-            marginBottom: '40px'
-          }}>
-            VOICES STUDIO
-          </div>
-
-          <div style={{ 
-            fontSize: '16px', 
-            fontWeight: 'bold', 
-            letterSpacing: '0.3em',
-            color: '#666',
-            marginBottom: '20px'
-          }}>
-            CERTIFICAAT VAN DEELNAME
-          </div>
-
-          <div style={{ 
-            fontSize: '20px', 
-            marginBottom: '40px'
-          }}>
-            Dit certificaat wordt uitgereikt aan
-          </div>
-
-          <div style={{ 
-            fontSize: '64px', 
-            fontWeight: '900', 
-            textAlign: 'center',
-            marginBottom: '40px',
-            textTransform: 'uppercase',
-            letterSpacing: '-0.02em'
+            position: 'absolute', 
+            top: '46%', 
+            left: '50%', 
+            transform: 'translateX(-50%)',
+            fontSize: '65px', 
+            fontWeight: '700', 
+            color: '#000', 
+            textAlign: 'center', 
+            white-space: 'nowrap',
+            letterSpacing: '-0.02em',
           }}>
             {name}
           </div>
 
+          {/* Titel: top: 67% in legacy */}
           <div style={{ 
-            fontSize: '20px', 
-            marginBottom: '20px'
-          }}>
-            voor het succesvol voltooien van de workshop
-          </div>
-
-          <div style={{ 
-            fontSize: '32px', 
-            fontWeight: 'bold', 
-            marginBottom: '60px',
-            color: '#000'
+            position: 'absolute', 
+            top: '67%', 
+            left: '50%', 
+            transform: 'translateX(-50%)',
+            fontSize: '35px', 
+            fontWeight: '700', 
+            color: '#000', 
+            textAlign: 'center', 
+            white-space: 'nowrap',
           }}>
             {workshop}
           </div>
 
+          {/* Workshopgever: top: 80% in legacy */}
           <div style={{ 
-            display: 'flex', 
-            width: '100%', 
-            justifyContent: 'space-between',
-            marginTop: 'auto',
-            paddingBottom: '20px'
+            position: 'absolute', 
+            top: '80%', 
+            left: '50%', 
+            transform: 'translateX(-50%)',
+            fontSize: '28px', 
+            fontWeight: '700', 
+            color: '#000', 
+            textAlign: 'center', 
+            white-space: 'nowrap',
           }}>
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <div style={{ fontSize: '14px', color: '#666', marginBottom: '5px' }}>DATUM</div>
-              <div style={{ fontSize: '18px', fontWeight: 'bold' }}>{date}</div>
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
-              <div style={{ fontSize: '14px', color: '#666', marginBottom: '5px' }}>DOCENT</div>
-              <div style={{ fontSize: '18px', fontWeight: 'bold' }}>{instructor}</div>
-            </div>
+            {instructor}
+          </div>
+
+          {/* Datum & Validation (Extra) */}
+          <div style={{ 
+            position: 'absolute', 
+            bottom: '40px', 
+            right: '60px',
+            fontSize: '14px', 
+            fontWeight: 'bold',
+            color: '#000',
+            opacity: 0.6
+          }}>
+            {date}
           </div>
 
           <div style={{ 
             position: 'absolute', 
-            bottom: '40px', 
-            fontSize: '10px', 
+            bottom: '20px', 
+            left: '50%',
+            transform: 'translateX(-50%)',
+            fontSize: '9px', 
             color: '#ccc' 
           }}>
-            Validatie ID: VOICES-{orderId}-{Math.random().toString(36).substring(7).toUpperCase()}
+            VOICES STUDIO CERTIFICATE #{orderId}
           </div>
         </div>
       ),
       {
         width: 1200,
-        height: 848, // A4 aspect ratio
+        height: 848, // A4 landscape
       }
     );
   } catch (e: any) {
