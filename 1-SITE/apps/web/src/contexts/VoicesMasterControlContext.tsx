@@ -115,11 +115,11 @@ export const VoicesMasterControlProvider: React.FC<{
     
     const initialLanguageParam = searchParams?.get('language');
     const initialLanguageIdParam = searchParams?.get('languageId');
-    
     const initialLanguage = initialLanguageParam 
       ? initialLanguageParam 
       : (savedState.filters?.language || 'nl-be');
-      
+    
+    // 🛡️ CHRIS-PROTOCOL: ID-First Initialization (v2.14.734)
     const initialLanguageId = initialLanguageIdParam 
       ? parseInt(initialLanguageIdParam) 
       : (savedState.filters?.languageId || null);

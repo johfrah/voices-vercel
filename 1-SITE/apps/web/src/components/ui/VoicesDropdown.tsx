@@ -246,6 +246,10 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
         if (label && label.toLowerCase() === value.toLowerCase()) return true;
       }
       
+      // 🛡️ CHRIS-PROTOCOL: ID-First Matching (v2.14.734)
+      if (typeof value === 'number' && typeof v === 'number' && v === value) return true;
+      if (typeof value === 'string' && !isNaN(Number(value)) && v === Number(value)) return true;
+
       return v === value;
     });
     const label = typeof opt === 'string' ? opt : opt?.label || value;

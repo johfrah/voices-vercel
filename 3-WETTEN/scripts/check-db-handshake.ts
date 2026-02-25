@@ -23,7 +23,7 @@ async function checkDatabase() {
     } else {
       console.log(`✅ TABLE: ${table} - Count: ${count}`);
       if (data && data.length > 0) {
-        console.log(`   First 3 items:`, data.slice(0, 3).map(item => ({ id: item.id, code: item.code, label: item.label })));
+        console.log(`   Items:`, data.map(item => ({ id: item.id, code: item.code, label: item.label })));
       }
     }
   }

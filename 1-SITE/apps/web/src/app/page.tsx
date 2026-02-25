@@ -642,6 +642,7 @@ export default function Home() {
         // 🛡️ CHRIS-PROTOCOL: Prime MarketManager with real data for labels
         if (langs.results) {
           MarketManager.setLanguages(langs.results);
+          console.log('[Home] MarketManager primed with', langs.results.length, 'languages');
         }
 
         setDynamicConfigData({

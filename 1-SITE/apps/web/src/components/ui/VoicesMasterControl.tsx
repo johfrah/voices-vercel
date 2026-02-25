@@ -139,8 +139,37 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
-  }, []);
+    if (!languagesData || languagesData.length === 0) return;
+
+    // 🛡️ CHRIS-PROTOCOL: Handshake Truth Sync (v2.14.734)
+    // If we have a language code but no ID, resolve it from the data.
+    if (state.filters.language && !state.filters.languageId) {
+      const match = languagesData.find(l => 
+        l.code.toLowerCase() === state.filters.language?.toLowerCase() || 
+        l.label.toLowerCase() === state.filters.language?.toLowerCase()
+      );
+      if (match) {
+        console.log(`[VoicesMasterControl] Syncing languageId for ${state.filters.language} -> ${match.id}`);
+        updateFilters({ languageId: match.id, languageIds: [match.id] });
+      }
+    }
+
+    // Same for gender
+    if (state.filters.gender && !state.filters.genderId && gendersData.length > 0) {
+      const match = gendersData.find(g => g.code.toLowerCase() === state.filters.gender?.toLowerCase());
+      if (match) {
+        updateFilters({ genderId: match.id });
+      }
+    }
+
+    // Same for country
+    if (state.filters.country && !state.filters.countryId && countriesData.length > 0) {
+      const match = countriesData.find(c => c.code.toLowerCase() === state.filters.country?.toLowerCase());
+      if (match) {
+        updateFilters({ countryId: match.id });
+      }
+    }
+  }, [languagesData, gendersData, countriesData]);
 
   const handleReorderClick = (language: string) => {
     setReorderLanguage(language);
