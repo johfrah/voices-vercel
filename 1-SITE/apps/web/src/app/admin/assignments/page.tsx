@@ -8,7 +8,7 @@ import {
 } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { db } from '@/lib/services/api-server';
-import { orderItems, orders, users, vaultFiles } from '@/types';
+import { orderItems, orders, users, vaultFiles } from '../../../../packages/database/src/schema';
 import { clsx } from 'clsx';
 import { format } from 'date-fns';
 import { nl } from 'date-fns/locale';

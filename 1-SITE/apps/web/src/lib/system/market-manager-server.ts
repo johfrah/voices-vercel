@@ -9,7 +9,7 @@
  * - Geen overerving van andere pakketten tijdens module-initialisatie.
  */
 
-import { VOICES_CONFIG } from './market-manager-server';
+import { VOICES_CONFIG } from '../../../../packages/config/config';
 
 export interface MarketConfig {
   market_code: string;

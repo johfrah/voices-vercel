@@ -1,5 +1,5 @@
-import { db } from '@db';
-import { courseSubmissions, users } from '@db/schema';
+import { db } from '../../../../../packages/database/src/index';
+import { courseSubmissions, users } from '../../../../../packages/database/src/schema';
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
 import { DropboxService } from '@/lib/services/dropbox-service';

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/services/api-server';
-import { lessons } from '@/types';
+import { lessons } from '../../../../../packages/database/src/schema';
 import { eq } from 'drizzle-orm';
 
 export async function GET() {

@@ -1,5 +1,5 @@
-import { db } from '@db';
-import { appConfigs, languages } from '@db/schema';
+import { db } from '../../../../../packages/database/src/index';
+import { appConfigs, languages } from '../../../../../packages/database/src/schema';
 import { eq, asc } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
 import { getActor, getActors, getMusicLibrary } from '@/lib/services/api-server';
