@@ -107,7 +107,7 @@ export default function BestellingenPage() {
     else setIsRefreshing(true);
     
     try {
-      const res = await fetch(`/api/admin/orders/?page=${page}&limit=50&t=${Date.now()}`);
+      const res = await fetch(`/api/admin/orders?page=${page}&limit=50&t=${Date.now()}`);
       console.log('🚀 [Admin Orders] API Response Status:', res.status);
       
       if (res.ok) {

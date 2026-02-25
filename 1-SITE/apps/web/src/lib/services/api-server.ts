@@ -243,6 +243,7 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
     // Create lookup maps for performance
     const nativeLangMap = new Map<number, number>();
     const extraLangsMap = new Map<number, number[]>();
+    const extraLangsStringMap = new Map<number, string>();
 
     actorLangsData.forEach((al: any) => {
       // 🛡️ CHRIS-PROTOCOL: Map snake_case (Supabase SDK) to camelCase (Drizzle Standard)
@@ -255,6 +256,13 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
       } else {
         const current = extraLangsMap.get(actorId) || [];
         extraLangsMap.set(actorId, [...current, languageId]);
+        
+        // Update the legacy string representation for components like TelephonySmartSuggestions
+        const langInfo = langLookup.get(languageId);
+        if (langInfo) {
+          const currentStr = extraLangsStringMap.get(actorId);
+          extraLangsStringMap.set(actorId, currentStr ? `${currentStr}, ${langInfo.code}` : langInfo.code);
+        }
       }
     });
     
@@ -347,6 +355,7 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
         delivery_days_min: actor.delivery_days_min || 1,
         delivery_days_max: actor.delivery_days_max || 3,
         extra_lang_ids: extraLangsMap.get(actor.id) || [],
+        extra_langs: extraLangsStringMap.get(actor.id) || actor.extra_langs || '',
         demos: proxiedDemos,
         actor_videos: proxiedVideos,
         rates: actor.rates || {},
@@ -565,14 +574,30 @@ async function processActorData(actor: any, slug: string): Promise<Actor> {
   // 🛡️ CHRIS-PROTOCOL: Fetch language details for Handshake Truth (v2.14.656)
   let nativeLang = actor.native_lang || '';
   let nativeLangLabel = actor.native_lang_label || '';
+  let extraLangs = actor.extra_langs || '';
   
-  if (actor.native_language_id) {
+  if (actor.native_language_id || actor.id) {
     try {
-      const { db: directDb, languages: langsTable } = await import('@/lib/system/voices-config');
-      const [langInfo] = await directDb.select().from(langsTable).where(eq(langsTable.id, actor.native_language_id)).limit(1);
-      if (langInfo) {
-        nativeLang = langInfo.code;
-        nativeLangLabel = langInfo.label;
+      const { db: directDb, languages: langsTable, actorLanguages: actorLangsTable } = await import('@/lib/system/voices-config');
+      
+      // Fetch native lang
+      if (actor.native_language_id) {
+        const [langInfo] = await directDb.select().from(langsTable).where(eq(langsTable.id, actor.native_language_id)).limit(1);
+        if (langInfo) {
+          nativeLang = langInfo.code;
+          nativeLangLabel = langInfo.label;
+        }
+      }
+
+      // Fetch extra langs via Handshake (v2.14.658)
+      const extraLangsData = await directDb
+        .select({ code: langsTable.code })
+        .from(actorLangsTable)
+        .innerJoin(langsTable, eq(actorLangsTable.languageId, langsTable.id))
+        .where(and(eq(actorLangsTable.actorId, actor.id), eq(actorLangsTable.isNative, false)));
+      
+      if (extraLangsData.length > 0) {
+        extraLangs = extraLangsData.map(l => l.code).join(', ');
       }
     } catch (e) {}
   }
@@ -586,6 +611,7 @@ async function processActorData(actor: any, slug: string): Promise<Actor> {
     native_lang_id: actor.native_language_id,
     native_lang: nativeLang,
     native_lang_label: nativeLangLabel,
+    extra_langs: extraLangs,
     photo_url: photoUrl,
     starting_price: parseFloat(actor.price_unpaid || '0'),
     voice_score: actor.voice_score || 10,

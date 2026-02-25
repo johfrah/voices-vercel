@@ -168,14 +168,23 @@ export const TelephonySmartSuggestions: React.FC<{ setLocalBriefing?: (val: stri
     const langs = new Set<string>(['nl']); // Altijd NL als basis
     if (state.selectedActor) {
       const actor = state.selectedActor;
+      
+      // 🛡️ CHRIS-PROTOCOL: Handshake Truth (ID-First)
+      // We gebruiken de native_lang string alleen als fallback
       if (actor.native_lang) {
         const nativeCode = actor.native_lang.split('-')[0].toLowerCase();
         langs.add(nativeCode);
       }
+
+      // 🛡️ CHRIS-PROTOCOL: Extra Languages via ID (v2.14.658)
+      // Als we extra_lang_ids hebben, is dat de meest betrouwbare bron.
+      // Voor de templates in deze component hebben we echter de 2-letter codes nodig.
+      // De api-server.ts moet deze idealiter al gemapt hebben, maar we checken ook de legacy extra_langs string.
       if (actor.extra_langs) {
         actor.extra_langs.split(',').forEach(l => {
           const code = l.trim().toLowerCase();
           if (code.length === 2) langs.add(code);
+          if (code.includes('-')) langs.add(code.split('-')[0]);
         });
       }
     }

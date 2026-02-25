@@ -13,6 +13,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
     console.log(`🚀 [Admin Order Detail] Fetching atomic data for WP ID: ${id}`);
 
     // 🚀 NUCLEAR DETAIL FETCH: WP ID is nu de PK
+    // We gebruiken sql.raw voor maximale stabiliteit in de cloud
     const rawResult = await db.execute(sql.raw(`
       SELECT 
         o.id, o.user_id, o.journey_id, o.status_id, o.payment_method_id,
@@ -31,8 +32,12 @@ export async function GET(request: Request, { params }: { params: { id: string }
       return NextResponse.json({ error: 'Order not found' }, { status: 404 });
     }
 
+    // 🛡️ CHRIS-PROTOCOL: Robust Type Casting (v2.14.656)
+    const userId = order.user_id ? Number(order.user_id) : null;
+    const legacyInternalId = order.legacy_internal_id ? Number(order.legacy_internal_id) : null;
+    const orderPk = Number(order.id);
+
     // 🛡️ CHRIS-PROTOCOL: JSON Parsing Fix (v2.14.637)
-    // raw_meta kan als string of object binnenkomen afhankelijk van de driver
     let rawMeta = order.raw_meta;
     if (typeof rawMeta === 'string') {
       try {
@@ -44,15 +49,15 @@ export async function GET(request: Request, { params }: { params: { id: string }
 
     // 🛡️ CHRIS-PROTOCOL: Zero-Slop Item Mapping (v2.14.637)
     const items = await db.select().from(orderItems).where(
-      eq(orderItems.orderId, order.legacy_internal_id || order.id)
+      eq(orderItems.orderId, legacyInternalId || orderPk)
     );
 
     // Resolve User Info
     let customerInfo = null;
-    if (order.user_id) {
-      let dbUser = await db.select().from(users).where(eq(users.id, order.user_id)).limit(1).then(res => res[0]);
-      if (!dbUser && order.user_id > 1000) {
-        dbUser = await db.select().from(users).where(eq(users.wpUserId, order.user_id)).limit(1).then(res => res[0]);
+    if (userId) {
+      let dbUser = await db.select().from(users).where(eq(users.id, userId)).limit(1).then(res => res[0]);
+      if (!dbUser && userId > 1000) {
+        dbUser = await db.select().from(users).where(eq(users.wpUserId, userId)).limit(1).then(res => res[0]);
       }
       
       if (dbUser) {
@@ -72,17 +77,37 @@ export async function GET(request: Request, { params }: { params: { id: string }
       }
     }
 
+    // 🛡️ CHRIS-PROTOCOL: System Event Logging for Debugging
+    await db.insert(systemEvents).values({
+      source: 'api',
+      level: 'info',
+      message: `Order Detail Fetched: ${id}`,
+      details: { order_id: id, has_meta: !!rawMeta, item_count: items.length }
+    }).catch(() => {});
+
     return NextResponse.json({
       ...order,
+      id: orderPk,
+      user_id: userId,
+      legacy_internal_id: legacyInternalId,
       raw_meta: rawMeta, // 🤝 De Handdruk: Altijd een object
       user: customerInfo,
       items: items,
-      displayOrderId: order.id?.toString(),
+      displayOrderId: orderPk.toString(),
       status: 'completed' // Default for now
     });
 
   } catch (error: any) {
     console.error('[Admin Order Detail GET] Error:', error);
+    
+    // Log de fout naar de database voor forensische analyse
+    await db.insert(systemEvents).values({
+      source: 'api',
+      level: 'critical',
+      message: `Order Detail Failed: ${params.id}`,
+      details: { error: error.message, stack: error.stack }
+    }).catch(() => {});
+
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
