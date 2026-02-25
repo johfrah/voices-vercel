@@ -1,25 +1,25 @@
 "use client";
 
+import { useAuth } from '@/contexts/AuthContext';
 import { useCheckout } from '@/contexts/CheckoutContext';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { useMasterControl } from '@/contexts/VoicesMasterControlContext';
-import { useAuth } from '@/contexts/AuthContext';
 import { CommercialMediaType, SlimmeKassa } from '@/lib/engines/pricing-engine';
 import { useSonicDNA } from '@/lib/engines/sonic-dna';
-import { cn } from '@/lib/utils';
 import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
+import { cn } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Clock, Globe, Megaphone, Mic2, Phone, Radio, Star, Tv, Type, User, Users, Video, Search as SearchIcon } from 'lucide-react';
+import { Clock, Globe, Megaphone, Mic2, Phone, Radio, Search as SearchIcon, Star, Tv, Type, User, Users, Video } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import React, { useEffect, useMemo, useState } from 'react';
+import { ActorReorderModal } from './ActorReorderModal';
 import { AgencyFilterSheet } from './AgencyFilterSheet';
-import { ContainerInstrument, TextInstrument, FlagBE, FlagDE, FlagDK, FlagES, FlagFR, FlagIT, FlagNL, FlagPL, FlagPT, FlagUK, FlagUS } from './LayoutInstruments';
+import { ContainerInstrument, FlagBE, FlagDE, FlagDK, FlagES, FlagFR, FlagIT, FlagNL, FlagPL, FlagPT, FlagUK, FlagUS, TextInstrument } from './LayoutInstruments';
 import { OrderStepsInstrument } from './OrderStepsInstrument';
 import { VoiceglotImage } from './VoiceglotImage';
 import { VoiceglotText } from './VoiceglotText';
 import { VoicesDropdown } from './VoicesDropdown';
 import { VoicesWordSlider } from './VoicesWordSlider';
-import { ActorReorderModal } from './ActorReorderModal';
 
 
 interface VoicesMasterControlProps {
@@ -29,13 +29,13 @@ interface VoicesMasterControlProps {
     genders: string[];
     styles: string[];
   };
-  availableExtraLangs?: string[]; 
+  availableExtraLangs?: string[];
   minimalMode?: boolean; //  Added minimalMode for portfolio use
 }
 
-export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({ 
-  actors = [], 
-  filters = { languages: [], genders: [], styles: [] }, 
+export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
+  actors = [],
+  filters = { languages: [], genders: [], styles: [] },
   availableExtraLangs = [],
   minimalMode = false
 }) => {
@@ -106,10 +106,10 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
       console.warn('SonicDNA playSwell failed:', e);
     }
     playClick('pro');
-    
+
     //  CHRIS-PROTOCOL: Sync both contexts
     updateJourney(id);
-    
+
     // Map journey to usage for CheckoutContext
     const usageMap: Record<string, string> = {
       'telephony': 'telefonie',
@@ -121,47 +121,51 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
 
   const journeys = useMemo(() => {
     const baseJourneys = [
-      { 
-        id: 'telephony', 
-        icon: Phone, 
-        label: 'Telefonie', 
+      {
+        id: 'telephony',
+        icon: Phone,
+        label: 'Telefonie',
         subLabel: 'Voicemail & IVR',
-        key: 'journey.telephony', 
-        color: 'text-primary' 
+        key: 'journey.telephony',
+        color: 'text-primary'
       },
-      { 
-        id: 'video', 
-        icon: Video, 
-        label: 'Video', 
+      {
+        id: 'video',
+        icon: Video,
+        label: 'Video',
         subLabel: 'Corporate & Website',
-        key: 'journey.video', 
-        color: 'text-primary' 
+        key: 'journey.video',
+        color: 'text-primary'
       },
-      { 
-        id: 'commercial', 
-        icon: Megaphone, 
-        label: 'Advertentie', 
+      {
+        id: 'commercial',
+        icon: Megaphone,
+        label: 'Advertentie',
         subLabel: 'Radio, TV & Online Ads',
-        key: 'journey.commercial', 
-        color: 'text-primary' 
+        key: 'journey.commercial',
+        color: 'text-primary'
       },
     ];
 
     if (fetchedJourneys.length === 0) return baseJourneys;
 
-    //  CHRIS-PROTOCOL: Handshake Truth Mapping
-    // Map database journeys to frontend structure, preserving icons and colors.
-    return fetchedJourneys.map(fj => {
-      const base = baseJourneys.find(bj => bj.id === fj.code || bj.key === `journey.${fj.code}`);
-      return {
-        id: fj.code,
-        icon: base?.icon || Globe,
-        label: fj.label,
-        subLabel: fj.description || base?.subLabel || '',
-        key: base?.key || `journey.${fj.code}`,
-        color: base?.color || 'text-primary'
-      };
-    });
+    //  CHRIS-PROTOCOL: Handshake Truth Mapping (v2.14.679)
+    // We ONLY show the 3 main Agency journeys in the MasterControl.
+    const allowedCodes = ['telephony', 'video', 'commercial'];
+    
+    return fetchedJourneys
+      .filter(fj => allowedCodes.includes(fj.code))
+      .map(fj => {
+        const base = baseJourneys.find(bj => bj.id === fj.code || bj.key === `journey.${fj.code}`);
+        return {
+          id: fj.code,
+          icon: base?.icon || Globe,
+          label: fj.label,
+          subLabel: fj.description || base?.subLabel || '',
+          key: base?.key || `journey.${fj.code}`,
+          color: base?.color || 'text-primary'
+        };
+      });
   }, [fetchedJourneys]);
 
   // Use state.journey or checkoutState.usage to determine active journey
@@ -180,53 +184,53 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
   const sortedLanguages = useMemo(() => {
     const host = typeof window !== 'undefined' ? window.location.host : (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || MarketManager.getMarketDomains()['BE'].replace('https://', ''));
     const market = MarketManager.getCurrentMarket(host);
-    
-  // 🛡️ CHRIS-PROTOCOL: Map extra languages available for each primary language
+
+    // 🛡️ CHRIS-PROTOCOL: Map extra languages available for each primary language
     const getExtraLangsFor = (primary: string, primaryValue: any) => {
       const lowPrimary = String(primary || '').toLowerCase();
       const lowPrimaryValue = String(primaryValue || '').toLowerCase();
-      
+
       //  CHRIS-PROTOCOL: Combinations don't have extra langs
       if (lowPrimaryValue.includes(',')) return [];
 
       const primaryCode = MarketManager.getLanguageCode(lowPrimaryValue);
       const extraLangsSet = new Set<string>();
-      
+
       if (actors && Array.isArray(actors)) {
         actors.forEach(a => {
           const actorNative = a.native_lang?.toLowerCase();
           const actorNativeId = a.native_lang_id || a.native_language_id;
-          
+
           //  CHRIS-PROTOCOL: Match native language by ID or code/label
           const isMatch = (typeof primaryValue === 'number' && actorNativeId === primaryValue) ||
-                         actorNative === primaryCode || 
-                         actorNative === lowPrimaryValue ||
-                         (primaryCode === 'nl-be' && (actorNative === 'vlaams' || actorNative === 'nl-be')) ||
-                         (primaryCode === 'nl-nl' && (actorNative === 'nederlands' || actorNative === 'nl-nl'));
+            actorNative === primaryCode ||
+            actorNative === lowPrimaryValue ||
+            (primaryCode === 'nl-be' && (actorNative === 'vlaams' || actorNative === 'nl-be')) ||
+            (primaryCode === 'nl-nl' && (actorNative === 'nederlands' || actorNative === 'nl-nl'));
 
           if (isMatch) {
             if (a.extra_langs) {
               a.extra_langs.split(',').forEach((l: string) => {
                 const trimmed = l.trim();
                 const lowTrimmed = trimmed.toLowerCase();
-                
+
                 //  CHRIS-PROTOCOL: Exclude native language and its variations from extra languages
-                const isPrimary = lowTrimmed === lowPrimary || lowTrimmed === lowPrimaryValue || 
-                                 lowTrimmed === primaryCode ||
-                                 lowPrimary.includes(lowTrimmed) || lowTrimmed.includes(lowPrimary);
-                
+                const isPrimary = lowTrimmed === lowPrimary || lowTrimmed === lowPrimaryValue ||
+                  lowTrimmed === primaryCode ||
+                  lowPrimary.includes(lowTrimmed) || lowTrimmed.includes(lowPrimary);
+
                 //  CHRIS-PROTOCOL: Vlaams is a unique native type (nl-BE). 
                 // Non-natives (like FR or NL-NL) can offer "Nederlands" as extra, but NEVER "Vlaams".
                 const isVlaamsExtra = lowTrimmed === 'vlaams' || lowTrimmed === 'nl-be';
-                
+
                 if (trimmed && trimmed !== 'null' && !isPrimary && !isVlaamsExtra) {
                   // 🛡️ CHRIS-PROTOCOL: Handshake Truth (ID-First)
                   // We zoeken de taal op in de actors data om het ID te vinden
-                  const actorWithLang = actors.find(act => 
-                    act.extra_lang_ids && 
+                  const actorWithLang = actors.find(act =>
+                    act.extra_lang_ids &&
                     act.extra_langs?.toLowerCase().includes(trimmed)
                   );
-                  
+
                   const label = MarketManager.getLanguageLabel(trimmed);
                   extraLangsSet.add(label);
                 }
@@ -239,50 +243,50 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
       return result;
     };
 
-    const languageConfig = fetchedLanguages.length > 0 
+    const languageConfig = fetchedLanguages.length > 0
       ? fetchedLanguages.map(l => ({
-          label: l.label,
-          value: l.id,
-          langCode: l.code,
-          popular: market.popular_languages.some(pl => 
-            pl.toLowerCase() === l.code.toLowerCase() || 
-            pl.toLowerCase() === l.label.toLowerCase()
-          )
-        }))
+        label: l.label,
+        value: l.id,
+        langCode: l.code,
+        popular: market.popular_languages.some(pl =>
+          pl.toLowerCase() === l.code.toLowerCase() ||
+          pl.toLowerCase() === l.label.toLowerCase()
+        )
+      }))
       : [
-          { label: MarketManager.getLanguageLabel('nl-be'), value: 1, langCode: 'nl-be', popular: market.popular_languages.includes('nl-be') || market.popular_languages.includes('Vlaams') },
-          { label: MarketManager.getLanguageLabel('nl-nl'), value: 2, langCode: 'nl-nl', popular: market.popular_languages.includes('nl-nl') || market.popular_languages.includes('Nederlands') },
-          { label: MarketManager.getLanguageLabel('fr-be'), value: 3, langCode: 'fr-be', popular: (market.popular_languages.includes('fr-be') || market.popular_languages.includes('Frans')) && market.market_code === 'BE' },
-          { label: MarketManager.getLanguageLabel('fr-fr'), value: 4, langCode: 'fr-fr', popular: (market.popular_languages.includes('fr-fr') || market.popular_languages.includes('Frans')) && market.market_code !== 'BE' },
-          { label: MarketManager.getLanguageLabel('en-gb'), value: 5, langCode: 'en-gb', popular: market.popular_languages.includes('en-gb') || market.popular_languages.includes('Engels') || market.popular_languages.includes('English') },
-          { label: MarketManager.getLanguageLabel('en-us'), value: 6, langCode: 'en-us', popular: market.popular_languages.includes('en-us') },
-          { label: MarketManager.getLanguageLabel('de-de'), value: 7, langCode: 'de-de', popular: market.popular_languages.includes('de-de') || market.popular_languages.includes('Duits') || market.popular_languages.includes('German') },
-          { label: MarketManager.getLanguageLabel('es-es'), value: 8, langCode: 'es-es', popular: market.popular_languages.includes('es-es') || market.popular_languages.includes('Spaans') || market.popular_languages.includes('Spanish') },
-          { label: MarketManager.getLanguageLabel('it-it'), value: 9, langCode: 'it-it', popular: market.popular_languages.includes('it-it') || market.popular_languages.includes('Italiaans') || market.popular_languages.includes('Italian') },
-          { label: MarketManager.getLanguageLabel('pl-pl'), value: 10, langCode: 'pl-pl', popular: market.popular_languages.includes('pl-pl') || market.popular_languages.includes('Pools') || market.popular_languages.includes('Polish') },
-          { label: MarketManager.getLanguageLabel('da-dk'), value: 11, langCode: 'da-dk', popular: market.popular_languages.includes('da-dk') || market.popular_languages.includes('Deens') || market.popular_languages.includes('Danish') },
-          { label: MarketManager.getLanguageLabel('pt-pt'), value: 12, langCode: 'pt-pt', popular: market.popular_languages.includes('pt-pt') || market.popular_languages.includes('Portugees') || market.popular_languages.includes('Portuguese') },
-          { label: MarketManager.getLanguageLabel('sv-se'), value: 43, langCode: 'sv-se', popular: market.popular_languages.includes('sv-se') || market.popular_languages.includes('Zweeds') || market.popular_languages.includes('Swedish') },
-          { label: MarketManager.getLanguageLabel('ca-es'), value: 42, langCode: 'ca-es', popular: market.popular_languages.includes('ca-es') },
-          { label: MarketManager.getLanguageLabel('fi-fi'), value: 44, langCode: 'fi-fi', popular: market.popular_languages.includes('fi-fi') },
-          { label: MarketManager.getLanguageLabel('nb-no'), value: 45, langCode: 'nb-no', popular: market.popular_languages.includes('nb-no') },
-          { label: MarketManager.getLanguageLabel('tr-tr'), value: 46, langCode: 'tr-tr', popular: market.popular_languages.includes('tr-tr') },
-          { label: MarketManager.getLanguageLabel('hr-hr'), value: 47, langCode: 'hr-hr', popular: market.popular_languages.includes('hr-hr') },
-        ];
+        { label: MarketManager.getLanguageLabel('nl-be'), value: 1, langCode: 'nl-be', popular: market.popular_languages.includes('nl-be') || market.popular_languages.includes('Vlaams') },
+        { label: MarketManager.getLanguageLabel('nl-nl'), value: 2, langCode: 'nl-nl', popular: market.popular_languages.includes('nl-nl') || market.popular_languages.includes('Nederlands') },
+        { label: MarketManager.getLanguageLabel('fr-be'), value: 3, langCode: 'fr-be', popular: (market.popular_languages.includes('fr-be') || market.popular_languages.includes('Frans')) && market.market_code === 'BE' },
+        { label: MarketManager.getLanguageLabel('fr-fr'), value: 4, langCode: 'fr-fr', popular: (market.popular_languages.includes('fr-fr') || market.popular_languages.includes('Frans')) && market.market_code !== 'BE' },
+        { label: MarketManager.getLanguageLabel('en-gb'), value: 5, langCode: 'en-gb', popular: market.popular_languages.includes('en-gb') || market.popular_languages.includes('Engels') || market.popular_languages.includes('English') },
+        { label: MarketManager.getLanguageLabel('en-us'), value: 6, langCode: 'en-us', popular: market.popular_languages.includes('en-us') },
+        { label: MarketManager.getLanguageLabel('de-de'), value: 7, langCode: 'de-de', popular: market.popular_languages.includes('de-de') || market.popular_languages.includes('Duits') || market.popular_languages.includes('German') },
+        { label: MarketManager.getLanguageLabel('es-es'), value: 8, langCode: 'es-es', popular: market.popular_languages.includes('es-es') || market.popular_languages.includes('Spaans') || market.popular_languages.includes('Spanish') },
+        { label: MarketManager.getLanguageLabel('it-it'), value: 9, langCode: 'it-it', popular: market.popular_languages.includes('it-it') || market.popular_languages.includes('Italiaans') || market.popular_languages.includes('Italian') },
+        { label: MarketManager.getLanguageLabel('pl-pl'), value: 10, langCode: 'pl-pl', popular: market.popular_languages.includes('pl-pl') || market.popular_languages.includes('Pools') || market.popular_languages.includes('Polish') },
+        { label: MarketManager.getLanguageLabel('da-dk'), value: 11, langCode: 'da-dk', popular: market.popular_languages.includes('da-dk') || market.popular_languages.includes('Deens') || market.popular_languages.includes('Danish') },
+        { label: MarketManager.getLanguageLabel('pt-pt'), value: 12, langCode: 'pt-pt', popular: market.popular_languages.includes('pt-pt') || market.popular_languages.includes('Portugees') || market.popular_languages.includes('Portuguese') },
+        { label: MarketManager.getLanguageLabel('sv-se'), value: 43, langCode: 'sv-se', popular: market.popular_languages.includes('sv-se') || market.popular_languages.includes('Zweeds') || market.popular_languages.includes('Swedish') },
+        { label: MarketManager.getLanguageLabel('ca-es'), value: 42, langCode: 'ca-es', popular: market.popular_languages.includes('ca-es') },
+        { label: MarketManager.getLanguageLabel('fi-fi'), value: 44, langCode: 'fi-fi', popular: market.popular_languages.includes('fi-fi') },
+        { label: MarketManager.getLanguageLabel('nb-no'), value: 45, langCode: 'nb-no', popular: market.popular_languages.includes('nb-no') },
+        { label: MarketManager.getLanguageLabel('tr-tr'), value: 46, langCode: 'tr-tr', popular: market.popular_languages.includes('tr-tr') },
+        { label: MarketManager.getLanguageLabel('hr-hr'), value: 47, langCode: 'hr-hr', popular: market.popular_languages.includes('hr-hr') },
+      ];
 
     const mappedConfig = languageConfig.map(langObj => ({
       ...langObj,
       icon: (langObj.langCode === 'nl-be' || langObj.langCode === 'fr-be') ? FlagBE :
-            (langObj.langCode === 'nl-nl') ? FlagNL :
-            (langObj.langCode === 'fr-fr') ? FlagFR :
+        (langObj.langCode === 'nl-nl') ? FlagNL :
+          (langObj.langCode === 'fr-fr') ? FlagFR :
             (langObj.langCode === 'en-gb') ? FlagUK :
-            (langObj.langCode === 'en-us') ? FlagUS :
-            (langObj.langCode === 'de-de') ? FlagDE :
-            (langObj.langCode === 'es-es') ? FlagES :
-            (langObj.langCode === 'it-it') ? FlagIT :
-            (langObj.langCode === 'pl-pl') ? FlagPL :
-            (langObj.langCode === 'da-dk') ? FlagDK :
-            (langObj.langCode === 'pt-pt') ? FlagPT : Globe,
+              (langObj.langCode === 'en-us') ? FlagUS :
+                (langObj.langCode === 'de-de') ? FlagDE :
+                  (langObj.langCode === 'es-es') ? FlagES :
+                    (langObj.langCode === 'it-it') ? FlagIT :
+                      (langObj.langCode === 'pl-pl') ? FlagPL :
+                        (langObj.langCode === 'da-dk') ? FlagDK :
+                          (langObj.langCode === 'pt-pt') ? FlagPT : Globe,
       availableExtraLangs: activeJourneyId === 'telephony' ? getExtraLangsFor(langObj.label, langObj.value) : []
     }));
 
@@ -292,23 +296,23 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
     const sortFn = (a: any, b: any) => {
       //  CHRIS-PROTOCOL: Universal Market-specific priority sorting (Bob-methode)
       const primaryLangCode = MarketManager.getLanguageCode(market.primary_language);
-      
+
       const getPriority = (code: string) => {
         if (code === primaryLangCode) return 1;
-        
+
         const popularIndex = market.popular_languages.findIndex(l => MarketManager.getLanguageCode(l) === code);
         if (popularIndex !== -1) return 2 + popularIndex;
-        
+
         if (code.startsWith('en')) return 50;
-        
+
         return 100;
       };
-      
+
       const scoreA = getPriority(a.langCode);
       const scoreB = getPriority(b.langCode);
-      
+
       if (scoreA !== scoreB) return scoreA - scoreB;
-      
+
       // Specifieke fix voor Frans (BE) vs Frans (FR) in de Belgische markt
       if (market.market_code === 'BE' && a.langCode.startsWith('fr') && b.langCode.startsWith('fr')) {
         if (a.icon === FlagBE) return -1;
@@ -336,7 +340,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
         // CHRIS-PROTOCOL: Reduce bottom padding when no filters are visible (Telephony/Video in script phase)
         (state.currentStep !== 'voice' && state.journey !== 'commercial' || minimalMode) && "pb-3"
       )}>
-        
+
         {/* 1. Journey Selector (Top Row) */}
         <ContainerInstrument plain className={cn(
           "flex items-center md:justify-center p-1.5 bg-va-off-white/50 rounded-[32px] overflow-x-auto no-scrollbar snap-x snap-mandatory",
@@ -350,10 +354,10 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
               // CHRIS-PROTOCOL: Check if selected actor supports this journey (especially for 'commercial')
               const isCommercialJourney = j.id === 'commercial';
               let isUnsupported = false;
-              
+
               if (state.currentStep !== 'voice' && checkoutState.selectedActor && isCommercialJourney) {
                 const commercialTypes: CommercialMediaType[] = ['online', 'radio_national', 'tv_national', 'podcast', 'radio_regional', 'radio_local', 'tv_regional', 'tv_local'];
-                const hasAnyCommercialRate = commercialTypes.some(type => 
+                const hasAnyCommercialRate = commercialTypes.some(type =>
                   SlimmeKassa.getAvailabilityStatus(checkoutState.selectedActor, [type], state.filters.country || 'BE') === 'available'
                 );
                 isUnsupported = !hasAnyCommercialRate;
@@ -367,23 +371,23 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                   onClick={() => handleJourneySwitch(j.id)}
                   className={cn(
                     "flex-1 md:flex-none flex items-center justify-start gap-3 md:gap-4 px-4 md:px-6 py-3 rounded-[28px] transition-all duration-500 group/btn text-left snap-center min-w-[140px] md:min-w-0",
-                    isActive 
-                      ? "bg-va-black text-white shadow-xl scale-[1.02] z-10" 
+                    isActive
+                      ? "bg-va-black text-white shadow-xl scale-[1.02] z-10"
                       : "text-va-black/40 hover:text-va-black hover:bg-white/50"
                   )}
                 >
                   <Icon size={20} strokeWidth={isActive ? 2 : 1.5} className={cn("transition-all duration-500 shrink-0 md:w-6 md:h-6", isActive && j.color)} />
-          <div className="flex flex-col">
-            <span className="text-[12px] md:text-[14px] font-bold tracking-widest leading-none mb-1 whitespace-nowrap">
-              <VoiceglotText translationKey={j.key} defaultText={j.label} instrument="label" context={`Navigatie journey label: ${j.label}`} />
-            </span>
-            <span className={cn(
-              "text-[9px] md:text-[10px] font-medium tracking-wider uppercase opacity-60 whitespace-nowrap",
-              isActive ? "text-white/80" : "text-va-black/40 group-hover/btn:text-va-black/60"
-            )}>
-              <VoiceglotText translationKey={`${j.key}.sub`} defaultText={j.subLabel} instrument="label" context={`Navigatie journey sub-label: ${j.subLabel}`} />
-            </span>
-          </div>
+                  <div className="flex flex-col">
+                    <span className="text-[12px] md:text-[14px] font-bold tracking-widest leading-none mb-1 whitespace-nowrap">
+                      <VoiceglotText translationKey={j.key} defaultText={j.label} instrument="label" context={`Navigatie journey label: ${j.label}`} />
+                    </span>
+                    <span className={cn(
+                      "text-[9px] md:text-[10px] font-medium tracking-wider uppercase opacity-60 whitespace-nowrap",
+                      isActive ? "text-white/80" : "text-va-black/40 group-hover/btn:text-va-black/60"
+                    )}>
+                      <VoiceglotText translationKey={`${j.key}.sub`} defaultText={j.subLabel} instrument="label" context={`Navigatie journey sub-label: ${j.subLabel}`} />
+                    </span>
+                  </div>
                   {isActive && <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse ml-auto hidden md:block" />}
                 </button>
               );
@@ -404,7 +408,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
               >
                 {/* MOBILE FILTER TRIGGER (Moby-methode) */}
                 <div className="md:hidden p-1.5">
-                  <button 
+                  <button
                     onClick={() => setIsSheetOpen(true)}
                     className="w-full h-16 bg-white rounded-full border border-black/10 shadow-sm flex items-center px-6 gap-4 active:scale-[0.98] transition-all"
                   >
@@ -426,11 +430,11 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                 <ContainerInstrument plain className="hidden md:block p-1.5">
                   <div className="flex flex-col">
                     <ContainerInstrument plain className="flex items-center bg-white rounded-full shadow-md border border-black/10 divide-x divide-black/10 h-20">
-                      
-                    {/* Language Segment - CHRIS-PROTOCOL: Hide in script flow */}
-                    {state.currentStep === 'voice' ? (
-                      <div className="flex-1 h-full flex flex-col justify-center relative group/lang">
-                          <VoicesDropdown 
+
+                      {/* Language Segment - CHRIS-PROTOCOL: Hide in script flow */}
+                      {state.currentStep === 'voice' ? (
+                        <div className="flex-1 h-full flex flex-col justify-center relative group/lang">
+                          <VoicesDropdown
                             searchable
                             rounding="left"
                             options={sortedLanguages}
@@ -473,7 +477,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                               if (typeof val === 'number') {
                                 //  CHRIS-PROTOCOL: ID-First Selection (Handshake Truth)
                                 const optMatch = sortedLanguages.find(langOpt => typeof langOpt === 'object' && langOpt.value === val);
-                                updateFilters({ 
+                                updateFilters({
                                   languageId: val,
                                   languageIds: [val],
                                   language: optMatch?.langCode || optMatch?.label || undefined
@@ -481,7 +485,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                               } else if (val && val.includes(',')) {
                                 // Combination selected (Legacy support)
                                 const langs = val.split(',').map((l: string) => l.trim().toLowerCase());
-                                updateFilters({ 
+                                updateFilters({
                                   language: val,
                                   languages: langs
                                 });
@@ -489,15 +493,15 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                                 // ISO Code or Label selected
                                 const optMatch = sortedLanguages.find(langOpt => typeof langOpt === 'object' && (langOpt.langCode === val || langOpt.value === val));
                                 if (optMatch && typeof optMatch.value === 'number') {
-                                  updateFilters({ 
+                                  updateFilters({
                                     languageId: optMatch.value,
                                     languageIds: [optMatch.value],
                                     language: optMatch.langCode || optMatch.label
                                   });
                                 } else {
-                                  updateFilters({ 
+                                  updateFilters({
                                     language: val || undefined,
-                                    languages: val ? [val.toLowerCase()] : undefined 
+                                    languages: val ? [val.toLowerCase()] : undefined
                                   });
                                 }
                               }
@@ -508,41 +512,41 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                             required={true}
                             onOrderClick={handleReorderClick}
                           />
-                      </div>
-                    ) : null}
+                        </div>
+                      ) : null}
 
                       {/* Gender Segment - CHRIS-PROTOCOL: Hide in script flow */}
                       {state.currentStep === 'voice' ? (
                         <div className="flex-1 h-full flex flex-col justify-center relative group/gender">
-                          <VoicesDropdown 
-                            options={fetchedGenders.length > 0 
+                          <VoicesDropdown
+                            options={fetchedGenders.length > 0
                               ? [
-                                  { label: t('gender.everyone', language === 'fr' ? 'Tout le monde' : language === 'en' ? 'Everyone' : 'Iedereen'), value: '', icon: Users },
-                                  ...fetchedGenders.map(g => ({
-                                    label: g.label,
-                                    value: g.id, //  CHRIS-PROTOCOL: Use ID for Handshake Truth
-                                    code: g.code,
-                                    icon: User
-                                  }))
-                                ]
+                                { label: t('gender.everyone', language === 'fr' ? 'Tout le monde' : language === 'en' ? 'Everyone' : 'Iedereen'), value: '', icon: Users },
+                                ...fetchedGenders.map(g => ({
+                                  label: g.label,
+                                  value: g.id, //  CHRIS-PROTOCOL: Use ID for Handshake Truth
+                                  code: g.code,
+                                  icon: User
+                                }))
+                              ]
                               : [
-                                  { label: t('gender.everyone', language === 'fr' ? 'Tout le monde' : language === 'en' ? 'Everyone' : 'Iedereen'), value: '', icon: Users },
-                                  { label: t('gender.male', language === 'fr' ? 'Masculin' : language === 'en' ? 'Male' : 'Mannelijk'), value: 'male', icon: User },
-                                  { label: t('gender.female', language === 'fr' ? 'Féminin' : language === 'en' ? 'Female' : 'Vrouwelijk'), value: 'female', icon: User },
-                                ]
+                                { label: t('gender.everyone', language === 'fr' ? 'Tout le monde' : language === 'en' ? 'Everyone' : 'Iedereen'), value: '', icon: Users },
+                                { label: t('gender.male', language === 'fr' ? 'Masculin' : language === 'en' ? 'Male' : 'Mannelijk'), value: 'male', icon: User },
+                                { label: t('gender.female', language === 'fr' ? 'Féminin' : language === 'en' ? 'Female' : 'Vrouwelijk'), value: 'female', icon: User },
+                              ]
                             }
                             value={state.filters.genderId || state.filters.gender || ''}
                             onChange={(val) => {
                               if (typeof val === 'number') {
                                 const optMatch = fetchedGenders.find(g => g.id === val);
-                                updateFilters({ 
+                                updateFilters({
                                   genderId: val,
-                                  gender: optMatch?.code || undefined 
+                                  gender: optMatch?.code || undefined
                                 });
                               } else {
-                                updateFilters({ 
+                                updateFilters({
                                   genderId: undefined,
-                                  gender: val || undefined 
+                                  gender: val || undefined
                                 });
                               }
                             }}
@@ -556,7 +560,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
 
                       {/* Words Segment (Telephony & Video) - CHRIS-PROTOCOL: Hide in script flow */}
                       {state.currentStep === 'voice' && (state.journey === 'telephony' || state.journey === 'video') ? (
-                        <VoicesWordSlider 
+                        <VoicesWordSlider
                           rounding="right"
                           isTelephony={state.journey === 'telephony'}
                           isVideo={state.journey === 'video'}
@@ -571,28 +575,28 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                       {/* Media Segment (Commercial only) -  AIRBNB STEPPER MODE */}
                       {state.journey === 'commercial' && (
                         <div className="flex-1 h-full flex flex-col justify-center relative group/media">
-                          <VoicesDropdown 
+                          <VoicesDropdown
                             stepperMode
                             rounding={state.currentStep !== 'voice' ? 'left' : 'none'}
-                            options={fetchedMediaTypes.length > 0 
+                            options={fetchedMediaTypes.length > 0
                               ? fetchedMediaTypes.map(fmt => {
-                                  const baseId = fmt.code.split('_')[0];
-                                  const baseIcons: Record<string, any> = { online: Globe, podcast: Mic2, radio: Radio, tv: Tv };
-                                  return {
-                                    id: fmt.code,
-                                    label: fmt.label,
-                                    value: fmt.code,
-                                    icon: baseIcons[baseId] || Globe,
-                                    subLabel: fmt.description,
-                                    hasRegions: fmt.hasRegions
-                                  };
-                                })
+                                const baseId = fmt.code.split('_')[0];
+                                const baseIcons: Record<string, any> = { online: Globe, podcast: Mic2, radio: Radio, tv: Tv };
+                                return {
+                                  id: fmt.code,
+                                  label: fmt.label,
+                                  value: fmt.code,
+                                  icon: baseIcons[baseId] || Globe,
+                                  subLabel: fmt.description,
+                                  hasRegions: fmt.hasRegions
+                                };
+                              })
                               : [
-                                  { id: 'online', label: t('media.online_socials', 'Online & Socials'), value: 'online', icon: Globe, subLabel: t('media.online_socials.sub', 'YouTube, Meta, LinkedIn') },
-                                  { id: 'podcast', label: t('media.podcast', 'Podcast'), value: 'podcast', icon: Mic2, subLabel: t('media.podcast.sub', 'Pre-roll, Mid-roll') },
-                                  { id: 'radio', label: t('media.radio', 'Radio'), value: 'radio', icon: Radio, subLabel: t('media.radio.sub', 'Landelijke of regionale zenders'), hasRegions: true },
-                                  { id: 'tv', label: t('media.television', 'TV'), value: 'tv', icon: Tv, subLabel: t('media.television.sub', 'Landelijke of regionale zenders'), hasRegions: true }
-                                ]
+                                { id: 'online', label: t('media.online_socials', 'Online & Socials'), value: 'online', icon: Globe, subLabel: t('media.online_socials.sub', 'YouTube, Meta, LinkedIn') },
+                                { id: 'podcast', label: t('media.podcast', 'Podcast'), value: 'podcast', icon: Mic2, subLabel: t('media.podcast.sub', 'Pre-roll, Mid-roll') },
+                                { id: 'radio', label: t('media.radio', 'Radio'), value: 'radio', icon: Radio, subLabel: t('media.radio.sub', 'Landelijke of regionale zenders'), hasRegions: true },
+                                { id: 'tv', label: t('media.television', 'TV'), value: 'tv', icon: Tv, subLabel: t('media.television.sub', 'Landelijke of regionale zenders'), hasRegions: true }
+                              ]
                             }
                             value={(() => {
                               const val = state.filters.spotsDetail || {};
@@ -606,11 +610,11 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                             })()}
                             onChange={(val) => {
                               const mediaKeys = Object.keys(val);
-                              
+
                               //  KELLY-MANDATE: Always require at least one media type for commercial journey
                               if (mediaKeys.length === 0) {
                                 console.warn("[MasterControl] Attempted to clear all media types. Reverting to 'online'.");
-                                updateFilters({ 
+                                updateFilters({
                                   spotsDetail: { online: 1 },
                                   media: ['online']
                                 });
@@ -638,7 +642,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                                 }
                               });
 
-                              updateFilters({ 
+                              updateFilters({
                                 spotsDetail: newSpotsDetail,
                                 media: mappedMedia as string[]
                               });
@@ -659,7 +663,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                             mediaRegion={state.filters.mediaRegion || {}}
                             onMediaRegionChange={(mediaId, region) => {
                               const newMediaRegion = { ...state.filters.mediaRegion, [mediaId]: region };
-                              
+
                               // Update media array and details with the new region
                               const currentMedia = state.filters.media || [];
                               const newMedia = currentMedia.map(m => {
@@ -686,7 +690,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                                 }
                               });
 
-                              updateFilters({ 
+                              updateFilters({
                                 mediaRegion: newMediaRegion,
                                 media: newMedia as any,
                                 spotsDetail: newSpotsDetail,
@@ -703,7 +707,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                       {/* Country Segment (Commercial only) */}
                       {state.journey === 'commercial' && (
                         <div className="flex-1 h-full flex flex-col justify-center relative group/country">
-                          <VoicesDropdown 
+                          <VoicesDropdown
                             searchable
                             rounding="right"
                             options={[
@@ -732,7 +736,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
 
                       {/* Sorting Segment (Airbnb Style) */}
                       {state.currentStep === 'voice' && (
-                        <VoicesDropdown 
+                        <VoicesDropdown
                           rounding="right"
                           options={[
                             { label: t('sort.popularity', language === 'fr' ? 'Popularité' : language === 'en' ? 'Popularity' : 'Populariteit'), value: 'popularity', icon: Star },
@@ -759,13 +763,13 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
 
       {/* De Filter Sheet (Mobile & Advanced) */}
       {!minimalMode && (
-        <AgencyFilterSheet 
-          filters={filters} 
+        <AgencyFilterSheet
+          filters={filters}
           activeParams={{
             language: state.filters.language || '',
             gender: state.filters.gender || '',
             style: state.filters.style || ''
-          }} 
+          }}
           onUpdate={(params) => updateFilters(params)}
           isOpen={isSheetOpen}
           onClose={() => setIsSheetOpen(false)}
@@ -774,7 +778,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
 
       {/* Actor Reorder Modal (Admin Only) */}
       {isAdmin && (
-        <ActorReorderModal 
+        <ActorReorderModal
           isOpen={isReorderModalOpen}
           onClose={() => setIsReorderModalOpen(false)}
           language={reorderLanguage}
@@ -792,9 +796,9 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
           {!pathname.startsWith('/voice/') && (
             <OrderStepsInstrument currentStep={state.currentStep} className="!mb-0" />
           )}
-          
+
           {mounted && state.currentStep !== 'voice' && (
-            <button 
+            <button
               onClick={() => {
                 updateStep('voice');
                 // Scroll to top of anchor

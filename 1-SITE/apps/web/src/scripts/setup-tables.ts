@@ -24,6 +24,8 @@ async function setupTables() {
         code TEXT UNIQUE NOT NULL,
         label TEXT NOT NULL,
         description TEXT,
+        icon TEXT,
+        color TEXT,
         created_at TIMESTAMP DEFAULT NOW()
       )
     `);
@@ -57,15 +59,19 @@ async function setupTables() {
 
     // 5. Seed Journeys
     console.log('🌱 Seeding journeys...');
+    await db.execute(sql`ALTER TABLE journeys ADD COLUMN IF NOT EXISTS icon TEXT`);
+    await db.execute(sql`ALTER TABLE journeys ADD COLUMN IF NOT EXISTS color TEXT`);
+    
     await db.execute(sql`
-      INSERT INTO journeys (code, label, description)
+      INSERT INTO journeys (code, label, description, icon, color)
       VALUES 
-        ('telephony', 'Telefonie', 'Voicemail & IVR'),
-        ('video', 'Video', 'Corporate & Website'),
-        ('commercial', 'Advertentie', 'Radio, TV & Online Ads'),
-        ('studio', 'Voices Studio', 'Workshops & Training'),
-        ('academy', 'Voices Academy', 'Online Learning')
-      ON CONFLICT (code) DO NOTHING
+        ('telephony', 'Telefonie', 'Voicemail & IVR', 'phone', 'text-primary'),
+        ('video', 'Video', 'Corporate & Website', 'video', 'text-primary'),
+        ('commercial', 'Advertentie', 'Radio, TV & Online Ads', 'megaphone', 'text-primary'),
+        ('studio', 'Voices Studio', 'Workshops & Training', 'mic-2', 'text-primary'),
+        ('academy', 'Voices Academy', 'Online Learning', 'globe', 'text-primary')
+      ON CONFLICT (code) DO UPDATE 
+      SET icon = EXCLUDED.icon, color = EXCLUDED.color
     `);
 
     // 6. Seed Media Types

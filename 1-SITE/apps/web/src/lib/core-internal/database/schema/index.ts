@@ -23,6 +23,8 @@ export const journeys = pgTable('journeys', {
   code: text('code').unique().notNull(), // bijv. 'studio', 'agency_vo', 'agency_ivr'
   label: text('label').notNull(), // bijv. 'Voices Studio', 'Agency: Voice-over'
   description: text('description'),
+  icon: text('icon'), // lucide icon name
+  color: text('color'), // tailwind color class or hex
   createdAt: timestamp('created_at').defaultNow(),
 });
 
