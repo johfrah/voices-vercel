@@ -1,6 +1,5 @@
-import { db } from '../../../../../packages/database/src/index.ts';
-import { appConfigs, languages } from '../../../../../packages/database/src/schema/index.ts';
-import { eq, asc } from 'drizzle-orm';
+import { db, appConfigs, languages } from '@/lib/system/voices-config';
+import { eq, asc, desc, and, or, ilike, sql } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
 import { getActor, getActors, getMusicLibrary } from '@/lib/services/api-server';
 import { requireAdmin } from '@/lib/auth/api-auth';
@@ -68,13 +67,13 @@ export async function GET(request: NextRequest) {
         const config = await dbWithTimeout(db.select().from(appConfigs).where(eq(appConfigs.key, 'general_settings')).limit(1));
         return NextResponse.json({
           general_settings: config[0]?.value || {},
-          _version: '2.14.490'
+          _version: '2.14.491'
         });
       } catch (err: any) {
         console.warn(`[Admin Config] General settings fetch failed, returning empty: ${err.message}`);
         return NextResponse.json({
           general_settings: {},
-          _version: '2.14.490'
+          _version: '2.14.491'
         });
       }
     }

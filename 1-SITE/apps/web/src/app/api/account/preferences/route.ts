@@ -1,6 +1,5 @@
 import { createClient } from '@/utils/supabase/server';
-import { db } from '../../../../../packages/database/src/index.ts';
-import { users } from '../../../../../packages/database/src/schema/index.ts';
+import { db, users } from '@/lib/system/voices-config';
 import { eq } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 

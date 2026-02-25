@@ -9,7 +9,7 @@
  * - Geen overerving van andere pakketten tijdens module-initialisatie.
  */
 
-import { VOICES_CONFIG } from '../../../../packages/config/config.ts';
+import { VOICES_CONFIG } from './voices-config';
 
 export interface MarketConfig {
   market_code: string;
