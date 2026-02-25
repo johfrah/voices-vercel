@@ -68,6 +68,7 @@ export const viewport: Viewport = {
 
 export async function generateMetadata(): Promise<Metadata> {
   const headersList = headers();
+  const langHeader = headersList.get('x-voices-lang');
   const domains = MarketManagerServer.getMarketDomains();
   const pathname = headersList.get('x-voices-pathname') || '';
   const host = headersList.get("x-voices-host") || headersList.get("host") || process.env.NEXT_PUBLIC_SITE_URL || MarketManagerServer.getMarketDomains()['BE'].replace('https://', '');
@@ -162,6 +163,7 @@ export default async function RootLayout({
   params: { slug?: string[] };
 }) {
   const headersList = headers();
+  const langHeader = headersList.get('x-voices-lang');
   const domains = MarketManagerServer.getMarketDomains();
   const pathname = headersList.get('x-voices-pathname') || '';
   const host = headersList.get("x-voices-host") || headersList.get("host") || process.env.NEXT_PUBLIC_SITE_URL || MarketManagerServer.getMarketDomains()['BE'].replace('https://', '');
