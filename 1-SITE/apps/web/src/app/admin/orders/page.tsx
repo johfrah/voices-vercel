@@ -145,7 +145,7 @@ export default function BestellingenPage() {
                 <VoiceglotText translationKey="admin.orders.title" defaultText="Bestellingen" />
               </HeadingInstrument>
               <TextInstrument className="text-xl text-black/40 font-light tracking-tight max-w-2xl">
-                <VoiceglotText translationKey="admin.orders.subtitle" defaultText={`Beheer alle transacties, offertes en productiestatus van ${typeof window !== 'undefined' ? window.location.hostname : 'Voices.be'}.`} />
+                <VoiceglotText translationKey="admin.orders.subtitle" defaultText={`Beheer alle transacties, offertes en productiestatus van ${typeof window !== 'undefined' ? window.location.hostname : 'Voices'}.`} />
               </TextInstrument>
             </div>
             

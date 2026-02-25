@@ -1,7 +1,7 @@
 import { db, users, workshops, orders, workshopEditions, instructors } from '@/lib/system/voices-config';
 import { eq, desc } from 'drizzle-orm';
 import { VumeEngine } from '@/lib/mail/VumeEngine';
-// MarketManager is used for domain resolution in the mail engine
+import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
 
 /**
  *  VUME TEST SCRIPT (2026)
@@ -12,6 +12,8 @@ import { VumeEngine } from '@/lib/mail/VumeEngine';
 
 export async function sendTestMails(recipient: string) {
   console.log(` Starting VUME Test Suite for ${recipient}...`);
+  const domains = MarketManager.getMarketDomains();
+  const defaultHost = domains['BE']?.replace('https://', '') || 'voices.be';
 
   try {
     // 1. Test Magic Link (Auth Journey) - Gebruik echte user data
@@ -19,14 +21,14 @@ export async function sendTestMails(recipient: string) {
     // const realUser = { first_name: 'Johfrah' };
     await VumeEngine.send({
       to: recipient,
-      subject: ' Test: Inloggen op Voices.be (Real Data)',
+      subject: ` Test: Inloggen op ${defaultHost} (Real Data)`,
       template: 'magic-link',
       context: {
         name: realUser?.first_name || 'Johfrah',
-        link: 'https://voices.be/account/callback?token=test-token',
-        language: 'nl'
+        link: `https://${defaultHost}/account/callback?token=test-token`,
+        language: 'nl-BE'
       },
-      host: 'voices.be'
+      host: defaultHost
     });
     console.log(' Magic Link test mail verzonden.');
 
@@ -54,10 +56,10 @@ export async function sendTestMails(recipient: string) {
         date: realEdition ? new Date(realEdition.date).toLocaleDateString('nl-BE', { day: 'numeric', month: 'long', year: 'numeric' }) : '25 februari 2026',
         time: '14:00',
         location: 'Voices Studio, Gent',
-        language: 'nl',
+        language: 'nl-BE',
         optOutToken: 'test-token-123'
       },
-      host: 'voices.be'
+      host: defaultHost
     });
     console.log(' Studio Experience test mail verzonden.');
 
@@ -79,9 +81,9 @@ export async function sendTestMails(recipient: string) {
         userName: realUser?.first_name || 'Johfrah',
         invoiceNumber: realOrder?.invoiceNumber || 'INV-2026-001',
         amount: realOrder ? parseFloat(realOrder.total || '0') : 1250.50,
-        language: 'nl'
+        language: 'nl-BE'
       },
-      host: 'voices.be'
+      host: defaultHost
     });
     console.log(' Invoice Reply test mail verzonden.');
 

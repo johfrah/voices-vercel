@@ -7,7 +7,7 @@
 ---
 
 ## 1. DE ARCHITECTUUR (SSoT)
-Wij werken in een volledig ontkoppeld model waarbij de **Voices Engine** de enige waarheid is.
+Wij werken in een volledig ontkoppeld model waarbij de Voices-database de enige waarheid is.
 
 - **Frontend:** Next.js (App Router) in `apps/web/`.
 - **Backend:** Supabase (PostgreSQL + Auth + Storage).

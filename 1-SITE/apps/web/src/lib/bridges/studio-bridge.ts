@@ -425,7 +425,7 @@ export class StudioDataBridge {
       })
       .from(orders)
       .leftJoin(orderItems, eq(orders.id, orderItems.orderId))
-      .where(eq(orders.user_id, userId))
+      .where(eq(orders.user_id, user_id))
       .groupBy(orders.id);
     } catch (error) {
       console.error("Core Logic Error (User Registrations):", error);
@@ -529,7 +529,7 @@ export class StudioDataBridge {
   static async getInstructorByUserId(user_id: number) {
     try {
       return await db.query.instructors.findFirst({
-        where: eq(instructors.user_id, userId),
+        where: eq(instructors.user_id, user_id),
         with: {
           photo: true
         }

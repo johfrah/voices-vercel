@@ -5,7 +5,7 @@
 ---
 
 ## 1. 🧘 HET MANTRA: "NEXT-ONLY, DATA-BACKEND, SCHEMA-FIRST"
-We bouwen geen pagina's meer in PHP; we instrueren de **Voices Engine** via een headless data-backend. De UI is een intelligent instrument, geen statische weergave.
+We bouwen geen pagina's meer in PHP; we instrueren Voices via een headless data-backend. De UI is een intelligent instrument, geen statische weergave.
 
 - **Next.js Mandaat:** De browser-ervaring wordt uitsluitend gebouwd in Next.js (App Router). PHP is verboden voor nieuwe UI-pixels.
 - **Schema-First:** Elke pagina is een entiteit in de Knowledge Graph. JSON-LD is verplicht voor alle detailpagina's.

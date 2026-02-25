@@ -48,7 +48,7 @@ function isAllowedUser(user_id: number): boolean {
   const allowed = process.env.TELEGRAM_ALLOWED_USER_IDS;
   if (!allowed?.trim()) return true; // No whitelist = allow all (dev/optional)
   const ids = allowed.split(',').map((s) => s.trim()).filter(Boolean);
-  return ids.includes(String(userId));
+  return ids.includes(String(user_id));
 }
 
 function getSenderId(update: TelegramUpdate): number | undefined {
@@ -228,7 +228,7 @@ SLIMME KASSA REGELS:
           } else {
             // BOB: AI-powered response via Gemini - but now with Voicy reasoning
             const prompt = `
-Je bent Bob, de Architect van Voices.be.
+Je bent Bob, de Architect van Voices.
 Je bent wijs, autoritair maar warm (Bob-methode). Je kent de codebase, de agents en de Voices-missie.
 
 BELANGRIJK: Hoewel je Bob bent, redeneer je als VOICY (de Frontend/Klantendienst).

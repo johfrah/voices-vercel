@@ -228,7 +228,7 @@ export async function middleware(request: NextRequest) {
   }
 
   // 2.5 SUB-JOURNEY DETECTION (v2.30)
-  // Voices.be/studio en /academy zijn aparte journeys met eigen branding/socials
+  // Voices /studio en /academy zijn aparte journeys met eigen branding/socials
   const isStudioJourney = pathname.startsWith('/studio') || pathname.startsWith('/studio/');
   const isAcademyJourney = pathname.startsWith('/academy') || pathname.startsWith('/academy/');
   

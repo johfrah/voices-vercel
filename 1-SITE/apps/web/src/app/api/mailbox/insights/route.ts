@@ -93,7 +93,7 @@ export async function GET(request: Request) {
         messages: [
           {
             role: "system",
-            content: `Je bent een business analist voor Voices.be. 
+            content: `Je bent een business analist voor Voices. 
             Analyseer de e-mail data en genereer inzichten in JSON formaat.
             
             BELANGRIJK: 

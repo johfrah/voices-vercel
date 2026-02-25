@@ -49,8 +49,8 @@ export const VumeOrderConfirmationTemplate = (props: OrderConfirmationProps) => 
       <p style="font-size: 18px; color: #1a1a1a;">${isNl ? 'Beste' : 'Dear'} ${userName},</p>
       <p style="font-size: 16px; line-height: 1.6; color: #666;">
         ${isNl 
-          ? `Bedankt voor je bestelling bij <strong>${host || 'Voices.be'}</strong>! We zijn direct voor je aan de slag gegaan. Hieronder vind je een overzicht van je project.` 
-          : `Thank you for your order at <strong>${host || 'Voices.be'}</strong>! We have started working on it immediately. Below you will find an overview of your project.`}
+          ? `Bedankt voor je bestelling bij <strong>${host || 'Voices'}</strong>! We zijn direct voor je aan de slag gegaan. Hieronder vind je een overzicht van je project.` 
+          : `Thank you for your order at <strong>${host || 'Voices'}</strong>! We have started working on it immediately. Below you will find an overview of your project.`}
       </p>
     </div>
 

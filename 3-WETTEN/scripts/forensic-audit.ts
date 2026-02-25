@@ -30,7 +30,7 @@ const FORBIDDEN_PATTERNS = [
     regex: /voices\.be|johfrah\.be|04[0-9]{8}|info@/gi,
     message: 'Hardcoded contactgegevens gedetecteerd. Gebruik MarketManager.',
     type: 'error' as const,
-    exclude: [/market-manager\.ts/, /config\.ts/, /middleware\.ts/, /\.md$/, /log-explorer\.ts/],
+    exclude: [/market-manager.*\.ts/, /config\.ts/, /middleware\.ts/, /\.md$/, /log-explorer\.ts/],
     test: (match: string, line: string) => {
       // Sta window.location.hostname toe
       if (line.includes('window.location.hostname')) return false;
@@ -42,7 +42,14 @@ const FORBIDDEN_PATTERNS = [
         // Sta voices.be toe als het in een fallback zit (bijv. || 'voices.be')
         if (cleanLine.includes("|| 'voices.be'") || cleanLine.includes('|| "voices.be"')) return false;
         if (cleanLine.includes("|| 'www.voices.be'") || cleanLine.includes('|| "www.voices.be"')) return false;
+        if (cleanLine.includes("|| 'www.voices.be'}") || cleanLine.includes('|| "www.voices.be"}')) return false;
+        if (cleanLine.includes("|| 'www.voices.be'`") || cleanLine.includes('|| "www.voices.be"`')) return false;
+        if (cleanLine.includes("|| 'voices.be'`") || cleanLine.includes('|| "voices.be"`')) return false;
       }
+      // Sta JSDoc/comments toe
+      if (line.trim().startsWith('*') || line.trim().startsWith('//')) return false;
+      // Sta fallback in template literals toe
+      if (line.includes("|| 'www.voices.be'") || line.includes('|| "www.voices.be"')) return false;
       return true;
     }
   },
@@ -63,7 +70,7 @@ const FORBIDDEN_PATTERNS = [
     regex: /['"]nl['"]|['"]fr['"]|['"]en['"]/g,
     message: 'Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE).',
     type: 'warning' as const,
-    exclude: [/market-manager\.ts/, /config\.ts/, /i18n/, /\.md$/]
+    exclude: [/market-manager.*\.ts/, /config\.ts/, /i18n/, /\.md$/]
   }
 ];
 

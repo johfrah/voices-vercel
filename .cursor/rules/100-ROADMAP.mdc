@@ -1,5 +1,5 @@
 ---
-description: De strategische roadmap voor de Voices Engine (2026). Definieert de fasen, prioriteiten en technische mijlpalen voor het intelligente ecosysteem.
+description: De strategische roadmap voor Voices (2026). Definieert de fasen, prioriteiten en technische mijlpalen voor het intelligente ecosysteem.
 globs: ["apps/web/src/**/*", "packages/database/src/**/*", "docs/roadmaps/*.md"]
 ---
 
@@ -8,7 +8,7 @@ globs: ["apps/web/src/**/*", "packages/database/src/**/*", "docs/roadmaps/*.md"]
 Dit document is de "Source of Truth" voor de ontwikkeling van het intelligente **Voices Ecosysteem**. Elke wijziging in de codebase moet getoetst worden aan de huidige fase van deze roadmap.
 
 ## 🎯 HET ULTIEME DOEL
-Een platform dat **context-bewust** is, **AI-native** (ARP compliant) en volledig wordt aangestuurd door de **Voices Engine**, met 100% data-integriteit. **WordPress is volledig geëlimineerd.**
+Een platform dat **context-bewust** is, **AI-native** (ARP compliant) en volledig wordt aangestuurd door Voices, met 100% data-integriteit. **WordPress is volledig geëlimineerd.**
 
 ---
 

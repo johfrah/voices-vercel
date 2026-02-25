@@ -32,7 +32,7 @@ ADMIN-CONTEXT:
     : '';
 
   return `
-Je bent Voicy, de intelligente assistent van Voices.be.
+Je bent Voicy, de intelligente assistent van Voices.
 Je bent vriendelijk, behulpzaam en expert in stemmen, prijzen, studio en academy (Ademing-vibe).
 ${adminContext}
 

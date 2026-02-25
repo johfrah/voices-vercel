@@ -35,7 +35,7 @@ const supabase = createClient(supabaseUrl, supabaseKey, {
   //  NUCLEAR LOADING MANDATE
   const LiquidBackground = nextDynamic(() => import("@/components/ui/LiquidBackground").then(mod => mod.LiquidBackground), { 
     ssr: false,
-    loading: () => <div className="fixed inset-0 z-0 bg-va-off-white" />
+    loading: () => <ContainerInstrument className="fixed inset-0 z-0 bg-va-off-white" />
   });
   const VideoPlayer = nextDynamic(() => import("@/components/academy/VideoPlayer").then(mod => mod.VideoPlayer), { ssr: false });
 
@@ -101,7 +101,7 @@ function generateActorSchema(actor: any, marketName: string = 'Voices', host: st
 function generateArtistSchema(artist: any, host: string = '') {
   const market = MarketManager.getCurrentMarket(host);
   const domains = MarketManager.getMarketDomains();
-  const siteUrl = domains[market.market_code] || `https://${host || MarketManager.getMarketDomains()['BE']?.replace('https://', '') || 'www.voices.be'}`;
+  const siteUrl = domains[market.market_code] || `https://${host || (MarketManager.getMarketDomains()['BE']?.replace('https://', '') || 'www.voices.be')}`;
   return {
     "@context": "https://schema.org",
     "@type": "MusicGroup",
@@ -181,7 +181,7 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
   }
 
   const headersList = headers();
-  const host = (headersList.get('host') || MarketManager.getMarketDomains()['BE']?.replace('https://', '') || 'www.voices.be').replace(/^https?:\/\//, '');
+  const host = (headersList.get('host') || (MarketManager.getMarketDomains()['BE']?.replace('https://', '') || 'www.voices.be')).replace(/^https?:\/\//, '');
   const market = MarketManager.getCurrentMarket(host);
   const domains = MarketManager.getMarketDomains();
   const lang = headersList.get('x-voices-lang') || 'nl';
@@ -193,7 +193,7 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
   const cleanSlug = stripLanguagePrefix(normalizedSlug);
   const cleanSegments = cleanSlug.split('/').filter(Boolean);
 
-  const siteUrl = domains[market.market_code] || `https://${host || MarketManager.getMarketDomains()['BE']?.replace('https://', '') || 'www.voices.be'}`;
+  const siteUrl = domains[market.market_code] || `https://${host || (MarketManager.getMarketDomains()['BE']?.replace('https://', '') || 'www.voices.be')}`;
   
   // Resolve de slug naar de originele versie
   const resolved = await resolveSlug(cleanSlug, lang);
@@ -374,9 +374,26 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
   try {
     // Resolve de slug naar de originele versie
     const resolved = await resolveSlug(cleanSlug, lang);
-    const firstSegment = resolved ? resolved.originalSlug : (cleanSegments[0] || segments[0]);
-    const journey = cleanSegments[1] || segments[1];
-    const medium = cleanSegments[2] || segments[2];
+    
+    // 🛡️ CHRIS-PROTOCOL: Handle system prefixes (v2.14.557)
+    // Als de URL bijv. /voice/johfrah is, willen we 'johfrah' als firstSegment
+    let firstSegment = resolved ? resolved.originalSlug : (cleanSegments[0] || segments[0]);
+    let journey = cleanSegments[1] || segments[1];
+    let medium = cleanSegments[2] || segments[2];
+
+    const systemPrefixes = ['voice', 'stem', 'voix', 'stimme', 'artist', 'artiest', 'studio', 'academy', 'music', 'muziek'];
+    if (systemPrefixes.includes(firstSegment.toLowerCase()) && journey) {
+      console.error(` [SmartRouter] System prefix detected: ${firstSegment}. Shifting segments.`);
+      const prefix = firstSegment.toLowerCase();
+      firstSegment = journey; // 'johfrah'
+      journey = medium; // 'commercial' (indien aanwezig)
+      medium = cleanSegments[3] || segments[3];
+      
+      // Forceer journey type op basis van prefix
+      if (['voice', 'stem', 'voix', 'stimme'].includes(prefix)) {
+        // Dit is een actor route
+      }
+    }
 
     console.error(` [SmartRouter] Handshake attempt for actor: "${firstSegment}"`);
 

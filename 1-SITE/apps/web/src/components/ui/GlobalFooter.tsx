@@ -315,7 +315,7 @@ export default function GlobalFooter() {
 
           <ContainerInstrument className="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8">
             <TextInstrument className="text-[15px] font-light tracking-widest text-white/20">
-              © 2026 Voices Artists. <span className="opacity-50"><VoiceglotText translationKey="footer.powered_by_voices" defaultText="Powered by Voices.be" /></span>
+              © 2026 Voices Artists. <span className="opacity-50"><VoiceglotText translationKey="footer.powered_by_voices" defaultText="Powered by Voices" /></span>
             </TextInstrument>
             <ContainerInstrument className="flex items-center gap-3 px-4 py-2 bg-white/5 rounded-full border border-white/5">
               <ContainerInstrument className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />

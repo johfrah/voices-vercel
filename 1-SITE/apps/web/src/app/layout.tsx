@@ -114,7 +114,7 @@ export async function generateMetadata(): Promise<Metadata> {
     })()
   ]);
 
-  const baseUrl = `https://${market.market_code === 'BE' ? MarketManagerServer.getMarketDomains()['BE'].replace('https://', '') : (market.market_code === 'NLNL' ? 'www.voices.nl' : cleanHost)}`;
+  const baseUrl = `https://${market.market_code === 'BE' ? MarketManagerServer.getMarketDomains()['BE'].replace('https://', '') : (market.market_code === 'NLNL' ? (MarketManagerServer.getMarketDomains()['NLNL']?.replace('https://', '') || 'www.voices.nl') : cleanHost)}`;
 
   const isAdeming = market.market_code === 'ADEMING';
   const isJohfrah = market.market_code === 'PORTFOLIO';

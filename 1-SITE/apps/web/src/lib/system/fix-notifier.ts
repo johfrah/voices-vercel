@@ -31,7 +31,7 @@ export class FixNotifier {
               <p style="font-size: 14px; color: #444; line-height: 1.6; margin: 0;">${details}</p>
             </div>
             <hr style="border: none; border-top: 1px solid #eee; margin: 24px 0;" />
-            <p style="font-size: 12px; color: #999; text-align: center;">Gegenereerd door de Voices Engine - Pure Excellence 2026</p>
+            <p style="font-size: 12px; color: #999; text-align: center;">Gegenereerd door Voices - Pure Excellence 2026</p>
           </div>
         `
       });

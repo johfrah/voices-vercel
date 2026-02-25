@@ -38,7 +38,7 @@ export async function POST(request: Request) {
        DIGEST: ${digest || 'Geen digest'}
       
       Tijdstip: ${new Date().toLocaleString('nl-BE')}
-      Status: Voices Engine probeert te herstellen...
+      Status: Voices probeert te herstellen...
     `;
 
     // 2. Call Internal Email Service (Bypass auth for system alerts)

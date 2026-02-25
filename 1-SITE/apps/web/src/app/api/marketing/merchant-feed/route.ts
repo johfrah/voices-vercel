@@ -27,7 +27,7 @@ export async function GET() {
     const { MarketManagerServer: MarketManager } = await import('@/lib/system/market-manager-server');
     const host = process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || MarketManager.getMarketDomains()['BE']?.replace('https://', '');
     const market = MarketManager.getCurrentMarket(host);
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || process.env.NEXT_PUBLIC_SITE_URL || MarketManager.getMarketDomains()['BE'] || `https://${host || 'www.voices.be'}`;
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || process.env.NEXT_PUBLIC_SITE_URL || MarketManager.getMarketDomains()['BE'] || `https://${host || (MarketManager.getMarketDomains()['BE']?.replace('https://', '') || 'www.voices.be')}`;
 
     // 1. Haal alle data op in parallel
     const [allActors, allWorkshops, allCourses] = await Promise.all([

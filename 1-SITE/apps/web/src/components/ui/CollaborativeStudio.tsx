@@ -234,7 +234,7 @@ export const CollaborativeStudio = ({
                   {script || (
                     <VoiceglotText  
                       translationKey="auto.collaborativestudio._quot_welkom_bij_voi.667eb2" 
-                      defaultText="&quot;Welkom bij Voices.be. Waar elke stem een verhaal vertelt. Onze passie is jouw boodschap tot leven brengen met de perfecte toon.&quot;" 
+                      defaultText="&quot;Welkom bij Voices. Waar elke stem een verhaal vertelt. Onze passie is jouw boodschap tot leven brengen met de perfecte toon.&quot;" 
                     />
                   )}
                 </TextInstrument>

@@ -5,7 +5,7 @@ export const runtime = 'nodejs';
 /**
  * NUCLEAR ASSET PROXY - 2026 EDITION
  * 
- * Doel: Omzeilen van de Next.js interceptie op www.voices.be door assets 
+ * Doel: Omzeilen van de Next.js interceptie op de hoofdsite door assets 
  * direct van de Combell backend (PHP layer) of Supabase Storage te fetchen.
  */
 

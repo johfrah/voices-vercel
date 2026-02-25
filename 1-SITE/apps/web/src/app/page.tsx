@@ -498,8 +498,8 @@ function HomeContent({ actors: initialActors, reviews, reviewStats, dynamicConfi
         "@context": "https://schema.org",
         "@type": "Organization",
         "name": marketConfig.name,
-        "url": MarketManager.getMarketDomains()[marketConfig.market_code] || `https://${marketConfig.market_code === 'BE' ? 'www.voices.be' : 'www.voices.nl'}`,
-        "logo": `${MarketManager.getMarketDomains()[marketConfig.market_code] || `https://${marketConfig.market_code === 'BE' ? 'www.voices.be' : 'www.voices.nl'}`}${marketConfig.logo_url}`,
+        "url": MarketManager.getMarketDomains()[marketConfig.market_code] || `https://${marketConfig.market_code === 'BE' ? (MarketManager.getMarketDomains()['BE']?.replace('https://', '') || 'www.voices.be') : (MarketManager.getMarketDomains()['NL']?.replace('https://', '') || 'www.voices.nl')}`,
+        "logo": `${MarketManager.getMarketDomains()[marketConfig.market_code] || `https://${marketConfig.market_code === 'BE' ? (MarketManager.getMarketDomains()['BE']?.replace('https://', '') || 'www.voices.be') : (MarketManager.getMarketDomains()['NL']?.replace('https://', '') || 'www.voices.nl')}`}${marketConfig.logo_url}`,
         "description": marketConfig.seo_data?.description || "Castingbureau voor stemacteurs en voice-overs.",
         "aggregateRating": {
           "@type": "AggregateRating",
