@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
 
     // If not admin, check if the email matches the requested userId
     if (!isAdmin) {
-      const { users } = await import('@db/schema');
+      const { users } = await import('@/lib/system/voices-config');
       const [dbUser] = await db.select({ email: users.email }).from(users).where(eq(users.id, uid)).limit(1);
       
       if (!dbUser || dbUser.email !== user.email) {

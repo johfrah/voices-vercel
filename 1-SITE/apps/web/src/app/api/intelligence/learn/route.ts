@@ -20,8 +20,8 @@ export async function POST(request: NextRequest) {
     // Haal de numerieke userId op uit onze eigen users tabel
     let numericUserId: number | undefined;
     if (user?.email) {
-      const { db } = await import('@db');
-      const { users } = await import('@db/schema');
+      const { db } = await import('@/lib/system/voices-config');
+      const { users } = await import('@/lib/system/voices-config');
       const { eq } = await import('drizzle-orm');
       const { createClient: createSupabaseClient } = await import('@supabase/supabase-js');
       

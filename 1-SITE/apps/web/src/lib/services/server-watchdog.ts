@@ -30,7 +30,7 @@ export class ServerWatchdog {
       
       // 🛡️ CHRIS-PROTOCOL: Direct DB logging fallback if API is unreachable
       try {
-        const { db } = await import('@db');
+        const { db } = await import('@/lib/system/voices-config');
         const { systemEvents } = await import('@database/schema');
         
         await db.insert(systemEvents).values({

@@ -111,7 +111,7 @@ async function handleSendMessage(params: any) {
     let workshopContext = "";
     if (journey === 'studio') {
       try {
-        const { workshopEditions, workshops } = await import('@db/schema');
+        const { workshopEditions, workshops } = await import('@/lib/system/voices-config');
         const upcomingEditions = await db.select({
           id: workshopEditions.id,
           date: workshopEditions.date,

@@ -50,7 +50,7 @@ export async function POST(request: Request) {
     
     //  CHRIS-PROTOCOL: Create a record in the 'media' table
     const { db } = await import('@/lib/sync/bridge');
-    const { media } = await import('@db/schema');
+    const { media } = await import('@/lib/system/voices-config');
     
     const mediaResult = await db.insert(media).values({
       fileName: fileName,

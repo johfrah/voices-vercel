@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
     if (!isNaN(id)) {
       try {
         const { db } = await import('@/lib/sync/bridge');
-        const { actors: actorsTable } = await import('@db/schema');
+        const { actors: actorsTable } = await import('@/lib/system/voices-config');
         const { eq } = await import('drizzle-orm');
         
         const actorData = await db.select().from(actorsTable).where(eq(actorsTable.id, id)).limit(1);
