@@ -405,9 +405,10 @@ export async function getArticle(slug: string, lang: string = 'nl'): Promise<any
 
 export async function getActor(slug: string, lang: string = 'nl'): Promise<Actor> {
   // 🛡️ CHRIS-PROTOCOL: Use SDK for consistency and field prioritization
-  console.error(` [api-server] getActor lookup for slug: "${slug}" (length: ${slug?.length})`);
+  const cleanSlug = slug?.trim().toLowerCase();
+  console.error(` [api-server] getActor lookup for slug: "${cleanSlug}" (original: "${slug}")`);
   
-  if (!slug) {
+  if (!cleanSlug) {
     console.error(` [api-server] getActor: No slug provided!`);
     throw new Error("Slug is required");
   }
@@ -415,31 +416,31 @@ export async function getActor(slug: string, lang: string = 'nl'): Promise<Actor
   const { data: actor, error } = await supabase
     .from('actors')
     .select('*, country:countries(*)')
-    .eq('slug', slug)
+    .eq('slug', cleanSlug)
     .single();
 
   if (error || !actor) {
-    console.error(` [api-server] getActor failed for slug: "${slug}"`, error?.message || 'Not found');
+    console.error(` [api-server] getActor failed for slug: "${cleanSlug}"`, error?.message || 'Not found');
     // 🛡️ CHRIS-PROTOCOL: Fallback lookup by first_name if slug fails (v2.14.525)
-    console.error(` [api-server] Attempting fallback lookup by first_name for: "${slug}"`);
+    console.error(` [api-server] Attempting fallback lookup by first_name for: "${cleanSlug}"`);
     const { data: fallbackActor, error: fallbackError } = await supabase
       .from('actors')
       .select('*, country:countries(*)')
-      .ilike('first_name', slug)
+      .ilike('first_name', cleanSlug)
       .limit(1)
       .single();
 
     if (fallbackError || !fallbackActor) {
-      console.error(` [api-server] Fallback failed for: "${slug}"`, fallbackError?.message || 'Not found');
+      console.error(` [api-server] Fallback failed for: "${cleanSlug}"`, fallbackError?.message || 'Not found');
       throw new Error("Actor not found");
     }
     
     console.error(` [api-server] Fallback SUCCESS: Found actor ${fallbackActor.first_name} by name.`);
-    return processActorData(fallbackActor, slug);
+    return processActorData(fallbackActor, cleanSlug);
   }
 
   console.error(` [api-server] Found actor: ${actor.first_name} (ID: ${actor.id})`);
-  return processActorData(actor, slug);
+  return processActorData(actor, cleanSlug);
 }
 
 /**

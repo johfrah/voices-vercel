@@ -584,21 +584,35 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
 
     // 2. Check voor Stem
     try {
-      console.error(` [SmartRouter] Content check for actor: ${firstSegment} (lang: ${lang})`);
+      console.error(` [SmartRouter] Content check for actor: "${firstSegment}" (lang: ${lang})`);
       
       // 🛡️ CHRIS-PROTOCOL: Force direct lookup by slug first
       const actor = await getActor(firstSegment, lang).catch(async (err) => {
-        console.error(` [SmartRouter] Content actor fetch failed for ${firstSegment}:`, err.message);
+        console.error(` [SmartRouter] Content actor fetch failed for "${firstSegment}":`, err.message);
         // 🛡️ CHRIS-PROTOCOL: Try lowercase fallback for slug
-        if (firstSegment !== firstSegment.toLowerCase()) {
-          console.error(` [SmartRouter] Retrying with lowercase slug: ${firstSegment.toLowerCase()}`);
-          return await getActor(firstSegment.toLowerCase(), lang).catch(() => null);
+        const lowerSlug = firstSegment.toLowerCase();
+        if (firstSegment !== lowerSlug) {
+          console.error(` [SmartRouter] Retrying with lowercase slug: "${lowerSlug}"`);
+          return await getActor(lowerSlug, lang).catch(() => null);
         }
         return null;
       });
 
       if (actor) {
         console.error(` [SmartRouter] Actor found! rendering VoiceDetailClient for ${actor.first_name} (ID: ${actor.id})`);
+        
+        // 🛡️ CHRIS-PROTOCOL: Direct DB logging fallback (Atomic Pulse)
+        const { db, systemEvents } = await import('@/lib/system/voices-config');
+        if (db && systemEvents) {
+          await db.insert(systemEvents).values({
+            level: 'info',
+            source: 'SmartRouter',
+            message: `[SmartRouter] SUCCESS: Actor ${actor.first_name} found for slug "${firstSegment}"`,
+            details: { actorId: actor.id, slug: actor.slug, version: '2.14.535' },
+            createdAt: new Date().toISOString()
+          }).catch(() => null);
+        }
+
         //  CHRIS-PROTOCOL: Map journey slug to internal journey type
         const journeyMap: Record<string, JourneyType> = {
           'telefoon': 'telephony',

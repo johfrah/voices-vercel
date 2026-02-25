@@ -494,7 +494,11 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
 
       const data = await response.json();
       const newDemos = [...formData.demos];
-      newDemos[demoIdx] = { ...newDemos[demoIdx], audio_url: data.url };
+      newDemos[demoIdx] = { 
+        ...newDemos[demoIdx], 
+        audio_url: data.url,
+        media_id: data.mediaId 
+      };
       setFormData({ ...formData, demos: newDemos });
       
       playClick('success');
