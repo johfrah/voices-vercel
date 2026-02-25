@@ -584,7 +584,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
               onUpdate={(newSrc) => {
                 saveNav(links, { ...navConfig.logo, src: newSrc });
               }}
-              className="h-10 md:h-12 w-auto transition-transform duration-500 relative z-50"
+              className="h-7 md:h-9 w-auto transition-transform duration-500 relative z-50"
             />
           </ContainerInstrument>
         ) : isPortfolioMarket ? (
