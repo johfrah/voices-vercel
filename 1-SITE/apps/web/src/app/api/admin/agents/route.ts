@@ -92,7 +92,7 @@ export async function PATCH(request: NextRequest) {
           promptId: id,
           systemPrompt,
           version: nextVersion,
-          changeNote: changeNote || 'Updated via Control Center',
+          changeNote: changeNote || 'Bijgewerkt via beheer',
           createdAt: new Date()
         });
       }

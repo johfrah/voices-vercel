@@ -55,7 +55,7 @@ export const VumeOrderConfirmationTemplate = (props: OrderConfirmationProps) => 
     </div>
 
     <div style="background: #fcfaf7; border-radius: 20px; padding: 25px; border: 1px solid #eee; margin-bottom: 30px;">
-      <div style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; color: #bbbbbb; margin-bottom: 15px;">${isNl ? 'Besteloverzicht' : 'Order Summary'}</div>
+      <div style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; color: #bbbbbb; margin-bottom: 15px;">${isNl ? 'Jouw project' : 'Your project'}</div>
       <div style="margin-bottom: 20px;">
         ${itemsHtml}
       </div>
@@ -68,12 +68,12 @@ export const VumeOrderConfirmationTemplate = (props: OrderConfirmationProps) => 
     </div>
 
     <div style="margin-bottom: 30px;">
-      <div style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; color: #bbbbbb; margin-bottom: 10px;">${isNl ? 'Wat gebeurt er nu?' : 'What happens next?'}</div>
+      <div style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; color: #bbbbbb; margin-bottom: 10px;">${isNl ? 'Hoe gaan we verder?' : 'What happens next?'}</div>
       <div style="font-size: 15px; line-height: 1.6; color: #666;">
         <ul style="padding-left: 20px;">
-          <li style="margin-bottom: 10px;">${isNl ? 'De stemacteur is op de hoogte gebracht en plant de opname in.' : 'The voice actor has been notified and is scheduling the recording.'}</li>
-          <li style="margin-bottom: 10px;">${isNl ? 'Zodra de audio klaar is, ontvang je een e-mail met een download-link.' : 'As soon as the audio is ready, you will receive an email with a download link.'}</li>
-          <li style="margin-bottom: 10px;">${isNl ? 'Je kunt de status van je project op elk moment volgen in je account.' : 'You can track the status of your project at any time in your account.'}</li>
+          <li style="margin-bottom: 10px;">${isNl ? 'We hebben de stem gebriefd en de opname wordt ingepland.' : 'The voice actor has been notified and is scheduling the recording.'}</li>
+          <li style="margin-bottom: 10px;">${isNl ? 'Zodra de opname klaar is, ontvang je een e-mail met een download-link.' : 'As soon as the recording is ready, you will receive an email with a download link.'}</li>
+          <li style="margin-bottom: 10px;">${isNl ? 'Je kunt de status van je project op elk moment volgen in je overzicht.' : 'You can track the status of your project at any time in your overview.'}</li>
         </ul>
       </div>
     </div>
@@ -88,7 +88,7 @@ export const VumeOrderConfirmationTemplate = (props: OrderConfirmationProps) => 
   `;
 
   return BaseTemplate({
-    title: isNl ? 'Bestelling Bevestigd' : 'Order Confirmed',
+    title: isNl ? 'Je opdracht is goed ontvangen' : 'Order Confirmed',
     journey: 'agency',
     host,
     children: content

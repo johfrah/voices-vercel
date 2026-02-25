@@ -34,7 +34,7 @@ export async function GET(request: Request) {
     });
 
   } catch (error) {
-    console.error(' VIES Validation Error:', error);
+    console.error(' BTW Check Fout:', error);
     
     return NextResponse.json({ 
       error: 'SERVICE_UNAVAILABLE',

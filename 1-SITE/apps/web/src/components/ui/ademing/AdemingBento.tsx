@@ -9,7 +9,7 @@ import { BreathingInstrument } from './BreathingInstrument';
 import { MeditationPlayerInstrument } from './MeditationPlayerInstrument';
 import { VoiceglotText } from '../VoiceglotText';
 import { Testimonials } from './Testimonials';
-import { Moon, Zap, Clock, ArrowRight, Compass, Users } from 'lucide-react';
+import { Moon, Zap, Clock, ArrowRight, Compass, Users, Instagram, Globe } from 'lucide-react';
 import { VoicesDropdown } from '../VoicesDropdown';
 import { ElementIcon } from './ElementIcon';
 
@@ -36,12 +36,12 @@ export const AdemingBento = ({ tracks, initialTrack }: AdemingBentoProps) => {
         <div className="max-w-6xl mx-auto px-6 space-y-40 py-32">
           
           {/* Filters Section - Original spacing and depth */}
-          <section className="bg-gradient-to-br from-primary/5 via-background to-primary/10 rounded-[48px] p-12 md:p-24 border border-primary/10 shadow-soft animate-fade-in">
+          <section className="bg-gradient-to-br from-primary/5 via-background to-primary/10 rounded-[48px] p-12 md:p-24 border border-primary/10 shadow-soft animate-fade-in hover:shadow-medium transition-all duration-1000">
             <div className="mb-16 text-center space-y-6">
-              <h2 className="text-5xl md:text-6xl font-serif font-bold tracking-tight">
+              <h2 className="text-5xl md:text-7xl font-serif font-bold tracking-tight animate-gentle-float">
                 <VoiceglotText translationKey="home.filters.title" defaultText="Vind jouw perfecte meditatie" />
               </h2>
-              <p className="text-muted-foreground text-2xl font-light max-w-2xl mx-auto">
+              <p className="text-muted-foreground text-2xl font-light max-w-2xl mx-auto leading-relaxed">
                 <VoiceglotText translationKey="home.filters.subtitle" defaultText="Kies wat je zoekt en ontdek meditaties op maat" />
               </p>
             </div>
@@ -77,9 +77,9 @@ export const AdemingBento = ({ tracks, initialTrack }: AdemingBentoProps) => {
                 placeholder="⏱️ Kies duur"
                 options={[
                   { label: "Alle duur", value: "all" },
-                  { label: "Kort (< 10 min)", value: "kort" },
-                  { label: "Middel (10-20 min)", value: "middel" },
-                  { label: "Lang (> 20 min)", value: "lang" }
+                  { label: "Kort (< 10 min)", value: "kort", icon: Clock },
+                  { label: "Middel (10-20 min)", value: "middel", icon: Clock },
+                  { label: "Lang (> 20 min)", value: "lang", icon: Clock }
                 ]}
                 value="all"
                 onChange={() => {}}
@@ -90,8 +90,8 @@ export const AdemingBento = ({ tracks, initialTrack }: AdemingBentoProps) => {
                 placeholder="👤 Kies begeleider"
                 options={[
                   { label: "Alle begeleiders", value: "all" },
-                  { label: "Julie", value: "julie" },
-                  { label: "Johfrah", value: "johfrah" }
+                  { label: "Julie", value: "julie", icon: User },
+                  { label: "Johfrah", value: "johfrah", icon: User }
                 ]}
                 value="all"
                 onChange={() => {}}
@@ -141,13 +141,17 @@ export const AdemingBento = ({ tracks, initialTrack }: AdemingBentoProps) => {
                   name: "Julie",
                   fullName: "Julie",
                   bio: "Julie brengt een zachte, liefdevolle energie in elke meditatie. Haar stem is een warme deken voor de ziel.",
-                  avatar: "/assets/ademing/avatar-julie.jpg"
+                  avatar: "/assets/ademing/avatar-julie.jpg",
+                  instagram: "@julie_ademing",
+                  website: "www.ademing.be"
                 },
                 {
                   name: "Johfrah",
                   fullName: "Johfrah",
                   bio: "Johfrah's diepe, rustgevende stem helpt je om direct te landen in het hier en nu.",
-                  avatar: "/assets/ademing/avatar-johfrah.jpg"
+                  avatar: "/assets/ademing/avatar-johfrah.jpg",
+                  instagram: "@johfrah",
+                  website: "www.voices.be"
                 }
               ].map((maker) => (
                 <div key={maker.name} className="bg-white p-12 rounded-[64px] shadow-soft border border-primary/5 hover:shadow-medium hover:-translate-y-2 transition-all duration-700 group cursor-pointer">
@@ -157,7 +161,23 @@ export const AdemingBento = ({ tracks, initialTrack }: AdemingBentoProps) => {
                     </div>
                     <div className="flex-1 space-y-6">
                       <h3 className="font-serif font-bold text-4xl group-hover:text-primary transition-colors">{maker.fullName}</h3>
-                      <p className="text-muted-foreground text-xl leading-relaxed font-light">{maker.bio}</p>
+                      <p className="text-muted-foreground text-xl leading-relaxed font-light">
+                        <VoiceglotText translationKey={`creator.${maker.name}.bio`} defaultText={maker.bio} />
+                      </p>
+                      <div className="flex flex-wrap justify-center md:justify-start gap-6 text-sm font-bold uppercase tracking-[0.2em] text-primary/60">
+                        {maker.instagram && (
+                          <span className="flex items-center gap-2 hover:text-primary transition-colors">
+                            <Instagram size={16} />
+                            {maker.instagram}
+                          </span>
+                        )}
+                        {maker.website && (
+                          <span className="flex items-center gap-2 hover:text-primary transition-colors">
+                            <Globe size={16} />
+                            Website
+                          </span>
+                        )}
+                      </div>
                       <div className="pt-4 flex items-center justify-center md:justify-start gap-3 text-primary font-bold text-sm uppercase tracking-[0.2em] opacity-0 group-hover:opacity-100 transition-all translate-y-4 group-hover:translate-y-0">
                         Bekijk profiel <ArrowRight size={20} />
                       </div>

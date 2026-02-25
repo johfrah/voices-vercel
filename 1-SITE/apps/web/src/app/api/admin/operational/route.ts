@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
       process.env.SUPABASE_SERVICE_ROLE_KEY!
     );
 
-    // 1. Media Engine Data
+    // 1. Studio Data (Media)
     const { data: mediaFiles } = await supabase
       .from('media')
       .select('*')

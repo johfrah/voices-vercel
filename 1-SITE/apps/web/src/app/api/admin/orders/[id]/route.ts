@@ -95,7 +95,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
     const margin = totalNet - totalCost;
     const marginPercentage = totalNet > 0 ? Math.round((margin / totalNet) * 100) : 0;
 
-    // 🎭 PRODUCTION INTELLIGENCE: Briefing & Script (Punt 4 Scope)
+    // 🎭 PRODUCTIE: Script & Regie (Punt 4 Scope)
     const rawBriefing = rawMeta.briefing || rawMeta._billing_wo_briefing || "";
     const hasRegieInstructions = rawBriefing.includes('(') && rawBriefing.includes(')');
     
@@ -111,15 +111,15 @@ export async function GET(request: Request, { params }: { params: { id: string }
 
     const statusMap: Record<string, string> = {
       'completed': 'Voltooid',
-      'processing': 'In behandeling',
-      'pending': 'Wacht op betaling',
+      'processing': 'In productie',
+      'pending': 'Wacht op kassa',
       'on-hold': 'Gepauzeerd',
       'cancelled': 'Geannuleerd',
       'refunded': 'Terugbetaald',
       'failed': 'Mislukt',
       'wc-completed': 'Voltooid',
-      'wc-processing': 'In behandeling',
-      'wc-pending': 'Wacht op betaling',
+      'wc-processing': 'In productie',
+      'wc-pending': 'Wacht op kassa',
       'waiting-po': 'Wacht op PO-nummer'
     };
 

@@ -6,7 +6,7 @@ import { MollieService } from '@/lib/payments/mollie';
  *  HEADLESS CHECKOUT API - V2 (NUCLEAR)
  * 
  * Doel: Volledige order-creatie inclusief line items en Mollie betaling.
- * Geen WordPress, 100% Native Engine.
+ * Geen WordPress, 100% eigen architectuur.
  */
 
 export async function POST(request: NextRequest) {

@@ -1,9 +1,9 @@
 import { DirectMailService } from './direct-mail-service';
 
 /**
- * VOICES MAIL ENGINE (BOB-METHOD 2026)
+ * VOICES MAIL (BOB-METHOD 2026)
  * 
- * De centrale motor voor alle uitgaande e-mails.
+ * Beheert alle uitgaande e-mails.
  * Dwingt de Voices-stijl, taal (Voiceglot) en betrouwbare links af.
  */
 export class VoicesMailEngine {

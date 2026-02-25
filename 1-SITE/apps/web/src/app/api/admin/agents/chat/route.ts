@@ -101,6 +101,6 @@ export async function POST(req: NextRequest) {
         });
 
     } catch (error) {
-        return NextResponse.json({ error: 'Engine Failure' }, { status: 500 });
+        return NextResponse.json({ error: 'Er klopt iets niet bij de assistent' }, { status: 500 });
     }
 }

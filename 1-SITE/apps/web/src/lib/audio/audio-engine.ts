@@ -1,7 +1,7 @@
 /**
- *  VOICES AUDIO ENGINE (2026)
+ *  VOICES AUDIO (2026)
  * 
- * Deze service is het hart van de geautomatiseerde audio pipeline.
+ * Deze service regelt de audio pipeline.
  * Het orkestreert FFMPEG voor mastering, mixing en export.
  * 
  * @mandaat NEXT-ONLY, DATA-BACKEND, TONE-OF-VOICE
@@ -18,7 +18,7 @@ export const MASTERING_PROFILES: Record<string, MasteringProfile> = {
     filters: [
       'highpass=f=80',                  // Low-cut voor rumble
       'anequalizer=f=3000:g=2:t=q:w=1',   // Presence boost voor verstaanbaarheid
-      'compand=attacks=0:points=-80/-80|-20/-12|0/-7', // Intelligent compressie
+      'compand=attacks=0:points=-80/-80|-20/-12|0/-7', // Compressie
       'alimiter=limit=0.9'              // Safety limiter
     ]
   },

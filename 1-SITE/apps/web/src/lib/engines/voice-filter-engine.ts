@@ -1,5 +1,5 @@
 /**
- * VOICE FILTER ENGINE (2026)
+ * STEMMENFILTER (2026)
  * 
  * De onverwoestbare basishoeksteen van het Voices ecosysteem.
  * Centraliseert alle filter-logica om inconsistenties tussen frontend en backend te elimineren.
@@ -38,7 +38,7 @@ export class VoiceFilterEngine {
   static filter(actors: Actor[], criteria: FilterCriteria): Actor[] {
     if (!actors || actors.length === 0) return [];
 
-    console.log(`[VoiceFilterEngine] Starting filter with ${actors.length} actors. Journey: ${criteria.journey}`, { 
+    console.log(`[VoiceFilter] Starting filter with ${actors.length} actors. Journey: ${criteria.journey}`, { 
       language: criteria.language,
       languageId: criteria.languageId,
       media: criteria.media,

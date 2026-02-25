@@ -6,7 +6,7 @@ import { NextResponse } from 'next/server';
 /**
  * API: Update User Preferences
  * 
- * Doel: Slaat gebruikersvoorkeuren (zoals taal) op in de database voor 'Intelligence' en 'Stickiness'.
+ * Doel: Slaat gebruikersvoorkeuren (zoals taal) op in de database voor een persoonlijke ervaring.
  */
 export async function POST(request: Request) {
   try {

@@ -36,7 +36,15 @@ import {
     X,
     Zap,
     Bot,
-    Ghost
+    Ghost,
+    Home,
+    Headphones,
+    Layers,
+    Mail,
+    PieChart,
+    Shield,
+    Sparkles,
+    Smartphone
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState, useCallback } from 'react';
@@ -50,7 +58,8 @@ interface MenuItem {
   icon: any;
   href: string;
   color: string;
-  group: 'Core' | 'Commerce' | 'Studio' | 'Academy' | 'Agency' | 'Marketing' | 'Systems' | 'Support' | 'Account' | 'Content' | 'Analytics' | 'Financieel';
+  group: 'Directie' | 'Productie' | 'Relaties' | 'Groei' | 'Systeem';
+  agent?: string;
   badge?: string | number;
   journey?: 'agency' | 'studio' | 'academy' | 'all';
 }
@@ -65,84 +74,58 @@ interface DataResult {
 
 const journeyInstructions: Record<string, string[]> = {
   agency: [
-    "Zoek op ISO-codes (nl-BE, fr-FR) om stemmen te filteren.",
-    "Klik op een stem om demo's te beluisteren en direct te boeken.",
-    "Gebruik Voicy Chat voor een persoonlijke casting op maat."
+    "BOB: 'Visie is de basis van elke journey.'",
+    "VOICY: 'De perfecte stem is een match in DNA.'",
+    "CHRIS: 'Integriteit in code is integriteit in business.'"
   ],
   studio: [
-    "Selecteer een workshop in de kalender om je in te schrijven.",
-    "Upload je eigen opnames in de recorder voor professionele feedback.",
-    "Beheer je boekingen en deelnemers via het Studio Dashboard."
+    "BERNY: 'Vakmanschap wordt doorgegeven, niet gekopieerd.'",
+    "LAYA: 'Esthetiek is de ziel van de Studio.'",
+    "LOUIS: 'Elk frame moet spreken.'"
   ],
   academy: [
-    "Start een les en volg je voortgang in het Academy Dashboard.",
-    "Stuur je oefeningen in voor persoonlijke coaching door onze experts.",
-    "Bekijk video-lessen en download oefenmateriaal."
+    "BERNY: 'Leren is het proces van herhaling naar meesterschap.'",
+    "ANNA: 'De show is altijd aan in de Academy.'",
+    "LEX: 'Waarheid in educatie is heilig.'"
   ],
   all: [
-    "Gebruik CMD + K om razendsnel tussen alle modules te navigeren.",
-    "Klik op het Voicy icoon rechtsonder voor directe AI-ondersteuning.",
-    "Beheer je account, bestellingen en instellingen via het menu."
+    "MARK: 'Conversie is het resultaat van een goed verteld verhaal.'",
+    "MAT: 'Elke footprint vertelt een verhaal.'",
+    "KELLY: 'Een slimme kassa is een blije kassa.'"
   ]
 };
 
 const menuItems: MenuItem[] = [
-  //  CORE & OPERATIONS
-  { title: 'Dashboard', icon: Zap, href: '/admin/dashboard', color: 'text-yellow-500', group: 'Core', journey: 'all' },
-  { title: 'Postvak', icon: MessageSquare, href: '/admin/mailbox', color: 'text-primary', group: 'Core', badge: 3, journey: 'all' },
-  { title: 'Workshop Overzicht', icon: Calendar, href: '/admin/studio/workshops', color: 'text-purple-500', group: 'Core', journey: 'studio' },
-  { title: 'Datamatch Monitor', icon: Activity, href: '/admin/datamatch', color: 'text-blue-400', group: 'Core', journey: 'all' },
-  { title: 'Statistieken', icon: TrendingUp, href: '/admin/analytics', color: 'text-orange-500', group: 'Core', journey: 'all' },
-  { title: 'Klant Inzichten', icon: Brain, href: '/admin/insights', color: 'text-pink-500', group: 'Core', journey: 'all' },
+  //  🏢 DIRECTIE (Core Operations)
+  { title: 'Dashboard', icon: Home, href: '/admin/dashboard', color: 'text-va-black', group: 'Directie', agent: 'BOB', journey: 'all' },
+  { title: 'Postvak', icon: Mail, href: '/admin/mailbox', color: 'text-primary', group: 'Directie', agent: 'SALLY', badge: 3, journey: 'all' },
+  { title: 'Statistieken', icon: PieChart, href: '/admin/analytics', color: 'text-blue-500', group: 'Directie', agent: 'MARK', journey: 'all' },
+  { title: 'Klant Inzichten', icon: Brain, href: '/admin/insights', color: 'text-pink-500', group: 'Directie', agent: 'MARK', journey: 'all' },
 
-  //  CONTENT & JOURNEYS
-  { title: 'Artikelen', icon: FileText, href: '/admin/articles', color: 'text-blue-500', group: 'Content', journey: 'all' },
-  { title: 'Journey Beheer', icon: Target, href: '/admin/journeys', color: 'text-primary', group: 'Content', journey: 'all' },
-  { title: 'Audiopost Studio', icon: Video, href: '/admin/media', color: 'text-va-black/40', group: 'Content', journey: 'all' },
+  //  🎙️ PRODUCTIE (Audiopost & Orders)
+  { title: 'Bestellingen', icon: ShoppingBag, href: '/admin/orders', color: 'text-emerald-600', group: 'Productie', agent: 'KELLY', badge: 5, journey: 'all' },
+  { title: 'Audiopost Studio', icon: Headphones, href: '/admin/media', color: 'text-va-black/40', group: 'Productie', agent: 'LOUIS', journey: 'all' },
+  { title: 'Journey Beheer', icon: Layers, href: '/admin/journeys', color: 'text-primary', group: 'Productie', agent: 'BOB', journey: 'all' },
+  { title: 'Stemmenbeheer', icon: Mic, href: '/admin/voices', color: 'text-purple-500', group: 'Productie', agent: 'VOICY', journey: 'agency' },
+  { title: 'Workshop Beheer', icon: Calendar, href: '/admin/workshops', color: 'text-orange-500', group: 'Productie', agent: 'BERNY', journey: 'studio' },
 
-  //  ANALYTICS & INZICHTEN
-  { title: 'UTM Attribution', icon: BarChart3, href: '/admin/marketing/utm', color: 'text-orange-500', group: 'Analytics', journey: 'all' },
-  { title: 'Bezoekers', icon: Activity, href: '/admin/marketing/visitors', color: 'text-emerald-500', group: 'Analytics', journey: 'all' },
-  { title: 'Klantprofielen', icon: Users, href: '/admin/users', color: 'text-blue-400', group: 'Analytics', journey: 'all' },
-  { title: 'CTA AB Test', icon: MousePointer2, href: '/admin/marketing/ab-test', color: 'text-primary', group: 'Analytics', journey: 'all' },
-  { title: 'Trends & SWOT', icon: TrendingUp, href: '/admin/marketing/trends', color: 'text-indigo-500', group: 'Analytics', journey: 'all' },
+  //  👥 RELATIES (CRM & People)
+  { title: 'Klantprofielen', icon: Users, href: '/admin/users', color: 'text-blue-400', group: 'Relaties', agent: 'MAT', journey: 'all' },
+  { title: 'Artiesten', icon: Briefcase, href: '/admin/artists', color: 'text-slate-600', group: 'Relaties', agent: 'LAYA', journey: 'agency' },
+  { title: 'Deelnemers', icon: Smile, href: '/admin/participants', color: 'text-green-500', group: 'Relaties', agent: 'BERNY', journey: 'studio' },
+  { title: 'Feedback', icon: MessageSquare, href: '/admin/feedback', color: 'text-yellow-500', group: 'Relaties', agent: 'CHATTY', journey: 'studio' },
 
-  //  FINANCIEEL & COMMERCE
-  { title: 'Bestellingen', icon: ShoppingBag, href: '/admin/orders', color: 'text-blue-600', group: 'Financieel', badge: 5, journey: 'all' },
-  { title: 'Boekhouder Review', icon: ShieldCheck, href: '/admin/approvals', color: 'text-green-600', group: 'Financieel', journey: 'all' },
-  { title: 'Yuki Dashboard', icon: CreditCard, href: '/admin/finance', color: 'text-indigo-500', group: 'Financieel', journey: 'all' },
-  { title: 'Tarieven', icon: Tag, href: '/admin/rates', color: 'text-emerald-500', group: 'Financieel', journey: 'all' },
-  { title: 'Vouchers', icon: Star, href: '/admin/vouchers', color: 'text-yellow-600', group: 'Financieel', journey: 'all' },
-  { title: 'Omzet Monitor', icon: TrendingUp, href: '/admin/finance/revenue', color: 'text-green-500', group: 'Financieel', journey: 'all' },
+  //  📈 GROEI (Marketing & Academy)
+  { title: 'Academy Overzicht', icon: GraduationCap, href: '/admin/academy', color: 'text-primary', group: 'Groei', agent: 'BERNY', journey: 'academy' },
+  { title: 'Bezoekers', icon: Activity, href: '/admin/marketing/visitors', color: 'text-emerald-500', group: 'Groei', agent: 'MAT', journey: 'all' },
+  { title: 'Marketing & UTM', icon: Target, href: '/admin/marketing/utm', color: 'text-orange-500', group: 'Groei', agent: 'MARK', journey: 'all' },
+  { title: 'Artikelen', icon: FileText, href: '/admin/articles', color: 'text-blue-500', group: 'Groei', agent: 'MARK', journey: 'all' },
 
-  //  AGENCY & VOICES
-  { title: 'Stemmenbeheer', icon: Mic, href: '/admin/voices', color: 'text-purple-500', group: 'Agency', journey: 'agency' },
-  { title: 'Product Catalogus', icon: Database, href: '/admin/catalog', color: 'text-va-black', group: 'Agency', journey: 'agency' },
-  { title: 'Demo Beheer', icon: Music, href: '/admin/demos', color: 'text-blue-500', group: 'Agency', journey: 'agency' },
-  { title: 'Vakanties', icon: Clock, href: '/admin/vacations', color: 'text-red-400', group: 'Agency', journey: 'agency' },
-  { title: 'Artiesten', icon: Briefcase, href: '/admin/artists', color: 'text-slate-600', group: 'Agency', journey: 'agency' },
-
-  //  STUDIO & WORKSHOPS
-  { title: 'Workshops', icon: Calendar, href: '/admin/workshops', color: 'text-primary', group: 'Studio', journey: 'studio' },
-  { title: 'Deelnemers', icon: Users, href: '/admin/participants', color: 'text-green-500', group: 'Studio', journey: 'studio' },
-  { title: 'Workshop Funnel', icon: Target, href: '/admin/funnel', color: 'text-orange-400', group: 'Studio', journey: 'studio' },
-  { title: 'Feedback', icon: Smile, href: '/admin/feedback', color: 'text-yellow-500', group: 'Studio', journey: 'studio' },
-  { title: 'Afspraken', icon: Clock, href: '/admin/meetings', color: 'text-blue-400', group: 'Studio', journey: 'studio' },
-
-  //  ACADEMY
-  { title: 'Academy Overzicht', icon: GraduationCap, href: '/admin/academy', color: 'text-primary', group: 'Academy', journey: 'academy' },
-  { title: 'Lessen', icon: FileText, href: '/admin/academy/lessons', color: 'text-blue-500', group: 'Academy', journey: 'academy' },
-
-  //  SYSTEMS
-  { title: 'Instellingen', icon: Settings, href: '/admin/settings', color: 'text-va-black/40', group: 'Systems', journey: 'all' },
-  { title: 'Markten & SEO', icon: Globe, href: '/admin/settings/markets', color: 'text-emerald-600', group: 'Systems', journey: 'all' },
-  { title: 'Vertalingen (Voiceglot)', icon: Globe, href: '/admin/voiceglot', color: 'text-blue-600', group: 'Systems', journey: 'all' },
-  { title: 'AI Instellingen', icon: Brain, href: '/admin/ai-settings', color: 'text-pink-400', group: 'Systems', journey: 'all' },
-  { title: 'Core Locks', icon: Lock, href: '/admin/locks', color: 'text-red-500', group: 'Systems', journey: 'all' },
-  { title: 'Vault', icon: Database, href: '/admin/vault', color: 'text-va-black/40', group: 'Systems', journey: 'all' },
-  { title: 'AI Agent Control', icon: Bot, href: '/admin/agents', color: 'text-primary', group: 'Systems', journey: 'all' },
-  { title: 'VibeCode', icon: Zap, href: '/admin/vibecode', color: 'text-primary', group: 'Systems', journey: 'all' },
-  { title: 'Security', icon: ShieldCheck, href: '/admin/security', color: 'text-red-600', group: 'Systems', journey: 'all' },
+  //  ⚙️ SYSTEEM (Technical)
+  { title: 'Instellingen', icon: Settings, href: '/admin/settings', color: 'text-va-black/40', group: 'Systeem', agent: 'CHRIS', journey: 'all' },
+  { title: 'AI Instellingen', icon: Bot, href: '/admin/ai-settings', color: 'text-primary', group: 'Systeem', agent: 'ANNA', journey: 'all' },
+  { title: 'Beveiliging & Locks', icon: Shield, href: '/admin/locks', color: 'text-red-500', group: 'Systeem', agent: 'WIM', journey: 'all' },
+  { title: 'Vertalingen', icon: Globe, href: '/admin/voiceglot', color: 'text-blue-600', group: 'Systeem', agent: 'CHATTY', journey: 'all' },
 ];
 
 export const SpotlightDashboard: React.FC = () => {
@@ -286,7 +269,7 @@ export const SpotlightDashboard: React.FC = () => {
         </div>
 
         {/* Results Grid */}
-        <div className="flex-1 overflow-y-auto p-10 custom-scrollbar bg-va-off-white/30">
+        <div className="flex-1 overflow-y-auto p-6 md:p-10 custom-scrollbar bg-va-off-white/30">
           {isSearching && (
             <div className="flex items-center justify-center py-20">
               <Activity className="animate-spin text-primary" size={32} />
@@ -294,17 +277,55 @@ export const SpotlightDashboard: React.FC = () => {
           )}
 
           {!isSearching && (search.length >= 2 || filteredItems.length > 0) ? (
-            <div className="space-y-10">
+            <div className="space-y-6 md:space-y-10">
+              {/* 0. QUICK ACTIONS (Bureau Hub) */}
+              {search.length === 0 && (
+                <div className="bg-primary/5 rounded-[20px] p-6 md:p-8 border border-primary/10 space-y-6">
+                  <div className="flex items-center gap-4 px-2">
+                    <HeadingInstrument level={3} className="text-[11px] md:text-[13px] font-bold tracking-[0.3em] text-primary uppercase Raleway">
+                      <VoiceglotText translationKey="admin.group.quick_actions" defaultText="Snel naar je Bureau" />
+                    </HeadingInstrument>
+                    <div className="h-[1px] flex-1 bg-primary/10" />
+                  </div>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+                    {[
+                      { title: 'Nieuwe Stem', icon: Plus, href: '/admin/voices/new', agent: 'VOICY' },
+                      { title: 'Open Orders', icon: ShoppingBag, href: '/admin/orders?status=open', agent: 'KELLY' },
+                      { title: 'Live Monitor', icon: Activity, href: '/admin/marketing/visitors', agent: 'MAT' },
+                      { title: 'System Health', icon: ShieldCheck, href: '/admin/security', agent: 'CHRIS' },
+                    ].map((action, i) => (
+                      <button
+                        key={`quick-${i}`}
+                        onClick={() => {
+                          playClick('pro');
+                          router.push(action.href);
+                          setIsOpen(false);
+                        }}
+                        className="flex flex-col items-center justify-center gap-3 p-6 rounded-[20px] bg-white border border-primary/5 hover:border-primary/30 hover:shadow-lg transition-all group touch-manipulation"
+                      >
+                        <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all">
+                          <action.icon size={24} strokeWidth={1.5} />
+                        </div>
+                        <div className="text-center">
+                          <span className="block text-[13px] font-bold text-va-black/80">{action.title}</span>
+                          <span className="block text-[9px] font-bold text-va-black/20 uppercase tracking-widest">{action.agent}</span>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* 1. DATABASE RESULTS (Spotlight 2.0) */}
               {dataResults.length > 0 && (
-                <div className="bg-white rounded-[20px] p-8 border border-black/[0.03] shadow-sm space-y-8">
+                <div className="bg-white rounded-[20px] p-6 md:p-8 border border-black/[0.03] shadow-sm space-y-6 md:space-y-8">
                   <div className="flex items-center gap-4 px-2">
-                    <HeadingInstrument level={3} className="text-[13px] font-light tracking-[0.3em] text-primary uppercase Raleway">
+                    <HeadingInstrument level={3} className="text-[11px] md:text-[13px] font-light tracking-[0.3em] text-primary uppercase Raleway">
                       <VoiceglotText translationKey="admin.group.database_results" defaultText="Database Results" />
                     </HeadingInstrument>
                     <div className="h-[1px] flex-1 bg-black/[0.03]" />
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
                     {dataResults.map((item, i) => (
                       <button
                         key={`data-${i}`}
@@ -318,29 +339,36 @@ export const SpotlightDashboard: React.FC = () => {
                             setIsOpen(false);
                           }
                         }}
-                        className="flex items-center gap-4 p-5 rounded-[20px] bg-va-off-white/50 border border-black/[0.02] hover:border-primary/30 hover:bg-white hover:shadow-[0_15px_30px_rgba(0,0,0,0.04)] transition-all group text-left relative overflow-hidden touch-manipulation"
+                        className="flex items-center gap-3 md:gap-4 p-4 md:p-5 rounded-[20px] bg-va-off-white/50 border border-black/[0.02] hover:border-primary/30 hover:bg-white hover:shadow-[0_15px_30px_rgba(0,0,0,0.04)] transition-all group text-left relative overflow-hidden touch-manipulation min-h-[72px]"
                       >
-                        <div className={`w-12 h-12 rounded-[10px] bg-white flex items-center justify-center shadow-sm group-hover:bg-primary group-hover:text-white transition-all duration-500`}>
-                          {item.type === 'actor' && <Mic size={20} className="text-purple-500 group-hover:text-white" />}
-                          {item.type === 'order' && <ShoppingBag size={20} className="text-blue-600 group-hover:text-white" />}
-                          {item.type === 'user' && <Ghost size={20} className="text-emerald-500 group-hover:text-white" />}
-                          {item.type === 'article' && <FileText size={20} className="text-orange-500 group-hover:text-white" />}
+                        <div className={`w-10 h-10 md:w-12 md:h-12 rounded-[10px] bg-white flex items-center justify-center shadow-sm group-hover:bg-primary group-hover:text-white transition-all duration-500 shrink-0`}>
+                          {item.type === 'actor' && <Mic size={18} className="text-purple-500 group-hover:text-white" />}
+                          {item.type === 'order' && <ShoppingBag size={18} className="text-blue-600 group-hover:text-white" />}
+                          {item.type === 'user' && <Ghost size={18} className="text-emerald-500 group-hover:text-white" />}
+                          {item.type === 'article' && <FileText size={18} className="text-orange-500 group-hover:text-white" />}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <h4 className="font-light tracking-tight text-[15px] text-va-black/80 Raleway truncate">
-                            {item.title}
-                          </h4>
-                          <p className="text-[11px] font-light tracking-widest text-va-black/30 uppercase truncate">
+                          <div className="flex items-center justify-between gap-2">
+                            <h4 className="font-light tracking-tight text-[14px] md:text-[15px] text-va-black/80 Raleway truncate">
+                              {item.title}
+                            </h4>
+                            {item.type === 'user' && (
+                              <span className="text-[8px] md:text-[9px] font-bold tracking-[0.2em] text-va-black/20 uppercase shrink-0">
+                                WIM
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-[10px] md:text-[11px] font-light tracking-widest text-va-black/30 uppercase truncate">
                             {item.type === 'user' ? `Ghost Mode • ${item.subtitle.split(' • ')[1]}` : item.subtitle}
                           </p>
                         </div>
                         {item.type === 'user' ? (
-                          <div className="flex items-center gap-2 text-primary opacity-0 group-hover:opacity-100 transition-opacity">
-                            <span className="text-[9px] font-bold uppercase tracking-widest">Inloggen</span>
+                          <div className="flex items-center gap-2 text-primary opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+                            <span className="text-[9px] font-bold uppercase tracking-widest hidden md:inline">Inloggen</span>
                             <ArrowRight strokeWidth={1.5} size={14} className="group-hover:translate-x-1 transition-all" />
                           </div>
                         ) : (
-                          <ArrowRight strokeWidth={1.5} size={14} className="text-va-black/10 group-hover:text-primary group-hover:translate-x-1 transition-all" />
+                          <ArrowRight strokeWidth={1.5} size={14} className="text-va-black/10 group-hover:text-primary group-hover:translate-x-1 transition-all shrink-0" />
                         )}
                       </button>
                     ))}
@@ -350,14 +378,14 @@ export const SpotlightDashboard: React.FC = () => {
 
               {/* 2. MENU ITEMS */}
               {Array.from(new Set(filteredItems.map(item => item.group))).map(group => (
-                <div key={group} className="bg-white rounded-[20px] p-8 border border-black/[0.03] shadow-sm space-y-8">
+                <div key={group} className="bg-white rounded-[20px] p-6 md:p-8 border border-black/[0.03] shadow-sm space-y-6 md:space-y-8">
                   <div className="flex items-center gap-4 px-2">
-                    <HeadingInstrument level={3} className="text-[13px] font-light tracking-[0.3em] text-va-black/20 uppercase Raleway">
+                    <HeadingInstrument level={3} className="text-[11px] md:text-[13px] font-light tracking-[0.3em] text-va-black/20 uppercase Raleway">
                       <VoiceglotText translationKey={`admin.group.${group.toLowerCase()}`} defaultText={group} />
                     </HeadingInstrument>
                     <div className="h-[1px] flex-1 bg-black/[0.03]" />
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
                     {filteredItems
                       .filter(item => item.group === group)
                       .map((item, i) => (
@@ -369,23 +397,30 @@ export const SpotlightDashboard: React.FC = () => {
                             router.push(item.href);
                             setIsOpen(false);
                           }}
-                          className="flex items-center gap-4 p-5 rounded-[20px] bg-va-off-white/50 border border-black/[0.02] hover:border-primary/30 hover:bg-white hover:shadow-[0_15px_30px_rgba(0,0,0,0.04)] transition-all group text-left relative overflow-hidden touch-manipulation"
+                          className="flex items-center gap-3 md:gap-4 p-4 md:p-5 rounded-[20px] bg-va-off-white/50 border border-black/[0.02] hover:border-primary/30 hover:bg-white hover:shadow-[0_15px_30px_rgba(0,0,0,0.04)] transition-all group text-left relative overflow-hidden touch-manipulation min-h-[72px]"
                         >
-                          <div className={`w-12 h-12 rounded-[10px] bg-white flex items-center justify-center ${item.color} shadow-sm group-hover:bg-primary group-hover:text-white transition-all duration-500`}>
+                          <div className={`w-10 h-10 md:w-12 md:h-12 rounded-[10px] bg-white flex items-center justify-center ${item.color} shadow-sm group-hover:bg-primary group-hover:text-white transition-all duration-500 shrink-0`}>
                             {(() => {
                               const Icon = item.icon;
                               if (!Icon) return null;
                               return (typeof Icon === 'function' || (typeof Icon === 'object' && Icon.$$typeof)) 
-                                ? <Icon strokeWidth={1.5} size={20} /> 
+                                ? <Icon strokeWidth={1.5} size={18} /> 
                                 : Icon;
                             })()}
                           </div>
-                          <div className="flex-1">
-                            <h4 className="font-light tracking-tight text-[15px] text-va-black/80 Raleway">
-                              <VoiceglotText  translationKey={`admin.menu.${item.title.toLowerCase().replace(/\s+/g, '_')}`} defaultText={item.title} />
-                            </h4>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between gap-2">
+                              <h4 className="font-light tracking-tight text-[14px] md:text-[15px] text-va-black/80 Raleway truncate">
+                                <VoiceglotText  translationKey={`admin.menu.${item.title.toLowerCase().replace(/\s+/g, '_')}`} defaultText={item.title} />
+                              </h4>
+                              {item.agent && (
+                                <span className="text-[8px] md:text-[9px] font-bold tracking-[0.2em] text-va-black/20 uppercase shrink-0">
+                                  {item.agent}
+                                </span>
+                              )}
+                            </div>
                           </div>
-                          <ArrowRight strokeWidth={1.5} size={14} className="text-va-black/10 group-hover:text-primary group-hover:translate-x-1 transition-all" />
+                          <ArrowRight strokeWidth={1.5} size={14} className="text-va-black/10 group-hover:text-primary group-hover:translate-x-1 transition-all shrink-0" />
                         </button>
                       ))}
                   </div>

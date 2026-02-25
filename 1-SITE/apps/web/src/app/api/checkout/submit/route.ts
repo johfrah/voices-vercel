@@ -50,7 +50,7 @@ export async function POST(request: Request) {
       await ServerWatchdog.report({
         level: 'error',
         component: 'CheckoutAPI',
-        error: 'Validation Failed',
+        error: 'Gegevens onvolledig',
         payload: { errors: validation.error.format(), rawBody }
       });
       return NextResponse.json({ error: 'Ongeldige bestelgegevens', details: validation.error.format() }, { status: 400 });

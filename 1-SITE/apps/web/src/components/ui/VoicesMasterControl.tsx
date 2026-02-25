@@ -35,11 +35,6 @@ interface VoicesMasterControlProps {
   countriesData?: any[];
 }
 
-// 🛡️ CHRIS-PROTOCOL: Global UI Registry (v2.14.732)
-// We use direct imports and safe wrappers to prevent ReferenceErrors in production.
-const SafeContainer = (props: any) => <ContainerInstrument {...props} />;
-const SafeText = (props: any) => <TextInstrument {...props} />;
-
 // 🛡️ CHRIS-PROTOCOL: Icon Registry for Handshake Truth (v2.14.716)
 // We use a centralized IconInstrument to render icons from database strings.
 export const IconInstrument = ({ name, size = 18, className = '', strokeWidth = 1.5 }: { name?: string, size?: number, className?: string, strokeWidth?: number }) => {
@@ -371,16 +366,16 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
   }, [mappedLanguages, t]);
 
   return (
-    <SafeContainer className={cn("w-full mx-auto space-y-8 px-0", !minimalMode && "max-w-[1440px]")}>
+    <ContainerInstrument className={cn("w-full mx-auto space-y-8 px-0", !minimalMode && "max-w-[1440px]")}>
       {/*  THE MASTER CONTROL BOX - CHRIS-PROTOCOL: Always show journey selector in script phase as it influences input style */}
-      <SafeContainer plain className={cn(
+      <ContainerInstrument plain className={cn(
         "w-full bg-white border border-black/10 rounded-[40px] p-3 shadow-aura group/master transition-all duration-500",
         // CHRIS-PROTOCOL: Reduce bottom padding when no filters are visible (Telephony/Video in script phase)
         (state.currentStep !== 'voice' && state.journey !== 'commercial' || minimalMode) && "pb-3"
       )}>
 
         {/* 1. Journey Selector (Top Row) */}
-        <SafeContainer plain className={cn(
+        <ContainerInstrument plain className={cn(
           "flex items-center md:justify-center p-1.5 bg-va-off-white/50 rounded-[32px] overflow-x-auto no-scrollbar snap-x snap-mandatory",
           ((state.currentStep === 'voice' || state.journey === 'commercial') && !minimalMode) && "mb-3"
         )}>
@@ -465,9 +460,9 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                 </div>
 
                 {/* DESKTOP FILTERS */}
-                <SafeContainer plain className="hidden md:block p-1.5">
+                <ContainerInstrument plain className="hidden md:block p-1.5">
                   <div className="flex flex-col">
-                    <SafeContainer plain className="flex items-center bg-white rounded-full shadow-md border border-black/10 divide-x divide-black/10 h-20">
+                    <ContainerInstrument plain className="flex items-center bg-white rounded-full shadow-md border border-black/10 divide-x divide-black/10 h-20">
 
                       {/* Language Segment - CHRIS-PROTOCOL: Hide in script flow */}
                       {state.currentStep === 'voice' ? (
@@ -849,7 +844,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
 
       {/* 3. Order Progress (Bottom Row - Subtle) */}
       {!minimalMode && (
-        <SafeContainer plain className="pt-4 relative z-0 flex items-center justify-center">
+        <ContainerInstrument plain className="pt-4 relative z-0 flex items-center justify-center">
           {!pathname.startsWith('/voice/') && (
             <OrderStepsInstrument currentStep={state.currentStep} className="!mb-0" />
           )}
@@ -879,13 +874,13 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
 const Chip = ({ label, onRemove }: { label: string, onRemove: () => void }) => {
   const { t } = useTranslation();
   return (
-    <SafeContainer className="inline-flex items-center gap-2 px-5 py-2.5 bg-white border border-black/5 rounded-full text-[14px] font-light tracking-widest shadow-sm hover:border-primary/20 transition-colors group">
-      <SafeText className="text-va-black/60 group-hover:text-va-black">
+    <ContainerInstrument className="inline-flex items-center gap-2 px-5 py-2.5 bg-white border border-black/5 rounded-full text-[14px] font-light tracking-widest shadow-sm hover:border-primary/20 transition-colors group">
+      <TextInstrument className="text-va-black/60 group-hover:text-va-black">
         {t(`language.${String(label || '').toLowerCase()}`, String(label || ''))}
-      </SafeText>
+      </TextInstrument>
       <button onClick={onRemove} aria-label={t('action.remove', 'Verwijder')} className="hover:text-primary transition-colors p-0.5">
         <VoiceglotImage src="/assets/common/branding/icons/BACK.svg" width={10} height={10} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.4 }} />
       </button>
-    </SafeContainer>
+    </ContainerInstrument>
   );
 };
