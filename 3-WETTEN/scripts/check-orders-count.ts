@@ -15,7 +15,7 @@ async function checkOrdersCount() {
   }
 
   if (connectionString.includes('pooler.supabase.com')) {
-    connectionString = connectionString.replace('aws-1-eu-west-1.pooler.supabase.com', 'db.vcbxyyjsxuquytcsskpj.supabase.co');
+    connectionString = connectionString.replace('aws-1-eu-west-1.pooler.supabase.com', 'vcbxyyjsxuquytcsskpj.supabase.co');
     connectionString = connectionString.replace(':6543', ':5432');
     connectionString = connectionString.replace('postgres.vcbxyyjsxuquytcsskpj', 'postgres');
     connectionString = connectionString.split('?')[0]; 
@@ -30,9 +30,9 @@ async function checkOrdersCount() {
   try {
     // Total count
     const totalCount = await sql`
-      SELECT COUNT(*) as count FROM orders
+      SELECT COUNT(*) as count FROM orders_v2
     `;
-    console.log(`📊 Total orders in database: ${totalCount[0].count}`);
+    console.log(`📊 Total orders in orders_v2: ${totalCount[0].count}`);
 
     // Count with users
     const withUsers = await sql`

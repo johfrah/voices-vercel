@@ -14,7 +14,7 @@ async function debugOrdersApi() {
   }
 
   if (connectionString.includes('pooler.supabase.com')) {
-    connectionString = connectionString.replace('aws-1-eu-west-1.pooler.supabase.com', 'db.vcbxyyjsxuquytcsskpj.supabase.co');
+    connectionString = connectionString.replace('aws-1-eu-west-1.pooler.supabase.com', 'vcbxyyjsxuquytcsskpj.supabase.co');
     connectionString = connectionString.replace(':6543', ':5432');
     connectionString = connectionString.replace('postgres.vcbxyyjsxuquytcsskpj', 'postgres');
     connectionString = connectionString.split('?')[0]; 
