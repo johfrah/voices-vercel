@@ -1,5 +1,5 @@
-import { db } from '@db';
-import { users, visitors, systemEvents } from '@db/schema';
+import { db } from '@/lib/system/voices-config';
+import { users, visitors, systemEvents } from '@/lib/system/voices-config';
 import { eq, sql } from 'drizzle-orm';
 import { GeminiService } from '@/lib/services/gemini-service';
 

@@ -1,0 +1,39 @@
+# 🔒 Lock Protocol (Voices 2026)
+
+Dit protocol beschermt kritieke bestanden die de "Masterclass" status hebben bereikt tegen ongewenste wijzigingen door AI-agenten.
+
+## 🚫 STRIKT VERBOD (AI Restriction)
+
+1. **GEEN WIJZIGINGEN**: AI-agenten mogen bestanden die gemarkeerd zijn als "LOCKED" **NOOIT** wijzigen, herschrijven of verwijderen zonder expliciete toestemming van de USER met het codewoord "UNLOCK".
+2. **READ-ONLY**: Behandel deze bestanden als 'read-only'. Ze mogen uitsluitend worden gelezen voor context of als referentie.
+3. **LINTING EXCEPTIE**: Alleen als een locked bestand een fatale linter-error veroorzaakt die de build blokkeert, mag een agent dit rapporteren aan de USER, maar nog steeds niet zelfstandig wijzigen.
+4. **GEEN DATA-GISSEN**: AI-agenten mogen NOOIT hardcoded waarden (prijzen, thresholds, IDs) invullen in gelockte bestanden of bij het voorstellen van wijzigingen. Als een waarde 0 is, blijft deze 0 tenzij de database anders aangeeft via een live query.
+
+## 🎯 Hoe een bestand te locken
+
+Een bestand wordt als LOCKED beschouwd als:
+- Het bovenaan de comment `// @lock-file` of `/* @lock-file */` bevat.
+- Het expliciet wordt vermeld in de lijst hieronder.
+
+## 📋 Lijst van Locked Bestanden
+
+De volgende bestanden zijn momenteel bevroren onder het Chris-Protocol:
+
+### 💳 Financiële Kern (Kelly)
+- `1-SITE/apps/web/src/lib/pricing-engine.ts` - De onbetwistbare rekenmotor.
+- `1-SITE/apps/web/src/app/api/checkout/mollie/route.ts` - De betalingsvalidatie.
+
+### 🏗️ Architectuur & Regels (Bob & Chris)
+- `.cursorrules` - De grondwet van het project.
+- `.cursor/rules/*` - Alle actieve agent-instructies en wetten.
+- `1-SITE/packages/database/schema.ts` - De ruggengraat van de data.
+- `1-SITE/apps/web/src/app/[...slug]/page.tsx` - De Smart Router.
+- `1-SITE/apps/web/src/lib/api-server.ts` - De Server-Only API.
+- `1-SITE/apps/web/src/middleware.ts` - De Nuclear Middleware.
+
+### 🎨 Esthetiek & Vertaling (Laya & Voiceglot)
+- `1-SITE/apps/web/src/components/ui/LayoutInstruments.tsx` - De visuele bouwstenen.
+- `1-SITE/apps/web/src/lib/voiceglot-bridge.ts` - De vertalingslogica.
+
+## 🛡️ Handhaving
+Chris (de Technisch Directeur) voert een **Pre-flight Check** uit vóór elke schrijfactie. Elke poging om een gelockt bestand te wijzigen zonder "UNLOCK" mandaat resulteert in een onmiddellijke ABORT van de taak.

@@ -1,5 +1,5 @@
-import { db } from '@db';
-import { systemEvents } from '@db/schema/index';
+import { db } from '@/lib/system/voices-config';
+import { systemEvents } from '@/lib/system/voices-config';
 import { eq, desc } from 'drizzle-orm';
 
 export class SelfHealingService {

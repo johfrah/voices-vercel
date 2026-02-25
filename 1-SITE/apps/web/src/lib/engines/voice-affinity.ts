@@ -1,5 +1,5 @@
-import { db } from '@db';
-import { orderItems, voiceAffinity, actors } from '@db/schema';
+import { db } from '@/lib/system/voices-config';
+import { orderItems, voiceAffinity, actors } from '@/lib/system/voices-config';
 import { sql, eq, and, or } from 'drizzle-orm';
 
 /**

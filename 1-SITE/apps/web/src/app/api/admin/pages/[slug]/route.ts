@@ -1,5 +1,5 @@
-import { db } from '@db';
-import { contentArticles, contentBlocks } from '@db/schema';
+import { db } from '@/lib/system/voices-config';
+import { contentArticles, contentBlocks } from '@/lib/system/voices-config';
 import { eq, asc } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth/api-auth';

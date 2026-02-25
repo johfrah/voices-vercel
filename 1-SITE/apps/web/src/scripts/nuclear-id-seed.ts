@@ -1,6 +1,6 @@
 
 import { db } from '../lib/sync/bridge';
-import { actors, actorLanguages, languages } from '../../../../packages/database/src/schema/index';
+import { actors, actorLanguages, languages } from '@/lib/system/voices-config';
 import { eq, inArray } from 'drizzle-orm';
 
 const SOURCE_OF_TRUTH = [

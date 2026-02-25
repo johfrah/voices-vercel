@@ -1,5 +1,5 @@
-import { db } from '@db';
-import { mailContent, faq } from '@db/schema';
+import { db } from '@/lib/system/voices-config';
+import { mailContent, faq } from '@/lib/system/voices-config';
 import { desc, eq, and, sql } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 

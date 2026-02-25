@@ -1,8 +1,8 @@
 import { ContainerInstrument, HeadingInstrument, PageWrapperInstrument, TextInstrument, LoadingScreenInstrument, ButtonInstrument } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { VoicesLink } from '@/components/ui/VoicesLink';
-import { db } from '@db';
-import { contentArticles, actors, translations, castingLists } from '@db/schema';
+import { db } from '@/lib/system/voices-config';
+import { contentArticles, actors, translations, castingLists } from '@/lib/system/voices-config';
 import { eq, or, ilike, and } from 'drizzle-orm';
 import { ArrowRight, CreditCard, Info, ShieldCheck, Star, Zap } from 'lucide-react';
 import { Metadata } from 'next';

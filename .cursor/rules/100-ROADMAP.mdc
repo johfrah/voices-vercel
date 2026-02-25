@@ -1,0 +1,65 @@
+---
+description: De strategische roadmap voor de Voices Engine (2026). Definieert de fasen, prioriteiten en technische mijlpalen voor het intelligente ecosysteem.
+globs: ["apps/web/src/**/*", "packages/database/src/**/*", "docs/roadmaps/*.md"]
+---
+
+# 🗺️ ROADMAP: VOICES ENGINE TRANSFORMATION (2026)
+
+Dit document is de "Source of Truth" voor de ontwikkeling van het intelligente **Voices Ecosysteem**. Elke wijziging in de codebase moet getoetst worden aan de huidige fase van deze roadmap.
+
+## 🎯 HET ULTIEME DOEL
+Een platform dat **context-bewust** is, **AI-native** (ARP compliant) en volledig wordt aangestuurd door de **Voices Engine**, met 100% data-integriteit. **WordPress is volledig geëlimineerd.**
+
+---
+
+## 🚀 FASE 1: HET DIGITALE BREIN (HUIDIGE FOCUS)
+*Doel: De intelligentielaag activeren zodat de site "snapt" wie de gebruiker is.*
+
+### 1.1 IAP Context & User Intelligence
+- [x] **Unified Foundation**: Supabase PostgreSQL + Drizzle ORM actief.
+- [x] **Market-First Fetching**: Headers (`x-voices-market`) sturen de data-laag aan.
+- [ ] **Customer DNA**: AI-geanalyseerde `customer_insights` koppelen aan de frontend.
+
+### 1.2 Global LLM Context Layer (ARP)
+- [x] **JSON-LD Injectie**: Basis IAP-context aanwezig in HTML.
+- [ ] **Voicy Bridge**: Volledige bidirectionele communicatie tussen UI en Chat.
+
+---
+
+## 🏗️ FASE 2: NATIVE JOURNEY REFACTORING
+*Doel: De volledige loskoppeling van alle legacy systemen.*
+
+### 2.1 Modulaire Native Journeys
+- [x] **Agency Hub**: Headless Search & Bento UI live.
+- [x] **Voice Detail**: Live prijzen via echte acteur-data.
+- [ ] **Studio Dashboard**: Volledige herbouw van de beheer-omgeving in Next.js.
+
+### 2.2 Product Form & Checkout
+- [ ] **Modular Checkout**: De checkout-modules volledig integreren met de IAP context.
+- [ ] **Frictionless Onboarding**: Gebruik van Magic Links voor directe toegang.
+
+---
+
+## 💰 FASE 3: FINANCIËLE INTELLIGENTIE & CRUD
+*Doel: De nieuwe COG en Profit data omzetten in actiegericht inzicht.*
+
+### 3.1 Admin Instrumenten
+- [ ] **Profit Engine**: Admin-widget voor werkelijke winst (**ALTIJD Excl. BTW**).
+- [ ] **Atomic CRUD**: Data-aanpassingen direct in de UI (inline) via de API.
+- [ ] **Nuclear Sync**: Automatisering van de laatste data-stromen.
+
+---
+
+## 🛡️ OPERATIONAL PROTOCOLS
+- **Zero WordPress Policy**: Geen gebruik van WordPress, Elementor of legacy PHP fallbacks.
+- **Nuclear Reality Check**: Bij de minste twijfel over data-structuren MOET de live database gecontroleerd worden.
+- **Zero-CSS**: Elke regel nieuwe CSS is een architecturale fout.
+
+---
+
+## 🛠️ ACTIEPLAN VOOR VANDAAG
+1. **Auth Completion**: De `/auth/callback` route is live, nu testen met echte gebruikers.
+2. **Content Migration**: Verplaatsen van de laatste `nuclear-relevant` MD's naar `src/content/`.
+3. **Filter Optimization**: Geavanceerde filters (stijl, accent) in de Agency Hub activeren.
+
+**ULTIEME WET:** De machine ademt. De vrijheid is een feit.

@@ -10,8 +10,8 @@ import { MarketManagerServer as MarketManager } from '@/lib/system/market-manage
 import { createClient as createSupabaseClient, type User } from '@supabase/supabase-js';
 import { createClient } from '@/utils/supabase/server';
 import { NextResponse } from 'next/server';
-import { db } from '@db';
-import { users } from '@db/schema';
+import { db } from '@/lib/system/voices-config';
+import { users } from '@/lib/system/voices-config';
 import { eq } from 'drizzle-orm';
 import { cookies } from 'next/headers';
 

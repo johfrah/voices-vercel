@@ -1,5 +1,5 @@
-import { db } from '@db';
-import { actors, contentArticles } from '@db/schema';
+import { db } from '@/lib/system/voices-config';
+import { actors, contentArticles } from '@/lib/system/voices-config';
 import { eq } from 'drizzle-orm';
 import { MetadataRoute } from 'next';
 

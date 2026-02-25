@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { VumeEngine } from '@/lib/mail/VumeEngine';
-import { db } from '@db';
-import { actors, orders, users } from '@db/schema';
+import { db } from '@/lib/system/voices-config';
+import { actors, orders, users } from '@/lib/system/voices-config';
 import { eq } from 'drizzle-orm';
 import { requireAdmin } from '@/lib/auth/api-auth';
 

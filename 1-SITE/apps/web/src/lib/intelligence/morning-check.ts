@@ -1,5 +1,5 @@
-import { db } from '@db';
-import { centralLeads, orders, systemEvents } from '@db/schema';
+import { db } from '@/lib/system/voices-config';
+import { centralLeads, orders, systemEvents } from '@/lib/system/voices-config';
 import { desc, gte, sql } from 'drizzle-orm';
 
 /**

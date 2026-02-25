@@ -1,5 +1,5 @@
-import { db } from "@db";
-import { navMenus } from "@db/schema";
+import { db } from '@/lib/system/voices-config';
+import { navMenus } from '@/lib/system/voices-config';
 import { eq } from "drizzle-orm";
 import { createClient } from "@supabase/supabase-js";
 

@@ -1,5 +1,5 @@
-import { db } from "@db";
-import { pageLayouts } from "@db/schema";
+import { db } from '@/lib/system/voices-config';
+import { pageLayouts } from '@/lib/system/voices-config';
 import { eq } from "drizzle-orm";
 
 /**

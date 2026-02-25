@@ -1,5 +1,5 @@
-import { db } from '@db';
-import { chatMessages } from '@db/schema';
+import { db } from '@/lib/system/voices-config';
+import { chatMessages } from '@/lib/system/voices-config';
 import { desc, eq } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth/api-auth';

@@ -1,5 +1,5 @@
-import { db } from '@db';
-import { orders, orderItems } from '@db/schema';
+import { db } from '@/lib/system/voices-config';
+import { orders, orderItems } from '@/lib/system/voices-config';
 import { eq } from 'drizzle-orm';
 import { InvoiceService } from '../commerce/invoice-service';
 

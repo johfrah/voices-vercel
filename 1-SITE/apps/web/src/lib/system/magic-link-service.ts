@@ -1,5 +1,5 @@
-import { db } from "@db";
-import { users } from "@voices/database/src/schema";
+import { db } from '@/lib/system/voices-config';
+import { users } from '@/lib/system/voices-config';
 import { eq } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
 

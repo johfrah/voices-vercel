@@ -1,5 +1,5 @@
-import { db } from '@db';
-import { actors, appConfigs } from '@db/schema';
+import { db } from '@/lib/system/voices-config';
+import { actors, appConfigs } from '@/lib/system/voices-config';
 import { eq } from 'drizzle-orm';
 import fs from 'fs/promises';
 import path from 'path';

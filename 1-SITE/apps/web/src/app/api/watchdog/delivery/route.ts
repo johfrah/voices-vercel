@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import { db } from '@db';
-import { orders } from '@db/schema';
+import { db } from '@/lib/system/voices-config';
+import { orders } from '@/lib/system/voices-config';
 import { eq, and, lt, isNull } from 'drizzle-orm';
 
 export const dynamic = 'force-dynamic';

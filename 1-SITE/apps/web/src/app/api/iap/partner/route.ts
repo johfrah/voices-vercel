@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@db';
-import { partnerWidgets, actors, orders, orderItems } from '@db/schema';
+import { db } from '@/lib/system/voices-config';
+import { partnerWidgets, actors, orders, orderItems } from '@/lib/system/voices-config';
 import { eq, inArray, sql } from 'drizzle-orm';
 
 /**

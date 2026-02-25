@@ -1,6 +1,6 @@
 import OpenAI from 'openai';
-import { db } from '@db';
-import { users } from '@db/schema';
+import { db } from '@/lib/system/voices-config';
+import { users } from '@/lib/system/voices-config';
 import { eq } from 'drizzle-orm';
 
 /**

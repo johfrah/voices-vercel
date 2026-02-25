@@ -1,5 +1,5 @@
-import { db } from '@db';
-import { vouchers } from '@db/schema';
+import { db } from '@/lib/system/voices-config';
+import { vouchers } from '@/lib/system/voices-config';
 import { NextRequest, NextResponse } from 'next/server';
 import { requirePartner } from '@/lib/auth/api-auth';
 
