@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
   const limit = parseInt(searchParams.get('limit') || '50');
   const offset = parseInt(searchParams.get('offset') || '0');
   const folder = searchParams.get('folder') || 'INBOX';
-  const host = request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be');
+  const host = request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || MarketManager.getMarketDomains()['BE']?.replace('https://', ''));
   const market = MarketManager.getCurrentMarket(host);
   const account = searchParams.get('account') || market.email;
   const sortByValue = searchParams.get('sortByValue') === 'true';

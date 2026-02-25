@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
 
     try {
       const { MarketManagerServer: MarketManager } = await import('@/lib/system/market-manager-server');
-      const host = request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || MarketManager.getCurrentMarket().market_code.toLowerCase() + '.be');
+      const host = request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || MarketManager.getMarketDomains()['BE']?.replace('https://', ''));
       const url = new URL(pathname, `https://${host}`);
       utmSource = url.searchParams.get('utm_source');
       utmMedium = url.searchParams.get('utm_medium');

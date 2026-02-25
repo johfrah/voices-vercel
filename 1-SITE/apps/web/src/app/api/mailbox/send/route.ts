@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
     const { VoicesMailEngine } = await import('@/lib/services/voices-mail-engine');
     const { MarketManagerServer: MarketManager } = await import('@/lib/system/market-manager-server');
     const mailEngine = VoicesMailEngine.getInstance();
-    const host = request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || MarketManager.getCurrentMarket().market_code.toLowerCase() + '.be');
+    const host = request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || MarketManager.getMarketDomains()['BE']?.replace('https://', ''));
 
     await mailEngine.sendVoicesMail({
       to,

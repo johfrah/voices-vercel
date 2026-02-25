@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
       messages: [
         {
           role: "system",
-          content: `Je bent een AI-schrijfassistent voor Voices.be. 
+          content: `Je bent een AI-schrijfassistent voor de Voices Engine. 
           Jouw taak is om de zin van de gebruiker af te maken met een korte, logische suggestie (max 5-7 woorden).
           
           CONTEXT:

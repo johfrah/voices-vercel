@@ -64,7 +64,7 @@ export async function GET(request: Request) {
         messages: [
           {
             role: "system",
-            content: `Je bent een AI die e-mails analyseert voor een voice-over bureau (Voices.be). 
+            content: `Je bent een AI die e-mails analyseert voor een voice-over bureau (Voices). 
             Je taak is om veelvoorkomende vragen van klanten te identificeren en daarvoor FAQ-voorstellen te doen.
             
             Geef je antwoord in een JSON array van objecten met deze structuur:

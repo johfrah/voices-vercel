@@ -45,9 +45,9 @@ export async function POST(request: NextRequest) {
     }
 
     //  NUCLEAR CONFIG: Haal admin e-mail uit MarketManager of ENV
-    const host = request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be');
+    const host = request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || MarketManagerServer.getMarketDomains()['BE']?.replace('https://', ''));
     const market = await MarketDatabaseService.getCurrentMarketAsync(host);
-    const adminEmail = process.env.ADMIN_EMAIL || market?.email || 'johfrah@voices.be';
+    const adminEmail = process.env.ADMIN_EMAIL || market?.email || `johfrah@${MarketManagerServer.getMarketDomains()['BE']?.replace('https://www.', '')}`;
 
     // 1. Check of de key al bestaat voor deze taal
     const [existing] = await db

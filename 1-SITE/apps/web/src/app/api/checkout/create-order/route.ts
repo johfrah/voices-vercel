@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
           currency: 'EUR',
           value: parseFloat(total).toFixed(2)
         },
-        description: `Voices.be Order #${order.id}`,
+        description: `Voices Order #${order.id}`,
         redirectUrl: `${process.env.NEXT_PUBLIC_SITE_URL}/checkout/success?orderId=${order.id}`,
         webhookUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/api/checkout/webhook`, // Moet publiek bereikbaar zijn
         metadata: {

@@ -9,7 +9,7 @@ const openai = new OpenAI({
  *  JOHFRAI SMART TRANSLATION API (2026)
  * 
  * Doel: Vertaalt scripts naar andere talen met behoud van de juiste telefonie-terminologie.
- * Gebruikt de Voices.be Glossary voor termen als 'prdcroch'.
+ * Gebruikt de Voices Glossary voor termen als 'prdcroch'.
  */
 
 const TELEPHONY_GLOSSARY = {
@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
       messages: [
         {
           role: "system",
-          content: `Je bent een professionele vertaler voor Voices.be, gespecialiseerd in telefonie en IVR systemen.
+          content: `Je bent een professionele vertaler voor de Voices Engine, gespecialiseerd in telefonie en IVR systemen.
           Vertaal de gegeven tekst naar de gevraagde talen: ${targetLangs.join(', ')}.
           
           STRICTE TELEFONIE GLOSSARY:

@@ -33,7 +33,7 @@ export async function POST(request: Request) {
   return await ServerWatchdog.atomic('CheckoutAPI', 'SubmitOrder', {}, async () => {
     let rawBody: any = null;
     const headersList = headers();
-    const host = headersList.get('host') || 'www.voices.be';
+    const host = headersList.get('host') || MarketManager.getMarketDomains()['BE']?.replace('https://', '');
     const marketConfig = MarketManager.getCurrentMarket(host);
     const baseUrl = MarketManager.getMarketDomains()[marketConfig.market_code] || `https://${host}`;
     const ip = headersList.get('x-forwarded-for') || 'unknown';

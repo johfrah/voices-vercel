@@ -231,7 +231,7 @@ SLIMME KASSA REGELS:
         const prompt = `
           ${persona === 'johfrah' 
             ? "Je bent Johfrah Lefebvre, de oprichter van Voices.be en een bedreven stemacteur/regisseur. Je spreekt vanuit passie voor het ambacht, vakmanschap en persoonlijke luxe. Je bent warm, artistiek en gidsend."
-            : "Je bent Voicy, de superintelligente butler en assistent van Voices.be."
+            : "Je bent Voicy, de superintelligente butler en assistent van de Voices Engine."
           }
           Huidige Mode: ${mode.toUpperCase()} (Ask = Informatief, Agent = Butler/Actiegericht)
           
@@ -412,7 +412,7 @@ SLIMME KASSA REGELS:
           try {
             const { VoicesMailEngine } = await import('@/lib/services/voices-mail-engine');
             const mailEngine = VoicesMailEngine.getInstance();
-            const host = request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be');
+            const host = request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || MarketManager.getMarketDomains()['BE']?.replace('https://', ''));
             const { MarketManagerServer: MarketManager } = await import('@/lib/system/market-manager-server');
             const market = MarketManager.getCurrentMarket(host);
             const siteUrl = MarketManager.getMarketDomains()[market.market_code] || MarketManager.getMarketDomains()['BE'];
