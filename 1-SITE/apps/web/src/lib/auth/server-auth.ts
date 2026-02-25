@@ -28,15 +28,16 @@ export async function getServerUser(): Promise<ServerUser | null> {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user?.email) return null;
 
-  // 🛡️ CHRIS-PROTOCOL: Use SDK as primary source for Edge stability (v2.14.458)
+  // 🛡️ CHRIS-PROTOCOL: Use SDK as primary source for Edge stability (v2.14.459)
   try {
     if (!sdkClient) throw new Error('Supabase SDK client not initialized');
 
+    // We gebruiken een directe fetch om Drizzle/Edge serialisatie issues te vermijden in layouts
     const { data, error } = await sdkClient
       .from('users')
       .select('id, email, role')
       .eq('email', user.email)
-      .maybeSingle(); // maybeSingle is safer than single()
+      .maybeSingle();
     
     if (data && !error) {
       return { id: data.id, email: data.email, role: data.role };
@@ -46,25 +47,8 @@ export async function getServerUser(): Promise<ServerUser | null> {
       console.warn(' Auth SDK Fetch error:', error.message);
     }
 
-    // Fallback to Drizzle only if SDK fails and NOT on Edge
-    if (process.env.NEXT_RUNTIME !== 'edge') {
-      try {
-        const { db } = await import('@db');
-        const { users } = await import('@db/schema');
-        const { eq } = await import('drizzle-orm');
-
-        if (!db) throw new Error('Drizzle DB not available');
-
-        const [dbUser] = await db.select({ id: users.id, email: users.email, role: users.role })
-          .from(users)
-          .where(eq(users.email, user.email))
-          .limit(1);
-        
-        if (dbUser) return { id: dbUser.id, email: dbUser.email, role: dbUser.role };
-      } catch (drizzleErr: any) {
-        console.warn(' Auth Drizzle Fallback failed:', drizzleErr.message);
-      }
-    }
+    // 🛡️ CHRIS-PROTOCOL: Drizzle is VERBODEN in server-side auth voor layouts (Edge stability)
+    // We vallen alleen terug op de SDK als de eerste call faalde.
   } catch (err: any) {
     console.warn(' Auth Fetch critical failure:', err.message);
   }
