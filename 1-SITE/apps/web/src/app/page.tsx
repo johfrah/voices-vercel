@@ -670,6 +670,8 @@ export default function Home() {
           setData({ actors: [], reviews: [], dynamicConfig: homeConfig });
           return;
         }
+        
+        // 🛡️ CHRIS-PROTOCOL: Map actors AFTER priming MarketManager (v2.14.742)
         const mappedActors = resData.results.map((actor: any) => {
           let photoUrl = actor.photo_url;
           if (photoUrl && !photoUrl.startsWith('http') && !photoUrl.startsWith('/api/proxy') && !photoUrl.startsWith('/assets')) {

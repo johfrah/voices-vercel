@@ -44,11 +44,11 @@ export class VoiceFilterEngine {
     const langRegistry = MarketManager.languages || (typeof window !== 'undefined' ? (window as any).handshakeLanguages : (typeof global !== 'undefined' ? (global as any).handshakeLanguages : [])) || [];
     const mediaRegistry = (typeof window !== 'undefined' ? (window as any).handshakeMediaTypes : (typeof global !== 'undefined' ? (global as any).handshakeMediaTypes : [])) || [];
 
-    console.log(`[VoiceFilter] Starting filter with ${actors.length} actors. Journey: ${criteria.journey}`, { 
-      languageId: criteria.languageId,
-      mediaIds: criteria.mediaIds,
-      countryId: criteria.countryId
-    });
+    // console.log(`[VoiceFilter] Starting filter with ${actors.length} actors. Journey: ${criteria.journey}`, { 
+    //   languageId: criteria.languageId,
+    //   mediaIds: criteria.mediaIds,
+    //   countryId: criteria.countryId
+    // });
 
     let result = [...actors];
 
@@ -99,12 +99,12 @@ export class VoiceFilterEngine {
     } else if (criteria.language && criteria.language !== 'all') {
       const lowLang = criteria.language.toLowerCase();
       const dbCode = MarketManager.getLanguageCode(lowLang).toLowerCase();
-      const targetLang = langRegistry.find((l: any) => l.code.toLowerCase() === dbCode || l.label.toLowerCase() === lowLang);
+      const targetLang = langRegistry.find((l: any) => l.code.toLowerCase() === dbCode || l.label.toLowerCase() === lowLang || l.code.toLowerCase() === lowLang);
 
       result = result.filter(actor => {
         if (targetLang && (actor.native_lang_id === targetLang.id || actor.native_language_id === targetLang.id)) return true;
         const actorNative = actor.native_lang?.toLowerCase();
-        return (actorNative === dbCode || actorNative === lowLang || this.isLanguageVariationMatch(dbCode, actorNative));
+        return (actorNative === dbCode || actorNative === lowLang || this.isLanguageVariationMatch(dbCode, actorNative) || this.isLanguageVariationMatch(lowLang, actorNative));
       });
     }
 

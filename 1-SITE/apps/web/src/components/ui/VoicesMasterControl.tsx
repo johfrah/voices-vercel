@@ -315,16 +315,20 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
       return result;
     };
 
-    const languageConfig = languagesData.map(l => ({
-      label: l.label.replace(/\s*\(algemeen\)\s*/i, '').trim(),
-      value: l.id,
-      langCode: l.code,
-      icon: l.icon,
-      popular: l.isPopular || market.popular_languages.some(pl => 
-        pl.toLowerCase() === l.code.toLowerCase() || 
-        pl.toLowerCase() === l.label.toLowerCase()
-      )
-    }));
+    const languageConfig = languagesData.map(l => {
+      const cleanLabel = l.label.replace(/\s*\(algemeen\)\s*/i, '').trim();
+      return {
+        label: cleanLabel,
+        value: l.id,
+        langCode: l.code,
+        icon: l.icon,
+        popular: l.isPopular || market.popular_languages.some(pl => 
+          pl.toLowerCase() === l.code.toLowerCase() || 
+          pl.toLowerCase() === l.label.toLowerCase() ||
+          pl.toLowerCase() === cleanLabel.toLowerCase()
+        )
+      };
+    });
 
     const mappedConfig = languageConfig.map(langObj => ({
       ...langObj,
