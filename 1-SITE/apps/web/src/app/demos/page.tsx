@@ -31,11 +31,22 @@ export default function DemoDiscoveryPage() {
   const [selectedSector, setSelectedSector] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeDemoId, setActiveDemoId] = useState<number | null>(null);
+  const [companyName, setCompanyName] = useState("");
 
   useEffect(() => {
     setMounted(true);
     fetchDiscoveryData();
   }, []);
+
+  // Helper to re-skin transcript
+  const reskinTranscript = (text: string) => {
+    if (!text) return "";
+    const name = companyName.trim() || "(Bedrijfsnaam)";
+    return text
+      .replace(/\{\{company_name\}\}/g, name)
+      .replace(/\[Bedrijfsnaam\]/g, name)
+      .replace(/\(Bedrijfsnaam\)/g, name);
+  };
 
   const fetchDiscoveryData = async () => {
     setIsLoading(true);
@@ -94,7 +105,7 @@ export default function DemoDiscoveryPage() {
 
           {/* Search & Filter Bar */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-12">
-            <div className="lg:col-span-8 relative group">
+            <div className="lg:col-span-6 relative group">
               <div className="absolute left-6 top-1/2 -translate-y-1/2 text-va-black/20 group-focus-within:text-primary transition-colors">
                 <Search size={20} strokeWidth={1.5} />
               </div>
@@ -106,7 +117,7 @@ export default function DemoDiscoveryPage() {
                 className="w-full h-20 bg-white/80 backdrop-blur-xl border border-black/5 rounded-[24px] pl-16 pr-8 text-xl font-light outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary/20 transition-all shadow-aura-sm"
               />
             </div>
-            <div className="lg:col-span-4">
+            <div className="lg:col-span-3">
               <select 
                 value={selectedSector || ""}
                 onChange={(e) => setSelectedSector(e.target.value || null)}
@@ -117,6 +128,18 @@ export default function DemoDiscoveryPage() {
                   <option key={s.id} value={s.id}>{s.name}</option>
                 ))}
               </select>
+            </div>
+            <div className="lg:col-span-3 relative group">
+              <div className="absolute left-6 top-1/2 -translate-y-1/2 text-primary/40">
+                <Zap size={20} strokeWidth={1.5} />
+              </div>
+              <input 
+                type="text"
+                placeholder="Jouw Bedrijfsnaam..."
+                value={companyName}
+                onChange={(e) => setCompanyName(e.target.value)}
+                className="w-full h-20 bg-primary/5 backdrop-blur-xl border border-primary/10 rounded-[24px] pl-16 pr-8 text-xl font-medium text-primary outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary/30 transition-all shadow-aura-sm placeholder:text-primary/30"
+              />
             </div>
           </div>
 
@@ -162,7 +185,7 @@ export default function DemoDiscoveryPage() {
                         <span>Transcript Blueprint</span>
                       </div>
                       <p className="text-[14px] font-light text-va-black/60 leading-relaxed line-clamp-3">
-                        {demo.transcript || "Analyseert audio..."}
+                        {reskinTranscript(demo.transcript) || "Analyseert audio..."}
                       </p>
                     </div>
 

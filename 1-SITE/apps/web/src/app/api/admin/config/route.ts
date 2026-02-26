@@ -68,7 +68,8 @@ export async function GET(request: NextRequest) {
           actors (first_name, last_name),
           media_intelligence (transcript, detected_language_id),
           demo_sectors (sector_id, sectors (name)),
-          media_types (label)
+          media_types (label),
+          languages (label)
         `)
         .limit(100);
 
@@ -80,7 +81,8 @@ export async function GET(request: NextRequest) {
         transcript: d.media_intelligence?.transcript,
         sector_id: d.demo_sectors?.[0]?.sector_id,
         sector_name: d.demo_sectors?.[0]?.sectors?.name,
-        media_type_label: d.media_types?.label
+        media_type_label: d.media_types?.label,
+        language_label: d.languages?.label
       }));
 
       return NextResponse.json({ results: flattened || [] });
@@ -130,13 +132,13 @@ export async function GET(request: NextRequest) {
         const config = await dbWithTimeout(db.select().from(appConfigs).where(eq(appConfigs.key, 'general_settings')).limit(1)) as any[];
         return NextResponse.json({
           general_settings: config[0]?.value || {},
-          _version: '2.14.796'
+          _version: '2.14.797'
         });
       } catch (err: any) {
         console.warn(`[Admin Config] General settings fetch failed, returning empty: ${err.message}`);
         return NextResponse.json({
           general_settings: {},
-          _version: '2.14.796'
+          _version: '2.14.797'
         });
       }
     }
@@ -227,7 +229,7 @@ export async function POST(request: NextRequest) {
         }
       });
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true, _version: '2.14.797' });
   } catch (error) {
     console.error('[Admin Config POST Error]:', error);
     return NextResponse.json({ error: 'Failed to update config' }, { status: 500 });
