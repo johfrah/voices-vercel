@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Youssef Zaki Artist Page - Detailed Audit', () => {
-  const artistUrl = 'https://www.voices.be/artist/youssef';
+  const artistUrl = 'https://www.voices.be/artist/youssef/';
 
   test('Complete Page Audit with Element Detection', async ({ page }) => {
     const consoleErrors: string[] = [];
@@ -18,7 +18,20 @@ test.describe('Youssef Zaki Artist Page - Detailed Audit', () => {
     });
 
     console.log('🚀 Navigating to Youssef artist page...');
-    await page.goto(artistUrl, { waitUntil: 'domcontentloaded', timeout: 60000 });
+    try {
+      await page.goto(artistUrl, { waitUntil: 'commit', timeout: 30000 });
+      console.log('   ✓ Initial navigation committed');
+      await page.waitForLoadState('domcontentloaded', { timeout: 30000 });
+      console.log('   ✓ DOM content loaded');
+    } catch (error) {
+      console.error('   ❌ Navigation error:', error.message);
+      // Take screenshot of error state
+      await page.screenshot({ 
+        path: '/Users/voices/Library/CloudStorage/Dropbox/voices-headless/3-WETTEN/scripts/youssef-error-screenshot.png',
+        fullPage: false 
+      });
+      throw error;
+    }
     
     // Wait for React to hydrate
     await page.waitForTimeout(3000);

@@ -199,15 +199,15 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
 
   const filteredLanguagesData = useMemo(() => {
     // 🛡️ CHRIS-PROTOCOL: Strict Availability Mandate (v2.15.042)
-    return languagesData.filter(l => availableLanguageIds.has(l.id));
+    return (languagesData || []).filter(l => availableLanguageIds.has(l.id));
   }, [languagesData, availableLanguageIds]);
 
   const filteredGendersData = useMemo(() => {
-    return gendersData.filter(g => availableGenderIds.has(g.id));
+    return (gendersData || []).filter(g => availableGenderIds.has(g.id));
   }, [gendersData, availableGenderIds]);
 
   const filteredCountriesData = useMemo(() => {
-    return countriesData.filter(c => availableCountryIds.has(c.id));
+    return (countriesData || []).filter(c => availableCountryIds.has(c.id));
   }, [countriesData, availableCountryIds]);
 
   useEffect(() => {
@@ -293,7 +293,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
       ];
     }
 
-    const filteredJourneys = journeysData
+    const filteredJourneys = (journeysData || [])
       .filter(fj => allowedCodes.includes(fj.code))
       .map(fj => {
         const frontendId = mapping[fj.code] || fj.code;
@@ -346,42 +346,40 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
       const primaryCode = MarketManager.getLanguageCode(lowPrimaryValue);
       const extraLangsSet = new Set<string>();
       
-      if (actors && Array.isArray(actors)) {
-        actors.forEach(a => {
-          const actorNative = a.native_lang?.toLowerCase();
-          const actorNativeId = a.native_lang_id;
-          
-          //  CHRIS-PROTOCOL: Match native language by ID or code/label
-          const isMatch = (typeof primaryValue === 'number' && actorNativeId === primaryValue) ||
-                         actorNative === primaryCode || 
-                         actorNative === lowPrimaryValue ||
-                         (primaryCode === 'nl-be' && (actorNative === 'vlaams' || actorNative === 'nl-be')) ||
-                         (primaryCode === 'nl-nl' && (actorNative === 'nederlands' || actorNative === 'nl-nl'));
+    (actors || []).forEach(a => {
+      const actorNative = (a.native_lang || '').toLowerCase();
+      const actorNativeId = a.native_lang_id;
+      
+      //  CHRIS-PROTOCOL: Match native language by ID or code/label
+      const isMatch = (typeof primaryValue === 'number' && actorNativeId === primaryValue) ||
+                     actorNative === primaryCode || 
+                     actorNative === lowPrimaryValue ||
+                     (primaryCode === 'nl-be' && (actorNative === 'vlaams' || actorNative === 'nl-be')) ||
+                     (primaryCode === 'nl-nl' && (actorNative === 'nederlands' || actorNative === 'nl-nl'));
 
-          if (isMatch) {
-            if (a.extra_langs) {
-              a.extra_langs.split(',').forEach((l: string) => {
-                const trimmed = l.trim();
-                const lowTrimmed = trimmed.toLowerCase();
-                
-                //  CHRIS-PROTOCOL: Exclude native language and its variations from extra languages
-                const isPrimary = lowTrimmed === lowPrimary || lowTrimmed === lowPrimaryValue || 
-                                 lowTrimmed === primaryCode ||
-                                 lowPrimary.includes(lowTrimmed) || lowTrimmed.includes(lowPrimary);
-                
-                //  CHRIS-PROTOCOL: Vlaams is a unique native type (nl-BE). 
-                // Non-natives (like FR or NL-NL) can offer "Nederlands" as extra, but NEVER "Vlaams".
-                const isVlaamsExtra = lowTrimmed === 'vlaams' || lowTrimmed === 'nl-be';
-                
-                if (trimmed && trimmed !== 'null' && !isPrimary && !isVlaamsExtra) {
-                  const label = MarketManager.getLanguageLabel(trimmed);
-                  extraLangsSet.add(label);
-                }
-              });
+      if (isMatch) {
+        if (a.extra_langs) {
+          (a.extra_langs || '').split(',').forEach((l: string) => {
+            const trimmed = l.trim();
+            const lowTrimmed = trimmed.toLowerCase();
+            
+            //  CHRIS-PROTOCOL: Exclude native language and its variations from extra languages
+            const isPrimary = lowTrimmed === lowPrimary || lowTrimmed === lowPrimaryValue || 
+                             lowTrimmed === primaryCode ||
+                             lowPrimary.includes(lowTrimmed) || lowTrimmed.includes(lowPrimary);
+            
+            //  CHRIS-PROTOCOL: Vlaams is a unique native type (nl-BE). 
+            // Non-natives (like FR or NL-NL) can offer "Nederlands" as extra, but NEVER "Vlaams".
+            const isVlaamsExtra = lowTrimmed === 'vlaams' || lowTrimmed === 'nl-be';
+            
+            if (trimmed && trimmed !== 'null' && !isPrimary && !isVlaamsExtra) {
+              const label = MarketManager.getLanguageLabel(trimmed);
+              extraLangsSet.add(label);
             }
-          }
-        });
+          });
+        }
       }
+    });
       const result = Array.from(extraLangsSet).sort();
       return result;
     };
@@ -475,7 +473,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
     const genders = new Set<string>();
     const styles = new Set<string>();
 
-    actors.forEach(a => {
+    (actors || []).forEach(a => {
       // Language
       if (a.native_lang_label) langs.add(a.native_lang_label);
       else if (a.native_lang) {
@@ -490,7 +488,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
 
       // Styles (Tones)
       if (a.tone_of_voice) {
-        a.tone_of_voice.split(',').forEach(s => {
+        (a.tone_of_voice || '').split(',').forEach(s => {
           const trimmed = s.trim();
           if (trimmed) styles.add(trimmed);
         });
