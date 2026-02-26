@@ -159,20 +159,23 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
     return ids;
   }, [actors]);
 
-  const filteredLanguagesData = useMemo(() => 
-    actors.length > 0 ? languagesData.filter(l => availableLanguageIds.has(l.id)) : languagesData,
-    [languagesData, availableLanguageIds, actors.length]
-  );
+  const filteredLanguagesData = useMemo(() => {
+    // 🛡️ CHRIS-PROTOCOL: Configurator Mode Detection (v2.15.034)
+    // In the configurator, we don't have an actors list to filter by, 
+    // so we must show all available languages from the database.
+    const isConfigurator = actors.length === 0 || pathname.includes('/checkout/configurator');
+    return isConfigurator ? languagesData : languagesData.filter(l => availableLanguageIds.has(l.id));
+  }, [languagesData, availableLanguageIds, actors.length, pathname]);
 
-  const filteredGendersData = useMemo(() => 
-    actors.length > 0 ? gendersData.filter(g => availableGenderIds.has(g.id)) : gendersData,
-    [gendersData, availableGenderIds, actors.length]
-  );
+  const filteredGendersData = useMemo(() => {
+    const isConfigurator = actors.length === 0 || pathname.includes('/checkout/configurator');
+    return isConfigurator ? gendersData : gendersData.filter(g => availableGenderIds.has(g.id));
+  }, [gendersData, availableGenderIds, actors.length, pathname]);
 
-  const filteredCountriesData = useMemo(() => 
-    actors.length > 0 ? countriesData.filter(c => availableCountryIds.has(c.id)) : countriesData,
-    [countriesData, availableCountryIds, actors.length]
-  );
+  const filteredCountriesData = useMemo(() => {
+    const isConfigurator = actors.length === 0 || pathname.includes('/checkout/configurator');
+    return isConfigurator ? countriesData : countriesData.filter(c => availableCountryIds.has(c.id));
+  }, [countriesData, availableCountryIds, actors.length, pathname]);
 
   useEffect(() => {
     if (!filteredLanguagesData || filteredLanguagesData.length === 0) return;
