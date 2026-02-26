@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 450 320" width="450" height="320">
+  <rect width="450" height="320" rx="40" fill="#0071C5"/>
+  <path d="M120 100h210v120H120z" fill="#fff"/>
+  <text x="225" y="180" font-family="Arial" font-size="60" font-weight="bold" text-anchor="middle" fill="#0071C5">iDEAL</text>
+</svg>
