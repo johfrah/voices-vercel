@@ -44,22 +44,37 @@ async function finalMasterclassInjection() {
       const fileName = `demo_${o.item_id}.mp3`;
       const targetUrl = `https://storage.voices.be/demos/telephony/${fileName}`;
       
-      // FIX: Gebruik sql.array() en zorg dat alle kolomnamen correct zijn
+      // FIX: Gebruik OBJECT syntax voor postgres library om verwarring te voorkomen
       const [media] = await sql`
-        INSERT INTO public.media (file_name, file_path, file_type, labels, journey)
-        VALUES (${fileName}, ${targetUrl}, 'audio/mpeg', ${sql.array(['demo', 'telephony'])}, ${'telephony'})
+        INSERT INTO public.media ${sql({
+          file_name: fileName,
+          file_path: targetUrl,
+          file_type: 'audio/mpeg',
+          labels: ['demo', 'telephony'],
+          journey: 'telephony'
+        })}
         RETURNING id
       `;
 
       const [demo] = await sql`
-        INSERT INTO public.actor_demos (actor_id, name, url, type, media_id, telephony_subtype_id, is_public)
-        VALUES (${o.actor_id}, ${o.company_name || 'Elite'} - Telefonie, ${targetUrl}, 'telephony', ${media.id}, 5, true)
+        INSERT INTO public.actor_demos ${sql({
+          actor_id: o.actor_id,
+          name: `${o.company_name || 'Elite'} - Telefonie`,
+          url: targetUrl,
+          type: 'telephony',
+          media_id: media.id,
+          telephony_subtype_id: 5,
+          is_public: true
+        })}
         RETURNING id
       `;
 
       await sql`
-        INSERT INTO public.media_intelligence (demo_id, transcript, ai_metadata)
-        VALUES (${demo.id}, ${anonText}, ${JSON.stringify({ sector: o.sector || 'Algemeen' })})
+        INSERT INTO public.media_intelligence ${sql({
+          demo_id: demo.id,
+          transcript: anonText,
+          ai_metadata: { sector: o.sector || 'Algemeen' }
+        })}
       `;
 
       successCount++;

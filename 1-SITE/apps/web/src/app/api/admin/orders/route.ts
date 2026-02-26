@@ -13,6 +13,7 @@ export const revalidate = 0;
  *  API: ADMIN ORDERS (2026)
  * 
  * Haalt bestellingen op voor de admin cockpit met paginering.
+ * 🛡️ CHRIS-PROTOCOL: RESTORED STABLE v2.14.714 ARCHITECTURE
  */
 
 export async function GET(request: NextRequest) {
@@ -24,32 +25,21 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '50');
-    const search = searchParams.get('search') || '';
-    const status = searchParams.get('status') || '';
     const offset = (page - 1) * limit;
 
     // 🛡️ CHRIS-PROTOCOL: 1 TRUTH MANDATE (v2.14.638)
-    let whereClause = '';
-    
-    if (search) {
-      // Gebruik parameterized query voor veiligheid en stabiliteit
-      whereClause = `WHERE id::text ILIKE '%' || $1 || '%' OR billing_email_alt ILIKE '%' || $1 || '%'`;
-    }
-    
-    const countResult = await db.execute(sql.raw(`SELECT count(*) as value FROM orders_v2 ${whereClause.replace('$1', search ? `'${search}'` : '')}`));
+    // NUCLEAR: We gebruiken db.execute met sql.raw om Drizzle abstractie volledig te passeren
+    const countResult = await db.execute(sql.raw('SELECT count(*) as value FROM orders_v2'));
     const countRows: any = Array.isArray(countResult) ? countResult : (countResult.rows || []);
     const totalInDb = countRows[0] ? Number(countRows[0].value || countRows[0].count || 0) : 0;
 
-    let allOrders: any[] = [];
     let debugInfo: any = {
-      version: '2.15.005',
+      version: '2.15.012',
       db_host: process.env.DATABASE_URL?.split('@')[1]?.split('/')[0] || 'unknown',
       page,
       limit,
       offset,
       totalInDb,
-      search,
-      status,
       timestamp: new Date().toISOString()
     };
 
@@ -59,7 +49,6 @@ export async function GET(request: NextRequest) {
         id, user_id, journey_id, status_id, payment_method_id, 
         amount_net, amount_total, purchase_order, billing_email_alt, created_at
       FROM orders_v2
-      ${whereClause.replace('$1', search ? `'${search}'` : '')}
       ORDER BY created_at DESC
       LIMIT ${limit}
       OFFSET ${offset}
@@ -67,7 +56,7 @@ export async function GET(request: NextRequest) {
 
     const rows: any = Array.isArray(rowsResult) ? rowsResult : (rowsResult.rows || []);
     
-    allOrders = rows.map((row: any) => ({
+    const allOrders = rows.map((row: any) => ({
       id: row.id,
       userId: row.user_id,
       journeyId: row.journey_id,
@@ -143,52 +132,29 @@ export async function GET(request: NextRequest) {
           };
         }
 
-        const journeyMap: Record<number, string> = {
-          1: 'Voices Agency',
-          2: 'Voices Studio',
-          3: 'Voices Academy',
-          4: 'Voices Artist'
-        };
-
-        const statusMap: Record<string, string> = {
-          'completed': 'Voltooid',
-          'processing': 'In behandeling',
-          'pending': 'Wacht op betaling',
-          'on-hold': 'Gepauzeerd',
-          'cancelled': 'Geannuleerd',
-          'refunded': 'Terugbetaald',
-          'failed': 'Mislukt',
-          'wc-completed': 'Voltooid',
-          'wc-processing': 'In behandeling',
-          'wc-pending': 'Wacht op betaling',
-          'waiting-po': 'Wacht op PO-nummer'
-        };
-
-        let displayStatus = order.status || 'completed';
+        let displayStatus = 'completed';
         if (order.status_id) {
           const [statusRow] = await db.select().from(orderStatuses).where(eq(orderStatuses.id, order.status_id)).limit(1);
           if (statusRow) displayStatus = statusRow.code;
         }
 
+        // 🤝 DE HANDDRUK: Return structure matching v2.14.714 frontend
         return {
           id: order.id,
-          orderNumber: order.id?.toString(),
-          date: order.created_at || order.createdAt,
-          status: statusMap[displayStatus] || displayStatus,
-          unit: journeyMap[Number(order.journey_id || order.journeyId)] || 'Voices',
-          customer: customerInfo ? {
-            name: `${customerInfo.first_name || ''} ${customerInfo.last_name || ''}`.trim(),
-            email: customerInfo.email,
-            company: customerInfo.companyName
-          } : null,
-          finance: {
-            net: order.amount_net?.toString() || order.amountNet?.toString() || "0.00",
-            total: order.amount_total?.toString() || order.amountTotal?.toString() || "0.00"
-          },
-          billing: {
-            purchaseOrder: order.purchase_order || order.purchaseOrder || null,
-            email: order.billing_email_alt || order.billingEmailAlt || null
-          }
+          wpOrderId: order.id,
+          displayOrderId: order.id?.toString(),
+          total: order.amountTotal?.toString() || "0.00",
+          amountNet: order.amountNet?.toString() || "0.00",
+          purchaseOrder: order.purchaseOrder || null,
+          billingEmailAlt: order.billingEmailAlt || null,
+          status: displayStatus, 
+          journey: 'agency', // Default for now
+          journeyId: order.journeyId,
+          statusId: order.statusId,
+          paymentMethodId: order.paymentMethodId,
+          createdAt: order.createdAt,
+          isQuote: false,
+          user: customerInfo
         };
       } catch (innerError) {
         return null;
