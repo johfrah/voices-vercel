@@ -652,46 +652,6 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
       return notFound();
     }
 
-    // 🛡️ CHRIS-PROTOCOL: Registry-First Mandate (v2.15.034)
-    // We only allow legacy fallbacks for very specific, known entry points.
-    // This prevents the SmartRouter from "hijacking" unknown paths or system routes.
-    const isKnownEntryPoint = MarketManager.isAgencyEntryPoint(segments[0]) || ['voice', 'artist', 'portfolio'].includes(segments[0]);
-    
-    if (!resolved && !isKnownEntryPoint && segments.length > 1) {
-      console.error(` [SmartRouter] NUCLEAR BLOCK: Path "${lookupSlug}" not in registry and not a known entry point. Blocking.`);
-      return notFound();
-    }
-
-    // 🛡️ CHRIS-PROTOCOL: Registry-First Mandate (v2.15.034)
-    // We only allow legacy fallbacks for very specific, known entry points.
-    // This prevents the SmartRouter from "hijacking" unknown paths or system routes.
-    const isKnownEntryPoint = MarketManager.isAgencyEntryPoint(segments[0]) || ['voice', 'artist', 'portfolio'].includes(segments[0]);
-    
-    if (!resolved && !isKnownEntryPoint && segments.length > 1) {
-      console.error(` [SmartRouter] NUCLEAR BLOCK: Path "${lookupSlug}" not in registry and not a known entry point. Blocking.`);
-      return notFound();
-    }
-
-    // 🛡️ CHRIS-PROTOCOL: Registry-First Mandate (v2.15.034)
-    // We only allow legacy fallbacks for very specific, known entry points.
-    // This prevents the SmartRouter from "hijacking" unknown paths or system routes.
-    const isKnownEntryPoint = MarketManager.isAgencyEntryPoint(segments[0]) || ['voice', 'artist', 'portfolio'].includes(segments[0]);
-    
-    if (!resolved && !isKnownEntryPoint && segments.length > 1) {
-      console.error(` [SmartRouter] NUCLEAR BLOCK: Path "${lookupSlug}" not in registry and not a known entry point. Blocking.`);
-      return notFound();
-    }
-
-  // 🛡️ CHRIS-PROTOCOL: Registry-First Mandate (v2.15.034)
-    // We only allow legacy fallbacks for very specific, known entry points.
-    // This prevents the SmartRouter from "hijacking" unknown paths or system routes.
-    const isKnownEntryPoint = MarketManager.isAgencyEntryPoint(segments[0]) || ['voice', 'artist', 'portfolio'].includes(segments[0]);
-    
-    if (!resolved && !isKnownEntryPoint && segments.length > 1) {
-      console.error(` [SmartRouter] NUCLEAR BLOCK: Path "${lookupSlug}" not in registry and not a known entry point. Blocking.`);
-      return notFound();
-    }
-
     // Legacy Fallbacks (Agency, Casting, etc.)
     if (MarketManager.isAgencySegment(lookupSlug)) {
       const filters: Record<string, string> = {};
@@ -763,6 +723,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
     }
 
     // 1.7 Casting Tool (Launchpad)
+    const firstSegment = segments[0];
     if (firstSegment === 'casting') {
       return (
         <PageWrapperInstrument>

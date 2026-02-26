@@ -47,7 +47,7 @@ async function healRegistry() {
         console.log(`  ☢️  Healing Actor: ${actor.first_name} (${actor.slug})`);
         const { error } = await supabase.from('slug_registry').insert({
           entity_id: actor.id,
-          entity_type_id: 1,
+          routing_type: 'actor',
           slug: actor.slug.toLowerCase(),
           market_code: 'ALL',
           journey: 'agency',
@@ -76,37 +76,22 @@ async function healRegistry() {
         .from('slug_registry')
         .select('id')
         .eq('entity_id', article.id)
-        .eq('entity_type_id', 2) // We use 2 for articles based on common schema, but summary showed 3. Let's check summary again.
+        .eq('routing_type', 'article')
         .limit(1)
         .single();
 
       if (!existing) {
-        // Double check entity_type_id for articles from summary (it was 3)
-        const typeId = 3; 
-        
         console.log(`  ☢️  Healing Article: ${article.title} (${article.slug})`);
         const { error } = await supabase.from('slug_registry').insert({
           entity_id: article.id,
-          entity_type_id: typeId,
+          routing_type: 'article',
           slug: article.slug.toLowerCase(),
           market_code: 'ALL',
           journey: (article.iapContext as any)?.journey || 'agency',
           is_active: true
         });
         if (!error) articleHealed++;
-        else {
-          // Try type 2 if 3 fails (or vice versa)
-          const { error: error2 } = await supabase.from('slug_registry').insert({
-            entity_id: article.id,
-            entity_type_id: 2,
-            slug: article.slug.toLowerCase(),
-            market_code: 'ALL',
-            journey: (article.iapContext as any)?.journey || 'agency',
-            is_active: true
-          });
-          if (!error2) articleHealed++;
-          else console.error(`   ❌ Failed: ${error.message}`);
-        }
+        else console.error(`   ❌ Failed: ${error.message}`);
       }
     }
     console.log(`✅ Healed ${articleHealed} articles.`);

@@ -15,7 +15,7 @@ async function verifyRegistry() {
     const missingActors = await sql`
       SELECT a.id, a.first_name, a.slug 
       FROM actors a 
-      LEFT JOIN slug_registry sr ON a.id = sr.entity_id AND sr.entity_type_id = 1
+      LEFT JOIN slug_registry sr ON a.id = sr.entity_id AND sr.routing_type = 'actor'
       WHERE sr.id IS NULL AND a.status = 'live' AND a.is_public = true
     `;
     
@@ -30,7 +30,7 @@ async function verifyRegistry() {
     const missingArticles = await sql`
       SELECT c.id, c.title, c.slug 
       FROM content_articles c 
-      LEFT JOIN slug_registry sr ON c.id = sr.entity_id AND sr.entity_type_id = 2
+      LEFT JOIN slug_registry sr ON c.id = sr.entity_id AND sr.routing_type = 'article'
       WHERE sr.id IS NULL AND c.status = 'publish'
     `;
     
@@ -59,10 +59,9 @@ async function verifyRegistry() {
 
     // 4. Summary of registry types
     const summary = await sql`
-      SELECT sr.entity_type_id, et.code, COUNT(*) 
-      FROM slug_registry sr
-      JOIN entity_types et ON sr.entity_type_id = et.id
-      GROUP BY sr.entity_type_id, et.code
+      SELECT routing_type, COUNT(*) 
+      FROM slug_registry 
+      GROUP BY routing_type
     `;
     console.log('\n--- REGISTRY SUMMARY ---');
     console.table(summary);
