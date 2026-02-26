@@ -568,6 +568,33 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
         }
       }
 
+      // 🛡️ CHRIS-PROTOCOL: Studio World Special Routes (v2.14.765)
+      if (lookupSlug === 'studio/quiz') {
+        return (
+          <PageWrapperInstrument className="bg-va-off-white">
+            <Suspense fallback={null}><LiquidBackground /></Suspense>
+            <ContainerInstrument className="py-32 max-w-xl mx-auto">
+              <WorkshopQuiz />
+            </ContainerInstrument>
+          </PageWrapperInstrument>
+        );
+      }
+
+      if (lookupSlug === 'studio/doe-je-mee') {
+        return (
+          <PageWrapperInstrument className="bg-va-off-white">
+            <Suspense fallback={null}><LiquidBackground /></Suspense>
+            <ContainerInstrument className="py-32 max-w-4xl mx-auto">
+              <header className="mb-16 text-center">
+                <HeadingInstrument level={1} className="text-5xl font-light tracking-tighter mb-4">Doe je mee?</HeadingInstrument>
+                <TextInstrument className="text-va-black/40 font-light">Laat ons weten welke workshop je interesseert.</TextInstrument>
+              </header>
+              <WorkshopInterestForm />
+            </ContainerInstrument>
+          </PageWrapperInstrument>
+        );
+      }
+
       if (resolved.routing_type === 'language' || resolved.routing_type === 'country' || resolved.routing_type === 'attribute') {
         // Category Page Logic
         const filters: Record<string, string> = {};

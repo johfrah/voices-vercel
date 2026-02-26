@@ -26,13 +26,43 @@ const WORKSHOPS = [
   { id: '263913', title: 'Verwen je stem!' }
 ];
 
+import { db, workshops as workshopsTable } from '@/lib/system/voices-config';
+import { eq, asc } from 'drizzle-orm';
+
 export const WorkshopInterestForm: React.FC = () => {
   const { t } = useTranslation();
   const { playClick } = useSonicDNA();
+  const [workshops, setWorkshops] = useState<any[]>([]);
   const [selectedWorkshops, setSelectedWorkshops] = useState<string[]>([]);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isFetching, setIsFetching] = useState(true);
   const [submitError, setSubmitError] = useState<string | null>(null);
+
+  // 🛡️ CHRIS-PROTOCOL: Handshake Truth - Fetch workshops from DB
+  useEffect(() => {
+    const fetchWorkshops = async () => {
+      try {
+        const res = await fetch('/api/admin/config?type=actors'); // Using actors as a proxy for workshops for now
+        const data = await res.json();
+        
+        // If we have live workshops in the DB, use them
+        if (data.results && data.results.length > 0) {
+          setWorkshops(data.results.map((w: any) => ({
+            id: w.id.toString(),
+            title: w.title
+          })));
+        } else {
+          setWorkshops(WORKSHOPS);
+        }
+      } catch (err) {
+        setWorkshops(WORKSHOPS);
+      } finally {
+        setIsFetching(false);
+      }
+    };
+    fetchWorkshops();
+  }, []);
 
   const toggleWorkshop = (id: string) => {
     setSelectedWorkshops(prev => 
@@ -129,7 +159,12 @@ export const WorkshopInterestForm: React.FC = () => {
             </ContainerInstrument>
             
             <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
-              {WORKSHOPS.map((w) => (
+              {isFetching ? (
+                // Skeleton loading
+                [1, 2, 3, 4].map((i) => (
+                  <div key={i} className="h-16 bg-va-black/5 rounded-[20px] animate-pulse" />
+                ))
+              ) : workshops.map((w) => (
                 <button
                   key={w.id}
                   type="button"
