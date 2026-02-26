@@ -107,7 +107,10 @@ async function runCheck() {
         // Simpele extractie van namen tussen { }
         const match = imp.match(/\{([^}]+)\}/);
         if (match) {
-          const names = match[1].split(',').map(n => n.trim().split(' as ')[0].trim());
+          const names = match[1].split(',').map(n => {
+            const parts = n.trim().split(/\s+as\s+/);
+            return parts[parts.length - 1].trim();
+          });
           names.forEach(name => {
             if (name && importedNames.has(name)) {
               console.log(chalk.red(`❌ ERROR: Duplicate import '${name}' gedetecteerd in: ${path.relative(rootDir, file)}`));

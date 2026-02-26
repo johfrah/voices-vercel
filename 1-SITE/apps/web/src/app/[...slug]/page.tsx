@@ -1009,6 +1009,24 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
     const { title, body } = extractTitle(block.content || '');
 
     switch (block.type) {
+      case 'reviews_grid':
+      case 'reviews':
+        return (
+          <section key={block.id} className="py-40 bg-va-off-white border-y border-black/[0.03] -mx-4 px-4 lg:-mx-32 lg:px-32">
+            <ContainerInstrument plain className="max-w-6xl mx-auto">
+              <ContainerInstrument plain className="max-w-3xl mb-24 space-y-8 mx-auto text-center">
+                {title && <HeadingInstrument level={2} className="text-5xl md:text-6xl font-light tracking-tighter leading-none text-va-black">{title}</HeadingInstrument>}
+                <TextInstrument className="text-xl md:text-2xl text-black/40 font-light leading-relaxed">
+                  {body}
+                </TextInstrument>
+              </ContainerInstrument>
+              <Suspense fallback={<div className="h-96 w-full bg-va-black/5 animate-pulse rounded-[20px]" />}>
+                <AgencyContent mappedActors={[]} filters={{ genders: [], languages: [], styles: [] }} mode="reviews_only" />
+              </Suspense>
+            </ContainerInstrument>
+          </section>
+        );
+
       case 'workshop_hero':
         const videoUrl = body.match(/video:\s*([^\n]+)/)?.[1]?.trim();
         const posterUrl = body.match(/poster:\s*([^\n]+)/)?.[1]?.trim();
@@ -1445,7 +1463,13 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
           <TextInstrument className="text-[11px] font-bold tracking-[0.4em] text-primary/60 mb-12 block uppercase">
             Projecttype
           </TextInstrument>
-          <HeadingInstrument level={1} className="text-[10vw] lg:text-[160px] font-light tracking-tighter mb-20 leading-[0.85] text-va-black" suppressHydrationWarning><VoiceglotText  translationKey={`page.${page.slug}.title`} defaultText={page.title} /></HeadingInstrument>
+          <HeadingInstrument level={1} className="text-[10vw] lg:text-[160px] font-light tracking-tighter mb-20 leading-[0.85] text-va-black" suppressHydrationWarning>
+            {page.slug === 'studio' ? (
+              <VoiceglotText translationKey="studio.hero.title" defaultText="Voices Studio" />
+            ) : (
+              <VoiceglotText translationKey={`page.${page.slug}.title`} defaultText={page.title} />
+            )}
+          </HeadingInstrument>
           <ContainerInstrument className="w-48 h-1 bg-black/5 rounded-full" />
         </header>
         <ContainerInstrument className="space-y-24">
@@ -1453,18 +1477,21 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
         </ContainerInstrument>
         <footer className="mt-80 text-center">
           {journey !== 'portfolio' && (
-            <ContainerInstrument className="bg-va-black text-white p-32 rounded-[20px] shadow-aura-lg relative overflow-hidden group">
-              <ContainerInstrument className="relative z-10">
-                <TextInstrument className="text-[15px] font-medium tracking-[0.4em] text-primary/60 mb-10 block uppercase"><VoiceglotText  translationKey="cta.next_step" defaultText="volgende stap" /></TextInstrument>
-                <HeadingInstrument level={2} className="text-7xl lg:text-8xl font-light tracking-tighter mb-16 leading-[0.9] text-white"><VoiceglotText  translationKey="cta.ready_title" defaultText="Klaar om jouw stem te vinden?" /></HeadingInstrument>
-                <ContainerInstrument className="flex flex-col sm:flex-row items-center justify-center gap-10">
-                  <VoicesLink  href="/agency" className="bg-va-off-white text-va-black px-20 py-10 rounded-[10px] font-medium text-base tracking-widest hover:scale-105 transition-all duration-700 shadow-2xl hover:bg-white uppercase"><VoiceglotText  translationKey="cta.find_voice" defaultText="vind jouw stem" /></VoicesLink>
-                  <VoicesLink  href="/contact" className="text-white/30 hover:text-white font-medium text-base tracking-widest flex items-center gap-4 group transition-all duration-700 uppercase">
+            <ContainerInstrument className="bg-va-off-white p-20 sm:p-32 rounded-[40px] shadow-aura border border-black/[0.02] relative overflow-hidden group max-w-5xl mx-auto">
+              <ContainerInstrument className="relative z-10 space-y-12">
+                <div className="space-y-4">
+                  <TextInstrument className="text-[11px] font-bold tracking-[0.4em] text-primary/60 uppercase"><VoiceglotText  translationKey="cta.next_step" defaultText="volgende stap" /></TextInstrument>
+                  <HeadingInstrument level={2} className="text-5xl lg:text-7xl font-light tracking-tighter leading-[0.9] text-va-black"><VoiceglotText  translationKey="cta.ready_title" defaultText="Klaar om jouw stem te vinden?" /></HeadingInstrument>
+                </div>
+                <ContainerInstrument className="flex flex-col sm:flex-row items-center justify-center gap-6">
+                  <VoicesLink  href="/agency" className="va-btn-pro !bg-va-black !text-white px-16 py-6 !rounded-[10px] font-light tracking-widest hover:bg-primary transition-all duration-500 shadow-aura-lg uppercase"><VoiceglotText  translationKey="cta.find_voice" defaultText="vind jouw stem" /></VoicesLink>
+                  <VoicesLink  href="/contact" className="text-va-black/40 hover:text-va-black font-light tracking-widest flex items-center gap-4 group transition-all duration-500 uppercase">
                     <VoiceglotText  translationKey="cta.ask_question" defaultText="stel een vraag" />
-                    <ArrowRight strokeWidth={1.5} size={24} className="group-hover:translate-x-3 transition-transform duration-700" />
+                    <ArrowRight strokeWidth={1.5} size={20} className="group-hover:translate-x-2 transition-transform duration-500" />
                   </VoicesLink>
                 </ContainerInstrument>
               </ContainerInstrument>
+              <ContainerInstrument className="absolute -right-20 -bottom-20 w-96 h-96 bg-primary/5 rounded-full blur-3xl -z-10 animate-pulse" />
             </ContainerInstrument>
           )}
         </footer>
