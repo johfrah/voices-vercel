@@ -1,6 +1,6 @@
 {
   "name": "voices-experience-layer",
-  "version": "2.14.773",
+  "version": "2.14.774",
   "private": true,
   "scripts": {
     "dev": "PORT=3000 next dev",
@@ -21,7 +21,8 @@
     "audit:forensic": "tsx ../../../3-WETTEN/scripts/forensic-audit.ts",
     "test:unit": "vitest run",
     "test:e2e": "playwright test",
-    "test:all": "npm run audit:forensic && npm run test:unit && npm run test:e2e"
+    "test:all": "npm run audit:forensic && npm run test:unit && npm run test:e2e",
+    "admin:link": "tsx src/scripts/generate-admin-link.ts"
   },
   "dependencies": {
     "@capacitor/core": "^8.0.2",

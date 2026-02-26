@@ -111,6 +111,7 @@ export default function AdminDashboardContent() {
 
   const stats = [
     { label: <VoiceglotText  translationKey="admin.stats.mails" defaultText="Nieuwe Mails" />, value: '...', icon: <Mail strokeWidth={1.5} size={20} />, trend: 'Inbox', color: 'text-blue-500', href: '/admin/mailbox' },
+    { label: <VoiceglotText  translationKey="admin.stats.live_chat" defaultText="Live Chat" />, value: 'Meekijken', icon: <MessageCircle strokeWidth={1.5} size={20} />, trend: 'Live', color: 'text-green-500', href: '/admin/live-chat' },
     { label: <VoiceglotText  translationKey="admin.stats.analytics" defaultText="Statistieken" />, value: 'Inzicht', icon: <TrendingUp strokeWidth={1.5} size={20} />, trend: 'Groei', color: 'text-orange-500', href: '/admin/analytics' },
     { label: <VoiceglotText  translationKey="admin.stats.approvals" defaultText="Wachtrij" />, value: '...', icon: <Bell strokeWidth={1.5} size={20} />, trend: 'Actie nodig', color: 'text-orange-500', href: '/admin/approvals' },
     { label: <VoiceglotText  translationKey="admin.stats.finance" defaultText="Financieel" />, value: 'Overzicht', icon: <Euro strokeWidth={1.5} size={20} />, trend: 'Kassa', color: 'text-green-500', href: '/admin/finance' },

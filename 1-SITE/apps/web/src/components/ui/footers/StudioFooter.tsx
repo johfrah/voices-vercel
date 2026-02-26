@@ -21,14 +21,54 @@ export function StudioFooter({ market, activeSocials, activePhone, activeEmail }
       description: 'De start van je professionele traject.'
     },
     { 
-      name: 'Storytelling & Presentatie', 
-      href: '/studio/storytelling',
-      description: 'Til je podcast of presentatie naar een hoger niveau.'
+      name: 'Maak je eigen podcast', 
+      href: '/studio/podcast',
+      description: 'Van concept tot professionele opname.'
     },
     { 
-      name: 'Uitspraak & Stemgebruik', 
-      href: '/studio/uitspraak',
-      description: 'Essentiële vaardigheden voor elke spreker.'
+      name: 'Perfectie van intonatie', 
+      href: '/studio/intonatie',
+      description: 'De fijne kneepjes van de juiste klemtoon.'
+    },
+    { 
+      name: 'Perfectie van articulatie', 
+      href: '/studio/articulatie',
+      description: 'Heldere uitspraak voor elke microfoon.'
+    },
+    { 
+      name: 'Audioboeken inspreken', 
+      href: '/studio/audioboeken',
+      description: 'Urenlang boeien met je stem.'
+    },
+    { 
+      name: 'Documentaires inspreken', 
+      href: '/studio/documentaires',
+      description: 'De kunst van de voice-over bij beeld.'
+    },
+    { 
+      name: 'Verwen je stem!', 
+      href: '/studio/stem-verwen-dag',
+      description: 'Onderhoud en verzorging van je instrument.'
+    },
+    { 
+      name: 'Workshop op maat', 
+      href: '/studio/op-maat',
+      description: 'Voor bedrijven en specifieke groepen.'
+    },
+    { 
+      name: 'Storytelling & Presentatie', 
+      href: '/studio/storytelling',
+      description: 'Til je presentatie naar een hoger niveau.'
+    },
+    { 
+      name: 'Maak je eigen radioshow', 
+      href: '/studio/radio',
+      description: 'De dynamiek van live radio maken.'
+    },
+    { 
+      name: 'Voice-overs voor explainers', 
+      href: '/studio/explainers',
+      description: 'Heldere uitleg in korte video\'s.'
     }
   ];
 
@@ -49,48 +89,31 @@ export function StudioFooter({ market, activeSocials, activePhone, activeEmail }
         </TextInstrument>
       </ContainerInstrument>
 
-      {/* Kolom 2: Onze Workshops */}
-      <ContainerInstrument className="space-y-6 flex flex-col items-start">
+      {/* Kolom 2: Onze Workshops (De 12) */}
+      <ContainerInstrument className="space-y-6 flex flex-col items-start lg:col-span-2">
         <HeadingInstrument level={4} className="text-[13px] font-medium tracking-[0.2em] text-va-black/40 uppercase">
           <VoiceglotText translationKey="footer.section.studio.workshops" defaultText="Onze Workshops" />
         </HeadingInstrument>
-        <ul className="space-y-4">
+        <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 w-full">
           {workshops.map((workshop, i) => (
             <li key={i}>
               <VoicesLink href={workshop.href} className="flex flex-col gap-0.5 group">
-                <TextInstrument className="text-[15px] font-medium text-va-black/70 group-hover:text-primary transition-colors">
+                <TextInstrument className="text-[14px] font-medium text-va-black/70 group-hover:text-primary transition-colors">
                   {workshop.name}
                 </TextInstrument>
-                <TextInstrument className="text-[12px] font-light text-va-black/40 leading-snug">
+                <TextInstrument className="text-[11px] font-light text-va-black/40 leading-snug">
                   {workshop.description}
                 </TextInstrument>
               </VoicesLink>
             </li>
           ))}
-          <li className="pt-2 border-t border-black/5 w-full">
-            <VoicesLink href="/studio/workshops" className="flex items-center gap-2 text-[13px] font-bold text-primary hover:opacity-70 transition-opacity">
-              <Calendar size={14} />
-              <VoiceglotText translationKey="footer.link.studio.editions" defaultText="Bekijk alle komende edities" />
-            </VoicesLink>
-          </li>
         </ul>
-      </ContainerInstrument>
-
-      {/* Kolom 3: De Instructeurs */}
-      <ContainerInstrument className="space-y-6 flex flex-col items-start">
-        <HeadingInstrument level={4} className="text-[13px] font-medium tracking-[0.2em] text-va-black/40 uppercase">
-          <VoiceglotText translationKey="footer.section.studio.coaches" defaultText="De Instructeurs" />
-        </HeadingInstrument>
-        <ul className="space-y-4">
-          <li className="flex flex-col gap-1">
-            <TextInstrument className="text-[15px] font-medium text-va-black/70">Bernadette Timmermans</TextInstrument>
-            <TextInstrument className="text-[12px] font-light text-va-black/40 leading-snug">Gerenommeerde stemcoach & auteur van 'Klink Klaar'.</TextInstrument>
-          </li>
-          <li className="flex flex-col gap-1">
-            <TextInstrument className="text-[15px] font-medium text-va-black/70">Johfrah Lefebvre</TextInstrument>
-            <TextInstrument className="text-[12px] font-light text-va-black/40 leading-snug">Bedreven Vlaamse voice-over & regisseur.</TextInstrument>
-          </li>
-        </ul>
+        <div className="pt-4 border-t border-black/5 w-full">
+          <VoicesLink href="/studio/workshops" className="flex items-center gap-2 text-[13px] font-bold text-primary hover:opacity-70 transition-opacity">
+            <Calendar size={14} />
+            <VoiceglotText translationKey="footer.link.studio.editions" defaultText="Bekijk alle komende edities" />
+          </VoicesLink>
+        </div>
       </ContainerInstrument>
 
       {/* Kolom 4: Contact & Info */}
@@ -98,23 +121,35 @@ export function StudioFooter({ market, activeSocials, activePhone, activeEmail }
         <HeadingInstrument level={4} className="text-[13px] font-medium tracking-[0.2em] text-va-black/40 uppercase">
           <VoiceglotText translationKey="footer.contact.title" defaultText="Contact" />
         </HeadingInstrument>
-        <ContainerInstrument className="space-y-3 w-full">
-          <a href={`mailto:${activeEmail}`} className="flex items-center gap-2 text-[15px] font-light text-va-black/60 hover:text-primary transition-colors">
-            <Mail size={14} strokeWidth={1.5} />
-            <span>{activeEmail}</span>
-          </a>
-          <a href={`tel:${activePhone.replace(/\s+/g, '')}`} className="flex items-center gap-2 text-[15px] font-light text-va-black/60 hover:text-primary transition-colors">
-            <Phone size={14} strokeWidth={1.5} />
-            <span>{activePhone}</span>
-          </a>
+        
+        <ContainerInstrument className="space-y-4 w-full">
+          <li className="flex flex-col gap-1 list-none">
+            <TextInstrument className="text-[14px] font-medium text-va-black/70">Bernadette Timmermans</TextInstrument>
+            <TextInstrument className="text-[11px] font-light text-va-black/40 leading-snug italic">Gerenommeerde stemcoach</TextInstrument>
+          </li>
+          <li className="flex flex-col gap-1 list-none pb-4">
+            <TextInstrument className="text-[14px] font-medium text-va-black/70">Johfrah Lefebvre</TextInstrument>
+            <TextInstrument className="text-[11px] font-light text-va-black/40 leading-snug italic">Voice-over & regisseur</TextInstrument>
+          </li>
+          
+          <div className="pt-4 border-t border-black/5 space-y-3">
+            <a href={`mailto:${activeEmail}`} className="flex items-center gap-2 text-[14px] font-light text-va-black/60 hover:text-primary transition-colors">
+              <Mail size={14} strokeWidth={1.5} />
+              <span>{activeEmail}</span>
+            </a>
+            <a href={`tel:${activePhone.replace(/\s+/g, '')}`} className="flex items-center gap-2 text-[14px] font-light text-va-black/60 hover:text-primary transition-colors">
+              <Phone size={14} strokeWidth={1.5} />
+              <span>{activePhone}</span>
+            </a>
+          </div>
         </ContainerInstrument>
         
         <div className="pt-4 space-y-3 w-full border-t border-black/5">
-          <VoicesLink href="/academy" className="flex items-center gap-2 text-[14px] font-light text-va-black/40 hover:text-primary transition-colors">
+          <VoicesLink href="/academy" className="flex items-center gap-2 text-[13px] font-light text-va-black/40 hover:text-primary transition-colors">
             <GraduationCap size={14} />
             <span>Naar de Academy</span>
           </VoicesLink>
-          <VoicesLink href="/studio/faq" className="flex items-center gap-2 text-[14px] font-light text-va-black/40 hover:text-primary transition-colors">
+          <VoicesLink href="/studio/faq" className="flex items-center gap-2 text-[13px] font-light text-va-black/40 hover:text-primary transition-colors">
             <BookOpen size={14} />
             <span>Veelgestelde vragen</span>
           </VoicesLink>

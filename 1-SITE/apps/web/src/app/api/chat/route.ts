@@ -549,15 +549,19 @@ SLIMME KASSA REGELS:
  */
 async function handleGetConversations(params: any) {
   const { userId } = params;
-  if (!userId) return NextResponse.json({ error: 'Missing userId' }, { status: 400 });
-
+  
   try {
-    const results = await db
+    const query = db
       .select()
-      .from(chatConversations)
-      .where(eq(chatConversations.user_id, userId))
-      .orderBy(desc(chatConversations.updatedAt));
+      .from(chatConversations);
+    
+    //  CHRIS-PROTOCOL: Admin 'all' support voor Live Chat Watcher
+    if (userId !== 'all') {
+      if (!userId) return NextResponse.json({ error: 'Missing userId' }, { status: 400 });
+      query.where(eq(chatConversations.user_id, userId));
+    }
 
+    const results = await query.orderBy(desc(chatConversations.updatedAt));
     return NextResponse.json(results);
   } catch (error) {
     return NextResponse.json({ error: 'Failed to fetch conversations' }, { status: 500 });
