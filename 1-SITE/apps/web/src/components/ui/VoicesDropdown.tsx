@@ -59,6 +59,7 @@ interface VoicesDropdownProps {
   mediaRegion?: Record<string, string>;
   onMediaRegionChange?: (mediaId: string, region: string) => void;
   onOrderClick?: (language: string) => void; //  Added for admin reordering
+  displayValueOverride?: string; //  Added to force a specific label (e.g. Vlaams instead of nl-be)
 }
 
 export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
@@ -82,7 +83,8 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
   disabled = false,
   mediaRegion = {},
   onMediaRegionChange,
-  onOrderClick
+  onOrderClick,
+  displayValueOverride
 }) => {
   const { t, language } = useTranslation();
   const { isAdmin } = useAuth();
@@ -196,6 +198,7 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
 
   const displayValue = () => {
     if (!mounted) return placeholder;
+    if (displayValueOverride) return displayValueOverride;
     if (!value || (Array.isArray(value) && value.length === 0)) return placeholder;
 
     if (stepperMode) {

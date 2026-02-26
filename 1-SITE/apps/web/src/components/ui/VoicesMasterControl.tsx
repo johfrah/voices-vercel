@@ -581,6 +581,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                             rounding="left"
                             options={sortedLanguages}
                             value={state.filters.languageId || state.filters.language}
+                            displayValueOverride={state.filters.languageId ? MarketManager.getLanguageLabel(String(state.filters.languageId)) : undefined}
                             selectedExtraLangs={state.filters.languageIds?.map(String) || state.filters.languages || []}
                             onExtraLangToggle={(lang) => {
                               //  CHRIS-PROTOCOL: Handle both ID and Label toggling
