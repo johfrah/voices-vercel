@@ -67,14 +67,23 @@ export class PushService {
               }
             },
             notificationPayload
-          )
+          ).then(res => {
+            console.log(`[PushService] Successfully sent to ${sub.endpoint.substring(0, 30)}... Status: ${res.statusCode}`);
+            return res;
+          })
         )
       );
 
       // Cleanup failed subscriptions (e.g. expired)
-      const failedEndpoints = results
-        .filter((r): r is PromiseRejectedResult => r.status === 'rejected' && (r.reason.statusCode === 410 || r.reason.statusCode === 404))
-        .map((_, i) => subscriptions[i].endpoint);
+      const failedEndpoints: string[] = [];
+      results.forEach((r, i) => {
+        if (r.status === 'rejected') {
+          console.error(`[PushService] Failed for ${subscriptions[i].endpoint.substring(0, 30)}... Reason:`, r.reason.message || r.reason);
+          if (r.reason.statusCode === 410 || r.reason.statusCode === 404) {
+            failedEndpoints.push(subscriptions[i].endpoint);
+          }
+        }
+      });
 
       if (failedEndpoints.length > 0) {
         await db

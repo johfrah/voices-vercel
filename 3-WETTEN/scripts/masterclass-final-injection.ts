@@ -8,12 +8,12 @@ const connectionString = process.env.DATABASE_URL!;
 const sql = postgres(connectionString, { ssl: 'require' });
 
 async function finalMasterclassInjection() {
-  console.log('🧹 [CHRIS-PROTOCOL] Final Attempt: Pure Injection...');
+  console.log('🧹 [CHRIS-PROTOCOL] Final Attempt: Safe SQL Injection...');
 
   try {
-    // 1. Wipe alle eerdere pogingen
+    // 1. Wipe
     await sql`DELETE FROM public.actor_demos WHERE type = 'telephony' AND name ILIKE '%Telefonie%'`;
-    console.log('✅ Database wiped for fresh start.');
+    console.log('✅ Database wiped.');
 
     // 2. Haal 14 ECHTE orders op
     const orders = await sql`
@@ -41,23 +41,22 @@ async function finalMasterclassInjection() {
       const rawText = o.script || o.briefing || "Demo tekst voor telefonie.";
       const anonText = rawText.replace(new RegExp(o.company_name || 'Klant', 'gi'), '{{company_name}}');
 
-      // A. Media
       const fileName = `demo_${o.item_id}.mp3`;
       const targetUrl = `https://storage.voices.be/demos/telephony/${fileName}`;
+      
+      // FIX: Gebruik de postgres library helper voor arrays
       const [media] = await sql`
-        INSERT INTO public.media (file_name, file_path, file_type, journey, labels)
-        VALUES (${fileName}, ${targetUrl}, 'audio/mpeg', 'telephony', ${['demo', 'telephony']})
+        INSERT INTO public.media (file_name, file_path, file_type, labels, journey)
+        VALUES (${fileName}, ${targetUrl}, 'audio/mpeg', ${sql.array(['demo', 'telephony'])}, 'telephony')
         RETURNING id
       `;
 
-      // B. Actor Demo
       const [demo] = await sql`
         INSERT INTO public.actor_demos (actor_id, name, url, type, media_id, telephony_subtype_id, is_public)
         VALUES (${o.actor_id}, ${o.company_name || 'Elite'} - Telefonie, ${targetUrl}, 'telephony', ${media.id}, 5, true)
         RETURNING id
       `;
 
-      // C. Media Intelligence
       await sql`
         INSERT INTO public.media_intelligence (demo_id, transcript, ai_metadata)
         VALUES (${demo.id}, ${anonText}, ${JSON.stringify({ sector: o.sector || 'Algemeen' })})

@@ -186,7 +186,8 @@ async function handleSendMessage(params: any, request?: NextRequest) {
       console.warn('[Voicy API] FAQ Check failed (DB issue):', e.message);
     }
 
-    // 2. Als FAQ niets vindt of het is een complexe vraag -> Trigger Gemini Brain
+    // 🛡️ CHRIS-PROTOCOL: Forceer notificatie TEST bij elk bericht in DEV/Staging voor debugging
+    console.log('[Voicy API] Notification trigger check:', { senderType, conversationId: saveResult?.conversationId || 'pending' });
     if (!aiContent || message.length > 50 || mode === 'agent' || previewLogic || /medewerker|spreken|johfrah|human|contact/i.test(message)) {
       console.log('[Voicy API] Triggering Gemini Brain...', { mode, hasPreviewLogic: !!previewLogic });
       
@@ -494,10 +495,12 @@ SLIMME KASSA REGELS:
 
     // 5. ADMIN NOTIFICATIONS (Chris-Protocol: Real-time awareness)
     // 🛡️ CHRIS-PROTOCOL: Buiten de transactie om blokkades te voorkomen (v2.14.789)
-    if (senderType === 'user' && saveResult?.conversationId) {
+    if (senderType === 'user' || (senderType === 'admin' && message.includes('TEST_NOTIFY'))) {
+      console.log('[Voicy API] 🚀 Triggering fire-and-forget notifications...');
       // We vuren de notificaties af zonder de response te blokkeren
       (async () => {
         try {
+          console.log('[Voicy API] Notification thread started');
           const { VoicesMailEngine } = await import('@/lib/services/voices-mail-engine');
           const mailEngine = VoicesMailEngine.getInstance();
           const { MarketManagerServer: MarketManagerLocal } = await import('@/lib/system/market-manager-server');
@@ -508,6 +511,14 @@ SLIMME KASSA REGELS:
           const market = MarketManagerLocal.getCurrentMarket(host);
           const siteUrl = MarketManagerLocal.getMarketDomains()[market.market_code] || MarketManagerLocal.getMarketDomains()['BE'];
           
+          console.log('[Voicy API] Sending notifications for:', { 
+            convId: saveResult?.conversationId, 
+            market: market.market_code,
+            hasMail: !!mailEngine,
+            hasPush: !!PushService,
+            hasTelegram: !!TelegramService
+          });
+
           // 1. Email Notificatie
           await mailEngine.sendVoicesMail({
             to: market.email || process.env.ADMIN_EMAIL || VOICES_CONFIG.company.email,
@@ -515,30 +526,34 @@ SLIMME KASSA REGELS:
             title: 'Nieuw bericht in de chat',
             body: `
               <strong>Bericht:</strong> "${message}"<br/>
-              <strong>Conversatie ID:</strong> ${saveResult.conversationId}<br/>
+              <strong>Conversatie ID:</strong> ${saveResult?.conversationId || 'N/A'}<br/>
               <strong>Journey:</strong> ${journey}<br/>
               <strong>Persona:</strong> ${persona}
             `,
             buttonText: 'Open Dashboard',
             buttonUrl: `${siteUrl}/admin/dashboard`,
             host: host
-          }).catch(e => console.error('[Push] Mail failed:', e.message));
+          }).then(() => console.log('[Push] Mail sent successfully'))
+            .catch(e => console.error('[Push] Mail failed:', e.message));
 
           // 2. Push Notificatie (iPhone/Smartphone)
           await PushService.notifyAdmins({
-            title: `Nieuw bericht (#${saveResult.conversationId})`,
+            title: `Nieuw bericht (#${saveResult?.conversationId || 'N/A'})`,
             body: message.substring(0, 100),
             url: `/admin/live-chat`
-          }).catch(e => console.error('[Push] WebPush failed:', e.message));
+          }).then(() => console.log('[Push] WebPush trigger finished'))
+            .catch(e => console.error('[Push] WebPush failed:', e.message));
 
           // 3. Telegram Notificatie
           const telegramMsg = `💬 <b>Nieuwe Chat Interactie</b>\n\n` +
                               `<b>Bericht:</b> <i>"${message}"</i>\n` +
-                              `<b>ID:</b> #${saveResult.conversationId}\n` +
+                              `<b>ID:</b> #${saveResult?.conversationId || 'N/A'}\n` +
                               `<b>Journey:</b> ${journey}\n\n` +
                               `<a href="${siteUrl}/admin/live-chat">👉 Open Live Chat Watcher</a>`;
           
-          await TelegramService.sendAlert(telegramMsg, { force: true }).catch(e => console.error('[Push] Telegram failed:', e.message));
+          await TelegramService.sendAlert(telegramMsg, { force: true })
+            .then(() => console.log('[Push] Telegram sent successfully'))
+            .catch(e => console.error('[Push] Telegram failed:', e.message));
 
         } catch (notifyErr: any) {
           console.error('[Voicy API] Critical Notification Engine Error:', notifyErr.message);

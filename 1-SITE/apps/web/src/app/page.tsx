@@ -37,6 +37,7 @@ const ConfiguratorPageClient = nextDynamic(() => import('@/app/checkout/configur
 });
 
 import { VoiceCard } from "@/components/ui/VoiceCard";
+import { ArtistDetailClient } from "@/components/legacy/ArtistDetailClient";
 
 /**
  * HOME CONTENT (GOD MODE 2026 - AIRBNB STYLE)
@@ -100,6 +101,27 @@ function HomeContent({
   }, [marketCode]);
 
   const market = currentMarketConfig; // Fix for ReferenceError: market is not defined
+  const [artistData, setArtistData] = useState<any>(null);
+  const [donors, setDonors] = useState<any[]>([]);
+  const [isArtistLoading, setIsArtistLoading] = useState(false);
+
+  //  CHRIS-PROTOCOL: Fetch Artist Data for ARTIST market
+  useEffect(() => {
+    if (marketCode === 'ARTIST') {
+      setIsArtistLoading(true);
+      // We explicitly fetch Youssef Zaki (ID 1) for this market
+      fetch('/api/admin/config?type=actor&slug=youssef-zaki')
+        .then(res => res.json())
+        .then(data => {
+          setArtistData(data);
+          setIsArtistLoading(false);
+        })
+        .catch(err => {
+          console.error('Failed to fetch artist data:', err);
+          setIsArtistLoading(false);
+        });
+    }
+  }, [marketCode]);
 
   //  CHRIS-PROTOCOL: Sync local state with initial props
   useEffect(() => {
@@ -344,224 +366,245 @@ function HomeContent({
 
   return (
     <>
-      <Suspense fallback={null}>
-        <LiquidBackground strokeWidth={1.5} />
-      </Suspense>
-      
-      <SectionInstrument className="!pt-40 pb-32 relative z-50">
-        <ContainerInstrument plain className="max-w-[1440px] mx-auto px-0">
-          <ContainerInstrument plain className="mb-20 text-center max-w-4xl mx-auto space-y-8 px-4 md:px-6">
-            <HeadingInstrument level={1} className="text-6xl md:text-8xl font-light tracking-tighter leading-[0.9] text-va-black">
-              <VoiceglotText 
-                translationKey={`home.hero.title_v4_${masterControlState.journey}_${marketCode}`} 
-                defaultText={
-                  masterControlState.journey === 'telephony' 
-                    ? "Maak jouw *telefooncentrale* menselijk."
-                    : masterControlState.journey === 'video'
-                    ? (marketCode === 'BE' ? "De mooiste *voice-overs* van België." : marketCode === 'NLNL' ? "De mooiste *voice-overs* van Nederland." : marketCode === 'FR' ? "Les meilleures *voix-off* de France." : "De mooiste *voice-overs* voor jouw video.")
-                    : masterControlState.journey === 'commercial'
-                    ? "Scoor met *high-end* commercials."
-                    : "Vind de *stem* voor jouw verhaal."
-                }
-                components={{
-                  highlight: (children) => (
-                    <TextInstrument as="span" className="text-primary italic font-light text-inherit">
-                      {children}
-                    </TextInstrument>
-                  )
-                }}
-              />
-            </HeadingInstrument>
-            <TextInstrument className="text-xl md:text-2xl font-light text-va-black/40 leading-tight tracking-tight mx-auto max-w-2xl">
-              <VoiceglotText translationKey={`home.hero.subtitle_${masterControlState.journey}`} defaultText={journeyContent.subtitle} />
-            </TextInstrument>
-
-            {/* USP Trust-Bar (Bob-methode) */}
-            <ContainerInstrument plain className="flex flex-wrap justify-center gap-x-12 gap-y-6 pt-8">
-              {journeyContent.usps.map((usp) => (
-                <ContainerInstrument key={usp.key} plain className="flex items-center gap-3">
-                  <ContainerInstrument plain className="w-8 h-8 rounded-full bg-primary/5 flex items-center justify-center">
-                    {renderUspIcon(usp.icon)}
-                  </ContainerInstrument>
-                  <TextInstrument className="text-[14px] font-medium tracking-tight text-va-black/60">
-                    <VoiceglotText translationKey={`home.usp.${usp.key}`} defaultText={usp.text} />
-                  </TextInstrument>
-                </ContainerInstrument>
-              ))}
-            </ContainerInstrument>
-          </ContainerInstrument>
-
-          <div className="w-full relative z-50 px-4 md:px-6">
-            <VoicesMasterControl 
-              actors={actors} 
-              filters={filters} 
-              availableExtraLangs={availableExtraLangs} 
-              languagesData={handshakeConfig?.languages}
-              gendersData={handshakeConfig?.genders}
-              journeysData={handshakeConfig?.journeys}
-              mediaTypesData={handshakeConfig?.mediaTypes}
-              countriesData={handshakeConfig?.countries}
+      {marketCode === 'ARTIST' ? (
+        <Suspense fallback={<LoadingScreenInstrument text="Artist World laden..." />}>
+          {artistData ? (
+            <ArtistDetailClient 
+              artistData={artistData} 
+              isYoussef={true} 
+              params={{ slug: 'youssef-zaki' }} 
+              donors={donors} 
             />
-          </div>
-          
-          <div className="mt-20 relative min-h-[600px] w-full px-4 md:px-6">
-            <AnimatePresence mode="wait">
-              {masterControlState.currentStep === 'voice' ? (
-                <motion.div
-                  key="voice-grid"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
-                  className="w-full"
-                >
-                  {/* CHRIS-PROTOCOL: Deterministic Skeletons (Moby-methode) */}
-                  {(!filteredActors || filteredActors.length === 0) ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 items-stretch">
-                      {[...Array(8)].map((_, i) => (
-                        <VoiceCardSkeleton key={`skeleton-${i}`} />
-                      ))}
-                    </div>
-                  ) : (
-                    <VoiceGrid 
-                      strokeWidth={1.5} 
-                      actors={filteredActors.map(a => ({
-                        ...a,
-                        // Ensure we use the latest photo_url from our local state
-                        photo_url: actors.find(actor => actor.id === a.id)?.photo_url || a.photo_url
-                      }))} 
-                      featured={false} 
-                      onSelect={(actor) => {
-                        //  CHRIS-PROTOCOL: The "Ultimate SPA" Way
-                        // We stay on the homepage and just switch the step!
-                        console.log(`[Home] Initiating in-page SPA transition for: ${actor.display_name}`);
-                        playClick('success');
-                        
-                        // 1. Set the actor in global checkout context
-                        selectActor(actor);
-                        
-                        // 2. Set the step to script
-                        updateStep('script');
-                        
-                        // 3. Update URL for Smart Routing
-                        const newUrl = `/${actor.slug}/${masterControlState.journey}`;
-                        window.history.pushState(null, '', newUrl);
-                        
-                        // 4. Scroll to top of the section
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                      }}
-                    />
-                  )}
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="configurator"
-                  initial={{ opacity: 0, scale: 0.98, y: 20 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.98, y: -20 }}
-                  transition={{ duration: 0.6, ease: [0.23, 1, 0.32, 1] }}
-                  className="w-full"
-                >
-                  <div className="flex flex-col lg:grid lg:grid-cols-12 gap-8 items-start w-full">
-                    {/* Script & Prijs (9 kolommen breed) - EERST op mobiel */}
-                    <div className="order-1 lg:order-2 lg:col-span-9 w-full">
-                          <ConfiguratorPageClient 
-                            isEmbedded={true} 
-                            hideMediaSelector={true} 
-                            minimalMode={true} 
-                            hidePriceBlock={false}
-                          />
-                    </div>
-
-                    {/* VoiceCard (3 kolommen breed) - LATER op mobiel, compact */}
-                    <div className="order-2 lg:order-1 lg:col-span-3 w-full">
-                      <motion.div
-                        layoutId={`actor-${checkoutState.selectedActor?.id}`}
-                        className="lg:sticky lg:top-10 w-full"
-                      >
-                        {checkoutState.selectedActor && (
-                          <VoiceCard 
-                            voice={checkoutState.selectedActor} 
-                            onSelect={() => {}} 
-                            hideButton
-                            hidePrice // CHRIS-PROTOCOL: Hide price in sidebar
-                            isCornered
-                            compact={true} 
-                          />
-                        )}
-                      </motion.div>
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        </ContainerInstrument>
-      </SectionInstrument>
-
-      <SectionInstrument className="py-48 bg-white/80 backdrop-blur-md relative z-10">
-        <ContainerInstrument plain className="max-w-7xl mx-auto px-4 md:px-6">
-          <Suspense fallback={
-            <div className="space-y-16">
-              <div className="flex flex-col md:flex-row justify-between items-end gap-8">
-                <div className="space-y-4 w-full md:w-auto">
-                  <div className="h-6 w-32 bg-va-black/5 rounded-full animate-pulse" />
-                  <div className="h-24 w-full md:w-[600px] bg-va-black/5 rounded-2xl animate-pulse" />
-                </div>
-                <div className="h-20 w-64 bg-va-black/5 rounded-[24px] animate-pulse" />
-              </div>
-              <div className="flex gap-8 overflow-hidden">
-                {[1, 2, 3].map(i => (
-                  <div key={i} className="min-w-[400px] h-[450px] bg-va-black/5 rounded-[40px] animate-pulse" />
-                ))}
-              </div>
+          ) : isArtistLoading ? (
+            <LoadingScreenInstrument text="Youssef Zaki laden..." />
+          ) : (
+            <div className="min-h-screen flex items-center justify-center text-white bg-va-black">
+              <TextInstrument>Artist data not found.</TextInstrument>
             </div>
-          }>
-            <ReviewsInstrument 
-              reviews={reviews} 
-              hideHeader={false} 
-              averageRating={reviewStats?.averageRating?.toString() || "4.9"}
-              totalReviews={reviewStats?.totalCount?.toString() || "392"}
-              distribution={reviewStats?.distribution}
-              variant="wall"
-            />
+          )}
+        </Suspense>
+      ) : (
+        <>
+          <Suspense fallback={null}>
+            <LiquidBackground strokeWidth={1.5} />
           </Suspense>
-        </ContainerInstrument>
-      </SectionInstrument>
+          
+          <SectionInstrument className="!pt-40 pb-32 relative z-50">
+            <ContainerInstrument plain className="max-w-[1440px] mx-auto px-0">
+              <ContainerInstrument plain className="mb-20 text-center max-w-4xl mx-auto space-y-8 px-4 md:px-6">
+                <HeadingInstrument level={1} className="text-6xl md:text-8xl font-light tracking-tighter leading-[0.9] text-va-black">
+                  <VoiceglotText 
+                    translationKey={`home.hero.title_v4_${masterControlState.journey}_${marketCode}`} 
+                    defaultText={
+                      masterControlState.journey === 'telephony' 
+                        ? "Maak jouw *telefooncentrale* menselijk."
+                        : masterControlState.journey === 'video'
+                        ? (marketCode === 'BE' ? "De mooiste *voice-overs* van België." : marketCode === 'NLNL' ? "De mooiste *voice-overs* van Nederland." : marketCode === 'FR' ? "Les meilleures *voix-off* de France." : "De mooiste *voice-overs* voor jouw video.")
+                        : masterControlState.journey === 'commercial'
+                        ? "Scoor met *high-end* commercials."
+                        : "Vind de *stem* voor jouw verhaal."
+                    }
+                    components={{
+                      highlight: (children) => (
+                        <TextInstrument as="span" className="text-primary italic font-light text-inherit">
+                          {children}
+                        </TextInstrument>
+                      )
+                    }}
+                  />
+                </HeadingInstrument>
+                <TextInstrument className="text-xl md:text-2xl font-light text-va-black/40 leading-tight tracking-tight mx-auto max-w-2xl">
+                  <VoiceglotText translationKey={`home.hero.subtitle_${masterControlState.journey}`} defaultText={journeyContent.subtitle} />
+                </TextInstrument>
 
-      {/* LLM Context Layer */}
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
-        "@context": "https://schema.org",
-        "@type": "Organization",
-        "name": currentMarketConfig.name,
-        "url": MarketManager.getMarketDomains()[currentMarketConfig.market_code] || `https://${currentMarketConfig.market_code === 'BE' ? (MarketManager.getMarketDomains()['BE']?.replace('https://', '')) : (MarketManager.getMarketDomains()['NL']?.replace('https://', ''))}`,
-        "logo": `${MarketManager.getMarketDomains()[currentMarketConfig.market_code] || `https://${currentMarketConfig.market_code === 'BE' ? (MarketManager.getMarketDomains()['BE']?.replace('https://', '')) : (MarketManager.getMarketDomains()['NL']?.replace('https://', ''))}`}${currentMarketConfig.logo_url}`,
-        "description": currentMarketConfig.seo_data?.description || "Castingbureau voor stemacteurs en voice-overs.",
-        "aggregateRating": {
-          "@type": "AggregateRating",
-          "ratingValue": reviewStats?.averageRating || 4.9,
-          "reviewCount": reviewStats?.totalCount || 392,
-          "bestRating": "5",
-          "worstRating": "1"
-        },
-        "review": reviews.slice(0, 3).map(r => ({
-          "@type": "Review",
-          "author": { "@type": "Person", "name": r.name || r.authorName },
-          "reviewRating": { "@type": "Rating", "ratingValue": r.rating },
-          "reviewBody": r.text || "Geweldige ervaring!"
-        })),
-        "founder": {
-          "@type": "Person",
-          "name": "Johfrah Lefebvre",
-          "sameAs": MarketManager.getMarketDomains()['PORTFOLIO']
-        },
-        "_llm_context": {
-          "intent": "explore_platform",
-          "persona": "visitor",
-          "capabilities": ["search_voices", "view_pricing", "read_reviews"],
-          "visual_dna": ["Spatial Growth", "Bento Grid", "Liquid DNA"]
-        }
-      })}} />
+                {/* USP Trust-Bar (Bob-methode) */}
+                <ContainerInstrument plain className="flex flex-wrap justify-center gap-x-12 gap-y-6 pt-8">
+                  {journeyContent.usps.map((usp) => (
+                    <ContainerInstrument key={usp.key} plain className="flex items-center gap-3">
+                      <ContainerInstrument plain className="w-8 h-8 rounded-full bg-primary/5 flex items-center justify-center">
+                        {renderUspIcon(usp.icon)}
+                      </ContainerInstrument>
+                      <TextInstrument className="text-[14px] font-medium tracking-tight text-va-black/60">
+                        <VoiceglotText translationKey={`home.usp.${usp.key}`} defaultText={usp.text} />
+                      </TextInstrument>
+                    </ContainerInstrument>
+                  ))}
+                </ContainerInstrument>
+              </ContainerInstrument>
+
+              <div className="w-full relative z-50 px-4 md:px-6">
+                <VoicesMasterControl 
+                  actors={actors} 
+                  filters={filters} 
+                  availableExtraLangs={availableExtraLangs} 
+                  languagesData={handshakeConfig?.languages}
+                  gendersData={handshakeConfig?.genders}
+                  journeysData={handshakeConfig?.journeys}
+                  mediaTypesData={handshakeConfig?.mediaTypes}
+                  countriesData={handshakeConfig?.countries}
+                />
+              </div>
+              
+              <div className="mt-20 relative min-h-[600px] w-full px-4 md:px-6">
+                <AnimatePresence mode="wait">
+                  {masterControlState.currentStep === 'voice' ? (
+                    <motion.div
+                      key="voice-grid"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -20 }}
+                      transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
+                      className="w-full"
+                    >
+                      {/* CHRIS-PROTOCOL: Deterministic Skeletons (Moby-methode) */}
+                      {(!filteredActors || filteredActors.length === 0) ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 items-stretch">
+                          {[...Array(8)].map((_, i) => (
+                            <VoiceCardSkeleton key={`skeleton-${i}`} />
+                          ))}
+                        </div>
+                      ) : (
+                        <VoiceGrid 
+                          strokeWidth={1.5} 
+                          actors={filteredActors.map(a => ({
+                            ...a,
+                            // Ensure we use the latest photo_url from our local state
+                            photo_url: actors.find(actor => actor.id === a.id)?.photo_url || a.photo_url
+                          }))} 
+                          featured={false} 
+                          onSelect={(actor) => {
+                            //  CHRIS-PROTOCOL: The "Ultimate SPA" Way
+                            // We stay on the homepage and just switch the step!
+                            console.log(`[Home] Initiating in-page SPA transition for: ${actor.display_name}`);
+                            playClick('success');
+                            
+                            // 1. Set the actor in global checkout context
+                            selectActor(actor);
+                            
+                            // 2. Set the step to script
+                            updateStep('script');
+                            
+                            // 3. Update URL for Smart Routing
+                            const newUrl = `/${actor.slug}/${masterControlState.journey}`;
+                            window.history.pushState(null, '', newUrl);
+                            
+                            // 4. Scroll to top of the section
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                          }}
+                        />
+                      )}
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="configurator"
+                      initial={{ opacity: 0, scale: 0.98, y: 20 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.98, y: -20 }}
+                      transition={{ duration: 0.6, ease: [0.23, 1, 0.32, 1] }}
+                      className="w-full"
+                    >
+                      <div className="flex flex-col lg:grid lg:grid-cols-12 gap-8 items-start w-full">
+                        {/* Script & Prijs (9 kolommen breed) - EERST op mobiel */}
+                        <div className="order-1 lg:order-2 lg:col-span-9 w-full">
+                              <ConfiguratorPageClient 
+                                isEmbedded={true} 
+                                hideMediaSelector={true} 
+                                minimalMode={true} 
+                                hidePriceBlock={false}
+                              />
+                        </div>
+
+                        {/* VoiceCard (3 kolommen breed) - LATER op mobiel, compact */}
+                        <div className="order-2 lg:order-1 lg:col-span-3 w-full">
+                          <motion.div
+                            layoutId={`actor-${checkoutState.selectedActor?.id}`}
+                            className="lg:sticky lg:top-10 w-full"
+                          >
+                            {checkoutState.selectedActor && (
+                              <VoiceCard 
+                                voice={checkoutState.selectedActor} 
+                                onSelect={() => {}} 
+                                hideButton
+                                hidePrice // CHRIS-PROTOCOL: Hide price in sidebar
+                                isCornered
+                                compact={true} 
+                              />
+                            )}
+                          </motion.div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            </ContainerInstrument>
+          </SectionInstrument>
+
+          <SectionInstrument className="py-48 bg-white/80 backdrop-blur-md relative z-10">
+            <ContainerInstrument plain className="max-w-7xl mx-auto px-4 md:px-6">
+              <Suspense fallback={
+                <div className="space-y-16">
+                  <div className="flex flex-col md:flex-row justify-between items-end gap-8">
+                    <div className="space-y-4 w-full md:w-auto">
+                      <div className="h-6 w-32 bg-va-black/5 rounded-full animate-pulse" />
+                      <div className="h-24 w-full md:w-[600px] bg-va-black/5 rounded-2xl animate-pulse" />
+                    </div>
+                    <div className="h-20 w-64 bg-va-black/5 rounded-[24px] animate-pulse" />
+                  </div>
+                  <div className="flex gap-8 overflow-hidden">
+                    {[1, 2, 3].map(i => (
+                      <div key={i} className="min-w-[400px] h-[450px] bg-va-black/5 rounded-[40px] animate-pulse" />
+                    ))}
+                  </div>
+                </div>
+              }>
+                <ReviewsInstrument 
+                  reviews={reviews} 
+                  hideHeader={false} 
+                  averageRating={reviewStats?.averageRating?.toString() || "4.9"}
+                  totalReviews={reviewStats?.totalCount?.toString() || "392"}
+                  distribution={reviewStats?.distribution}
+                  variant="wall"
+                />
+              </Suspense>
+            </ContainerInstrument>
+          </SectionInstrument>
+
+          {/* LLM Context Layer */}
+          <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            "name": currentMarketConfig.name,
+            "url": MarketManager.getMarketDomains()[currentMarketConfig.market_code] || `https://${currentMarketConfig.market_code === 'BE' ? (MarketManager.getMarketDomains()['BE']?.replace('https://', '')) : (MarketManager.getMarketDomains()['NL']?.replace('https://', ''))}`,
+            "logo": `${MarketManager.getMarketDomains()[currentMarketConfig.market_code] || `https://${currentMarketConfig.market_code === 'BE' ? (MarketManager.getMarketDomains()['BE']?.replace('https://', '')) : (MarketManager.getMarketDomains()['NL']?.replace('https://', ''))}`}${currentMarketConfig.logo_url}`,
+            "description": currentMarketConfig.seo_data?.description || "Castingbureau voor stemacteurs en voice-overs.",
+            "aggregateRating": {
+              "@type": "AggregateRating",
+              "ratingValue": reviewStats?.averageRating || 4.9,
+              "reviewCount": reviewStats?.totalCount || 392,
+              "bestRating": "5",
+              "worstRating": "1"
+            },
+            "review": reviews.slice(0, 3).map(r => ({
+              "@type": "Review",
+              "author": { "@type": "Person", "name": r.name || r.authorName },
+              "reviewRating": { "@type": "Rating", "ratingValue": r.rating },
+              "reviewBody": r.text || "Geweldige ervaring!"
+            })),
+            "founder": {
+              "@type": "Person",
+              "name": "Johfrah Lefebvre",
+              "sameAs": MarketManager.getMarketDomains()['PORTFOLIO']
+            },
+            "_llm_context": {
+              "intent": "explore_platform",
+              "persona": "visitor",
+              "capabilities": ["search_voices", "view_pricing", "read_reviews"],
+              "visual_dna": ["Spatial Growth", "Bento Grid", "Liquid DNA"]
+            }
+          })}} />
+        </>
+      )}
     </>
   );
 }

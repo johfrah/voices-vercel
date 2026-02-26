@@ -30,6 +30,8 @@ export class TelegramService {
       (global as any)._lastTelegramAlertSent = now;
     }
 
+    console.log(`[TelegramService] Sending alert to ${this.ADMIN_IDS.length} admins: ${message.substring(0, 50)}...`);
+
     const promises = this.ADMIN_IDS.map(chatId => 
       fetch(`https://api.telegram.org/bot${this.BOT_TOKEN}/sendMessage`, {
         method: 'POST',
@@ -40,7 +42,14 @@ export class TelegramService {
           parse_mode: options.parse_mode || 'HTML',
           disable_web_page_preview: true
         })
-      }).catch(err => console.error(`[TelegramService] Failed to send to ${chatId}:`, err))
+      }).then(async res => {
+        if (!res.ok) {
+          const errData = await res.json();
+          console.error(`[TelegramService] Telegram API Error for ${chatId}:`, errData);
+        } else {
+          console.log(`[TelegramService] Successfully sent alert to ${chatId}`);
+        }
+      }).catch(err => console.error(`[TelegramService] Fetch failed for ${chatId}:`, err))
     );
 
     await Promise.all(promises);
