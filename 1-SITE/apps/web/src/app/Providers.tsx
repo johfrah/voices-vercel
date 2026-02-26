@@ -33,14 +33,19 @@ export function Providers({
   initialUsage?: any;
 }) {
   const pathname = usePathname();
-  const currentVersion = '2.15.071';
+  const currentVersion = '2.15.072';
 
 
   //  CHRIS-PROTOCOL: Initialize Client Logger for real-time error reporting
   React.useEffect(() => {
     ClientLogger.init();
     console.log(`🚀 [Voices] Nuclear Version: v${currentVersion} (Godmode Zero)`);
-  }, []);
+    
+    // Expose version to window for verification scripts
+    if (typeof window !== 'undefined') {
+      (window as any).__VOICES_VERSION__ = currentVersion;
+    }
+  }, [currentVersion]);
 
   //  CHRIS-PROTOCOL: Language is now strictly passed from Server (Source of Truth)
   // to prevent Hydration Mismatch errors (#419, #425).
