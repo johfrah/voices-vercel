@@ -315,13 +315,19 @@ export async function middleware(request: NextRequest) {
 
   // Meditation Journey (ADEMING)
   if (market === 'ADEMING') {
-    // 🛡️ CHRIS-PROTOCOL: Offline mode for Ademing (v2.15.073)
+    // 🛡️ CHRIS-PROTOCOL: Offline mode for Ademing (v2.15.074)
+    // We rewrite to the offline view internally while keeping the URL clean.
     const isOffline = process.env.ADEMING_OFFLINE === 'true';
     if (isOffline && !isAdmin) {
       url.pathname = '/ademing/offline'
-    } else {
-      url.pathname = `/ademing${pathname === '/' ? '' : pathname}`
+      const offlineResponse = NextResponse.rewrite(url)
+      offlineResponse.headers.set('x-voices-market', 'ADEMING')
+      offlineResponse.headers.set('x-voices-pathname', pathname)
+      offlineResponse.headers.set('x-voices-host', `${request.nextUrl.protocol}//${host}`)
+      return offlineResponse
     }
+    
+    url.pathname = `/ademing${pathname === '/' ? '' : pathname}`
     const ademingResponse = NextResponse.rewrite(url)
     ademingResponse.headers.set('x-voices-market', 'ADEMING')
     ademingResponse.headers.set('x-voices-pathname', pathname)
