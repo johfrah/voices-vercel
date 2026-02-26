@@ -1,6 +1,6 @@
 #!/usr/bin/env tsx
 /**
- * Live Site Verification Script for v2.15.070
+ * Live Site Verification Script for v2.15.072
  * Checks version, actor cards, console errors, and Youssef Zaki page
  */
 
@@ -17,10 +17,15 @@ async function verifyLive() {
   const errors: string[] = [];
   const consoleErrors: string[] = [];
 
-  // Capture console errors
+  // Capture console messages
   page.on('console', (msg) => {
+    const text = msg.text();
     if (msg.type() === 'error') {
-      consoleErrors.push(msg.text());
+      consoleErrors.push(text);
+    }
+    // Log important messages
+    if (text.includes('Godmode Audit') || text.includes('Filter Results') || text.includes('[Home]')) {
+      console.log(`   [Console] ${text.substring(0, 150)}`);
     }
   });
 
@@ -36,8 +41,8 @@ async function verifyLive() {
       timeout: 60000
     });
 
-    // Wait a bit for initial render
-    await page.waitForTimeout(3000);
+    // Wait for data to load
+    await page.waitForTimeout(8000);
 
     console.log('🔍 Step 2: Checking version...');
     
@@ -48,7 +53,7 @@ async function verifyLive() {
 
     console.log(`   Version found: ${version || 'NOT FOUND'}`);
 
-    if (version !== 'v2.15.070') {
+    if (version !== '2.15.072') {
       console.log('⏳ Version mismatch, waiting 30s and refreshing...');
       await page.waitForTimeout(30000);
       await page.reload({ waitUntil: 'domcontentloaded', timeout: 60000 });
@@ -60,17 +65,25 @@ async function verifyLive() {
       
       console.log(`   Version after refresh: ${newVersion || 'NOT FOUND'}`);
       
-      if (newVersion !== 'v2.15.070') {
-        errors.push(`Version mismatch: expected v2.15.070, got ${newVersion || 'unknown'}`);
+      if (newVersion !== '2.15.072') {
+        errors.push(`Version mismatch: expected 2.15.072, got ${newVersion || 'unknown'}`);
       }
     }
 
     console.log('🎭 Step 3: Checking actor cards...');
     
+    // Check what the page is fetching
+    const apiResponse = await page.evaluate(() => {
+      return (window as any).__LAST_ACTORS_FETCH__ || null;
+    });
+    
+    console.log(`   API response: ${apiResponse ? JSON.stringify(apiResponse).substring(0, 100) : 'NOT FOUND'}`);
+    
     // Wait for actor cards or skeletons
     await page.waitForTimeout(2000);
     
-    const actorCards = await page.$$('[data-actor-card], .voice-card, [class*="VoiceCard"]');
+    // Look for VoiceCard divs (they have specific classes: bg-white rounded-[20px] shadow-aura)
+    const actorCards = await page.$$('div.bg-white.rounded-\\[20px\\].shadow-aura');
     const skeletons = await page.$$('[class*="skeleton"], [class*="animate-pulse"]');
     
     console.log(`   Found ${actorCards.length} actor cards`);
@@ -134,7 +147,7 @@ async function verifyLive() {
       
       process.exit(1);
     } else {
-      console.log('\n✅ VERIFIED LIVE: v2.15.070 - Actor grid visible, 0 console errors, Youssef Zaki page OK.');
+      console.log('\n✅ VERIFIED LIVE: v2.15.072 - Actor grid visible, 0 console errors, Youssef Zaki page OK.');
       process.exit(0);
     }
 

@@ -260,6 +260,7 @@ export default async function RootLayout({
   const isStudioPage = pathname.startsWith('/studio/') || pathname === '/studio' || pathname === '/workshops' || pathname === '/voorwaarden-studio';
   
   const isAdeming = market.market_code === 'ADEMING';
+  const isOffline = process.env.ADEMING_OFFLINE === 'true';
   const htmlClass = `${raleway.className} ${inter.className} ${cormorant.variable} theme-${isAdeming ? 'ademing' : market.theme} ${raleway.variable}`;
   const bodyClass = cn(
     "pb-24 md:pb-0 touch-manipulation va-main-layout",
@@ -268,13 +269,13 @@ export default async function RootLayout({
   );
   const lang = langHeader || (pathname.includes('/artist/youssef') || market.market_code === 'ARTIST' ? 'en-EU' : (market.primary_language || 'nl-BE'));
 
-  if (isAdminRoute || isStudioPage) {
+  if (isAdminRoute || isStudioPage || (isAdeming && isOffline && !isAdmin)) {
     return (
       <html lang={lang} className={htmlClass} suppressHydrationWarning>
         <body className={bodyClass}>
           <Providers lang={lang} market={market} initialTranslations={translations} initialJourney={initialJourney} initialUsage={initialUsage}>
             <SafeErrorGuard>
-              <Suspense fallback={<LoadingScreenInstrument text={isAdminRoute ? "Beheer laden..." : "Studio laden..."} />}>
+              <Suspense fallback={<LoadingScreenInstrument text={isAdminRoute ? "Beheer laden..." : (isAdeming && isOffline ? "Even geduld..." : "Studio laden...")} />}>
                 {children}
               </Suspense>
             </SafeErrorGuard>
