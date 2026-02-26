@@ -8,7 +8,7 @@ export interface VoicesState {
   opening_hours: string;
   location: string;
   current_sector: string | null;
-  current_journey: 'telephony' | 'video' | 'commercial' | 'general';
+  current_journey: 'telephony' | 'video' | 'commercial' | 'general' | 'agency';
   intent: {
     archetype: string | null;
     asset_focus: 'Audio-First' | 'Script-First' | 'Hybrid';
@@ -40,7 +40,7 @@ export const initialState: VoicesState = {
   opening_hours: '09:00 - 18:00',
   location: '',
   current_sector: null,
-  current_journey: 'agency',
+  current_journey: 'general',
   intent: {
     archetype: null,
     asset_focus: 'Hybrid',
@@ -55,24 +55,3 @@ export const initialState: VoicesState = {
 };
 
 export const VoicesStateContext = createContext<VoicesStateContextType | undefined>(undefined);
-
-export function useVoicesState() {
-  const context = useContext(VoicesStateContext);
-  if (context === undefined) {
-    // 🛡️ CHRIS-PROTOCOL: Fallback for evaluation phase to prevent ReferenceError
-    // We provide a minimal functional object to ensure components don't crash
-    return {
-      state: initialState,
-      reviewStats: initialState.reviewStats,
-      campaignMessage: null,
-      updateCompanyName: () => {},
-      updateSector: () => {},
-      updateJourney: () => {},
-      updateIntent: () => {},
-      getPlaceholderValue: (key: string) => key,
-      toggleActorSelection: () => {},
-      clearSelectedActors: () => {},
-    } as VoicesStateContextType;
-  }
-  return context;
-}

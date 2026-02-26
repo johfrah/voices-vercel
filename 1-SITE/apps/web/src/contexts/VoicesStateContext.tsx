@@ -1,10 +1,29 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Actor } from '@/types';
 import { VoicesState, VoicesStateContext, VoicesStateContextType, initialState } from './VoicesStateContextCore';
 
-export { useVoicesState } from './VoicesStateContextCore';
+export function useVoicesState() {
+  const context = useContext(VoicesStateContext);
+  if (context === undefined) {
+    // 🛡️ CHRIS-PROTOCOL: Fallback for evaluation phase to prevent ReferenceError
+    // We provide a minimal functional object to ensure components don't crash
+    return {
+      state: initialState,
+      reviewStats: initialState.reviewStats,
+      campaignMessage: null,
+      updateCompanyName: () => {},
+      updateSector: () => {},
+      updateJourney: () => {},
+      updateIntent: () => {},
+      getPlaceholderValue: (key: string) => key,
+      toggleActorSelection: () => {},
+      clearSelectedActors: () => {},
+    } as VoicesStateContextType;
+  }
+  return context;
+}
 
 export const VoicesStateProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [state, setState] = useState<VoicesState>(initialState);

@@ -5,9 +5,9 @@ import { MarketManagerServer as MarketManager } from '@/lib/system/market-manage
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { useCheckout } from './CheckoutContext';
-import { useVoicesState } from './VoicesStateContextCore';
+import { useVoicesState } from './VoicesStateContext';
 
-export type JourneyType = 'telephony' | 'video' | 'commercial';
+export type JourneyType = 'telephony' | 'video' | 'commercial' | 'agency' | 'general';
 
 interface MasterControlState {
   journey: JourneyType;
@@ -47,10 +47,12 @@ interface VoicesMasterControlContextType {
   toggleMute: () => void;
 }
 
-const JOURNEY_USAGE_MAP: Record<JourneyType, UsageType> = {
+const JOURNEY_USAGE_MAP: Record<string, UsageType> = {
   telephony: 'telefonie',
   video: 'unpaid',
   commercial: 'commercial',
+  agency: 'unpaid',
+  general: 'unpaid'
 };
 
 export const VoicesMasterControlContext = createContext<VoicesMasterControlContextType | undefined>(undefined);
@@ -71,7 +73,7 @@ export const VoicesMasterControlProvider: React.FC<{
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
-  const { state: voicesState, updateJourney: updateVoicesJourney } = useVoicesState();
+  const { state: voicesState, updateJourney: updateVoicesJourney } = useVoicesState() || { state: { current_journey: 'video' }, updateJourney: () => {} };
   const checkout = useCheckout();
   const { state: checkoutState, updateUsage, updateMedia, updateSpots, updateYears, updateSpotsDetail, updateYearsDetail, updateLiveSession, updateBriefing, setStep: setCheckoutStep } = checkout;
 
@@ -110,7 +112,7 @@ export const VoicesMasterControlProvider: React.FC<{
     // We delay the actual state initialization from external sources (URL/Storage)
     // until AFTER the first render to ensure hydration matches the server.
     const initializeState = () => {
-      const host = window.location.host;
+      const host = typeof window !== 'undefined' ? window.location.host : '';
       const market = MarketManager.getCurrentMarket(host);
       const defaultLang = market.primary_language; // e.g. 'nl-BE'
       const defaultLangId = market.primary_language_id; // e.g. 1
@@ -122,8 +124,10 @@ export const VoicesMasterControlProvider: React.FC<{
       } catch (e) {}
 
       const journey = initialJourney || (searchParams?.get('journey') as JourneyType) || 
-                     (voicesState.current_journey !== 'general' ? voicesState.current_journey as JourneyType : 'video');
+                     (voicesState?.current_journey && voicesState.current_journey !== 'general' ? voicesState.current_journey as JourneyType : 'video');
       
+      const targetUsage = JOURNEY_USAGE_MAP[journey] || 'unpaid';
+
       const initialLanguageParam = searchParams?.get('language');
       const initialLanguageIdParam = searchParams?.get('languageId');
       
@@ -171,7 +175,7 @@ export const VoicesMasterControlProvider: React.FC<{
 
       const newState: MasterControlState = {
         journey,
-        usage: JOURNEY_USAGE_MAP[journey],
+        usage: targetUsage,
         isMuted: savedState.isMuted ?? false,
         filters: {
           language: initialLanguage,
