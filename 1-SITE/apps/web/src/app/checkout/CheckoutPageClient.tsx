@@ -210,9 +210,9 @@ export default function CheckoutPageClient() {
                   isLoading={isReviewsLoading} 
                   averageRating={reviewStats?.averageRating?.toString()}
                   totalReviews={reviewStats?.totalCount?.toString()}
-                  variant="minimal" 
+                  variant="super-minimal" 
                   hideFilters={true}
-                  limit={2}
+                  limit={5}
                 />
             </ContainerInstrument>
           </ContainerInstrument>

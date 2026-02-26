@@ -68,7 +68,8 @@ export const ReviewsInstrument: React.FC<{
   isPortfolio?: boolean,
   isLoading?: boolean,
   hideFilters?: boolean,
-  limit?: number
+  limit?: number,
+  variant?: "default" | "minimal" | "super-minimal"
 }> = ({ 
   reviews, 
   title, 
@@ -81,7 +82,8 @@ export const ReviewsInstrument: React.FC<{
   isPortfolio = false,
   isLoading = false,
   hideFilters = false,
-  limit
+  limit,
+  variant = "default"
 }) => {
   const { isEditMode } = useEditMode();
   const { playClick } = useSonicDNA();
@@ -257,6 +259,45 @@ export const ReviewsInstrument: React.FC<{
   };
 
   if (reviews.length === 0) return null;
+
+  if (variant === "super-minimal") {
+    return (
+      <ContainerInstrument plain className="w-full">
+        <div className="flex flex-col items-center gap-4">
+          <div className="flex items-center gap-2 text-green-600/60">
+            <div className="flex -space-x-0.5">
+              {[1, 2, 3, 4, 5].map(i => (
+                <Star key={i} size={12} fill="currentColor" strokeWidth={0} />
+              ))}
+            </div>
+            <TextInstrument className="text-[11px] font-bold tracking-[0.2em] uppercase">
+              {averageRating || "4.9"}/5 sterren ({totalReviews || "390"}+ reviews)
+            </TextInstrument>
+          </div>
+          
+          <div className="flex -space-x-3 overflow-hidden">
+            {reviews.slice(0, 5).map((review, i) => (
+              <div key={i} className="relative inline-block h-8 w-8 rounded-full ring-2 ring-white overflow-hidden bg-va-off-white border border-black/5">
+                {(review.authorPhoto || review.authorPhotoUrl || review.author_photo_url || review.authorUrl || review.mediaId) ? (
+                  <VoiceglotImage 
+                    src={review.authorPhoto || review.authorPhotoUrl || review.author_photo_url || review.authorUrl} 
+                    mediaId={review.mediaId}
+                    alt={review.name || review.authorName} 
+                    fill
+                    className="object-cover" 
+                  />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center text-[10px] font-bold text-va-black/20">
+                    {(review.name || review.authorName || "V").charAt(0)}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </ContainerInstrument>
+    );
+  }
 
   return (
     <ContainerInstrument plain className="w-full relative group/reviews">
