@@ -148,8 +148,11 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
         let query = supabase
           .from('actors')
           .select('*')
-          .eq('status_id', liveStatusId)
-          .eq('is_public', true);
+          .eq('status_id', liveStatusId);
+          
+        if (process.env.NODE_ENV === 'production') {
+          query = query.eq('is_public', true);
+        }
           
         // 🛡️ NUCLEAR HANDSHAKE: ID-First Filtering (v2.14.740)
         // We use the database as the source of truth for IDs.
@@ -480,7 +483,6 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
         demos: proxiedDemos,
         actor_videos: proxiedVideos,
         rates: actor.rates || {},
-        email: actor.email || '',
         status: statusInfo?.label || 'live',
         status_code: statusInfo?.code || 'live',
         experience_level: experienceInfo?.label || 'pro',
