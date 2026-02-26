@@ -223,7 +223,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
 
   useEffect(() => {
     if (isLangSelectorOpen) {
-      fetch('/api/admin/languages')
+      fetch('/api/admin/config?type=languages')
         .then(res => res.json())
         .then(data => {
           if (data.results) setAvailableLangs(data.results);
@@ -234,7 +234,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
 
   useEffect(() => {
     if (isGenderSelectorOpen) {
-      fetch('/api/admin/genders')
+      fetch('/api/admin/config?type=genders')
         .then(res => res.json())
         .then(data => {
           if (data.results) setAvailableGenders(data.results);
@@ -245,7 +245,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
 
   useEffect(() => {
     if (isExperienceSelectorOpen) {
-      fetch('/api/admin/experience-levels')
+      fetch('/api/admin/config?type=experience-levels')
         .then(res => res.json())
         .then(data => {
           if (data.results) setAvailableExperienceLevels(data.results);
@@ -256,7 +256,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
 
   useEffect(() => {
     if (isStatusSelectorOpen) {
-      fetch('/api/admin/actor-statuses')
+      fetch('/api/admin/config?type=actor-statuses')
         .then(res => res.json())
         .then(data => {
           if (data.results) setAvailableStatuses(data.results);
@@ -267,7 +267,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
 
   useEffect(() => {
     if (isToneSelectorOpen) {
-      fetch('/api/admin/voice-tones')
+      fetch('/api/admin/config?type=voice-tones')
         .then(res => res.json())
         .then(data => {
           if (data.results) setAvailableVoiceTones(data.results);
@@ -278,7 +278,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
 
   useEffect(() => {
     if (isCountrySelectorOpen) {
-      fetch('/api/admin/countries')
+      fetch('/api/admin/config?type=countries')
         .then(res => res.json())
         .then(data => {
           if (data.results) setAvailableCountries(data.results);

@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
   const type = searchParams.get('type');
 
   // appConfigs en overige types: admin only
-  const publicTypes = ['actor', 'actors', 'music', 'navigation', 'telephony', 'general', 'languages', 'genders', 'journeys', 'media_types', 'countries', 'sectors', 'blueprints', 'demos_enriched', 'telephony_subtypes'];
+  const publicTypes = ['actor', 'actors', 'music', 'navigation', 'telephony', 'general', 'languages', 'genders', 'journeys', 'media_types', 'countries', 'sectors', 'blueprints', 'demos_enriched', 'telephony_subtypes', 'experience-levels', 'actor-statuses', 'voice-tones'];
   if (!type || !publicTypes.includes(type)) {
     const auth = await requireAdmin();
     if (auth instanceof NextResponse) return auth;
@@ -44,7 +44,22 @@ export async function GET(request: NextRequest) {
     // 🛡️ CHRIS-PROTOCOL: SDK-First for Public Config (v2.14.750)
     // Drizzle can be unstable in some serverless environments. We use SDK for critical public data.
     if (type === 'languages') {
-      const { data: results } = await supabase.from('languages').select('*').order('id', { ascending: true });
+      const { data: results } = await supabase.from('languages').select('*').order('label', { ascending: true });
+      return NextResponse.json({ results: results || [] });
+    }
+
+    if (type === 'experience-levels') {
+      const { data: results } = await supabase.from('experience_levels').select('*').order('label', { ascending: true });
+      return NextResponse.json({ results: results || [] });
+    }
+
+    if (type === 'actor-statuses') {
+      const { data: results } = await supabase.from('actor_statuses').select('*').order('label', { ascending: true });
+      return NextResponse.json({ results: results || [] });
+    }
+
+    if (type === 'voice-tones') {
+      const { data: results } = await supabase.from('voice_tones').select('*').order('label', { ascending: true });
       return NextResponse.json({ results: results || [] });
     }
 
@@ -141,13 +156,13 @@ export async function GET(request: NextRequest) {
         const config = await dbWithTimeout(db.select().from(appConfigs).where(eq(appConfigs.key, 'general_settings')).limit(1)) as any[];
         return NextResponse.json({
           general_settings: config[0]?.value || {},
-          _version: '2.15.044'
+          _version: '2.15.045'
         });
       } catch (err: any) {
         console.warn(`[Admin Config] General settings fetch failed, returning empty: ${err.message}`);
         return NextResponse.json({
           general_settings: {},
-          _version: '2.15.044'
+          _version: '2.15.045'
         });
       }
     }

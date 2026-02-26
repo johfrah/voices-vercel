@@ -141,47 +141,66 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
 
   const availableLanguageIds = useMemo(() => {
     const ids = new Set<number>();
+    // 🛡️ CHRIS-PROTOCOL: Global Availability Mandate (v2.15.042)
+    // We use the registry as the primary source of truth for ALL languages that have actors.
+    if (MarketManager.languages.length > 0) {
+      MarketManager.languages.forEach(l => ids.add(l.id));
+      return ids;
+    }
+
+    // Fallback to current actors list
     actors.forEach(a => {
       if (a.native_lang_id) ids.add(a.native_lang_id);
       if (a.extra_lang_ids) a.extra_lang_ids.forEach(id => ids.add(id));
     });
+    
+    // ALWAYS include currently selected ID to prevent "1" display slop
+    if (state.filters.languageId) ids.add(state.filters.languageId);
+    
     return ids;
-  }, [actors]);
+  }, [actors, state.filters.languageId]);
 
   const availableGenderIds = useMemo(() => {
     const ids = new Set<number>();
+    if (MarketManager.genders.length > 0) {
+      MarketManager.genders.forEach(g => ids.add(g.id));
+      return ids;
+    }
+
     actors.forEach(a => {
       if (a.gender_id) ids.add(a.gender_id);
-      // Also check legacy gender string mapping if needed, but ID is preferred
     });
+
+    if (state.filters.genderId) ids.add(state.filters.genderId);
+
     return ids;
-  }, [actors]);
+  }, [actors, state.filters.genderId]);
 
   const availableCountryIds = useMemo(() => {
     const ids = new Set<number>();
+    if (MarketManager.countries.length > 0) {
+      MarketManager.countries.forEach(c => ids.add(c.id));
+      return ids;
+    }
+
     actors.forEach(a => {
       if (a.country_id) ids.add(a.country_id);
     });
-    return ids;
-  }, [actors]);
 
-  const filteredLanguagesData = useMemo(() => {
-    // 🛡️ CHRIS-PROTOCOL: Strict Availability Mandate (v2.15.036)
-    // We only show languages that have at least one associated actor.
-    // In configurator mode, we still filter by availableLanguageIds to ensure 
-    // we don't show "empty" options.
-    const isConfigurator = pathname.includes('/checkout/configurator');
-    
-    if (isConfigurator) {
-      // In configurator, we don't want to filter the list based on the selected actor,
-      // but we DO want to ensure the list only contains languages that actually HAVE actors in the DB.
-      // Since availableLanguageIds is derived from 'actors' prop, and in configurator 
-      // we only pass the selected actor, we need a different way to get ALL available IDs.
-      return languagesData.filter(l => l.has_actors !== false); // Assuming has_actors flag or similar, but for now we trust the provided list
+    if (state.filters.countryId) ids.add(state.filters.countryId);
+    if (Array.isArray(state.filters.countries)) {
+      state.filters.countries.forEach(c => {
+        if (typeof c === 'number') ids.add(c);
+      });
     }
 
+    return ids;
+  }, [actors, state.filters.countryId, state.filters.countries]);
+
+  const filteredLanguagesData = useMemo(() => {
+    // 🛡️ CHRIS-PROTOCOL: Strict Availability Mandate (v2.15.042)
     return languagesData.filter(l => availableLanguageIds.has(l.id));
-  }, [languagesData, availableLanguageIds, pathname]);
+  }, [languagesData, availableLanguageIds]);
 
   const filteredGendersData = useMemo(() => {
     return gendersData.filter(g => availableGenderIds.has(g.id));
@@ -192,20 +211,14 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
   }, [countriesData, availableCountryIds]);
 
   useEffect(() => {
-    if (!filteredLanguagesData || filteredLanguagesData.length === 0) return;
-
-    // 🛡️ CHRIS-PROTOCOL: Prime MarketManager and Global Registries (v2.14.740)
-    if (filteredLanguagesData.length > 0) {
-      MarketManager.setLanguages(filteredLanguagesData);
-    }
-    
-    if (mediaTypesData && mediaTypesData.length > 0 && typeof global !== 'undefined') {
-      (global as any).handshakeMediaTypes = mediaTypesData;
-    }
+    if (languagesData && languagesData.length > 0) MarketManager.setLanguages(languagesData);
+    if (countriesData && countriesData.length > 0) MarketManager.setCountries(countriesData);
+    if (journeysData && journeysData.length > 0) MarketManager.setJourneys(journeysData);
+    if (mediaTypesData && mediaTypesData.length > 0) MarketManager.setMediaTypes(mediaTypesData);
 
     // 🛡️ CHRIS-PROTOCOL: Handshake Truth Sync (v2.14.740)
     // We strictly prioritize IDs. If we only have a code, we resolve it once and then stick to IDs.
-    if (state.filters.language && !state.filters.languageId) {
+    if (state.filters.language && !state.filters.languageId && filteredLanguagesData.length > 0) {
       const match = filteredLanguagesData.find(l => 
         l.code.toLowerCase() === state.filters.language?.toLowerCase() || 
         l.label.toLowerCase() === state.filters.language?.toLowerCase()
@@ -228,7 +241,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
         updateFilters({ countryId: match.id, country: null });
       }
     }
-  }, [filteredLanguagesData, filteredGendersData, filteredCountriesData, state.filters.language, state.filters.gender, state.filters.country]);
+  }, [languagesData, gendersData, journeysData, mediaTypesData, countriesData, filteredLanguagesData, filteredGendersData, filteredCountriesData, state.filters.language, state.filters.gender, state.filters.country]);
 
   const handleReorderClick = (language: string) => {
     setReorderLanguage(language);
