@@ -160,7 +160,8 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
         // Also keep open in commercial journey (advertentie) to allow configuring multiple media types
         const isTelephony = typeof window !== 'undefined' && window.location.search.includes('journey=telephony');
         const isCommercial = typeof window !== 'undefined' && window.location.search.includes('journey=commercial');
-        const hasExtraLangs = filteredOptions.some(opt => typeof opt === 'object' && (opt as any).availableExtraLangs && (opt as any).availableExtraLangs.length > 0);
+        // 🛡️ CHRIS-PROTOCOL: Defensive guard for availableExtraLangs array (v2.15.066)
+        const hasExtraLangs = filteredOptions.some(opt => typeof opt === 'object' && (opt as any).availableExtraLangs && Array.isArray((opt as any).availableExtraLangs) && (opt as any).availableExtraLangs.length > 0);
 
         if (isTelephony || isCommercial || hasExtraLangs) {
           // Keep open to allow immediate switching or extra language selection
@@ -661,7 +662,8 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
 
                     {/*  NESTED EXTRA LANGUAGES CHIPS (Progressive Disclosure inside Dropdown) */}
                     <AnimatePresence initial={false}>
-                      {isSelected && item.availableExtraLangs && item.availableExtraLangs.length > 0 && (
+                      {/* 🛡️ CHRIS-PROTOCOL: Defensive guard for availableExtraLangs array (v2.15.066) */}
+                      {isSelected && item.availableExtraLangs && Array.isArray(item.availableExtraLangs) && item.availableExtraLangs.length > 0 && (
                         <motion.div
                           key={`extra-${item.value}`}
                           initial={{ height: 0, opacity: 0 }}
