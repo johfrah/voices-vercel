@@ -181,7 +181,7 @@ interface SmartRouteParams {
 export async function generateMetadata({ params }: { params: SmartRouteParams }): Promise<Metadata> {
   console.error(` [SmartRouter] generateMetadata triggered for: ${params.slug.join('/')}`);
   const [initialSegment] = params.slug;
-  const reserved = ['admin', 'backoffice', 'account', 'api', 'auth', 'checkout', 'favicon.ico', 'robots.txt', 'sitemap.xml'];
+  const reserved = ['admin', 'backoffice', 'account', 'api', 'auth', 'checkout', 'cart', 'demos', 'light', 'under-construction', 'favicon.ico', 'robots.txt', 'sitemap.xml', 'sitemap'];
   
   if (reserved.includes(initialSegment)) {
     return {};
@@ -351,7 +351,7 @@ export default async function SmartRoutePage({ params }: { params: SmartRoutePar
   const [firstSegment] = params.slug;
   
   // Gereserveerde routes overslaan (Alleen harde systeem-folders)
-  const reserved = ['admin', 'backoffice', 'account', 'api', 'auth', 'checkout', 'favicon.ico', 'robots.txt', 'sitemap.xml'];
+  const reserved = ['admin', 'backoffice', 'account', 'api', 'auth', 'checkout', 'cart', 'demos', 'light', 'under-construction', 'favicon.ico', 'robots.txt', 'sitemap.xml', 'sitemap'];
   
   if (reserved.includes(firstSegment)) {
     return notFound();

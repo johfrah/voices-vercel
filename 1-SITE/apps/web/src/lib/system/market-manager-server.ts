@@ -385,14 +385,16 @@ export class MarketManagerServer {
   /**
    * Haalt de UI label op basis van een ISO code of naam
    */
-  static getLanguageLabel(input: string): string {
+  static getLanguageLabel(input: string | number): string {
     if (!input || input === 'null') return '';
-    const lowInput = input.toLowerCase().trim();
+    const lowInput = String(input).toLowerCase().trim();
+    const inputId = typeof input === 'number' ? input : (!isNaN(Number(input)) ? Number(input) : null);
     
     // 🛡️ CHRIS-PROTOCOL: Handshake Truth (Zero-Slop)
     // We look up the label in our live registry from Supabase.
     if (this.languagesRegistry.length > 0) {
       const match = this.languagesRegistry.find(l => 
+        (inputId !== null && l.id === inputId) ||
         l.code.toLowerCase() === lowInput || 
         l.label.toLowerCase() === lowInput
       );
@@ -404,6 +406,10 @@ export class MarketManagerServer {
 
     // Emergency fallbacks for early boot/SSR only
     const emergencyMap: Record<string, string> = {
+      '1': 'Vlaams',
+      '2': 'Nederlands',
+      '4': 'Frans',
+      '5': 'Engels',
       'nl-be': 'Vlaams',
       'nl-nl': 'Nederlands',
       'fr-fr': 'Frans',

@@ -448,9 +448,9 @@ SLIMME KASSA REGELS:
     }
 
     // 5. ADMIN NOTIFICATIONS (Chris-Protocol: Real-time awareness)
-    // 🛡️ CHRIS-PROTOCOL: Buiten de transactie om blokkades te voorkomen (v2.14.789)
-    if (senderType === 'user' || (senderType === 'admin' && message.includes('TEST_NOTIFY'))) {
-      console.log('[Voicy API] 🚀 Triggering fire-and-forget notifications...', { senderType, message });
+    // 🛡️ CHRIS-PROTOCOL: Buiten de transactie om blokkades te voorkomen (v2.15.026)
+    if (senderType === 'user' || senderType === 'ai' || (senderType === 'admin' && message.includes('TEST_NOTIFY'))) {
+      console.log(`[Voicy API] 🚀 Triggering fire-and-forget notifications for ${senderType}...`);
       // We vuren de notificaties af zonder de response te blokkeren
       (async () => {
         try {
@@ -470,37 +470,39 @@ SLIMME KASSA REGELS:
           console.log('[Voicy API] Sending notifications for:', { 
             convId: saveResult?.conversationId, 
             market: market.market_code,
-            host,
-            siteUrl
+            sender: senderType
           });
 
-          // 1. Email Notificatie
-          mailEngine.sendVoicesMail({
-            to: market.email || process.env.ADMIN_EMAIL || VOICES_CONFIG.company.email,
-            subject: `💬 Chat Interactie: ${message.substring(0, 30)}...`,
-            title: 'Nieuw bericht in de chat',
-            body: `
-              <strong>Bericht:</strong> "${message}"<br/>
-              <strong>Conversatie ID:</strong> ${saveResult?.conversationId || 'N/A'}<br/>
-              <strong>Journey:</strong> ${journey}<br/>
-              <strong>Persona:</strong> ${persona}
-            `,
-            buttonText: 'Open Dashboard',
-            buttonUrl: `${siteUrl}/admin/dashboard`,
-            host: host
-          }).then(() => console.log('[Push] Mail sent successfully'))
-            .catch(e => console.error('[Push] Mail failed:', e.message));
+          // 1. Email Notificatie (Alleen bij user berichten om mailbox te sparen)
+          if (senderType === 'user') {
+            mailEngine.sendVoicesMail({
+              to: market.email || process.env.ADMIN_EMAIL || VOICES_CONFIG.company.email,
+              subject: `💬 Chat Interactie: ${message.substring(0, 30)}...`,
+              title: 'Nieuw bericht in de chat',
+              body: `
+                <strong>Bericht:</strong> "${message}"<br/>
+                <strong>Conversatie ID:</strong> ${saveResult?.conversationId || 'N/A'}<br/>
+                <strong>Journey:</strong> ${journey}<br/>
+                <strong>Persona:</strong> ${persona}
+              `,
+              buttonText: 'Open Dashboard',
+              buttonUrl: `${siteUrl}/admin/dashboard`,
+              host: host
+            }).then(() => console.log('[Push] Mail sent successfully'))
+              .catch(e => console.error('[Push] Mail failed:', e.message));
+          }
 
           // 2. Push Notificatie (iPhone/Smartphone)
           PushService.notifyAdmins({
-            title: `Nieuw bericht (#${saveResult?.conversationId || 'N/A'})`,
+            title: senderType === 'user' ? `Bericht van klant (#${saveResult?.conversationId || 'N/A'})` : `Voicy antwoordt (#${saveResult?.conversationId || 'N/A'})`,
             body: message.substring(0, 100),
             url: `/admin/live-chat`
           }).then(() => console.log('[Push] WebPush trigger finished'))
             .catch(e => console.error('[Push] WebPush failed:', e.message));
 
           // 3. Telegram Notificatie
-          const telegramMsg = `💬 <b>Nieuwe Chat Interactie</b>\n\n` +
+          const emoji = senderType === 'user' ? '💬' : '🤖';
+          const telegramMsg = `${emoji} <b>Nieuwe Interactie (${senderType})</b>\n\n` +
                               `<b>Bericht:</b> <i>"${message}"</i>\n` +
                               `<b>ID:</b> #${saveResult?.conversationId || 'N/A'}\n` +
                               `<b>Journey:</b> ${journey}\n\n` +

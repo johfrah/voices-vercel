@@ -160,18 +160,18 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
   }, [actors]);
 
   const filteredLanguagesData = useMemo(() => 
-    languagesData.filter(l => availableLanguageIds.has(l.id)),
-    [languagesData, availableLanguageIds]
+    actors.length > 0 ? languagesData.filter(l => availableLanguageIds.has(l.id)) : languagesData,
+    [languagesData, availableLanguageIds, actors.length]
   );
 
   const filteredGendersData = useMemo(() => 
-    gendersData.filter(g => availableGenderIds.has(g.id)),
-    [gendersData, availableGenderIds]
+    actors.length > 0 ? gendersData.filter(g => availableGenderIds.has(g.id)) : gendersData,
+    [gendersData, availableGenderIds, actors.length]
   );
 
   const filteredCountriesData = useMemo(() => 
-    countriesData.filter(c => availableCountryIds.has(c.id)),
-    [countriesData, availableCountryIds]
+    actors.length > 0 ? countriesData.filter(c => availableCountryIds.has(c.id)) : countriesData,
+    [countriesData, availableCountryIds, actors.length]
   );
 
   useEffect(() => {
