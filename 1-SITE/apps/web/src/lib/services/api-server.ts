@@ -325,6 +325,42 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
       ? await supabase.from('media').select('id, file_path').in('file_path', reviewMediaPaths)
       : { data: [] };
     
+    // 🛡️ CHRIS-PROTOCOL: Fetch Top Reviews for Actors (Zero-Latency Batching)
+    // We fetch one top review per actor in the current result set
+    const { data: actorTopReviewsRaw } = await supabase
+      .from('actor_reviews')
+      .select(`
+        actor_id,
+        review:reviews (
+          id,
+          rating,
+          text_nl,
+          text_en,
+          author_name,
+          created_at
+        )
+      `)
+      .in('actor_id', actorIds);
+
+    const actorTopReviewsMap = new Map();
+    actorTopReviewsRaw?.forEach((ar: any) => {
+      if (!actorTopReviewsMap.has(ar.actor_id)) {
+        actorTopReviewsMap.set(ar.actor_id, ar.review);
+      }
+    });
+
+    // 🛡️ CHRIS-PROTOCOL: Fetch Journey-specific Service Reviews (Fallback)
+    const journeyId = market === 'STUDIO' ? '1' : (market === 'ACADEMY' ? '30' : (params.journey === 'telephony' ? '3' : null));
+    let serviceReviews: any[] = [];
+    if (journeyId) {
+      const { data: serviceData } = await supabase
+        .from('reviews')
+        .select('*')
+        .eq('journey_id', journeyId)
+        .limit(10);
+      serviceReviews = serviceData || [];
+    }
+
     // Calculate stats manually for stability
     const totalCount = statsRaw.length;
     const avgRating = totalCount > 0 
@@ -378,6 +414,28 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
       const experienceInfo = allExperienceData?.find(e => e.id === actor.experience_level_id);
       const countryInfo = allCountriesData?.find(c => c.id === actor.country_id);
 
+      // 🛡️ CHRIS-PROTOCOL: Assign Top Review (Actor-specific or Service-Mirror)
+      const actorReview = actorTopReviewsMap.get(actor.id);
+      let topReviewData = null;
+
+      if (actorReview) {
+        topReviewData = {
+          text: actorReview.text_nl || actorReview.text_en || '',
+          rating: actorReview.rating,
+          author: actorReview.author_name,
+          type: 'actor'
+        };
+      } else if (serviceReviews.length > 0) {
+        // Pick a stable service review based on actor ID to avoid flickering
+        const serviceReview = serviceReviews[actor.id % serviceReviews.length];
+        topReviewData = {
+          text: serviceReview.text_nl || serviceReview.text_en || '',
+          rating: serviceReview.rating,
+          author: serviceReview.author_name,
+          type: 'service'
+        };
+      }
+
       return {
         id: actor.wp_product_id || actor.id,
         display_name: actor.first_name,
@@ -413,7 +471,8 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
         clients: actor.clients || '',
         tone_of_voice: actor.tone_of_voice || '',
         cutoff_time: actor.cutoff_time || '18:00',
-        portfolio_tier: actor.portfolio_tier || 'none'
+        portfolio_tier: actor.portfolio_tier || 'none',
+        top_review: topReviewData
       };
     });
 

@@ -1,58 +1,10 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
-
+import React, { useState, useEffect } from 'react';
 import { Actor } from '@/types';
+import { VoicesState, VoicesStateContext, VoicesStateContextType } from './VoicesStateContextCore';
 
-interface VoicesState {
-  company_name: string;
-  opening_hours: string;
-  location: string;
-  current_sector: string | null;
-  current_journey: 'telephony' | 'video' | 'commercial' | 'general';
-  intent: {
-    archetype: string | null;
-    asset_focus: 'Audio-First' | 'Script-First' | 'Hybrid';
-    decision_power: 'End-User' | 'Proxy-Buyer' | null;
-  };
-  selected_actors: Actor[];
-  reviewStats: {
-    averageRating: number;
-    totalCount: number;
-  } | null;
-  campaignMessage: string | null;
-}
-
-interface VoicesStateContextType {
-  state: VoicesState;
-  reviewStats: VoicesState['reviewStats']; // Direct access for convenience
-  campaignMessage: string | null;
-  updateCompanyName: (name: string) => void;
-  updateSector: (sector: string | null) => void;
-  updateJourney: (journey: VoicesState['current_journey']) => void;
-  updateIntent: (intent: Partial<VoicesState['intent']>) => void;
-  getPlaceholderValue: (key: string) => string;
-  toggleActorSelection: (actor: Actor) => void;
-  clearSelectedActors: () => void;
-}
-
-const initialState: VoicesState = {
-  company_name: '',
-  opening_hours: '09:00 - 17:00',
-  location: '',
-  current_sector: null,
-  current_journey: 'general',
-  intent: {
-    archetype: null,
-    asset_focus: 'Hybrid',
-    decision_power: null,
-  },
-  selected_actors: [],
-  reviewStats: null,
-  campaignMessage: null,
-};
-
-const VoicesStateContext = createContext<VoicesStateContextType | undefined>(undefined);
+export { useVoicesState } from './VoicesStateContextCore';
 
 export const VoicesStateProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [state, setState] = useState<VoicesState>(initialState);
@@ -165,12 +117,4 @@ export const VoicesStateProvider: React.FC<{ children: React.ReactNode }> = ({ c
       {children}
     </VoicesStateContext.Provider>
   );
-};
-
-export const useVoicesState = () => {
-  const context = useContext(VoicesStateContext);
-  if (context === undefined) {
-    throw new Error('useVoicesState must be used within a VoicesStateProvider');
-  }
-  return context;
 };

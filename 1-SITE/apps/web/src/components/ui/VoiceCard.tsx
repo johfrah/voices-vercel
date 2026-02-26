@@ -14,7 +14,7 @@ import { cn } from '@/lib/utils';
 import { Actor } from '@/types';
 import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, Check, ChevronDown, Clock, Edit3, Globe, MapPin, Mic, Pause, Play, Plus, Search as SearchIcon, Settings, ShieldCheck, Zap, X } from 'lucide-react';
+import { ArrowRight, Check, ChevronDown, Clock, Edit3, Globe, MapPin, Mic, Pause, Play, Plus, Search as SearchIcon, Settings, ShieldCheck, Zap, X, Star } from 'lucide-react';
 import { useVoicesRouter } from '@/components/ui/VoicesLink';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ButtonInstrument, ContainerInstrument, FlagAR, FlagBE, FlagBR, FlagCN, FlagDE, FlagDK, FlagES, FlagFI, FlagFR, FlagGR, FlagIT, FlagJP, FlagKR, FlagNL, FlagNO, FlagPL, FlagPT, FlagRU, FlagSE, FlagTR, FlagUK, FlagUS, HeadingInstrument, TextInstrument } from './LayoutInstruments';
@@ -73,6 +73,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
   const router = useVoicesRouter();
 
   const [voice, setVoice] = useState<Actor>(initialVoice);
+  const topReview = (voice as any).top_review;
 
   useEffect(() => {
     setVoice(initialVoice);
@@ -744,6 +745,35 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
               {sectorDemo ? sectorDemo : <VoiceglotText translationKey={`actor.${voice?.id}.bio`} defaultText={cleanDescription(voice?.tagline || voice?.bio || 'Professionele voice-over voor al uw projecten.')} />}
             </span>
           </div>
+
+          {/* 🛡️ CHRIS-PROTOCOL: Contextual Mirroring Review Injection (v2.14.805) */}
+          <AnimatePresence>
+            {topReview && (
+              <motion.div 
+                initial={{ opacity: 0, y: 5 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mb-4 p-3 bg-va-off-white/50 rounded-[12px] border border-black/[0.03] group/review-box hover:bg-white transition-all duration-500"
+              >
+                <div className="flex items-center gap-1.5 mb-1.5">
+                  <div className="flex gap-0.5">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} size={8} className={cn(i < (topReview.rating || 5) ? "text-[#fabc05]" : "text-va-black/5")} fill="currentColor" />
+                    ))}
+                  </div>
+                  <TextInstrument className="text-[8px] font-bold uppercase tracking-[0.1em] text-va-black/20">
+                    {topReview.type === 'actor' ? (
+                      <VoiceglotText translationKey="common.review_for_actor" defaultText={`Review voor ${voice.first_name}`} />
+                    ) : (
+                      <VoiceglotText translationKey="common.review_for_voices" defaultText="Klant over Voices" />
+                    )}
+                  </TextInstrument>
+                </div>
+                <TextInstrument className="text-[11px] font-light italic text-va-black/50 line-clamp-2 leading-snug">
+                  &quot;{topReview.textNl || topReview.textEn || "Top service!"}&quot;
+                </TextInstrument>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           <div className="flex justify-between items-center mt-auto pt-2 md:pt-4 border-t border-black/[0.03]">
             <div className="flex flex-col items-start">

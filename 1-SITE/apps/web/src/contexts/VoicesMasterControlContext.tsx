@@ -5,7 +5,7 @@ import { MarketManagerServer as MarketManager } from '@/lib/system/market-manage
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { useCheckout } from './CheckoutContext';
-import { useVoicesState } from './VoicesStateContext';
+import { useVoicesState } from './VoicesStateContextCore';
 
 export type JourneyType = 'telephony' | 'video' | 'commercial';
 
