@@ -95,6 +95,34 @@ async function runCheck() {
       console.log(chalk.green('✅ Assets zijn clean.'));
     }
 
+    // 4. DUPLICATE IDENTIFIER SCAN
+    console.log(chalk.yellow('\n🔍 Stap 4: Duplicate Identifier Scan...'));
+    files.forEach(file => {
+      const content = fs.readFileSync(file, 'utf8');
+      const lines = content.split('\n');
+      const imports = lines.filter(line => line.trim().startsWith('import '));
+      
+      const importedNames = new Set<string>();
+      imports.forEach(imp => {
+        // Simpele extractie van namen tussen { }
+        const match = imp.match(/\{([^}]+)\}/);
+        if (match) {
+          const names = match[1].split(',').map(n => n.trim().split(' as ')[0].trim());
+          names.forEach(name => {
+            if (name && importedNames.has(name)) {
+              console.log(chalk.red(`❌ ERROR: Duplicate import '${name}' gedetecteerd in: ${path.relative(rootDir, file)}`));
+              hasErrors = true;
+            }
+            if (name) importedNames.add(name);
+          });
+        }
+      });
+    });
+
+    if (!hasErrors) {
+      console.log(chalk.green('✅ Geen duplicate identifiers gevonden.'));
+    }
+
     if (hasErrors) {
       console.log(chalk.bold.red('\n☢️ CHECK FAILED: Fix de bovenstaande fouten voordat je pusht naar Vercel!'));
       process.exit(1);

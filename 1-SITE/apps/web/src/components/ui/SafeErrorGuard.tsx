@@ -6,6 +6,8 @@ import { RefreshCcw, AlertTriangle } from 'lucide-react';
 
 interface Props {
   children: ReactNode;
+  fallback?: ReactNode;
+  name?: string;
 }
 
 interface State {
@@ -31,17 +33,21 @@ export class SafeErrorGuard extends Component<Props, State> {
   }
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error(' [Nuclear Guard] Critical UI Crash caught:', error, errorInfo);
+    console.error(` [Nuclear Guard] ${this.props.name || 'UI'} Crash caught:`, error, errorInfo);
     
     // Log naar de watchdog
     fetch('/api/admin/system/logs', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        message: `UI Crash: ${error.message}`,
+        message: `UI Crash (${this.props.name || 'Unknown'}): ${error.message}`,
         level: 'critical',
         source: 'SafeErrorGuard',
-        details: { stack: error.stack, componentStack: errorInfo.componentStack }
+        details: { 
+          stack: error.stack, 
+          componentStack: errorInfo.componentStack,
+          name: this.props.name
+        }
       })
     }).catch(() => {});
   }
@@ -53,6 +59,10 @@ export class SafeErrorGuard extends Component<Props, State> {
 
   public render() {
     if (this.state.hasError) {
+      if (this.props.fallback) {
+        return this.props.fallback;
+      }
+
       return (
         <div className="min-h-screen bg-va-off-white flex items-center justify-center p-6">
           <ContainerInstrument className="max-w-xl w-full bg-white p-12 rounded-[32px] shadow-aura-lg border border-black/5 text-center space-y-8 animate-in fade-in zoom-in duration-500">

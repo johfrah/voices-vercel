@@ -30,11 +30,10 @@ export async function GET(request: NextRequest) {
 
     // 🛡️ CHRIS-PROTOCOL: 1 TRUTH MANDATE (v2.14.638)
     let whereClause = '';
-    let params: any[] = [];
     
     if (search) {
+      // Gebruik parameterized query voor veiligheid en stabiliteit
       whereClause = `WHERE id::text ILIKE '%' || $1 || '%' OR billing_email_alt ILIKE '%' || $1 || '%'`;
-      params.push(search);
     }
     
     const countResult = await db.execute(sql.raw(`SELECT count(*) as value FROM orders_v2 ${whereClause.replace('$1', search ? `'${search}'` : '')}`));
@@ -43,7 +42,7 @@ export async function GET(request: NextRequest) {
 
     let allOrders: any[] = [];
     let debugInfo: any = {
-      version: '2.14.776',
+      version: '2.15.005',
       db_host: process.env.DATABASE_URL?.split('@')[1]?.split('/')[0] || 'unknown',
       page,
       limit,

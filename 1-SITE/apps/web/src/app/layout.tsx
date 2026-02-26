@@ -86,41 +86,41 @@ export async function generateMetadata(): Promise<Metadata> {
   if (pathname.startsWith('/studio')) lookupHost = `${cleanHost}/studio`;
   else if (pathname.startsWith('/academy')) lookupHost = `${cleanHost}/academy`;
 
-  // 🛡️ CHRIS-PROTOCOL: Parallel Pulse Fetching (v2.14.798)
-  // We fetch market, locales and translations in parallel to minimize TTFB
-  const [market, alternateLanguages, translations] = await Promise.all([
-    getMarketSafe(lookupHost),
-    (async () => {
-      try {
-        const localesPromise = MarketDatabaseService.getAllLocalesAsync();
-        const timeoutPromise = new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Locales Timeout')), 2500)
-        );
-        return await Promise.race([localesPromise, timeoutPromise]) as any;
-      } catch (err) {
-        console.error(' generateMetadata: Failed to load locales:', err);
-        const staticDomains = MarketManagerServer.getMarketDomains();
-        return {
-          'nl-BE': staticDomains['BE'],
-          'nl-NL': staticDomains['NLNL'],
-          'fr-FR': staticDomains['FR'],
-          'en-EU': staticDomains['EU']
-        };
-      }
-    })(),
-    (async () => {
-      try {
-        const translationPromise = getTranslationsServer(langHeader || 'nl');
-        const timeoutPromise = new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Translation Timeout')), 2500)
-        );
-        return await Promise.race([translationPromise, timeoutPromise]) as any;
-      } catch (err) {
-        console.error(' generateMetadata: Failed to load translations:', err);
-        return {};
-      }
-    })()
-  ]);
+    // 🛡️ CHRIS-PROTOCOL: Parallel Pulse Fetching (v2.14.798)
+    // We fetch market, locales and translations in parallel to minimize TTFB
+    const [market, alternateLanguages, translations] = await Promise.all([
+      getMarketSafe(lookupHost),
+      (async () => {
+        try {
+          const localesPromise = MarketDatabaseService.getAllLocalesAsync();
+          const timeoutPromise = new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('Locales Timeout')), 2500)
+          );
+          return await Promise.race([localesPromise, timeoutPromise]) as any;
+        } catch (err) {
+          console.error(' generateMetadata: Failed to load locales:', err);
+          const staticDomains = MarketManagerServer.getMarketDomains();
+          return {
+            'nl-BE': staticDomains['BE'],
+            'nl-NL': staticDomains['NLNL'],
+            'fr-FR': staticDomains['FR'],
+            'en-EU': staticDomains['EU']
+          };
+        }
+      })(),
+      (async () => {
+        try {
+          const translationPromise = getTranslationsServer(langHeader || 'nl');
+          const timeoutPromise = new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('Translation Timeout')), 2500)
+          );
+          return await Promise.race([translationPromise, timeoutPromise]) as any;
+        } catch (err) {
+          console.error(' generateMetadata: Failed to load translations:', err);
+          return {};
+        }
+      })()
+    ]);
 
   const baseUrl = `https://${market.market_code === 'BE' ? MarketManagerServer.getMarketDomains()['BE'].replace('https://', '') : (market.market_code === 'NLNL' ? (MarketManagerServer.getMarketDomains()['NLNL']?.replace('https://', '') || 'www.voices.nl') : cleanHost)}`;
 
@@ -351,39 +351,45 @@ export default async function RootLayout({
               <GhostModeBar />
               <LiquidTransitionOverlay />
               <CodyPreviewBanner />
-              <Suspense fallback={null}>
-                <VoicejarTracker />
-              </Suspense>
+              <SafeErrorGuard name="Instruments" fallback={null}>
+                <Suspense fallback={null}>
+                  <VoicejarTracker />
+                </Suspense>
+                <Analytics />
+                {process.env.NODE_ENV === 'development' && <VercelToolbar />}
+                <CommandPalette />
+                <SpotlightDashboard />
+                <GlobalModalManager />
+                {!isArtistJourney && market.market_code !== 'ARTIST' && (
+                  <Suspense fallback={null}>
+                    {market.market_code === 'PORTFOLIO' && <JohfrahActionDock />}
+                    {market.market_code === 'PORTFOLIO' && <JohfrahConfiguratorSPA />}
+                    {market.market_code === 'BE' && <CastingDock />}
+                  </Suspense>
+                )}
+                <Suspense fallback={null}>
+                  <SonicDNAHandler isAdeming={market.market_code === 'ADEMING'} />
+                  <GlobalAudioOrchestrator />
+                </Suspense>
+                {showVoicy && (
+                  <Suspense fallback={null}>
+                    <VoicyBridge />
+                    <VoicyChat />
+                  </Suspense>
+                )}
+              </SafeErrorGuard>
               <div className="fixed top-0 left-0 right-0 z-[200]">
-                <Suspense fallback={<div className="h-10 bg-va-off-white/50 animate-pulse" />}>
-                  {showTopBar && <TopBar />}
-                  {showGlobalNav && <GlobalNav initialNavConfig={navConfig || undefined} />}
-                </Suspense>
+                <SafeErrorGuard name="GlobalNav" fallback={<div className="h-[60px] bg-white/80 backdrop-blur-md border-b border-black/5 flex items-center px-6"><div className="h-8 w-32 bg-va-black/10 animate-pulse rounded-md" /></div>}>
+                  <Suspense fallback={<div className="h-10 bg-va-off-white/50 animate-pulse" />}>
+                    {showTopBar && <TopBar />}
+                    {showGlobalNav && <GlobalNav initialNavConfig={navConfig || undefined} />}
+                  </Suspense>
+                </SafeErrorGuard>
               </div>
-              <Analytics />
-              {process.env.NODE_ENV === 'development' && <VercelToolbar />}
-              <CommandPalette />
-              <SpotlightDashboard />
-              <GlobalModalManager />
-              {!isArtistJourney && market.market_code !== 'ARTIST' && (
-                <Suspense fallback={null}>
-                  {market.market_code === 'PORTFOLIO' && <JohfrahActionDock />}
-                  {market.market_code === 'PORTFOLIO' && <JohfrahConfiguratorSPA />}
-                  {market.market_code === 'BE' && <CastingDock />}
-                </Suspense>
-              )}
-              <Suspense fallback={null}>
-                <SonicDNAHandler isAdeming={market.market_code === 'ADEMING'} />
-                <GlobalAudioOrchestrator />
-              </Suspense>
-              {showVoicy && (
-                <Suspense fallback={null}>
-                  <VoicyBridge />
-                  <VoicyChat />
-                </Suspense>
-              )}
               <CookieBanner />
-              {market.market_code !== 'ADEMING' && <FooterWrapper />}
+              <SafeErrorGuard name="Footer" fallback={<div className="py-12 bg-va-off-white border-t border-black/5 text-center text-[11px] text-va-black/20 uppercase tracking-widest">Voices Footer Safe-Mode</div>}>
+                {market.market_code !== 'ADEMING' && <FooterWrapper />}
+              </SafeErrorGuard>
             </EditModeOverlay>
           </SafeErrorGuard>
         </Providers>
