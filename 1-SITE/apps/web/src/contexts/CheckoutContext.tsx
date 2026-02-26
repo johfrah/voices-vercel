@@ -597,8 +597,8 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       return;
     }
 
-    const briefingWordCount = (state.briefing || '').trim().split(/\s+/).filter(Boolean).length;
-    const promptCount = (state.briefing || '').trim().split(/\n+/).filter(Boolean).length;
+    const briefingWordCount = ((state.briefing || '')).trim().split(/\s+/).filter(Boolean).length;
+    const promptCount = ((state.briefing || '')).trim().split(/\n+/).filter(Boolean).length;
 
     //  COMMERCIAL LOGIC: Apply spots/years to ALL selected media types
     // If detail maps exist, use those. Otherwise fall back to global spots/years.

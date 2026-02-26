@@ -503,6 +503,9 @@ export default function ConfiguratorPageClient({
   };
 
   const wordCount = useMemo(() => {
+    // #region agent log
+    fetch('http://127.0.0.1:7691/ingest/0b1da146-0703-4910-bde4-4876f6bb4146',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'81e7e6'},body:JSON.stringify({sessionId:'81e7e6',runId:'run1',hypothesisId:'H1',location:'ConfiguratorPageClient.tsx:506',message:'wordCount useMemo',data:{localBriefingType: typeof localBriefing, hasLocalBriefing: !!localBriefing},timestamp:Date.now()})}).catch(()=>{});
+    // #endregion
     const textWithoutRegie = localBriefing.replace(/\([^)]*\)/g, ' ');
     const words = textWithoutRegie.trim().split(/\s+/).filter(Boolean);
     return words.length;

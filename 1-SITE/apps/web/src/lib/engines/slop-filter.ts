@@ -42,7 +42,7 @@ export class SlopFilter {
     // terwijl de brontekst ook Nederlands was, dan is het waarschijnlijk een AI-antwoord in de verkeerde taal.
     const dutchIndicators = [' het ', ' de ', ' een ', ' is ', ' zijn ', ' met ', ' voor '];
     if (targetLang !== 'nl' && targetLang !== 'nl-be' && targetLang !== 'nl-nl') {
-      const hasDutchWords = dutchIndicators.filter(word => lowerText.includes(word)).length >= 2;
+      const hasDutchWords = (dutchIndicators || []).filter(word => lowerText.includes(word)).length >= 2;
       // Als de AI in het Nederlands antwoordt op een vertaalverzoek naar bijv. Frans, is het slop.
       if (hasDutchWords && lowerText !== sourceText.toLowerCase()) {
         return true;

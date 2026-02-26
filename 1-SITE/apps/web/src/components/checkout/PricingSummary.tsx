@@ -95,7 +95,7 @@ export const PricingSummary: React.FC<{
       // 🛡️ CHRIS-PROTOCOL: Structural Integrity (v2.14.245)
       // No more "pleisters". We use the shared CheckoutPayloadSchema to prepare the data.
       const safeBriefing = state.briefing || '';
-      const wordCount = (safeBriefing || '').trim().split(/\s+/).filter(Boolean).length;
+      const wordCount = ((safeBriefing || '')).trim().split(/\s+/).filter(Boolean).length;
       
       const payload = {
         pricing: {

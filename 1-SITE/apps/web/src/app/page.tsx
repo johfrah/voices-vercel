@@ -171,11 +171,11 @@ function HomeContent({
     }));
   };
 
-    const filteredActors = useMemo(() => {
-      // #region agent log
-      fetch('http://127.0.0.1:7691/ingest/0b1da146-0703-4910-bde4-4876f6bb4146',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'81e7e6'},body:JSON.stringify({sessionId:'81e7e6',location:'page.tsx:175',message:'filteredActors useMemo',data:{hasActors: !!actors, actorsType: typeof actors, actorsLength: actors?.length},timestamp:Date.now()})}).catch(()=>{});
-      // #endregion
-      if (!actors || actors.length === 0) return [];
+  const filteredActors = useMemo(() => {
+    // #region agent log
+    fetch('http://127.0.0.1:7691/ingest/0b1da146-0703-4910-bde4-4876f6bb4146',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'81e7e6'},body:JSON.stringify({sessionId:'81e7e6',runId:'run1',hypothesisId:'H2',location:'page.tsx:175',message:'filteredActors useMemo',data:{hasActors: !!actors, actorsType: typeof actors, actorsLength: actors?.length, filters: masterControlState.filters},timestamp:Date.now()})}).catch(()=>{});
+    // #endregion
+    if (!actors || actors.length === 0) return [];
       
     const result = VoiceFilterEngine.filter(actors, {
       journey: masterControlState.journey,
@@ -196,7 +196,7 @@ function HomeContent({
     }) || [];
 
     // 🛡️ CHRIS-PROTOCOL: Forensic Console Audit (Godmode)
-    console.log('📊 [Godmode Audit] Filter Results (v2.15.060):', {
+    console.log('📊 [Godmode Audit] Filter Results (v2.15.061):', {
       total_live_in_memory: (actors || []).length,
       criteria: {
         journey: masterControlState.journey,
@@ -424,7 +424,7 @@ function HomeContent({
 
                 {/* USP Trust-Bar (Bob-methode) */}
                 <ContainerInstrument plain className="flex flex-wrap justify-center gap-x-12 gap-y-6 pt-8">
-                  {journeyContent.usps.map((usp) => (
+                  {(journeyContent.usps || []).map((usp) => (
                     <ContainerInstrument key={usp.key} plain className="flex items-center gap-3">
                       <ContainerInstrument plain className="w-8 h-8 rounded-full bg-primary/5 flex items-center justify-center">
                         {renderUspIcon(usp.icon)}
