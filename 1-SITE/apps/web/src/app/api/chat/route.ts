@@ -470,18 +470,20 @@ SLIMME KASSA REGELS:
           createdAt: new Date()
         }).returning();
 
-        //  ADMIN NOTIFICATION: Stuur een mail bij elke interactie (Chris-Protocol: Real-time awareness)
+        //  ADMIN NOTIFICATION: Stuur een mail en push bij elke interactie (Chris-Protocol: Real-time awareness)
         if (senderType === 'user') {
           try {
             const { VoicesMailEngine } = await import('@/lib/services/voices-mail-engine');
             const mailEngine = VoicesMailEngine.getInstance();
             const { MarketManagerServer: MarketManagerLocal } = await import('@/lib/system/market-manager-server');
+            const { PushService } = await import('@/lib/services/push-service');
             
             // Gebruik de request parameter van de POST functie
             const host = request?.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || MarketManagerLocal.getMarketDomains()['BE']?.replace('https://', ''));
             const market = MarketManagerLocal.getCurrentMarket(host);
             const siteUrl = MarketManagerLocal.getMarketDomains()[market.market_code] || MarketManagerLocal.getMarketDomains()['BE'];
             
+            // 1. Email Notificatie
             await mailEngine.sendVoicesMail({
               to: market.email || process.env.ADMIN_EMAIL || VOICES_CONFIG.company.email,
               subject: `💬 Chat Interactie: ${message.substring(0, 30)}...`,
@@ -496,8 +498,26 @@ SLIMME KASSA REGELS:
               buttonUrl: `${siteUrl}/admin/dashboard`,
               host: host
             });
+
+            // 2. Push Notificatie (iPhone/Smartphone)
+            await PushService.notifyAdmins({
+              title: `Nieuw bericht (#${convId})`,
+              body: message.substring(0, 100),
+              url: `/admin/live-chat`
+            });
+
+            // 3. Telegram Notificatie (Chris-Protocol: Multi-Channel Awareness)
+            const { TelegramService } = await import('@/lib/services/telegram-service');
+            const telegramMsg = `💬 <b>Nieuwe Chat Interactie</b>\n\n` +
+                                `<b>Bericht:</b> <i>"${message}"</i>\n` +
+                                `<b>ID:</b> #${convId}\n` +
+                                `<b>Journey:</b> ${journey}\n\n` +
+                                `<a href="${siteUrl}/admin/live-chat">👉 Open Live Chat Watcher</a>`;
+            
+            await TelegramService.sendAlert(telegramMsg, { force: true });
+
           } catch (mailErr) {
-            console.error('[Voicy API] Failed to send notification mail:', mailErr);
+            console.error('[Voicy API] Failed to send notifications:', mailErr);
           }
         }
 

@@ -21,6 +21,26 @@ import {
   BellOff,
   Loader2
 } from "lucide-react";
+import { cn } from "@/lib/utils";
+import Link from "next/link";
+import { formatDistanceToNow } from "date-fns";
+import { nl } from "date-fns/locale";
+
+interface Conversation {
+  id: number;
+  status: string;
+  updatedAt: string;
+  metadata: any;
+  user_id: string | null;
+  lastMessage?: string;
+}
+
+interface Message {
+  id: string;
+  senderType: 'user' | 'ai' | 'admin';
+  message: string;
+  createdAt: string;
+}
 
 // Helper voor Base64 naar Uint8Array (nodig voor VAPID key)
 function urlBase64ToUint8Array(base64String: string) {

@@ -43,13 +43,13 @@ export async function POST(request: Request) {
     `;
 
     if (action === 'subscribe') {
-      const user = await auth; // requireAdmin returns the user if successful
+      const admin = await auth as any; // requireAdmin returns the user if successful
       
       // Upsert subscription
       await sqlDirect`
         INSERT INTO chat_push_subscriptions (user_id, endpoint, p256dh, auth, user_agent)
         VALUES (
-          ${user.id}, 
+          ${admin.id}, 
           ${subscription.endpoint}, 
           ${subscription.keys.p256dh}, 
           ${subscription.keys.auth},
@@ -60,7 +60,7 @@ export async function POST(request: Request) {
           enabled = TRUE
       `;
 
-      console.log(`[Push] New subscription registered for admin: ${user.email}`);
+      console.log(`[Push] New subscription registered for admin: ${admin.email}`);
       await sqlDirect.end();
       return NextResponse.json({ success: true, message: 'Subscription saved' });
     } 

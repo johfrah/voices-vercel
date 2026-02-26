@@ -1,6 +1,6 @@
 {
   "name": "voices-experience-layer",
-  "version": "2.14.787",
+  "version": "2.14.788",
   "private": true,
   "scripts": {
     "dev": "PORT=3000 next dev",
@@ -110,6 +110,7 @@
     "@types/react-dom": "^18",
     "@types/soap": "^0.18.0",
     "@types/uuid": "^10.0.0",
+    "@types/web-push": "^3.6.4",
     "@types/xml2js": "^0.4.14",
     "drizzle-kit": "^0.31.8",
     "eslint": "^8",
