@@ -33,7 +33,7 @@ export const OrderStepsInstrument: React.FC<OrderStepsInstrumentProps> = ({
 
   const currentStepId = typeof window !== 'undefined' && window.location.pathname.includes('/cart') ? 'cart' : currentStep;
 
-  const totalActors = checkoutState.items.length + (checkoutState.selectedActor ? 1 : 0);
+  const totalActors = (checkoutState.items || []).length + (checkoutState.selectedActor ? 1 : 0);
 
   return (
     <div className={cn("flex justify-center opacity-80 hover:opacity-100 transition-opacity duration-500", className)}>

@@ -297,7 +297,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
 
     try {
       const safeBriefing = state.briefing || '';
-      const wordCount = safeBriefing.trim().split(/\s+/).filter(Boolean).length;
+      const wordCount = (safeBriefing || '').trim().split(/\s+/).filter(Boolean).length;
 
       const payload = {
         pricing: {

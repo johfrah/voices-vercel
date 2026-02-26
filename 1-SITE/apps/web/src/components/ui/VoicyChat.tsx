@@ -139,7 +139,7 @@ export const VoicyChatV2: React.FC = () => {
 
   //  BUTLER BRIDGE: Execute suggested actions from Voicy
   useEffect(() => {
-    const lastMessage = messages[messages.length - 1];
+    const lastMessage = (messages || [])[(messages || []).length - 1];
     if (lastMessage?.role === 'assistant' && lastMessage.isButlerAction) {
       console.log(`[Voicy Butler] Executing action: ${lastMessage.action}`, lastMessage.params);
       
@@ -1343,7 +1343,7 @@ export const VoicyChatV2: React.FC = () => {
                       </ContainerInstrument>
                       <ContainerInstrument plain className="flex justify-between items-center">
                         <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/40"><VoiceglotText  translationKey="common.words" defaultText="Woorden" /></TextInstrument>
-                        <TextInstrument className="text-[15px] font-light">{state.briefing.split(/\s+/).filter(Boolean).length}</TextInstrument>
+                        <TextInstrument className="text-[15px] font-light">{(state.briefing || '').split(/\s+/).filter(Boolean).length}</TextInstrument>
                       </ContainerInstrument>
                       <ContainerInstrument plain className="pt-4 border-t border-black/5 flex justify-between items-center">
                         <TextInstrument className="text-[15px] font-light tracking-widest text-primary"><VoiceglotText  translationKey="common.total" defaultText="Totaal" /></TextInstrument>

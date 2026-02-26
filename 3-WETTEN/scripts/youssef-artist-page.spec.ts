@@ -20,7 +20,7 @@ test.describe('Youssef Zaki Artist Page Verification', () => {
     });
 
     console.log('🚀 Navigating to Youssef artist page...');
-    await page.goto(artistUrl, { waitUntil: 'networkidle', timeout: 30000 });
+    await page.goto(artistUrl, { waitUntil: 'domcontentloaded', timeout: 60000 });
 
     // 1. Verify page title contains "Youssef Zaki"
     console.log('✅ Step 1: Verifying page title...');

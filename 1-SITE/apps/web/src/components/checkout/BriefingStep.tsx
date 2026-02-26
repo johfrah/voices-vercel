@@ -134,14 +134,14 @@ export const BriefingStep: React.FC = () => {
               <TextInstrument>
                 <VoiceglotText  
                   translationKey="checkout.briefing.prompts_detected" 
-                  defaultText={`${state.briefing.trim().split(/\n+/).filter(Boolean).length} segmenten gedetecteerd`} 
+                  defaultText={`${(state.briefing || '').trim().split(/\n+/).filter(Boolean).length} segmenten gedetecteerd`} 
                 />
               </TextInstrument>
             ) : (
               <TextInstrument>
                 <VoiceglotText  
                   translationKey="checkout.briefing.words_detected" 
-                  defaultText={`${state.briefing.trim().split(/\s+/).filter(Boolean).length} woorden gedetecteerd`} 
+                  defaultText={`${(state.briefing || '').trim().split(/\s+/).filter(Boolean).length} woorden gedetecteerd`} 
                 />
               </TextInstrument>
             )}
