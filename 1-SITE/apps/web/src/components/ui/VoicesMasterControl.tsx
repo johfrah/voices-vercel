@@ -450,6 +450,9 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
   }, [languagesData, activeJourneyId, actors]);
 
   const sortedLanguages = useMemo(() => {
+    // 🛡️ CHRIS-PROTOCOL: Nuclear Safety Guard (v2.15.070)
+    if (!mappedLanguages || !Array.isArray(mappedLanguages)) return [];
+    
     const host = typeof window !== 'undefined' ? window.location.host : (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || MarketManager.getMarketDomains()['BE'].replace('https://', ''));
     const market = MarketManager.getCurrentMarket(host);
     
