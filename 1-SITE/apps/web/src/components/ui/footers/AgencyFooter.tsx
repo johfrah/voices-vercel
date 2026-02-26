@@ -11,8 +11,13 @@ import { cn } from '@/lib/utils';
 
 export function AgencyFooter({ market, activeSocials, activePhone, activeEmail, reviewStats }: any) {
   const { t } = useTranslation();
+  const { state: voicesState } = useVoicesState();
+  
   const averageRating = reviewStats?.averageRating || "4.9";
   const totalReviews = reviewStats?.totalCount || "390";
+
+  // 🛡️ CHRIS-PROTOCOL: Determine current journey for review context
+  const currentJourneyId = voicesState.current_journey_id || (voicesState.current_journey === 'telephony' ? '3' : null);
 
   const popularLanguages = [
     { name: t('common.lang.nl_be', 'Vlaams'), href: '/agency/stemmen/vlaams' },
@@ -45,7 +50,7 @@ export function AgencyFooter({ market, activeSocials, activePhone, activeEmail, 
               ))}
             </ContainerInstrument>
             <TextInstrument className="text-[10px] font-bold text-va-black/20 uppercase tracking-widest">
-              <VoiceglotText translationKey="footer.reviews.rating_label" defaultText="Google Rating" />
+              <VoiceglotText translationKey="footer.reviews.rating_label" defaultText={currentJourneyId === '3' || currentJourneyId === '26' ? "Telephony Rating" : "Google Rating"} />
             </TextInstrument>
           </ContainerInstrument>
           <ContainerInstrument className="w-px h-8 bg-black/5" />

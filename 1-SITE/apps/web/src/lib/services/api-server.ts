@@ -64,12 +64,19 @@ export async function getArtist(slug: string, lang: string = 'nl'): Promise<any>
 /**
  *  NUCLEAR CALCULATION: Real-time review statistics (SQL-First)
  */
-export async function getReviewStats(businessSlug: string = 'voices-be') {
+export async function getReviewStats(businessSlug: string = 'voices-be', journeyId?: string) {
   // 🛡️ CHRIS-PROTOCOL: Use SDK for stability (v2.14.273)
-  const { data: stats, error } = await supabase
+  let query = supabase
     .from('reviews')
-    .select('rating')
-    .eq('business_slug', businessSlug);
+    .select('rating');
+  
+  if (journeyId) {
+    query = query.eq('journey_id', journeyId);
+  } else {
+    query = query.eq('business_slug', businessSlug);
+  }
+
+  const { data: stats, error } = await query;
 
   if (error || !stats) {
     return {

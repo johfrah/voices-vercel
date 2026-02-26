@@ -69,7 +69,9 @@ export const ReviewsInstrument: React.FC<{
   isLoading?: boolean,
   hideFilters?: boolean,
   limit?: number,
-  variant?: "default" | "minimal" | "super-minimal" | "wall"
+  variant?: "default" | "minimal" | "super-minimal" | "wall",
+  journeyId?: string,
+  worldId?: string
 }> = ({ 
   reviews, 
   title, 
@@ -77,13 +79,15 @@ export const ReviewsInstrument: React.FC<{
   translationKeyPrefix = "home.reviews", 
   hideHeader = false, 
   averageRating, 
-  totalReviews,
-  distribution,
-  isPortfolio = false,
-  isLoading = false,
-  hideFilters = false,
-  limit,
-  variant = "default"
+  totalReviews, 
+  distribution, 
+  isPortfolio = false, 
+  isLoading = false, 
+  hideFilters = false, 
+  limit, 
+  variant = "default",
+  journeyId,
+  worldId
 }) => {
   const { isEditMode } = useEditMode();
   const { playClick } = useSonicDNA();
@@ -95,6 +99,31 @@ export const ReviewsInstrument: React.FC<{
   const [localReviews, setLocalReviews] = useState<any[]>(reviews);
   const [showDistribution, setShowDistribution] = useState(false);
   const [isHovered, setIsEditHovered] = useState(false);
+
+  // 🛡️ CHRIS-PROTOCOL: Journey-Aware Data Fetching (v2.14.801)
+  useEffect(() => {
+    if (!journeyId && !worldId) return;
+
+    const fetchJourneyReviews = async () => {
+      try {
+        const params = new URLSearchParams();
+        if (journeyId) params.append('journeyId', journeyId);
+        if (worldId) params.append('worldId', worldId);
+        
+        const res = await fetch(`/api/reviews?${params.toString()}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.length > 0) {
+            setLocalReviews(data);
+          }
+        }
+      } catch (e) {
+        console.warn('[ReviewsInstrument] Failed to fetch journey reviews');
+      }
+    };
+
+    fetchJourneyReviews();
+  }, [journeyId, worldId]);
 
   // 🛡️ CHRIS-PROTOCOL: Neurological UX - Smooth Marquee Logic (v2.14.763)
   // We avoid setInterval for the main movement to prevent 'flipping' (fighting manual scroll).
@@ -207,7 +236,7 @@ export const ReviewsInstrument: React.FC<{
     return Object.entries(wordCounts)
       .sort((a, b) => b[1] - a[1])
       .slice(0, 8)
-      .map(([word]) => word);
+      .map(([word]: [string, any]) => word);
   }, [localReviews]);
 
   // 🛡️ CHRIS-PROTOCOL: Sector Discovery (v2.14.764)
