@@ -916,7 +916,7 @@ export const VoicyChatV2: React.FC = () => {
       <ButtonInstrument
         onClick={toggleChat}
         className={`w-16 h-16 rounded-full shadow-aura flex items-center justify-center transition-all duration-500 hover:scale-110 active:scale-95 group relative touch-manipulation ${
-          isOpen ? 'bg-va-black text-white rotate-90' : 'bg-va-black text-white'
+          isOpen ? 'bg-va-black text-white rotate-90' : 'hred text-white'
         }`}
       >
         {isOpen ? <X strokeWidth={1.5} size={28} /> : (
