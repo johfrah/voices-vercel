@@ -188,6 +188,14 @@ async function handleSendMessage(params: any, request?: NextRequest) {
 
     // 🛡️ CHRIS-PROTOCOL: Forceer notificatie TEST bij elk bericht in DEV/Staging voor debugging
     console.log('[Voicy API] Notification trigger check:', { senderType, conversationId: saveResult?.conversationId || 'pending' });
+
+    // 🛡️ CHRIS-PROTOCOL: Gemini response check (v2.15.011)
+    if (!aiContent) {
+      console.error('[Voicy API] ❌ CRITICAL: Gemini returned empty content. Falling back to butler mode.');
+      aiContent = isEnglish 
+        ? "I'm sorry, I'm having trouble processing your request right now. How can I help you with your voice-over project?"
+        : "Excuses, ik heb momenteel wat moeite om je verzoek te verwerken. Hoe kan ik je helpen met je voice-over project?";
+    }
     if (!aiContent || message.length > 50 || mode === 'agent' || previewLogic || /medewerker|spreken|johfrah|human|contact/i.test(message)) {
       console.log('[Voicy API] Triggering Gemini Brain...', { mode, hasPreviewLogic: !!previewLogic });
       
@@ -496,32 +504,33 @@ SLIMME KASSA REGELS:
     // 5. ADMIN NOTIFICATIONS (Chris-Protocol: Real-time awareness)
     // 🛡️ CHRIS-PROTOCOL: Buiten de transactie om blokkades te voorkomen (v2.14.789)
     if (senderType === 'user' || (senderType === 'admin' && message.includes('TEST_NOTIFY'))) {
-      console.log('[Voicy API] 🚀 Triggering fire-and-forget notifications...');
+      console.log('[Voicy API] 🚀 Triggering fire-and-forget notifications...', { senderType, message });
       // We vuren de notificaties af zonder de response te blokkeren
       (async () => {
         try {
           console.log('[Voicy API] Notification thread started');
+          
+          // 🛡️ CHRIS-PROTOCOL: Forceer imports binnen de thread voor isolatie
           const { VoicesMailEngine } = await import('@/lib/services/voices-mail-engine');
           const mailEngine = VoicesMailEngine.getInstance();
           const { MarketManagerServer: MarketManagerLocal } = await import('@/lib/system/market-manager-server');
           const { PushService } = await import('@/lib/services/push-service');
           const { TelegramService } = await import('@/lib/services/telegram-service');
           
-          const host = request?.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || MarketManagerLocal.getMarketDomains()['BE']?.replace('https://', ''));
+          const host = request?.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'www.voices.be');
           const market = MarketManagerLocal.getCurrentMarket(host);
-          const siteUrl = MarketManagerLocal.getMarketDomains()[market.market_code] || MarketManagerLocal.getMarketDomains()['BE'];
+          const siteUrl = MarketManagerLocal.getMarketDomains()[market.market_code] || 'https://www.voices.be';
           
           console.log('[Voicy API] Sending notifications for:', { 
             convId: saveResult?.conversationId, 
             market: market.market_code,
-            hasMail: !!mailEngine,
-            hasPush: !!PushService,
-            hasTelegram: !!TelegramService
+            host,
+            siteUrl
           });
 
           // 1. Email Notificatie
-          await mailEngine.sendVoicesMail({
-            to: market.email || process.env.ADMIN_EMAIL || VOICES_CONFIG.company.email,
+          mailEngine.sendVoicesMail({
+            to: market.email || process.env.ADMIN_EMAIL || 'johfrah@voices.be',
             subject: `💬 Chat Interactie: ${message.substring(0, 30)}...`,
             title: 'Nieuw bericht in de chat',
             body: `
@@ -537,7 +546,7 @@ SLIMME KASSA REGELS:
             .catch(e => console.error('[Push] Mail failed:', e.message));
 
           // 2. Push Notificatie (iPhone/Smartphone)
-          await PushService.notifyAdmins({
+          PushService.notifyAdmins({
             title: `Nieuw bericht (#${saveResult?.conversationId || 'N/A'})`,
             body: message.substring(0, 100),
             url: `/admin/live-chat`
@@ -551,7 +560,7 @@ SLIMME KASSA REGELS:
                               `<b>Journey:</b> ${journey}\n\n` +
                               `<a href="${siteUrl}/admin/live-chat">👉 Open Live Chat Watcher</a>`;
           
-          await TelegramService.sendAlert(telegramMsg, { force: true })
+          TelegramService.sendAlert(telegramMsg, { force: true })
             .then(() => console.log('[Push] Telegram sent successfully'))
             .catch(e => console.error('[Push] Telegram failed:', e.message));
 

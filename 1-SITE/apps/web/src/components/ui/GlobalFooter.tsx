@@ -1,6 +1,7 @@
 "use client";
 
 import { useCheckout } from '@/contexts/CheckoutContext';
+import { usePathname } from 'next/navigation';
 import { BreadcrumbsInstrument } from './BreadcrumbsInstrument';
 import { Star, Check, Phone, Mail, Facebook, Instagram, Linkedin, Plus, Trash2, Link as LinkIcon, Search as SearchIcon, X, Quote, ChevronDown, Youtube, Music } from 'lucide-react';
 import { useTranslation } from '@/contexts/TranslationContext';
@@ -65,6 +66,9 @@ export default function GlobalFooter() {
   const activeSocials: Record<string, string> = marketConfig?.socialLinks || market.social_links || {};
   const activePhone = marketConfig?.phone || market.phone;
   const activeEmail = marketConfig?.email || market.email;
+
+  const pathname = usePathname();
+  const isCheckout = pathname === '/checkout';
 
   const isOrdering = masterControlState.currentStep !== 'voice';
   const showPortfolioFooter = isPortfolio && (actor as any)?.portfolio_tier && (actor as any)?.portfolio_tier !== 'none';
@@ -160,7 +164,7 @@ export default function GlobalFooter() {
         {!isSpecial && <BreadcrumbsInstrument />}
 
         {/* Dynamic Journey Elements */}
-        {!isSpecial && !isOrdering && (
+        {!isSpecial && !isOrdering && !isCheckout && (
           <ContainerInstrument className="mb-24">
             <JourneyCta journey={isStudio ? 'general' : isAcademy ? 'general' : state.current_journey as any} />
           </ContainerInstrument>
