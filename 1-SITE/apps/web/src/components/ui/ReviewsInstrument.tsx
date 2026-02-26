@@ -99,7 +99,7 @@ export const ReviewsInstrument: React.FC<{
   // 🛡️ CHRIS-PROTOCOL: Neurological UX - Smooth Marquee Logic (v2.14.763)
   // We avoid setInterval for the main movement to prevent 'flipping' (fighting manual scroll).
   // Instead, we use a CSS-driven infinite loop for the marquee vibe.
-  const [isPaused, setIsPaused] = useState(false);
+  const [isPaused, setIsPaused] = useState(true);
 
   // 🛡️ CHRIS-PROTOCOL: Neurological UX - Marquee Animation (v2.14.764)
   const marqueeStyle = {
@@ -107,6 +107,7 @@ export const ReviewsInstrument: React.FC<{
     display: 'flex',
     width: 'max-content',
     gap: '2rem',
+    transform: isPaused ? 'none' : undefined
   };
 
   const cssKeyframes = `
