@@ -689,7 +689,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
                   const trimmed = lItem.trim().toLowerCase();
                   // 🛡️ CHRIS-PROTOCOL: Use alias to prevent ReferenceError: MarketManager is not defined
                   const label = MarketManager.getLanguageLabel(trimmed);
-                  const isSelectedInFilter = masterControlState.filters.languages?.includes(trimmed) || (masterControlState.filters.languageIds && masterControlState.filters.languageIds.length > 1 && masterControlState.filters.languages?.includes(trimmed));
+                  const isSelectedInFilter = masterControlState.filters.languages?.includes(trimmed) || (masterControlState.filters.languageIds && (masterControlState.filters.languageIds || []).length > 1 && masterControlState.filters.languages?.includes(trimmed));
                   return (
                     <div key={idx} className={cn("flex items-center gap-1.5 transition-all duration-500", isSelectedInFilter ? "scale-110" : "opacity-60")}>
                       <div className={cn("w-4 h-4 rounded-full border border-black/5 flex items-center justify-center overflow-hidden shadow-sm shrink-0", isSelectedInFilter ? "ring-2 ring-primary ring-offset-1" : "bg-va-off-white")}>
