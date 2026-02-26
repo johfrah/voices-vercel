@@ -225,7 +225,7 @@ export const ReviewsInstrument: React.FC<{
       const text = (r.text || r.textNl || "").toLowerCase();
       const words = text.match(/\b\w{4,}\b/g); // Alleen woorden van 4+ letters
       if (words) {
-        words.forEach(word => {
+        words.forEach((word: string) => {
           if (!commonWords.includes(word)) {
             wordCounts[word] = (wordCounts[word] || 0) + 1;
           }
@@ -236,7 +236,7 @@ export const ReviewsInstrument: React.FC<{
     return Object.entries(wordCounts)
       .sort((a, b) => b[1] - a[1])
       .slice(0, 8)
-      .map(([word]: [string, any]) => word);
+      .map((entry: [string, any]) => entry[0]);
   }, [localReviews]);
 
   // 🛡️ CHRIS-PROTOCOL: Sector Discovery (v2.14.764)

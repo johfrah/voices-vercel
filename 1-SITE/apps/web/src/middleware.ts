@@ -448,7 +448,8 @@ export const config = {
      * - admin (admin dashboard)
      * - assets (statische assets)
      * - reviews, agency, active, studio, visuals (dynamische storage paden)
+     * - alle bestanden met een extensie (svg, png, jpg, etc.)
      */
-    '/((?!_next/static|_next/image|favicon.ico|api|admin|assets|static|reviews|agency|active|studio|visuals|.*\\.(?:svg|png|jpg|jpeg|gif|webp|css|js|woff2?)$).*)',
+    '/((?!_next/static|_next/image|favicon.ico|api|admin|assets|static|reviews|agency|active|studio|visuals|[\\w-]+\\.\\w+).*)',
   ],
 }
