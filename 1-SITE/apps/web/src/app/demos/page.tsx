@@ -4,9 +4,10 @@ import { ContainerInstrument, HeadingInstrument, SectionInstrument, TextInstrume
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { Suspense, useEffect, useMemo, useState } from 'react';
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Filter, Play, FileText, ChevronRight, Globe, Zap, Shield, Phone, Video, Megaphone } from "lucide-react";
+import { Search, Filter, Play, FileText, ChevronRight, Globe, Zap, Shield, Phone, Video, Megaphone, Lock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import nextDynamic from "next/dynamic";
+import { useAuth } from "@/contexts/AuthContext";
 
 // NUCLEAR LOADING MANDATE
 const LiquidBackground = nextDynamic(() => import("@/components/ui/LiquidBackground").then(mod => mod.LiquidBackground), { 
@@ -21,6 +22,7 @@ const LiquidBackground = nextDynamic(() => import("@/components/ui/LiquidBackgro
  * Gevoed door de 'Sonic Intelligence' laag (Sectors, Blueprints, Media Intelligence).
  */
 export default function DemoDiscoveryPage() {
+  const { user, isLoading: authLoading } = useAuth();
   const [mounted, setMounted] = useState(false);
   const [sectors, setSectors] = useState<any[]>([]);
   const [blueprints, setBlueprints] = useState<any[]>([]);
@@ -37,8 +39,10 @@ export default function DemoDiscoveryPage() {
 
   useEffect(() => {
     setMounted(true);
-    fetchDiscoveryData();
-  }, []);
+    if (user?.role === 'admin') {
+      fetchDiscoveryData();
+    }
+  }, [user]);
 
   // Helper to re-skin transcript
   const reskinTranscript = (text: string) => {
@@ -83,7 +87,30 @@ export default function DemoDiscoveryPage() {
     });
   }, [demos, selectedSector, selectedSubtype, searchQuery]);
 
-  if (!mounted) return null;
+  if (!mounted || authLoading) return null;
+
+  // 🛡️ ADMIN ONLY GUARD
+  if (user?.role !== 'admin') {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-va-off-white px-6">
+        <div className="max-w-md w-full text-center space-y-8">
+          <div className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
+            <Lock className="text-primary" size={40} />
+          </div>
+          <div className="space-y-2">
+            <h1 className="text-3xl font-light tracking-tight text-va-black">Admin Toegang Vereist</h1>
+            <p className="text-va-black/40 font-light">Deze pagina is momenteel in 'Masterclass' ontwikkeling en alleen toegankelijk voor beheerders.</p>
+          </div>
+          <button 
+            onClick={() => window.location.href = '/'}
+            className="px-8 py-4 bg-va-black text-white rounded-2xl font-bold uppercase tracking-widest text-[11px] hover:bg-primary transition-colors"
+          >
+            Terug naar Home
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
