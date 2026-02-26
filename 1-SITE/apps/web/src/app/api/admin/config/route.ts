@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
   const type = searchParams.get('type');
 
   // appConfigs en overige types: admin only
-  const publicTypes = ['actor', 'actors', 'music', 'navigation', 'telephony', 'general', 'languages', 'genders', 'journeys', 'media_types', 'countries', 'sectors', 'blueprints', 'demos_enriched'];
+  const publicTypes = ['actor', 'actors', 'music', 'navigation', 'telephony', 'general', 'languages', 'genders', 'journeys', 'media_types', 'countries', 'sectors', 'blueprints', 'demos_enriched', 'telephony_subtypes'];
   if (!type || !publicTypes.includes(type)) {
     const auth = await requireAdmin();
     if (auth instanceof NextResponse) return auth;
@@ -50,6 +50,11 @@ export async function GET(request: NextRequest) {
 
     if (type === 'sectors') {
       const { data: results } = await supabase.from('sectors').select('*').order('name', { ascending: true });
+      return NextResponse.json({ results: results || [] });
+    }
+
+    if (type === 'telephony_subtypes') {
+      const { data: results } = await supabase.from('telephony_subtypes').select('*').order('id', { ascending: true });
       return NextResponse.json({ results: results || [] });
     }
 
@@ -69,7 +74,8 @@ export async function GET(request: NextRequest) {
           media_intelligence (transcript, detected_language_id),
           demo_sectors (sector_id, sectors (name)),
           media_types (label),
-          languages (label)
+          languages (label),
+          telephony_subtypes (name)
         `)
         .limit(100);
 
@@ -82,7 +88,8 @@ export async function GET(request: NextRequest) {
         sector_id: d.demo_sectors?.[0]?.sector_id,
         sector_name: d.demo_sectors?.[0]?.sectors?.name,
         media_type_label: d.media_types?.label,
-        language_label: d.languages?.label
+        language_label: d.languages?.label,
+        subtype_name: d.telephony_subtypes?.name
       }));
 
       return NextResponse.json({ results: flattened || [] });
@@ -132,13 +139,13 @@ export async function GET(request: NextRequest) {
         const config = await dbWithTimeout(db.select().from(appConfigs).where(eq(appConfigs.key, 'general_settings')).limit(1)) as any[];
         return NextResponse.json({
           general_settings: config[0]?.value || {},
-          _version: '2.14.797'
+          _version: '2.14.798'
         });
       } catch (err: any) {
         console.warn(`[Admin Config] General settings fetch failed, returning empty: ${err.message}`);
         return NextResponse.json({
           general_settings: {},
-          _version: '2.14.797'
+          _version: '2.14.798'
         });
       }
     }

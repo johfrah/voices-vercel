@@ -25,10 +25,12 @@ export default function DemoDiscoveryPage() {
   const [sectors, setSectors] = useState<any[]>([]);
   const [blueprints, setBlueprints] = useState<any[]>([]);
   const [demos, setDemos] = useState<any[]>([]);
+  const [subtypes, setSubtypes] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   
   // Filters
   const [selectedSector, setSelectedSector] = useState<string | null>(null);
+  const [selectedSubtype, setSelectedSubtype] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeDemoId, setActiveDemoId] = useState<number | null>(null);
   const [companyName, setCompanyName] = useState("");
@@ -51,15 +53,17 @@ export default function DemoDiscoveryPage() {
   const fetchDiscoveryData = async () => {
     setIsLoading(true);
     try {
-      const [sectorsRes, blueprintsRes, demosRes] = await Promise.all([
+      const [sectorsRes, blueprintsRes, demosRes, subtypesRes] = await Promise.all([
         fetch('/api/admin/config?type=sectors').then(res => res.json()),
         fetch('/api/admin/config?type=blueprints').then(res => res.json()),
-        fetch('/api/admin/config?type=demos_enriched').then(res => res.json())
+        fetch('/api/admin/config?type=demos_enriched').then(res => res.json()),
+        fetch('/api/admin/config?type=telephony_subtypes').then(res => res.json())
       ]);
 
       setSectors(sectorsRes.results || []);
       setBlueprints(blueprintsRes.results || []);
       setDemos(demosRes.results || []);
+      setSubtypes(subtypesRes.results || []);
     } catch (err) {
       console.error('Failed to fetch discovery data:', err);
     } finally {
@@ -70,13 +74,14 @@ export default function DemoDiscoveryPage() {
   const filteredDemos = useMemo(() => {
     return demos.filter(demo => {
       const matchesSector = !selectedSector || demo.sector_id === parseInt(selectedSector);
+      const matchesSubtype = !selectedSubtype || demo.subtype_name === selectedSubtype;
       const matchesSearch = !searchQuery || 
         demo.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         demo.actor_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         demo.transcript?.toLowerCase().includes(searchQuery.toLowerCase());
-      return matchesSector && matchesSearch;
+      return matchesSector && matchesSubtype && matchesSearch;
     });
-  }, [demos, selectedSector, searchQuery]);
+  }, [demos, selectedSector, selectedSubtype, searchQuery]);
 
   if (!mounted) return null;
 
@@ -105,7 +110,7 @@ export default function DemoDiscoveryPage() {
 
           {/* Search & Filter Bar */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-12">
-            <div className="lg:col-span-6 relative group">
+            <div className="lg:col-span-4 relative group">
               <div className="absolute left-6 top-1/2 -translate-y-1/2 text-va-black/20 group-focus-within:text-primary transition-colors">
                 <Search size={20} strokeWidth={1.5} />
               </div>
@@ -126,6 +131,18 @@ export default function DemoDiscoveryPage() {
                 <option value="">Alle Sectoren</option>
                 {sectors.map(s => (
                   <option key={s.id} value={s.id}>{s.name}</option>
+                ))}
+              </select>
+            </div>
+            <div className="lg:col-span-2">
+              <select 
+                value={selectedSubtype || ""}
+                onChange={(e) => setSelectedSubtype(e.target.value || null)}
+                className="w-full h-20 bg-white/80 backdrop-blur-xl border border-black/5 rounded-[24px] px-8 text-xl font-light outline-none appearance-none cursor-pointer focus:ring-4 focus:ring-primary/5 focus:border-primary/20 transition-all shadow-aura-sm"
+              >
+                <option value="">Type Begroeting</option>
+                {subtypes.map(s => (
+                  <option key={s.id} value={s.name}>{s.name}</option>
                 ))}
               </select>
             </div>
@@ -195,8 +212,8 @@ export default function DemoDiscoveryPage() {
                         {demo.language_label || "NL"}
                       </div>
                       <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-va-black/5 text-[11px] font-bold text-va-black/40">
-                        <Shield size={12} />
-                        {demo.media_type_label || "Telefonie"}
+                        <Phone size={12} />
+                        {demo.subtype_name || "Telefonie"}
                       </div>
                     </div>
 
