@@ -274,15 +274,25 @@ export const AdemingBento = ({ tracks, initialTrack, mode = 'home' }: AdemingBen
       {/* Simple Footer - Original Ademing branding */}
       <ContainerInstrument plain className="bg-background border-t border-border py-32 px-6">
         <ContainerInstrument className="max-w-7xl mx-auto flex flex-col items-center gap-16">
-          <ContainerInstrument plain className="font-serif text-5xl font-semibold opacity-60 tracking-tighter animate-breathe-wave-subtle">ademing</ContainerInstrument>
+          <ContainerInstrument plain className="font-serif text-5xl font-semibold opacity-60 tracking-tighter animate-breathe-wave-subtle">
+            <VoiceglotText translationKey="ademing.footer.logo" defaultText="ademing" />
+          </ContainerInstrument>
           <ContainerInstrument plain className="flex flex-wrap justify-center gap-12 text-sm font-bold uppercase tracking-[0.3em] text-muted-foreground/60">
-            <a href="#" className="hover:text-primary transition-colors">Over ons</a>
-            <a href="#" className="hover:text-primary transition-colors">Contact</a>
-            <a href="#" className="hover:text-primary transition-colors">Privacy</a>
-            <a href="#" className="hover:text-primary transition-colors">Mijn meditaties</a>
+            <a href="#" className="hover:text-primary transition-colors">
+              <VoiceglotText translationKey="ademing.footer.about" defaultText="Over ons" />
+            </a>
+            <a href="#" className="hover:text-primary transition-colors">
+              <VoiceglotText translationKey="ademing.footer.contact" defaultText="Contact" />
+            </a>
+            <a href="#" className="hover:text-primary transition-colors">
+              <VoiceglotText translationKey="ademing.footer.privacy" defaultText="Privacy" />
+            </a>
+            <a href="#" className="hover:text-primary transition-colors">
+              <VoiceglotText translationKey="ademing.footer.my_meditations" defaultText="Mijn meditaties" />
+            </a>
           </ContainerInstrument>
           <TextInstrument className="text-sm text-muted-foreground/40 font-medium tracking-widest">
-            © 2026 ADEMING. EEN ZACHTE PLEK VOOR JEZELF.
+            <VoiceglotText translationKey="ademing.footer.copyright" defaultText="© 2026 ADEMING. EEN ZACHTE PLEK VOOR JEZELF." />
           </TextInstrument>
         </ContainerInstrument>
       </ContainerInstrument>

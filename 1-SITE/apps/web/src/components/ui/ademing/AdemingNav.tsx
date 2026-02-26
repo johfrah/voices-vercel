@@ -10,6 +10,7 @@ import { Logo } from "./Logo";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ThemeToggle } from "./ThemeToggle";
+import { VoiceglotText } from "../VoiceglotText";
 import {
   Sheet,
   SheetContent,
@@ -30,12 +31,12 @@ export const AdemingNav = () => {
   }, []);
 
   const navigationItems = [
-    { label: 'Home', icon: Home, path: '/' },
-    { label: 'Verkennen', icon: Compass, path: '/zoeken' },
-    { label: 'Bibliotheek', icon: Library, path: '/bibliotheek' },
-    { label: 'Favorieten', icon: Heart, path: '/favorieten' },
-    { label: 'Retreats', icon: Calendar, path: '/retreats' },
-    { label: 'Mijn Ademing', icon: UserCircle, path: '/mijn-ademing' },
+    { label: <VoiceglotText translationKey="nav.home" defaultText="Home" />, icon: Home, path: '/' },
+    { label: <VoiceglotText translationKey="nav.explore" defaultText="Verkennen" />, icon: Compass, path: '/zoeken' },
+    { label: <VoiceglotText translationKey="nav.library" defaultText="Bibliotheek" />, icon: Library, path: '/bibliotheek' },
+    { label: <VoiceglotText translationKey="nav.favorites" defaultText="Favorieten" />, icon: Heart, path: '/favorieten' },
+    { label: <VoiceglotText translationKey="nav.retreats" defaultText="Retreats" />, icon: Calendar, path: '/retreats' },
+    { label: <VoiceglotText translationKey="nav.profile" defaultText="Mijn Ademing" />, icon: UserCircle, path: '/mijn-ademing' },
   ];
 
   return (
@@ -61,7 +62,9 @@ export const AdemingNav = () => {
               </div>
               
               <nav className="flex flex-col p-4 gap-1">
-                <p className="px-4 py-2 text-[10px] font-bold uppercase tracking-[0.2em] text-primary/40">Menu</p>
+                <p className="px-4 py-2 text-[10px] font-bold uppercase tracking-[0.2em] text-primary/40">
+                  <VoiceglotText translationKey="nav.section.menu" defaultText="Menu" />
+                </p>
                 {navigationItems.map((item) => {
                   const isActive = pathname === item.path;
                   return (
@@ -84,12 +87,14 @@ export const AdemingNav = () => {
               </nav>
 
               <div className="p-4 mt-4">
-                <p className="px-4 py-2 text-[10px] font-bold uppercase tracking-[0.2em] text-primary/40">Verkennen</p>
+                <p className="px-4 py-2 text-[10px] font-bold uppercase tracking-[0.2em] text-primary/40">
+                  <VoiceglotText translationKey="nav.section.explore" defaultText="Verkennen" />
+                </p>
                 <div className="flex flex-col gap-1">
                   {[
-                    { label: 'Thema\'s', icon: Sparkles, path: '/themas' },
-                    { label: 'Elementen', icon: Compass, path: '/elementen' },
-                    { label: 'Begeleiders', icon: UsersIcon, path: '/begeleiders' },
+                    { label: <VoiceglotText translationKey="nav.themes" defaultText="Thema's" />, icon: Sparkles, path: '/themas' },
+                    { label: <VoiceglotText translationKey="nav.elements" defaultText="Elementen" />, icon: Compass, path: '/elementen' },
+                    { label: <VoiceglotText translationKey="nav.guides" defaultText="Begeleiders" />, icon: UsersIcon, path: '/begeleiders' },
                   ].map((item) => (
                     <Link
                       key={item.path}
@@ -106,10 +111,15 @@ export const AdemingNav = () => {
 
               <div className="mt-auto p-8">
                 <div className="p-6 rounded-[32px] bg-primary/5 border border-primary/10 shadow-soft">
-                  <p className="text-xs font-bold uppercase tracking-widest text-primary/60 mb-2">Premium</p>
-                  <p className="text-sm text-muted-foreground leading-relaxed mb-4">Ontgrendel alle meditaties en offline luisteren.</p>
+                  <p className="text-xs font-bold uppercase tracking-widest text-primary/60 mb-2">
+                    <VoiceglotText translationKey="nav.premium.title" defaultText="Premium" />
+                  </p>
+                  <p className="text-sm text-muted-foreground leading-relaxed mb-4">
+                    <VoiceglotText translationKey="nav.premium.description" defaultText="Ontgrendel alle meditaties en offline luisteren." />
+                  </p>
                   <Link href="/premium" className="text-sm font-bold text-primary flex items-center gap-2 group">
-                    Bekijk opties <Sparkles size={14} className="group-hover:rotate-12 transition-transform" />
+                    <VoiceglotText translationKey="nav.premium.cta" defaultText="Bekijk opties" />
+                    <Sparkles size={14} className="group-hover:rotate-12 transition-transform" />
                   </Link>
                 </div>
               </div>

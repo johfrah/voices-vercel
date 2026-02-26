@@ -44,10 +44,10 @@ async function finalMasterclassInjection() {
       const fileName = `demo_${o.item_id}.mp3`;
       const targetUrl = `https://storage.voices.be/demos/telephony/${fileName}`;
       
-      // FIX: Gebruik de postgres library helper voor arrays
+      // FIX: Gebruik sql.array() en zorg dat alle kolomnamen correct zijn
       const [media] = await sql`
         INSERT INTO public.media (file_name, file_path, file_type, labels, journey)
-        VALUES (${fileName}, ${targetUrl}, 'audio/mpeg', ${sql.array(['demo', 'telephony'])}, 'telephony')
+        VALUES (${fileName}, ${targetUrl}, 'audio/mpeg', ${sql.array(['demo', 'telephony'])}, ${'telephony'})
         RETURNING id
       `;
 
