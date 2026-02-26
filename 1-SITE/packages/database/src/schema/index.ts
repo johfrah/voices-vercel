@@ -1066,6 +1066,8 @@ export const reviews = pgTable('reviews', {
   textDe: text('text_de'),
   responseText: text('response_text'),
   conversionScore: decimal('conversion_score', { precision: 5, scale: 2 }),
+  journeyId: text('journey_id'), // 🛤️ Koppeling naar specifieke journey (telephony, commercial, etc.)
+  worldId: text('world_id'), // 🌍 Koppeling naar de world (agency, studio, academy)
   iapContext: jsonb('iap_context'), // Intent, Persona, Segment
   sentimentVelocity: integer('sentiment_velocity').default(0),
   language: text('language').default('nl'),

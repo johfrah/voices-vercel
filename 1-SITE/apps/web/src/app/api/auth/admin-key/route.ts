@@ -1,7 +1,6 @@
 import { db, users } from '@/lib/system/voices-config';
 import { eq, sql } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
 
 export const dynamic = 'force-dynamic';
 
@@ -45,10 +44,8 @@ export async function GET(request: Request) {
     // die door requireAdmin() worden herkend via de Legacy Bridge fallback.
     const response = NextResponse.redirect(new URL(redirectPath, request.url));
     
-    const cookieStore = cookies();
-    
-    // Zet de admin rol cookie
-    cookieStore.set('voices_role', 'admin', {
+    // Zet de admin rol cookie (via response object voor Next.js 15 compatibiliteit)
+    response.cookies.set('voices_role', 'admin', {
       httpOnly: true,
       secure: true,
       sameSite: 'lax',
@@ -57,7 +54,7 @@ export async function GET(request: Request) {
     });
 
     // Zet een 'pseudo' access token voor de bridge
-    cookieStore.set('sb-access-token', `admin-bridge-${admin.id}`, {
+    response.cookies.set('sb-access-token', `admin-bridge-${admin.id}`, {
       httpOnly: true,
       secure: true,
       sameSite: 'lax',

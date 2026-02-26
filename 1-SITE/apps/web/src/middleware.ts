@@ -447,7 +447,8 @@ export const config = {
      * - api (interne API routes)
      * - admin (admin dashboard)
      * - assets (statische assets)
+     * - reviews, agency, active, studio, visuals (dynamische storage paden)
      */
-    '/((?!_next/static|_next/image|favicon.ico|api|admin|assets|static|.*\\.(?:svg|png|jpg|jpeg|gif|webp|css|js|woff2?)$).*)',
+    '/((?!_next/static|_next/image|favicon.ico|api|admin|assets|static|reviews|agency|active|studio|visuals|.*\\.(?:svg|png|jpg|jpeg|gif|webp|css|js|woff2?)$).*)',
   ],
 }

@@ -24,9 +24,9 @@ async function checkLiveStatus() {
     // Check 1: Recent System Events (Errors)
     console.log('📊 Check 1: Recent System Events (Last Hour)...');
     const recentErrors = await sql`
-      SELECT event_type, message, details, created_at
+      SELECT level, source, message, details, created_at
       FROM system_events
-      WHERE event_type = 'error'
+      WHERE level = 'error'
         AND created_at > NOW() - INTERVAL '1 hour'
       ORDER BY created_at DESC
       LIMIT 10
@@ -35,7 +35,7 @@ async function checkLiveStatus() {
     if (recentErrors.length > 0) {
       console.log(`⚠️  Found ${recentErrors.length} recent errors:\n`);
       recentErrors.forEach((error: any) => {
-        console.log(`   🔴 ${error.message}`);
+        console.log(`   🔴 [${error.source}] ${error.message}`);
         console.log(`      Time: ${error.created_at}`);
         if (error.details) {
           const details = typeof error.details === 'string' ? error.details : JSON.stringify(error.details);

@@ -149,10 +149,31 @@ export const ReviewsInstrument: React.FC<{
 
   // Gefilterde reviews berekenen
   const filteredReviews = useMemo(() => {
+    const sentimentKeywords = ['snel', 'vakkundig', 'topkwaliteit', 'professioneel', 'vlot', 'aanrader'];
+    
     let base = localReviews.filter(r => {
       const matchesSector = !selectedSector || r.sector === selectedSector;
       const isVisible = isEditMode || r.status !== 'hidden';
       return matchesSector && isVisible;
+    });
+
+    // 🛡️ MARK-PROTOCOL: Sentiment Velocity & Hero Prioritization (v2.14.783)
+    // We sorteren op basis van: 1. isHero vlag, 2. Sentiment keywords, 3. Rating
+    base.sort((a, b) => {
+      // 1. Hero vlag
+      if (a.isHero && !b.isHero) return -1;
+      if (!a.isHero && b.isHero) return 1;
+
+      // 2. Sentiment keywords
+      const aText = (a.text || a.textNl || "").toLowerCase();
+      const bText = (b.text || b.textNl || "").toLowerCase();
+      const aHasSentiment = sentimentKeywords.some(k => aText.includes(k));
+      const bHasSentiment = sentimentKeywords.some(k => bText.includes(k));
+      if (aHasSentiment && !bHasSentiment) return -1;
+      if (!aHasSentiment && bHasSentiment) return 1;
+
+      // 3. Rating
+      return (b.rating || 0) - (a.rating || 0);
     });
 
     if (limit) return base.slice(0, limit);
@@ -250,7 +271,7 @@ export const ReviewsInstrument: React.FC<{
         "name": "Google",
         "logo": "https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png"
       },
-      "datePublished": reviewItem.rawDate || reviewItem.date,
+      "datePublished": reviewItem.rawDate || reviewItem.date || new Date().toISOString(),
       "inLanguage": "nl",
       "about": reviewItem.sector && reviewItem.sector !== 'general' ? {
         "@type": "Service",
@@ -340,7 +361,8 @@ export const ReviewsInstrument: React.FC<{
           </ContainerInstrument>
         </ContainerInstrument>
 
-        <div className="columns-1 md:columns-2 lg:columns-3 gap-8 space-y-8">
+        {/* 🛡️ CHRIS-PROTOCOL: Nuclear Loading - content-visibility: auto (v2.14.783) */}
+        <div className="columns-1 md:columns-2 lg:columns-3 gap-8 space-y-8" style={{ contentVisibility: 'auto' } as any}>
           {filteredReviews.slice(0, limit || 12).map((review: any, i: number) => (
             <div 
               key={`${review.id}-${i}`} 
@@ -349,7 +371,7 @@ export const ReviewsInstrument: React.FC<{
                 review.status === 'hidden' && "opacity-40 grayscale"
               )}
             >
-              <BentoCard span="sm" className="bg-white border border-black/[0.03] p-10 flex flex-col justify-between shadow-aura hover:shadow-aura-lg transition-all duration-700 rounded-[40px] relative overflow-hidden group/card h-auto">
+              <BentoCard span="sm" className="bg-va-off-white/80 backdrop-blur-md border border-black/[0.03] p-10 flex flex-col justify-between shadow-aura hover:shadow-aura-lg transition-all duration-700 rounded-[40px] relative overflow-hidden group/card h-auto">
                 {isEditMode && (
                   <div className="absolute top-6 right-6 z-50 flex gap-2 bg-va-black/80 backdrop-blur-md p-2 rounded-[12px] opacity-0 group-hover/card-container:opacity-100 transition-opacity">
                     <button 
@@ -639,7 +661,7 @@ export const ReviewsInstrument: React.FC<{
                   review.status === 'hidden' && "opacity-40 grayscale"
                 )}
               >
-                <BentoCard span="sm" className="bg-white border border-black/[0.03] p-10 flex flex-col justify-between h-full min-h-[400px] max-h-[500px] shadow-aura hover:shadow-aura-lg transition-all duration-700 rounded-[40px] relative overflow-hidden group/card">
+                <BentoCard span="sm" className="bg-va-off-white/80 backdrop-blur-md border border-black/[0.03] p-10 flex flex-col justify-between h-full min-h-[400px] max-h-[500px] shadow-aura hover:shadow-aura-lg transition-all duration-700 rounded-[40px] relative overflow-hidden group/card">
                   
                   {/*  SPOTLIGHT ADMIN OVERLAY (CHRIS-PROTOCOL) */}
                   {isEditMode && (
@@ -765,7 +787,7 @@ export const ReviewsInstrument: React.FC<{
               <TextInstrument className="text-lg font-light">
                 <VoiceglotText translationKey="reviews.no_results" defaultText="Geen reviews gevonden voor deze selectie." />
               </TextInstrument>
-              <button onClick={() => setSelectedSector(null)} className="text-primary text-sm underline">
+              <button onClick={() => { playClick('pro'); setSelectedSector(null); }} className="text-primary text-sm underline">
                 <VoiceglotText translationKey="reviews.clear_filters" defaultText="Wis filters" />
               </button>
             </div>
