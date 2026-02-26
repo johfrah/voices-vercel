@@ -8,6 +8,7 @@ import { VoicesLink } from '../VoicesLink';
 import { Star, Phone, Mail, Instagram, Youtube, Music, Facebook, Linkedin, Calculator, Globe2, HelpCircle, MessageSquare } from 'lucide-react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
+import { useVoicesState } from '@/contexts/VoicesStateContext';
 
 export function AgencyFooter({ market, activeSocials, activePhone, activeEmail, reviewStats }: any) {
   const { t } = useTranslation();
@@ -17,7 +18,7 @@ export function AgencyFooter({ market, activeSocials, activePhone, activeEmail, 
   const totalReviews = reviewStats?.totalCount || "390";
 
   // 🛡️ CHRIS-PROTOCOL: Determine current journey for review context
-  const currentJourneyId = voicesState.current_journey_id || (voicesState.current_journey === 'telephony' ? '3' : null);
+  const currentJourneyId = voicesState.current_journey === 'telephony' ? '3' : null;
 
   const popularLanguages = [
     { name: t('common.lang.nl_be', 'Vlaams'), href: '/agency/stemmen/vlaams' },

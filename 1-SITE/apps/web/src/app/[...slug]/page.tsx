@@ -3,12 +3,13 @@ import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { VoicesLink } from '@/components/ui/VoicesLink';
 import { db, contentArticles, actors, translations, castingLists } from '@/lib/system/voices-config';
 import { eq, or, ilike, and } from 'drizzle-orm';
-import { ArrowRight, CreditCard, Info, ShieldCheck, Star, Zap } from 'lucide-react';
+import { ArrowRight, CreditCard, Info, ShieldCheck, Star, Zap, Play } from 'lucide-react';
 import { Metadata } from 'next';
+import Link from 'next/link';
 import Image from 'next/image';
 import { notFound, redirect } from 'next/navigation';
 import { Suspense } from "react";
-import { getActor, getArtist, getActors, getWorkshops } from "@/lib/services/api-server";
+import { getActor, getArtist, getActors, getWorkshops, getArticle } from "@/lib/services/api-server";
 import { MarketManagerServer as MarketManager } from "@/lib/system/market-manager-server";
 import { headers } from "next/headers";
 import { VoiceDetailClient } from "@/components/legacy/VoiceDetailClient";
@@ -19,6 +20,7 @@ import nextDynamic from "next/dynamic";
 import { JourneyType } from '@/contexts/VoicesMasterControlContext';
 import { normalizeSlug, stripLanguagePrefix } from '@/lib/system/slug';
 
+import { BentoGrid, BentoCard } from '@/components/ui/BentoGrid';
 import { createClient } from "@supabase/supabase-js";
 
 //  CHRIS-PROTOCOL: SDK fallback for stability (v2.14.273)
@@ -390,6 +392,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
   console.error(` [SmartRouter] SmartRouteContent START for: ${segments.join('/')}`);
   try {
     // 🛡️ NUCLEAR HANDSHAKE: Resolve via Slug Registry
+    const firstSegment = segments[0];
     const host = headersList.get('host') || '';
     const market = MarketManager.getCurrentMarket(host);
     

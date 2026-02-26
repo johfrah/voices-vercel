@@ -41,7 +41,8 @@ import {
   ButtonInstrument, 
   ContainerInstrument,
   HeadingInstrument,
-  TextInstrument
+  TextInstrument,
+  InputInstrument
 } from './LayoutInstruments';
 import { VoiceglotImage } from './VoiceglotImage';
 import { VoiceglotText } from './VoiceglotText';
