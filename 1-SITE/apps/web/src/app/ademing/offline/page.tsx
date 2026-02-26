@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useRef } from 'react';
 import { Logo } from '@/components/ui/ademing/Logo';
 import { ContainerInstrument, ButtonInstrument } from '@/components/ui/LayoutInstruments';
