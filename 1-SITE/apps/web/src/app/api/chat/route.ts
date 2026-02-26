@@ -465,8 +465,7 @@ SLIMME KASSA REGELS:
           
           const host = request?.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'www.voices.be');
           const market = MarketManagerLocal.getCurrentMarket(host);
-          const domains = MarketManagerLocal.getMarketDomains();
-          const siteUrl = domains[market.market_code] || 'https://www.voices.be';
+          const siteUrl = `https://${host}`;
           
           console.log('[Voicy API] Sending notifications for:', { 
             convId: saveResult?.conversationId, 
@@ -477,7 +476,7 @@ SLIMME KASSA REGELS:
 
           // 1. Email Notificatie
           mailEngine.sendVoicesMail({
-            to: market.email || process.env.ADMIN_EMAIL || 'johfrah@voices.be',
+            to: market.email || process.env.ADMIN_EMAIL || VOICES_CONFIG.company.email,
             subject: `💬 Chat Interactie: ${message.substring(0, 30)}...`,
             title: 'Nieuw bericht in de chat',
             body: `
