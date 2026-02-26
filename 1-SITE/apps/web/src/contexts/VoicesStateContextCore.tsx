@@ -60,7 +60,19 @@ export const useVoicesState = () => {
   const context = useContext(VoicesStateContext);
   if (context === undefined) {
     // 🛡️ CHRIS-PROTOCOL: Fallback for evaluation phase to prevent ReferenceError
-    return {} as VoicesStateContextType;
+    // We provide a minimal functional object to ensure components don't crash
+    return {
+      state: initialState,
+      reviewStats: initialState.reviewStats,
+      campaignMessage: null,
+      updateCompanyName: () => {},
+      updateSector: () => {},
+      updateJourney: () => {},
+      updateIntent: () => {},
+      getPlaceholderValue: (key: string) => key,
+      toggleActorSelection: () => {},
+      clearSelectedActors: () => {},
+    } as VoicesStateContextType;
   }
   return context;
 };
