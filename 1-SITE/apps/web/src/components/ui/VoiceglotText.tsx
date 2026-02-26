@@ -77,7 +77,7 @@ export const VoiceglotText: React.FC<VoiceglotTextProps> = ({
     } else {
       const currentT = t(translationKey, defaultText, values, !!components);
       //  STABILITEIT: Gebruik SlopFilter om AI-foutmeldingen te blokkeren
-      if (SlopFilter.isSlop(currentT, language, defaultText)) {
+      if (SlopFilter.isSlop(currentT || '', language, defaultText || '')) {
         setContent(defaultText);
       } else {
         setContent(currentT);

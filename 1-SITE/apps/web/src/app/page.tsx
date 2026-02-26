@@ -98,10 +98,10 @@ function HomeContent({
       return MarketManager.getCurrentMarket(window.location.host);
     }
     
-    return defaultMarket;
+    return defaultMarket || {};
   }, [marketCode]);
 
-  const market = currentMarketConfig; // Fix for ReferenceError: market is not defined
+  const market = currentMarketConfig || {}; // Fix for ReferenceError: market is not defined
   const [artistData, setArtistData] = useState<any>(null);
   const [donors, setDonors] = useState<any[]>([]);
   const [isArtistLoading, setIsArtistLoading] = useState(false);
@@ -173,26 +173,26 @@ function HomeContent({
 
   const filteredActors = useMemo(() => {
     // #region agent log
-    fetch('http://127.0.0.1:7691/ingest/0b1da146-0703-4910-bde4-4876f6bb4146',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'81e7e6'},body:JSON.stringify({sessionId:'81e7e6',runId:'run1',hypothesisId:'H2',location:'page.tsx:175',message:'filteredActors useMemo',data:{hasActors: !!actors, actorsType: typeof actors, actorsLength: actors?.length, filters: masterControlState.filters},timestamp:Date.now()})}).catch(()=>{});
+    fetch('http://127.0.0.1:7691/ingest/0b1da146-0703-4910-bde4-4876f6bb4146',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'81e7e6'},body:JSON.stringify({sessionId:'81e7e6',runId:'run1',hypothesisId:'H2',location:'page.tsx:175',message:'filteredActors useMemo',data:{hasActors: !!actors, actorsType: typeof actors, actorsLength: actors?.length, filters: masterControlState?.filters},timestamp:Date.now()})}).catch(()=>{});
     // #endregion
-    if (!actors || actors.length === 0) return [];
+    if (!actors || actors.length === 0 || !masterControlState) return [];
       
     const result = VoiceFilterEngine.filter(actors, {
       journey: masterControlState.journey,
-      language: masterControlState.filters.language,
-      languageId: masterControlState.filters.languageId,
-      languages: masterControlState.filters.languages,
-      languageIds: masterControlState.filters.languageIds,
-      gender: masterControlState.filters.gender,
-      genderId: masterControlState.filters.genderId, // 🛡️ CHRIS-PROTOCOL: Handshake Truth (v2.14.740)
-      media: masterControlState.filters.media,
-      mediaIds: masterControlState.filters.mediaIds, // 🛡️ CHRIS-PROTOCOL: Handshake Truth (v2.14.740)
-      country: masterControlState.filters.country,
-      countryId: masterControlState.filters.countryId,
-      toneIds: masterControlState.filters.toneIds,
-      sortBy: masterControlState.filters.sortBy,
+      language: masterControlState.filters?.language,
+      languageId: masterControlState.filters?.languageId,
+      languages: masterControlState.filters?.languages,
+      languageIds: masterControlState.filters?.languageIds,
+      gender: masterControlState.filters?.gender,
+      genderId: masterControlState.filters?.genderId, // 🛡️ CHRIS-PROTOCOL: Handshake Truth (v2.14.740)
+      media: masterControlState.filters?.media,
+      mediaIds: masterControlState.filters?.mediaIds, // 🛡️ CHRIS-PROTOCOL: Handshake Truth (v2.14.740)
+      country: masterControlState.filters?.country,
+      countryId: masterControlState.filters?.countryId,
+      toneIds: masterControlState.filters?.toneIds,
+      sortBy: masterControlState.filters?.sortBy,
       currentStep: masterControlState.currentStep,
-      selectedActorId: checkoutState.selectedActor?.id
+      selectedActorId: checkoutState?.selectedActor?.id
     }) || [];
 
     // 🛡️ CHRIS-PROTOCOL: Forensic Console Audit (Godmode)
@@ -200,9 +200,9 @@ function HomeContent({
       total_live_in_memory: (actors || []).length,
       criteria: {
         journey: masterControlState.journey,
-        language: masterControlState.filters.language,
-        languageId: masterControlState.filters.languageId,
-        country: masterControlState.filters.country,
+        language: masterControlState.filters?.language,
+        languageId: masterControlState.filters?.languageId,
+        country: masterControlState.filters?.country,
         market: marketCode
       },
       shown_count: (result || []).length || 0,
@@ -212,19 +212,19 @@ function HomeContent({
     });
 
     return result || [];
-    }, [actors, masterControlState.journey, masterControlState.filters, checkoutState.selectedActor?.id, masterControlState.currentStep, market]);
+    }, [actors, masterControlState?.journey, masterControlState?.filters, checkoutState?.selectedActor?.id, masterControlState?.currentStep, market]);
 
   const isTelephony = customerDNA?.intelligence?.lastIntent === 'telephony' || customerDNA?.intelligence?.detectedSector === 'it';
 
   //  EXTRA LANGUAGES LOGIC: Calculate available extra languages for the selected primary language
   const availableExtraLangs = useMemo(() => {
-    if (masterControlState.journey !== 'telephony' || !masterControlState.filters.language || !actors) return [];
+    if (!masterControlState || masterControlState.journey !== 'telephony' || !masterControlState.filters?.language || !actors) return [];
     
     const primaryLang = (masterControlState.filters.language || '').toLowerCase();
     const primaryCode = MarketManager.getLanguageCode(primaryLang);
 
     const relevantActors = (actors || []).filter(a => {
-      const actorNative = a.native_lang?.toLowerCase();
+      const actorNative = (a.native_lang || '').toLowerCase();
       return actorNative === primaryLang || 
              actorNative === primaryCode ||
              (primaryCode === 'nl-be' && (actorNative === 'vlaams' || actorNative === 'nl-be')) ||
@@ -234,7 +234,7 @@ function HomeContent({
     const extraLangsSet = new Set<string>();
     relevantActors.forEach(a => {
       if (a.extra_langs) {
-        a.extra_langs.split(',').forEach(l => {
+        (a.extra_langs || '').split(',').forEach(l => {
           const trimmed = l.trim();
           const lowTrimmed = trimmed.toLowerCase();
           
@@ -264,12 +264,12 @@ function HomeContent({
     });
 
     return Array.from(extraLangsSet).sort();
-  }, [actors, masterControlState.journey, masterControlState.filters.language]);
+  }, [actors, masterControlState?.journey, masterControlState?.filters?.language]);
 
   //  CHRIS-PROTOCOL: Dynamic Filters from DB
   const filters = useMemo(() => {
     const lang = language;
-    if (dynamicConfig?.languages) {
+    if (dynamicConfig?.languages && Array.isArray(dynamicConfig.languages)) {
       return {
         languages: dynamicConfig.languages.map((l: any) => l.label),
         genders: [

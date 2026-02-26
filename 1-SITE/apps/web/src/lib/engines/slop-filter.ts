@@ -30,7 +30,7 @@ export class SlopFilter {
   static isSlop(text: string, targetLang: string, sourceText: string): boolean {
     if (!text) return true;
     
-    const lowerText = text.toLowerCase();
+    const lowerText = String(text).toLowerCase();
 
     // 1. Check op bekende AI-foutmelding zinnetjes
     if (this.forbiddenPhrases.some(phrase => lowerText.includes(phrase))) {
@@ -44,7 +44,7 @@ export class SlopFilter {
     if (targetLang !== 'nl' && targetLang !== 'nl-be' && targetLang !== 'nl-nl') {
       const hasDutchWords = (dutchIndicators || []).filter(word => lowerText.includes(word)).length >= 2;
       // Als de AI in het Nederlands antwoordt op een vertaalverzoek naar bijv. Frans, is het slop.
-      if (hasDutchWords && lowerText !== sourceText.toLowerCase()) {
+      if (hasDutchWords && lowerText !== (sourceText || '').toLowerCase()) {
         return true;
       }
     }
@@ -52,11 +52,11 @@ export class SlopFilter {
     // 3. Lengte Check (Expansion Slop)
     // Een vertaling is zelden 3x zo lang als het origineel voor korte strings.
     // Bijv: 'Voices' -> 'Voices: Home to exceptional voice talent...' is slop.
-    if (sourceText.length < 15 && text.length > 30 && !sourceText.includes('...')) {
+    if ((sourceText || '').length < 15 && text.length > 30 && !(sourceText || '').includes('...')) {
       return true;
     }
 
-    if (text.length > sourceText.length * 4 && text.length > 100) {
+    if (text.length > (sourceText || '').length * 4 && text.length > 100) {
       return true;
     }
 

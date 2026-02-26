@@ -143,59 +143,59 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
     const ids = new Set<number>();
     // 🛡️ CHRIS-PROTOCOL: Global Availability Mandate (v2.15.042)
     // We use the registry as the primary source of truth for ALL languages that have actors.
-    if (MarketManager.languages.length > 0) {
-      MarketManager.languages.forEach(l => ids.add(l.id));
+    if (MarketManager.languages && (MarketManager.languages || []).length > 0) {
+      (MarketManager.languages || []).forEach(l => ids.add(l.id));
       return ids;
     }
 
     // Fallback to current actors list
-    actors.forEach(a => {
+    (actors || []).forEach(a => {
       if (a.native_lang_id) ids.add(a.native_lang_id);
-      if (a.extra_lang_ids) a.extra_lang_ids.forEach(id => ids.add(id));
+      if (a.extra_lang_ids) (a.extra_lang_ids || []).forEach(id => ids.add(id));
     });
     
     // ALWAYS include currently selected ID to prevent "1" display slop
-    if (state.filters.languageId) ids.add(state.filters.languageId);
+    if (state.filters?.languageId) ids.add(state.filters.languageId);
     
     return ids;
-  }, [actors, state.filters.languageId]);
+  }, [actors, state.filters?.languageId]);
 
   const availableGenderIds = useMemo(() => {
     const ids = new Set<number>();
-    if (MarketManager.genders.length > 0) {
-      MarketManager.genders.forEach(g => ids.add(g.id));
+    if (MarketManager.genders && (MarketManager.genders || []).length > 0) {
+      (MarketManager.genders || []).forEach(g => ids.add(g.id));
       return ids;
     }
 
-    actors.forEach(a => {
+    (actors || []).forEach(a => {
       if (a.gender_id) ids.add(a.gender_id);
     });
 
-    if (state.filters.genderId) ids.add(state.filters.genderId);
+    if (state.filters?.genderId) ids.add(state.filters.genderId);
 
     return ids;
-  }, [actors, state.filters.genderId]);
+  }, [actors, state.filters?.genderId]);
 
   const availableCountryIds = useMemo(() => {
     const ids = new Set<number>();
-    if (MarketManager.countries.length > 0) {
-      MarketManager.countries.forEach(c => ids.add(c.id));
+    if (MarketManager.countries && (MarketManager.countries || []).length > 0) {
+      (MarketManager.countries || []).forEach(c => ids.add(c.id));
       return ids;
     }
 
-    actors.forEach(a => {
+    (actors || []).forEach(a => {
       if (a.country_id) ids.add(a.country_id);
     });
 
-    if (state.filters.countryId) ids.add(state.filters.countryId);
-    if (Array.isArray(state.filters.countries)) {
-      state.filters.countries.forEach(c => {
+    if (state.filters?.countryId) ids.add(state.filters.countryId);
+    if (Array.isArray(state.filters?.countries)) {
+      (state.filters.countries || []).forEach(c => {
         if (typeof c === 'number') ids.add(c);
       });
     }
 
     return ids;
-  }, [actors, state.filters.countryId, state.filters.countries]);
+  }, [actors, state.filters?.countryId, state.filters?.countries]);
 
   const filteredLanguagesData = useMemo(() => {
     // 🛡️ CHRIS-PROTOCOL: Strict Availability Mandate (v2.15.042)
@@ -399,15 +399,15 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
     });
 
     const languageConfig = Array.from(uniqueLangsMap.values()).map(l => {
-      const cleanLabel = l.label.replace(/\s*\(algemeen\)\s*/i, '').trim();
+      const cleanLabel = (l.label || '').replace(/\s*\(algemeen\)\s*/i, '').trim();
       return {
         label: cleanLabel,
         value: l.id,
         langCode: l.code,
         icon: l.icon,
-        popular: l.isPopular || (market.popular_languages || []).some(pl => 
-          pl.toLowerCase() === l.code.toLowerCase() || 
-          pl.toLowerCase() === l.label.toLowerCase() ||
+        popular: l.isPopular || (market?.popular_languages || []).some(pl => 
+          pl.toLowerCase() === (l.code || '').toLowerCase() || 
+          pl.toLowerCase() === (l.label || '').toLowerCase() ||
           pl.toLowerCase() === cleanLabel.toLowerCase()
         )
       };

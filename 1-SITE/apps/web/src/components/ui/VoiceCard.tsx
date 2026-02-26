@@ -454,35 +454,35 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
 
   const displayPrice = useMemo(() => {
     // #region agent log
-    fetch('http://127.0.0.1:7691/ingest/0b1da146-0703-4910-bde4-4876f6bb4146',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'81e7e6'},body:JSON.stringify({sessionId:'81e7e6',runId:'run1',hypothesisId:'H1',location:'VoiceCard.tsx:456',message:'displayPrice useMemo',data:{hasVoice: !!voice, hasCheckoutBriefing: typeof checkoutState.briefing !== 'undefined', briefingType: typeof checkoutState.briefing},timestamp:Date.now()})}).catch(()=>{});
+    fetch('http://127.0.0.1:7691/ingest/0b1da146-0703-4910-bde4-4876f6bb4146',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'81e7e6'},body:JSON.stringify({sessionId:'81e7e6',runId:'run1',hypothesisId:'H1',location:'VoiceCard.tsx:456',message:'displayPrice useMemo',data:{hasVoice: !!voice, hasCheckoutBriefing: typeof checkoutState?.briefing !== 'undefined', briefingType: typeof checkoutState?.briefing},timestamp:Date.now()})}).catch(()=>{});
     // #endregion
-    if (!voice) return null;
+    if (!voice || !masterControlState || !checkoutState) return null;
     const isConfigurator = masterControlState.currentStep === 'script';
     const briefingWordCount = (checkoutState.briefing || '').trim().split(/\s+/).filter(Boolean).length;
     const promptCount = (checkoutState.briefing || '').trim().split(/\n+/).filter(Boolean).length;
-    const wordCount = isConfigurator && briefingWordCount > 0 ? briefingWordCount : (masterControlState.filters.words || 0);
-    const currentSpotsDetail = eventData?.spotsDetail || masterControlState.filters.spotsDetail;
-    const currentYearsDetail = eventData?.yearsDetail || masterControlState.filters.yearsDetail;
-    const currentMedia = eventData?.media || masterControlState.filters.media || ['online'];
-    const spotsMap = masterControlState.journey === 'commercial' && Array.isArray(currentMedia) ? currentMedia.reduce((acc, m) => ({ ...acc, [m]: (currentSpotsDetail && currentSpotsDetail[m]) || masterControlState.filters.spots || 1 }), {}) : undefined;
-    const yearsMap = masterControlState.journey === 'commercial' && Array.isArray(currentMedia) ? currentMedia.reduce((acc, m) => ({ ...acc, [m]: (currentYearsDetail && currentYearsDetail[m]) || masterControlState.filters.years || 1 }), {}) : undefined;
-    const result = SlimmeKassa.calculate({ usage: masterControlState.journey === 'telephony' ? 'telefonie' : (masterControlState.journey === 'video' ? 'unpaid' : 'commercial'), plan: checkoutState.plan, words: wordCount, prompts: isConfigurator ? promptCount : (checkoutState.prompts || 1), mediaTypes: masterControlState.journey === 'commercial' ? (currentMedia as any) : undefined, countries: masterControlState.filters.countries || [masterControlState.filters.country || 'BE'], spots: spotsMap, years: yearsMap, liveSession: masterControlState.filters.liveSession, actorRates: voice as any, music: checkoutState.music, isVatExempt: false }, checkoutState.pricingConfig || undefined);
+    const wordCount = isConfigurator && briefingWordCount > 0 ? briefingWordCount : (masterControlState.filters?.words || 0);
+    const currentSpotsDetail = eventData?.spotsDetail || masterControlState.filters?.spotsDetail;
+    const currentYearsDetail = eventData?.yearsDetail || masterControlState.filters?.yearsDetail;
+    const currentMedia = eventData?.media || masterControlState.filters?.media || ['online'];
+    const spotsMap = masterControlState.journey === 'commercial' && Array.isArray(currentMedia) ? currentMedia.reduce((acc, m) => ({ ...acc, [m]: (currentSpotsDetail && currentSpotsDetail[m]) || masterControlState.filters?.spots || 1 }), {}) : undefined;
+    const yearsMap = masterControlState.journey === 'commercial' && Array.isArray(currentMedia) ? currentMedia.reduce((acc, m) => ({ ...acc, [m]: (currentYearsDetail && currentYearsDetail[m]) || masterControlState.filters?.years || 1 }), {}) : undefined;
+    const result = SlimmeKassa.calculate({ usage: masterControlState.journey === 'telephony' ? 'telefonie' : (masterControlState.journey === 'video' ? 'unpaid' : 'commercial'), plan: checkoutState.plan, words: wordCount, prompts: isConfigurator ? promptCount : (checkoutState.prompts || 1), mediaTypes: masterControlState.journey === 'commercial' ? (currentMedia as any) : undefined, countries: masterControlState.filters?.countries || [masterControlState.filters?.country || 'BE'], spots: spotsMap, years: yearsMap, liveSession: masterControlState.filters?.liveSession, actorRates: voice as any, music: checkoutState.music, isVatExempt: false }, checkoutState.pricingConfig || undefined);
     
     if (!result) return null;
 
-    const status = SlimmeKassa.getAvailabilityStatus(voice as any, masterControlState.journey === 'commercial' ? (currentMedia as any) : [], masterControlState.filters.countries?.[0] || masterControlState.filters.country || 'BE');
+    const status = SlimmeKassa.getAvailabilityStatus(voice as any, masterControlState.journey === 'commercial' ? (currentMedia as any) : [], masterControlState.filters?.countries?.[0] || masterControlState.filters?.country || 'BE');
     
     if (status === 'unavailable') {
       console.log(`[VoiceCard] Actor ${voice.id} (${voice.display_name}) is unavailable for current filters.`, {
         journey: masterControlState.journey,
         media: currentMedia,
-        country: masterControlState.filters.countries?.[0] || masterControlState.filters.country || 'BE'
+        country: masterControlState.filters?.countries?.[0] || masterControlState.filters?.country || 'BE'
       });
       return null;
     }
 
     return { price: SlimmeKassa.format(result.subtotal || 0).replace('', '').trim(), status, mediaBreakdown: result.mediaBreakdown };
-  }, [voice, masterControlState.journey, masterControlState.currentStep, masterControlState.filters, checkoutState.briefing, checkoutState.plan, checkoutState.prompts, checkoutState.music, eventData?.media, eventData?.spotsDetail, eventData?.yearsDetail, checkoutState.pricingConfig]);
+  }, [voice, masterControlState?.journey, masterControlState?.currentStep, masterControlState?.filters, checkoutState?.briefing, checkoutState?.plan, checkoutState?.prompts, checkoutState?.music, eventData?.media, eventData?.spotsDetail, eventData?.yearsDetail, checkoutState?.pricingConfig]);
 
   const sectorDemo = useMemo(() => {
     if (!voice) return null;
