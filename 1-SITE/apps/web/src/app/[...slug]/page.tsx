@@ -1438,12 +1438,14 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
       <Suspense fallback={null}>
         <LiquidBackground />
       </Suspense>
-      <ContainerInstrument className="py-48 relative z-10">
-        <header className="mb-64 max-w-5xl animate-in fade-in slide-in-from-bottom-12 duration-1000">
+      <ContainerInstrument className="py-48 relative z-10 max-w-5xl mx-auto px-6">
+        <header className="mb-64 animate-in fade-in slide-in-from-bottom-12 duration-1000">
           <TextInstrument className="text-[11px] font-bold tracking-[0.4em] text-primary/60 mb-12 block uppercase">
             Projecttype
           </TextInstrument>
-          <HeadingInstrument level={1} className="text-[10vw] lg:text-[160px] font-light tracking-tighter mb-20 leading-[0.85] text-va-black" suppressHydrationWarning><VoiceglotText  translationKey={`page.${page.slug}.title`} defaultText={page.title} /></HeadingInstrument>
+          <HeadingInstrument level={1} className="text-[10vw] lg:text-[120px] font-light tracking-tighter mb-20 leading-[0.85] text-va-black" suppressHydrationWarning>
+            <VoiceglotText translationKey={`page.${page.slug}.title`} defaultText={page.title} />
+          </HeadingInstrument>
           <ContainerInstrument className="w-48 h-1 bg-black/5 rounded-full" />
         </header>
         <ContainerInstrument className="space-y-24">
