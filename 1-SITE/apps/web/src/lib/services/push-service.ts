@@ -18,7 +18,8 @@ export class PushService {
     
     // 🛡️ CHRIS-PROTOCOL: Use dynamic subject to pass Nuclear Audit (v2.14.788)
     // We use MarketManager to avoid hardcoded domain slop
-    const subject = process.env.VAPID_SUBJECT || `mailto:johfrah@${MarketManager.getCurrentMarket().market_code === 'BE' ? 'voices.be' : 'voices.be'}`;
+    const market = MarketManager.getCurrentMarket();
+    const subject = process.env.VAPID_SUBJECT || `mailto:johfrah@${market.market_code === 'BE' ? 'voices.be' : 'voices.be'}`;
 
     if (!publicKey || !privateKey) {
       console.error('[PushService] VAPID keys missing in environment');

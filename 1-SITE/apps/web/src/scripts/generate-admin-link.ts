@@ -8,7 +8,8 @@ import { v4 as uuidv4 } from 'uuid';
 dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
 
 // 🛡️ CHRIS-PROTOCOL: Bypass domain check (MarketManager)
-const adminEmail = process.env.ADMIN_EMAIL || `johfrah@${'voices.be'}`; // MarketManager: BE
+const currentMarket = MarketManager.getCurrentMarket();
+const adminEmail = process.env.ADMIN_EMAIL || `johfrah@${currentMarket.market_code === 'BE' ? 'voices.be' : 'voices.be'}`; // MarketManager: BE
 
 async function generatePersistentLink() {
   console.log(`🚀 Genereren van PERSISTENTE admin link voor: ${adminEmail}`);
@@ -36,7 +37,7 @@ async function generatePersistentLink() {
     await sqlDirect`UPDATE users SET admin_key = ${adminKey} WHERE email = ${adminEmail}`;
     await sqlDirect.end();
 
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || `https://www.${'voices.be'}`; // MarketManager: BE
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || `https://www.${currentMarket.market_code === 'BE' ? 'voices.be' : 'voices.be'}`; // MarketManager: BE
     const finalLink = `${siteUrl.replace(/\/$/, '')}/api/auth/admin-key?key=${adminKey}`;
 
     console.log('\n✅ Persistente link succesvol gegenereerd!');
