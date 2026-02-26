@@ -277,6 +277,7 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
               if (m.id === 'bancontact') localPath = '/assets/common/branding/payment/bancontact.svg';
               if (m.id === 'ideal') localPath = '/assets/common/branding/payment/ideal.svg';
               if (m.id === 'creditcard') localPath = '/assets/common/branding/payment/visa.svg';
+              if (m.id === 'mastercard') localPath = '/assets/common/branding/payment/mastercard.svg';
               
               return {
                 ...m,
