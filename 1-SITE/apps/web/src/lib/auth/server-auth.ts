@@ -5,7 +5,7 @@
  */
 
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
-import { createClient } from '@/utils/supabase/server';
+import { createClient as createServerClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
 
@@ -50,7 +50,7 @@ export async function getServerUser(): Promise<ServerUser | null> {
     }
   }
 
-  const supabase = createClient();
+  const supabase = createServerClient();
   if (!supabase) return null;
   const { data: { user } } = await supabase.auth.getUser();
   if (!user?.email) return null;

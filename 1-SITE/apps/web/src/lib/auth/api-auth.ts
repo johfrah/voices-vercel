@@ -8,7 +8,7 @@ import { MarketManagerServer as MarketManager } from '@/lib/system/market-manage
  */
 
 import { createClient as createSupabaseClient, type User } from '@supabase/supabase-js';
-import { createClient } from '@/utils/supabase/server';
+import { createClient as createServerClient } from '@/utils/supabase/server';
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/system/voices-config';
 import { users } from '@/lib/system/voices-config';
@@ -86,7 +86,7 @@ async function checkIsPartner(user: User | null): Promise<boolean> {
  * Returnt de Supabase user bij succes.
  */
 export async function requireAdmin(): Promise<{ user: User } | NextResponse> {
-  const supabase = createClient();
+  const supabase = createServerClient();
   if (!supabase) {
     return NextResponse.json({ error: 'Auth service unavailable' }, { status: 503 });
   }
@@ -107,7 +107,7 @@ export async function requireAdmin(): Promise<{ user: User } | NextResponse> {
  * Vereist dat de aanvrager een partner (of admin) is.
  */
 export async function requirePartner(): Promise<{ user: User } | NextResponse> {
-  const supabase = createClient();
+  const supabase = createServerClient();
   if (!supabase) {
     return NextResponse.json({ error: 'Auth service unavailable' }, { status: 503 });
   }

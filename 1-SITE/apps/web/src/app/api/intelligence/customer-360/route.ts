@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { UCIService } from '@/lib/intelligence/uci-service';
-import { createClient } from '@/utils/supabase/server';
+import { createClient as createServerClient } from '@/utils/supabase/server';
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { db, users } from '@/lib/system/voices-config';
 import { eq } from 'drizzle-orm';
@@ -41,7 +41,7 @@ async function checkIsAdmin(email: string | undefined): Promise<boolean> {
 // export const runtime = 'edge';
 
 export async function GET(request: NextRequest) {
-  const supabase = createClient();
+  const supabase = createServerClient();
   if (!supabase) {
     return NextResponse.json({ error: 'Auth service unavailable' }, { status: 503 });
   }
