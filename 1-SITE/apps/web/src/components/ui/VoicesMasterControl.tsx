@@ -356,7 +356,21 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
       return result;
     };
 
-    const languageConfig = filteredLanguagesData.map(l => {
+    // 🛡️ CHRIS-PROTOCOL: Deduplicate Languages by Label (v2.14.765)
+    // We prefer ISO-specific codes (e.g. nl-be, nl-nl) over general codes (e.g. nl).
+    const uniqueLangsMap = new Map<string, any>();
+    
+    filteredLanguagesData.forEach(l => {
+      const cleanLabel = l.label.replace(/\s*\(algemeen\)\s*/i, '').trim();
+      const existing = uniqueLangsMap.get(cleanLabel);
+      
+      // If we have a duplicate label, prefer the one with a more specific code (length > 2)
+      if (!existing || l.code.length > existing.code.length) {
+        uniqueLangsMap.set(cleanLabel, l);
+      }
+    });
+
+    const languageConfig = Array.from(uniqueLangsMap.values()).map(l => {
       const cleanLabel = l.label.replace(/\s*\(algemeen\)\s*/i, '').trim();
       return {
         label: cleanLabel,
