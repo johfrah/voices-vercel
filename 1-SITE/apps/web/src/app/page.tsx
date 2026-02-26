@@ -38,6 +38,7 @@ const ConfiguratorPageClient = nextDynamic(() => import('@/app/checkout/configur
 
 import { VoiceCard } from "@/components/ui/VoiceCard";
 import { ArtistDetailClient } from "@/components/legacy/ArtistDetailClient";
+import { NuclearErrorBoundary } from "@/components/ui/NuclearErrorBoundary";
 
 /**
  * HOME CONTENT (GOD MODE 2026 - AIRBNB STYLE)
@@ -465,34 +466,36 @@ function HomeContent({
                           ))}
                         </div>
                       ) : (
-                        <VoiceGrid 
-                          strokeWidth={1.5} 
-                          actors={filteredActors.map(a => ({
-                            ...a,
-                            // Ensure we use the latest photo_url from our local state
-                            photo_url: actors.find(actor => actor.id === a.id)?.photo_url || a.photo_url
-                          }))} 
-                          featured={false} 
-                          onSelect={(actor) => {
-                            //  CHRIS-PROTOCOL: The "Ultimate SPA" Way
-                            // We stay on the homepage and just switch the step!
-                            console.log(`[Home] Initiating in-page SPA transition for: ${actor.display_name}`);
-                            playClick('success');
-                            
-                            // 1. Set the actor in global checkout context
-                            selectActor(actor);
-                            
-                            // 2. Set the step to script
-                            updateStep('script');
-                            
-                            // 3. Update URL for Smart Routing
-                            const newUrl = `/${actor.slug}/${masterControlState.journey}`;
-                            window.history.pushState(null, '', newUrl);
-                            
-                            // 4. Scroll to top of the section
-                            window.scrollTo({ top: 0, behavior: 'smooth' });
-                          }}
-                        />
+                        <NuclearErrorBoundary name="Home:VoiceGrid">
+                          <VoiceGrid 
+                            strokeWidth={1.5} 
+                            actors={filteredActors.map(a => ({
+                              ...a,
+                              // Ensure we use the latest photo_url from our local state
+                              photo_url: actors.find(actor => actor.id === a.id)?.photo_url || a.photo_url
+                            }))} 
+                            featured={false} 
+                            onSelect={(actor) => {
+                              //  CHRIS-PROTOCOL: The "Ultimate SPA" Way
+                              // We stay on the homepage and just switch the step!
+                              console.log(`[Home] Initiating in-page SPA transition for: ${actor.display_name}`);
+                              playClick('success');
+                              
+                              // 1. Set the actor in global checkout context
+                              selectActor(actor);
+                              
+                              // 2. Set the step to script
+                              updateStep('script');
+                              
+                              // 3. Update URL for Smart Routing
+                              const newUrl = `/${actor.slug}/${masterControlState.journey}`;
+                              window.history.pushState(null, '', newUrl);
+                              
+                              // 4. Scroll to top of the section
+                              window.scrollTo({ top: 0, behavior: 'smooth' });
+                            }}
+                          />
+                        </NuclearErrorBoundary>
                       )}
                     </motion.div>
                   ) : (
@@ -507,12 +510,14 @@ function HomeContent({
                       <div className="flex flex-col lg:grid lg:grid-cols-12 gap-8 items-start w-full">
                         {/* Script & Prijs (9 kolommen breed) - EERST op mobiel */}
                         <div className="order-1 lg:order-2 lg:col-span-9 w-full">
-                              <ConfiguratorPageClient 
-                                isEmbedded={true} 
-                                hideMediaSelector={true} 
-                                minimalMode={true} 
-                                hidePriceBlock={false}
-                              />
+                        <NuclearErrorBoundary name="Home:Configurator">
+                          <ConfiguratorPageClient 
+                            isEmbedded={true} 
+                            hideMediaSelector={true} 
+                            minimalMode={true} 
+                            hidePriceBlock={false}
+                          />
+                        </NuclearErrorBoundary>
                         </div>
 
                         {/* VoiceCard (3 kolommen breed) - LATER op mobiel, compact */}

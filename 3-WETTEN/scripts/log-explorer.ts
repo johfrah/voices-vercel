@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 import path from 'path';
 
 /**
- * 🛡️ CHRIS-PROTOCOL: NUCLEAR LOG EXPLORER (v2.14.517)
+ * 🛡️ CHRIS-PROTOCOL: NUCLEAR LOG EXPLORER (v2.15.1)
  * 
  * Doel: Een krachtigere 'log' alias die zowel de audit als de live logs combineert.
  * Gebruik: log [live|audit|errors|digest <hash>]
@@ -36,7 +36,13 @@ async function run() {
     process.exit(1);
   }
 
-  const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+  const supabase = createClient(SUPABASE_URL, SUPABASE_KEY, {
+    realtime: {
+      params: {
+        eventsPerSecond: 10,
+      },
+    },
+  });
 
   if (command === 'digest') {
     const digest = args[1];
@@ -102,14 +108,46 @@ async function run() {
   console.log(chalk.bold.yellow('\n--- 🛰️ LIVE WATCHDOG STREAM ---'));
   console.log(chalk.dim('Wachten op nieuwe events... (Ctrl+C om te stoppen)\n'));
 
-  const channel = supabase
-    .channel('system_events_realtime')
-    .on(
-      'postgres_changes',
-      { event: 'INSERT', schema: 'public', table: 'system_events' },
-      (payload) => logEvent(payload.new)
-    )
-    .subscribe();
+  const setupRealtime = () => {
+    const channel = supabase
+      .channel('system_events_realtime')
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'system_events' },
+        (payload) => {
+          logEvent(payload.new);
+        }
+      )
+      .subscribe((status) => {
+        if (status === 'SUBSCRIBED') {
+          console.log(chalk.green('📡 Verbonden met realtime stream.'));
+        }
+        if (status === 'CLOSED') {
+          console.log(chalk.yellow('⚠️ Verbinding gesloten. Opnieuw verbinden...'));
+          setTimeout(setupRealtime, 1000);
+        }
+        if (status === 'CHANNEL_ERROR') {
+          console.log(chalk.red('❌ Stream error. Herstarten...'));
+          setTimeout(setupRealtime, 5000);
+        }
+      });
+      
+    // Heartbeat log om te laten zien dat hij nog leeft
+    const heartbeat = setInterval(() => {
+      if (channel.state === 'joined') {
+        // Stilzwijgend laten draaien
+      } else {
+        console.log(chalk.dim(`[${new Date().toLocaleTimeString()}] 💓 Status: ${channel.state}`));
+      }
+    }, 30000);
+
+    return { channel, heartbeat };
+  };
+
+  setupRealtime();
+  
+  // Voorkom dat het script afsluit
+  setInterval(() => {}, 1000);
 }
 
 function logEvent(event: any) {

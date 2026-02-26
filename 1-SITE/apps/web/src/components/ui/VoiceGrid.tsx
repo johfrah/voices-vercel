@@ -5,7 +5,8 @@ import { cn } from '@/lib/utils';
 import { Actor } from '@/types';
 import { motion, AnimatePresence } from 'framer-motion';
 import React from 'react';
-import { VoiceCard } from './VoiceCard';
+import { VoiceCard } from "./VoiceCard";
+import { NuclearErrorBoundary } from "./NuclearErrorBoundary";
 
 interface VoiceGridProps {
   actors: Actor[];
@@ -51,10 +52,15 @@ export const VoiceGrid: React.FC<VoiceGridProps> = ({ actors, featured = false, 
                 }}
                 className={cn("w-full h-full", featured && "w-[85vw] md:w-auto snap-center")}
               >
-                <VoiceCard 
-                  voice={actor} 
-                  onSelect={onSelect ? () => onSelect(actor) : undefined}
-                />
+                <NuclearErrorBoundary 
+                  name={`VoiceCard:${actor?.id}`}
+                  fallback={<div className="w-full h-[400px] bg-va-black/5 rounded-[20px] animate-pulse" />}
+                >
+                  <VoiceCard 
+                    voice={actor} 
+                    onSelect={onSelect ? () => onSelect(actor) : undefined}
+                  />
+                </NuclearErrorBoundary>
               </motion.div>
             ))}
           </AnimatePresence>
