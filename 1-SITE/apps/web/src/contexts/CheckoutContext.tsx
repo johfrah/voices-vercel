@@ -174,7 +174,7 @@ const initialState: CheckoutState = {
   paymentMethod: 'bancontact',
   paymentMethods: [
     { id: 'bancontact', description: 'Bancontact', image: { size2x: '/assets/common/branding/payment/bancontact.svg' } },
-    { id: 'ideal', description: 'iDEAL', image: { size2x: '/assets/common/branding/payment/mollie.svg' } },
+    { id: 'ideal', description: 'iDEAL', image: { size2x: '/assets/common/branding/payment/ideal.svg' } },
     { id: 'banktransfer', description: 'Betalen op factuur (Offerte)', isInvoice: true, image: { size2x: '/assets/common/branding/icons/ACCOUNT.svg' } }
   ],
   taxRate: 0.21,
