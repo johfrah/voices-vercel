@@ -107,103 +107,103 @@ export const VoicesMasterControlProvider: React.FC<{
   useEffect(() => {
     setIsClient(true);
     
-    const host = window.location.host;
-    const market = MarketManager.getCurrentMarket(host);
-    const defaultLang = market.primary_language; // e.g. 'nl-BE'
-    const defaultLangId = market.primary_language_id; // e.g. 1
-    
-    const saved = localStorage.getItem('voices_master_control');
-    let savedState: any = {};
-    try {
-      if (saved) savedState = JSON.parse(saved);
-    } catch (e) {}
-
-    const journey = initialJourney || (searchParams?.get('journey') as JourneyType) || 
-                   (voicesState.current_journey !== 'general' ? voicesState.current_journey as JourneyType : 'video');
-    
-    const initialLanguageParam = searchParams?.get('language');
-    const initialLanguageIdParam = searchParams?.get('languageId');
-    
-    // 🛡️ CHRIS-PROTOCOL: Handshake Truth Initialization (v2.14.740)
-    // We strictly use the market's primary language ID as the fallback.
-    let initialLanguage = initialLanguageParam 
-      ? initialLanguageParam 
-      : (savedState.filters?.language || defaultLang);
-    
-    let initialLanguageId = initialLanguageIdParam 
-      ? parseInt(initialLanguageIdParam) 
-      : (savedState.filters?.languageId || defaultLangId);
-
-    // If we have a code but no ID, and we are on the client, try a quick lookup in primed MarketManager
-    if (initialLanguage && !initialLanguageId && typeof window !== 'undefined') {
-      const code = MarketManager.getLanguageCode(initialLanguage);
-      // Note: MarketManager might not be primed yet, so we still rely on the component's useEffect sync.
-    }
+    // We delay the actual state initialization from external sources (URL/Storage)
+    // until AFTER the first render to ensure hydration matches the server.
+    const initializeState = () => {
+      const host = window.location.host;
+      const market = MarketManager.getCurrentMarket(host);
+      const defaultLang = market.primary_language; // e.g. 'nl-BE'
+      const defaultLangId = market.primary_language_id; // e.g. 1
       
-    const initialLanguages = searchParams?.get('languages') ? searchParams?.get('languages')?.split(',') : (savedState.filters?.languages || [initialLanguage.toLowerCase()]);
-    const initialLanguageIds = searchParams?.get('languageIds') ? searchParams?.get('languageIds')?.split(',').map(Number) : (savedState.filters?.languageIds || (initialLanguageId ? [initialLanguageId] : []));
+      const saved = localStorage.getItem('voices_master_control');
+      let savedState: any = {};
+      try {
+        if (saved) savedState = JSON.parse(saved);
+      } catch (e) {}
 
-    const initialWordsParam = searchParams?.get('words');
-    const initialWords = (initialWordsParam && parseInt(initialWordsParam) > 0) 
-      ? parseInt(initialWordsParam) 
-      : (savedState.filters?.words || (journey === 'telephony' ? 25 : (journey === 'commercial' ? 100 : 200)));
-    
-    const currentPath = window.location.pathname;
-    const pathSegments = currentPath.split('/').filter(Boolean);
-    let initialMedia = (searchParams?.get('media') ? searchParams?.get('media')?.split(',') : (savedState.filters?.media || ['online']));
-    
-    if (currentPath.startsWith('/agency') && journey === 'commercial' && pathSegments[2]) {
-      initialMedia = [pathSegments[2].toLowerCase()];
-    }
+      const journey = initialJourney || (searchParams?.get('journey') as JourneyType) || 
+                     (voicesState.current_journey !== 'general' ? voicesState.current_journey as JourneyType : 'video');
+      
+      const initialLanguageParam = searchParams?.get('language');
+      const initialLanguageIdParam = searchParams?.get('languageId');
+      
+      let initialLanguage = initialLanguageParam 
+        ? initialLanguageParam 
+        : (savedState.filters?.language || defaultLang);
+      
+      let initialLanguageId = initialLanguageIdParam 
+        ? parseInt(initialLanguageIdParam) 
+        : (savedState.filters?.languageId || defaultLangId);
+        
+      const initialLanguages = searchParams?.get('languages') ? searchParams?.get('languages')?.split(',') : (savedState.filters?.languages || [initialLanguage.toLowerCase()]);
+      const initialLanguageIds = searchParams?.get('languageIds') ? searchParams?.get('languageIds')?.split(',').map(Number) : (savedState.filters?.languageIds || (initialLanguageId ? [initialLanguageId] : []));
 
-    let initialSpotsDetail = savedState.filters?.spotsDetail;
-    try {
-      const sd = searchParams?.get('spotsDetail');
-      if (sd) initialSpotsDetail = JSON.parse(decodeURIComponent(sd));
-    } catch (e) {}
+      const initialWordsParam = searchParams?.get('words');
+      const initialWords = (initialWordsParam && parseInt(initialWordsParam) > 0) 
+        ? parseInt(initialWordsParam) 
+        : (savedState.filters?.words || (journey === 'telephony' ? 25 : (journey === 'commercial' ? 100 : 200)));
+      
+      const currentPath = window.location.pathname;
+      const pathSegments = currentPath.split('/').filter(Boolean);
+      let initialMedia = (searchParams?.get('media') ? searchParams?.get('media')?.split(',') : (savedState.filters?.media || ['online']));
+      
+      if (currentPath.startsWith('/agency') && journey === 'commercial' && pathSegments[2]) {
+        initialMedia = [pathSegments[2].toLowerCase()];
+      }
 
-    let initialYearsDetail = savedState.filters?.yearsDetail;
-    try {
-      const yd = searchParams?.get('yearsDetail');
-      if (yd) initialYearsDetail = JSON.parse(decodeURIComponent(yd));
-    } catch (e) {}
+      let initialSpotsDetail = savedState.filters?.spotsDetail;
+      try {
+        const sd = searchParams?.get('spotsDetail');
+        if (sd) initialSpotsDetail = JSON.parse(decodeURIComponent(sd));
+      } catch (e) {}
 
-    let initialMediaRegion = savedState.filters?.mediaRegion;
-    try {
-      const mr = searchParams?.get('mediaRegion');
-      if (mr) initialMediaRegion = JSON.parse(decodeURIComponent(mr));
-    } catch (e) {}
+      let initialYearsDetail = savedState.filters?.yearsDetail;
+      try {
+        const yd = searchParams?.get('yearsDetail');
+        if (yd) initialYearsDetail = JSON.parse(decodeURIComponent(yd));
+      } catch (e) {}
 
-    const newState: MasterControlState = {
-      journey,
-      usage: JOURNEY_USAGE_MAP[journey],
-      isMuted: savedState.isMuted ?? false,
-      filters: {
-        language: initialLanguage,
-        languageId: initialLanguageId,
-        languages: initialLanguages as string[],
-        languageIds: initialLanguageIds,
-        gender: searchParams?.get('gender') || savedState.filters?.gender || null,
-        genderId: searchParams?.get('genderId') ? parseInt(searchParams.get('genderId')!) : (savedState.filters?.genderId || null),
-        style: searchParams?.get('style') || savedState.filters?.style || null,
-        sortBy: (searchParams?.get('sortBy') as any) || savedState.filters?.sortBy || 'popularity',
-        words: initialWords,
-        media: initialMedia,
-        countries: savedState.filters?.countries || ['BE'],
-        country: searchParams?.get('country') || savedState.filters?.country || 'BE',
-        countryId: searchParams?.get('countryId') ? parseInt(searchParams.get('countryId')!) : (savedState.filters?.countryId || null),
-        spots: searchParams?.get('spots') ? parseInt(searchParams?.get('spots')!) : (savedState.filters?.spots || 1),
-        years: searchParams?.get('years') ? parseInt(searchParams?.get('years')!) : (savedState.filters?.years || 1),
-        spotsDetail: initialSpotsDetail,
-        yearsDetail: initialYearsDetail,
-        mediaRegion: initialMediaRegion,
-        liveSession: searchParams?.get('liveSession') === 'true' || savedState.filters?.liveSession || false,
-      },
-      currentStep: 'voice',
+      let initialMediaRegion = savedState.filters?.mediaRegion;
+      try {
+        const mr = searchParams?.get('mediaRegion');
+        if (mr) initialMediaRegion = JSON.parse(decodeURIComponent(mr));
+      } catch (e) {}
+
+      const newState: MasterControlState = {
+        journey,
+        usage: JOURNEY_USAGE_MAP[journey],
+        isMuted: savedState.isMuted ?? false,
+        filters: {
+          language: initialLanguage,
+          languageId: initialLanguageId,
+          languages: initialLanguages as string[],
+          languageIds: initialLanguageIds,
+          gender: searchParams?.get('gender') || savedState.filters?.gender || null,
+          genderId: searchParams?.get('genderId') ? parseInt(searchParams.get('genderId')!) : (savedState.filters?.genderId || null),
+          style: searchParams?.get('style') || savedState.filters?.style || null,
+          sortBy: (searchParams?.get('sortBy') as any) || savedState.filters?.sortBy || 'popularity',
+          words: initialWords,
+          media: initialMedia,
+          countries: savedState.filters?.countries || ['BE'],
+          country: searchParams?.get('country') || savedState.filters?.country || 'BE',
+          countryId: searchParams?.get('countryId') ? parseInt(searchParams.get('countryId')!) : (savedState.filters?.countryId || null),
+          spots: searchParams?.get('spots') ? parseInt(searchParams?.get('spots')!) : (savedState.filters?.spots || 1),
+          years: searchParams?.get('years') ? parseInt(searchParams?.get('years')!) : (savedState.filters?.years || 1),
+          spotsDetail: initialSpotsDetail,
+          yearsDetail: initialYearsDetail,
+          mediaRegion: initialMediaRegion,
+          liveSession: searchParams?.get('liveSession') === 'true' || savedState.filters?.liveSession || false,
+        },
+        currentStep: 'voice',
+      };
+
+      setState(newState);
     };
 
-    setState(newState);
-  }, [searchParams, pathname, voicesState.current_journey]);
+    // CHRIS-PROTOCOL: Execute initialization in the next tick to guarantee hydration completion
+    const timer = setTimeout(initializeState, 0);
+    return () => clearTimeout(timer);
+  }, [searchParams, pathname, voicesState.current_journey, initialJourney]);
 
   // 🛡️ CHRIS-PROTOCOL: Decouple context sync from hydration (v2.14.629)
   // This prevents React Error #419 by moving side-effects to a separate tick.
@@ -577,7 +577,7 @@ export const VoicesMasterControlProvider: React.FC<{
           updatedFilters.media = ['online'];
           updatedFilters.spotsDetail = { online: 1 };
         }
-        updateMedia(updatedFilters.media);
+        updateMedia(updatedFilters.media || []);
       }
       if (newFilters.spots) updateSpots(newFilters.spots);
       if (newFilters.years) updateYears(newFilters.years);

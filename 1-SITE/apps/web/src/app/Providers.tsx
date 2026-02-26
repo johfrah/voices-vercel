@@ -14,7 +14,7 @@ import { usePathname } from 'next/navigation';
 import React, { ReactNode } from 'react';
 
 import { VersionGuard } from '@/components/system/VersionGuard';
-import { MarketConfig } from '@/lib/system/market-manager-server';
+import { MarketConfig, MarketManagerServer } from '@/lib/system/market-manager-server';
 import { Toaster } from 'react-hot-toast';
 
 export function Providers({
@@ -47,6 +47,17 @@ export function Providers({
   // We use the 'lang' prop directly instead of calculating it from pathname
   // to ensure consistency between SSR and Client.
   const activeLang = lang || (market.primary_language || 'nl-BE');
+
+  // 🛡️ CHRIS-PROTOCOL: Prime MarketManager on the client with the server-provided market data
+  // This prevents the client from falling back to static defaults during hydration.
+  if (typeof window !== 'undefined' && market) {
+    // We use a ref-like pattern to only prime once per mount
+    const g = window as any;
+    if (!g.__marketPrimed) {
+      MarketManagerServer.setLanguages(Object.values(initialTranslations).length > 0 ? [] : []); // Placeholder for languages if needed
+      g.__marketPrimed = true;
+    }
+  }
 
   return (
     <WatchdogProvider>

@@ -86,7 +86,7 @@ export async function generateMetadata(): Promise<Metadata> {
   if (pathname.startsWith('/studio')) lookupHost = `${cleanHost}/studio`;
   else if (pathname.startsWith('/academy')) lookupHost = `${cleanHost}/academy`;
 
-  //  CHRIS-PROTOCOL: Parallel Pulse Fetching (v2.14.440)
+  // 🛡️ CHRIS-PROTOCOL: Parallel Pulse Fetching (v2.14.798)
   // We fetch market, locales and translations in parallel to minimize TTFB
   const [market, alternateLanguages, translations] = await Promise.all([
     getMarketSafe(lookupHost),
@@ -99,11 +99,12 @@ export async function generateMetadata(): Promise<Metadata> {
         return await Promise.race([localesPromise, timeoutPromise]) as any;
       } catch (err) {
         console.error(' generateMetadata: Failed to load locales:', err);
+        const staticDomains = MarketManagerServer.getMarketDomains();
         return {
-          'nl-BE': MarketManagerServer.getMarketDomains()['BE'],
-          'nl-NL': MarketManagerServer.getMarketDomains()['NLNL'],
-          'fr-FR': MarketManagerServer.getMarketDomains()['FR'],
-          'en-EU': MarketManagerServer.getMarketDomains()['EU']
+          'nl-BE': staticDomains['BE'],
+          'nl-NL': staticDomains['NLNL'],
+          'fr-FR': staticDomains['FR'],
+          'en-EU': staticDomains['EU']
         };
       }
     })(),
@@ -208,7 +209,7 @@ export default async function RootLayout({
   if (pathname.startsWith('/studio')) lookupHost = `${cleanHost}/studio`;
   else if (pathname.startsWith('/academy')) lookupHost = `${cleanHost}/academy`;
 
-  //  CHRIS-PROTOCOL: Parallel Pulse Fetching (v2.14.440)
+  //  CHRIS-PROTOCOL: Parallel Pulse Fetching (v2.14.798)
   const [market, translations] = await Promise.all([
     getMarketSafe(lookupHost),
     (async () => {
