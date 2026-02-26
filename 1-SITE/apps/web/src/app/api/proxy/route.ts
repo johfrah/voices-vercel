@@ -89,6 +89,7 @@ export async function GET(request: NextRequest) {
       cleanPath.startsWith('common/') || 
       cleanPath.startsWith('studio/') || 
       cleanPath.startsWith('visuals/') ||
+      cleanPath.startsWith('reviews/') ||
       cleanPath.startsWith('portfolio/') ||
       cleanPath.startsWith('artists/') ||
       cleanPath.startsWith('ademing/') ||
@@ -114,8 +115,8 @@ export async function GET(request: NextRequest) {
 
     let normalizedPath = cleanPath.startsWith('/') ? cleanPath : `/${cleanPath}`;
 
-    //  SUPABASE & GOOGLE STORAGE REDIRECT: Als het pad begint met 'agency/', 'active/', 'common/', 'studio/', 'ademing/', 'portfolio/', 'artists/' of 'visuals/', fetch het dan van Supabase Storage
-    if (cleanPath.startsWith('agency/') || cleanPath.startsWith('active/') || cleanPath.startsWith('common/') || cleanPath.startsWith('studio/') || cleanPath.startsWith('ademing/') || cleanPath.startsWith('portfolio/') || cleanPath.startsWith('artists/') || cleanPath.startsWith('visuals/') || cleanPath.startsWith('https://vcbxyyjsxuquytcsskpj.supabase.co') || cleanPath.includes('googleusercontent.com')) {
+    //  SUPABASE & GOOGLE STORAGE REDIRECT: Als het pad begint met 'agency/', 'active/', 'common/', 'studio/', 'ademing/', 'portfolio/', 'artists/', 'visuals/' of 'reviews/', fetch het dan van Supabase Storage
+    if (cleanPath.startsWith('agency/') || cleanPath.startsWith('active/') || cleanPath.startsWith('common/') || cleanPath.startsWith('studio/') || cleanPath.startsWith('ademing/') || cleanPath.startsWith('portfolio/') || cleanPath.startsWith('artists/') || cleanPath.startsWith('visuals/') || cleanPath.startsWith('reviews/') || cleanPath.startsWith('https://vcbxyyjsxuquytcsskpj.supabase.co') || cleanPath.includes('googleusercontent.com')) {
       const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://vcbxyyjsxuquytcsskpj.supabase.co';
       const SUPABASE_STORAGE_URL = `${SUPABASE_URL.replace(/\/$/, '')}/storage/v1`;
       
