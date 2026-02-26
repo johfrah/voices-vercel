@@ -40,6 +40,18 @@ async function validateStudioParcours() {
     });
     
     page = await context.newPage();
+    
+    // Capture console logs and errors
+    const consoleErrors: string[] = [];
+    page.on('console', msg => {
+      if (msg.type() === 'error') {
+        consoleErrors.push(msg.text());
+      }
+    });
+    
+    page.on('pageerror', error => {
+      consoleErrors.push(`Page Error: ${error.message}`);
+    });
 
     // ========================================
     // STEP 1: Navigate to /studio/quiz
@@ -55,6 +67,15 @@ async function validateStudioParcours() {
     }
     
     await page.waitForTimeout(5000);
+    
+    // Take screenshot for debugging
+    await page.screenshot({ path: '/tmp/studio-quiz.png', fullPage: true });
+    console.log('📸 Screenshot saved to /tmp/studio-quiz.png');
+    
+    // Check for console errors
+    if (consoleErrors.length > 0) {
+      console.log('⚠️  Console errors detected:', consoleErrors.slice(0, 3));
+    }
     
     // Check if video element exists
     const videoElement = await page.locator('video').first();
@@ -171,6 +192,10 @@ async function validateStudioParcours() {
     }
     
     await page.waitForTimeout(5000);
+    
+    // Take screenshot for debugging
+    await page.screenshot({ path: '/tmp/studio-doe-je-mee.png', fullPage: true });
+    console.log('📸 Screenshot saved to /tmp/studio-doe-je-mee.png');
     
     // Check for workshop list (buttons with workshop titles)
     const workshopButtons = await page.locator('button:has-text("Voice-over"), button:has-text("Perfectie"), button:has-text("Audioboeken")').count();
