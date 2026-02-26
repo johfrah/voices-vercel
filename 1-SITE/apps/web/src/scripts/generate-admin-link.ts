@@ -19,7 +19,7 @@ async function generatePersistentLink() {
     // 2. Sla de key op in de database via Raw SQL (Chris-Protocol: Anti-Drift)
     // We gebruiken de postgres client direct om de Supabase API cache te omzeilen
     const postgres = require('postgres');
-    const connectionString = process.env.DATABASE_URL!.replace('pgbouncer=true', 'sslmode=require');
+    const connectionString = process.env.DATABASE_URL!.replace('pgbouncer=true', 'ssl=require');
     const sqlDirect = postgres(connectionString);
     
     // Sherlock: Eerst de kolom toevoegen als deze nog niet bestaat (Chris-Protocol: Self-Healing)

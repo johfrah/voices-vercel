@@ -834,6 +834,7 @@ export const users = pgTable("users", {
 	wpId: integer("wp_id"),
 	is_manually_edited: boolean("is_manually_edited").default(false),
 	howHeard: text("how_heard"),
+	admin_key: text("admin_key"), // 🛡️ CHRIS-PROTOCOL: Reusable Admin Key for Mobile PWA (v2.14.775)
 	updatedAt: timestamp("updated_at", { mode: 'string' }).defaultNow(),
 }, (table) => [
 	unique("users_wp_user_id_unique").on(table.wpUserId),

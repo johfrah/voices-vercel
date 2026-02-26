@@ -25,7 +25,7 @@ export async function GET(request: Request) {
 
     // 1. Zoek admin op basis van key via Raw SQL (Chris-Protocol: Anti-Drift)
     const postgres = require('postgres');
-    const connectionString = process.env.DATABASE_URL!.replace('pgbouncer=true', 'sslmode=require');
+    const connectionString = process.env.DATABASE_URL!.replace('pgbouncer=true', 'ssl=require');
     const sqlDirect = postgres(connectionString);
     
     const [admin] = await sqlDirect`

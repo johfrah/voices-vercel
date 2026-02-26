@@ -233,6 +233,7 @@ export const actors = pgTable('actors', {
   slug: text('slug').unique(),
   website: text('website'), // 🌐 Persoonlijke website van de acteur (Privé/Admin)
   linkedin: text('linkedin'), // 🔗 LinkedIn profiel (Privé/Admin)
+  instagram: text('instagram'), // 📸 Instagram profiel
   internal_notes: text('internal_notes'), // Privé veld voor admin
   is_manually_edited: boolean('is_manually_edited').default(false), // 🛡️ NUCLEAR LOCK MANDATE
   createdAt: timestamp('created_at').defaultNow(),
@@ -1596,6 +1597,26 @@ export const actorDialectsRelations = relations(actorDialects, ({ one }) => ({
   proficiency: one(proficiencies, {
     fields: [actorDialects.proficiencyId],
     references: [proficiencies.id],
+  }),
+}));
+
+export const actorReviews = pgTable('actor_reviews', {
+  id: serial('id').primaryKey(),
+  actorId: integer('actor_id').references(() => actors.id, { onDelete: 'cascade' }).notNull(),
+  reviewId: integer('review_id').references(() => reviews.id, { onDelete: 'cascade' }).notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
+}, (table) => [
+  unique('actor_reviews_actor_id_review_id_key').on(table.actorId, table.reviewId),
+]);
+
+export const actorReviewsRelations = relations(actorReviews, ({ one }) => ({
+  actor: one(actors, {
+    fields: [actorReviews.actorId],
+    references: [actors.id],
+  }),
+  review: one(reviews, {
+    fields: [actorReviews.reviewId],
+    references: [reviews.id],
   }),
 }));
 export const proficienciesRelations = relations(proficiencies, ({ many }) => ({
