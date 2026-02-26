@@ -28,11 +28,13 @@ export default function DemoDiscoveryPage() {
   const [blueprints, setBlueprints] = useState<any[]>([]);
   const [demos, setDemos] = useState<any[]>([]);
   const [subtypes, setSubtypes] = useState<any[]>([]);
+  const [tones, setTones] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   
   // Filters
   const [selectedSector, setSelectedSector] = useState<string | null>(null);
   const [selectedSubtype, setSelectedSubtype] = useState<string | null>(null);
+  const [selectedTone, setSelectedTone] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeDemoId, setActiveDemoId] = useState<number | null>(null);
   const [companyName, setCompanyName] = useState("");

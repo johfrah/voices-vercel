@@ -85,6 +85,8 @@ export async function GET(request: NextRequest) {
         name: d.name,
         actor_name: `${d.actors?.first_name || ''} ${d.actors?.last_name || ''}`.trim(),
         transcript: d.media_intelligence?.transcript,
+        detected_tones: d.media_intelligence?.ai_metadata?.detected_tones,
+        sonic_dna: d.media_intelligence?.ai_metadata?.sonic_dna,
         sector_id: d.demo_sectors?.[0]?.sector_id,
         sector_name: d.demo_sectors?.[0]?.sectors?.name,
         media_type_label: d.media_types?.label,
@@ -236,7 +238,7 @@ export async function POST(request: NextRequest) {
         }
       });
 
-    return NextResponse.json({ success: true, _version: '2.14.800' });
+    return NextResponse.json({ success: true, _version: '2.15.001' });
   } catch (error) {
     console.error('[Admin Config POST Error]:', error);
     return NextResponse.json({ error: 'Failed to update config' }, { status: 500 });
