@@ -164,7 +164,7 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
                   query = query.eq('native_language_id', match.id);
                 } else {
                   // Last resort fallback to legacy column if ID not found
-                  query = query.eq('native_lang', lowLang);
+                  // query = query.eq('native_lang', lowLang);
                 }
               }
             }
@@ -182,7 +182,7 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
               if (match) {
                 query = query.eq('gender_id', match.id);
               } else {
-                query = query.eq('gender', gender);
+                // query = query.eq('gender', gender);
               }
             }
           }
@@ -444,8 +444,8 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
         slug: actor.slug || actor.first_name?.toLowerCase(),
         gender: actor.gender,
         native_lang_id: nativeLangId,
-        native_lang: nativeLangInfo?.code || actor.native_lang || '',
-        native_lang_label: nativeLangInfo?.label || actor.native_lang_label || '',
+        native_lang: nativeLangInfo?.code || '',
+        native_lang_label: nativeLangInfo?.label || '',
         photo_url: photoUrl,
         starting_price: parseFloat(actor.price_unpaid || '0'),
         voice_score: actor.voice_score || 10,
@@ -457,17 +457,17 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
         delivery_days_min: actor.delivery_days_min || 1,
         delivery_days_max: actor.delivery_days_max || 3,
         extra_lang_ids: extraLangsMap.get(actor.id) || [],
-        extra_langs: extraLangsStringMap.get(actor.id) || actor.extra_langs || '',
+        extra_langs: extraLangsStringMap.get(actor.id) || '',
         demos: proxiedDemos,
         actor_videos: proxiedVideos,
         rates: actor.rates || {},
         email: actor.email || '',
-        status: statusInfo?.label || actor.status || 'live',
-        status_code: statusInfo?.code || actor.status || 'live',
-        experience_level: experienceInfo?.label || actor.experience_level || 'pro',
-        experience_level_code: experienceInfo?.code || actor.experience_level || 'pro',
-        country: countryInfo?.label || actor.country || 'België',
-        country_code: countryInfo?.code || actor.country || 'BE',
+        status: statusInfo?.label || 'live',
+        status_code: statusInfo?.code || 'live',
+        experience_level: experienceInfo?.label || 'pro',
+        experience_level_code: experienceInfo?.code || 'pro',
+        country: countryInfo?.label || 'België',
+        country_code: countryInfo?.code || 'BE',
         clients: actor.clients || '',
         tone_of_voice: actor.tone_of_voice || '',
         cutoff_time: actor.cutoff_time || '18:00',
@@ -680,17 +680,17 @@ async function processActorData(actor: any, slug: string): Promise<Actor> {
   console.error(` [api-server] processActorData SUCCESS for ${actor.first_name}`);
 
   // 🛡️ CHRIS-PROTOCOL: Fetch language details for Handshake Truth (v2.14.656)
-  let nativeLang = actor.native_lang || '';
-  let nativeLangLabel = actor.native_lang_label || '';
-  let extraLangs = actor.extra_langs || '';
+  let nativeLang = '';
+  let nativeLangLabel = '';
+  let extraLangs = '';
   
   // 🛡️ CHRIS-PROTOCOL: Handshake Truth Resolution (v2.14.676)
-  let statusLabel = actor.status || 'live';
-  let statusCode = actor.status || 'live';
-  let experienceLabel = actor.experience_level || 'pro';
-  let experienceCode = actor.experience_level || 'pro';
-  let countryLabel = actor.country || 'België';
-  let countryCode = actor.country || 'BE';
+  let statusLabel = 'live';
+  let statusCode = 'live';
+  let experienceLabel = 'pro';
+  let experienceCode = 'pro';
+  let countryLabel = 'België';
+  let countryCode = 'BE';
 
   if (actor.native_language_id || actor.id) {
     try {

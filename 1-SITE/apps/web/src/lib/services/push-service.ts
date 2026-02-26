@@ -1,6 +1,6 @@
-import { MarketManager } from '../system/market-manager-server';
 import webpush from 'web-push';
-import postgres from 'postgres';
+import { db, chatPushSubscriptions } from '../system/voices-config';
+import { eq, inArray } from 'drizzle-orm';
 
 /**
  * 🚀 PUSH SERVICE (VOICES 2026)
@@ -17,9 +17,7 @@ export class PushService {
     const privateKey = process.env.VAPID_PRIVATE_KEY;
     
     // 🛡️ CHRIS-PROTOCOL: Use dynamic subject to pass Nuclear Audit (v2.14.788)
-    // We use MarketManager to avoid hardcoded domain slop
-    const market = MarketManager.getCurrentMarket();
-    const subject = process.env.VAPID_SUBJECT || `mailto:johfrah@${market.market_code === 'BE' ? 'voices.be' : 'voices.be'}`;
+    const subject = process.env.VAPID_SUBJECT || `mailto:johfrah@voices.be`;
 
     if (!publicKey || !privateKey) {
       console.error('[PushService] VAPID keys missing in environment');
@@ -39,15 +37,15 @@ export class PushService {
     if (!this.isInitialized) return;
 
     try {
-      const connectionString = process.env.DATABASE_URL!.replace('?pgbouncer=true', '');
-      const sql = postgres(connectionString, { ssl: 'require' });
-
-      const subscriptions = await sql`
-        SELECT endpoint, p256dh, auth 
-        FROM chat_push_subscriptions 
-        WHERE enabled = TRUE
-      `;
-      await sql.end();
+      // 🛡️ CHRIS-PROTOCOL: Use Drizzle for connection stability (v2.14.789)
+      const subscriptions = await db
+        .select({
+          endpoint: chatPushSubscriptions.endpoint,
+          p256dh: chatPushSubscriptions.p256Dh,
+          auth: chatPushSubscriptions.auth
+        })
+        .from(chatPushSubscriptions)
+        .where(eq(chatPushSubscriptions.enabled, true));
 
       if (subscriptions.length === 0) {
         console.log('[PushService] No active subscriptions found');
@@ -75,17 +73,15 @@ export class PushService {
 
       // Cleanup failed subscriptions (e.g. expired)
       const failedEndpoints = results
-        .filter(r => r.status === 'rejected' && (r.reason.statusCode === 410 || r.reason.statusCode === 404))
+        .filter((r): r is PromiseRejectedResult => r.status === 'rejected' && (r.reason.statusCode === 410 || r.reason.statusCode === 404))
         .map((_, i) => subscriptions[i].endpoint);
 
       if (failedEndpoints.length > 0) {
-        const sqlCleanup = postgres(connectionString, { ssl: 'require' });
-        await sqlCleanup`
-          UPDATE chat_push_subscriptions 
-          SET enabled = FALSE 
-          WHERE endpoint IN ${failedEndpoints}
-        `;
-        await sqlCleanup.end();
+        await db
+          .update(chatPushSubscriptions)
+          .set({ enabled: false })
+          .where(inArray(chatPushSubscriptions.endpoint, failedEndpoints));
+        
         console.log(`[PushService] Cleaned up ${failedEndpoints.length} expired subscriptions`);
       }
 

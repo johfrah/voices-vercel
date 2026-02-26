@@ -438,9 +438,10 @@ SLIMME KASSA REGELS:
     }
 
     // 4. Sla op in DB indien mogelijk
+    let saveResult: any = null;
     try {
       console.log('[Voicy API] Attempting to save to DB...');
-      const result = await db.transaction(async (tx: any) => {
+      saveResult = await db.transaction(async (tx: any) => {
         let convId = conversationId;
         if (!convId) {
           const [newConv] = await tx.insert(chatConversations).values({
@@ -470,57 +471,6 @@ SLIMME KASSA REGELS:
           createdAt: new Date()
         }).returning();
 
-        //  ADMIN NOTIFICATION: Stuur een mail en push bij elke interactie (Chris-Protocol: Real-time awareness)
-        if (senderType === 'user') {
-          try {
-            const { VoicesMailEngine } = await import('@/lib/services/voices-mail-engine');
-            const mailEngine = VoicesMailEngine.getInstance();
-            const { MarketManagerServer: MarketManagerLocal } = await import('@/lib/system/market-manager-server');
-            const { PushService } = await import('@/lib/services/push-service');
-            
-            // Gebruik de request parameter van de POST functie
-            const host = request?.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || MarketManagerLocal.getMarketDomains()['BE']?.replace('https://', ''));
-            const market = MarketManagerLocal.getCurrentMarket(host);
-            const siteUrl = MarketManagerLocal.getMarketDomains()[market.market_code] || MarketManagerLocal.getMarketDomains()['BE'];
-            
-            // 1. Email Notificatie
-            await mailEngine.sendVoicesMail({
-              to: market.email || process.env.ADMIN_EMAIL || VOICES_CONFIG.company.email,
-              subject: `💬 Chat Interactie: ${message.substring(0, 30)}...`,
-              title: 'Nieuw bericht in de chat',
-              body: `
-                <strong>Bericht:</strong> "${message}"<br/>
-                <strong>Conversatie ID:</strong> ${convId}<br/>
-                <strong>Journey:</strong> ${journey}<br/>
-                <strong>Persona:</strong> ${persona}
-              `,
-              buttonText: 'Open Dashboard',
-              buttonUrl: `${siteUrl}/admin/dashboard`,
-              host: host
-            });
-
-            // 2. Push Notificatie (iPhone/Smartphone)
-            await PushService.notifyAdmins({
-              title: `Nieuw bericht (#${convId})`,
-              body: message.substring(0, 100),
-              url: `/admin/live-chat`
-            });
-
-            // 3. Telegram Notificatie (Chris-Protocol: Multi-Channel Awareness)
-            const { TelegramService } = await import('@/lib/services/telegram-service');
-            const telegramMsg = `💬 <b>Nieuwe Chat Interactie</b>\n\n` +
-                                `<b>Bericht:</b> <i>"${message}"</i>\n` +
-                                `<b>ID:</b> #${convId}\n` +
-                                `<b>Journey:</b> ${journey}\n\n` +
-                                `<a href="${siteUrl}/admin/live-chat">👉 Open Live Chat Watcher</a>`;
-            
-            await TelegramService.sendAlert(telegramMsg, { force: true });
-
-          } catch (mailErr) {
-            console.error('[Voicy API] Failed to send notifications:', mailErr);
-          }
-        }
-
         await tx.update(chatConversations)
           .set({ updatedAt: new Date() })
           .where(eq(chatConversations.id, convId));
@@ -536,24 +486,72 @@ SLIMME KASSA REGELS:
 
         return { messageId: newMessage.id, conversationId: convId };
       });
-
       console.log('[Voicy API] DB save successful.');
-      return NextResponse.json({
-        success: true,
-        content: aiContent,
-        actions: actions,
-        ...result
-      });
     } catch (dbError: any) {
       console.error('[Voicy API DB Error]:', dbError);
-      // Fallback to AI-only response if DB fails
-      return NextResponse.json({
-        success: true,
-        content: aiContent,
-        actions: actions,
-        _db_error: true
-      });
+      // We gaan door met AI response zelfs als DB faalt (voor UX stabiliteit)
     }
+
+    // 5. ADMIN NOTIFICATIONS (Chris-Protocol: Real-time awareness)
+    // 🛡️ CHRIS-PROTOCOL: Buiten de transactie om blokkades te voorkomen (v2.14.789)
+    if (senderType === 'user' && saveResult?.conversationId) {
+      // We vuren de notificaties af zonder de response te blokkeren
+      (async () => {
+        try {
+          const { VoicesMailEngine } = await import('@/lib/services/voices-mail-engine');
+          const mailEngine = VoicesMailEngine.getInstance();
+          const { MarketManagerServer: MarketManagerLocal } = await import('@/lib/system/market-manager-server');
+          const { PushService } = await import('@/lib/services/push-service');
+          const { TelegramService } = await import('@/lib/services/telegram-service');
+          
+          const host = request?.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || MarketManagerLocal.getMarketDomains()['BE']?.replace('https://', ''));
+          const market = MarketManagerLocal.getCurrentMarket(host);
+          const siteUrl = MarketManagerLocal.getMarketDomains()[market.market_code] || MarketManagerLocal.getMarketDomains()['BE'];
+          
+          // 1. Email Notificatie
+          await mailEngine.sendVoicesMail({
+            to: market.email || process.env.ADMIN_EMAIL || VOICES_CONFIG.company.email,
+            subject: `💬 Chat Interactie: ${message.substring(0, 30)}...`,
+            title: 'Nieuw bericht in de chat',
+            body: `
+              <strong>Bericht:</strong> "${message}"<br/>
+              <strong>Conversatie ID:</strong> ${saveResult.conversationId}<br/>
+              <strong>Journey:</strong> ${journey}<br/>
+              <strong>Persona:</strong> ${persona}
+            `,
+            buttonText: 'Open Dashboard',
+            buttonUrl: `${siteUrl}/admin/dashboard`,
+            host: host
+          }).catch(e => console.error('[Push] Mail failed:', e.message));
+
+          // 2. Push Notificatie (iPhone/Smartphone)
+          await PushService.notifyAdmins({
+            title: `Nieuw bericht (#${saveResult.conversationId})`,
+            body: message.substring(0, 100),
+            url: `/admin/live-chat`
+          }).catch(e => console.error('[Push] WebPush failed:', e.message));
+
+          // 3. Telegram Notificatie
+          const telegramMsg = `💬 <b>Nieuwe Chat Interactie</b>\n\n` +
+                              `<b>Bericht:</b> <i>"${message}"</i>\n` +
+                              `<b>ID:</b> #${saveResult.conversationId}\n` +
+                              `<b>Journey:</b> ${journey}\n\n` +
+                              `<a href="${siteUrl}/admin/live-chat">👉 Open Live Chat Watcher</a>`;
+          
+          await TelegramService.sendAlert(telegramMsg, { force: true }).catch(e => console.error('[Push] Telegram failed:', e.message));
+
+        } catch (notifyErr: any) {
+          console.error('[Voicy API] Critical Notification Engine Error:', notifyErr.message);
+        }
+      })();
+    }
+
+    return NextResponse.json({
+      success: true,
+      content: aiContent,
+      actions: actions,
+      ...(saveResult || { _db_error: true })
+    });
   } catch (error: any) {
     console.error('[Core Chat Send Error]:', error);
     return NextResponse.json({ 

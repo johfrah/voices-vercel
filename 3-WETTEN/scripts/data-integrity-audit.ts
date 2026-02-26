@@ -122,7 +122,7 @@ async function runAudit(): Promise<DataHealthReport> {
       COUNT(*)::int as count,
       COUNT(CASE WHEN status = 'live' AND is_public = true THEN 1 END)::int as live_public_count
     FROM actors
-    WHERE (native_lang IS NULL OR native_lang = '')
+    WHERE (native_language_id IS NULL)
       AND (status = 'live' OR is_public = true)
   `;
   report.languageIntegrity.missingNativeLang = missingNativeLang[0]?.count || 0;
@@ -132,7 +132,7 @@ async function runAudit(): Promise<DataHealthReport> {
     SELECT COUNT(DISTINCT a.id)::int as count
     FROM actors a
     INNER JOIN actor_languages al ON a.id = al.actor_id
-    WHERE (a.native_lang IS NULL OR a.native_lang = '')
+    WHERE (a.native_language_id IS NULL)
       AND al.is_native = true
       AND (a.status = 'live' OR a.is_public = true)
   `;
@@ -143,7 +143,7 @@ async function runAudit(): Promise<DataHealthReport> {
     FROM actors a
     LEFT JOIN actor_languages al ON a.id = al.actor_id AND al.is_native = true
     WHERE a.status = 'live'
-      AND (a.native_lang IS NULL OR a.native_lang = '')
+      AND (a.native_language_id IS NULL)
       AND al.id IS NULL
   `;
   report.languageIntegrity.noNativeLangAnywhere = noNativeLangAnywhere[0]?.count || 0;
@@ -156,12 +156,12 @@ async function runAudit(): Promise<DataHealthReport> {
       a.first_name,
       a.status,
       a.is_public,
-      a.native_lang,
+      a.native_language_id as native_lang,
       CASE WHEN al.id IS NOT NULL THEN 'YES' ELSE 'NO' END as has_native_in_relation
     FROM actors a
     LEFT JOIN actor_languages al ON a.id = al.actor_id AND al.is_native = true
     WHERE a.status = 'live'
-      AND (a.native_lang IS NULL OR a.native_lang = '')
+      AND (a.native_language_id IS NULL)
       AND al.id IS NULL
     ORDER BY a.id
   `;

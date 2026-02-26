@@ -4,8 +4,6 @@ import { VoicesLink } from '@/components/ui/VoicesLink';
 import { db, contentArticles, actors, translations, castingLists } from '@/lib/system/voices-config';
 import { eq, or, ilike, and } from 'drizzle-orm';
 import { ArrowRight, CreditCard, Info, ShieldCheck, Star, Zap, Play, Instagram, Globe } from 'lucide-react';
-import Link from 'next/link';
-import { BentoGrid, BentoCard } from '@/components/ui/BentoGrid';
 import { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -21,7 +19,6 @@ import { AgencyHeroInstrument } from "@/components/ui/AgencyHeroInstrument";
 import nextDynamic from "next/dynamic";
 import { JourneyType } from '@/contexts/VoicesMasterControlContext';
 import { normalizeSlug, stripLanguagePrefix } from '@/lib/system/slug';
-
 import { BentoGrid, BentoCard } from '@/components/ui/BentoGrid';
 import { createClient } from "@supabase/supabase-js";
 
@@ -394,7 +391,6 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
   console.error(` [SmartRouter] SmartRouteContent START for: ${segments.join('/')}`);
   try {
     // 🛡️ NUCLEAR HANDSHAKE: Resolve via Slug Registry
-    const firstSegment = segments[0];
     const host = headersList.get('host') || '';
     const market = MarketManager.getCurrentMarket(host);
     
@@ -825,7 +821,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
               </ContainerInstrument>
 
               <footer className="mt-32 text-center">
-                <ContainerInstrument className="bg-va-black text-white p-16 rounded-[20px] shadow-aura-lg">
+                <ContainerInstrument className="bg-va-black text-white p-16 rounded-[20px] shadow-aura-lg relative overflow-hidden group">
                   <HeadingInstrument level={2} className="text-4xl font-light mb-8">
                     <VoiceglotText translationKey="casting.no_match_title" defaultText="Niet de juiste match?" />
                   </HeadingInstrument>
@@ -955,11 +951,9 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
           } else if (cmsSlug === 'ademing') {
             try {
               const { data: tracks } = await supabase.from('ademing_tracks').select('*').eq('is_public', true).limit(6);
-              const { data: makers } = await supabase.from('ademing_makers').select('*').eq('is_public', true);
               extraData.tracks = tracks || [];
-              extraData.makers = makers || [];
             } catch (err) {
-              console.error("[SmartRouter] Failed to fetch tracks/makers for ademing page:", err);
+              console.error("[SmartRouter] Failed to fetch tracks for ademing page:", err);
             }
           }
 
@@ -1013,24 +1007,6 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
     const { title, body } = extractTitle(block.content || '');
 
     switch (block.type) {
-      case 'reviews_grid':
-      case 'reviews':
-        return (
-          <section key={block.id} className="py-40 bg-va-off-white border-y border-black/[0.03] -mx-4 px-4 lg:-mx-32 lg:px-32">
-            <ContainerInstrument plain className="max-w-6xl mx-auto">
-              <ContainerInstrument plain className="max-w-3xl mb-24 space-y-8 mx-auto text-center">
-                {title && <HeadingInstrument level={2} className="text-5xl md:text-6xl font-light tracking-tighter leading-none text-va-black">{title}</HeadingInstrument>}
-                <TextInstrument className="text-xl md:text-2xl text-black/40 font-light leading-relaxed">
-                  {body}
-                </TextInstrument>
-              </ContainerInstrument>
-              <Suspense fallback={<div className="h-96 w-full bg-va-black/5 animate-pulse rounded-[20px]" />}>
-                <AgencyContent mappedActors={[]} filters={{ genders: [], languages: [], styles: [] }} mode="reviews_only" />
-              </Suspense>
-            </ContainerInstrument>
-          </section>
-        );
-
       case 'workshop_hero':
         const videoUrl = body.match(/video:\s*([^\n]+)/)?.[1]?.trim();
         const posterUrl = body.match(/poster:\s*([^\n]+)/)?.[1]?.trim();
@@ -1209,97 +1185,6 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
                   </BentoCard>
                 ))}
               </BentoGrid>
-            </ContainerInstrument>
-          </section>
-        );
-
-      case 'ademing_hero':
-        const heroVideo = body.match(/video:\s*([^\n]+)/)?.[1]?.trim();
-        return (
-          <section key={block.id} className="relative min-h-[80vh] flex items-center justify-center overflow-hidden">
-            <Suspense fallback={null}><LiquidBackground /></Suspense>
-            <ContainerInstrument className="relative z-10 text-center space-y-8 max-w-4xl mx-auto px-6">
-              {title && (
-                <HeadingInstrument level={1} className="text-7xl md:text-9xl font-serif font-bold tracking-tighter animate-breathe-wave">
-                  <VoiceglotText translationKey={`page.${page.slug}.block.${block.id}.title`} defaultText={title} />
-                </HeadingInstrument>
-              )}
-              <TextInstrument className="text-xl md:text-3xl text-muted-foreground font-light leading-relaxed">
-                <VoiceglotText translationKey={`page.${page.slug}.block.${block.id}.body`} defaultText={body.replace(/video:\s*[^\n]+/, '').trim()} />
-              </TextInstrument>
-            </ContainerInstrument>
-            {heroVideo && (
-              <div className="absolute inset-0 -z-10 opacity-20">
-                <video src={heroVideo} autoPlay loop muted playsInline className="w-full h-full object-cover" />
-              </div>
-            )}
-          </section>
-        );
-
-      case 'ademing_breathing':
-        return (
-          <section key={block.id} className="py-32 bg-gradient-to-br from-primary/5 via-background to-primary/10 rounded-[48px] border border-primary/10 shadow-soft">
-            <ContainerInstrument className="max-w-4xl mx-auto text-center space-y-16">
-              <div className="space-y-4">
-                {title && (
-                  <HeadingInstrument level={2} className="text-4xl md:text-6xl font-serif font-bold tracking-tight">
-                    <VoiceglotText translationKey={`page.${page.slug}.block.${block.id}.title`} defaultText={title} />
-                  </HeadingInstrument>
-                )}
-                <TextInstrument className="text-xl text-muted-foreground font-light leading-relaxed">
-                  <VoiceglotText translationKey={`page.${page.slug}.block.${block.id}.body`} defaultText={body} />
-                </TextInstrument>
-              </div>
-              <BreathingInstrument />
-            </ContainerInstrument>
-          </section>
-        );
-
-      case 'ademing_creators':
-        return (
-          <section key={block.id} className="py-32">
-            <ContainerInstrument className="max-w-6xl mx-auto px-6">
-              <div className="text-center mb-20 space-y-4">
-                {title && (
-                  <HeadingInstrument level={2} className="text-5xl md:text-7xl font-serif font-bold tracking-tight">
-                    <VoiceglotText translationKey={`page.${page.slug}.block.${block.id}.title`} defaultText={title} />
-                  </HeadingInstrument>
-                )}
-                <TextInstrument className="text-xl text-muted-foreground font-light">
-                  <VoiceglotText translationKey={`page.${page.slug}.block.${block.id}.body`} defaultText={body} />
-                </TextInstrument>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
-                {(extraData.makers || []).map((maker: any) => (
-                  <ContainerInstrument key={maker.id} className="bg-white p-12 rounded-[64px] shadow-soft border border-primary/5 hover:shadow-medium hover:-translate-y-2 transition-all duration-700 group cursor-pointer">
-                    <ContainerInstrument plain className="flex flex-col md:flex-row gap-12 items-center md:items-start text-center md:text-left">
-                      <ContainerInstrument plain className="h-40 w-40 rounded-full overflow-hidden flex-shrink-0 border-8 border-primary/5 shadow-medium group-hover:scale-105 transition-transform duration-700">
-                        <img src={maker.avatar_url} alt={maker.full_name} className="h-full w-full object-cover" />
-                      </ContainerInstrument>
-                      <ContainerInstrument plain className="flex-1 space-y-6">
-                        <HeadingInstrument level={3} className="font-serif font-bold text-4xl group-hover:text-primary transition-colors">{maker.full_name}</HeadingInstrument>
-                        <TextInstrument className="text-muted-foreground text-xl leading-relaxed font-light">
-                          <VoiceglotText translationKey={`creator.${maker.short_name}.bio`} defaultText={maker.bio} />
-                        </TextInstrument>
-                        <ContainerInstrument plain className="flex flex-wrap justify-center md:justify-start gap-6 text-sm font-bold uppercase tracking-[0.2em] text-primary/60">
-                          {maker.instagram && (
-                            <TextInstrument className="flex items-center gap-2 hover:text-primary transition-colors">
-                              <Instagram size={16} />
-                              {maker.instagram}
-                            </TextInstrument>
-                          )}
-                          {maker.website && (
-                            <TextInstrument className="flex items-center gap-2 hover:text-primary transition-colors">
-                              <Globe size={16} />
-                              Website
-                            </TextInstrument>
-                          )}
-                        </ContainerInstrument>
-                      </ContainerInstrument>
-                    </ContainerInstrument>
-                  </ContainerInstrument>
-                ))}
-              </div>
             </ContainerInstrument>
           </section>
         );
@@ -1558,13 +1443,7 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
           <TextInstrument className="text-[11px] font-bold tracking-[0.4em] text-primary/60 mb-12 block uppercase">
             Projecttype
           </TextInstrument>
-          <HeadingInstrument level={1} className="text-[10vw] lg:text-[160px] font-light tracking-tighter mb-20 leading-[0.85] text-va-black" suppressHydrationWarning>
-            {page.slug === 'studio' ? (
-              <VoiceglotText translationKey="studio.hero.title" defaultText="Voices Studio" />
-            ) : (
-              <VoiceglotText translationKey={`page.${page.slug}.title`} defaultText={page.title} />
-            )}
-          </HeadingInstrument>
+          <HeadingInstrument level={1} className="text-[10vw] lg:text-[160px] font-light tracking-tighter mb-20 leading-[0.85] text-va-black" suppressHydrationWarning><VoiceglotText  translationKey={`page.${page.slug}.title`} defaultText={page.title} /></HeadingInstrument>
           <ContainerInstrument className="w-48 h-1 bg-black/5 rounded-full" />
         </header>
         <ContainerInstrument className="space-y-24">
@@ -1572,21 +1451,18 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
         </ContainerInstrument>
         <footer className="mt-80 text-center">
           {journey !== 'portfolio' && (
-            <ContainerInstrument className="bg-va-off-white p-20 sm:p-32 rounded-[40px] shadow-aura border border-black/[0.02] relative overflow-hidden group max-w-5xl mx-auto">
-              <ContainerInstrument className="relative z-10 space-y-12">
-                <div className="space-y-4">
-                  <TextInstrument className="text-[11px] font-bold tracking-[0.4em] text-primary/60 uppercase"><VoiceglotText  translationKey="cta.next_step" defaultText="volgende stap" /></TextInstrument>
-                  <HeadingInstrument level={2} className="text-5xl lg:text-7xl font-light tracking-tighter leading-[0.9] text-va-black"><VoiceglotText  translationKey="cta.ready_title" defaultText="Klaar om jouw stem te vinden?" /></HeadingInstrument>
-                </div>
-                <ContainerInstrument className="flex flex-col sm:flex-row items-center justify-center gap-6">
-                  <VoicesLink  href="/agency" className="va-btn-pro !bg-va-black !text-white px-16 py-6 !rounded-[10px] font-light tracking-widest hover:bg-primary transition-all duration-500 shadow-aura-lg uppercase"><VoiceglotText  translationKey="cta.find_voice" defaultText="vind jouw stem" /></VoicesLink>
-                  <VoicesLink  href="/contact" className="text-va-black/40 hover:text-va-black font-light tracking-widest flex items-center gap-4 group transition-all duration-500 uppercase">
+            <ContainerInstrument className="bg-va-black text-white p-32 rounded-[20px] shadow-aura-lg relative overflow-hidden group">
+              <ContainerInstrument className="relative z-10">
+                <TextInstrument className="text-[15px] font-medium tracking-[0.4em] text-primary/60 mb-10 block uppercase"><VoiceglotText  translationKey="cta.next_step" defaultText="volgende stap" /></TextInstrument>
+                <HeadingInstrument level={2} className="text-7xl lg:text-8xl font-light tracking-tighter mb-16 leading-[0.9] text-white"><VoiceglotText  translationKey="cta.ready_title" defaultText="Klaar om jouw stem te vinden?" /></HeadingInstrument>
+                <ContainerInstrument className="flex flex-col sm:flex-row items-center justify-center gap-10">
+                  <VoicesLink  href="/agency" className="bg-va-off-white text-va-black px-20 py-10 rounded-[10px] font-medium text-base tracking-widest hover:scale-105 transition-all duration-700 shadow-2xl hover:bg-white uppercase"><VoiceglotText  translationKey="cta.find_voice" defaultText="vind jouw stem" /></VoicesLink>
+                  <VoicesLink  href="/contact" className="text-white/30 hover:text-white font-medium text-base tracking-widest flex items-center gap-4 group transition-all duration-700 uppercase">
                     <VoiceglotText  translationKey="cta.ask_question" defaultText="stel een vraag" />
-                    <ArrowRight strokeWidth={1.5} size={20} className="group-hover:translate-x-2 transition-transform duration-500" />
+                    <ArrowRight strokeWidth={1.5} size={24} className="group-hover:translate-x-3 transition-transform duration-700" />
                   </VoicesLink>
                 </ContainerInstrument>
               </ContainerInstrument>
-              <ContainerInstrument className="absolute -right-20 -bottom-20 w-96 h-96 bg-primary/5 rounded-full blur-3xl -z-10 animate-pulse" />
             </ContainerInstrument>
           )}
         </footer>
