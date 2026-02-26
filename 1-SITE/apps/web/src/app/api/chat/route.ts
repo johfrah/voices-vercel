@@ -189,13 +189,11 @@ async function handleSendMessage(params: any, request?: NextRequest) {
     // 🛡️ CHRIS-PROTOCOL: Forceer notificatie TEST bij elk bericht in DEV/Staging voor debugging
     console.log('[Voicy API] Notification trigger check:', { senderType, conversationId: saveResult?.conversationId || 'pending' });
 
-    // 🛡️ CHRIS-PROTOCOL: Gemini response check (v2.15.025)
+    // 🛡️ CHRIS-PROTOCOL: Gemini response check (v2.15.026)
     if (!aiContent) {
-      console.error('[Voicy API] ❌ CRITICAL: Gemini returned empty content. Falling back to butler mode.');
-      aiContent = isEnglish 
-        ? "I'm sorry, I'm having trouble processing your request right now. How can I help you with your voice-over project?"
-        : "Excuses, ik heb momenteel wat moeite om je verzoek te verwerken. Hoe kan ik je helpen met je voice-over project?";
+      console.log('[Voicy API] No FAQ match, proceeding to Gemini or fallback...');
     }
+    
     if (!aiContent || message.length > 50 || mode === 'agent' || previewLogic || /medewerker|spreken|johfrah|human|contact/i.test(message)) {
       console.log('[Voicy API] Triggering Gemini Brain...', { mode, hasPreviewLogic: !!previewLogic });
       
