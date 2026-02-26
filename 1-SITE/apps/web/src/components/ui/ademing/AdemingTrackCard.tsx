@@ -5,6 +5,10 @@ import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { ElementIcon } from "./ElementIcon";
 
+import { VoiceglotText } from "../VoiceglotText";
+import { useEditMode } from "@/contexts/EditModeContext";
+import { Lock } from "lucide-react";
+
 interface AdemingTrackCardProps {
   track: any;
   onClick?: () => void;
@@ -19,6 +23,8 @@ const elementColors: Record<string, string> = {
 };
 
 export const AdemingTrackCard = ({ track, onClick, variant = "default" }: AdemingTrackCardProps) => {
+  const { isEditMode } = useEditMode();
+
   if (variant === "compact") {
     return (
       <div 
@@ -38,13 +44,24 @@ export const AdemingTrackCard = ({ track, onClick, variant = "default" }: Ademin
         </div>
         
         <div className="flex-1 min-w-0">
-          <h3 className="font-serif font-semibold text-sm truncate">{track.title}</h3>
+          <h3 className="font-serif font-semibold text-sm truncate">
+            <VoiceglotText 
+              translationKey={`ademing.track.${track.id}.title`} 
+              defaultText={track.title} 
+            />
+          </h3>
           <p className="text-xs text-muted-foreground truncate">
-            {track.short_description}
+            <VoiceglotText 
+              translationKey={`ademing.track.${track.id}.short_description`} 
+              defaultText={track.short_description} 
+            />
           </p>
           <div className="flex items-center gap-2 mt-1">
             <span className="text-[9px] font-bold uppercase tracking-widest text-primary/60">
-              {track.maker || "Julie"}
+              <VoiceglotText 
+                translationKey={`ademing.track.${track.id}.maker`} 
+                defaultText={track.maker || "Julie"} 
+              />
             </span>
             <span className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground">
               {track.duration ? `${Math.floor(track.duration / 60)} min` : "10 min"}
@@ -59,8 +76,17 @@ export const AdemingTrackCard = ({ track, onClick, variant = "default" }: Ademin
     <motion.div 
       whileHover={{ y: -8, scale: 1.02 }}
       onClick={onClick}
-      className="bg-white rounded-[32px] overflow-hidden shadow-soft hover:shadow-medium transition-all duration-500 cursor-pointer group"
+      className={cn(
+        "bg-white rounded-[32px] overflow-hidden shadow-soft hover:shadow-medium transition-all duration-500 cursor-pointer group relative",
+        isEditMode && "ring-2 ring-primary/20"
+      )}
     >
+      {isEditMode && (
+        <div className="absolute top-4 right-4 z-50 bg-va-black text-white px-3 py-1 rounded-full text-[10px] font-black tracking-widest flex items-center gap-2 shadow-aura">
+          <Lock size={10} className="text-primary" />
+          EDIT MODE: {track.id}
+        </div>
+      )}
       <div className="relative aspect-[4/5]">
         <img 
           src={track.cover_image_url} 
@@ -88,10 +114,16 @@ export const AdemingTrackCard = ({ track, onClick, variant = "default" }: Ademin
 
       <div className="p-6 space-y-3">
         <h3 className="font-serif text-xl font-bold text-foreground line-clamp-1 group-hover:text-primary transition-colors">
-          {track.title}
+          <VoiceglotText 
+            translationKey={`ademing.track.${track.id}.title`} 
+            defaultText={track.title} 
+          />
         </h3>
         <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed font-light">
-          {track.short_description || "Een moment van rust."}
+          <VoiceglotText 
+            translationKey={`ademing.track.${track.id}.short_description`} 
+            defaultText={track.short_description || "Een moment van rust."} 
+          />
         </p>
         
         <div className="pt-3 flex items-center justify-between border-t border-black/5">
@@ -100,7 +132,10 @@ export const AdemingTrackCard = ({ track, onClick, variant = "default" }: Ademin
               <UserCircle size={10} className="text-primary" />
             </div>
             <span className="text-[9px] font-bold text-va-black/40 uppercase tracking-widest">
-              {track.maker || "Julie"}
+              <VoiceglotText 
+                translationKey={`ademing.track.${track.id}.maker`} 
+                defaultText={track.maker || "Julie"} 
+              />
             </span>
           </div>
           <div className="flex items-center gap-2">

@@ -4,7 +4,13 @@ import { ContainerInstrument, ButtonInstrument } from '@/components/ui/LayoutIns
 import { motion, AnimatePresence } from 'framer-motion';
 import { Play, Pause, Volume2, VolumeX } from 'lucide-react';
 
+import { useEditMode } from '@/contexts/EditModeContext';
+import { Lock } from 'lucide-react';
+
+import { VoiceglotText } from '@/components/ui/VoiceglotText';
+
 export default function AdemingOfflinePage() {
+  const { isEditMode } = useEditMode();
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [showControls, setShowControls] = useState(true);
@@ -39,6 +45,12 @@ export default function AdemingOfflinePage() {
         return () => clearTimeout(timer);
       }}
     >
+      {isEditMode && (
+        <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[100] bg-va-black text-white px-6 py-2 rounded-full text-xs font-black tracking-[0.2em] flex items-center gap-3 shadow-aura border border-primary/20 animate-bounce">
+          <Lock size={14} className="text-primary" />
+          ADEMING EDIT MODE ACTIVE
+        </div>
+      )}
       {/* Background Video - Lente optimized */}
       <video
         ref={videoRef}
@@ -84,7 +96,10 @@ export default function AdemingOfflinePage() {
                 <Play size={40} fill="currentColor" className="ml-2 group-hover:scale-110 transition-transform" />
               </ButtonInstrument>
               <p className="mt-6 text-white/60 font-serif italic text-xl tracking-wide">
-                Ademing 1 — Lente
+                <VoiceglotText 
+                  translationKey="ademing.offline.featured.title" 
+                  defaultText="Ademing 1 — Lente" 
+                />
               </p>
             </motion.div>
           )}
@@ -108,7 +123,10 @@ export default function AdemingOfflinePage() {
             </button>
             <div className="h-4 w-px bg-white/20" />
             <span className="text-white/60 font-serif italic text-sm tracking-widest uppercase">
-              Lente
+              <VoiceglotText 
+                translationKey="ademing.offline.featured.label" 
+                defaultText="Lente" 
+              />
             </span>
           </motion.div>
         )}
