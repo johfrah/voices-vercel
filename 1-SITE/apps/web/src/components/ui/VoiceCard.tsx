@@ -559,7 +559,34 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
                   return;
                 }
                 const isThisActorActive = activeDemo?.actor_name === voice.display_name;
-                if (isThisActorActive) { setGlobalIsPlaying(!globalIsPlaying); } else if (voice?.demos?.[0]) { const actorPlaylist = (voice.demos || []).map(d => ({ ...d, actor_name: voice.display_name, actor_photo: voice.photo_url, actor_lang: voice.native_lang })); playDemo({ ...voice.demos[0], actor_name: voice.display_name, actor_photo: voice.photo_url, actor_lang: voice.native_lang }, actorPlaylist); }
+                if (isThisActorActive) { 
+                  setGlobalIsPlaying(!globalIsPlaying); 
+                } else if (voice?.demos?.length) { 
+                  // 🛡️ CHRIS-PROTOCOL: Journey-Aware Playback (v2.14.766)
+                  // We prioriteren demo's die matchen met de huidige journey.
+                  const currentJourney = masterControlState.journey;
+                  const sortedDemos = [...voice.demos].sort((a, b) => {
+                    const aMatch = a.category === currentJourney;
+                    const bMatch = b.category === currentJourney;
+                    if (aMatch && !bMatch) return -1;
+                    if (!aMatch && bMatch) return 1;
+                    return 0;
+                  });
+
+                  const actorPlaylist = sortedDemos.map(d => ({ 
+                    ...d, 
+                    actor_name: voice.display_name, 
+                    actor_photo: voice.photo_url, 
+                    actor_lang: voice.native_lang 
+                  })); 
+                  
+                  playDemo({ 
+                    ...sortedDemos[0], 
+                    actor_name: voice.display_name, 
+                    actor_photo: voice.photo_url, 
+                    actor_lang: voice.native_lang 
+                  }, actorPlaylist); 
+                }
               }}
               className="w-12 h-12 md:w-20 md:h-20 rounded-full bg-white/20 backdrop-blur-xl border border-white/30 flex items-center justify-center text-white hover:scale-110 hover:bg-white/30 transition-all duration-500 shadow-2xl group/play"
             >
