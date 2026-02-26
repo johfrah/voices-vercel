@@ -160,16 +160,32 @@ export async function POST(request: Request) {
     if (orderErr) throw new Error(`Order creation failed: ${orderErr.message}`);
 
     // 6. Order Items
-    const itemsToInsert = validatedItems.map((item: any) => ({
-      order_id: newOrder.id,
-      actor_id: actorMap.get(Number(item.actor?.id))?.id || null,
-      name: item.name || 'Product',
-      quantity: 1,
-      price: (item.pricing?.subtotal || 0).toString(),
-      tax: (item.pricing?.tax || 0).toString(),
-      meta_data: { ...item.pricing, briefing: item.briefing, usage: item.usage, media: item.media },
-      delivery_status: 'waiting'
-    }));
+    const itemsToInsert = validatedItems.map((item: any) => {
+      const dbActor = actorMap.get(Number(item.actor?.id));
+      
+      // 🛡️ CHRIS-PROTOCOL: Handshake Truth (ID-First)
+      // We resolve the country code to its official database ID for the meta_data.
+      const countryId = MarketManager.getCountryLabel(item.country) ? 
+                        (global as any).handshakeCountries?.find((c: any) => c.code === item.country || c.label === item.country)?.id : null;
+
+      return {
+        order_id: newOrder.id,
+        actor_id: dbActor?.id || null,
+        name: item.name || 'Product',
+        quantity: 1,
+        price: (item.pricing?.subtotal || 0).toString(),
+        tax: (item.pricing?.tax || 0).toString(),
+        meta_data: { 
+          ...item.pricing, 
+          briefing: item.briefing, 
+          usage: item.usage, 
+          media: item.media,
+          country_id: countryId || item.countryId, // 🛡️ Store the hard ID
+          language_id: dbActor?.native_language_id // 🛡️ Store the hard ID
+        },
+        delivery_status: 'waiting'
+      };
+    });
 
     const { error: itemsErr } = await sdkClient.from('order_items').insert(itemsToInsert);
     if (itemsErr) throw new Error(`Order items failed: ${itemsErr.message}`);

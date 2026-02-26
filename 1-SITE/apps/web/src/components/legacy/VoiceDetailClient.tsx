@@ -106,10 +106,16 @@ export function VoiceDetailClient({
 
     const mappedJourney = initialJourney ? (journeyMap[initialJourney.toLowerCase()] || initialJourney) : 'video';
     
+    // 🛡️ CHRIS-PROTOCOL: Handshake Truth (ID-First)
+    // We resolve the journey string to its official database ID if possible.
+    const journeyRegistry = (typeof window !== 'undefined' ? (window as any).handshakeJourneys : []) || [];
+    const journeyMatch = journeyRegistry.find((j: any) => j.code === mappedJourney || j.label.toLowerCase() === mappedJourney.toLowerCase());
+    const finalJourney = journeyMatch ? journeyMatch.code : mappedJourney;
+
     // BOB-METHODE: Update zowel de MasterControl (voor filters/UI) als de Checkout (voor prijs)
-    updateJourney(mappedJourney as any);
+    updateJourney(finalJourney as any);
     
-    if (mappedJourney === 'commercial' && initialMedium) {
+    if (finalJourney === 'commercial' && initialMedium) {
       const mediumMap: Record<string, string> = {
         // Nederlands
         'online': 'online',
@@ -122,11 +128,19 @@ export function VoiceDetailClient({
         'web': 'online',
         'television': 'tv_national'
       };
-      const mediaType = mediumMap[initialMedium.toLowerCase()];
-      if (mediaType) {
-        updateMedia([mediaType]);
+      const mediumCode = initialMedium.toLowerCase();
+      const mediumType = mediumMap[mediumCode] || mediumCode;
+      
+      // 🛡️ CHRIS-PROTOCOL: Media Handshake
+      const mediaRegistry = (typeof window !== 'undefined' ? (window as any).handshakeMediaTypes : []) || [];
+      const mediaMatch = mediaRegistry.find((m: any) => m.code === mediumType || m.label.toLowerCase() === mediumType.toLowerCase());
+      
+      if (mediaMatch) {
+        updateMedia([mediaMatch.code]);
+      } else if (mediumType) {
+        updateMedia([mediumType]);
       }
-    } else if (mappedJourney !== 'commercial') {
+    } else if (finalJourney !== 'commercial') {
       // Reset media for non-commercial journeys to ensure pricing works
       updateMedia(['online']);
     }
