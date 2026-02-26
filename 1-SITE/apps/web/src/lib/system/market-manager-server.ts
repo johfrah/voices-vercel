@@ -489,6 +489,69 @@ export class MarketManagerServer {
   }
 
   /**
+   * 🛡️ CHRIS-PROTOCOL: Handshake Usage Lookup (v2.15.040)
+   * Haalt het UI label op voor een usage code of ID.
+   */
+  static getUsageLabel(input: string | number): string {
+    if (!input || input === 'null') return '';
+    const lowInput = String(input).toLowerCase().trim();
+    const inputId = typeof input === 'number' ? input : (!isNaN(Number(input)) ? Number(input) : null);
+
+    if (typeof window !== 'undefined' && (window as any).handshakeJourneys) {
+      const registry = (window as any).handshakeJourneys;
+      const match = registry.find((j: any) => 
+        (inputId !== null && j.id === inputId) ||
+        j.code.toLowerCase() === lowInput || 
+        j.label.toLowerCase() === lowInput
+      );
+      if (match) return match.label.replace('Agency: ', '');
+    }
+
+    // Emergency fallbacks
+    const emergencyMap: Record<string, string> = {
+      'telephony': 'Telefoon / IVR', 'telefonie': 'Telefoon / IVR', 'agency_ivr': 'Telefoon / IVR',
+      'video': 'Online Video / Corporate', 'unpaid': 'Online Video / Corporate', 'agency_vo': 'Online Video / Corporate',
+      'commercial': 'Commercial / Advertentie', 'agency_commercial': 'Commercial / Advertentie'
+    };
+
+    return emergencyMap[lowInput] || lowInput;
+  }
+
+  /**
+   * 🛡️ CHRIS-PROTOCOL: Handshake Media Lookup (v2.15.040)
+   * Haalt het UI label op voor een media type code of ID.
+   */
+  static getMediaLabel(input: string | number): string {
+    if (!input || input === 'null') return '';
+    const lowInput = String(input).toLowerCase().trim();
+    const inputId = typeof input === 'number' ? input : (!isNaN(Number(input)) ? Number(input) : null);
+
+    if (typeof window !== 'undefined' && (window as any).handshakeMediaTypes) {
+      const registry = (window as any).handshakeMediaTypes;
+      const match = registry.find((m: any) => 
+        (inputId !== null && m.id === inputId) ||
+        m.code.toLowerCase() === lowInput || 
+        m.label.toLowerCase() === lowInput
+      );
+      if (match) return match.label;
+    }
+
+    // Emergency fallbacks
+    const emergencyMap: Record<string, string> = {
+      'online': 'Online / Social Media',
+      'radio_national': 'Landelijke Radio',
+      'radio_regional': 'Regionale Radio',
+      'radio_local': 'Lokale Radio',
+      'tv_national': 'Landelijke TV',
+      'tv_regional': 'Regionale TV',
+      'tv_local': 'Lokale TV',
+      'podcast': 'Podcast Ads'
+    };
+
+    return emergencyMap[lowInput] || lowInput;
+  }
+
+  /**
    * Haalt alle ondersteunde talen voor de huidige markt
    */
   static getNativeLanguages(lang: string = 'nl'): Record<string, string> {

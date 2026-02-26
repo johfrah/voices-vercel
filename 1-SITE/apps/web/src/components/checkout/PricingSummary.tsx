@@ -186,23 +186,6 @@ export const PricingSummary: React.FC<{
     }
   };
 
-  const usageLabels: Record<string, string> = {
-    'telefonie': 'Telefoon / IVR',
-    'unpaid': 'Online Video / Corporate',
-    'commercial': 'Commercial / Advertentie'
-  };
-
-  const mediaLabels: Record<string, string> = {
-    'online': 'Online / Social Media',
-    'radio_national': 'Landelijke Radio',
-    'radio_regional': 'Regionale Radio',
-    'radio_local': 'Lokale Radio',
-    'tv_national': 'Landelijke TV',
-    'tv_regional': 'Regionale TV',
-    'tv_local': 'Lokale TV',
-    'podcast': 'Podcast Ads'
-  };
-
   const isSubscription = state.usage === 'subscription';
   const isCartPage = typeof window !== 'undefined' && window.location.pathname.includes('/cart');
   const isCheckoutPage = typeof window !== 'undefined' && window.location.pathname.includes('/checkout');
@@ -290,15 +273,11 @@ export const PricingSummary: React.FC<{
                     <div className="text-[13px] leading-relaxed text-va-black/40 font-light mt-1">
                       <div className="flex flex-col gap-1">
                         <span className="font-medium text-va-black/60">
-                          {itemObj.usage === 'telefonie' ? (
-                            t('checkout.item.telephony_desc', 'Telefoon / IVR')
-                          ) : itemObj.usage === 'commercial' ? (
+                          {itemObj.usage === 'commercial' ? (
                             Array.isArray(itemObj.media) 
-                              ? itemObj.media.map((m: string) => mediaLabels[m] || m).join(' • ')
-                              : (mediaLabels[itemObj.media] || itemObj.media)
-                          ) : (
-                            t('checkout.item.unpaid_desc', 'Online Video / Corporate')
-                          )}
+                              ? itemObj.media.map((m: string) => MarketManager.getMediaLabel(m)).join(' • ')
+                              : MarketManager.getMediaLabel(itemObj.media)
+                          ) : MarketManager.getUsageLabel(itemObj.usage)}
                         </span>
                         {itemObj.usage === 'commercial' && (
                           <span className="text-[11px] uppercase tracking-widest opacity-70">
@@ -498,7 +477,7 @@ export const PricingSummary: React.FC<{
                         {selectedItem.actor?.display_name || selectedItem.name}
                       </HeadingInstrument>
                       <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] font-bold tracking-[0.1em] uppercase text-va-black/40">
-                        <span>{usageLabels[selectedItem.usage] || selectedItem.usage}</span>
+                        <span>{MarketManager.getUsageLabel(selectedItem.usage)}</span>
                         {selectedItem.usage === 'telefonie' ? (
                           <>
                             <span className="w-1 h-1 rounded-full bg-va-black/10" />
@@ -509,8 +488,8 @@ export const PricingSummary: React.FC<{
                             <span className="w-1 h-1 rounded-full bg-va-black/10" />
                             <span>
                               {Array.isArray(selectedItem.media) 
-                                ? selectedItem.media.map((m: string) => mediaLabels[m] || m).join(', ') 
-                                : (mediaLabels[selectedItem.media] || selectedItem.media || 'Online')}
+                                ? selectedItem.media.map((m: string) => MarketManager.getMediaLabel(m)).join(', ') 
+                                : MarketManager.getMediaLabel(selectedItem.media || 'online')}
                             </span>
                             <span className="w-1 h-1 rounded-full bg-va-black/10" />
                             <span>{MarketManager.getCountryLabel(selectedItem.country) || t('common.country.be', 'België')}</span>

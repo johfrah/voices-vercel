@@ -245,7 +245,7 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
       title,
       description,
       alternates: {
-        canonical: `${siteUrl}/${lang !== 'nl' ? lang + '/' : ''}${normalizedSlug}`,
+        canonical: `${siteUrl}/${lang !== 'nl-BE' ? lang.split('-')[0] + '/' : ''}${normalizedSlug}`,
       }
     };
   }
@@ -294,7 +294,7 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
           title,
           description,
           alternates: {
-            canonical: `${siteUrl}/${lang !== 'nl' ? lang + '/' : ''}${params.slug.join('/')}`,
+            canonical: `${siteUrl}/${lang !== 'nl-BE' ? lang.split('-')[0] + '/' : ''}${params.slug.join('/')}`,
           },
           other: {
             'script:ld+json': JSON.stringify(schema)
@@ -321,7 +321,7 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
               title,
               description,
               alternates: {
-                canonical: `${siteUrl}/${lang !== 'nl' ? lang + '/' : ''}${page.slug}`,
+                canonical: `${siteUrl}/${lang !== 'nl-BE' ? lang.split('-')[0] + '/' : ''}${page.slug}`,
               }
             };
           }
@@ -343,7 +343,7 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
             title,
             description,
             alternates: {
-              canonical: `${siteUrl}/${lang !== 'nl' ? lang + '/' : ''}${firstSegment}`,
+              canonical: `${siteUrl}/${lang !== 'nl-BE' ? lang.split('-')[0] + '/' : ''}${firstSegment}`,
             }
           };
         }
