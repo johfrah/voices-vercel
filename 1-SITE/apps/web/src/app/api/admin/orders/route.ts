@@ -24,21 +24,30 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '50');
+    const search = searchParams.get('search') || '';
+    const status = searchParams.get('status') || '';
     const offset = (page - 1) * limit;
 
     // 🛡️ CHRIS-PROTOCOL: 1 TRUTH MANDATE (v2.14.638)
-    const countResult = await db.execute(sql.raw('SELECT count(*) as value FROM orders_v2'));
+    let whereClause = '';
+    if (search) {
+      whereClause = `WHERE id::text ILIKE '%${search}%' OR billing_email_alt ILIKE '%${search}%'`;
+    }
+    
+    const countResult = await db.execute(sql.raw(`SELECT count(*) as value FROM orders_v2 ${whereClause}`));
     const countRows: any = Array.isArray(countResult) ? countResult : (countResult.rows || []);
     const totalInDb = countRows[0] ? Number(countRows[0].value || countRows[0].count || 0) : 0;
 
     let allOrders: any[] = [];
     let debugInfo: any = {
-      version: '2.14.685',
+      version: '2.14.770',
       db_host: process.env.DATABASE_URL?.split('@')[1]?.split('/')[0] || 'unknown',
       page,
       limit,
       offset,
       totalInDb,
+      search,
+      status,
       timestamp: new Date().toISOString()
     };
 
@@ -48,6 +57,7 @@ export async function GET(request: NextRequest) {
         id, user_id, journey_id, status_id, payment_method_id, 
         amount_net, amount_total, purchase_order, billing_email_alt, created_at
       FROM orders_v2
+      ${whereClause}
       ORDER BY created_at DESC
       LIMIT ${limit}
       OFFSET ${offset}

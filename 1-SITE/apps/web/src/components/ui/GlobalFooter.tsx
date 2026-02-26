@@ -23,6 +23,10 @@ import { VoiceglotImage } from './VoiceglotImage';
 import { AnimatePresence, motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
+import { AgencyFooter } from './footers/AgencyFooter';
+import { StudioFooter } from './footers/StudioFooter';
+import { AcademyFooter } from './footers/AcademyFooter';
+
 /**
  *  GLOBAL FOOTER (NUCLEAR 2026)
  * 
@@ -61,9 +65,66 @@ export default function GlobalFooter() {
   const isPortfolio = market.market_code === 'PORTFOLIO';
   const isArtist = market.market_code === 'ARTIST';
   const isAdeming = market.market_code === 'ADEMING';
-  const isStudio = market.market_code === 'STUDIO';
+  const isStudio = market.market_code === 'STUDIO' || market.market_code === 'ACADEMY';
   const isAcademy = market.market_code === 'ACADEMY';
   const isSpecial = isPortfolio || isArtist || isAdeming || isStudio || isAcademy;
+
+  const socialIcons = [
+    { id: 'instagram', icon: Instagram, alt: 'Instagram' },
+    { id: 'youtube', icon: Youtube, alt: 'YouTube' },
+    { id: 'spotify', icon: Music, alt: 'Spotify' },
+    { id: 'facebook', icon: Facebook, alt: 'Facebook' },
+    { id: 'linkedin', icon: Linkedin, alt: 'LinkedIn' },
+  ];
+
+  const activeSocials: Record<string, string> = marketConfig?.socialLinks || market.social_links || {};
+  const activePhone = marketConfig?.phone || market.phone;
+  const activeEmail = marketConfig?.email || market.email;
+
+  const renderJourneyFooter = () => {
+    if (isArtist) {
+      // Artist specifieke footer (bestaande logica behouden voor nu)
+      return null; // Wordt hieronder afgehandeld in de originele if(isArtist)
+    }
+
+    if (isPortfolio && actor?.portfolio_tier && actor?.portfolio_tier !== 'none') {
+      // Portfolio specifieke footer (bestaande logica behouden voor nu)
+      return null; // Wordt hieronder afgehandeld in de originele if(showPortfolioFooter)
+    }
+
+    if (isAcademy) {
+      return (
+        <AcademyFooter 
+          market={market} 
+          activeSocials={activeSocials} 
+          activePhone={activePhone} 
+          activeEmail={activeEmail} 
+        />
+      );
+    }
+
+    if (isStudio) {
+      return (
+        <StudioFooter 
+          market={market} 
+          activeSocials={activeSocials} 
+          activePhone={activePhone} 
+          activeEmail={activeEmail} 
+        />
+      );
+    }
+
+    // Default: Agency Footer
+    return (
+      <AgencyFooter 
+        market={market} 
+        activeSocials={activeSocials} 
+        activePhone={activePhone} 
+        activeEmail={activeEmail} 
+        reviewStats={reviewStats}
+      />
+    );
+  };
 
   const standardSections = useMemo(() => {
     const sections = [
@@ -462,389 +523,7 @@ export default function GlobalFooter() {
           </ContainerInstrument>
         )}
 
-        <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-12 gap-y-16 mb-24">
-          {/* Brand Column */}
-          <ContainerInstrument className="space-y-8 flex flex-col items-start">
-            <ButtonInstrument as={VoicesLink} href="/" variant="plain" size="none" onClick={() => playClick('light')} className="flex items-center gap-3 group justify-start">
-              {isArtist ? (
-                <TextInstrument as="span" className="text-2xl font-light tracking-tighter text-va-black">
-                  <VoiceglotText  translationKey="footer.artist.name" defaultText={actorName.toUpperCase()} />
-                </TextInstrument>
-              ) : (
-                <VoiceglotImage  
-                  src={market.logo_url} 
-                  alt={market.name} 
-                  width={200} 
-                  height={80}
-                  journey="common"
-                  category="branding"
-                  className="h-10 md:h-12 w-auto transition-transform duration-500 group-hover:scale-105"
-                />
-              )}
-            </ButtonInstrument>
-            <TextInstrument className="text-va-black/40 text-lg font-light leading-relaxed max-w-sm text-left">
-              {isPortfolio 
-                ? <VoiceglotText  translationKey="footer.portfolio.tagline" defaultText="De stem achter het verhaal. Warme, natuurlijke voice-over & host." />
-                : isArtist
-                ? <VoiceglotText  translationKey="footer.artist.tagline" defaultText="Independent singer releasing music on his own terms. Supported by Voices Artists." />
-                : <VoiceglotText  translationKey="footer.tagline" defaultText="Vind de juiste stem voor jouw verhaal. Vandaag besteld, morgen klaar." />
-              }
-            </TextInstrument>
-
-            {/* Micro-Review Widget (Social Proof) */}
-            {!isSpecial && (
-                <VoicesLink href="/agency/reviews" className="flex items-center gap-4 py-4 px-5 bg-white rounded-[20px] border border-black/5 shadow-aura-sm group/review-widget hover:shadow-aura transition-all duration-500">
-                <ContainerInstrument className="flex flex-col">
-                  <ContainerInstrument className="flex gap-0.5 mb-1">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} size={12} className="text-[#fabc05]" fill="currentColor" />
-                    ))}
-                  </ContainerInstrument>
-                  <TextInstrument className="text-[10px] font-bold text-va-black/20 uppercase tracking-widest">
-                    <VoiceglotText translationKey="footer.reviews.rating_label" defaultText="Google Rating" />
-                  </TextInstrument>
-                </ContainerInstrument>
-                <ContainerInstrument className="w-px h-8 bg-black/5" />
-                <ContainerInstrument className="flex flex-col">
-                  <TextInstrument className="text-xl font-light text-va-black leading-none">
-                    {averageRating}<span className="text-[13px] text-va-black/20 ml-0.5">/5</span>
-                  </TextInstrument>
-                  <TextInstrument className="text-[10px] font-bold text-va-black/20 uppercase tracking-tighter">
-                    {totalReviews} <VoiceglotText translationKey="footer.reviews.count_label" defaultText="reviews" />
-                  </TextInstrument>
-                </ContainerInstrument>
-              </VoicesLink>
-            )}
-
-            <ContainerInstrument className="flex flex-col gap-4">
-              <ContainerInstrument className="flex gap-4 justify-start">
-                {socialIcons.map((social) => (
-                  <ContainerInstrument key={social.id} className="relative group/social">
-                    <ButtonInstrument 
-                      as="a"
-                      href={activeSocials[social.id] || '#'}
-                      aria-label={social.alt}
-                      size="none"
-                      onClick={(e) => {
-                        if (isEditMode) {
-                          e.preventDefault();
-                          setIsEditingSocial(social.id);
-                          setEditValue(activeSocials[social.id] || '');
-                          playClick('pro');
-                        } else {
-                          playClick('light');
-                        }
-                      }}
-                      className={cn(
-                        "w-10 h-10 rounded-full bg-va-black/10 flex items-center justify-center group/social-btn transition-all duration-300 shadow-sm",
-                        isEditMode && "ring-2 ring-primary/20"
-                      )}
-                    >
-                      <social.icon size={18} strokeWidth={1.5} className="text-va-black group-hover/social-btn:text-white shrink-0" />
-                    </ButtonInstrument>
-
-                    <AnimatePresence>
-                      {isEditingSocial === social.id && (
-                        <motion.div 
-                          ref={popoverRef}
-                          initial={{ opacity: 0, scale: 0.9, y: 10 }}
-                          animate={{ opacity: 1, scale: 1, y: 0 }}
-                          exit={{ opacity: 0, scale: 0.9, y: 10 }}
-                          className="absolute left-0 top-full mt-2 w-64 bg-white rounded-xl shadow-2xl border border-black/10 p-3 z-50"
-                        >
-                          <ContainerInstrument className="flex flex-col gap-3">
-                            <TextInstrument className="text-[11px] font-bold text-va-black/40 uppercase tracking-widest">{social.alt} URL</TextInstrument>
-                            <ContainerInstrument className="flex items-center gap-2 bg-va-off-white px-3 py-2 rounded-lg border border-black/5">
-                              <SearchIcon size={14} className="text-va-black/30" />
-                              <input 
-                                autoFocus
-                                type="text" 
-                                value={editValue}
-                                onChange={(e) => setEditValue(e.target.value)}
-                                placeholder="https://..."
-                                className="bg-transparent border-none outline-none text-[13px] font-medium w-full"
-                                onKeyDown={(e) => {
-                                  if (e.key === 'Enter') updateSocialLink(social.id, editValue);
-                                  if (e.key === 'Escape') setIsEditingSocial(null);
-                                }}
-                              />
-                            </ContainerInstrument>
-                            <ContainerInstrument className="flex justify-end gap-2">
-                            <button onClick={() => setIsEditingSocial(null)} className="px-3 py-1.5 text-[11px] font-bold text-va-black/40 hover:text-va-black">
-                              <VoiceglotText translationKey="common.cancel" defaultText="Annuleer" />
-                            </button>
-                            <button onClick={() => updateSocialLink(social.id, editValue)} className="px-3 py-1.5 bg-primary text-white rounded-lg text-[11px] font-bold flex items-center gap-1">
-                              <Check size={12} strokeWidth={3} /> <VoiceglotText translationKey="common.save" defaultText="Save" />
-                            </button>
-                          </ContainerInstrument>
-                        </ContainerInstrument>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </ContainerInstrument>
-              ))}
-            </ContainerInstrument>
-
-            <ContainerInstrument className="flex flex-col gap-2">
-              <ContainerInstrument className="relative group/contact">
-                <ButtonInstrument 
-                  as="a"
-                  href={(() => {
-                    const isPhoneOpen = generalSettings?.phone_hours ? isOfficeOpen(generalSettings.phone_hours) : true;
-                    return isPhoneOpen ? `tel:${activePhone.replace(/\s+/g, '')}` : undefined;
-                  })()}
-                  variant="plain"
-                  size="none"
-                  onClick={(e) => {
-                    if (isEditMode) {
-                      e.preventDefault();
-                      setIsEditingContact('phone');
-                      setEditValue(activePhone);
-                      playClick('pro');
-                    } else {
-                      const isPhoneOpen = generalSettings?.phone_hours ? isOfficeOpen(generalSettings.phone_hours) : true;
-                      if (!isPhoneOpen) {
-                        e.preventDefault();
-                        playClick('error');
-                        toast.error(t('footer.error.phone_closed', 'Onze studio is momenteel telefonisch gesloten.'));
-                      }
-                    }
-                  }}
-                  className={cn(
-                    "flex items-center gap-2 text-[14px] font-light text-va-black/60 hover:text-primary transition-colors",
-                    generalSettings?.phone_hours && !isOfficeOpen(generalSettings.phone_hours) && "opacity-50"
-                  )}
-                >
-                  <Phone size={14} strokeWidth={1.5} />
-                  <span>{activePhone}</span>
-                  {generalSettings?.phone_hours && (
-                    <span className={cn("w-1.5 h-1.5 rounded-full ml-1", isOfficeOpen(generalSettings.phone_hours) ? "bg-green-500" : "bg-amber-500")} />
-                  )}
-                </ButtonInstrument>
-                <AnimatePresence>
-                  {isEditingContact === 'phone' && (
-                    <motion.div 
-                      ref={popoverRef}
-                      initial={{ opacity: 0, scale: 0.9, y: 10 }}
-                      animate={{ opacity: 1, scale: 1, y: 0 }}
-                      exit={{ opacity: 0, scale: 0.9, y: 10 }}
-                      className="absolute left-0 top-full mt-2 w-64 bg-white rounded-xl shadow-2xl border border-black/10 p-3 z-50"
-                    >
-                      <ContainerInstrument className="flex flex-col gap-3">
-                        <TextInstrument className="text-[11px] font-bold text-va-black/40 uppercase tracking-widest">
-                          <VoiceglotText translationKey="common.phone_number" defaultText="Telefoonnummer" />
-                        </TextInstrument>
-                        <input 
-                          autoFocus
-                          type="text" 
-                          value={editValue}
-                          onChange={(e) => setEditValue(e.target.value)}
-                          className="bg-va-off-white px-3 py-2 rounded-lg border border-black/5 text-[13px] font-medium w-full outline-none focus:ring-2 focus:ring-primary/20"
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter') updateContactInfo('phone', editValue);
-                            if (e.key === 'Escape') setIsEditingContact(null);
-                          }}
-                        />
-                        <ContainerInstrument className="flex justify-end gap-2">
-                          <button onClick={() => setIsEditingContact(null)} className="px-3 py-1.5 text-[11px] font-bold text-va-black/40 hover:text-va-black">
-                            <VoiceglotText translationKey="common.cancel" defaultText="Annuleer" />
-                          </button>
-                          <button onClick={() => updateContactInfo('phone', editValue)} className="px-3 py-1.5 bg-primary text-white rounded-lg text-[11px] font-bold flex items-center gap-1">
-                            <Check size={12} strokeWidth={3} /> <VoiceglotText translationKey="common.save" defaultText="Save" />
-                          </button>
-                        </ContainerInstrument>
-                      </ContainerInstrument>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </ContainerInstrument>
-
-              <ContainerInstrument className="relative group/contact">
-                <ButtonInstrument 
-                  as="a"
-                  href={`mailto:${activeEmail}`}
-                  variant="plain"
-                  size="none"
-                  onClick={(e) => {
-                    if (isEditMode) {
-                      e.preventDefault();
-                      setIsEditingContact('email');
-                      setEditValue(activeEmail);
-                      playClick('pro');
-                    }
-                  }}
-                  className="flex items-center gap-2 text-[14px] font-light text-va-black/60 hover:text-primary transition-colors"
-                >
-                  <Mail size={14} strokeWidth={1.5} />
-                  <span>{activeEmail}</span>
-                </ButtonInstrument>
-                <AnimatePresence>
-                  {isEditingContact === 'email' && (
-                    <motion.div 
-                      ref={popoverRef}
-                      initial={{ opacity: 0, scale: 0.9, y: 10 }}
-                      animate={{ opacity: 1, scale: 1, y: 0 }}
-                      exit={{ opacity: 0, scale: 0.9, y: 10 }}
-                      className="absolute left-0 top-full mt-2 w-64 bg-white rounded-xl shadow-2xl border border-black/10 p-3 z-50"
-                    >
-                      <ContainerInstrument className="flex flex-col gap-3">
-                        <TextInstrument className="text-[11px] font-bold text-va-black/40 uppercase tracking-widest">
-                          <VoiceglotText translationKey="common.email_address" defaultText="Email adres" />
-                        </TextInstrument>
-                        <input 
-                          autoFocus
-                          type="text" 
-                          value={editValue}
-                          onChange={(e) => setEditValue(e.target.value)}
-                          className="bg-va-off-white px-3 py-2 rounded-lg border border-black/5 text-[13px] font-medium w-full outline-none focus:ring-2 focus:ring-primary/20"
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter') updateContactInfo('email', editValue);
-                            if (e.key === 'Escape') setIsEditingContact(null);
-                          }}
-                        />
-                        <ContainerInstrument className="flex justify-end gap-2">
-                          <button onClick={() => setIsEditingContact(null)} className="px-3 py-1.5 text-[11px] font-bold text-va-black/40 hover:text-va-black">
-                            <VoiceglotText translationKey="common.cancel" defaultText="Annuleer" />
-                          </button>
-                          <button onClick={() => updateContactInfo('email', editValue)} className="px-3 py-1.5 bg-primary text-white rounded-lg text-[11px] font-bold flex items-center gap-1">
-                            <Check size={12} strokeWidth={3} /> <VoiceglotText translationKey="common.save" defaultText="Save" />
-                          </button>
-                        </ContainerInstrument>
-                      </ContainerInstrument>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </ContainerInstrument>
-            </ContainerInstrument>
-          </ContainerInstrument>
-        </ContainerInstrument>
-
-        {/* Links Columns */}
-        {activeSections.map((section: any, i: number) => (
-          <ContainerInstrument key={i} className="space-y-6 flex flex-col items-start relative group/section w-full md:w-auto">
-            {/* Mobile Accordion Header */}
-            <button 
-              onClick={() => setOpenAccordion(openAccordion === i ? null : i)}
-              className="flex items-center justify-between w-full md:hidden py-4 border-b border-black/5"
-            >
-              <HeadingInstrument level={4} className="text-[13px] font-medium tracking-[0.2em] text-va-black/40 uppercase text-left">
-                <VoiceglotText translationKey={`footer.section.${i}.title`} defaultText={section.title} />
-              </HeadingInstrument>
-              <ChevronDown 
-                size={16} 
-                className={cn("text-va-black/20 transition-transform duration-300", openAccordion === i && "rotate-180")} 
-              />
-            </button>
-
-            {/* Desktop Header */}
-            <HeadingInstrument level={4} className="hidden md:block text-[13px] font-medium tracking-[0.2em] text-va-black/40 uppercase text-left">
-              <VoiceglotText translationKey={`footer.section.${i}.title`} defaultText={section.title} />
-            </HeadingInstrument>
-
-            <AnimatePresence>
-              {(openAccordion === i || (typeof window !== 'undefined' && window.innerWidth >= 768)) && (
-                <motion.ul 
-                  initial={typeof window !== 'undefined' && window.innerWidth < 768 ? { height: 0, opacity: 0 } : false}
-                  animate={{ height: 'auto', opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  className="flex flex-col items-start space-y-1 w-full overflow-hidden md:!h-auto md:!opacity-100"
-                >
-                  {section.links.map((link: any, j: number) => (
-                    <li key={j} className="w-full flex justify-start items-center gap-2 group/link">
-                      <ButtonInstrument 
-                        as={VoicesLink}
-                        href={link.href} 
-                        variant="plain"
-                        size="none"
-                        onClick={() => playClick('light')}
-                        className="text-[15px] font-light text-va-black/60 hover:text-primary transition-colors duration-300 py-1"
-                      >
-                        {link.name}
-                        {section.badges?.[link.name] && (
-                          <span className="ml-2 px-1.5 py-0.5 bg-primary/10 text-primary text-[9px] font-bold uppercase tracking-widest rounded">
-                            {section.badges[link.name]}
-                          </span>
-                        )}
-                      </ButtonInstrument>
-
-                      {isEditMode && (
-                        <ContainerInstrument className="flex items-center gap-1 opacity-0 group-hover/link:opacity-100 transition-opacity">
-                          <button 
-                            onClick={() => {
-                              setIsEditingLink({ sectionIdx: i, linkIdx: j });
-                              setEditValue(link.href);
-                              playClick('pro');
-                            }}
-                            className="p-1 text-primary hover:bg-primary/10 rounded"
-                          >
-                            <LinkIcon size={12} />
-                          </button>
-                          <button 
-                            onClick={() => removeLink(i, j)}
-                            className="p-1 text-red-500 hover:bg-red-50 rounded"
-                          >
-                            <Trash2 size={12} />
-                          </button>
-                        </ContainerInstrument>
-                      )}
-
-                      <AnimatePresence>
-                        {isEditingLink?.sectionIdx === i && isEditingLink?.linkIdx === j && (
-                          <motion.div 
-                            ref={popoverRef}
-                            initial={{ opacity: 0, scale: 0.9, y: 10 }}
-                            animate={{ opacity: 1, scale: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.9, y: 10 }}
-                            className="absolute left-0 top-full mt-2 w-64 bg-white rounded-xl shadow-2xl border border-black/10 p-3 z-50"
-                          >
-                            <ContainerInstrument className="flex flex-col gap-3">
-                              <TextInstrument className="text-[11px] font-bold text-va-black/40 uppercase tracking-widest">
-                                <VoiceglotText translationKey="common.link_url" defaultText="Link URL" />
-                              </TextInstrument>
-                              <ContainerInstrument className="flex items-center gap-2 bg-va-off-white px-3 py-2 rounded-lg border border-black/5">
-                                <SearchIcon size={14} className="text-va-black/30" />
-                                <input 
-                                  autoFocus
-                                  type="text" 
-                                  value={editValue}
-                                  onChange={(e) => setEditValue(e.target.value)}
-                                  placeholder="https://..."
-                                  className="bg-transparent border-none outline-none text-[13px] font-medium w-full"
-                                  onKeyDown={(e) => {
-                                    if (e.key === 'Enter') updateLinkUrl(i, j, editValue);
-                                    if (e.key === 'Escape') setIsEditingLink(null);
-                                  }}
-                                />
-                              </ContainerInstrument>
-                              <ContainerInstrument className="flex justify-end gap-2">
-                                <button onClick={() => setIsEditingLink(null)} className="px-3 py-1.5 text-[11px] font-bold text-va-black/40 hover:text-va-black">
-                                  <VoiceglotText translationKey="common.cancel" defaultText="Annuleer" />
-                                </button>
-                                <button onClick={() => updateLinkUrl(i, j, editValue)} className="px-3 py-1.5 bg-primary text-white rounded-lg text-[11px] font-bold flex items-center gap-1">
-                                  <Check size={12} strokeWidth={3} /> <VoiceglotText translationKey="common.save" defaultText="Save" />
-                                </button>
-                              </ContainerInstrument>
-                            </ContainerInstrument>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </li>
-                  ))}
-                  {isEditMode && (
-                    <li className="pt-2">
-                      <button 
-                        onClick={() => addLink(i)}
-                        className="flex items-center gap-2 text-[11px] font-bold text-primary hover:opacity-70 transition-opacity"
-                      >
-                        <Plus size={12} strokeWidth={3} /> <VoiceglotText translationKey="footer.add_link" defaultText="Link toevoegen" />
-                      </button>
-                    </li>
-                  )}
-                </motion.ul>
-              )}
-            </AnimatePresence>
-          </ContainerInstrument>
-        ))}
+        {renderJourneyFooter()}
       </ContainerInstrument>
 
       {/* Bottom Bar */}
