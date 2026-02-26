@@ -1,7 +1,7 @@
 import { GeminiService } from '@/lib/services/gemini-service';
 import { KnowledgeService } from '@/lib/services/knowledge-service';
-import { db, VOICES_CONFIG } from '@/lib/system/voices-config';
-import { chatConversations, chatMessages, faq } from '@/lib/system/voices-config';
+import { db } from '@/lib/system/voices-config';
+import { chatConversations, chatMessages, faq, workshopEditions, workshops } from '@/lib/system/voices-config';
 import { desc, eq, ilike, or } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -17,8 +17,6 @@ export async function POST(request: NextRequest) {
     switch (action) {
       case 'send':
         return handleSendMessage(params, request);
-      case 'faq':
-        return handleFaqSearch(params);
       case 'conversations':
         return handleGetConversations(params);
       case 'history':
@@ -30,52 +28,6 @@ export async function POST(request: NextRequest) {
     console.error('[Voicy API Error]:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
-}
-
-/**
- * Native FAQ Search in Supabase
- */
-async function handleFaqSearch(params: any) {
-  const { q, lang = 'nl' } = params;
-
-  try {
-    const results = await db
-      .select()
-      .from(faq)
-      .where(
-        or(
-          ilike(faq.questionNl, `%${q}%`),
-          ilike(faq.answerNl, `%${q}%`),
-          ilike(faq.questionEn, `%${q}%`),
-          ilike(faq.answerEn, `%${q}%`)
-        )
-      )
-      .limit(3);
-
-    return NextResponse.json({
-      success: true,
-      faqs: results.map((f: any) => ({
-        id: f.id,
-        question: lang === 'nl' ? f.questionNl : f.questionEn,
-        answer: lang === 'nl' ? f.answerNl : f.answerEn
-      }))
-    });
-  } catch (error) {
-    console.error('[Chat FAQ Error]:', error);
-    return NextResponse.json({ error: 'FAQ search failed' }, { status: 500 });
-  }
-}
-
-interface ChatMessage {
-  id: string;
-  role: 'user' | 'assistant' | 'system';
-  content: string;
-  timestamp: string;
-  senderType: string;
-  senderId?: string;
-  isButlerAction?: boolean;
-  action?: string;
-  params?: any;
 }
 
 /**
@@ -134,7 +86,6 @@ async function handleSendMessage(params: any, request?: NextRequest) {
     let workshopContext = "";
     if (journey === 'studio') {
       try {
-        const { workshopEditions, workshops } = await import('@/lib/system/voices-config');
         const upcomingEditions = await db.select({
           id: workshopEditions.id,
           date: workshopEditions.date,
@@ -185,9 +136,6 @@ async function handleSendMessage(params: any, request?: NextRequest) {
     } catch (e: any) {
       console.warn('[Voicy API] FAQ Check failed (DB issue):', e.message);
     }
-
-    // 🛡️ CHRIS-PROTOCOL: Forceer notificatie TEST bij elk bericht in DEV/Staging voor debugging
-    console.log('[Voicy API] Notification trigger check:', { senderType, conversationId: saveResult?.conversationId || 'pending' });
 
     // 🛡️ CHRIS-PROTOCOL: Gemini response check (v2.15.026)
     if (!aiContent) {

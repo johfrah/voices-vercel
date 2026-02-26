@@ -844,7 +844,7 @@ export const VoicyChatV2: React.FC = () => {
         chips.push({ label: t('chat.chip.browse_voices', "Stemmen Zoeken"), action: "browse_voices", icon: Search });
       }
 
-      if (state.vat_number) {
+      if (state.customer.vat_number) {
         chips.push({ label: t('chat.chip.check_vat', "Check BTW Status"), action: "check_vat", icon: Shield });
       }
 
