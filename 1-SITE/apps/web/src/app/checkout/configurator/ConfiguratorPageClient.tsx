@@ -98,7 +98,7 @@ export default function ConfiguratorPageClient({
 
   //  BOB-METHODE: Share Functionality
   const [isSharing, setIsSharing] = useState(false);
-  const [dynamicConfig, setDynamicConfig] = useState<{ languages: any[], genders: any[], journeys: any[], mediaTypes: any[] } | null>(null);
+  const [dynamicConfig, setDynamicConfig] = useState<{ languages: any[], genders: any[], journeys: any[], mediaTypes: any[], countries: any[] } | null>(null);
 
   useEffect(() => {
     // 🛡️ CHRIS-PROTOCOL: Handshake Truth Priming (v2.14.714)
@@ -106,13 +106,15 @@ export default function ConfiguratorPageClient({
       fetch('/api/admin/config?type=languages').then(res => res.json()),
       fetch('/api/admin/config?type=genders').then(res => res.json()),
       fetch('/api/admin/config?type=journeys').then(res => res.json()),
-      fetch('/api/admin/config?type=media_types').then(res => res.json())
-    ]).then(([langs, genders, journeys, mediaTypes]) => {
+      fetch('/api/admin/config?type=media_types').then(res => res.json()),
+      fetch('/api/admin/config?type=countries').then(res => res.json())
+    ]).then(([langs, genders, journeys, mediaTypes, countries]) => {
       setDynamicConfig({
         languages: langs.results || [],
         genders: genders.results || [],
         journeys: journeys.results || [],
-        mediaTypes: mediaTypes.results || []
+        mediaTypes: mediaTypes.results || [],
+        countries: countries.results || []
       });
     });
   }, []);
@@ -1208,6 +1210,7 @@ export default function ConfiguratorPageClient({
                       gendersData={dynamicConfig?.genders}
                       journeysData={dynamicConfig?.journeys}
                       mediaTypesData={dynamicConfig?.mediaTypes}
+                      countriesData={dynamicConfig?.countries}
                     />
                   </div>
                 )}

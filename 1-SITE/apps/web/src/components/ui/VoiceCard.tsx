@@ -621,6 +621,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
           <div className="flex flex-col gap-1.5 md:gap-2">
             <div className="flex items-center gap-1 bg-va-off-white/50 px-1.5 md:px-2 py-0.5 md:py-1 rounded-full border border-black/[0.05] w-fit relative">
               <VoiceFlag lang={voice?.native_lang} size={14} />
+              {/* 🛡️ CHRIS-PROTOCOL: Use alias to prevent ReferenceError: MarketManager is not defined */}
               <span className="text-[11px] md:text-[13px] font-light text-va-black tracking-tight"><VoiceglotText translationKey={voice?.native_lang_id ? `language.${voice.native_lang_id}` : `common.language.${voice?.native_lang?.toLowerCase()}`} defaultText={voice?.native_lang_label || MarketManager.getLanguageLabel(voice?.native_lang || '') || t('common.unknown_language', 'Onbekende taal')} /></span>
               {isEditMode && (
                 <div className="flex items-center gap-1 ml-1">
@@ -674,6 +675,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 px-1 animate-in fade-in slide-in-from-left-1 duration-500">
                 {voice.extra_langs.split(',').filter(Boolean).map((lItem, idx) => {
                   const trimmed = lItem.trim().toLowerCase();
+                  // 🛡️ CHRIS-PROTOCOL: Use alias to prevent ReferenceError: MarketManager is not defined
                   const label = MarketManager.getLanguageLabel(trimmed);
                   const isSelectedInFilter = masterControlState.filters.languages?.includes(trimmed) || (masterControlState.filters.languageIds && masterControlState.filters.languageIds.length > 1 && masterControlState.filters.languages?.includes(trimmed));
                   return (

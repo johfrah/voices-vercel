@@ -47,7 +47,10 @@ export interface MarketConfig {
 
 export class MarketManagerServer {
   private static cache: Record<string, MarketConfig> = {};
-  private static languagesRegistry: Array<{ id: number, code: string, label: string }> = [];
+  private static languagesRegistry: Array<{ id: number, code: string, label: string, icon?: string }> = [];
+  private static countriesRegistry: Array<{ id: number, code: string, label: string }> = [];
+  private static journeysRegistry: Array<{ id: number, code: string, label: string }> = [];
+  private static mediaTypesRegistry: Array<{ id: number, code: string, label: string }> = [];
 
   /**
    * 🛡️ CHRIS-PROTOCOL: Handshake Truth Registry (v2.14.667)
@@ -55,18 +58,32 @@ export class MarketManagerServer {
    */
   public static setLanguages(langs: any[]) {
     this.languagesRegistry = langs;
-    // 🛡️ CHRIS-PROTOCOL: Sync with global/window for engines that might not have direct access
-    if (typeof global !== 'undefined') {
-      (global as any).handshakeLanguages = langs;
-    }
-    if (typeof window !== 'undefined') {
-      (window as any).handshakeLanguages = langs;
-    }
+    if (typeof global !== 'undefined') (global as any).handshakeLanguages = langs;
+    if (typeof window !== 'undefined') (window as any).handshakeLanguages = langs;
   }
 
-  public static get languages() {
-    return this.languagesRegistry;
+  public static setCountries(countries: any[]) {
+    this.countriesRegistry = countries;
+    if (typeof global !== 'undefined') (global as any).handshakeCountries = countries;
+    if (typeof window !== 'undefined') (window as any).handshakeCountries = countries;
   }
+
+  public static setJourneys(journeys: any[]) {
+    this.journeysRegistry = journeys;
+    if (typeof global !== 'undefined') (global as any).handshakeJourneys = journeys;
+    if (typeof window !== 'undefined') (window as any).handshakeJourneys = journeys;
+  }
+
+  public static setMediaTypes(mediaTypes: any[]) {
+    this.mediaTypesRegistry = mediaTypes;
+    if (typeof global !== 'undefined') (global as any).handshakeMediaTypes = mediaTypes;
+    if (typeof window !== 'undefined') (window as any).handshakeMediaTypes = mediaTypes;
+  }
+
+  public static get languages() { return this.languagesRegistry; }
+  public static get countries() { return this.countriesRegistry; }
+  public static get journeys() { return this.journeysRegistry; }
+  public static get mediaTypes() { return this.mediaTypesRegistry; }
 
   public static MARKETS_STATIC: Record<string, Partial<MarketConfig>> = {
     'voices.be': {

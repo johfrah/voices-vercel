@@ -51,8 +51,10 @@ export const FilterBar: React.FC<FilterBarProps> = ({ filters, params: combinedP
   //  MARKET-BASED LANGUAGE LOGIC
   const sortedLanguages = React.useMemo(() => {
     const market = combinedParams.market || 'BE';
-    const primaryLang = market === 'BE' ? MarketManager.getLanguageLabel('nl-be') : MarketManager.getLanguageLabel('nl-nl');
-    const secondaryLang = market === 'BE' ? MarketManager.getLanguageLabel('nl-nl') : MarketManager.getLanguageLabel('nl-be');
+    // 🛡️ CHRIS-PROTOCOL: Use alias to prevent ReferenceError: MarketManager is not defined
+    const manager = MarketManager;
+    const primaryLang = market === 'BE' ? manager.getLanguageLabel('nl-be') : manager.getLanguageLabel('nl-nl');
+    const secondaryLang = market === 'BE' ? manager.getLanguageLabel('nl-nl') : manager.getLanguageLabel('nl-be');
     
     const baseLangs = [...filters.languages];
     const filteredLangs = baseLangs.filter(l => l !== primaryLang && l !== secondaryLang);
