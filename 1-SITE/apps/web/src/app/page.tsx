@@ -594,7 +594,7 @@ function HomeContent({
               "bestRating": "5",
               "worstRating": "1"
             },
-            "review": reviews.slice(0, 3).map(r => ({
+            "review": (reviews || []).slice(0, 3).map(r => ({
               "@type": "Review",
               "author": { "@type": "Person", "name": r.name || r.authorName },
               "reviewRating": { "@type": "Rating", "ratingValue": r.rating },
