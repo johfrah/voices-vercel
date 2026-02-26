@@ -615,7 +615,7 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     const result = SlimmeKassa.calculate({
       usage: state.usage,
       plan: state.plan,
-      words: wordCount,
+      words: briefingWordCount,
       prompts: promptCount,
       mediaTypes: state.usage === 'commercial' ? (state.media as any) : [],
       countries: Array.isArray(state.country) ? state.country : [state.country],
