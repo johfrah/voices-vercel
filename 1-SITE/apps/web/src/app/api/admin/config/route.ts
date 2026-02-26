@@ -156,13 +156,13 @@ export async function GET(request: NextRequest) {
         const config = await dbWithTimeout(db.select().from(appConfigs).where(eq(appConfigs.key, 'general_settings')).limit(1)) as any[];
         return NextResponse.json({
           general_settings: config[0]?.value || {},
-      _version: '2.15.049'
+      _version: '2.15.051'
     });
   } catch (err: any) {
     console.warn(`[Admin Config] General settings fetch failed, returning empty: ${err.message}`);
     return NextResponse.json({
       general_settings: {},
-      _version: '2.15.049'
+      _version: '2.15.051'
     });
       }
     }
@@ -253,7 +253,7 @@ export async function POST(request: NextRequest) {
         }
       });
 
-    return NextResponse.json({ success: true, _version: '2.15.009' });
+    return NextResponse.json({ success: true, _version: '2.15.049' });
   } catch (error) {
     console.error('[Admin Config POST Error]:', error);
     return NextResponse.json({ error: 'Failed to update config' }, { status: 500 });

@@ -98,6 +98,8 @@ export const VoicyChatV2: React.FC = () => {
   const [callError, setCallError] = useState<string | null>(null);
   const [persona, setPersona] = useState<'voicy' | 'johfrah'>('voicy');
   const [customer360, setCustomer360] = useState<any>(null);
+  const [showLeadForm, setShowLeadForm] = useState(false);
+  const [leadFormData, setLeadFormData] = useState({ name: '', email: '' });
 
   const isJohfrah = persona === 'johfrah';
 
@@ -357,6 +359,14 @@ export const VoicyChatV2: React.FC = () => {
               content: t('chat.cart.fail', `Ik kon de stem niet toevoegen. Zorg dat je een stem hebt geselecteerd en de prijs is berekend.`),
               timestamp: new Date().toISOString()
             }]);
+          }
+          break;
+
+        case 'SHOW_LEAD_FORM':
+          // 🛡️ CHRIS-PROTOCOL: Inline Lead Identification (v2.15.036)
+          if (!isAuthenticated && !conversationId?.toString().includes('guest')) {
+            setShowLeadForm(true);
+            playSonicClick('pro');
           }
           break;
       }
@@ -761,6 +771,51 @@ export const VoicyChatV2: React.FC = () => {
         timestamp: new Date().toISOString()
       };
       setMessages(prev => [...prev, errorResponse]);
+    } finally {
+      setIsTyping(false);
+    }
+  };
+
+  const handleLeadSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!leadFormData.email || !leadFormData.name) return;
+
+    setIsTyping(true);
+    playSonicClick('success');
+
+    try {
+      const response = await fetch('/api/chat/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'send',
+          message: `Mijn naam is ${leadFormData.name} en mijn email is ${leadFormData.email}`,
+          conversationId: conversationId,
+          language: language,
+          mode: 'agent',
+          persona: persona,
+          context: {
+            journey: isAcademyJourney ? 'academy' : isStudioJourney ? 'studio' : isPortfolioJourney ? 'portfolio' : 'agency',
+            briefing: state.briefing,
+            isAuthenticated,
+            user: user?.email,
+            customer360: customer360
+          }
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setShowLeadForm(false);
+        setMessages(prev => [...prev, {
+          id: `lead-success-${Date.now()}`,
+          role: 'assistant',
+          content: data.content || t('chat.lead.success', "Bedankt! Ik heb je gegevens genoteerd. Hoe kan ik je verder helpen?"),
+          timestamp: new Date().toISOString()
+        }]);
+      }
+    } catch (error) {
+      console.error("Lead submission error:", error);
     } finally {
       setIsTyping(false);
     }
@@ -1202,6 +1257,51 @@ export const VoicyChatV2: React.FC = () => {
                             <TextInstrument className="text-[13px] tracking-widest opacity-40 font-light">
                               <VoiceglotText translationKey="chat.status.typing" defaultText="VOICY DENKT NA..." />
                             </TextInstrument>
+                          </ContainerInstrument>
+                        </motion.div>
+                      )}
+
+                      {/* 🛡️ CHRIS-PROTOCOL: Inline Lead Form (v2.15.036) */}
+                      {showLeadForm && (
+                        <motion.div
+                          initial={{ opacity: 0, scale: 0.95 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          className="flex justify-start w-full"
+                        >
+                          <ContainerInstrument plain className="bg-white border border-black/5 p-6 rounded-[24px] rounded-tl-none shadow-aura w-[90%] space-y-4">
+                            <ContainerInstrument plain className="flex items-center gap-3 mb-2">
+                              <ContainerInstrument plain className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                                <User size={16} strokeWidth={1.5} />
+                              </ContainerInstrument>
+                              <TextInstrument className="text-[15px] font-medium tracking-tight">
+                                <VoiceglotText translationKey="chat.lead.form_title" defaultText="Even voorstellen" />
+                              </TextInstrument>
+                            </ContainerInstrument>
+                            
+                            <FormInstrument onSubmit={handleLeadSubmit} className="space-y-3">
+                              <InputInstrument 
+                                type="text"
+                                required
+                                placeholder={t('common.name', "Je naam")}
+                                value={leadFormData.name}
+                                onChange={(e) => setLeadFormData(prev => ({ ...prev, name: e.target.value }))}
+                                className="w-full bg-va-off-white border-none rounded-xl py-3 px-4 text-[14px] font-light focus:ring-2 focus:ring-va-black/10 transition-all"
+                              />
+                              <InputInstrument 
+                                type="email"
+                                required
+                                placeholder={t('common.email', "Je e-mailadres")}
+                                value={leadFormData.email}
+                                onChange={(e) => setLeadFormData(prev => ({ ...prev, email: e.target.value }))}
+                                className="w-full bg-va-off-white border-none rounded-xl py-3 px-4 text-[14px] font-light focus:ring-2 focus:ring-va-black/10 transition-all"
+                              />
+                              <ButtonInstrument 
+                                type="submit"
+                                className="w-full py-3 bg-va-black text-white rounded-xl text-[13px] font-black tracking-widest uppercase hover:opacity-80 transition-all shadow-lg"
+                              >
+                                <VoiceglotText translationKey="chat.lead.submit" defaultText="GESPREK BEWAREN" />
+                              </ButtonInstrument>
+                            </FormInstrument>
                           </ContainerInstrument>
                         </motion.div>
                       )}

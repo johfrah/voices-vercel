@@ -467,7 +467,16 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
     if (!result) return null;
 
     const status = SlimmeKassa.getAvailabilityStatus(voice as any, masterControlState.journey === 'commercial' ? (currentMedia as any) : [], masterControlState.filters.countries?.[0] || masterControlState.filters.country || 'BE');
-    if (status === 'unavailable') return null;
+    
+    if (status === 'unavailable') {
+      console.log(`[VoiceCard] Actor ${voice.id} (${voice.display_name}) is unavailable for current filters.`, {
+        journey: masterControlState.journey,
+        media: currentMedia,
+        country: masterControlState.filters.countries?.[0] || masterControlState.filters.country || 'BE'
+      });
+      return null;
+    }
+
     return { price: SlimmeKassa.format(result.subtotal || 0).replace('', '').trim(), status, mediaBreakdown: result.mediaBreakdown };
   }, [voice, masterControlState.journey, masterControlState.filters, checkoutState.briefing, checkoutState.plan, checkoutState.prompts, checkoutState.music, eventData?.media, eventData?.spotsDetail, eventData?.yearsDetail, checkoutState.pricingConfig]);
 

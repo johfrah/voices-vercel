@@ -20,6 +20,8 @@ export const VoiceGrid: React.FC<VoiceGridProps> = ({ actors, featured = false, 
   // We gebruiken een vaste grid-structuur die ALTIJD van links naar rechts vult.
   // De 'flex' op de motion.div zorgde voor gaten bij filter-wissels.
   
+  console.log(`[VoiceGrid] Rendering ${actors?.length || 0} actors.`);
+  
   return (
     <>
       <div className={cn(
