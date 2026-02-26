@@ -1202,7 +1202,7 @@ export default function ConfiguratorPageClient({
                     </LabelInstrument>
                     <VoicesMasterControl 
                       minimalMode={minimalMode} 
-                      actors={[]} 
+                      actors={state.selectedActor ? [state.selectedActor] : []} 
                       filters={{ languages: [], genders: [], styles: [] }} 
                       languagesData={dynamicConfig?.languages}
                       gendersData={dynamicConfig?.genders}

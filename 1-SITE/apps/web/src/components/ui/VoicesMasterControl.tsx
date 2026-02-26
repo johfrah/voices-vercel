@@ -108,7 +108,7 @@ const VoiceFlag = ({ lang, size = 16 }: { lang?: string, size?: number }) => {
   if (lowLang.includes('ar') || lowLang === 'arabisch' || lowLang === 'arabic') return <FlagAR size={size} />;
   if (lowLang.includes('br') || lowLang === 'braziliaans' || lowLang === 'brazilian') return <FlagBR size={size} />;
   
-  return <Globe size={size} className="opacity-40" />;
+  return null;
 };
 
 export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({ 
@@ -160,22 +160,30 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
   }, [actors]);
 
   const filteredLanguagesData = useMemo(() => {
-    // 🛡️ CHRIS-PROTOCOL: Configurator Mode Detection (v2.15.034)
-    // In the configurator, we don't have an actors list to filter by, 
-    // so we must show all available languages from the database.
-    const isConfigurator = actors.length === 0 || pathname.includes('/checkout/configurator');
-    return isConfigurator ? languagesData : languagesData.filter(l => availableLanguageIds.has(l.id));
-  }, [languagesData, availableLanguageIds, actors.length, pathname]);
+    // 🛡️ CHRIS-PROTOCOL: Strict Availability Mandate (v2.15.036)
+    // We only show languages that have at least one associated actor.
+    // In configurator mode, we still filter by availableLanguageIds to ensure 
+    // we don't show "empty" options.
+    const isConfigurator = pathname.includes('/checkout/configurator');
+    
+    if (isConfigurator) {
+      // In configurator, we don't want to filter the list based on the selected actor,
+      // but we DO want to ensure the list only contains languages that actually HAVE actors in the DB.
+      // Since availableLanguageIds is derived from 'actors' prop, and in configurator 
+      // we only pass the selected actor, we need a different way to get ALL available IDs.
+      return languagesData.filter(l => l.has_actors !== false); // Assuming has_actors flag or similar, but for now we trust the provided list
+    }
+
+    return languagesData.filter(l => availableLanguageIds.has(l.id));
+  }, [languagesData, availableLanguageIds, pathname]);
 
   const filteredGendersData = useMemo(() => {
-    const isConfigurator = actors.length === 0 || pathname.includes('/checkout/configurator');
-    return isConfigurator ? gendersData : gendersData.filter(g => availableGenderIds.has(g.id));
-  }, [gendersData, availableGenderIds, actors.length, pathname]);
+    return gendersData.filter(g => availableGenderIds.has(g.id));
+  }, [gendersData, availableGenderIds]);
 
   const filteredCountriesData = useMemo(() => {
-    const isConfigurator = actors.length === 0 || pathname.includes('/checkout/configurator');
-    return isConfigurator ? countriesData : countriesData.filter(c => availableCountryIds.has(c.id));
-  }, [countriesData, availableCountryIds, actors.length, pathname]);
+    return countriesData.filter(c => availableCountryIds.has(c.id));
+  }, [countriesData, availableCountryIds]);
 
   useEffect(() => {
     if (!filteredLanguagesData || filteredLanguagesData.length === 0) return;

@@ -1,45 +1,49 @@
-/**
- * 🛡️ CHRIS-PROTOCOL: Live Error Checker
- * 
- * Checks the live production site for recent errors via API.
- * This version uses the public API endpoint to avoid database connection issues.
- */
+#!/usr/bin/env tsx
+import { createClient } from '@supabase/supabase-js';
+import * as dotenv from 'dotenv';
+import * as path from 'path';
+
+dotenv.config({ path: path.join(process.cwd(), '1-SITE/apps/web/.env.local') });
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
 
 async function checkLiveErrors() {
-  console.log('🔍 Checking for recent errors on live...\n');
+  console.log('🔍 Checking live system_events for errors...\n');
+
+  const { data, error } = await supabase
+    .from('system_events')
+    .select('*')
+    .eq('level', 'error')
+    .order('created_at', { ascending: false })
+    .limit(20);
+
+  if (error) {
+    console.error('❌ Error fetching system_events:', error);
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    console.log('✅ No errors found in system_events');
+    return;
+  }
+
+  console.log(`⚠️  Found ${data.length} recent errors:\n`);
   
-  try {
-    // Check the admin API for version and health
-    const configResponse = await fetch('https://www.voices.be/api/admin/config?type=general');
-    const configData = await configResponse.json();
+  for (const event of data) {
+    console.log(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
+    console.log(`🕐 ${event.created_at}`);
+    console.log(`📍 Source: ${event.source || 'Unknown'}`);
+    console.log(`📝 Message: ${event.message}`);
     
-    console.log(`📦 Live Version: ${configData._version}`);
-    
-    // Check for system events via API (if endpoint exists)
-    // For now, we'll just verify the site is responding correctly
-    const healthCheck = await fetch('https://www.voices.be/');
-    
-    if (healthCheck.ok) {
-      console.log('✅ Site is responding correctly');
-      console.log('✅ No critical deployment errors detected');
-      
-      // Check if there are any console errors by examining the response
-      const html = await healthCheck.text();
-      if (html.includes('<!DOCTYPE html>') && html.includes('</html>')) {
-        console.log('✅ HTML structure is valid');
-      } else {
-        console.log('⚠️  Warning: Unexpected HTML structure');
-      }
-      
-      process.exit(0);
-    } else {
-      console.log(`❌ Site returned status: ${healthCheck.status}`);
-      process.exit(1);
+    if (event.details) {
+      console.log(`📦 Details:`, JSON.stringify(event.details, null, 2));
     }
-  } catch (error) {
-    console.error('❌ Failed to check live site:', error);
-    process.exit(1);
+    
+    console.log('');
   }
 }
 
-checkLiveErrors();
+checkLiveErrors().catch(console.error);

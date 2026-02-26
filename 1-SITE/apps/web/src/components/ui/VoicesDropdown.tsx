@@ -25,8 +25,19 @@ const VoiceFlag = ({ lang, size = 16 }: { lang?: string, size?: number }) => {
   if (lowLang.includes('pl') || lowLang === 'pools' || lowLang === 'polish') return <FlagPL size={size} />;
   if (lowLang.includes('dk') || lowLang === 'deens' || lowLang === 'danish') return <FlagDK size={size} />;
   if (lowLang.includes('pt') || lowLang === 'portugees' || lowLang === 'portuguese') return <FlagPT size={size} />;
+  if (lowLang.includes('se') || lowLang === 'zweeds' || lowLang === 'swedish') return <FlagSE size={size} />;
+  if (lowLang.includes('no') || lowLang === 'noors' || lowLang === 'norwegian') return <FlagNO size={size} />;
+  if (lowLang.includes('fi') || lowLang === 'fins' || lowLang === 'finnish') return <FlagFI size={size} />;
+  if (lowLang.includes('gr') || lowLang === 'grieks' || lowLang === 'greek') return <FlagGR size={size} />;
+  if (lowLang.includes('tr') || lowLang === 'turks' || lowLang === 'turkish') return <FlagTR size={size} />;
+  if (lowLang.includes('ru') || lowLang === 'russisch' || lowLang === 'russian') return <FlagRU size={size} />;
+  if (lowLang.includes('cn') || lowLang.includes('zh') || lowLang === 'chinees' || lowLang === 'chinese') return <FlagCN size={size} />;
+  if (lowLang.includes('jp') || lowLang === 'japans' || lowLang === 'japanese') return <FlagJP size={size} />;
+  if (lowLang.includes('kr') || lowLang === 'koreaans' || lowLang === 'korean') return <FlagKR size={size} />;
+  if (lowLang.includes('ar') || lowLang === 'arabisch' || lowLang === 'arabic') return <FlagAR size={size} />;
+  if (lowLang.includes('br') || lowLang === 'braziliaans' || lowLang === 'brazilian') return <FlagBR size={size} />;
   
-  return <Globe size={size} className="opacity-40" />;
+  return null;
 };
 
 interface VoicesDropdownProps {
