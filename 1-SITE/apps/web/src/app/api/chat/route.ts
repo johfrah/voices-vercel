@@ -275,6 +275,10 @@ SLIMME KASSA REGELS:
           BUTLER MANDAAT:
           - Je bent proactief maar nooit opdringerig.
           - Je bedient de tools van de website voor de klant.
+          - 🛡️ LEAD IDENTIFICATION (ZEER BELANGRIJK): 
+            - Indien de klant nog niet is geïdentificeerd (geen naam/email in context): Vraag na het EERSTE bericht direct op een warme manier naar hun naam en e-mailadres. 
+            - Leg uit dat dit is om het gesprek te kunnen bewaren en hen later beter te kunnen helpen.
+            - Als ze hun gegevens geven, extraheer deze dan in het 'extractedLead' veld van je JSON antwoord.
           - Als een klant over prijs, woorden of gebruik praat, stel je ALTIJD een 'SET_CONFIGURATOR' actie voor.
           - Als een klant een stem zoekt, stel je een 'FILTER_VOICES' actie voor.
           - Als een klant een stem wil toevoegen aan zijn mandje (bijv. "zet deze er ook bij"), stel je 'ADD_TO_CART' voor.
@@ -286,6 +290,10 @@ SLIMME KASSA REGELS:
             "suggestedAction": {
               "type": "SET_CONFIGURATOR" | "FILTER_VOICES" | "PREFILL_CHECKOUT" | "NAVIGATE_JOURNEY" | "PLACE_ORDER" | "ADD_TO_CART",
               "params": { ... relevante parameters volgens de Tool-Bijbel ... }
+            },
+            "extractedLead": {
+              "name": "Naam indien genoemd",
+              "email": "Email indien genoemd"
             }
           }
           
@@ -396,11 +404,30 @@ SLIMME KASSA REGELS:
     let saveResult: any = null;
     try {
       console.log('[Voicy API] Attempting to save to DB...');
+      
+      // 🛡️ CHRIS-PROTOCOL: Lead Identification (v2.15.035)
+      // Als de gebruiker al ingelogd is (senderId aanwezig), koppelen we die direct.
+      // Anders kijken we of de AI naam/email heeft geëxtraheerd in Butler Mode.
+      let leadEmail = null;
+      let leadName = null;
+      
+      if (aiContent && mode === 'agent') {
+        try {
+          const aiJson = JSON.parse(aiContent);
+          if (aiJson.extractedLead) {
+            leadEmail = aiJson.extractedLead.email;
+            leadName = aiJson.extractedLead.name;
+          }
+        } catch (e) {}
+      }
+
       saveResult = await db.transaction(async (tx: any) => {
         let convId = conversationId;
         if (!convId) {
           const [newConv] = await tx.insert(chatConversations).values({
             user_id: senderType === 'user' ? senderId : null,
+            guestName: leadName,
+            guestEmail: leadEmail,
             status: 'open',
             iapContext: params.iapContext || {},
             metadata: { 
@@ -411,6 +438,15 @@ SLIMME KASSA REGELS:
             }
           }).returning({ id: chatConversations.id });
           convId = newConv.id;
+        } else if (leadEmail || leadName) {
+          // Update bestaande conversatie met lead info
+          await tx.update(chatConversations)
+            .set({ 
+              guestEmail: leadEmail || undefined,
+              guestName: leadName || undefined,
+              updatedAt: new Date() 
+            })
+            .where(eq(chatConversations.id, convId));
         }
 
         const [newMessage] = await tx.insert(chatMessages).values({

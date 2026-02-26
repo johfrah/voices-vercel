@@ -597,7 +597,7 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       return;
     }
 
-    const wordCount = (state.briefing || '').trim().split(/\s+/).filter(Boolean).length;
+    const briefingWordCount = (state.briefing || '').trim().split(/\s+/).filter(Boolean).length;
     const promptCount = (state.briefing || '').trim().split(/\n+/).filter(Boolean).length;
 
     //  COMMERCIAL LOGIC: Apply spots/years to ALL selected media types
@@ -626,10 +626,12 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       music: state.music,
       isVatExempt: !!state.customer.vat_number && 
         state.customer.vat_verified === true &&
-        state.customer.vat_number.length > 2 && 
+        (state.customer.vat_number || '').length > 2 && 
         !state.customer.vat_number.startsWith('BE') && 
         state.customer.country !== 'BE'
     }, state.pricingConfig || undefined);
+
+    if (!result) return;
 
     // Liquid price animation in context
     setState(prev => {

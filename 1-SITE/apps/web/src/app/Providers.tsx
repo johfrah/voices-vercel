@@ -33,7 +33,7 @@ export function Providers({
   initialUsage?: any;
 }) {
   const pathname = usePathname();
-  const currentVersion = '2.15.046';
+  const currentVersion = '2.15.047';
 
 
   //  CHRIS-PROTOCOL: Initialize Client Logger for real-time error reporting
@@ -54,7 +54,7 @@ export function Providers({
     // We use a ref-like pattern to only prime once per mount
     const g = window as any;
     if (!g.__marketPrimed) {
-      MarketManagerServer.setLanguages(Object.values(initialTranslations).length > 0 ? [] : []); // Placeholder for languages if needed
+      MarketManagerServer.setLanguages(Object.values(initialTranslations || {}).length > 0 ? [] : []); // Placeholder for languages if needed
       g.__marketPrimed = true;
     }
   }

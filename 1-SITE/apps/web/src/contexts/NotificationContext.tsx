@@ -117,7 +117,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
   };
 
   const markAllAsRead = async () => {
-    if (!supabase || notifications.length === 0) return;
+    if (!supabase || (notifications || []).length === 0) return;
     try {
       const { data: userData } = await supabase
         .from('users')
@@ -141,7 +141,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     }
   };
 
-  const unreadCount = notifications.filter(n => !n.isRead).length;
+  const unreadCount = (notifications || []).filter(n => n && !n.isRead).length;
 
   return (
     <NotificationContext.Provider value={{

@@ -173,41 +173,41 @@ function HomeContent({
     const filteredActors = useMemo(() => {
       if (!actors || actors.length === 0) return [];
       
-      const results = VoiceFilterEngine.filter(actors, {
+    const result = VoiceFilterEngine.filter(actors, {
+      journey: masterControlState.journey,
+      language: masterControlState.filters.language,
+      languageId: masterControlState.filters.languageId,
+      languages: masterControlState.filters.languages,
+      languageIds: masterControlState.filters.languageIds,
+      gender: masterControlState.filters.gender,
+      genderId: masterControlState.filters.genderId, // 🛡️ CHRIS-PROTOCOL: Handshake Truth (v2.14.740)
+      media: masterControlState.filters.media,
+      mediaIds: masterControlState.filters.mediaIds, // 🛡️ CHRIS-PROTOCOL: Handshake Truth (v2.14.740)
+      country: masterControlState.filters.country,
+      countryId: masterControlState.filters.countryId,
+      toneIds: masterControlState.filters.toneIds,
+      sortBy: masterControlState.filters.sortBy,
+      currentStep: masterControlState.currentStep,
+      selectedActorId: checkoutState.selectedActor?.id
+    }) || [];
+
+    // 🛡️ CHRIS-PROTOCOL: Forensic Console Audit (Godmode)
+    console.log('📊 [Godmode Audit] Filter Results (v2.14.106):', {
+      total_live_in_memory: actors.length,
+      criteria: {
         journey: masterControlState.journey,
         language: masterControlState.filters.language,
         languageId: masterControlState.filters.languageId,
-        languages: masterControlState.filters.languages,
-        languageIds: masterControlState.filters.languageIds,
-        gender: masterControlState.filters.gender,
-        genderId: masterControlState.filters.genderId, // 🛡️ CHRIS-PROTOCOL: Handshake Truth (v2.14.740)
-        media: masterControlState.filters.media,
-        mediaIds: masterControlState.filters.mediaIds, // 🛡️ CHRIS-PROTOCOL: Handshake Truth (v2.14.740)
         country: masterControlState.filters.country,
-        countryId: masterControlState.filters.countryId,
-        toneIds: masterControlState.filters.toneIds,
-        sortBy: masterControlState.filters.sortBy,
-        currentStep: masterControlState.currentStep,
-        selectedActorId: checkoutState.selectedActor?.id
-      });
+        market: marketCode
+      },
+      shown_count: (result || []).length || 0,
+      shown_names: (result || []).map(a => `${a?.display_name || '?'} (Native: ${a?.native_lang || '?'}, Country: ${a?.country || '?'})`),
+      hidden_count: actors.length - ((result || []).length || 0),
+      hidden_names: actors.filter(a => !((result || []).find(r => r?.id === a?.id))).map(a => `${a?.display_name || '?'} (Native: ${a?.native_lang || '?'})`)
+    });
 
-      // 🛡️ CHRIS-PROTOCOL: Forensic Console Audit (Godmode)
-      console.log('📊 [Godmode Audit] Filter Results (v2.14.106):', {
-        total_live_in_memory: actors.length,
-        criteria: {
-          journey: masterControlState.journey,
-          language: masterControlState.filters.language,
-          languageId: masterControlState.filters.languageId,
-          country: masterControlState.filters.country,
-          market: marketCode
-        },
-        shown_count: results?.length || 0,
-        shown_names: (results || []).map(a => `${a?.display_name || '?'} (Native: ${a?.native_lang || '?'}, Country: ${a?.country || '?'})`),
-        hidden_count: actors.length - (results?.length || 0),
-        hidden_names: actors.filter(a => !(results || []).find(r => r?.id === a?.id)).map(a => `${a?.display_name || '?'} (Native: ${a?.native_lang || '?'})`)
-      });
-
-      return results;
+    return result || [];
     }, [actors, masterControlState.journey, masterControlState.filters, checkoutState.selectedActor?.id, masterControlState.currentStep, market]);
 
   const isTelephony = customerDNA?.intelligence?.lastIntent === 'telephony' || customerDNA?.intelligence?.detectedSector === 'it';

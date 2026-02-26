@@ -72,17 +72,18 @@ export function AgencyContent({ mappedActors, filters }: { mappedActors: any[], 
       languages: state.filters.languages,
       languageIds: state.filters.languageIds,
       gender: state.filters.gender,
+      genderId: state.filters.genderId,
       media: state.filters.media,
       country: state.filters.country,
       countries: state.filters.countries,
       sortBy: state.filters.sortBy,
       currentStep: state.currentStep,
       selectedActorId: checkoutState.selectedActor?.id
-    });
+    }) || [];
 
-    console.log(`[AgencyContent] Result: ${result.length} actors. First 3:`, result.slice(0, 3).map(a => a.display_name));
+    console.log(`[AgencyContent] Result: ${(result || []).length} actors. First 3:`, (result || []).slice(0, 3).map(a => a?.display_name));
 
-    return result;
+    return result || [];
   }, [mappedActors, state.journey, state.filters, state.currentStep, checkoutState.selectedActor?.id, mounted]);
 
   //  CHRIS-PROTOCOL: Handle initial actor selection from URL (Homepage SPA flow)

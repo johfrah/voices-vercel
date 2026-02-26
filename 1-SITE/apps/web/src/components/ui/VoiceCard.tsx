@@ -463,9 +463,12 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
     const spotsMap = masterControlState.journey === 'commercial' && Array.isArray(currentMedia) ? currentMedia.reduce((acc, m) => ({ ...acc, [m]: (currentSpotsDetail && currentSpotsDetail[m]) || masterControlState.filters.spots || 1 }), {}) : undefined;
     const yearsMap = masterControlState.journey === 'commercial' && Array.isArray(currentMedia) ? currentMedia.reduce((acc, m) => ({ ...acc, [m]: (currentYearsDetail && currentYearsDetail[m]) || masterControlState.filters.years || 1 }), {}) : undefined;
     const result = SlimmeKassa.calculate({ usage: masterControlState.journey === 'telephony' ? 'telefonie' : (masterControlState.journey === 'video' ? 'unpaid' : 'commercial'), plan: checkoutState.plan, words: wordCount, prompts: checkoutState.prompts, mediaTypes: masterControlState.journey === 'commercial' ? (currentMedia as any) : undefined, countries: masterControlState.filters.countries || [masterControlState.filters.country || 'BE'], spots: spotsMap, years: yearsMap, liveSession: masterControlState.filters.liveSession, actorRates: voice as any, music: checkoutState.music, isVatExempt: false }, checkoutState.pricingConfig || undefined);
+    
+    if (!result) return null;
+
     const status = SlimmeKassa.getAvailabilityStatus(voice as any, masterControlState.journey === 'commercial' ? (currentMedia as any) : [], masterControlState.filters.countries?.[0] || masterControlState.filters.country || 'BE');
     if (status === 'unavailable') return null;
-    return { price: SlimmeKassa.format(result.subtotal).replace('', '').trim(), status, mediaBreakdown: result.mediaBreakdown };
+    return { price: SlimmeKassa.format(result.subtotal || 0).replace('', '').trim(), status, mediaBreakdown: result.mediaBreakdown };
   }, [voice, masterControlState.journey, masterControlState.filters, checkoutState.briefing, checkoutState.plan, checkoutState.prompts, checkoutState.music, eventData?.media, eventData?.spotsDetail, eventData?.yearsDetail, checkoutState.pricingConfig]);
 
   const sectorDemo = useMemo(() => {
