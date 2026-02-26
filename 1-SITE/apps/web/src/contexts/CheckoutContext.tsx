@@ -230,9 +230,12 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             ));
           });
 
+          // 🛡️ CHRIS-PROTOCOL: Destructure to exclude items from spread to prevent override
+          const { items: _, ...parsedWithoutItems } = parsed;
+
           setState(prev => ({
             ...prev,
-            ...parsed,
+            ...parsedWithoutItems,
             items: cleanItems,
             customer: { ...prev.customer, ...parsed.customer },
             paymentMethods: prev.paymentMethods

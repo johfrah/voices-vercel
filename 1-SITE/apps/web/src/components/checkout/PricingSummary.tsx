@@ -189,7 +189,8 @@ export const PricingSummary: React.FC<{
   const isSubscription = state.usage === 'subscription';
   const isCartPage = typeof window !== 'undefined' && window.location.pathname.includes('/cart');
   const isCheckoutPage = typeof window !== 'undefined' && window.location.pathname.includes('/checkout');
-  const hasContextData = state.items.length > 0 || state.selectedActor || state.briefing || isSubscription || state.editionId;
+  // 🛡️ CHRIS-PROTOCOL: Defensive guard for items array (v2.15.065)
+  const hasContextData = (state.items?.length || 0) > 0 || state.selectedActor || state.briefing || isSubscription || state.editionId;
   
   const discountAmount = state.customer.active_coupon 
     ? (state.customer.active_coupon.type === 'percentage' 
@@ -244,7 +245,8 @@ export const PricingSummary: React.FC<{
               </motion.div>
             )}
 
-            {state.items.length > 0 && state.items.map((itemObj, idx) => (
+            {/* 🛡️ CHRIS-PROTOCOL: Defensive guard for items array (v2.15.065) */}
+            {(state.items?.length || 0) > 0 && (state.items || []).map((itemObj, idx) => (
               <ContainerInstrument 
                 key={itemObj.id || idx} 
                 onClick={() => !isCartPage && setSelectedItem(itemObj)}
