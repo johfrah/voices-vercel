@@ -51,7 +51,6 @@ export async function POST(request: NextRequest) {
     let eventId = 0;
     try {
       if (db && systemEvents) {
-        const nowIso = new Date().toISOString();
         const [event] = await db.insert(systemEvents).values({
           level,
           source: component || 'Watchdog',
@@ -61,9 +60,9 @@ export async function POST(request: NextRequest) {
             stack,
             url,
             userAgent: request.headers.get('user-agent'),
-            timestamp: nowIso
+            timestamp: new Date().toISOString()
           },
-          createdAt: nowIso
+          createdAt: new Date().toISOString()
         }).returning({ id: systemEvents.id });
         eventId = event.id;
         console.log(`[Watchdog] Event logged to DB: #${eventId}`);

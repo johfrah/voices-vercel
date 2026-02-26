@@ -204,8 +204,8 @@ function HomeContent({
       },
       shown_count: (result || []).length || 0,
       shown_names: (result || []).map(a => `${a?.display_name || '?'} (Native: ${a?.native_lang || '?'}, Country: ${a?.country || '?'})`),
-      hidden_count: actors.length - ((result || []).length || 0),
-      hidden_names: actors.filter(a => !((result || []).find(r => r?.id === a?.id))).map(a => `${a?.display_name || '?'} (Native: ${a?.native_lang || '?'})`)
+      hidden_count: (actors || []).length - ((result || []).length || 0),
+      hidden_names: (actors || []).filter(a => !((result || []).find(r => r?.id === a?.id))).map(a => `${a?.display_name || '?'} (Native: ${a?.native_lang || '?'})`)
     });
 
     return result || [];

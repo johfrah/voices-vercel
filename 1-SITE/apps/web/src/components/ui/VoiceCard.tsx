@@ -453,6 +453,9 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
   }, [voice]);
 
   const displayPrice = useMemo(() => {
+    // #region agent log
+    fetch('http://127.0.0.1:7691/ingest/0b1da146-0703-4910-bde4-4876f6bb4146',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'81e7e6'},body:JSON.stringify({sessionId:'81e7e6',location:'VoiceCard.tsx:456',message:'displayPrice useMemo',data:{hasVoice: !!voice, hasCheckoutBriefing: !!checkoutState.briefing},timestamp:Date.now()})}).catch(()=>{});
+    // #endregion
     if (!voice) return null;
     const isConfigurator = masterControlState.currentStep === 'script';
     const briefingWordCount = (checkoutState.briefing || '').trim().split(/\s+/).filter(Boolean).length;

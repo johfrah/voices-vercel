@@ -445,7 +445,7 @@ SLIMME KASSA REGELS:
             .set({ 
               guestEmail: leadEmail || undefined,
               guestName: leadName || undefined,
-              updatedAt: new Date() 
+              updatedAt: new Date().toISOString() 
             })
             .where(eq(chatConversations.id, convId));
         }
@@ -460,11 +460,11 @@ SLIMME KASSA REGELS:
             ai_mode: mode,
             has_actions: actions.length > 0
           },
-          createdAt: new Date()
+          createdAt: new Date().toISOString()
         }).returning();
 
         await tx.update(chatConversations)
-          .set({ updatedAt: new Date() })
+          .set({ updatedAt: new Date().toISOString() })
           .where(eq(chatConversations.id, convId));
 
         if (!conversationId || message.toLowerCase().includes("prijs") || message.toLowerCase().includes("offerte")) {

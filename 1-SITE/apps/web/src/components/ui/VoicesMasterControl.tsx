@@ -405,7 +405,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
         value: l.id,
         langCode: l.code,
         icon: l.icon,
-        popular: l.isPopular || market.popular_languages.some(pl => 
+        popular: l.isPopular || (market.popular_languages || []).some(pl => 
           pl.toLowerCase() === l.code.toLowerCase() || 
           pl.toLowerCase() === l.label.toLowerCase() ||
           pl.toLowerCase() === cleanLabel.toLowerCase()

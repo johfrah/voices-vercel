@@ -191,7 +191,9 @@ async function discoverAndRegisterSlug(slug: string, marketCode: string, journey
           entity_type_id: 1, // actor
           market_code: marketCode === 'ADEMING' ? 'BE' : marketCode,
           journey: 'agency',
-          is_active: true
+          is_active: true,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
         })
         .select('entity_id, journey')
         .single();
@@ -217,7 +219,9 @@ async function discoverAndRegisterSlug(slug: string, marketCode: string, journey
           entity_type_id: 3, // article
           market_code: 'ALL',
           journey: 'agency',
-          is_active: true
+          is_active: true,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
         })
         .select('entity_id, journey')
         .single();
@@ -242,7 +246,9 @@ async function discoverAndRegisterSlug(slug: string, marketCode: string, journey
           entity_type_id: 4, // artist
           market_code: 'ALL',
           journey: 'artist',
-          is_active: true
+          is_active: true,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
         })
         .select('entity_id, journey')
         .single();

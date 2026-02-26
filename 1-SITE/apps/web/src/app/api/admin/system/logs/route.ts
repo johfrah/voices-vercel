@@ -91,9 +91,9 @@ export async function POST(request: Request) {
           ...details,
           url: request.headers.get('referer'),
           userAgent: request.headers.get('user-agent'),
-          timestamp: nowIso
+          timestamp: new Date().toISOString()
         },
-        createdAt: nowIso
+        createdAt: new Date().toISOString()
       });
     } catch (dbError) {
       console.warn('[Logs Reporting] Drizzle failed, falling back to Supabase SDK:', dbError);

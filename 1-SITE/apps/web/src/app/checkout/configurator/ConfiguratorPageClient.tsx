@@ -935,6 +935,9 @@ export default function ConfiguratorPageClient({
    *  SALLY'S PRICE BLOCK (Refactored for 2026)
    */
   const PriceBlock = () => {
+    // #region agent log
+    fetch('http://127.0.0.1:7691/ingest/0b1da146-0703-4910-bde4-4876f6bb4146',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'81e7e6'},body:JSON.stringify({sessionId:'81e7e6',location:'ConfiguratorPageClient.tsx:938',message:'PriceBlock render',data:{hasWordCount: typeof wordCount !== 'undefined'},timestamp:Date.now()})}).catch(()=>{});
+    // #endregion
     if (!isHydrated) return (
       <ContainerInstrument className="bg-white rounded-[20px] p-8 text-va-black shadow-aura border border-black/[0.03] min-h-[400px] flex items-center justify-center">
         <Loader2 className="animate-spin text-primary/20" size={32} />
