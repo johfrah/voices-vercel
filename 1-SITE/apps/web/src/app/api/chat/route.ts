@@ -189,7 +189,7 @@ async function handleSendMessage(params: any, request?: NextRequest) {
     // 🛡️ CHRIS-PROTOCOL: Forceer notificatie TEST bij elk bericht in DEV/Staging voor debugging
     console.log('[Voicy API] Notification trigger check:', { senderType, conversationId: saveResult?.conversationId || 'pending' });
 
-    // 🛡️ CHRIS-PROTOCOL: Gemini response check (v2.15.011)
+    // 🛡️ CHRIS-PROTOCOL: Gemini response check (v2.15.025)
     if (!aiContent) {
       console.error('[Voicy API] ❌ CRITICAL: Gemini returned empty content. Falling back to butler mode.');
       aiContent = isEnglish 

@@ -748,7 +748,7 @@ export const VoicyChatV2: React.FC = () => {
       if (error.name === 'AbortError') {
         errorMessage = t('chat.error.slow_response', "Voicy doet er iets langer over dan normaal. Ik probeer het nog eens, of stuur ons een mailtje!");
       } else if (error.message?.includes('Network response was not ok') || error.message?.includes('Server error')) {
-        errorMessage = t('chat.error.connection', "Ik heb even moeite om verbinding te maken met het brein. Probeer je het nog een keer?");
+        errorMessage = t('chat.error.connection', "Ik ben even de verbinding kwijt. Probeer je het nog een keer?");
       }
 
       const errorResponse = {
