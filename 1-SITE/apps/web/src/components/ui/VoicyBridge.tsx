@@ -39,7 +39,7 @@ export const VoicyBridge: React.FC = () => {
         setBriefing: (text: string) => {
           playClick('deep');
           checkout.updateBriefing(text);
-          return `Script bijgewerkt naar ${text.split(' ').length} woorden.`;
+          return `Script bijgewerkt naar ${(text || '').split(' ').length} woorden.`;
         },
         setUsage: (usage: 'telefonie' | 'unpaid' | 'paid') => {
           playClick('light');

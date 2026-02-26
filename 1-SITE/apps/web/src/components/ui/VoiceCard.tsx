@@ -555,7 +555,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
         ) : (
           <div className="w-full h-full bg-va-off-white flex flex-col items-center justify-center gap-2 md:gap-4">
             <div className="w-16 h-16 md:w-24 md:h-24 rounded-full bg-va-black/5 flex items-center justify-center border-2 border-dashed border-va-black/10">
-              <span className="text-2xl md:text-3xl font-light text-va-black/20 tracking-tighter">{voice?.display_name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}</span>
+              <span className="text-2xl md:text-3xl font-light text-va-black/20 tracking-tighter">{(voice?.display_name || '').split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}</span>
             </div>
             <Mic strokeWidth={1.5} size={24} className="text-va-black/10 md:hidden" />
             <Mic strokeWidth={1.5} size={32} className="text-va-black/10 hidden md:block" />

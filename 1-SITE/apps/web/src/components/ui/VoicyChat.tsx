@@ -1356,9 +1356,9 @@ export const VoicyChatV2: React.FC = () => {
                     <ContainerInstrument plain>
                       <HeadingInstrument level={4} className="text-[15px] font-light tracking-widest text-va-black/30 mb-6"><VoiceglotText  translationKey="common.selected_voice" defaultText="Geselecteerde Stem" /></HeadingInstrument>
                       <ContainerInstrument plain className="bg-white rounded-3xl p-6 shadow-sm flex items-center gap-4">
-                        <ContainerInstrument plain className="w-12 h-12 rounded-full bg-va-black/5 flex items-center justify-center font-light text-va-black">
-                          {state.selectedActor.first_name[0]}
-                        </ContainerInstrument>
+                      <ContainerInstrument plain className="w-12 h-12 rounded-full bg-va-black/5 flex items-center justify-center font-light text-va-black">
+                        {(state.selectedActor.first_name || '')[0]}
+                      </ContainerInstrument>
                         <ContainerInstrument plain>
                           <TextInstrument className="text-[15px] font-light">{state.selectedActor.first_name}</TextInstrument>
                           <TextInstrument className="text-[15px] font-light opacity-40">
