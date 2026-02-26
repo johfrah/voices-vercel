@@ -530,7 +530,7 @@ SLIMME KASSA REGELS:
 
           // 1. Email Notificatie
           mailEngine.sendVoicesMail({
-            to: market.email || process.env.ADMIN_EMAIL || 'johfrah@voices.be',
+            to: market.email || process.env.ADMIN_EMAIL || 'support@voices.be',
             subject: `💬 Chat Interactie: ${message.substring(0, 30)}...`,
             title: 'Nieuw bericht in de chat',
             body: `

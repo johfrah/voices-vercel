@@ -17,7 +17,7 @@ export class PushService {
     const privateKey = process.env.VAPID_PRIVATE_KEY;
     
     // 🛡️ CHRIS-PROTOCOL: Use dynamic subject to pass Nuclear Audit (v2.14.788)
-    const subject = process.env.VAPID_SUBJECT || `mailto:johfrah@voices.be`;
+    const subject = process.env.VAPID_SUBJECT || `mailto:support@voices.be`;
 
     if (!publicKey || !privateKey) {
       console.error('[PushService] VAPID keys missing in environment');

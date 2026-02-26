@@ -77,9 +77,9 @@ export function AgencyFooter({ market, activeSocials, activePhone, activeEmail, 
         </HeadingInstrument>
         <ul className="space-y-3">
           <li>
-            <VoicesLink href="/agency/calculator" className="flex items-center gap-2 text-[15px] font-light text-va-black/60 hover:text-primary transition-colors group">
-              <Calculator size={16} strokeWidth={1.5} className="text-primary/40 group-hover:text-primary" />
-              <VoiceglotText translationKey="footer.link.calculator" defaultText="Prijscalculator" />
+            <VoicesLink href="/agency/stemmen" className="flex items-center gap-2 text-[15px] font-light text-va-black/60 hover:text-primary transition-colors group">
+              <Music size={16} strokeWidth={1.5} className="text-primary/40 group-hover:text-primary" />
+              <VoiceglotText translationKey="footer.link.listen_voices" defaultText="Beluister onze stemmen" />
             </VoicesLink>
           </li>
           <li>
