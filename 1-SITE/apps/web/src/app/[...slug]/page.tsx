@@ -239,15 +239,15 @@ async function discoverAndRegisterSlug(slug: string, marketCode: string, journey
         .insert({
           slug: slug.toLowerCase(),
           entity_id: artist.id,
-          entity_type_id: 4, // artist (verify ID in schema if possible, usually 4)
+          entity_type_id: 4, // artist
           market_code: 'ALL',
-          journey: 'portfolio',
+          journey: 'artist',
           is_active: true
         })
         .select('entity_id, journey')
         .single();
       
-      if (newEntry) return { entity_id: artist.id, routing_type: 'artist', journey: 'portfolio' };
+      if (newEntry) return { entity_id: artist.id, routing_type: 'artist', journey: 'artist' };
     }
   } catch (err) {
     console.error(' [SmartRouter] Lazy Discovery FAILED:', err);
@@ -525,7 +525,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
       if (ademingSlug === 'bibliotheek') {
         return (
           <PageWrapperInstrument className="bg-va-off-white">
-            <Suspense fallback={null}><LiquidBackground /></Suspense>
+            <Suspense fallback={null}><LiquidBackground /></PageWrapperInstrument>
             <AdemingBento tracks={tracks} mode="library" />
           </PageWrapperInstrument>
         );
@@ -578,6 +578,33 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
           <AdemingBento tracks={tracks} />
         </PageWrapperInstrument>
       );
+    }
+
+    // 🛡️ CHRIS-PROTOCOL: Market-Specific Routing for Portfolio (v2.15.011)
+    if (market.market_code === 'PORTFOLIO') {
+      const actor = await getActor('johfrah', lang);
+      if (actor) {
+        // Map portfolio sub-routes to journeys/media
+        const portfolioSlug = cleanSegments[0];
+        const journeyMap: Record<string, JourneyType> = {
+          'telefoon': 'telephony', 'telefooncentrale': 'telephony', 'telephony': 'telephony',
+          'video': 'video', 'commercial': 'commercial', 'reclame': 'commercial',
+          'host': 'video' // Host is treated as video journey for now
+        };
+
+        const mappedJourney = portfolioSlug ? journeyMap[portfolioSlug.toLowerCase()] : 'video';
+        const mappedMedium = cleanSegments[1];
+
+        console.error(` [SmartRouter] Portfolio Handshake: slug=${portfolioSlug}, journey=${mappedJourney}`);
+
+        return (
+          <VoiceDetailClient 
+            actor={actor} 
+            initialJourney={mappedJourney as any} 
+            initialMedium={mappedMedium} 
+          />
+        );
+      }
     }
     
     // 1. Full Path Lookup (Multilingual Registry Handshake)
