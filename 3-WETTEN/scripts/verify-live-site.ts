@@ -125,7 +125,7 @@ async function verifyLiveSite() {
     console.log('📊 VERIFICATION SUMMARY');
     console.log('='.repeat(60));
     console.log(`Version:           ${version}`);
-    console.log(`Expected Version:  v2.15.065`);
+    console.log(`Expected Version:  v2.15.066`);
     console.log(`Version Match:     ${version === 'v2.15.063' ? '✅ YES' : '❌ NO'}`);
     console.log(`Actor Cards:       ${actorCards > 0 ? '✅ VISIBLE' : '❌ NOT VISIBLE'} (${actorCards} found)`);
     console.log(`USP Trust-Bar:     ${uspTrustBar > 0 ? '✅ VISIBLE' : '❌ NOT VISIBLE'}`);
@@ -134,7 +134,7 @@ async function verifyLiveSite() {
     console.log('='.repeat(60));
 
     // If version doesn't match, wait and retry
-    if (version !== 'v2.15.065') {
+    if (version !== 'v2.15.066') {
       console.log('\n⏳ Version mismatch detected. Waiting 30 seconds and retrying...');
       await page.waitForTimeout(30000);
       
@@ -143,7 +143,7 @@ async function verifyLiveSite() {
       const retryVersion = retryData?._version || 'unknown';
       
       console.log(`\n🔄 RETRY VERSION: ${retryVersion}`);
-      console.log(`Version Match:     ${retryVersion === 'v2.15.065' ? '✅ YES' : '❌ NO'}`);
+      console.log(`Version Match:     ${retryVersion === 'v2.15.066' ? '✅ YES' : '❌ NO'}`);
     }
 
   } catch (error) {
