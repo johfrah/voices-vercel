@@ -26,9 +26,6 @@ const WORKSHOPS = [
   { id: '263913', title: 'Verwen je stem!' }
 ];
 
-import { db, workshops as workshopsTable } from '@/lib/system/voices-config';
-import { eq, asc } from 'drizzle-orm';
-
 export const WorkshopInterestForm: React.FC = () => {
   const { t } = useTranslation();
   const { playClick } = useSonicDNA();

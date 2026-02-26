@@ -47,6 +47,8 @@ const WorkshopCalendar = nextDynamic(() => import("@/components/studio/WorkshopC
 const StudioVideoPlayer = nextDynamic(() => import("@/components/ui/StudioVideoPlayer").then(mod => mod.StudioVideoPlayer), { ssr: false });
 const JourneyCta = nextDynamic(() => import("@/components/ui/JourneyCta").then(mod => mod.JourneyCta), { ssr: false });
 const StudioLaunchpad = nextDynamic(() => import("@/components/ui/StudioLaunchpad").then(mod => mod.StudioLaunchpad), { ssr: false });
+const WorkshopQuiz = nextDynamic(() => import("@/components/studio/WorkshopQuiz").then(mod => mod.WorkshopQuiz), { ssr: false });
+const WorkshopInterestForm = nextDynamic(() => import("@/components/studio/WorkshopInterestForm").then(mod => mod.WorkshopInterestForm), { ssr: false });
 
 // Ademing Components
 const AdemingBento = nextDynamic(() => import("@/components/ui/ademing/AdemingBento").then(mod => mod.AdemingBento), { ssr: false });
