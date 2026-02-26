@@ -1,6 +1,6 @@
 import { GeminiService } from '@/lib/services/gemini-service';
 import { KnowledgeService } from '@/lib/services/knowledge-service';
-import { db } from '@/lib/system/voices-config';
+import { db, VOICES_CONFIG } from '@/lib/system/voices-config';
 import { chatConversations, chatMessages, faq } from '@/lib/system/voices-config';
 import { desc, eq, ilike, or } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
 
     switch (action) {
       case 'send':
-        return handleSendMessage(params);
+        return handleSendMessage(params, request);
       case 'faq':
         return handleFaqSearch(params);
       case 'conversations':
@@ -54,7 +54,7 @@ async function handleFaqSearch(params: any) {
 
     return NextResponse.json({
       success: true,
-      faqs: results.map(f => ({
+      faqs: results.map((f: any) => ({
         id: f.id,
         question: lang === 'nl' ? f.questionNl : f.questionEn,
         answer: lang === 'nl' ? f.answerNl : f.answerEn
@@ -70,7 +70,7 @@ async function handleFaqSearch(params: any) {
  *  CORE MESSAGE HANDLER
  * Slaat berichten direct op in Supabase en triggeert AI-logica
  */
-async function handleSendMessage(params: any) {
+async function handleSendMessage(params: any, request?: NextRequest) {
   const { conversationId, message, senderType = 'user', senderId, context, language = 'nl', mode = 'ask', persona = 'voicy', previewLogic = null } = params;
 
   console.log('[Voicy API] handleSendMessage started:', { conversationId, messageLength: message?.length, mode, persona });
@@ -125,7 +125,7 @@ async function handleSendMessage(params: any) {
         .limit(5);
 
         if (upcomingEditions.length > 0) {
-          workshopContext = "\n\nBeschikbare workshop data:\n" + upcomingEditions.map(e => 
+          workshopContext = "\n\nBeschikbare workshop data:\n" + upcomingEditions.map((e: any) => 
             `- ID: ${e.id} | Datum: ${new Date(e.date).toLocaleDateString('nl-BE')} : ${e.workshopTitle}${e.title ? ` (${e.title})` : ''}`
           ).join('\n');
           
@@ -167,6 +167,26 @@ async function handleSendMessage(params: any) {
     if (!aiContent || message.length > 50 || mode === 'agent' || previewLogic || /medewerker|spreken|johfrah|human|contact/i.test(message)) {
       console.log('[Voicy API] Triggering Gemini Brain...', { mode, hasPreviewLogic: !!previewLogic });
       
+      //  CHRIS-PROTOCOL: Haal chatgeschiedenis op voor context-bewustzijn (Anti-Goudvis Mandate)
+      let historyContext = "";
+      if (conversationId) {
+        try {
+          const history = await db
+            .select()
+            .from(chatMessages)
+            .where(eq(chatMessages.conversationId, conversationId))
+            .orderBy(desc(chatMessages.id))
+            .limit(15);
+          
+          if (history.length > 0) {
+            historyContext = "\n\nRECENTE CHATGESCHIEDENIS (Context):\n" + 
+              history.reverse().map((m: any) => `${m.senderType.toUpperCase()}: ${m.message}`).join('\n');
+          }
+        } catch (e) {
+          console.error('[Voicy API] Failed to fetch history for Gemini context:', e);
+        }
+      }
+
       //  HUMAN TAKEOVER: Als de gebruiker vraagt om een medewerker
       if (/medewerker|spreken|johfrah|human|contact/i.test(message)) {
         actions.push({ label: "Johfrah Spreken", action: "johfrah_takeover" });
@@ -306,6 +326,8 @@ SLIMME KASSA REGELS:
           ${previewLogic}
           ` : ''}
 
+          ${historyContext}
+
           Taal: ${isEnglish ? 'Engels' : 'Nederlands'}
           Gebruiker vraagt: "${message}"
           
@@ -388,7 +410,7 @@ SLIMME KASSA REGELS:
     // 4. Sla op in DB indien mogelijk
     try {
       console.log('[Voicy API] Attempting to save to DB...');
-      const result = await db.transaction(async (tx) => {
+      const result = await db.transaction(async (tx: any) => {
         let convId = conversationId;
         if (!convId) {
           const [newConv] = await tx.insert(chatConversations).values({
@@ -412,10 +434,12 @@ SLIMME KASSA REGELS:
           try {
             const { VoicesMailEngine } = await import('@/lib/services/voices-mail-engine');
             const mailEngine = VoicesMailEngine.getInstance();
-            const host = request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || MarketManager.getMarketDomains()['BE']?.replace('https://', ''));
-            const { MarketManagerServer: MarketManager } = await import('@/lib/system/market-manager-server');
-            const market = MarketManager.getCurrentMarket(host);
-            const siteUrl = MarketManager.getMarketDomains()[market.market_code] || MarketManager.getMarketDomains()['BE'];
+            const { MarketManagerServer: MarketManagerLocal } = await import('@/lib/system/market-manager-server');
+            
+            // Gebruik de request parameter van de POST functie
+            const host = request?.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || MarketManagerLocal.getMarketDomains()['BE']?.replace('https://', ''));
+            const market = MarketManagerLocal.getCurrentMarket(host);
+            const siteUrl = MarketManagerLocal.getMarketDomains()[market.market_code] || MarketManagerLocal.getMarketDomains()['BE'];
             
             await mailEngine.sendVoicesMail({
               to: market.email || process.env.ADMIN_EMAIL || VOICES_CONFIG.company.email,
@@ -516,7 +540,7 @@ async function handleGetHistory(params: any) {
 
     return NextResponse.json({
       success: true,
-      messages: results.map(m => ({
+      messages: results.map((m: any) => ({
         id: m.id.toString(),
         role: m.senderType === 'ai' ? 'assistant' : m.senderType,
         content: m.message,

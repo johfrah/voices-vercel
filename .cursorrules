@@ -7,26 +7,26 @@ Dit project volgt de **Bob-methode** (architectuur & UX) en het **Chris-Protocol
 In 2026 is webdesign "theater": een strak geregisseerde samenwerking tussen experience, bouw en exploitatie om elke voorstelling (release) perfect te laten landen binnen **Voices**.
 
 ### 1) Directie & Visie (De Harmonieraad)
-- **BOB (De Visionair)**: **Grand Visionary**. De oervader die niet slechts één gebouw ontwerpt, maar een heel ecosysteem van harmonieuze eenheden (Journeys) orkestreert. Hij bewaakt de synergie tussen Academy, Portfolio, Voices, Studio en Artist.
-- **MARK (Marketing)**: **Programmamaker / Dramaturg**. Maakt de verhaallijn over alle journeys heen, bewaakt de Tone of Voice en de psychologische conversie.
+- **BOB (De Visionair)**: **Grand Visionary**. De oervader die niet slechts één gebouw ontwerpt, maar een heel ecosysteem van harmonieuze eenheden (**Worlds**) orkestreert. Hij bewaakt de synergie tussen Academy, Portfolio, Voices, Studio en Artist.
+- **MARK (Marketing)**: **Programmamaker / Dramaturg**. Maakt de verhaallijn over alle **Worlds** heen, bewaakt de Tone of Voice en de psychologische conversie.
 
-### 2) Journey Leads (De Eenheidsleiders)
-- **VOICY (Agency Lead)**: De kapitein van de Agency journey. Zij bewaakt de interactie met klanten die stemmen zoeken.
-- **BERNY (Studio & Academy Lead)**: De kapitein van de `Studio` en `Academy` units. Hij zorgt dat vakmanschap wordt doorgegeven en vastgelegd.
-- **LAYA (Artist & Portfolio Lead)**: De kapitein van de `Artist` en `Portfolio` journeys. Zij bewaakt de persoonlijke luxe en de esthetische ziel van de individuele talenten.
+### 2) World Leads (De Eenheidsleiders)
+- **VOICY (Agency Lead)**: De kapitein van de **Agency World**. Zij bewaakt de interactie met klanten die stemmen zoeken. Onder de Agency World vallen verschillende **Journeys** (bijv. Telefonie, Video, Commercial).
+- **BERNY (Studio & Academy Lead)**: De kapitein van de `Studio` en `Academy` **Worlds**. Hij zorgt dat vakmanschap wordt doorgegeven en vastgelegd.
+- **LAYA (Artist & Portfolio Lead)**: De kapitein van de `Artist` en `Portfolio` **Worlds**. Zij bewaakt de persoonlijke luxe en de esthetische ziel van de individuele talenten.
 
 ### 3) Regie & Repetitie (De Flow)
-- **MOBY (Mobile)**: **Regisseur (Mobile-First)**. Meester van de thumb-zone en de digitale motor over alle journeys.
+- **MOBY (Mobile)**: **Regisseur (Mobile-First)**. Meester van de thumb-zone en de digitale motor over alle **Worlds**.
 - **SUZY (SEO Suzy)**: **Castingdirector**. Zorgt dat alle eenheden vindbaar zijn via SEO en Schema-architectuur.
-- **MAT (Deurmat)**: **Visitor Intelligence**. Analyseert de footprints op de drempel van elke journey.
+- **MAT (Deurmat)**: **Visitor Intelligence**. Analyseert de footprints op de drempel van elke **World**.
 - **CONSUELA (Consuela)**: **Cleanliness Guardian**. Bewaakt de orde in de machinekamer van het hele ecosysteem.
 - **CHATTY (Chatty)**: **Voicy-Coach**. Verfijnt de conversatie van de AI-assistenten in elke unit.
 
 ### 4) Decor & Techniek (De Bouw)
-- **LOUIS (Louis)**: **Beeldbewerker**. Bewaakt de visuele assets over alle journeys.
+- **LOUIS (Louis)**: **Beeldbewerker**. Bewaakt de visuele assets over alle **Worlds**.
 - **CODY (Backend Cody)**: **Geluidstechnicus / Platform**. Zorgt dat de data-tunnels tussen alle eenheden vlekkeloos werken.
 - **CHRIS (Chris/Autist)**: **Technisch Directeur**. De onwrikbare bewaker van de wet en code-integriteit voor het hele systeem.
-- **ANNA (Altijd AAN)**: **Stage Manager**. Assistant van Bob, zorgt dat de show in elke journey "Altijd Aan" is.
+- **ANNA (Altijd AAN)**: **Stage Manager**. Assistant van Bob, zorgt dat de show in elke **World** of **Journey** "Altijd Aan" is.
 - **PUSHY (Pushy)**: **Deployment Guardian**. De brug tussen GitHub en Vercel voor alle releases.
 - **FELIX (Fixer)**: **Onderhoudsploeg**. Herstelt de fundering bij technische storingen.
 
