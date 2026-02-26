@@ -1,10 +1,10 @@
-import { db, appConfigs, languages, genders, journeys, mediaTypes, countries } from '@/lib/system/voices-config';
-import { eq, asc, desc, and, or, ilike, sql } from 'drizzle-orm';
-import { NextRequest, NextResponse } from 'next/server';
-import { getActor, getActors, getMusicLibrary } from '@/lib/services/api-server';
 import { requireAdmin } from '@/lib/auth/api-auth';
+import { getActor, getActors, getMusicLibrary } from '@/lib/services/api-server';
+import { appConfigs, db } from '@/lib/system/voices-config';
 import { ConfigBridge } from '@/lib/utils/config-bridge';
 import { createClient } from '@supabase/supabase-js';
+import { eq } from 'drizzle-orm';
+import { NextRequest, NextResponse } from 'next/server';
 
 //  NUCLEAR CACHE BUSTER (v2.14.447)
 export const runtime = 'nodejs';
@@ -70,7 +70,7 @@ export async function GET(request: NextRequest) {
 
     //  CHRIS-PROTOCOL: Database Timeout Protection (2026)
     const dbWithTimeout = async <T>(promise: Promise<T>): Promise<T> => {
-      const timeout = new Promise((_, reject) => 
+      const timeout = new Promise((_, reject) =>
         setTimeout(() => reject(new Error('Database Timeout')), 5000)
       );
       return Promise.race([promise, timeout]) as Promise<T>;
@@ -91,7 +91,7 @@ export async function GET(request: NextRequest) {
       try {
         const config = await dbWithTimeout(db.select().from(appConfigs).where(eq(appConfigs.key, 'general_settings')).limit(1)) as any[];
         return NextResponse.json({
-        general_settings: config[0]?.value || {},
+          general_settings: config[0]?.value || {},
           _version: '2.14.790'
         });
       } catch (err: any) {
