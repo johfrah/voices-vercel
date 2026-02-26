@@ -66,12 +66,35 @@ async function handleFaqSearch(params: any) {
   }
 }
 
+interface ChatMessage {
+  id: string;
+  role: 'user' | 'assistant' | 'system';
+  content: string;
+  timestamp: string;
+  senderType: string;
+  senderId?: string;
+  isButlerAction?: boolean;
+  action?: string;
+  params?: any;
+}
+
 /**
  *  CORE MESSAGE HANDLER
  * Slaat berichten direct op in Supabase en triggeert AI-logica
  */
 async function handleSendMessage(params: any, request?: NextRequest) {
-  const { conversationId, message, senderType = 'user', senderId, context, language = 'nl', mode = 'ask', persona = 'voicy', previewLogic = null } = params;
+  const { 
+    conversationId, 
+    message, 
+    senderType = 'user', 
+    senderId, 
+    context, 
+    language = 'nl', 
+    mode = 'ask', 
+    persona = 'voicy', 
+    previewLogic = null,
+    intent = null //  MAT-MANDATE: Intent van PredictiveRouter
+  } = params;
 
   console.log('[Voicy API] handleSendMessage started:', { conversationId, messageLength: message?.length, mode, persona });
 
@@ -235,6 +258,13 @@ ACTUELE TARIEVEN (SUPABASE SOURCE OF TRUTH):
 - Extra woorden (Video): ${dbPricing.videoWordRate / 100 || 0.20} per woord
 - Wachtmuziek: ${dbPricing.musicSurcharge / 100} per track
 - BTW: ${Math.round((dbPricing.vatRate || 0.21) * 100)}%
+
+USER INTELLIGENCE (MAT-MANDATE):
+- Gedetecteerde Intentie: ${intent || 'onbekend'}
+- Journey: ${journey}
+- User DNA: ${context?.customer360?.intelligence?.leadVibe || 'nieuw'}
+- Vorige aankopen: ${context?.customer360?.dna?.totalOrders || 0}
+- Top Journeys: ${context?.customer360?.dna?.topJourneys?.join(', ') || 'geen'}
 
 TAAL CONTEXT:
 - Huidige taal: ${langLabel}
@@ -416,7 +446,13 @@ SLIMME KASSA REGELS:
           const [newConv] = await tx.insert(chatConversations).values({
             user_id: senderType === 'user' ? senderId : null,
             status: 'open',
-            iapContext: params.iapContext || {}
+            iapContext: params.iapContext || {},
+            metadata: { 
+              initial_intent: intent,
+              journey: journey,
+              market: context?.market_code,
+              vibe: context?.customer360?.intelligence?.leadVibe
+            }
           }).returning({ id: chatConversations.id });
           convId = newConv.id;
         }
@@ -426,6 +462,11 @@ SLIMME KASSA REGELS:
           senderId: senderId,
           senderType: senderType,
           message: message,
+          metadata: {
+            ai_persona: persona,
+            ai_mode: mode,
+            has_actions: actions.length > 0
+          },
           createdAt: new Date()
         }).returning();
 

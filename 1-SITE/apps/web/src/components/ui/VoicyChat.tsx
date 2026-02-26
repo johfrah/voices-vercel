@@ -673,6 +673,10 @@ export const VoicyChatV2: React.FC = () => {
       }, 30000);
 
       console.log("[Voicy] Sending message to API...", { message: userMessage.content });
+      
+      //  MAT-MANDATE: Haal intentie op van de Bridge voor context-bewuste AI
+      const bridgeIntent = (window as any).Voicy?.getIntent()?.intent || null;
+
       const response = await fetch('/api/chat/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -684,6 +688,7 @@ export const VoicyChatV2: React.FC = () => {
           mode: chatMode,
           persona: persona,
           previewLogic: previewLogic, //  Stuur preview code mee naar de API
+          intent: bridgeIntent, //  MAT-MANDATE: Intentie doorgeven
           context: {
             journey: isAcademyJourney ? 'academy' : isStudioJourney ? 'studio' : isPortfolioJourney ? 'portfolio' : 'agency',
             briefing: state.briefing,
