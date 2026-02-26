@@ -525,7 +525,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
       if (ademingSlug === 'bibliotheek') {
         return (
           <PageWrapperInstrument className="bg-va-off-white">
-            <Suspense fallback={null}><LiquidBackground /></PageWrapperInstrument>
+            <Suspense fallback={null}><LiquidBackground /></Suspense>
             <AdemingBento tracks={tracks} mode="library" />
           </PageWrapperInstrument>
         );
