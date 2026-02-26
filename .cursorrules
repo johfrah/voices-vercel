@@ -73,7 +73,11 @@ Rapporteer vóór uitvoering:
 
 ### 5. FAST-TRACK AUDIT (De Smoking Gun)
 - **Directe Inspectie**: Scan DIRECT de `system_events` tabel (SQL) of relevante logs. Zoek niet blind met Grep als de database het weet.
-- **Trinity Selection**: Formuleer intern the beste oplossing. Toets deze aan: 1. Performance (100ms LCP), 2. Bob-architectuur, 3. Robuustheid.
+- **Tool-First Debugging**: Gebruik ALTIJD de beschikbare instrumenten om de oorzaak van een fout te isoleren:
+  - **Watchdog**: Run `npm run log` of `npm run watchdog` voor real-time systeem-integriteit.
+  - **Playwright/Puppeteer**: Gebruik `npm run test:e2e` of specifieke scripts in `3-WETTEN/scripts/` om UI-crashes of flow-onderbrekingen te reproduceren.
+  - **Forensic Audit**: Run `npm run audit:forensic` om protocol-schendingen (slop) direct te vinden.
+- **Trinity Selection**: Formuleer intern de beste oplossing. Toets deze aan: 1. Performance (100ms LCP), 2. Bob-architectuur, 3. Robuustheid.
 - **MANDATORY STOP**: Rapporteer kort en krachtig:
  1. **The Smoking Gun**: Bewijs van de fout (log/code-locatie).
  2. **The Masterclass Fix**: Wat ga je doen en waarom (gebruik `MarketManager`).
@@ -81,6 +85,8 @@ Rapporteer vóór uitvoering:
 
 ### 5. ATOMIC EXECUTION (Zero-Slop Mandate)
 - **Type-Check First**: Voer ALTIJD `npm run type-check` of een lokale build uit vóór elke push.
+- **E2E Validation**: Voer ALTIJD `npm run test:e2e` uit (Playwright) om UI-regressies te voorkomen.
+- **Forensic Audit**: Voer ALTIJD `npx tsx 3-WETTEN/scripts/forensic-audit.ts` uit om slop te detecteren.
 - **Import Validation**: Controleer handmatig of ELK gebruikt component of icoon (bijv. `Loader2`) expliciet is geïmporteerd.
 - **Sync & Bump**: Verhoog versie in `package.json`, `Providers.tsx` en `api/admin/config/route.ts` in ÉÉN tool-call.
 - **Pre-Flight**: Run `npm run check:pre-vercel` DIRECT na de code-wijziging.

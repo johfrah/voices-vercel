@@ -27,18 +27,22 @@ const supabase = createClient(supabaseUrl, supabaseKey, {
  * @lock-file
  */
 
-export async function getArtist(slug: string, lang: string = 'nl'): Promise<any> {
-  console.log(' API: Querying artist from the artists table:', slug);
+export async function getArtist(slugOrId: string, lang: string = 'nl'): Promise<any> {
+  console.log(' API: Querying artist from the artists table:', slugOrId);
   
   // 🛡️ CHRIS-PROTOCOL: Use SDK for stability (v2.14.273)
-  const { data: artist, error } = await supabase
+  // Handle both ID (numeric string) and slug lookups
+  const isNumericId = /^\d+$/.test(slugOrId);
+  const query = supabase
     .from('artists')
-    .select('*')
-    .eq('slug', slug)
-    .single();
+    .select('*');
+  
+  const { data: artist, error } = isNumericId 
+    ? await query.eq('id', parseInt(slugOrId, 10)).single()
+    : await query.eq('slug', slugOrId).single();
 
   if (error || !artist) {
-    console.warn(`[api-server] Artist not found for slug: ${slug}`, error);
+    console.warn(`[api-server] Artist not found for ${isNumericId ? 'id' : 'slug'}: ${slugOrId}`, error);
     return null;
   }
 

@@ -54,12 +54,12 @@ async function verifyYoussefPage() {
 
     console.log('🌐 Navigating to https://www.voices.be/artist/youssef...');
     await page.goto('https://www.voices.be/artist/youssef', {
-      waitUntil: 'networkidle2',
-      timeout: 30000
+      waitUntil: 'domcontentloaded',
+      timeout: 60000
     });
 
     console.log('⏳ Waiting for page hydration...');
-    await page.waitForTimeout(3000);
+    await new Promise(resolve => setTimeout(resolve, 5000));
 
     // 1. Verify page title contains "Youssef Zaki"
     console.log('\n1️⃣ Checking page title...');
