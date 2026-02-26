@@ -43,8 +43,8 @@ async function auditYoussef() {
     // ========================================
     console.log('📍 Test 1: Navigating to https://www.youssefzaki.eu...');
     await page.goto('https://www.youssefzaki.eu', { 
-      waitUntil: 'networkidle',
-      timeout: 30000 
+      waitUntil: 'domcontentloaded',
+      timeout: 60000 
     });
     
     await page.waitForTimeout(2000);
@@ -98,8 +98,8 @@ async function auditYoussef() {
     // ========================================
     console.log('📍 Test 2: Navigating to /story...');
     await page.goto('https://www.youssefzaki.eu/story', { 
-      waitUntil: 'networkidle',
-      timeout: 30000 
+      waitUntil: 'domcontentloaded',
+      timeout: 60000 
     });
     
     const storyContent = await page.textContent('body');
@@ -120,8 +120,8 @@ async function auditYoussef() {
     // ========================================
     console.log('📍 Test 3: Navigating to /music...');
     await page.goto('https://www.youssefzaki.eu/music', { 
-      waitUntil: 'networkidle',
-      timeout: 30000 
+      waitUntil: 'domcontentloaded',
+      timeout: 60000 
     });
     
     const musicTracks = await page.locator('[class*="track"], [class*="album"]').count();

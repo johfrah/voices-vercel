@@ -20,7 +20,8 @@ export class SlopFilter {
     'het lijkt erop',
     'ik kan je niet helpen',
     'als ai-model',
-    'sorry'
+    'sorry',
+    'null'
   ];
 
   /**
