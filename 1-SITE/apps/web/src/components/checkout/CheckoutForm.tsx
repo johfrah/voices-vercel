@@ -520,32 +520,49 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
                 className="w-full !rounded-[10px]"
                 onChange={(e) => handleChange('vat_number', e.target.value.toUpperCase())}
               />
-              <ContainerInstrument className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2">
-                {vatStatus.validating ? <Loader2 className="animate-spin text-primary" size={18} strokeWidth={1.5} /> : 
-                 vatStatus.valid === true ? (
-                   <ContainerInstrument className="flex items-center gap-2 text-green-600 animate-fade-in">
-                     <TextInstrument className="text-[15px] font-light tracking-widest ">
-                       <VoiceglotText  translationKey="checkout.form.vat_ready" defaultText="Geverifieerd" />
-                     </TextInstrument>
-                     <CheckCircle2 strokeWidth={1.5} size={18} />
-                   </ContainerInstrument>
-                 ) : vatStatus.valid === false ? (
-                   <ContainerInstrument className="flex items-center gap-2 text-red-500 animate-shake">
-                     <TextInstrument className="text-[15px] font-light tracking-widest ">
-                       <VoiceglotText  translationKey="checkout.form.vat_invalid" defaultText={vatStatus.message || t('checkout.vat.invalid', "Ongeldig")} />
-                     </TextInstrument>
-                     <AlertCircle size={18} strokeWidth={1.5} />
-                   </ContainerInstrument>
-                 ) : vatStatus.valid === null && vatStatus.lastChecked ? (
-                   <ContainerInstrument className="flex items-center gap-2 text-va-black/30 animate-fade-in">
-                     <TextInstrument className="text-[15px] font-light tracking-widest ">
-                       <VoiceglotText  translationKey="checkout.form.vat_unavailable" defaultText="Check niet mogelijk" />
-                     </TextInstrument>
-                     <Clock size={18} strokeWidth={1.5} />
-                   </ContainerInstrument>
-                 ) : null}
-              </ContainerInstrument>
             </ContainerInstrument>
+            
+            {/* 🛡️ CHRIS-PROTOCOL: VAT Status moved below input to prevent text overlap (v2.15.019) */}
+            <AnimatePresence>
+              {(vatStatus.validating || vatStatus.valid !== null) && (
+                <motion.div 
+                  initial={{ opacity: 0, y: -5 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -5 }}
+                  className="px-4 pt-1 flex items-center gap-2 min-h-[20px]"
+                >
+                  {vatStatus.validating ? (
+                    <div className="flex items-center gap-2 text-va-black/40">
+                      <Loader2 className="animate-spin" size={14} strokeWidth={1.5} />
+                      <TextInstrument className="text-[12px] font-light tracking-widest uppercase">
+                        <VoiceglotText translationKey="checkout.form.vat_validating" defaultText="Verifiëren..." />
+                      </TextInstrument>
+                    </div>
+                  ) : vatStatus.valid === true ? (
+                    <div className="flex items-center gap-2 text-green-600">
+                      <CheckCircle2 strokeWidth={1.5} size={14} />
+                      <TextInstrument className="text-[12px] font-light tracking-widest uppercase">
+                        <VoiceglotText translationKey="checkout.form.vat_ready" defaultText="Geverifieerd" />
+                      </TextInstrument>
+                    </div>
+                  ) : vatStatus.valid === false ? (
+                    <div className="flex items-center gap-2 text-red-500">
+                      <AlertCircle size={14} strokeWidth={1.5} />
+                      <TextInstrument className="text-[12px] font-light tracking-widest uppercase">
+                        <VoiceglotText translationKey="checkout.form.vat_invalid" defaultText={vatStatus.message || t('checkout.vat.invalid', "Ongeldig")} />
+                      </TextInstrument>
+                    </div>
+                  ) : vatStatus.valid === null && vatStatus.lastChecked ? (
+                    <div className="flex items-center gap-2 text-va-black/30">
+                      <Clock size={14} strokeWidth={1.5} />
+                      <TextInstrument className="text-[12px] font-light tracking-widest uppercase">
+                        <VoiceglotText translationKey="checkout.form.vat_unavailable" defaultText="Check niet mogelijk" />
+                      </TextInstrument>
+                    </div>
+                  ) : null}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </ContainerInstrument>
         </ContainerInstrument>
 
