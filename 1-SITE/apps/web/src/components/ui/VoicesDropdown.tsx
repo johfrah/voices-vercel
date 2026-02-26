@@ -255,7 +255,10 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
       if (labelStr === valStr && valStr !== '') return true;
 
       // 4. Numeric string match (e.g. "1" === 1)
-      if (typeof value === 'string' && !isNaN(Number(value)) && v === Number(value)) return true;
+      if (typeof value === 'string' && !isNaN(Number(value)) && String(v) === value) return true;
+
+      // 5. Array match (if value is an array, check if item is in it)
+      if (Array.isArray(value) && (value as any[]).some(vInArr => String(vInArr).toLowerCase() === String(v).toLowerCase())) return true;
 
       return false;
     });
