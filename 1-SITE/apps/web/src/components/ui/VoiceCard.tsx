@@ -478,7 +478,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
     }
 
     return { price: SlimmeKassa.format(result.subtotal || 0).replace('', '').trim(), status, mediaBreakdown: result.mediaBreakdown };
-  }, [voice, masterControlState.journey, masterControlState.filters, checkoutState.briefing, checkoutState.plan, checkoutState.prompts, checkoutState.music, eventData?.media, eventData?.spotsDetail, eventData?.yearsDetail, checkoutState.pricingConfig]);
+  }, [voice, masterControlState.journey, masterControlState.currentStep, masterControlState.filters, checkoutState.briefing, checkoutState.plan, checkoutState.prompts, checkoutState.music, eventData?.media, eventData?.spotsDetail, eventData?.yearsDetail, checkoutState.pricingConfig]);
 
   const sectorDemo = useMemo(() => {
     if (!voice) return null;

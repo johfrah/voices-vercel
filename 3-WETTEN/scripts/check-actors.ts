@@ -1,43 +1,37 @@
-import { db } from '@voices/database/client';
-import { actors } from '@voices/database/schema';
-import { eq, and } from 'drizzle-orm';
+import { db } from '../../1-SITE/packages/database/src/index.js';
+import { sql } from 'drizzle-orm';
 
 async function checkActors() {
-  const johfrah = await db.select().from(actors).where(
-    and(
-      eq(actors.slug, 'johfrah'),
-      eq(actors.status, 'live'),
-      eq(actors.is_public, true)
-    )
-  ).limit(1);
+  try {
+    const result = await db.execute(sql`
+      SELECT 
+        COUNT(*) as total,
+        COUNT(*) FILTER (WHERE status = 'live') as live_count,
+        COUNT(*) FILTER (WHERE is_public = true) as public_count,
+        COUNT(*) FILTER (WHERE status = 'live' AND is_public = true) as visible_count
+      FROM voice_actors
+    `);
 
-  const youssef = await db.select().from(actors).where(
-    and(
-      eq(actors.slug, 'youssef'),
-      eq(actors.status, 'live'),
-      eq(actors.is_public, true)
-    )
-  ).limit(1);
+    console.log('Actor Status:', result.rows[0]);
 
-  console.log('Johfrah:', johfrah.length > 0 ? 'FOUND (live + public)' : 'NOT FOUND or not live+public');
-  console.log('Youssef:', youssef.length > 0 ? 'FOUND (live + public)' : 'NOT FOUND or not live+public');
+    // Get a sample of visible actors
+    const sample = await db.execute(sql`
+      SELECT slug, first_name, last_name, status, is_public
+      FROM voice_actors
+      WHERE status = 'live' AND is_public = true
+      LIMIT 5
+    `);
 
-  if (johfrah.length > 0) {
-    console.log('Johfrah details:', { 
-      slug: johfrah[0].slug, 
-      status: johfrah[0].status, 
-      is_public: johfrah[0].is_public, 
-      first_name: johfrah[0].first_name 
+    console.log('\nSample of visible actors:');
+    sample.rows.forEach((actor: any) => {
+      console.log(`  - ${actor.first_name} ${actor.last_name} (${actor.slug})`);
     });
+
+  } catch (error) {
+    console.error('Error:', error);
+    process.exit(1);
   }
-  if (youssef.length > 0) {
-    console.log('Youssef details:', { 
-      slug: youssef[0].slug, 
-      status: youssef[0].status, 
-      is_public: youssef[0].is_public, 
-      first_name: youssef[0].first_name 
-    });
-  }
+  process.exit(0);
 }
 
-checkActors().catch(console.error);
+checkActors();
