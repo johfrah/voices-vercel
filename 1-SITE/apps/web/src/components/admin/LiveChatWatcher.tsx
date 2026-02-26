@@ -18,27 +18,24 @@ import {
   Shield,
   Zap,
   Bell,
+  BellOff,
   Loader2
 } from "lucide-react";
-import { cn } from "@/lib/utils";
-import Link from "next/link";
-import { formatDistanceToNow } from "date-fns";
-import { nl } from "date-fns/locale";
 
-interface Conversation {
-  id: number;
-  status: string;
-  updatedAt: string;
-  metadata: any;
-  user_id: string | null;
-  lastMessage?: string;
-}
+// Helper voor Base64 naar Uint8Array (nodig voor VAPID key)
+function urlBase64ToUint8Array(base64String: string) {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding)
+    .replace(/\-/g, '+')
+    .replace(/_/g, '/');
 
-interface Message {
-  id: string;
-  senderType: 'user' | 'ai' | 'admin';
-  message: string;
-  createdAt: string;
+  const rawData = window.atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
+
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i);
+  }
+  return outputArray;
 }
 
 export const LiveChatWatcher = () => {
@@ -47,7 +44,85 @@ export const LiveChatWatcher = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingMessages, setLoadingMessages] = useState(false);
+  const [isPushEnabled, setIsPushEnabled] = useState(false);
+  const [isPushLoading, setIsPushLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  // Check Push Status op mount
+  useEffect(() => {
+    if ('serviceWorker' in navigator && 'PushManager' in window) {
+      navigator.serviceWorker.register('/sw.js').then(registration => {
+        registration.pushManager.getSubscription().then(subscription => {
+          setIsPushEnabled(!!subscription);
+        });
+      });
+    }
+  }, []);
+
+  const togglePush = async () => {
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+      alert('Push notificaties worden niet ondersteund op dit toestel.');
+      return;
+    }
+
+    setIsPushLoading(true);
+    try {
+      const registration = await navigator.serviceWorker.ready;
+      
+      if (isPushEnabled) {
+        // Unsubscribe
+        const subscription = await registration.pushManager.getSubscription();
+        if (subscription) {
+          await subscription.unsubscribe();
+          await fetch('/api/admin/push', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'unsubscribe', subscription })
+          });
+        }
+        setIsPushEnabled(false);
+      } else {
+        // Subscribe
+        const permission = await Notification.requestPermission();
+        if (permission !== 'granted') {
+          alert('Je moet toestemming geven voor notificaties.');
+          return;
+        }
+
+        const vapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
+        if (!vapidKey) throw new Error('VAPID Public Key missing');
+
+        const subscription = await registration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: urlBase64ToUint8Array(vapidKey)
+        });
+
+        const res = await fetch('/api/admin/push', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            action: 'subscribe', 
+            subscription: {
+              endpoint: subscription.endpoint,
+              keys: {
+                p256dh: btoa(String.fromCharCode.apply(null, new Uint8Array(subscription.getKey('p256dh')!) as any)),
+                auth: btoa(String.fromCharCode.apply(null, new Uint8Array(subscription.getKey('auth')!) as any))
+              }
+            }
+          })
+        });
+
+        if (res.ok) {
+          setIsPushEnabled(true);
+        }
+      }
+    } catch (err) {
+      console.error('Push toggle failed', err);
+      alert('Fout bij instellen notificaties.');
+    } finally {
+      setIsPushLoading(false);
+    }
+  };
 
   // Fetch conversations
   useEffect(() => {
@@ -149,12 +224,30 @@ export const LiveChatWatcher = () => {
             {selectedId ? `Chat #${selectedId}` : "Live Chat Watcher"}
           </HeadingInstrument>
         </div>
-        {!selectedId && (
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-            <TextInstrument className="text-[10px] font-bold tracking-widest uppercase opacity-60">Live</TextInstrument>
-          </div>
-        )}
+        <div className="flex items-center gap-2">
+          <button 
+            onClick={togglePush}
+            disabled={isPushLoading}
+            className={cn(
+              "p-2 rounded-full transition-all",
+              isPushEnabled ? "bg-primary/20 text-primary" : "bg-white/10 text-white/40"
+            )}
+          >
+            {isPushLoading ? (
+              <Loader2 size={18} className="animate-spin" />
+            ) : isPushEnabled ? (
+              <Bell size={18} />
+            ) : (
+              <BellOff size={18} />
+            )}
+          </button>
+          {!selectedId && (
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+              <TextInstrument className="text-[10px] font-bold tracking-widest uppercase opacity-60">Live</TextInstrument>
+            </div>
+          )}
+        </div>
       </ContainerInstrument>
 
       <ContainerInstrument className="flex-1 flex overflow-hidden relative">

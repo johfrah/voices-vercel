@@ -41,8 +41,6 @@ export const useVoicesState = () => {
   const context = useContext(VoicesStateContext);
   if (context === undefined) {
     // 🛡️ CHRIS-PROTOCOL: Fallback for evaluation phase to prevent ReferenceError
-    // If we are in the module evaluation phase, we return a dummy object 
-    // instead of throwing or being undefined.
     return {} as VoicesStateContextType;
   }
   return context;
