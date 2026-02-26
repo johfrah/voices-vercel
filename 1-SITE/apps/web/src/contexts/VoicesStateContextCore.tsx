@@ -56,7 +56,7 @@ export const initialState: VoicesState = {
 
 export const VoicesStateContext = createContext<VoicesStateContextType | undefined>(undefined);
 
-export const useVoicesState = () => {
+export function useVoicesState() {
   const context = useContext(VoicesStateContext);
   if (context === undefined) {
     // 🛡️ CHRIS-PROTOCOL: Fallback for evaluation phase to prevent ReferenceError
@@ -75,4 +75,4 @@ export const useVoicesState = () => {
     } as VoicesStateContextType;
   }
   return context;
-};
+}

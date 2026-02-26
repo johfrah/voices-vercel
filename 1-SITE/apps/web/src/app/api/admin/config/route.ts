@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
   const type = searchParams.get('type');
 
   // appConfigs en overige types: admin only
-  const publicTypes = ['actor', 'actors', 'music', 'navigation', 'telephony', 'general', 'languages', 'genders', 'journeys', 'media_types', 'countries'];
+  const publicTypes = ['actor', 'actors', 'music', 'navigation', 'telephony', 'general', 'languages', 'genders', 'journeys', 'media_types', 'countries', 'sectors', 'blueprints', 'demos_enriched'];
   if (!type || !publicTypes.includes(type)) {
     const auth = await requireAdmin();
     if (auth instanceof NextResponse) return auth;
@@ -46,6 +46,44 @@ export async function GET(request: NextRequest) {
     if (type === 'languages') {
       const { data: results } = await supabase.from('languages').select('*').order('id', { ascending: true });
       return NextResponse.json({ results: results || [] });
+    }
+
+    if (type === 'sectors') {
+      const { data: results } = await supabase.from('sectors').select('*').order('name', { ascending: true });
+      return NextResponse.json({ results: results || [] });
+    }
+
+    if (type === 'blueprints') {
+      const { data: results } = await supabase.from('script_blueprints').select('*').order('title', { ascending: true });
+      return NextResponse.json({ results: results || [] });
+    }
+
+    if (type === 'demos_enriched') {
+      const { data: results } = await supabase
+        .from('actor_demos')
+        .select(`
+          id, 
+          name, 
+          actor_id,
+          actors (first_name, last_name),
+          media_intelligence (transcript, detected_language_id),
+          demo_sectors (sector_id, sectors (name)),
+          media_types (label)
+        `)
+        .limit(100);
+
+      // Flatten the results for the frontend
+      const flattened = results?.map((d: any) => ({
+        id: d.id,
+        name: d.name,
+        actor_name: `${d.actors?.first_name || ''} ${d.actors?.last_name || ''}`.trim(),
+        transcript: d.media_intelligence?.transcript,
+        sector_id: d.demo_sectors?.[0]?.sector_id,
+        sector_name: d.demo_sectors?.[0]?.sectors?.name,
+        media_type_label: d.media_types?.label
+      }));
+
+      return NextResponse.json({ results: flattened || [] });
     }
 
     if (type === 'genders') {
@@ -92,13 +130,13 @@ export async function GET(request: NextRequest) {
         const config = await dbWithTimeout(db.select().from(appConfigs).where(eq(appConfigs.key, 'general_settings')).limit(1)) as any[];
         return NextResponse.json({
           general_settings: config[0]?.value || {},
-          _version: '2.14.790'
+          _version: '2.14.795'
         });
       } catch (err: any) {
         console.warn(`[Admin Config] General settings fetch failed, returning empty: ${err.message}`);
         return NextResponse.json({
           general_settings: {},
-          _version: '2.14.790'
+          _version: '2.14.795'
         });
       }
     }
