@@ -170,8 +170,15 @@ export const TelephonySmartSuggestions: React.FC<{ setLocalBriefing?: (val: stri
       const actor = state.selectedActor;
       
       // 🛡️ CHRIS-PROTOCOL: Handshake Truth (ID-First)
-      // We gebruiken de native_lang string alleen als fallback
-      if (actor.native_lang) {
+      // We prioritize ID-based lookup for language codes
+      const nativeId = actor.native_lang_id || (actor as any).nativeLanguageId;
+      if (nativeId) {
+        const langInfo = MarketManager.languages.find(l => l.id === nativeId);
+        if (langInfo) {
+          const nativeCode = langInfo.code.split('-')[0].toLowerCase();
+          langs.add(nativeCode);
+        }
+      } else if (actor.native_lang) {
         const nativeCode = actor.native_lang.split('-')[0].toLowerCase();
         langs.add(nativeCode);
       }
@@ -193,7 +200,16 @@ export const TelephonySmartSuggestions: React.FC<{ setLocalBriefing?: (val: stri
 
   // Effect: Zet de geselecteerde taal op de moedertaal van de acteur als die beschikbaar is
   React.useEffect(() => {
-    if (state.selectedActor?.native_lang) {
+    const nativeId = state.selectedActor?.native_lang_id || (state.selectedActor as any)?.nativeLanguageId;
+    if (nativeId) {
+      const langInfo = MarketManager.languages.find(l => l.id === nativeId);
+      if (langInfo) {
+        const nativeCode = langInfo.code.split('-')[0].toLowerCase();
+        if (nativeCode !== selectedLang && availableLangs.includes(nativeCode)) {
+          setSelectedLang(nativeCode);
+        }
+      }
+    } else if (state.selectedActor?.native_lang) {
       const nativeCode = state.selectedActor.native_lang.split('-')[0].toLowerCase();
       if (nativeCode !== selectedLang && availableLangs.includes(nativeCode)) {
         setSelectedLang(nativeCode);

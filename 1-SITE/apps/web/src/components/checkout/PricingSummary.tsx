@@ -203,14 +203,6 @@ export const PricingSummary: React.FC<{
     'podcast': 'Podcast Ads'
   };
 
-  const countryLabels: Record<string, string> = {
-    'BE': 'België',
-    'NL': 'Nederland',
-    'FR': 'Frankrijk',
-    'EU': 'Europa (EU)',
-    'GLOBAL': 'Wereldwijd'
-  };
-
   const isSubscription = state.usage === 'subscription';
   const isCartPage = typeof window !== 'undefined' && window.location.pathname.includes('/cart');
   const isCheckoutPage = typeof window !== 'undefined' && window.location.pathname.includes('/checkout');
@@ -310,7 +302,7 @@ export const PricingSummary: React.FC<{
                         </span>
                         {itemObj.usage === 'commercial' && (
                           <span className="text-[11px] uppercase tracking-widest opacity-70">
-                            {countryLabels[itemObj.country] || itemObj.country || t('common.country.be', 'België')}
+                            {MarketManager.getCountryLabel(itemObj.country) || t('common.country.be', 'België')}
                           </span>
                         )}
                       </div>
@@ -521,7 +513,7 @@ export const PricingSummary: React.FC<{
                                 : (mediaLabels[selectedItem.media] || selectedItem.media || 'Online')}
                             </span>
                             <span className="w-1 h-1 rounded-full bg-va-black/10" />
-                            <span>{countryLabels[selectedItem.country] || selectedItem.country || t('common.country.be', 'België')}</span>
+                            <span>{MarketManager.getCountryLabel(selectedItem.country) || t('common.country.be', 'België')}</span>
                           </>
                         )}
                         <span className="w-1 h-1 rounded-full bg-va-black/10" />

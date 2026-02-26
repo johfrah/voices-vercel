@@ -1262,7 +1262,7 @@ export const VoicyChatV2: React.FC = () => {
                         <ContainerInstrument plain>
                           <TextInstrument className="text-[15px] font-light">{state.selectedActor.first_name}</TextInstrument>
                           <TextInstrument className="text-[15px] font-light opacity-40">
-                            <VoiceglotText translationKey={`common.language.${state.selectedActor.native_lang}`} defaultText={state.selectedActor.native_lang} noTranslate={true} />
+                            <VoiceglotText translationKey={state.selectedActor.native_lang_id ? `language.${state.selectedActor.native_lang_id}` : `common.language.${state.selectedActor.native_lang}`} defaultText={state.selectedActor.native_lang_label || MarketManager.getLanguageLabel(state.selectedActor.native_lang)} noTranslate={true} />
                           </TextInstrument>
                         </ContainerInstrument>
                       </ContainerInstrument>

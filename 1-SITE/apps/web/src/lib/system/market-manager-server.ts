@@ -455,6 +455,40 @@ export class MarketManagerServer {
   }
 
   /**
+   * 🛡️ CHRIS-PROTOCOL: Handshake Country Lookup (v2.15.039)
+   * Haalt de UI label op basis van een ISO code of ID.
+   */
+  static getCountryLabel(input: string | number): string {
+    if (!input || input === 'null') return '';
+    const lowInput = String(input).toLowerCase().trim();
+    const inputId = typeof input === 'number' ? input : (!isNaN(Number(input)) ? Number(input) : null);
+
+    if (typeof window !== 'undefined' && (window as any).handshakeCountries) {
+      const registry = (window as any).handshakeCountries;
+      const match = registry.find((c: any) => 
+        (inputId !== null && c.id === inputId) ||
+        c.code.toLowerCase() === lowInput || 
+        c.label.toLowerCase() === lowInput
+      );
+      if (match) return match.label;
+    }
+
+    // Emergency fallbacks
+    const emergencyMap: Record<string, string> = {
+      'be': 'België', '1': 'België',
+      'nl': 'Nederland', '2': 'Nederland',
+      'fr': 'Frankrijk', '4': 'Frankrijk',
+      'de': 'Duitsland',
+      'es': 'Spanje',
+      'it': 'Italië',
+      'gb': 'Verenigd Koninkrijk', 'uk': 'Verenigd Koninkrijk',
+      'us': 'Verenigde Staten'
+    };
+
+    return emergencyMap[lowInput] || lowInput.toUpperCase();
+  }
+
+  /**
    * Haalt alle ondersteunde talen voor de huidige markt
    */
   static getNativeLanguages(lang: string = 'nl'): Record<string, string> {

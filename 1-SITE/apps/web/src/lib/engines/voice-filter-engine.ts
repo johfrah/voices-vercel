@@ -183,23 +183,24 @@ export class VoiceFilterEngine {
           const primaryLang = market.primary_language.toLowerCase();
           
           const getLangScore = (actor: Actor) => {
-            const actorNative = (actor.native_lang_label || actor.native_lang || '').toLowerCase();
+            const actorNativeId = actor.native_lang_id || (actor as any).nativeLanguageId;
+            const marketPrimaryId = market.primary_language_id;
             
-            // 1. Primary Language of the market
-            if (actorNative === primaryLang) return 1;
+            // 1. Primary Language of the market (ID-First)
+            if (actorNativeId === marketPrimaryId) return 1;
             
-            // 2. English (Global standard)
-            if (actorNative === 'engels' || actorNative === 'en-gb' || actorNative === 'en-us') return 2;
+            // 2. English (Global standard - ID 5 is English GB, ID 6 is English US)
+            if (actorNativeId === 5 || actorNativeId === 6) return 2;
             
-            // 3. Market-specific secondary priorities
+            // 3. Market-specific secondary priorities (ID-based)
             if (market.market_code === 'BE') {
-              if (actorNative === 'nederlands') return 3;
-              if (actorNative === 'frans') return 4;
-              if (actorNative === 'duits') return 5;
+              if (actorNativeId === 2) return 3; // Nederlands
+              if (actorNativeId === 4) return 4; // Frans
+              if (actorNativeId === 7) return 5; // Duits
             } else if (market.market_code === 'NLNL') {
-              if (actorNative === 'vlaams') return 3;
-              if (actorNative === 'duits') return 4;
-              if (actorNative === 'frans') return 5;
+              if (actorNativeId === 1) return 3; // Vlaams
+              if (actorNativeId === 7) return 4; // Duits
+              if (actorNativeId === 4) return 5; // Frans
             }
             
             return 100;

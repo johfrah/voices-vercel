@@ -181,7 +181,13 @@ interface SmartRouteParams {
 export async function generateMetadata({ params }: { params: SmartRouteParams }): Promise<Metadata> {
   console.error(` [SmartRouter] generateMetadata triggered for: ${params.slug.join('/')}`);
   const [initialSegment] = params.slug;
-  const reserved = ['admin', 'backoffice', 'account', 'api', 'auth', 'checkout', 'cart', 'demos', 'light', 'under-construction', 'favicon.ico', 'robots.txt', 'sitemap.xml', 'sitemap'];
+  
+  // 🛡️ CHRIS-PROTOCOL: System Route Protection (v2.15.034)
+  const reserved = [
+    'admin', 'backoffice', 'account', 'api', 'auth', 'checkout', 'cart', 
+    'demos', 'light', 'under-construction', 'favicon.ico', 'robots.txt', 
+    'sitemap.xml', 'sitemap', 'static', 'assets', '_next'
+  ];
   
   if (reserved.includes(initialSegment)) {
     return {};
@@ -191,7 +197,7 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
   const host = (headersList.get('host') || (MarketManager.getMarketDomains()['BE']?.replace('https://', '') || MarketManager.getMarketDomains()['BE']?.replace('https://', ''))).replace(/^https?:\/\//, '');
   const market = MarketManager.getCurrentMarket(host);
   const domains = MarketManager.getMarketDomains();
-  const lang = headersList.get('x-voices-lang') || 'nl';
+  const lang = headersList.get('x-voices-lang') || 'nl-BE';
   const normalizedSlug = normalizeSlug(params.slug);
   
   console.error(` [SmartRouter] Metadata context: host=${host}, market=${market.market_code}, lang=${lang}, slug=${normalizedSlug}`);
