@@ -46,6 +46,13 @@ export async function getArtist(slug: string, lang: string = 'nl'): Promise<any>
   const translatedBio = await VoiceglotBridge.t(artist.bio || '', lang);
 
   // Map to unified Artist object for UI
+  // 🛡️ CHRIS-PROTOCOL: Fetch portfolio items (demos/videos) for Artist (v2.15.043)
+  const { data: demos } = await supabase
+    .from('actor_portfolio')
+    .select('*')
+    .eq('actor_id', artist.id)
+    .eq('is_public', true);
+
   return {
     ...artist,
     display_name: artist.display_name || artist.first_name || artist.displayName || artist.first_name,
@@ -57,7 +64,13 @@ export async function getArtist(slug: string, lang: string = 'nl'): Promise<any>
     youtube_url: artist.youtube_url || '',
     instagram_url: artist.instagram_url || artist.instagramUrl || '',
     tiktok_url: artist.tiktok_url || artist.tiktokUrl || '',
-    demos: [] // Artist portfolio items could be mapped here if needed
+    demos: (demos || []).map(d => ({
+      id: d.id,
+      title: d.name,
+      url: d.url,
+      category: d.type || 'performance'
+    })),
+    albums: artist.iapContext?.albums || [] // Fallback to context if not in separate table
   };
 }
 
@@ -127,10 +140,15 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
       // 🛡️ CHRIS-PROTOCOL: Use Supabase SDK for everything for stability on Vercel
       let dbResults: any[] = [];
       try {
+        // 🛡️ CHRIS-PROTOCOL: Handshake Truth (v2.15.042)
+        // We fetch the 'live' status ID to ensure strict relational filtering.
+        const { data: liveStatus } = await supabase.from('actor_statuses').select('id').eq('code', 'live').single();
+        const liveStatusId = liveStatus?.id || 1; // Fallback to 1 (Live) if not found
+        
         let query = supabase
           .from('actors')
           .select('*')
-          .eq('status', 'live')
+          .eq('status_id', liveStatusId)
           .eq('is_public', true);
           
         // 🛡️ NUCLEAR HANDSHAKE: ID-First Filtering (v2.14.740)

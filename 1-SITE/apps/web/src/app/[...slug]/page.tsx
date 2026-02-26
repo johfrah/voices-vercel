@@ -129,6 +129,7 @@ function generateArtistSchema(artist: any, host: string = '') {
 /**
  * 🧠 SLUG RESOLVER (ID-FIRST 2026)
  * Zoekt de entiteit op basis van de slug_registry (ID Handshake Truth).
+ * 🛡️ CHRIS-PROTOCOL: Added Lazy Discovery (v2.15.043)
  */
 async function resolveSlugFromRegistry(slug: string, marketCode: string = 'ALL', journey: string = 'agency'): Promise<{ entity_id: number, routing_type: string, journey: string, canonical_slug?: string, metadata?: any, entity_type_id?: number, language_id?: number } | null> {
   try {
@@ -138,7 +139,7 @@ async function resolveSlugFromRegistry(slug: string, marketCode: string = 'ALL',
       .eq('slug', slug.toLowerCase())
       .or(`market_code.eq.${marketCode},market_code.eq.ALL`)
       .eq('is_active', true)
-      .order('entity_type_id', { ascending: false }) // 🛡️ CHRIS-PROTOCOL: Prioritize entries with valid type IDs
+      .order('entity_type_id', { ascending: false })
       .limit(1)
       .single();
 
@@ -153,8 +154,103 @@ async function resolveSlugFromRegistry(slug: string, marketCode: string = 'ALL',
         language_id: entry.language_id
       };
     }
+
+    // 🛡️ NUCLEAR AUTO-HEALING: If not in registry, try to discover it
+    if (error || !entry) {
+      console.warn(` [SmartRouter] Registry MISS for "${slug}". Triggering Lazy Discovery...`);
+      return await discoverAndRegisterSlug(slug, marketCode, journey);
+    }
   } catch (err) {
     console.error('[resolveSlugFromRegistry] Fatal Error:', err);
+  }
+  return null;
+}
+
+/**
+ * 🛡️ CHRIS-PROTOCOL: Lazy Discovery & Auto-Registration (v2.15.043)
+ * Zoekt in bron-tabellen en voegt ontbrekende entries toe aan de registry.
+ */
+async function discoverAndRegisterSlug(slug: string, marketCode: string, journey: string): Promise<any> {
+  try {
+    // 1. Check Actors
+    const { data: actor } = await supabase
+      .from('actors')
+      .select('id, slug, status, is_public')
+      .eq('slug', slug.toLowerCase())
+      .eq('status', 'live')
+      .eq('is_public', true)
+      .maybeSingle();
+
+    if (actor) {
+      console.error(` [SmartRouter] DISCOVERED Actor: ${actor.id}. Registering...`);
+      const { data: newEntry } = await supabase
+        .from('slug_registry')
+        .insert({
+          slug: slug.toLowerCase(),
+          entity_id: actor.id,
+          entity_type_id: 1, // actor
+          market_code: marketCode === 'ADEMING' ? 'BE' : marketCode,
+          journey: 'agency',
+          is_active: true
+        })
+        .select('entity_id, journey')
+        .single();
+      
+      if (newEntry) return { entity_id: actor.id, routing_type: 'actor', journey: 'agency' };
+    }
+
+    // 2. Check Articles
+    const { data: article } = await supabase
+      .from('content_articles')
+      .select('id, slug, status')
+      .eq('slug', slug.toLowerCase())
+      .eq('status', 'publish')
+      .maybeSingle();
+
+    if (article) {
+      console.error(` [SmartRouter] DISCOVERED Article: ${article.id}. Registering...`);
+      const { data: newEntry } = await supabase
+        .from('slug_registry')
+        .insert({
+          slug: slug.toLowerCase(),
+          entity_id: article.id,
+          entity_type_id: 3, // article
+          market_code: 'ALL',
+          journey: 'agency',
+          is_active: true
+        })
+        .select('entity_id, journey')
+        .single();
+      
+      if (newEntry) return { entity_id: article.id, routing_type: 'article', journey: 'agency' };
+    }
+
+    // 3. Check Artists
+    const { data: artist } = await supabase
+      .from('artists')
+      .select('id, slug')
+      .eq('slug', slug.toLowerCase())
+      .maybeSingle();
+
+    if (artist) {
+      console.error(` [SmartRouter] DISCOVERED Artist: ${artist.id}. Registering...`);
+      const { data: newEntry } = await supabase
+        .from('slug_registry')
+        .insert({
+          slug: slug.toLowerCase(),
+          entity_id: artist.id,
+          entity_type_id: 4, // artist (verify ID in schema if possible, usually 4)
+          market_code: 'ALL',
+          journey: 'portfolio',
+          is_active: true
+        })
+        .select('entity_id, journey')
+        .single();
+      
+      if (newEntry) return { entity_id: artist.id, routing_type: 'artist', journey: 'portfolio' };
+    }
+  } catch (err) {
+    console.error(' [SmartRouter] Lazy Discovery FAILED:', err);
   }
   return null;
 }
