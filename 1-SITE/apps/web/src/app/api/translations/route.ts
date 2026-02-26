@@ -42,8 +42,11 @@ export async function GET(request: NextRequest) {
     const translationMap: Record<string, string> = {};
     results?.forEach(row => {
       const key = row.translation_key || row.translationKey;
-      if (key) {
-        translationMap[key] = row.translated_text || row.translatedText || row.original_text || row.originalText || '';
+      const text = row.translated_text || row.translatedText || row.original_text || row.originalText || '';
+      
+      // 🛡️ CHRIS-PROTOCOL: Filter out 'NULL' strings from database (v2.14.780)
+      if (key && text && text.toUpperCase() !== 'NULL') {
+        translationMap[key] = text;
       }
     });
 
