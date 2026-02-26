@@ -5,7 +5,7 @@ import { ContainerInstrument, HeadingInstrument, TextInstrument, ButtonInstrumen
 import { VoiceglotText } from '../VoiceglotText';
 import { VoiceglotImage } from '../VoiceglotImage';
 import { VoicesLink } from '../VoicesLink';
-import { Star, Phone, Mail, Instagram, Youtube, Music, Facebook, Linkedin, Calculator, Globe2, HelpCircle, MessageSquare } from 'lucide-react';
+import { Star, Phone, Mail, Instagram, Youtube, Music, Facebook, Linkedin, Calculator, Globe2, HelpCircle, MessageSquare, Mic2, Info, Euro, Quote, Monitor, Radio, Globe, Building2 } from 'lucide-react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { useVoicesState } from '@/contexts/VoicesStateContext';
@@ -78,37 +78,53 @@ export function AgencyFooter({ market, activeSocials, activePhone, activeEmail, 
         <ul className="space-y-3">
           <li>
             <VoicesLink href="/agency/stemmen" className="flex items-center gap-2 text-[15px] font-light text-va-black/60 hover:text-primary transition-colors group">
-              <Music size={16} strokeWidth={1.5} className="text-primary/40 group-hover:text-primary" />
-              <VoiceglotText translationKey="footer.link.listen_voices" defaultText="Beluister onze stemmen" />
+              <Mic2 size={16} strokeWidth={1.5} className="text-primary/40 group-hover:text-primary" />
+              <VoiceglotText translationKey="footer.link.listen_voices" defaultText="Stemmen" />
             </VoicesLink>
           </li>
           <li>
             <VoicesLink href="/agency/zo-werkt-het" className="flex items-center gap-2 text-[15px] font-light text-va-black/60 hover:text-primary transition-colors group">
-              <HelpCircle size={16} strokeWidth={1.5} className="text-primary/40 group-hover:text-primary" />
-              <VoiceglotText translationKey="footer.link.how_it_works" defaultText="Hoe werkt het?" />
+              <Info size={16} strokeWidth={1.5} className="text-primary/40 group-hover:text-primary" />
+              <VoiceglotText translationKey="footer.link.how_it_works" defaultText="Hoe het werkt" />
             </VoicesLink>
           </li>
           <li>
             <VoicesLink href="/tarieven" className="flex items-center gap-2 text-[15px] font-light text-va-black/60 hover:text-primary transition-colors group">
-              <Calculator size={16} strokeWidth={1.5} className="text-primary/40 group-hover:text-primary" />
-              <VoiceglotText translationKey="footer.link.rates" defaultText="Tarieven overzicht" />
+              <Euro size={16} strokeWidth={1.5} className="text-primary/40 group-hover:text-primary" />
+              <VoiceglotText translationKey="footer.link.rates" defaultText="Tarieven" />
+            </VoicesLink>
+          </li>
+          <li>
+            <VoicesLink href="/contact" className="flex items-center gap-2 text-[15px] font-light text-va-black/60 hover:text-primary transition-colors group">
+              <Mail size={16} strokeWidth={1.5} className="text-primary/40 group-hover:text-primary" />
+              <VoiceglotText translationKey="footer.link.contact" defaultText="Contact" />
             </VoicesLink>
           </li>
         </ul>
 
         <div className="pt-4 space-y-4">
           <HeadingInstrument level={4} className="text-[11px] font-bold tracking-[0.1em] text-va-black/20 uppercase">
-            <VoiceglotText translationKey="footer.section.languages.title" defaultText="Populaire talen" />
+            <VoiceglotText translationKey="footer.section.about.title" defaultText="Over Voices" />
           </HeadingInstrument>
-          <ul className="grid grid-cols-1 gap-2">
-            {popularLanguages.map((lang, i) => (
-              <li key={i}>
-                <VoicesLink href={lang.href} className="flex items-center gap-2 text-[14px] font-light text-va-black/40 hover:text-primary transition-colors">
-                  <Globe2 size={12} strokeWidth={1.5} />
-                  {lang.name}
-                </VoicesLink>
-              </li>
-            ))}
+          <ul className="space-y-3">
+            <li>
+              <VoicesLink href="/agency/zo-werkt-het" className="flex items-center gap-2 text-[14px] font-light text-va-black/40 hover:text-primary transition-colors group">
+                <Info size={14} strokeWidth={1.5} className="text-primary/20 group-hover:text-primary" />
+                <VoiceglotText translationKey="footer.link.how_works_short" defaultText="Hoe werkt het" />
+              </VoicesLink>
+            </li>
+            <li>
+              <VoicesLink href="/tarieven" className="flex items-center gap-2 text-[14px] font-light text-va-black/40 hover:text-primary transition-colors group">
+                <Euro size={14} strokeWidth={1.5} className="text-primary/20 group-hover:text-primary" />
+                <VoiceglotText translationKey="footer.link.rates_short" defaultText="Tarieven" />
+              </VoicesLink>
+            </li>
+            <li>
+              <VoicesLink href="/agency/over-ons" className="flex items-center gap-2 text-[14px] font-light text-va-black/40 hover:text-primary transition-colors group">
+                <Quote size={14} strokeWidth={1.5} className="text-primary/20 group-hover:text-primary" />
+                <VoiceglotText translationKey="footer.link.story" defaultText="Ons verhaal" />
+              </VoicesLink>
+            </li>
           </ul>
         </div>
       </ContainerInstrument>
@@ -116,19 +132,24 @@ export function AgencyFooter({ market, activeSocials, activePhone, activeEmail, 
       {/* Kolom 3: Vertrouwen & Support */}
       <ContainerInstrument className="space-y-6 flex flex-col items-start">
         <HeadingInstrument level={4} className="text-[13px] font-medium tracking-[0.2em] text-va-black/40 uppercase">
-          <VoiceglotText translationKey="footer.section.trust.title" defaultText="Vertrouwen" />
+          <VoiceglotText translationKey="nav.menu.categories_title" defaultText="Stemmen per categorie" />
         </HeadingInstrument>
         <ul className="space-y-3">
-          <li>
-            <VoicesLink href="/agency/zo-werkt-het/#faq" className="text-[15px] font-light text-va-black/60 hover:text-primary transition-colors">
-              <VoiceglotText translationKey="footer.link.faq" defaultText="Veelgestelde vragen" />
-            </VoicesLink>
-          </li>
-          <li>
-            <VoicesLink href="/contact" className="text-[15px] font-light text-va-black/60 hover:text-primary transition-colors">
-              <VoiceglotText translationKey="footer.link.contact" defaultText="Neem contact op" />
-            </VoicesLink>
-          </li>
+          {[
+            { label: 'TV Spot', icon: Monitor, href: '/agency/commercial/tv', key: 'category.tv' },
+            { label: 'Radio', icon: Radio, href: '/agency/commercial/radio', key: 'category.radio' },
+            { label: 'Online', icon: Globe, href: '/agency/commercial/online', key: 'category.online' },
+            { label: 'Podcast', icon: Mic2, href: '/agency/commercial/podcast', key: 'category.podcast' },
+            { label: 'Telefonie', icon: Phone, href: '/agency/telephony', key: 'category.telefoon' },
+            { label: 'Corporate', icon: Building2, href: '/agency/video', key: 'category.corporate' }
+          ].map((cat) => (
+            <li key={cat.label}>
+              <VoicesLink href={cat.href} className="flex items-center gap-2 text-[15px] font-light text-va-black/60 hover:text-primary transition-colors group">
+                <cat.icon size={16} strokeWidth={1.5} className="text-primary/40 group-hover:text-primary" />
+                <VoiceglotText translationKey={cat.key} defaultText={cat.label} />
+              </VoicesLink>
+            </li>
+          ))}
         </ul>
 
         <div className="pt-4">
