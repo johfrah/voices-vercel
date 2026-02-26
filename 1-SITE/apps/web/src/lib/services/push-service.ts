@@ -1,5 +1,6 @@
 import webpush from 'web-push';
 import { db, chatPushSubscriptions } from '../system/voices-config';
+import { MarketManager } from '../system/market-manager-server';
 import { eq, inArray } from 'drizzle-orm';
 
 /**
@@ -16,8 +17,9 @@ export class PushService {
     const publicKey = process.env.VAPID_PUBLIC_KEY;
     const privateKey = process.env.VAPID_PRIVATE_KEY;
     
-    // 🛡️ CHRIS-PROTOCOL: Use dynamic subject to pass Nuclear Audit (v2.14.788)
-    const subject = process.env.VAPID_SUBJECT || `mailto:support@voices.be`;
+    // 🛡️ CHRIS-PROTOCOL: Use MarketManager for dynamic subject (v2.15.022)
+    const market = MarketManager.getCurrentMarket();
+    const subject = process.env.VAPID_SUBJECT || `mailto:${market.email}`;
 
     if (!publicKey || !privateKey) {
       console.error('[PushService] VAPID keys missing in environment');

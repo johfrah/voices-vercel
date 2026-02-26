@@ -125,13 +125,8 @@ export function AgencyFooter({ market, activeSocials, activePhone, activeEmail, 
             </VoicesLink>
           </li>
           <li>
-            <VoicesLink href="/agency/voorwaarden" className="text-[15px] font-light text-va-black/60 hover:text-primary transition-colors">
-              <VoiceglotText translationKey="footer.link.terms" defaultText="Algemene voorwaarden" />
-            </VoicesLink>
-          </li>
-          <li>
-            <VoicesLink href="/privacy" className="text-[15px] font-light text-va-black/60 hover:text-primary transition-colors">
-              <VoiceglotText translationKey="footer.link.privacy" defaultText="Privacy & Cookies" />
+            <VoicesLink href="/contact" className="text-[15px] font-light text-va-black/60 hover:text-primary transition-colors">
+              <VoiceglotText translationKey="footer.link.contact" defaultText="Neem contact op" />
             </VoicesLink>
           </li>
         </ul>

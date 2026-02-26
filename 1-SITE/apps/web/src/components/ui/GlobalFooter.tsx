@@ -187,6 +187,15 @@ export default function GlobalFooter() {
             )}
           </TextInstrument>
             
+            <ContainerInstrument className="flex items-center gap-6">
+              <VoicesLink href="/agency/voorwaarden" className="text-[11px] font-bold uppercase tracking-[0.2em] text-va-black/20 hover:text-va-black transition-colors">
+                <VoiceglotText translationKey="footer.link.terms" defaultText="Voorwaarden" />
+              </VoicesLink>
+              <VoicesLink href="/privacy" className="text-[11px] font-bold uppercase tracking-[0.2em] text-va-black/20 hover:text-va-black transition-colors">
+                <VoiceglotText translationKey="footer.link.privacy" defaultText="Privacy" />
+              </VoicesLink>
+            </ContainerInstrument>
+
             {/* Trust Logos (Kelly-Mandate) */}
             {!isSpecial && (
               <ContainerInstrument className="flex items-center gap-6 opacity-20 grayscale hover:grayscale-0 hover:opacity-50 transition-all duration-700">
