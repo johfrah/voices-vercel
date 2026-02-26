@@ -1,36 +1,51 @@
+import { db, users } from '@/lib/system/voices-config';
+import { eq, sql } from 'drizzle-orm';
 import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
 import path from 'path';
+import { v4 as uuidv4 } from 'uuid';
 
 dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-const adminEmail = process.env.ADMIN_EMAIL!;
+const adminEmail = process.env.ADMIN_EMAIL || 'johfrah@voices.be';
 
-async function generateLink() {
-  const supabase = createClient(supabaseUrl, supabaseKey);
+async function generatePersistentLink() {
+  console.log(`🚀 Genereren van PERSISTENTE admin link voor: ${adminEmail}`);
 
-  console.log(`🚀 Genereren van admin auto-login link voor: ${adminEmail}`);
+  // 1. Genereer een unieke admin key
+  const adminKey = `ak_${uuidv4().replace(/-/g, '')}`;
 
-  const { data, error } = await supabase.auth.admin.generateLink({
-    type: 'magiclink',
-    email: adminEmail,
-    options: {
-      redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://www.voices.be'}/admin/live-chat`
+  try {
+    // 2. Sla de key op in de database via Raw SQL (Chris-Protocol: Anti-Drift)
+    // We gebruiken de postgres client direct om de Supabase API cache te omzeilen
+    const postgres = require('postgres');
+    const connectionString = process.env.DATABASE_URL!.replace('pgbouncer=true', 'sslmode=require');
+    const sqlDirect = postgres(connectionString);
+    
+    // Sherlock: Eerst de kolom toevoegen als deze nog niet bestaat (Chris-Protocol: Self-Healing)
+    try {
+      await sqlDirect`ALTER TABLE users ADD COLUMN IF NOT EXISTS admin_key TEXT`;
+      console.log('✅ Database schema updated (admin_key column added)');
+    } catch (e) {
+      // Kolom bestaat waarschijnlijk al
     }
-  });
 
-  if (error) {
-    console.error('❌ Fout bij genereren link:', error.message);
-    return;
+    await sqlDirect`UPDATE users SET admin_key = ${adminKey} WHERE email = ${adminEmail}`;
+    await sqlDirect.end();
+
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.voices.be';
+    const finalLink = `${siteUrl}/api/auth/admin-key?key=${adminKey}`;
+
+    console.log('\n✅ Persistente link succesvol gegenereerd!');
+    console.log('Deze link is herbruikbaar en blijft 1 jaar geldig op je smartphone.');
+    console.log('-----------------------------------');
+    console.log(finalLink);
+    console.log('-----------------------------------');
+    console.log('\nTIP: Open deze link op je smartphone en kies "Zet op beginscherm" voor de app-ervaring.');
+
+  } catch (error: any) {
+    console.error('❌ Fout bij database update:', error.message);
   }
-
-  console.log('\n✅ Link succesvol gegenereerd!');
-  console.log('-----------------------------------');
-  console.log(data.properties.action_link);
-  console.log('-----------------------------------');
-  console.log('\nOpen deze link op je smartphone om direct in de Live Chat Watcher te landen.');
 }
 
-generateLink();
+generatePersistentLink();

@@ -165,6 +165,7 @@ export const users = pgTable('users', {
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
   lastActive: timestamp('last_active').defaultNow(),
+  admin_key: text('admin_key'), // 🛡️ CHRIS-PROTOCOL: Reusable Admin Key for Mobile PWA (v2.14.775)
 });
 
 // ❤️ FAVORITES

@@ -4,72 +4,25 @@ import { useTranslation } from '@/contexts/TranslationContext';
 import { ContainerInstrument, HeadingInstrument, TextInstrument, ButtonInstrument } from '../LayoutInstruments';
 import { VoiceglotText } from '../VoiceglotText';
 import { VoicesLink } from '../VoicesLink';
-import { Phone, Mail, Calendar, Users, BookOpen, GraduationCap } from 'lucide-react';
+import { Phone, Mail, Calendar, BookOpen, GraduationCap } from 'lucide-react';
 
 export function StudioFooter({ market, activeSocials, activePhone, activeEmail }: any) {
   const { t } = useTranslation();
 
+  // 🛡️ CHRIS-PROTOCOL: Exacte sync met Supabase Source of Truth
   const workshops = [
-    { 
-      name: 'Perfect spreken in 1 dag', 
-      href: '/studio/perfect-spreken-in-1-dag',
-      description: 'Spreken met helderheid, warmte en impact.'
-    },
-    { 
-      name: 'Voice-overs voor beginners', 
-      href: '/studio/masterclass',
-      description: 'De start van je professionele traject.'
-    },
-    { 
-      name: 'Maak je eigen podcast', 
-      href: '/studio/podcast',
-      description: 'Van concept tot professionele opname.'
-    },
-    { 
-      name: 'Perfectie van intonatie', 
-      href: '/studio/intonatie',
-      description: 'De fijne kneepjes van de juiste klemtoon.'
-    },
-    { 
-      name: 'Perfectie van articulatie', 
-      href: '/studio/articulatie',
-      description: 'Heldere uitspraak voor elke microfoon.'
-    },
-    { 
-      name: 'Audioboeken inspreken', 
-      href: '/studio/audioboeken',
-      description: 'Urenlang boeien met je stem.'
-    },
-    { 
-      name: 'Documentaires inspreken', 
-      href: '/studio/documentaires',
-      description: 'De kunst van de voice-over bij beeld.'
-    },
-    { 
-      name: 'Verwen je stem!', 
-      href: '/studio/stem-verwen-dag',
-      description: 'Onderhoud en verzorging van je instrument.'
-    },
-    { 
-      name: 'Workshop op maat', 
-      href: '/studio/op-maat',
-      description: 'Voor bedrijven en specifieke groepen.'
-    },
-    { 
-      name: 'Storytelling & Presentatie', 
-      href: '/studio/storytelling',
-      description: 'Til je presentatie naar een hoger niveau.'
-    },
-    { 
-      name: 'Maak je eigen radioshow', 
-      href: '/studio/radio',
-      description: 'De dynamiek van live radio maken.'
-    },
-    { 
-      name: 'Voice-overs voor explainers', 
-      href: '/studio/explainers',
-      description: 'Heldere uitleg in korte video\'s.'
-    }
+    { name: 'Perfect spreken in 1 dag', href: '/studio/perfect-spreken-in-1-dag', description: 'Spreken met helderheid, warmte en impact.' },
+    { name: 'Voice-overs voor beginners', href: '/studio/masterclass', description: 'De start van je professionele traject.' },
+    { name: 'Maak je eigen podcast', href: '/studio/maak-je-eigen-podcast', description: 'Van concept tot professionele opname.' },
+    { name: 'Maak je eigen radioshow', href: '/studio/maak-je-eigen-radioshow', description: 'De dynamiek van live radio maken.' },
+    { name: 'Perfectie van intonatie', href: '/studio/perfectie-van-intonatie', description: 'De fijne kneepjes van de juiste klemtoon.' },
+    { name: 'Perfectie van articulatie', href: '/studio/perfectie-van-articulatie', description: 'Heldere uitspraak voor elke microfoon.' },
+    { name: 'Audioboeken inspreken', href: '/studio/audioboeken-inspreken', description: 'Urenlang boeien met je stem.' },
+    { name: 'Documentaires inspreken', href: '/studio/documentaires-inspreken', description: 'De kunst van de voice-over bij beeld.' },
+    { name: 'Speel een stemmetje in een tekenfilm', href: '/studio/tekenfilm-stemmetjes', description: 'Karakterstemmen en stemacteren.' },
+    { name: 'Meditatief spreken', href: '/studio/meditaties-inspreken', description: 'Rust en verbinding in je stem.' },
+    { name: 'Verwen je stem!', href: '/studio/verwen-je-stem', description: 'Onderhoud en verzorging van je instrument.' },
+    { name: 'Voice-over voor audio-descriptie', href: '/studio/audio-descriptie', description: 'Beeld vertalen naar stem.' }
   ];
 
   return (
@@ -89,7 +42,7 @@ export function StudioFooter({ market, activeSocials, activePhone, activeEmail }
         </TextInstrument>
       </ContainerInstrument>
 
-      {/* Kolom 2: Onze Workshops (De 12) */}
+      {/* Kolom 2: Onze Workshops (De 12 uit Supabase) */}
       <ContainerInstrument className="space-y-6 flex flex-col items-start lg:col-span-2">
         <HeadingInstrument level={4} className="text-[13px] font-medium tracking-[0.2em] text-va-black/40 uppercase">
           <VoiceglotText translationKey="footer.section.studio.workshops" defaultText="Onze Workshops" />
@@ -123,14 +76,14 @@ export function StudioFooter({ market, activeSocials, activePhone, activeEmail }
         </HeadingInstrument>
         
         <ContainerInstrument className="space-y-4 w-full">
-          <li className="flex flex-col gap-1 list-none">
+          <div className="flex flex-col gap-1 list-none">
             <TextInstrument className="text-[14px] font-medium text-va-black/70">Bernadette Timmermans</TextInstrument>
             <TextInstrument className="text-[11px] font-light text-va-black/40 leading-snug italic">Gerenommeerde stemcoach</TextInstrument>
-          </li>
-          <li className="flex flex-col gap-1 list-none pb-4">
+          </div>
+          <div className="flex flex-col gap-1 list-none pb-4">
             <TextInstrument className="text-[14px] font-medium text-va-black/70">Johfrah Lefebvre</TextInstrument>
             <TextInstrument className="text-[11px] font-light text-va-black/40 leading-snug italic">Voice-over & regisseur</TextInstrument>
-          </li>
+          </div>
           
           <div className="pt-4 border-t border-black/5 space-y-3">
             <a href={`mailto:${activeEmail}`} className="flex items-center gap-2 text-[14px] font-light text-va-black/60 hover:text-primary transition-colors">
