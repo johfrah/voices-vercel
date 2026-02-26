@@ -35,8 +35,8 @@ async function generatePersistentLink() {
     await sqlDirect`UPDATE users SET admin_key = ${adminKey} WHERE email = ${adminEmail}`;
     await sqlDirect.end();
 
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.voices.be';
-    const finalLink = `${siteUrl}/api/auth/admin-key?key=${adminKey}`;
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.voices.be/';
+    const finalLink = `${siteUrl.replace(/\/$/, '')}/api/auth/admin-key?key=${adminKey}`;
 
     console.log('\n✅ Persistente link succesvol gegenereerd!');
     console.log('Deze link is herbruikbaar en blijft 1 jaar geldig op je smartphone.');
