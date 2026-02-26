@@ -142,20 +142,35 @@ export default function CheckoutPageClient() {
                 </div>
                 <PricingSummary strokeWidth={1.5} />
 
-                {/* 🛡️ CHRIS-PROTOCOL: Social Proof moved INSIDE sticky container to prevent overlap (v2.14.258) */}
+                {/* 🛡️ CHRIS-PROTOCOL: Social Proof minimized to prevent overlap (v2.15.014) */}
                 <ContainerInstrument className="hidden lg:block animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-500">
-                  <div className="bg-va-black/[0.02] border border-va-black/5 rounded-[32px] p-10 space-y-8">
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-2xl bg-white shadow-sm flex items-center justify-center text-primary">
-                        <Star size={24} fill="currentColor" strokeWidth={0} />
+                  <div className="bg-va-black/[0.02] border border-va-black/5 rounded-[32px] p-8 space-y-6">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-white shadow-sm flex items-center justify-center text-primary">
+                          <Star size={20} fill="currentColor" strokeWidth={0} />
+                        </div>
+                        <div>
+                          <HeadingInstrument level={3} className="text-lg font-light tracking-tight">
+                            <VoiceglotText translationKey="checkout.trust.title" defaultText="Social Proof" />
+                          </HeadingInstrument>
+                          <TextInstrument className="text-[11px] text-va-black/40 font-bold uppercase tracking-widest">
+                            {reviewStats?.averageRating || "4.9"}/5 sterren
+                          </TextInstrument>
+                        </div>
                       </div>
-                      <div>
-                        <HeadingInstrument level={3} className="text-2xl font-light tracking-tight">
-                          <VoiceglotText translationKey="checkout.trust.title" defaultText="Anderen gingen je voor" />
-                        </HeadingInstrument>
-                        <TextInstrument className="text-[13px] text-va-black/40 font-light uppercase tracking-widest">
-                          <VoiceglotText translationKey="checkout.trust.subtitle" defaultText={`${reviewStats?.averageRating || "4.9"}/5 ${t('common.based_on', 'op basis van')} ${reviewStats?.totalCount || "390"}+ ${t('common.reviews', 'reviews')}`} />
-                        </TextInstrument>
+                      <div className="flex -space-x-2">
+                        {[1,2,3].map(avatarIdx => (
+                          <div key={avatarIdx} className="w-8 h-8 rounded-full border-2 border-white bg-va-off-white overflow-hidden relative shadow-sm">
+                            <Image 
+                              src={`/assets/common/branding/founder/johfrah.png`} 
+                              fill 
+                              sizes="32px"
+                              alt="User" 
+                              className="object-cover grayscale" 
+                            />
+                          </div>
+                        ))}
                       </div>
                     </div>
 
@@ -164,32 +179,10 @@ export default function CheckoutPageClient() {
                       isLoading={isReviewsLoading} 
                       averageRating={reviewStats?.averageRating?.toString()}
                       totalReviews={reviewStats?.totalCount?.toString()}
-                      variant="minimal" 
+                      variant="super-minimal" 
                       hideFilters={true}
-                      limit={3}
+                      limit={1}
                     />
-
-                    <div className="pt-6 border-t border-va-black/5 flex items-center justify-between">
-                      <div className="flex -space-x-3">
-                        {[1,2,3,4].map(avatarIdx => (
-                          <div key={avatarIdx} className="w-10 h-10 rounded-full border-2 border-white bg-va-off-white overflow-hidden relative shadow-sm">
-                            <Image 
-                              src={`/assets/common/branding/founder/johfrah.png`} 
-                              fill 
-                              sizes="40px"
-                              alt="User" 
-                              className="object-cover grayscale" 
-                            />
-                          </div>
-                        ))}
-                        <div className="w-10 h-10 rounded-full border-2 border-white bg-va-black text-white flex items-center justify-center text-[10px] font-bold shadow-sm">
-                          +{reviewStats?.totalCount || "390"}
-                        </div>
-                      </div>
-                      <TextInstrument className="text-[12px] font-medium text-va-black/40 italic">
-                        &quot;<VoiceglotText translationKey="checkout.trust.testimonial" defaultText="Direct contact, snelle levering." />&quot;
-                      </TextInstrument>
-                    </div>
                   </div>
                 </ContainerInstrument>
               </div>
