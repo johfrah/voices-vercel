@@ -42,27 +42,36 @@ async function verifyLiveSite() {
     // Navigate to homepage
     console.log('📍 Navigating to https://www.voices.be...');
     await page.goto('https://www.voices.be', { 
-      waitUntil: 'networkidle',
-      timeout: 30000 
+      waitUntil: 'domcontentloaded',
+      timeout: 60000 
     });
 
     // Wait a bit for any dynamic content
-    await page.waitForTimeout(3000);
+    await page.waitForTimeout(5000);
 
     // Check version via API
     console.log('🔍 Checking version via /api/admin/config...');
     const apiResponse = await page.goto('https://www.voices.be/api/admin/config');
-    const apiData = await apiResponse?.json();
-    const version = apiData?._version || 'unknown';
+    const apiText = await apiResponse?.text();
+    let version = 'unknown';
+    let apiData;
+    
+    try {
+      apiData = JSON.parse(apiText || '{}');
+      version = apiData?._version || apiData?.version || 'unknown';
+      console.log('API Response:', JSON.stringify(apiData, null, 2));
+    } catch (e) {
+      console.log('Failed to parse API response:', apiText?.substring(0, 200));
+    }
 
     console.log(`\n✅ VERSION: ${version}`);
 
     // Go back to homepage
     await page.goto('https://www.voices.be', { 
-      waitUntil: 'networkidle',
-      timeout: 30000 
+      waitUntil: 'domcontentloaded',
+      timeout: 60000 
     });
-    await page.waitForTimeout(2000);
+    await page.waitForTimeout(3000);
 
     // Check for actor cards
     console.log('🎭 Checking for actor cards...');
@@ -77,6 +86,13 @@ async function verifyLiveSite() {
     console.log(`   - Skeleton loaders: ${skeletons}`);
     console.log(`   - Actual actor cards: ${actorCards}`);
     console.log(`   - Status: ${actorCards > 0 ? '✅ VISIBLE' : '❌ NOT VISIBLE'}`);
+
+    // Check for USP Trust-Bar
+    console.log('🎯 Checking for USP Trust-Bar...');
+    const uspTrustBar = await page.locator('text=/menselijke begroeting|inclusief muziek|binnen 24 uur/i').count();
+    console.log(`\n🎯 USP TRUST-BAR:`);
+    console.log(`   - Elements found: ${uspTrustBar}`);
+    console.log(`   - Status: ${uspTrustBar > 0 ? '✅ VISIBLE' : '❌ NOT VISIBLE'}`);
 
     // Check console errors
     console.log(`\n🐛 CONSOLE ERRORS:`);
@@ -109,15 +125,16 @@ async function verifyLiveSite() {
     console.log('📊 VERIFICATION SUMMARY');
     console.log('='.repeat(60));
     console.log(`Version:           ${version}`);
-    console.log(`Expected Version:  v2.15.062`);
-    console.log(`Version Match:     ${version === 'v2.15.062' ? '✅ YES' : '❌ NO'}`);
+    console.log(`Expected Version:  v2.15.063`);
+    console.log(`Version Match:     ${version === 'v2.15.063' ? '✅ YES' : '❌ NO'}`);
     console.log(`Actor Cards:       ${actorCards > 0 ? '✅ VISIBLE' : '❌ NOT VISIBLE'} (${actorCards} found)`);
+    console.log(`USP Trust-Bar:     ${uspTrustBar > 0 ? '✅ VISIBLE' : '❌ NOT VISIBLE'}`);
     console.log(`Console Clean:     ${consoleErrors.length === 0 ? '✅ YES' : `❌ NO (${consoleErrors.length} errors)`}`);
     console.log(`No .length Errors: ${lengthTypeErrors.length === 0 ? '✅ YES' : `❌ NO (${lengthTypeErrors.length} errors)`}`);
     console.log('='.repeat(60));
 
     // If version doesn't match, wait and retry
-    if (version !== 'v2.15.062') {
+    if (version !== 'v2.15.063') {
       console.log('\n⏳ Version mismatch detected. Waiting 30 seconds and retrying...');
       await page.waitForTimeout(30000);
       
@@ -126,7 +143,7 @@ async function verifyLiveSite() {
       const retryVersion = retryData?._version || 'unknown';
       
       console.log(`\n🔄 RETRY VERSION: ${retryVersion}`);
-      console.log(`Version Match:     ${retryVersion === 'v2.15.062' ? '✅ YES' : '❌ NO'}`);
+      console.log(`Version Match:     ${retryVersion === 'v2.15.063' ? '✅ YES' : '❌ NO'}`);
     }
 
   } catch (error) {

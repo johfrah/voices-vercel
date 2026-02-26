@@ -297,8 +297,8 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
   }, []);
 
   // Live data voor badges
-  const favoritesCount = voicesState.selected_actors?.length || 0;
-  const cartCount = checkoutState.items?.length || 0;
+  const favoritesCount = (voicesState.selected_actors || []).length || 0;
+  const cartCount = (checkoutState.items || []).length || 0;
   
   //  NOTIFICATION LOGIC
   const notifications = customerNotifications;
@@ -533,8 +533,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
   const showLanguage = isAdmin || (navConfig?.icons?.language ?? !isMobile);
   const showAccount = isAdmin || (navConfig?.icons?.account ?? (!isSpecialJourney && !isStudioJourney && !isMobile));
   const showMenu = isAdmin || (navConfig?.icons?.menu ?? !isSpecialJourney);
-  const showLinks = isAdmin || ((navConfig?.links?.length ?? 0) > 0 && !isMobile); 
-
+  const showLinks = isAdmin || (((navConfig?.links || [])?.length ?? 0) > 0 && !isMobile); 
   const showPortfolioAdmin = isPortfolioMarket && isAdmin;
 
   const handleSpeakToJohfrah = () => {
@@ -773,9 +772,9 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
               </ContainerInstrument>
 
               <ContainerInstrument plain className="max-h-[320px] overflow-y-auto no-scrollbar px-1">
-                {voicesState.selected_actors.length > 0 ? (
-                  <ContainerInstrument plain className="space-y-1">
-                    {voicesState.selected_actors.map((actor: any) => (
+              {(voicesState.selected_actors || []).length > 0 ? (
+                <ContainerInstrument plain className="space-y-1">
+                  {(voicesState.selected_actors || []).map((actor: any) => (
                       <ContainerInstrument
                         key={actor.id}
                         plain
@@ -866,9 +865,9 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
             </ContainerInstrument>
 
             <ContainerInstrument plain className="max-h-[320px] overflow-y-auto no-scrollbar px-1">
-              {checkoutState.items.length > 0 ? (
+              {(checkoutState.items || []).length > 0 ? (
                 <ContainerInstrument plain className="space-y-1">
-                  {checkoutState.items.map((item: any, idx: number) => (
+                  {(checkoutState.items || []).map((item: any, idx: number) => (
                     <ContainerInstrument
                       key={item.id || idx}
                       plain
@@ -934,7 +933,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
               )}
             </ContainerInstrument>
 
-            {checkoutState.items.length > 0 && (
+            {(checkoutState.items || []).length > 0 && (
               <ContainerInstrument plain className="p-2 pt-3 border-t border-black/5 mt-1">
                 <div className="flex justify-between items-center mb-3 px-2">
                   <TextInstrument className="text-[13px] font-light text-va-black/40">

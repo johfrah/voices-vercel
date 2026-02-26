@@ -54,10 +54,10 @@ export const OrderStepsInstrument: React.FC<OrderStepsInstrumentProps> = ({
                 </span>
               );
             } else {
-              const actorName = checkoutState.selectedActor?.display_name || checkoutState.items[0]?.actor?.display_name;
+              const actorName = checkoutState.selectedActor?.display_name || (checkoutState.items || [])[0]?.actor?.display_name;
               // CHRIS-PROTOCOL: Alleen de naam tonen als er echt een stem geselecteerd is OF in het mandje zit
               // En we niet in de initiële 'voice' stap zitten zonder selectie
-              if (actorName && (checkoutState.items.length > 0 || (checkoutState.selectedActor && currentStep !== 'voice'))) {
+              if (actorName && ((checkoutState.items || []).length > 0 || (checkoutState.selectedActor && currentStep !== 'voice'))) {
                 stepLabel = <span className="truncate max-w-[100px]">{actorName}</span>;
               }
             }
