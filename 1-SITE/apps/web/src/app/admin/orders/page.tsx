@@ -2,29 +2,28 @@
 
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useAdminTracking } from '@/hooks/useAdminTracking';
-import { 
-  ArrowLeft, 
-  RefreshCw, 
-  ShoppingBag, 
-  Search, 
-  Filter, 
-  ExternalLink, 
-  CheckCircle2, 
-  Clock, 
-  AlertCircle,
-  FileText,
-  User,
-  MoreHorizontal,
-  Plus,
-  ChevronLeft,
-  ChevronRight,
-  Loader2
-} from 'lucide-react';
-import Link from 'next/link';
-import React, { useEffect, useState, useCallback } from 'react';
+import { cn } from '@/lib/utils/index';
 import { format } from 'date-fns';
 import { nl } from 'date-fns/locale';
-import { cn } from '@/lib/utils/index';
+import {
+  AlertCircle,
+  ArrowLeft,
+  CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
+  Clock,
+  ExternalLink,
+  FileText,
+  Loader2,
+  MoreHorizontal,
+  Plus,
+  RefreshCw,
+  Search,
+  ShoppingBag,
+  User
+} from 'lucide-react';
+import Link from 'next/link';
+import { useCallback, useEffect, useState } from 'react';
 
 export const dynamic = 'force-dynamic';
 
@@ -64,9 +63,9 @@ export default function OrdersPage() {
       });
       const res = await fetch(`/api/admin/orders?${params.toString()}`);
       const data = await res.json();
-      if (data.results) {
-        setOrders(data.results);
-        setTotalPages(Math.ceil(data.count / 20));
+      if (data.orders) {
+        setOrders(data.orders);
+        setTotalPages(data.pagination?.totalPages || 1);
       }
     } catch (error) {
       console.error('Failed to fetch orders:', error);
@@ -111,10 +110,10 @@ export default function OrdersPage() {
         {/* Header Section */}
         <div className="mb-12">
           <Link href="/admin/dashboard" className="flex items-center gap-2 text-va-black/30 hover:text-primary transition-colors text-[15px] font-light tracking-widest mb-8">
-            <ArrowLeft strokeWidth={1.5} size={12} /> 
+            <ArrowLeft strokeWidth={1.5} size={12} />
             <VoiceglotText translationKey="admin.back_to_dashboard" defaultText="Terug naar Dashboard" />
           </Link>
-          
+
           <div className="flex justify-between items-end">
             <div className="space-y-4">
               <div className="inline-block bg-primary/10 text-primary text-[13px] font-light px-3 py-1 rounded-full tracking-widest">
@@ -128,15 +127,15 @@ export default function OrdersPage() {
                 <VoiceglotText translationKey="admin.orders.subtitle" defaultText={`Beheer alle transacties, offertes en productiestatus van ${typeof window !== 'undefined' ? window.location.hostname : 'Voices'}.`} />
               </p>
             </div>
-            
+
             <div className="flex flex-col md:flex-row gap-4 items-start md:items-end w-full md:w-auto mt-8 md:mt-0">
               <Link href="/admin/orders/new" className="va-btn-pro !bg-va-black flex items-center gap-2 mb-1 w-full md:w-auto justify-center">
-                <Plus strokeWidth={1.5} size={16} /> 
+                <Plus strokeWidth={1.5} size={16} />
                 <VoiceglotText translationKey="admin.orders.add" defaultText="Nieuwe Bestelling" />
               </Link>
               <div className="relative w-full md:w-80">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-va-black/20" size={18} />
-                <input 
+                <input
                   type="text"
                   placeholder="Zoek op ID, klant of bedrijf..."
                   className="w-full bg-white border-none rounded-xl px-12 py-4 text-[15px] font-medium focus:ring-2 focus:ring-primary/20 transition-all shadow-sm placeholder:text-va-black/20"
@@ -156,16 +155,16 @@ export default function OrdersPage() {
               onClick={() => setStatusFilter(status)}
               className={cn(
                 "px-6 py-2.5 rounded-full text-[13px] font-bold tracking-widest uppercase transition-all border",
-                statusFilter === status 
-                  ? "bg-va-black text-white border-va-black shadow-lg" 
+                statusFilter === status
+                  ? "bg-va-black text-white border-va-black shadow-lg"
                   : "bg-white text-va-black/40 border-black/5 hover:border-black/10"
               )}
             >
               {status === 'all' ? 'Alle Status' : status}
             </button>
           ))}
-          
-          <button 
+
+          <button
             onClick={fetchOrders}
             className="ml-auto w-12 h-12 rounded-full bg-white border border-black/5 flex items-center justify-center text-va-black/40 hover:text-primary transition-all hover:rotate-180 duration-500"
           >
@@ -224,7 +223,7 @@ export default function OrdersPage() {
                     </td>
                     <td className="px-8 py-6 text-right">
                       <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Link 
+                        <Link
                           href={`/admin/orders/${order.id}`}
                           className="w-10 h-10 rounded-full bg-white border border-black/5 flex items-center justify-center text-va-black/40 hover:text-primary hover:border-primary/20 transition-all"
                         >
@@ -259,14 +258,14 @@ export default function OrdersPage() {
                 Pagina {page} van {totalPages}
               </span>
               <div className="flex gap-2">
-                <button 
+                <button
                   onClick={() => setPage(p => Math.max(1, p - 1))}
                   disabled={page === 1}
                   className="w-10 h-10 rounded-full bg-white border border-black/5 flex items-center justify-center text-va-black/40 disabled:opacity-30 hover:text-primary transition-all"
                 >
                   <ChevronLeft size={18} />
                 </button>
-                <button 
+                <button
                   onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                   disabled={page === totalPages}
                   className="w-10 h-10 rounded-full bg-white border border-black/5 flex items-center justify-center text-va-black/40 disabled:opacity-30 hover:text-primary transition-all"
