@@ -12,30 +12,37 @@ import { VoiceglotText } from './VoiceglotText';
 
 const VoiceFlag = ({ lang, size = 16 }: { lang?: string, size?: number }) => {
   if (!lang) return null;
-  const lowLang = lang.toLowerCase();
   
-  if (lowLang.includes('be') || lowLang === 'vlaams' || lowLang === 'frans (be)') return <FlagBE size={size} />;
-  if (lowLang.includes('nl') || lowLang === 'nederlands' || lowLang === 'dutch') return <FlagNL size={size} />;
-  if (lowLang.includes('fr') || lowLang === 'frans' || lowLang === 'frans (fr)' || lowLang === 'french') return <FlagFR size={size} />;
-  if (lowLang.includes('de') || lowLang === 'duits' || lowLang === 'german') return <FlagDE size={size} />;
-  if (lowLang.includes('gb') || lowLang.includes('uk') || lowLang === 'engels' || lowLang === 'english') return <FlagUK size={size} />;
-  if (lowLang.includes('us')) return <FlagUS size={size} />;
-  if (lowLang.includes('es') || lowLang === 'spaans' || lowLang === 'spanish') return <FlagES size={size} />;
-  if (lowLang.includes('it') || lowLang === 'italiaans' || lowLang === 'italian') return <FlagIT size={size} />;
-  if (lowLang.includes('pl') || lowLang === 'pools' || lowLang === 'polish') return <FlagPL size={size} />;
-  if (lowLang.includes('dk') || lowLang === 'deens' || lowLang === 'danish') return <FlagDK size={size} />;
-  if (lowLang.includes('pt') || lowLang === 'portugees' || lowLang === 'portuguese') return <FlagPT size={size} />;
-  if (lowLang.includes('se') || lowLang === 'zweeds' || lowLang === 'swedish') return <FlagSE size={size} />;
-  if (lowLang.includes('no') || lowLang === 'noors' || lowLang === 'norwegian') return <FlagNO size={size} />;
-  if (lowLang.includes('fi') || lowLang === 'fins' || lowLang === 'finnish') return <FlagFI size={size} />;
-  if (lowLang.includes('gr') || lowLang === 'grieks' || lowLang === 'greek') return <FlagGR size={size} />;
-  if (lowLang.includes('tr') || lowLang === 'turks' || lowLang === 'turkish') return <FlagTR size={size} />;
-  if (lowLang.includes('ru') || lowLang === 'russisch' || lowLang === 'russian') return <FlagRU size={size} />;
-  if (lowLang.includes('cn') || lowLang.includes('zh') || lowLang === 'chinees' || lowLang === 'chinese') return <FlagCN size={size} />;
-  if (lowLang.includes('jp') || lowLang === 'japans' || lowLang === 'japanese') return <FlagJP size={size} />;
-  if (lowLang.includes('kr') || lowLang === 'koreaans' || lowLang === 'korean') return <FlagKR size={size} />;
-  if (lowLang.includes('ar') || lowLang === 'arabisch' || lowLang === 'arabic') return <FlagAR size={size} />;
-  if (lowLang.includes('br') || lowLang === 'braziliaans' || lowLang === 'brazilian') return <FlagBR size={size} />;
+  // 🛡️ CHRIS-PROTOCOL: Handshake Truth Lookup (v2.15.038)
+  // We look up the icon instrument name from the MarketManager registry.
+  // This eliminates hardcoded string mapping in the UI layer.
+  const iconName = MarketManager.getLanguageIcon(lang);
+  
+  if (iconName && iconName.startsWith('Flag')) {
+    const Flag = (iconName === 'FlagBE') ? FlagBE :
+                 (iconName === 'FlagNL') ? FlagNL :
+                 (iconName === 'FlagFR') ? FlagFR :
+                 (iconName === 'FlagUK') ? FlagUK :
+                 (iconName === 'FlagUS') ? FlagUS :
+                 (iconName === 'FlagDE') ? FlagDE :
+                 (iconName === 'FlagES') ? FlagES :
+                 (iconName === 'FlagIT') ? FlagIT :
+                 (iconName === 'FlagPL') ? FlagPL :
+                 (iconName === 'FlagDK') ? FlagDK :
+                 (iconName === 'FlagPT') ? FlagPT :
+                 (iconName === 'FlagSE') ? FlagSE :
+                 (iconName === 'FlagNO') ? FlagNO :
+                 (iconName === 'FlagFI') ? FlagFI :
+                 (iconName === 'FlagGR') ? FlagGR :
+                 (iconName === 'FlagTR') ? FlagTR :
+                 (iconName === 'FlagRU') ? FlagRU :
+                 (iconName === 'FlagCN') ? FlagCN :
+                 (iconName === 'FlagJP') ? FlagJP :
+                 (iconName === 'FlagKR') ? FlagKR :
+                 (iconName === 'FlagAR') ? FlagAR :
+                 (iconName === 'FlagBR') ? FlagBR : null;
+    if (Flag) return <Flag size={size} />;
+  }
   
   return null;
 };

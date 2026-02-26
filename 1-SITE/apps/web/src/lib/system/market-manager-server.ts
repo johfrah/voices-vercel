@@ -424,6 +424,37 @@ export class MarketManagerServer {
   }
 
   /**
+   * 🛡️ CHRIS-PROTOCOL: Handshake Icon Lookup (v2.15.038)
+   * Haalt de icon instrument naam op uit de registry.
+   */
+  static getLanguageIcon(input: string | number): string | null {
+    if (!input || input === 'null') return null;
+    const lowInput = String(input).toLowerCase().trim();
+    const inputId = typeof input === 'number' ? input : (!isNaN(Number(input)) ? Number(input) : null);
+
+    if (this.languagesRegistry.length > 0) {
+      const match = this.languagesRegistry.find(l => 
+        (inputId !== null && l.id === inputId) ||
+        l.code.toLowerCase() === lowInput || 
+        l.label.toLowerCase() === lowInput
+      );
+      if (match && match.icon) return match.icon;
+    }
+
+    // Emergency fallbacks
+    const emergencyMap: Record<string, string> = {
+      '1': 'FlagBE', 'nl-be': 'FlagBE', 'vlaams': 'FlagBE',
+      '2': 'FlagNL', 'nl-nl': 'FlagNL', 'nederlands': 'FlagNL',
+      '4': 'FlagFR', 'fr-fr': 'FlagFR', 'frans': 'FlagFR',
+      '5': 'FlagUK', 'en-gb': 'FlagUK', 'engels': 'FlagUK',
+      '8': 'FlagES', 'es-es': 'FlagES', 'spaans': 'FlagES',
+      '12': 'FlagPT', 'pt-pt': 'FlagPT', 'portugees': 'FlagPT'
+    };
+
+    return emergencyMap[lowInput] || null;
+  }
+
+  /**
    * Haalt alle ondersteunde talen voor de huidige markt
    */
   static getNativeLanguages(lang: string = 'nl'): Record<string, string> {

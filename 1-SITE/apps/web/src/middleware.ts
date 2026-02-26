@@ -446,11 +446,11 @@ export const config = {
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
      * - api (interne API routes)
-     * - admin (admin dashboard)
-     * - assets (statische assets)
+     * - admin, backoffice, account, auth (systeem dashboards)
+     * - assets, static (statische assets)
      * - reviews, agency, active, studio, visuals (dynamische storage paden)
      * - alle bestanden met een extensie (svg, png, jpg, etc.)
      */
-    '/((?!_next/static|_next/image|favicon.ico|api|admin|assets|static|reviews|agency|active|studio|visuals|[\\w-]+\\.\\w+).*)',
+    '/((?!_next/static|_next/image|favicon.ico|api|admin|backoffice|account|auth|assets|static|reviews|agency|active|studio|visuals|[\\w-]+\\.\\w+).*)',
   ],
 }
