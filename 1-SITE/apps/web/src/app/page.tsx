@@ -196,8 +196,8 @@ function HomeContent({
     }) || [];
 
     // 🛡️ CHRIS-PROTOCOL: Forensic Console Audit (Godmode)
-    console.log('📊 [Godmode Audit] Filter Results (v2.14.106):', {
-      total_live_in_memory: actors.length,
+    console.log('📊 [Godmode Audit] Filter Results (v2.15.060):', {
+      total_live_in_memory: (actors || []).length,
       criteria: {
         journey: masterControlState.journey,
         language: masterControlState.filters.language,

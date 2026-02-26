@@ -590,7 +590,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                         <VoiceglotText translationKey="filter.mobile_trigger" defaultText="Filters & Zoeken" />
                       </span>
                       <span className="text-[11px] text-va-black/40 truncate w-full text-left">
-                        {state.filters.language ? t(`common.language.${state.filters.language.toLowerCase()}`, state.filters.language) : t('filter.all_languages', 'Alle talen')} • {state.filters.gender ? t(`common.gender.${state.filters.gender.toLowerCase()}`, state.filters.gender) : t('gender.everyone', 'Iedereen')} • {state.journey === 'commercial' ? (state.filters.media?.length || 0) + ' ' + t('common.channels', 'kanalen') : (state.filters.words || 200) + ' ' + t('common.words', 'woorden')}
+                        {state.filters.language ? t(`common.language.${(state.filters.language || '').toLowerCase()}`, state.filters.language) : t('filter.all_languages', 'Alle talen')} • {state.filters.gender ? t(`common.gender.${(state.filters.gender || '').toLowerCase()}`, state.filters.gender) : t('gender.everyone', 'Iedereen')} • {state.journey === 'commercial' ? ((state.filters.media || []).length || 0) + ' ' + t('common.channels', 'kanalen') : (state.filters.words || 200) + ' ' + t('common.words', 'woorden')}
                       </span>
                     </div>
                   </button>
