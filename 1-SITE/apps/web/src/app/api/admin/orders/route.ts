@@ -13,7 +13,7 @@ export const revalidate = 0;
  *  API: ADMIN ORDERS (2026)
  * 
  * Haalt bestellingen op voor de admin cockpit met paginering.
- * 🛡️ CHRIS-PROTOCOL: RESTORED STABLE v2.14.714 ARCHITECTURE
+ * 🛡️ CHRIS-PROTOCOL: RESTORED STABLE v2.15.012 ARCHITECTURE
  */
 
 export async function GET(request: NextRequest) {
@@ -25,16 +25,22 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '50');
+    const search = searchParams.get('search') || '';
     const offset = (page - 1) * limit;
 
     // 🛡️ CHRIS-PROTOCOL: 1 TRUTH MANDATE (v2.14.638)
     // NUCLEAR: We gebruiken db.execute met sql.raw om Drizzle abstractie volledig te passeren
-    const countResult = await db.execute(sql.raw('SELECT count(*) as value FROM orders_v2'));
+    let whereClause = '';
+    if (search) {
+      whereClause = `WHERE id::text ILIKE '%' || $1 || '%' OR billing_email_alt ILIKE '%' || $1 || '%'`;
+    }
+
+    const countResult = await db.execute(sql.raw(`SELECT count(*) as value FROM orders_v2 ${whereClause.replace('$1', search ? `'${search}'` : '')}`));
     const countRows: any = Array.isArray(countResult) ? countResult : (countResult.rows || []);
     const totalInDb = countRows[0] ? Number(countRows[0].value || countRows[0].count || 0) : 0;
 
     let debugInfo: any = {
-      version: '2.15.012',
+      version: '2.15.028',
       db_host: process.env.DATABASE_URL?.split('@')[1]?.split('/')[0] || 'unknown',
       page,
       limit,
@@ -49,6 +55,7 @@ export async function GET(request: NextRequest) {
         id, user_id, journey_id, status_id, payment_method_id, 
         amount_net, amount_total, purchase_order, billing_email_alt, created_at
       FROM orders_v2
+      ${whereClause.replace('$1', search ? `'${search}'` : '')}
       ORDER BY created_at DESC
       LIMIT ${limit}
       OFFSET ${offset}

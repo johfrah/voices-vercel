@@ -1226,7 +1226,7 @@ export default function ConfiguratorPageClient({
                               key={c.id}
                               type="button"
                               onClick={() => {
-                                updateCountry(c.id);
+                                updateCountry(c.code, c.id);
                                 setTimeout(() => calculatePricing?.(), 50);
                               }}
                               className={cn(
