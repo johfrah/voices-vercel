@@ -885,9 +885,13 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                             value={state.filters.countryId || state.filters.countries || state.filters.country || 'BE'}
                             displayValueOverride={(() => {
                               const currentIds = Array.isArray(state.filters.countries) ? state.filters.countries : (state.filters.countryId ? [state.filters.countryId] : []);
-                              if (currentIds.length === 1 && typeof currentIds[0] === 'number') {
-                                const match = filteredCountriesData.find(c => c.id === currentIds[0]);
-                                return match ? t(`country.${match.code.toLowerCase()}`, match.label) : undefined;
+                              if (currentIds.length === 1) {
+                                const rawId = currentIds[0];
+                                const id = typeof rawId === 'number' ? rawId : (!isNaN(Number(rawId)) ? Number(rawId) : null);
+                                if (id !== null) {
+                                  const match = filteredCountriesData.find(c => c.id === id);
+                                  return match ? t(`country.${match.code.toLowerCase()}`, match.label) : undefined;
+                                }
                               }
                               return undefined;
                             })()}

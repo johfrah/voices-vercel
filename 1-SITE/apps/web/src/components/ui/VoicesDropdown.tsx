@@ -235,10 +235,16 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
 
     if (Array.isArray(value)) {
       if (value.length === 1) {
+        const val0 = value[0];
+        const val0Id = typeof val0 === 'number' ? val0 : (!isNaN(Number(val0)) ? Number(val0) : null);
+
         const opt = options.find(o => {
           const v = typeof o === 'string' ? o : o.value;
-          if (typeof v !== 'string' || typeof value[0] !== 'string') return v === value[0];
-          return v.toLowerCase() === value[0].toLowerCase();
+          const vId = typeof v === 'number' ? v : (!isNaN(Number(v)) ? Number(v) : null);
+          
+          if (vId !== null && val0Id !== null) return vId === val0Id;
+          if (typeof v !== 'string' || typeof val0 !== 'string') return v === val0;
+          return v.toLowerCase() === val0.toLowerCase();
         });
         return typeof opt === 'string' ? opt : opt?.label || value[0];
       }
