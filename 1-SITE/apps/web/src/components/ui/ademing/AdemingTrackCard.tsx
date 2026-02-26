@@ -86,26 +86,26 @@ export const AdemingTrackCard = ({ track, onClick, variant = "default" }: Ademin
         )}
       </div>
 
-      <div className="p-8 space-y-4">
-        <h3 className="font-serif text-2xl font-bold text-foreground line-clamp-1 group-hover:text-primary transition-colors">
+      <div className="p-6 space-y-3">
+        <h3 className="font-serif text-xl font-bold text-foreground line-clamp-1 group-hover:text-primary transition-colors">
           {track.title}
         </h3>
-        <p className="text-muted-foreground line-clamp-2 leading-relaxed font-light">
+        <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed font-light">
           {track.short_description || "Een moment van rust."}
         </p>
         
-        <div className="pt-4 flex items-center justify-between border-t border-black/5">
+        <div className="pt-3 flex items-center justify-between border-t border-black/5">
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
-              <UserCircle size={12} className="text-primary" />
+            <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center">
+              <UserCircle size={10} className="text-primary" />
             </div>
-            <span className="text-[11px] font-bold text-va-black/40 uppercase tracking-widest">
+            <span className="text-[9px] font-bold text-va-black/40 uppercase tracking-widest">
               {track.maker || "Julie"}
             </span>
           </div>
           <div className="flex items-center gap-2">
-            <Clock size={12} className="text-va-black/20" />
-            <span className="text-[11px] font-bold text-va-black/40 uppercase tracking-widest">
+            <Clock size={10} className="text-va-black/20" />
+            <span className="text-[9px] font-bold text-va-black/40 uppercase tracking-widest">
               {track.duration ? `${Math.floor(track.duration / 60)} min` : "10 min"}
             </span>
           </div>

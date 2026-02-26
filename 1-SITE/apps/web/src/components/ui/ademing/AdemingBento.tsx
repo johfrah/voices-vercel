@@ -26,6 +26,12 @@ export const AdemingBento = ({ tracks, initialTrack, mode = 'home' }: AdemingBen
   const [selectedTheme, setSelectedTheme] = useState<string | null>(null);
   const [selectedElement, setSelectedElement] = useState<string | null>(null);
 
+  // Performance: Pre-fetch player components
+  useEffect(() => {
+    import('./MeditationPlayerInstrument');
+    import('./AudioWaveform');
+  }, []);
+
   const publishedTracks = tracks.filter(t => t.is_public);
 
   // Filter tracks based on mode and selections

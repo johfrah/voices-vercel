@@ -99,7 +99,7 @@ export const ReviewsInstrument: React.FC<{
   // Instead, we use a CSS-driven infinite loop for the marquee vibe.
   const [isPaused, setIsPaused] = useState(false);
 
-  // 🛡️ CHRIS-PROTOCOL: Neurological UX - Marquee Animation (v2.14.763)
+  // 🛡️ CHRIS-PROTOCOL: Neurological UX - Marquee Animation (v2.14.764)
   const marqueeStyle = {
     animation: isPaused || isEditMode ? 'none' : 'marquee 80s linear infinite',
     display: 'flex',
@@ -114,6 +114,36 @@ export const ReviewsInstrument: React.FC<{
     }
   `;
 
+  //  SPOTLIGHT MANAGEMENT: Update review in DB and local state
+  const updateReview = async (id: number, updates: any) => {
+    playClick('pro');
+    try {
+      const res = await fetch('/api/admin/reviews/update', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, ...updates })
+      });
+      
+      if (res.ok) {
+        setLocalReviews(prev => prev.map(r => r.id === id ? { ...r, ...updates } : r));
+        toast.success('Review bijgewerkt');
+      } else {
+        toast.error('Update mislukt');
+      }
+    } catch (e) {
+      toast.error('Netwerkfout');
+    }
+  };
+
+  // Unieke sectoren extraheren voor filters
+  const sectors = useMemo(() => {
+    const s = new Set<string>();
+    localReviews.forEach(r => {
+      if (r.sector && r.sector !== 'general') s.add(r.sector);
+    });
+    return Array.from(s).sort();
+  }, [localReviews]);
+
   // Gefilterde reviews berekenen
   const filteredReviews = useMemo(() => {
     let base = localReviews.filter(r => {
@@ -127,7 +157,8 @@ export const ReviewsInstrument: React.FC<{
     // 🛡️ CHRIS-PROTOCOL: Infinite Loop Duplication
     // We duplicate the items to create a seamless loop without 'flipping'
     if (base.length > 0) {
-      return [...base, ...base];
+      // Ensure we have enough items to fill the screen width twice
+      return [...base, ...base, ...base, ...base];
     }
     return base;
   }, [localReviews, selectedSector, limit, isEditMode]);
@@ -528,3 +559,4 @@ export const ReviewsInstrument: React.FC<{
     </ContainerInstrument>
   );
 };
+

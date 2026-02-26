@@ -262,7 +262,8 @@ export default async function RootLayout({
   const htmlClass = `${raleway.className} ${inter.className} ${cormorant.variable} theme-${isAdeming ? 'ademing' : market.theme} ${raleway.variable}`;
   const bodyClass = cn(
     "pb-24 md:pb-0 touch-manipulation va-main-layout",
-    !isAdeming && "pt-[80px] md:pt-[110px]"
+    !isAdeming && "pt-[80px] md:pt-[110px]",
+    isAdeming && "bg-background text-foreground"
   );
   const lang = langHeader || (pathname.includes('/artist/youssef') || market.market_code === 'ARTIST' ? 'en-EU' : (market.primary_language || 'nl-BE'));
 

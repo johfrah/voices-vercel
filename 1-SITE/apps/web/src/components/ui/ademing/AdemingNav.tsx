@@ -35,7 +35,7 @@ export const AdemingNav = () => {
     { label: 'Bibliotheek', icon: Library, path: '/bibliotheek' },
     { label: 'Favorieten', icon: Heart, path: '/favorieten' },
     { label: 'Retreats', icon: Calendar, path: '/retreats' },
-    { label: 'Profiel', icon: UserCircle, path: '/mijn-ademing' },
+    { label: 'Mijn Ademing', icon: UserCircle, path: '/mijn-ademing' },
   ];
 
   return (
