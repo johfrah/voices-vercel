@@ -20,22 +20,23 @@ async function verifyOrdersLive() {
     // Step 1: Authenticate with Admin Key Bridge
     console.log('🔐 Step 1: Authenticating via Admin Key Bridge...');
     const authResponse = await fetch(`${BASE_URL}/api/auth/admin-key?key=${ADMIN_KEY}`, {
-      redirect: 'manual'
+      redirect: 'follow'
     });
 
-    if (authResponse.status !== 302 && authResponse.status !== 200) {
+    if (!authResponse.ok) {
       console.error(`❌ Auth failed with status ${authResponse.status}`);
       process.exit(1);
     }
 
-    const cookies = authResponse.headers.get('set-cookie');
+    // Extract cookies from response headers
+    const setCookieHeader = authResponse.headers.get('set-cookie');
     console.log('✅ Authentication successful\n');
 
     // Step 2: Fetch Orders API
     console.log('📊 Step 2: Fetching orders from API...');
     const ordersResponse = await fetch(`${BASE_URL}/api/admin/orders?page=1&limit=5`, {
       headers: {
-        'Cookie': cookies || ''
+        'Cookie': setCookieHeader || ''
       }
     });
 
@@ -75,7 +76,7 @@ async function verifyOrdersLive() {
 
     const detailResponse = await fetch(`${BASE_URL}/api/admin/orders/${firstOrder.id}`, {
       headers: {
-        'Cookie': cookies || ''
+        'Cookie': setCookieHeader || ''
       }
     });
 
@@ -111,7 +112,7 @@ async function verifyOrdersLive() {
     console.log('🔍 Step 7: Checking for recent errors...');
     const eventsResponse = await fetch(`${BASE_URL}/api/admin/system-events?type=error&limit=5`, {
       headers: {
-        'Cookie': cookies || ''
+        'Cookie': setCookieHeader || ''
       }
     });
 

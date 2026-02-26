@@ -523,6 +523,7 @@ function HomeContent({
               averageRating={reviewStats?.averageRating?.toString() || "4.9"}
               totalReviews={reviewStats?.totalCount?.toString() || "392"}
               distribution={reviewStats?.distribution}
+              variant="wall"
             />
           </Suspense>
         </ContainerInstrument>
