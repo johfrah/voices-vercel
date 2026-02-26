@@ -455,7 +455,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
   const displayPrice = useMemo(() => {
     if (!voice) return null;
     const isConfigurator = masterControlState.currentStep === 'script';
-    const briefingWordCount = checkoutState.briefing.trim().split(/\s+/).filter(Boolean).length;
+    const briefingWordCount = (checkoutState.briefing || '').trim().split(/\s+/).filter(Boolean).length;
     const wordCount = isConfigurator && briefingWordCount > 0 ? briefingWordCount : (masterControlState.filters.words || 0);
     const currentSpotsDetail = eventData?.spotsDetail || masterControlState.filters.spotsDetail;
     const currentYearsDetail = eventData?.yearsDetail || masterControlState.filters.yearsDetail;
@@ -702,7 +702,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
         <div className="flex flex-col flex-grow px-4 md:px-6 pt-3 md:pt-4 pb-4 md:pb-6">
           <div className="flex flex-col mb-2 md:mb-3">
             <HeadingInstrument level={3} className={cn("font-extralight tracking-tighter leading-none group-hover:text-primary transition-colors truncate", compact ? "text-xl md:text-2xl mb-1 md:mb-1.5" : "text-2xl md:text-3xl mb-1 md:mb-1.5")}>
-              <VoiceglotText translationKey={`actor.${voice?.id}.name`} defaultText={voice?.display_name} noTranslate={true} />
+              <VoiceglotText translationKey={`actor.${voice?.id}.name`} defaultText={voice?.display_name || ''} noTranslate={true} />
             </HeadingInstrument>
 
             {voice?.tone_of_voice && (

@@ -448,8 +448,8 @@ SLIMME KASSA REGELS:
     }
 
     // 5. ADMIN NOTIFICATIONS (Chris-Protocol: Real-time awareness)
-    // 🛡️ CHRIS-PROTOCOL: Buiten de transactie om blokkades te voorkomen (v2.15.026)
-    if (senderType === 'user' || senderType === 'ai' || (senderType === 'admin' && message.includes('TEST_NOTIFY'))) {
+    // 🛡️ CHRIS-PROTOCOL: Buiten de transactie om blokkades te voorkomen (v2.15.034)
+    if (senderType === 'user' || (senderType === 'admin' && message.includes('TEST_NOTIFY'))) {
       console.log(`[Voicy API] 🚀 Triggering fire-and-forget notifications for ${senderType}...`);
       // We vuren de notificaties af zonder de response te blokkeren
       (async () => {
@@ -476,7 +476,7 @@ SLIMME KASSA REGELS:
           // 1. Email Notificatie (Alleen bij user berichten om mailbox te sparen)
           if (senderType === 'user') {
             mailEngine.sendVoicesMail({
-              to: market.email || process.env.ADMIN_EMAIL || VOICES_CONFIG.company.email,
+              to: market.email || process.env.ADMIN_EMAIL || 'support@voices.be',
               subject: `💬 Chat Interactie: ${message.substring(0, 30)}...`,
               title: 'Nieuw bericht in de chat',
               body: `
@@ -494,23 +494,37 @@ SLIMME KASSA REGELS:
 
           // 2. Push Notificatie (iPhone/Smartphone)
           PushService.notifyAdmins({
-            title: senderType === 'user' ? `Bericht van klant (#${saveResult?.conversationId || 'N/A'})` : `Voicy antwoordt (#${saveResult?.conversationId || 'N/A'})`,
+            title: `Bericht van klant (#${saveResult?.conversationId || 'N/A'})`,
             body: message.substring(0, 100),
             url: `/admin/live-chat`
           }).then(() => console.log('[Push] WebPush trigger finished'))
             .catch(e => console.error('[Push] WebPush failed:', e.message));
 
-          // 3. Telegram Notificatie
-          const emoji = senderType === 'user' ? '💬' : '🤖';
-          const telegramMsg = `${emoji} <b>Nieuwe Interactie (${senderType})</b>\n\n` +
-                              `<b>Bericht:</b> <i>"${message}"</i>\n` +
-                              `<b>ID:</b> #${saveResult?.conversationId || 'N/A'}\n` +
-                              `<b>Journey:</b> ${journey}\n\n` +
-                              `<a href="${siteUrl}/admin/live-chat">👉 Open Live Chat Watcher</a>`;
+          // 3. Telegram Notificatie (User Bericht)
+          const telegramMsgUser = `💬 <b>Nieuwe Interactie (user)</b>\n\n` +
+                                  `<b>Bericht:</b> <i>"${message}"</i>\n` +
+                                  `<b>ID:</b> #${saveResult?.conversationId || 'N/A'}\n` +
+                                  `<b>Journey:</b> ${journey}\n\n` +
+                                  `<a href="${siteUrl}/admin/live-chat">👉 Open Live Chat Watcher</a>`;
           
-          TelegramService.sendAlert(telegramMsg, { force: true })
-            .then(() => console.log('[Push] Telegram sent successfully'))
-            .catch(e => console.error('[Push] Telegram failed:', e.message));
+          TelegramService.sendAlert(telegramMsgUser, { force: true })
+            .then(() => console.log('[Push] Telegram (user) sent successfully'))
+            .catch(e => console.error('[Push] Telegram (user) failed:', e.message));
+
+          // 4. Telegram Notificatie (AI Antwoord - Direct erachteraan)
+          if (aiContent) {
+            const telegramMsgAI = `🤖 <b>Voicy Antwoord</b>\n\n` +
+                                  `<b>Antwoord:</b> <i>"${aiContent}"</i>\n` +
+                                  `<b>ID:</b> #${saveResult?.conversationId || 'N/A'}\n\n` +
+                                  `<a href="${siteUrl}/admin/live-chat">👉 Open Live Chat Watcher</a>`;
+            
+            // Kleine delay om volgorde in Telegram te garanderen
+            setTimeout(() => {
+              TelegramService.sendAlert(telegramMsgAI, { force: true })
+                .then(() => console.log('[Push] Telegram (ai) sent successfully'))
+                .catch(e => console.error('[Push] Telegram (ai) failed:', e.message));
+            }, 1000);
+          }
 
         } catch (notifyErr: any) {
           console.error('[Voicy API] Critical Notification Engine Error:', notifyErr.message);

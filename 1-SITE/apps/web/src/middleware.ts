@@ -287,15 +287,20 @@ export async function middleware(request: NextRequest) {
   
   // ARTIST DOMAIN (YOUSSEF) - STRICT ISOLATION
   if (market === 'ARTIST' || (host.includes('localhost') && pathname.startsWith('/artist/youssef'))) {
-    const targetPath = pathname.replace('/artist/youssef', '') || '/';
-    url.pathname = `/artist/youssef${targetPath}`;
-    const artistResponse = NextResponse.rewrite(url)
-    artistResponse.headers.set('x-voices-market', 'ARTIST')
-    artistResponse.headers.set('x-voices-lang', 'en')
-    artistResponse.headers.set('x-voices-pathname', pathname)
-    artistResponse.headers.set('x-voices-host', `${request.nextUrl.protocol}//${host}`)
-    artistResponse.cookies.set('voices_lang', 'en', { path: '/', maxAge: 60 * 60 * 24 * 365, sameSite: 'lax' })
-    return artistResponse
+    // 🛡️ CHRIS-PROTOCOL: Only rewrite if there is a sub-path. 
+    // Let the root path be handled by app/page.tsx (v2.15.046)
+    const targetPath = pathname.replace('/artist/youssef', '');
+    if (targetPath && targetPath !== '/') {
+      url.pathname = `/artist/youssef${targetPath}`;
+      const artistResponse = NextResponse.rewrite(url)
+      artistResponse.headers.set('x-voices-market', 'ARTIST')
+      artistResponse.headers.set('x-voices-lang', 'en')
+      artistResponse.headers.set('x-voices-pathname', pathname)
+      artistResponse.headers.set('x-voices-host', `${request.nextUrl.protocol}//${host}`)
+      artistResponse.cookies.set('voices_lang', 'en', { path: '/', maxAge: 60 * 60 * 24 * 365, sameSite: 'lax' })
+      return artistResponse
+    }
+    // If root path, proceed to normal headers injection
   }
 
   // Academy Journey

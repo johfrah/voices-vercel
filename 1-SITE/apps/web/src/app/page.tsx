@@ -180,6 +180,7 @@ function HomeContent({
         languages: masterControlState.filters.languages,
         languageIds: masterControlState.filters.languageIds,
         gender: masterControlState.filters.gender,
+        genderId: masterControlState.filters.genderId, // 🛡️ CHRIS-PROTOCOL: Handshake Truth (v2.14.740)
         media: masterControlState.filters.media,
         mediaIds: masterControlState.filters.mediaIds, // 🛡️ CHRIS-PROTOCOL: Handshake Truth (v2.14.740)
         country: masterControlState.filters.country,
@@ -200,10 +201,10 @@ function HomeContent({
           country: masterControlState.filters.country,
           market: marketCode
         },
-        shown_count: results.length,
-        shown_names: results.map(a => `${a.display_name} (Native: ${a.native_lang || '?'}, Country: ${a.country || '?'})`),
-        hidden_count: actors.length - results.length,
-        hidden_names: actors.filter(a => !results.find(r => r.id === a.id)).map(a => `${a.display_name} (Native: ${a.native_lang || '?'})`)
+        shown_count: results?.length || 0,
+        shown_names: (results || []).map(a => `${a?.display_name || '?'} (Native: ${a?.native_lang || '?'}, Country: ${a?.country || '?'})`),
+        hidden_count: actors.length - (results?.length || 0),
+        hidden_names: actors.filter(a => !(results || []).find(r => r?.id === a?.id)).map(a => `${a?.display_name || '?'} (Native: ${a?.native_lang || '?'})`)
       });
 
       return results;

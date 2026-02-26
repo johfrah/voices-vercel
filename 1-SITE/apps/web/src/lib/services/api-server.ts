@@ -460,6 +460,7 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
         first_name: actor.first_name,
         last_name: actor.last_name || '',
         slug: actor.slug || actor.first_name?.toLowerCase(),
+        gender_id: actor.gender_id, // 🛡️ CHRIS-PROTOCOL: Handshake Truth (v2.14.740)
         gender: actor.gender,
         native_lang_id: nativeLangId,
         native_lang: nativeLangInfo?.code || '',
@@ -484,6 +485,7 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
         status_code: statusInfo?.code || 'live',
         experience_level: experienceInfo?.label || 'pro',
         experience_level_code: experienceInfo?.code || 'pro',
+        country_id: actor.country_id, // 🛡️ CHRIS-PROTOCOL: Handshake Truth (v2.14.740)
         country: countryInfo?.label || 'België',
         country_code: countryInfo?.code || 'BE',
         clients: actor.clients || '',

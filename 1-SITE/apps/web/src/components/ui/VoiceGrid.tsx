@@ -34,9 +34,9 @@ export const VoiceGrid: React.FC<VoiceGridProps> = ({ actors, featured = false, 
           )}
         >
           <AnimatePresence initial={false}>
-            {actors.filter(Boolean).map((actor) => (
+            {(actors || []).filter(Boolean).map((actor) => (
               <motion.div 
-                key={actor.id}
+                key={actor?.id || Math.random()}
                 layout="position"
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}

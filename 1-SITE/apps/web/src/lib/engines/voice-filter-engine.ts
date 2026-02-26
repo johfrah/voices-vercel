@@ -180,7 +180,7 @@ export class VoiceFilterEngine {
           // 1.5 Market-Aware Language Priority (Bob-methode)
           // CHRIS-PROTOCOL: If no manual order, prioritize market-specific languages.
           const market = MarketManager.getCurrentMarket();
-          const primaryLang = market.primary_language.toLowerCase();
+          const primaryLang = (market.primary_language || '').toLowerCase();
           
           const getLangScore = (actor: Actor) => {
             const actorNativeId = actor.native_lang_id || (actor as any).nativeLanguageId;
