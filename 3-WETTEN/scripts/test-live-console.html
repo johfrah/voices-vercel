@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Voices.be Live Console Test</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .container {
+      background: white;
+      border-radius: 8px;
+      padding: 30px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #333;
+      margin-bottom: 20px;
+    }
+    .status {
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 6px;
+      font-family: monospace;
+    }
+    .success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    .error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    .info {
+      background: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+    }
+    #console-output {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      padding: 20px;
+      border-radius: 6px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      max-height: 400px;
+      overflow-y: auto;
+      margin-top: 20px;
+    }
+    .console-line {
+      margin: 5px 0;
+      padding: 3px 0;
+    }
+    .console-log { color: #d4d4d4; }
+    .console-error { color: #f48771; }
+    .console-warn { color: #dcdcaa; }
+    .console-info { color: #4fc1ff; }
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      margin: 10px 5px 10px 0;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    iframe {
+      width: 100%;
+      height: 600px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🚀 Voices.be Live Console Test</h1>
+    
+    <div class="status info">
+      <strong>Test Instructions:</strong><br>
+      1. Click "Load Live Site" to load voices.be in the iframe below<br>
+      2. Check the console output for "Nuclear Version" message<br>
+      3. Look for any ReferenceError or other console errors
+    </div>
+
+    <button onclick="loadSite()">Load Live Site (voices.be)</button>
+    <button onclick="clearConsole()">Clear Console</button>
+    <button onclick="checkAPI()">Check API Version</button>
+
+    <div id="results"></div>
+
+    <div id="console-output">
+      <div class="console-line console-info">Console output will appear here...</div>
+    </div>
+
+    <iframe id="site-frame" style="display: none;"></iframe>
+  </div>
+
+  <script>
+    const consoleOutput = document.getElementById('console-output');
+    const results = document.getElementById('results');
+    const originalConsole = {
+      log: console.log,
+      error: console.error,
+      warn: console.warn,
+      info: console.info
+    };
+
+    function addToConsole(message, type = 'log') {
+      const line = document.createElement('div');
+      line.className = `console-line console-${type}`;
+      line.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+      consoleOutput.appendChild(line);
+      consoleOutput.scrollTop = consoleOutput.scrollHeight;
+    }
+
+    // Override console methods to capture output
+    console.log = function(...args) {
+      originalConsole.log.apply(console, args);
+      addToConsole(args.join(' '), 'log');
+    };
+    console.error = function(...args) {
+      originalConsole.error.apply(console, args);
+      addToConsole(args.join(' '), 'error');
+    };
+    console.warn = function(...args) {
+      originalConsole.warn.apply(console, args);
+      addToConsole(args.join(' '), 'warn');
+    };
+    console.info = function(...args) {
+      originalConsole.info.apply(console, args);
+      addToConsole(args.join(' '), 'info');
+    };
+
+    function clearConsole() {
+      consoleOutput.innerHTML = '<div class="console-line console-info">Console cleared...</div>';
+    }
+
+    function loadSite() {
+      const iframe = document.getElementById('site-frame');
+      iframe.style.display = 'block';
+      iframe.src = 'https://www.voices.be';
+      
+      addToConsole('Loading https://www.voices.be...', 'info');
+      
+      iframe.onload = function() {
+        addToConsole('Site loaded successfully', 'info');
+        
+        // Try to access iframe console (will fail due to CORS, but we can check our own console)
+        setTimeout(() => {
+          addToConsole('Check the browser DevTools console for "Nuclear Version" message', 'info');
+        }, 2000);
+      };
+
+      iframe.onerror = function() {
+        addToConsole('Failed to load site', 'error');
+      };
+    }
+
+    async function checkAPI() {
+      addToConsole('Checking /api/admin/config endpoint...', 'info');
+      
+      try {
+        const response = await fetch('https://www.voices.be/api/admin/config');
+        const text = await response.text();
+        
+        if (response.ok) {
+          try {
+            const data = JSON.parse(text);
+            addToConsole(`API Version: ${data._version || 'Unknown'}`, 'info');
+            
+            results.innerHTML = `
+              <div class="status success">
+                <strong>✅ API Response:</strong><br>
+                Version: ${data._version || 'Unknown'}<br>
+                Status: ${response.status}
+              </div>
+            `;
+          } catch (e) {
+            addToConsole(`API returned non-JSON: ${text}`, 'warn');
+            results.innerHTML = `
+              <div class="status info">
+                <strong>ℹ️ API Response:</strong><br>
+                ${text}
+              </div>
+            `;
+          }
+        } else {
+          addToConsole(`API returned status ${response.status}: ${text}`, 'warn');
+          results.innerHTML = `
+            <div class="status info">
+              <strong>ℹ️ API Response:</strong><br>
+              Status: ${response.status}<br>
+              ${text}
+            </div>
+          `;
+        }
+      } catch (error) {
+        addToConsole(`API check failed: ${error.message}`, 'error');
+        results.innerHTML = `
+          <div class="status error">
+            <strong>❌ API Error:</strong><br>
+            ${error.message}
+          </div>
+        `;
+      }
+    }
+
+    // Capture any global errors
+    window.addEventListener('error', function(event) {
+      addToConsole(`Global Error: ${event.message} at ${event.filename}:${event.lineno}`, 'error');
+    });
+
+    // Initial message
+    addToConsole('Console test ready. Click "Load Live Site" to begin.', 'info');
+  </script>
+</body>
+</html>
