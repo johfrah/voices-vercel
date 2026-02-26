@@ -1,43 +1,31 @@
-import { db } from './1-SITE/apps/web/src/lib/db';
-import { systemEvents } from './1-SITE/apps/web/src/lib/db/schema';
-import { desc, and, gte } from 'drizzle-orm';
+import { db } from '../../1-SITE/packages/database/src/db';
+import { sql } from 'drizzle-orm';
 
 async function checkLiveErrors() {
-  try {
-    // Get events from the last hour
-    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
-    
-    const events = await db
-      .select()
-      .from(systemEvents)
-      .where(gte(systemEvents.created_at, oneHourAgo))
-      .orderBy(desc(systemEvents.created_at))
-      .limit(20);
-
-    console.log(`\n🔍 Recent System Events (last hour):\n`);
-    
-    if (events.length === 0) {
-      console.log('✅ No errors in the last hour');
-      return;
-    }
-
-    events.forEach((event, idx) => {
-      console.log(`\n${idx + 1}. [${event.severity}] ${event.event_type}`);
-      console.log(`   Time: ${event.created_at}`);
-      console.log(`   Path: ${event.path || 'N/A'}`);
-      console.log(`   Message: ${event.message}`);
-      if (event.details) {
-        console.log(`   Details: ${JSON.stringify(event.details, null, 2)}`);
-      }
-    });
-
-    const errorCount = events.filter(e => e.severity === 'error').length;
-    console.log(`\n📊 Summary: ${errorCount} errors, ${events.length - errorCount} warnings/info`);
-    
-  } catch (error) {
-    console.error('❌ Failed to fetch events:', error);
+  console.log('🔍 Checking for recent errors on live...\n');
+  
+  const result = await db.execute(sql`
+    SELECT COUNT(*) as count, severity, error_type, message
+    FROM system_events
+    WHERE created_at > NOW() - INTERVAL '1 hour'
+    AND severity IN ('error', 'critical')
+    GROUP BY severity, error_type, message
+    ORDER BY count DESC
+    LIMIT 10
+  `);
+  
+  if (result.rows.length === 0) {
+    console.log('✅ 0 TypeErrors on live (last hour)');
+    console.log('✅ No critical errors detected');
+    process.exit(0);
+  } else {
+    console.log('❌ Errors detected:');
+    console.log(JSON.stringify(result.rows, null, 2));
     process.exit(1);
   }
 }
 
-checkLiveErrors();
+checkLiveErrors().catch(err => {
+  console.error('Failed to check errors:', err);
+  process.exit(1);
+});
