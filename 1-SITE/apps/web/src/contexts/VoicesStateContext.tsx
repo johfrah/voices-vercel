@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Actor } from '@/types';
-import { VoicesState, VoicesStateContext, VoicesStateContextType } from './VoicesStateContextCore';
+import { VoicesState, VoicesStateContext, VoicesStateContextType, initialState } from './VoicesStateContextCore';
 
 export { useVoicesState } from './VoicesStateContextCore';
 

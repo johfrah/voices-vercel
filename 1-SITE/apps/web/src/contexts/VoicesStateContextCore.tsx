@@ -35,6 +35,25 @@ export interface VoicesStateContextType {
   clearSelectedActors: () => void;
 }
 
+export const initialState: VoicesState = {
+  company_name: '',
+  opening_hours: '09:00 - 18:00',
+  location: '',
+  current_sector: null,
+  current_journey: 'agency',
+  intent: {
+    archetype: null,
+    asset_focus: 'Hybrid',
+    decision_power: null,
+  },
+  selected_actors: [],
+  reviewStats: {
+    averageRating: 4.9,
+    totalCount: 1250
+  },
+  campaignMessage: null,
+};
+
 export const VoicesStateContext = createContext<VoicesStateContextType | undefined>(undefined);
 
 export const useVoicesState = () => {
