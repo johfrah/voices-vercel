@@ -59,17 +59,19 @@ export default function DemoDiscoveryPage() {
   const fetchDiscoveryData = async () => {
     setIsLoading(true);
     try {
-      const [sectorsRes, blueprintsRes, demosRes, subtypesRes] = await Promise.all([
+      const [sectorsRes, blueprintsRes, demosRes, subtypesRes, tonesRes] = await Promise.all([
         fetch('/api/admin/config?type=sectors').then(res => res.json()),
         fetch('/api/admin/config?type=blueprints').then(res => res.json()),
         fetch('/api/admin/config?type=demos_enriched').then(res => res.json()),
-        fetch('/api/admin/config?type=telephony_subtypes').then(res => res.json())
+        fetch('/api/admin/config?type=telephony_subtypes').then(res => res.json()),
+        fetch('/api/admin/config?type=general').then(res => res.json().then(data => ({ results: data.general_settings?.voice_tones || [] })))
       ]);
 
       setSectors(sectorsRes.results || []);
       setBlueprints(blueprintsRes.results || []);
       setDemos(demosRes.results || []);
       setSubtypes(subtypesRes.results || []);
+      setTones(tonesRes.results || []);
     } catch (err) {
       console.error('Failed to fetch discovery data:', err);
     } finally {
@@ -81,13 +83,14 @@ export default function DemoDiscoveryPage() {
     return demos.filter(demo => {
       const matchesSector = !selectedSector || demo.sector_id === parseInt(selectedSector);
       const matchesSubtype = !selectedSubtype || demo.subtype_name === selectedSubtype;
+      const matchesTone = !selectedTone || demo.detected_tones?.includes(parseInt(selectedTone));
       const matchesSearch = !searchQuery || 
         demo.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         demo.actor_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         demo.transcript?.toLowerCase().includes(searchQuery.toLowerCase());
-      return matchesSector && matchesSubtype && matchesSearch;
+      return matchesSector && matchesSubtype && matchesTone && matchesSearch;
     });
-  }, [demos, selectedSector, selectedSubtype, searchQuery]);
+  }, [demos, selectedSector, selectedSubtype, selectedTone, searchQuery]);
 
   if (!mounted || authLoading) return null;
 
@@ -175,7 +178,19 @@ export default function DemoDiscoveryPage() {
                 ))}
               </select>
             </div>
-            <div className="lg:col-span-3 relative group">
+            <div className="lg:col-span-2">
+              <select 
+                value={selectedTone || ""}
+                onChange={(e) => setSelectedTone(e.target.value || null)}
+                className="w-full h-20 bg-white/80 backdrop-blur-xl border border-black/5 rounded-[24px] px-8 text-xl font-light outline-none appearance-none cursor-pointer focus:ring-4 focus:ring-primary/5 focus:border-primary/20 transition-all shadow-aura-sm"
+              >
+                <option value="">Tone of Voice</option>
+                {tones.map(t => (
+                  <option key={t.id} value={t.id}>{t.label}</option>
+                ))}
+              </select>
+            </div>
+            <div className="lg:col-span-2 relative group">
               <div className="absolute left-6 top-1/2 -translate-y-1/2 text-primary/40">
                 <Zap size={20} strokeWidth={1.5} />
               </div>
@@ -235,7 +250,7 @@ export default function DemoDiscoveryPage() {
                       </p>
                     </div>
 
-                    <div className="flex items-center gap-4 relative z-10">
+                    <div className="flex flex-wrap items-center gap-2 relative z-10">
                       <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-va-black/5 text-[11px] font-bold text-va-black/40">
                         <Globe size={12} />
                         {demo.language_label || "NL"}
@@ -244,6 +259,12 @@ export default function DemoDiscoveryPage() {
                         <Phone size={12} />
                         {demo.subtype_name || "Telefonie"}
                       </div>
+                      {demo.sonic_dna && (
+                        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 text-[11px] font-bold text-primary">
+                          <Zap size={12} />
+                          {demo.sonic_dna.energy === 'hoog' ? 'Energiek' : 'Warm'}
+                        </div>
+                      )}
                     </div>
 
                     {/* Background Decor */}
