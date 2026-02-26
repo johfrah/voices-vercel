@@ -356,10 +356,15 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
 export default async function SmartRoutePage({ params }: { params: SmartRouteParams }) {
   const [firstSegment] = params.slug;
   
-  // Gereserveerde routes overslaan (Alleen harde systeem-folders)
-  const reserved = ['admin', 'backoffice', 'account', 'api', 'auth', 'checkout', 'cart', 'demos', 'light', 'under-construction', 'favicon.ico', 'robots.txt', 'sitemap.xml', 'sitemap'];
+  // 🛡️ CHRIS-PROTOCOL: System Route Protection (v2.15.034)
+  const reserved = [
+    'admin', 'backoffice', 'account', 'api', 'auth', 'checkout', 'cart', 
+    'demos', 'light', 'under-construction', 'favicon.ico', 'robots.txt', 
+    'sitemap.xml', 'sitemap', 'static', 'assets', '_next'
+  ];
   
   if (reserved.includes(firstSegment)) {
+    console.error(` [SmartRouter] NUCLEAR BLOCK: Attempted to route system path "${firstSegment}" via SmartRouter. Redirecting to 404.`);
     return notFound();
   }
 
@@ -373,7 +378,7 @@ export default async function SmartRoutePage({ params }: { params: SmartRoutePar
 async function SmartRouteContent({ segments }: { segments: string[] }) {
   const normalizedSlug = normalizeSlug(segments);
   const headersList = headers();
-  const lang = headersList.get('x-voices-lang') || 'nl';
+  const lang = headersList.get('x-voices-lang') || 'nl-BE';
   
   // 🛡️ CHRIS-PROTOCOL: Strip language prefix if present (e.g. /nl/johfrah -> johfrah)
   const cleanSlug = stripLanguagePrefix(normalizedSlug);
@@ -637,6 +642,56 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
       }
     }
 
+    // 🛡️ CHRIS-PROTOCOL: Registry-First Mandate (v2.15.034)
+    // We only allow legacy fallbacks for very specific, known entry points.
+    // This prevents the SmartRouter from "hijacking" unknown paths or system routes.
+    const isKnownEntryPoint = MarketManager.isAgencyEntryPoint(segments[0]) || ['voice', 'artist', 'portfolio'].includes(segments[0]);
+    
+    if (!resolved && !isKnownEntryPoint && segments.length > 1) {
+      console.error(` [SmartRouter] NUCLEAR BLOCK: Path "${lookupSlug}" not in registry and not a known entry point. Blocking.`);
+      return notFound();
+    }
+
+    // 🛡️ CHRIS-PROTOCOL: Registry-First Mandate (v2.15.034)
+    // We only allow legacy fallbacks for very specific, known entry points.
+    // This prevents the SmartRouter from "hijacking" unknown paths or system routes.
+    const isKnownEntryPoint = MarketManager.isAgencyEntryPoint(segments[0]) || ['voice', 'artist', 'portfolio'].includes(segments[0]);
+    
+    if (!resolved && !isKnownEntryPoint && segments.length > 1) {
+      console.error(` [SmartRouter] NUCLEAR BLOCK: Path "${lookupSlug}" not in registry and not a known entry point. Blocking.`);
+      return notFound();
+    }
+
+    // 🛡️ CHRIS-PROTOCOL: Registry-First Mandate (v2.15.034)
+    // We only allow legacy fallbacks for very specific, known entry points.
+    // This prevents the SmartRouter from "hijacking" unknown paths or system routes.
+    const isKnownEntryPoint = MarketManager.isAgencyEntryPoint(segments[0]) || ['voice', 'artist', 'portfolio'].includes(segments[0]);
+    
+    if (!resolved && !isKnownEntryPoint && segments.length > 1) {
+      console.error(` [SmartRouter] NUCLEAR BLOCK: Path "${lookupSlug}" not in registry and not a known entry point. Blocking.`);
+      return notFound();
+    }
+
+    // 🛡️ CHRIS-PROTOCOL: Registry-First Mandate (v2.15.034)
+    // We only allow legacy fallbacks for very specific, known entry points.
+    // This prevents the SmartRouter from "hijacking" unknown paths or system routes.
+    const isKnownEntryPoint = MarketManager.isAgencyEntryPoint(segments[0]) || ['voice', 'artist', 'portfolio'].includes(segments[0]);
+    
+    if (!resolved && !isKnownEntryPoint && segments.length > 1) {
+      console.error(` [SmartRouter] NUCLEAR BLOCK: Path "${lookupSlug}" not in registry and not a known entry point. Blocking.`);
+      return notFound();
+    }
+
+  // 🛡️ CHRIS-PROTOCOL: Registry-First Mandate (v2.15.034)
+    // We only allow legacy fallbacks for very specific, known entry points.
+    // This prevents the SmartRouter from "hijacking" unknown paths or system routes.
+    const isKnownEntryPoint = MarketManager.isAgencyEntryPoint(segments[0]) || ['voice', 'artist', 'portfolio'].includes(segments[0]);
+    
+    if (!resolved && !isKnownEntryPoint && segments.length > 1) {
+      console.error(` [SmartRouter] NUCLEAR BLOCK: Path "${lookupSlug}" not in registry and not a known entry point. Blocking.`);
+      return notFound();
+    }
+
     // Legacy Fallbacks (Agency, Casting, etc.)
     if (MarketManager.isAgencySegment(lookupSlug)) {
       const filters: Record<string, string> = {};
@@ -846,13 +901,13 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
 
     // 3. Check voor Stem (Legacy Fallback by Slug)
     try {
-      // 🛡️ CHRIS-PROTOCOL: Refined Slug Mandate (v2.14.611)
-      // We staan legacy fallback toe voor single-segment slugs (bijv. /johfrah).
-      // Voor multi-segment paden (bijv. /voice/video) checken we of het eerste segment een bekende prefix is.
-      const isKnownPrefix = MarketManager.isAgencySegment(segments[0]) || ['voice', 'artist', 'portfolio'].includes(segments[0]);
+      // 🛡️ CHRIS-PROTOCOL: Registry-First Mandate (v2.15.034)
+      // We only allow legacy fallbacks for very specific, known entry points.
+      // This prevents the SmartRouter from "hijacking" unknown paths or system routes.
+      const isKnownEntryPoint = MarketManager.isAgencyEntryPoint(segments[0]) || ['voice', 'artist', 'portfolio'].includes(segments[0]);
       
-      if (segments.length > 1 && !isKnownPrefix) {
-        console.error(` [SmartRouter] Multi-segment path "${lookupSlug}" not in registry and no known prefix. Blocking legacy fallback.`);
+      if (!resolved && !isKnownEntryPoint && segments.length > 1) {
+        console.error(` [SmartRouter] NUCLEAR BLOCK: Path "${lookupSlug}" not in registry and not a known entry point. Blocking.`);
         return notFound();
       }
 
