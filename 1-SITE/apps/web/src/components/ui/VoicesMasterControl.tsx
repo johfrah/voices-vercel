@@ -393,7 +393,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
       const existing = uniqueLangsMap.get(cleanLabel);
       
       // If we have a duplicate label, prefer the one with a more specific code (length > 2)
-      if (!existing || l.code.length > existing.code.length) {
+      if (!existing || (l.code || '').length > (existing.code || '').length) {
         uniqueLangsMap.set(cleanLabel, l);
       }
     });

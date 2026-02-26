@@ -79,6 +79,9 @@ export async function GET(request: NextRequest) {
 
     try {
     const identifier = userId ? parseInt(userId) : email!;
+    // #region agent log
+    fetch('http://127.0.0.1:7691/ingest/0b1da146-0703-4910-bde4-4876f6bb4146',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'81e7e6'},body:JSON.stringify({sessionId:'81e7e6',location:'customer-360/route.ts:82',message:'Customer 360 request',data:{identifier, userId, email, isAdmin: !!isAdmin},timestamp:Date.now()})}).catch(()=>{});
+    // #endregion
     
     // 🛡️ CHRIS-PROTOCOL: Nuclear Caching Layer (SWR)
     // We cachen de 360 data voor 1 minuut om 504 timeouts te voorkomen (v2.14.347)
