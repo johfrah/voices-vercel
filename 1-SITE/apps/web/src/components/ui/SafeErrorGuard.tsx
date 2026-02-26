@@ -81,7 +81,7 @@ export class SafeErrorGuard extends Component<Props, State> {
 
             <div className="pt-8 border-t border-black/[0.03]">
               <TextInstrument className="text-[11px] font-bold text-va-black/20 uppercase tracking-[0.2em]">
-                Nuclear Shield Active • v2.14.351
+                Voices Guard Active
               </TextInstrument>
             </div>
           </ContainerInstrument>
