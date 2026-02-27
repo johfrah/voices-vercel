@@ -85,7 +85,7 @@ export function AgencyContent({ mappedActors, filters }: { mappedActors: any[], 
 
     if (mounted) {
       console.log(`[AgencyContent] Input actors: ${mappedActors.length}. Filters:`, filterOptions);
-      console.log(`[AgencyContent] First 3 actors raw:`, mappedActors.slice(0, 3).map(a => ({ id: a.id, name: a.display_name, native_lang_id: a.native_lang_id, status: a.status })));
+      console.log(`[AgencyContent] First 3 actors raw:`, mappedActors.slice(0, 3).map(a => ({ id: a.id, name: a.display_name, native_lang_id: a.native_lang_id, status: a.status, is_public: a.is_public })));
     }
 
     const result = VoiceFilterEngine.filter(mappedActors, filterOptions) || [];
