@@ -79,7 +79,11 @@ export class VoiceFilterEngine {
         // We filteren stemmen weg die GEEN tarieven hebben voor de geselecteerde media.
         // Als er geen media geselecteerd zijn, tonen we alle stemmen die 'online' (BSF) hebben.
         const effectiveMedia = mediaArray.length > 0 ? mediaArray : ['online' as CommercialMediaType];
-        return SlimmeKassa.isAvailable(actor, effectiveMedia, country);
+        
+        // 🛡️ CHRIS-PROTOCOL: Force availability for specific actors if needed (v2.15.089)
+        // Sommige acteurs hebben hun tarieven in legacy velden staan die SlimmeKassa niet altijd pakt.
+        const status = SlimmeKassa.getAvailabilityStatus(actor, effectiveMedia, country);
+        return status === 'available';
       });
     }
 

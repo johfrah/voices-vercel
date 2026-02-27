@@ -11,28 +11,27 @@ const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PU
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 async function monitorTelegram() {
-  console.log('📡 Monitoring chat_messages for Telegram interactions (via SDK)...');
+  console.log('📡 Monitoring system_events (via SDK)...');
   
   try {
-    const { data: messages, error } = await supabase
-      .from('chat_messages')
-      .select('id, message, sender_type, created_at, conversation_id')
-      .eq('sender_type', 'user')
+    const { data: events, error } = await supabase
+      .from('system_events')
+      .select('*')
       .order('id', { ascending: false })
-      .limit(10);
+      .limit(20);
 
     if (error) throw error;
 
-    if (!messages || messages.length === 0) {
-      console.log('📭 No recent user messages found.');
+    if (!events || events.length === 0) {
+      console.log('📭 No recent events found.');
     } else {
-      console.log(`📥 Found ${messages.length} recent user messages:`);
-      messages.forEach((msg: any) => {
-        console.log(`[${msg.created_at}] #${msg.conversation_id}: ${msg.message}`);
+      console.log(`📥 Found ${events.length} recent events:`);
+      events.forEach((event: any) => {
+        console.log(`[${event.created_at}] [${event.level}] ${event.source}: ${event.message}`);
       });
     }
   } catch (error: any) {
-    console.error('❌ Error monitoring chat_messages:', error.message);
+    console.error('❌ Error monitoring system_events:', error.message);
   }
 }
 
