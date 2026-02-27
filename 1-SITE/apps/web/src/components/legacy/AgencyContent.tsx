@@ -83,11 +83,14 @@ export function AgencyContent({ mappedActors, filters }: { mappedActors: any[], 
       selectedActorId: checkoutState.selectedActor?.id
     };
 
+    if (mounted) {
+      console.log(`[AgencyContent] Input actors: ${mappedActors.length}. Filters:`, filterOptions);
+    }
+
     const result = VoiceFilterEngine.filter(mappedActors, filterOptions) || [];
 
     if (mounted) {
-      console.log(`[AgencyContent] Filtering ${mappedActors.length} actors. Journey: ${state.journey}, Result: ${result.length}`, {
-        filters: state.filters,
+      console.log(`[AgencyContent] Result actors: ${result.length}`, {
         firstActor: result[0] ? { id: result[0].id, name: result[0].display_name } : 'none'
       });
     }
