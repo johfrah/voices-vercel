@@ -37,10 +37,15 @@ export async function middleware(request: NextRequest) {
   }
 
   // 1. SECURITY & ASSET BYPASS
-  // Laat statische assets en API's direct door (matcher doet dit ook, maar extra veiligheid)
+  // 🛡️ CHRIS-PROTOCOL: Absolute API Isolation (v2.15.084)
+  // API requests moeten NOOIT door i18n of market redirects gaan.
+  if (pathname.startsWith('/api')) {
+    return NextResponse.next()
+  }
+
+  // Laat statische assets direct door (matcher doet dit ook, maar extra veiligheid)
   if (
     pathname.startsWith('/_next') ||
-    pathname.startsWith('/api') ||
     pathname.startsWith('/assets') ||
     pathname.startsWith('/static') ||
     pathname.startsWith('/favicon.ico') ||
