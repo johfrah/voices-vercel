@@ -146,6 +146,7 @@ export interface Demo {
   title: string;
   audio_url: string;
   category: string;
+  actor_id?: number; // 🛡️ CHRIS-PROTOCOL: ID-First Handshake
   actor_name?: string;
   actor_photo?: string;
   actor_lang?: string; //  New field for flag display

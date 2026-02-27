@@ -372,28 +372,35 @@ export class MarketManagerServer {
   }
 
   /**
-   * Haalt de ISO taalcode op basis van een UI label
+   * Haalt de ISO taalcode op basis van een UI label of volledige ISO code
+   * 🛡️ CHRIS-PROTOCOL: Ondersteunt nu de 'Split' (v2.16.001)
+   * Retourneert altijd de korte code (ISO-2) voor database-matching.
    */
   static getLanguageCode(label: string): string {
+    if (!label) return 'nl';
     const lowLabel = label.toLowerCase().trim();
     
+    // Als het al een volledige ISO-5 code is (nl-be), pak het eerste deel
+    if (lowLabel.includes('-')) {
+      return lowLabel.split('-')[0];
+    }
+    
     // 🛡️ CHRIS-PROTOCOL: Handshake Truth (Zero-Slop)
-    // We look up the code in our live registry from Supabase.
     if (this.languagesRegistry.length > 0) {
       const match = this.languagesRegistry.find(l => 
         l.label.toLowerCase() === lowLabel || 
         l.code.toLowerCase() === lowLabel
       );
-      if (match) return match.code;
+      if (match) return match.code.includes('-') ? match.code.split('-')[0] : match.code;
     }
 
     // Emergency fallbacks for early boot/SSR only
     const emergencyMap: Record<string, string> = {
-      'vlaams': 'nl-be',
-      'nederlands': 'nl-nl',
-      'frans': 'fr-fr',
-      'engels': 'en-gb',
-      'duits': 'de-de'
+      'vlaams': 'nl',
+      'nederlands': 'nl',
+      'frans': 'fr',
+      'engels': 'en',
+      'duits': 'de'
     };
     
     return emergencyMap[lowLabel] || lowLabel;

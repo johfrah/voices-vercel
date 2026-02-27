@@ -183,7 +183,9 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
   const isCurrentlyPlaying = useMemo(() => {
     if (!voice) return false;
     if (activeVideo || voice?.video_url) return isPlaying;
-    return activeDemo?.actor_name === voice?.display_name && globalIsPlaying;
+    // 🛡️ CHRIS-PROTOCOL: ID-First Handshake (v2.15.073)
+    // We checken nu primair op actor_id ipv display_name om dubbelingen te voorkomen.
+    return (activeDemo?.actor_id === voice?.id || activeDemo?.actor_name === voice?.display_name) && globalIsPlaying;
   }, [activeVideo, voice, isPlaying, activeDemo, globalIsPlaying]);
 
   const [eventData, setEventData] = useState<any>(null);
@@ -575,7 +577,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
                   if (isPlaying) { videoRef.current?.pause(); setIsPlaying(false); } else { videoRef.current?.play(); setIsPlaying(true); }
                   return;
                 }
-                const isThisActorActive = activeDemo?.actor_name === voice.display_name;
+                const isThisActorActive = activeDemo?.actor_id === voice.id || activeDemo?.actor_name === voice.display_name;
                 if (isThisActorActive) { 
                   setGlobalIsPlaying(!globalIsPlaying); 
                 } else if (voice?.demos?.length) { 
@@ -592,6 +594,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
 
                   const actorPlaylist = sortedDemos.map(d => ({ 
                     ...d, 
+                    actor_id: voice.id, // 🛡️ CHRIS-PROTOCOL: ID-First Handshake
                     actor_name: voice.display_name, 
                     actor_photo: voice.photo_url, 
                     actor_lang: voice.native_lang 
@@ -599,6 +602,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
                   
                   playDemo({ 
                     ...sortedDemos[0], 
+                    actor_id: voice.id, // 🛡️ CHRIS-PROTOCOL: ID-First Handshake
                     actor_name: voice.display_name, 
                     actor_photo: voice.photo_url, 
                     actor_lang: voice.native_lang 
@@ -765,6 +769,8 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
           </div>
 
           {/* 🛡️ CHRIS-PROTOCOL: Contextual Mirroring Review Injection (v2.14.805) */}
+          {/* REMOVED: Review injection removed to improve visual balance as requested by user (v2.15.073) */}
+          {/* 
           <AnimatePresence>
             {topReview && (
               <motion.div 
@@ -792,6 +798,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
               </motion.div>
             )}
           </AnimatePresence>
+          */}
 
           <div className="flex justify-between items-center mt-auto pt-2 md:pt-4 border-t border-black/[0.03]">
             <div className="flex flex-col items-start">

@@ -27,14 +27,17 @@ export const TranslationProvider: React.FC<{
     // Als we al initialTranslations hebben, hoeven we niet direct opnieuw te laden
     // tenzij de taal verandert.
     const fetchTranslations = async () => {
-      if (lang === 'nl') {
+      // 🛡️ CHRIS-PROTOCOL: Gebruik altijd de korte code voor DB fetches (v2.16.001)
+      const dataLang = lang.includes('-') ? lang.split('-')[0] : lang;
+
+      if (dataLang === 'nl') {
         setLoading(false);
         return;
       }
       
       setLoading(true);
       try {
-        const res = await fetch(`/api/translations/?lang=${lang}`);
+        const res = await fetch(`/api/translations/?lang=${dataLang}`);
         const data = await res.json();
         setTranslations(prev => ({ ...prev, ...(data.translations || {}) }));
       } catch (e) {

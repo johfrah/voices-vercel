@@ -120,6 +120,9 @@ export async function POST(request: NextRequest) {
             );
 
             if (cleanTranslation && !isSlop) {
+              // 🛡️ CHRIS-PROTOCOL: Kleine pauze om database pooler te ontlasten (v2.16.001)
+              await new Promise(resolve => setTimeout(resolve, 200));
+
               await db.insert(translations).values({
                 translationKey: key,
                 lang: lang,
