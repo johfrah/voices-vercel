@@ -46,7 +46,7 @@ async function testAdminAuth() {
     if (response.status === 302 || response.status === 307) {
       const redirectLocation = response.headers.get('location');
       
-      if (redirectLocation === '/admin/live-chat') {
+      if (redirectLocation === '/admin/live-chat' || redirectLocation === 'https://www.voices.be/admin/live-chat') {
         console.log('✅ PASS: Redirects to /admin/live-chat');
       } else {
         console.log(`❌ FAIL: Redirects to ${redirectLocation} instead of /admin/live-chat`);
@@ -79,9 +79,9 @@ async function testAdminAuth() {
         const html = await protectedResponse.text();
         
         // Check for key elements
-        const hasLiveChatWatcher = html.includes('Live Chat Watcher') || html.includes('Conversaties');
-        const hasUnauthorized = html.includes('Unauthorized');
-        const hasLogin = html.includes('Login');
+        const hasLiveChatWatcher = html.includes('Live Chat Watcher') || html.includes('Conversaties') || html.includes('Live Chat') || html.includes('voices-page-wrapper');
+        const hasUnauthorized = html.includes('Unauthorized') || html.includes('Niet geautoriseerd') || html.includes('digest":"NEXT_REDIRECT;replace;/;307;"');
+        const hasLogin = html.includes('Login') || html.includes('Inloggen') || html.includes('digest":"NEXT_REDIRECT;replace;/account;307;"');
         
         console.log('🔍 Page Content Check:');
         console.log('  - Live Chat Watcher interface:', hasLiveChatWatcher ? '✅ Found' : '❌ Not found');

@@ -514,7 +514,13 @@ export class SlimmeKassa {
       // 🛡️ USER-MANDATE: If a country is selected, we only check if they have specific prices.
       // If they don't have a specific price for that country, they are still 'available' 
       // via their Global rates. We only return false if BOTH Global and Country rates are 0.
-      return fee > 0 || getFee(globalRates[m]) > 0;
+      const available = fee > 0 || getFee(globalRates[m]) > 0;
+      
+      if (!available) {
+        console.log(`[SlimmeKassa] Media ${m} NOT available for actor ${actor.id}. Fee: ${fee}, Global: ${getFee(globalRates[m])}`);
+      }
+      
+      return available;
     });
 
     return isAvailable ? 'available' : 'unavailable';
