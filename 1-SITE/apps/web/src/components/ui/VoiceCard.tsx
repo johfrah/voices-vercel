@@ -504,6 +504,9 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
   return (
     <div
       onClick={handleVoiceDetails}
+      data-actor-card
+      data-actor-id={voice.id}
+      data-actor-name={voice.display_name}
       className={cn(
         "group relative bg-white rounded-[20px] overflow-hidden shadow-aura transition-all duration-500 border border-black/[0.02] flex flex-col touch-manipulation w-full h-full",
         (!onSelect || isEditMode) && "cursor-pointer hover:scale-[1.01] active:scale-[0.99]",

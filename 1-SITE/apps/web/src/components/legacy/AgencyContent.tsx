@@ -61,11 +61,13 @@ export function AgencyContent({ mappedActors, filters }: { mappedActors: any[], 
   //  This ensures the grid "slides together" and sorting is identical across all pages.
   const filteredActors = useMemo(() => {
     if (!mappedActors || mappedActors.length === 0) return [];
-    if (!mounted) return mappedActors;
 
-    console.log(`[AgencyContent] Filtering ${mappedActors.length} actors. Journey: ${state.journey}, Language: ${state.filters.language}, LanguageId: ${state.filters.languageId}`);
-
-    const result = VoiceFilterEngine.filter(mappedActors, {
+    // 🛡️ CHRIS-PROTOCOL: Hydration Safety (v2.15.089)
+    // We no longer return the raw mappedActors when !mounted.
+    // Instead, we perform a basic filter that is safe for both server and client.
+    // This prevents the "Text content does not match" error #425.
+    
+    const filterOptions = {
       journey: state.journey,
       language: state.filters.language,
       languageId: state.filters.languageId,
@@ -79,11 +81,15 @@ export function AgencyContent({ mappedActors, filters }: { mappedActors: any[], 
       sortBy: state.filters.sortBy,
       currentStep: state.currentStep,
       selectedActorId: checkoutState.selectedActor?.id
-    }) || [];
+    };
 
-    console.log(`[AgencyContent] Result: ${(result || []).length} actors. First 3:`, (result || []).slice(0, 3).map(a => a?.display_name));
+    const result = VoiceFilterEngine.filter(mappedActors, filterOptions) || [];
 
-    return result || [];
+    if (mounted) {
+      console.log(`[AgencyContent] Filtering ${mappedActors.length} actors. Journey: ${state.journey}, Result: ${result.length}`);
+    }
+
+    return result;
   }, [mappedActors, state.journey, state.filters, state.currentStep, checkoutState.selectedActor?.id, mounted]);
 
   //  CHRIS-PROTOCOL: Handle initial actor selection from URL (Homepage SPA flow)
