@@ -129,6 +129,19 @@ export class DirectMailService {
    * Verstuurt een e-mail via SMTP
    */
   async sendMail(options: { to: string, subject: string, text?: string, html?: string, from?: string, replyTo?: string, attachments?: any[], host?: string }): Promise<void> {
+    // 🛡️ CHRIS-PROTOCOL: NUCLEAR TEST SAFETY (v2.15.090)
+    // Voorkom dat er echte mails naar klanten of stemmen worden gestuurd tijdens de testfase.
+    const isTestMode = process.env.NODE_ENV === 'development' || process.env.NUCLEAR_TEST_MODE === 'true';
+    const allowedRecipients = ['johfrah@voices.be', 'bernadette@voices.be', 'voices.be', 'ademing.be'];
+    
+    const isAllowed = allowedRecipients.some(domain => options.to.toLowerCase().includes(domain));
+    
+    if (isTestMode && !isAllowed) {
+      console.log(`🛑 [DirectMailService] NUCLEAR SAFETY BLOCK: Redirecting mail for ${options.to} to johfrah@voices.be`);
+      options.subject = `[TEST-REDIRECT to ${options.to}] ${options.subject}`;
+      options.to = 'johfrah@voices.be';
+    }
+
     const market = MarketManager.getCurrentMarket(options.host);
     const from = options.from || market.email;
     

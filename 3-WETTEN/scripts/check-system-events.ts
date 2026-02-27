@@ -2,7 +2,7 @@
  * Check system_events for recent errors
  */
 
-import { db } from '../../1-SITE/packages/database/src/client';
+import { db } from '../../1-SITE/packages/database/src/index';
 import { sql } from 'drizzle-orm';
 
 async function checkSystemEvents() {

@@ -14,17 +14,17 @@ const DEMO_FILES = [
   },
   {
     name: 'Q-Team (Telephony)',
-    path: 'assets/agency/voices/be/nl/male/johfrah-A-182508/demos/telephony/johfrah-qteam.mp3',
+    path: 'agency/voices/be/nl/male/johfrah-A-182508/demos/telephony/johfrah-qteam.mp3',
     type: 'telephony'
   },
   {
     name: 'FAVV (Telephony)',
-    path: 'assets/agency/voices/be/nl/male/johfrah-A-182508/demos/telephony/johfrah-favv.mp3',
+    path: 'agency/voices/be/nl/male/johfrah-A-182508/demos/telephony/johfrah-favv.mp3',
     type: 'telephony'
   },
   {
     name: 'Voices (Telephony)',
-    path: 'assets/agency/voices/be/nl/male/johfrah-A-182508/demos/telephony/johfrah-voices.mp3',
+    path: 'agency/voices/be/nl/male/johfrah-A-182508/demos/telephony/johfrah-voices.mp3',
     type: 'telephony'
   }
 ];
@@ -48,11 +48,17 @@ async function verifyJohfrahAudio() {
   for (const demo of DEMO_FILES) {
     console.log(`🎵 Testing: ${demo.name}`);
     
-    // Try both possible base URLs
-    const urls = [
-      `https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices/${demo.path}`,
-      `https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices-v2/${demo.path}`
+    // Try multiple path variations
+    const pathVariations = [
+      demo.path,
+      demo.path.replace(/^assets\//, ''), // Remove assets/ prefix
     ];
+    
+    const urls = [];
+    for (const pathVar of pathVariations) {
+      urls.push(`https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices/${pathVar}`);
+      urls.push(`https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices-v2/${pathVar}`);
+    }
     
     let success = false;
     let workingUrl = '';

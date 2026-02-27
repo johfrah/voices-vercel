@@ -1,6 +1,6 @@
 {
   "name": "voices-experience-layer",
-  "version": "2.15.089",
+  "version": "2.15.090",
   "private": true,
   "scripts": {
     "dev": "PORT=3000 next dev",
@@ -19,6 +19,7 @@
     "logs:live": "vercel logs voices-vercel-gazw8trp5-johfrahs-projects.vercel.app -f",
     "logs:nuclear": "tsx ../../../3-WETTEN/scripts/live-watchdog.ts",
     "audit:forensic": "tsx ../../../3-WETTEN/scripts/forensic-audit.ts",
+    "test:nuclear": "NUCLEAR_TEST_MODE=true npm run test:e2e",
     "test:unit": "vitest run",
     "test:e2e": "playwright test",
     "test:all": "npm run audit:forensic && npm run test:unit && npm run test:e2e",

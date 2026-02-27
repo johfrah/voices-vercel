@@ -6,8 +6,8 @@ import * as path from 'path';
 const envPath = path.join(process.cwd(), '1-SITE/apps/web/.env.local');
 dotenv.config({ path: envPath });
 
-import { db } from '../../1-SITE/packages/database/src';
-import { actors } from '../../1-SITE/packages/database/src/schema';
+import { db } from '../../1-SITE/packages/database/src/index';
+import { actors } from '../../1-SITE/packages/database/src/schema/index';
 
 // ------------------------------------------------------------------
 // ⚡ KELLY'S BRAIN (SlimmeKassa Logic Copy for Audit)
