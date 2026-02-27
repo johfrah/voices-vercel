@@ -45,53 +45,6 @@ export const AdemingHero = () => {
               />
             </button>
           </div>
-
-          {/* Social proof - literal replication of kelder avatars */}
-          <div className="pt-16 flex flex-wrap items-center justify-center gap-12 text-sm text-muted-foreground animate-fade-in" style={{ animationDelay: '0.6s' }}>
-            <div className="flex items-center gap-6 bg-white/40 backdrop-blur-md px-8 py-4 rounded-full border border-primary/5 shadow-soft">
-              <div className="flex -space-x-4">
-                {[1, 2, 3, 4].map((i) => (
-                  <div 
-                    key={i} 
-                    className="w-12 h-12 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 border-4 border-background shadow-soft flex items-center justify-center text-[10px] font-bold text-primary/40" 
-                  >
-                    <img src={`/assets/ademing/user-${i}.jpg`} alt="" className="w-full h-full object-cover rounded-full" />
-                  </div>
-                ))}
-              </div>
-              <span className="text-lg font-medium">
-                <VoiceglotText 
-                  translationKey="hero.social.users" 
-                  defaultText="Meer dan 500 mensen vonden hun rust" 
-                />
-              </span>
-            </div>
-            <div className="flex items-center gap-3 bg-white/40 backdrop-blur-md px-8 py-4 rounded-full border border-primary/5 shadow-soft">
-              <Sparkles className="w-6 h-6 text-primary animate-pulse" />
-              <span className="text-lg font-medium">
-                <VoiceglotText 
-                  translationKey="hero.social.meditations" 
-                  defaultText="50+ liefdevolle meditaties" 
-                />
-              </span>
-            </div>
-          </div>
-
-          {/* Quote van Julie - original italic style */}
-          <div className="pt-16 max-w-2xl mx-auto animate-fade-in" style={{ animationDelay: '0.8s' }}>
-            <p className="text-xl italic text-muted-foreground/80 leading-relaxed font-serif">
-              <VoiceglotText 
-                translationKey="hero.quote.text" 
-                defaultText="Meditatie hoeft niet perfect te zijn. Het gaat erom dat je er bent, voor jezelf. En dat mag op jouw manier." 
-              />
-            </p>
-            <p className="mt-4 text-[10px] font-bold uppercase tracking-[0.3em] text-primary/60">
-              <VoiceglotText 
-                translationKey="hero.quote.author" 
-                defaultText="— Julie" 
-              />
-            </p>
-          </div>
         </div>
       </div>
     </section>
