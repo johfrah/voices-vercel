@@ -885,4 +885,24 @@ export class StudioDataBridge {
     }
   }
 
+  /**
+   * Haalt alle deelnemers van een specifieke editie op
+   *  VOICES OS: Voor Berny's Inschrijvingen Dashboard
+   */
+  static async getEditionParticipants(editionId: number) {
+    try {
+      const { data, error } = await supabase
+        .from('workshop_participants')
+        .select('*')
+        .eq('edition_id', editionId)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return data || [];
+    } catch (error) {
+      console.error(`Error fetching participants for edition ${editionId}:`, error);
+      return [];
+    }
+  }
+
 }

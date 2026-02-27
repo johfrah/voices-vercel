@@ -86,7 +86,10 @@ export function AgencyContent({ mappedActors, filters }: { mappedActors: any[], 
     const result = VoiceFilterEngine.filter(mappedActors, filterOptions) || [];
 
     if (mounted) {
-      console.log(`[AgencyContent] Filtering ${mappedActors.length} actors. Journey: ${state.journey}, Result: ${result.length}`);
+      console.log(`[AgencyContent] Filtering ${mappedActors.length} actors. Journey: ${state.journey}, Result: ${result.length}`, {
+        filters: state.filters,
+        firstActor: result[0] ? { id: result[0].id, name: result[0].display_name } : 'none'
+      });
     }
 
     return result;

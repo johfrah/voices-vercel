@@ -777,7 +777,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
     const isKnownEntryPoint = MarketManager.isAgencyEntryPoint(segments[0]) || ['voice', 'artist', 'portfolio'].includes(segments[0]);
     
     // #region agent log
-    fetch('http://127.0.0.1:7691/ingest/0b1da146-0703-4910-bde4-4876f6bb4146',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'81e7e6'},body:JSON.stringify({sessionId:'81e7e6',runId:'run1',hypothesisId:'H4',location:'[...slug]/page.tsx:779',message:'SmartRouteContent check',data:{segments, resolvedType: resolved?.routing_type, resolvedId: resolved?.entity_id, isKnownEntryPoint},timestamp:Date.now()})}).catch(()=>{});
+    // fetch('http://127.0.0.1:7691/ingest/0b1da146-0703-4910-bde4-4876f6bb4146',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'81e7e6'},body:JSON.stringify({sessionId:'81e7e6',runId:'run1',hypothesisId:'H4',location:'[...slug]/page.tsx:779',message:'SmartRouteContent check',data:{segments, resolvedType: resolved?.routing_type, resolvedId: resolved?.entity_id, isKnownEntryPoint},timestamp:Date.now()})}).catch(()=>{});
     // #endregion
 
     if (!resolved && !isKnownEntryPoint && segments.length > 1) {

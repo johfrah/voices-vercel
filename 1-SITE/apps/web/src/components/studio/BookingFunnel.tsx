@@ -43,7 +43,8 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
   priceExclVat, 
   dates,
   onDateSelect,
-  selectedDateIndex: controlledIndex
+  selectedDateIndex: controlledIndex,
+  isLoading
 }) => {
   const { playClick } = useSonicDNA();
   const { t } = useTranslation();
@@ -66,40 +67,65 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
   });
 
   const handleBooking = () => {
-    playClick('premium');
+    //  CHRIS-PROTOCOL: Form Validation Mandate
+    if (!formData.first_name?.trim() || !formData.last_name?.trim() || !formData.email?.trim()) {
+      alert(t('studio.booking.error.required_fields', 'Vul alle verplichte velden in (voornaam, familienaam, email)'));
+      return;
+    }
+
+    //  Email Format Validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      alert(t('studio.booking.error.invalid_email', 'Voer een geldig emailadres in'));
+      return;
+    }
+
+    //  Date Selection Validation (only if dates are available)
+    if (hasDates && !selectedDate) {
+      alert(t('studio.booking.error.no_date', 'Selecteer een datum'));
+      return;
+    }
+
+    playClick('pro');
     setIsBooking(true);
     
-    //  NUCLEAR WORKSHOP SPA ENGINE
-    // We voegen de workshop toe aan de checkout en navigeren direct.
-    const workshopItem = {
-      id: `workshop-${workshopId}-${Date.now()}`,
-      type: 'workshop_edition',
-      name: title,
-      price: priceExclVatValue,
-      date: selectedDate?.date_raw,
-      location: selectedDate?.location,
-      pricing: {
-        total: priceExclVatValue,
-        subtotal: priceExclVatValue
-      }
-    };
+    try {
+      //  NUCLEAR WORKSHOP SPA ENGINE
+      // We voegen de workshop toe aan de checkout en navigeren direct.
+      const workshopItem = {
+        id: `workshop-${workshopId}-${Date.now()}`,
+        type: 'workshop_edition',
+        name: title,
+        price: priceExclVatValue,
+        date: selectedDate?.date_raw,
+        location: selectedDate?.location,
+        pricing: {
+          total: priceExclVatValue,
+          subtotal: priceExclVatValue
+        }
+      };
 
-    // Update customer info in context
-    updateCustomer({
-      first_name: formData.first_name,
-      last_name: formData.last_name,
-      email: formData.email
-    });
+      // Update customer info in context
+      updateCustomer({
+        first_name: formData.first_name,
+        last_name: formData.last_name,
+        email: formData.email
+      });
 
-    // Add to cart and set journey
-    addItem(workshopItem);
-    setJourney('studio', workshopId);
-    setStep('details'); // Direct naar de details stap in de checkout
+      // Add to cart and set journey
+      addItem(workshopItem);
+      setJourney('studio', workshopId);
+      setStep('details'); // Direct naar de details stap in de checkout
 
-    setTimeout(() => {
+      setTimeout(() => {
+        setIsBooking(false);
+        router.push('/checkout');
+      }, 800);
+    } catch (error) {
+      console.error('[BookingFunnel] Error during booking:', error);
       setIsBooking(false);
-      router.push('/checkout');
-    }, 800);
+      alert(t('studio.booking.error.generic', 'Er is een fout opgetreden. Probeer het opnieuw.'));
+    }
   };
 
   
@@ -169,7 +195,7 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
               <ButtonInstrument
                 key={index}
                 onClick={() => {
-                  playClick('light');
+                  playClick('soft');
                   if (onDateSelect) onDateSelect(index);
                   else setInternalIndex(index);
                 }}

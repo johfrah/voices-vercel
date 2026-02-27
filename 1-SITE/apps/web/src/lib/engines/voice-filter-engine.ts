@@ -83,6 +83,11 @@ export class VoiceFilterEngine {
         // 🛡️ CHRIS-PROTOCOL: Force availability for specific actors if needed (v2.15.089)
         // Sommige acteurs hebben hun tarieven in legacy velden staan die SlimmeKassa niet altijd pakt.
         const status = SlimmeKassa.getAvailabilityStatus(actor, effectiveMedia, country);
+        
+        if (status === 'unavailable') {
+          console.log(`[VoiceFilter] Actor ${actor.id} (${actor.display_name}) is unavailable for:`, { effectiveMedia, country });
+        }
+
         return status === 'available';
       });
     }

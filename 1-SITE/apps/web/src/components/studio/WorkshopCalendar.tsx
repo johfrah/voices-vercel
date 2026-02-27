@@ -16,8 +16,22 @@ export const WorkshopCalendar: React.FC<{ workshops: any[] }> = ({ workshops }) 
   const { playClick } = useSonicDNA();
   const days = ['Ma', 'Di', 'Wo', 'Do', 'Vr', 'Za', 'Zo'];
   
+  //  CHRIS-PROTOCOL: Extract workshop dates dynamically
+  const workshopDates = React.useMemo(() => {
+    const dates = new Set<number>();
+    workshops.forEach(workshop => {
+      workshop.editions?.forEach((edition: any) => {
+        const date = new Date(edition.date);
+        if (date >= new Date()) {
+          dates.add(date.getDate());
+        }
+      });
+    });
+    return Array.from(dates);
+  }, [workshops]);
+  
   const handleDayClick = (day: number) => {
-    playClick('light');
+    playClick('soft');
     // window.location.href = `/studio/book?day=${day}`;
   };
 
@@ -39,13 +53,13 @@ export const WorkshopCalendar: React.FC<{ workshops: any[] }> = ({ workshops }) 
         </ContainerInstrument>
         <ContainerInstrument plain className="flex gap-2">
           <ButtonInstrument 
-            onClick={() => playClick('light')}
+            onClick={() => playClick('soft')}
             className="w-10 h-10 rounded-[10px] bg-white border border-va-black/5 flex items-center justify-center text-va-black/40 hover:text-primary transition-all shadow-sm active:scale-95"
           >
             <Image  src="/assets/common/branding/icons/BACK.svg" width={20} height={20} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.4 }} />
           </ButtonInstrument>
           <ButtonInstrument 
-            onClick={() => playClick('light')}
+            onClick={() => playClick('soft')}
             className="w-10 h-10 rounded-[10px] bg-white border border-va-black/5 flex items-center justify-center text-va-black/40 hover:text-primary transition-all shadow-sm active:scale-95"
           >
             <Image  src="/assets/common/branding/icons/FORWARD.svg" width={20} height={20} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.4 }} />
@@ -62,7 +76,7 @@ export const WorkshopCalendar: React.FC<{ workshops: any[] }> = ({ workshops }) 
         ))}
         {[...Array(28)].map((_, i) => {
           const day = i + 1;
-          const hasWorkshop = [12, 18, 24].includes(day);
+          const hasWorkshop = workshopDates.includes(day);
           return (
             <ButtonInstrument 
               key={i} 
@@ -88,7 +102,7 @@ export const WorkshopCalendar: React.FC<{ workshops: any[] }> = ({ workshops }) 
         {workshops.slice(0, 2).map((workshop, i) => (
           <ButtonInstrument 
             key={i} 
-            onClick={() => playClick('deep')}
+            onClick={() => playClick('pro')}
             className="w-full p-4 rounded-[20px] bg-white border border-va-black/5 flex items-center justify-between group hover:border-primary/20 hover:shadow-aura transition-all cursor-pointer active:scale-[0.98]"
           >
             <ContainerInstrument plain className="flex items-center gap-4">

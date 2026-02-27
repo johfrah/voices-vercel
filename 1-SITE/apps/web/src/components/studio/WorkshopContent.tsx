@@ -44,7 +44,6 @@ export const WorkshopContent: React.FC<WorkshopContentProps> = ({ workshop, isLo
           <BentoCard span="full" className="bg-white shadow-aura-lg p-12 rounded-[32px] border border-black/5">
             <BookingFunnel 
               isLoading={isLoading}
-              strokeWidth={1.5} 
               workshopId={workshop.id}
               title={workshop.title}
               priceExclVat={workshop.price}
