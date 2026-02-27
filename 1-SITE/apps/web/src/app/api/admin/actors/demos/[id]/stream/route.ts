@@ -49,7 +49,24 @@ export async function GET(
 
       if (!mediaError && media?.file_path) {
         const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-        audioUrl = `${SUPABASE_URL.replace(/\/$/, '')}/storage/v1/object/public/voices/${media.file_path}`;
+        const filePath = media.file_path;
+        
+        // 🛡️ CHRIS-PROTOCOL: Dynamic Bucket Resolution (v2.15.083)
+        // We detecteren of het pad al begint met een bucket-naam (agency, assets, voices).
+        // Als dat zo is, gebruiken we dat als bucket. Zo niet, vallen we terug op 'voices'.
+        const pathSegments = filePath.split('/');
+        const firstSegment = pathSegments[0];
+        const knownBuckets = ['agency', 'assets', 'voices'];
+        
+        let bucket = 'voices';
+        let finalPath = filePath;
+        
+        if (knownBuckets.includes(firstSegment)) {
+          bucket = firstSegment;
+          finalPath = pathSegments.slice(1).join('/');
+        }
+        
+        audioUrl = `${SUPABASE_URL.replace(/\/$/, '')}/storage/v1/object/public/${bucket}/${finalPath}`;
       }
     }
 
