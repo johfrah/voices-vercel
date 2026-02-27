@@ -66,21 +66,21 @@ export class VoiceFilterEngine {
         });
       }
 
-      if (selectedMediaCodes.size > 0) {
-        const mediaArray = Array.from(selectedMediaCodes) as CommercialMediaType[];
-        const country = criteria.country || 'BE';
+      const mediaArray = Array.from(selectedMediaCodes) as CommercialMediaType[];
+      const country = criteria.country || 'BE';
 
-        result = result.filter(actor => {
-          // CHRIS-PROTOCOL: Behoud de geselecteerde acteur in de script-stap
-          if (criteria.selectedActorId === actor.id && criteria.currentStep === 'script') {
-            return true;
-          }
+      result = result.filter(actor => {
+        // CHRIS-PROTOCOL: Behoud de geselecteerde acteur in de script-stap
+        if (criteria.selectedActorId === actor.id && criteria.currentStep === 'script') {
+          return true;
+        }
 
-          // 🛡️ CHRIS-PROTOCOL: Strict Availability Filter (v2.14.740)
-          // We filteren stemmen weg die GEEN tarieven hebben voor de geselecteerde media.
-          return SlimmeKassa.isAvailable(actor, mediaArray, country);
-        });
-      }
+        // 🛡️ CHRIS-PROTOCOL: Strict Availability Filter (v2.14.740)
+        // We filteren stemmen weg die GEEN tarieven hebben voor de geselecteerde media.
+        // Als er geen media geselecteerd zijn, tonen we alle stemmen die 'online' (BSF) hebben.
+        const effectiveMedia = mediaArray.length > 0 ? mediaArray : ['online' as CommercialMediaType];
+        return SlimmeKassa.isAvailable(actor, effectiveMedia, country);
+      });
     }
 
     // 2. STRICT NATIVE LANGUAGE MATCHING (ID-First Mandate 2026)
