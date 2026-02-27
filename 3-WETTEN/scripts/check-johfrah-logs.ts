@@ -1,6 +1,11 @@
 #!/usr/bin/env tsx
+import dotenv from 'dotenv';
+import path from 'path';
 import { db, systemEvents } from '../../1-SITE/apps/web/src/lib/system/voices-config';
 import { desc, and, gte, like, or } from 'drizzle-orm';
+
+// Load .env.local from the web app directory
+dotenv.config({ path: path.resolve(process.cwd(), '1-SITE/apps/web/.env.local') });
 
 async function main() {
   const cutoff = new Date(Date.now() - 30 * 60 * 1000); // Last 30 minutes
