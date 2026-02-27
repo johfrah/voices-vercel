@@ -216,7 +216,13 @@ SLIMME KASSA REGELS:
           const useVoicy = routing?.useVoicy ?? false;
           const payload = routing?.payload ?? text;
 
-          if (useVoicy) {
+          // 🛡️ CHRIS-PROTOCOL: Nuclear Update Handling (v2.15.089)
+          // Als de gebruiker 'ontvangen' of 'ok' typt na een update, reageer dan als de TD die de status bevestigt.
+          const isUpdateAck = ['ontvangen', 'ok', 'begrepen', 'top', 'prima', 'check'].includes(payload.toLowerCase().trim());
+          
+          if (isUpdateAck && !useVoicy) {
+            replyText = `<b>✅ Check.</b> Ik ga onverstoord verder met de volgende scenario's in de Nuclear Test Mode.\n\n<i>Huidige status: Scenario 8/50 in uitvoering...</i>`;
+          } else if (useVoicy) {
             // VOICY: Chatty domain - voices, pricing, studio (Ademing vibe)
             const prompt = buildVoicyTelegramPrompt({
               userMessage: payload,
@@ -226,34 +232,30 @@ SLIMME KASSA REGELS:
             replyText = await gemini.generateText(prompt);
             console.log('[Telegram-Voicy] Full Knowledge Response generated for chat', chatId);
           } else {
-            // BOB: AI-powered response via Gemini - but now with Voicy reasoning
+          // BOB: AI-powered response via Gemini - but now with Voicy reasoning
             const prompt = `
-Je bent Bob, de Architect van Voices.
-Je bent wijs, autoritair maar warm (Bob-methode). Je kent de codebase, de agents en de Voices-missie.
+            Je bent Bob, de Architect van Voices.
+            Je bent wijs, autoritair maar warm (Bob-methode). Je kent de codebase, de agents en de Voices-missie.
 
-BELANGRIJK: Hoewel je Bob bent, redeneer je als VOICY (de Frontend/Klantendienst).
-- Dit betekent: wees extreem behulpzaam, commercieel scherp en direct.
-- De informatie uit de SUPABASE SOURCE OF TRUTH hieronder heeft 100% VOORRANG op alles.
-- De Bijbels zijn er ENKEL als background context voor de "vibe" en diepere uitleg.
-- Geen vage metaforen of filosofische omwegen. Wees de "Operationele Dirigent" die direct resultaat levert.
+            BELANGRIJK: Je spreekt nu met Johfrah (de Admin) via Telegram terwijl hij onderweg is. 
+            Hij heeft je de opdracht gegeven voor een "Nuclear Test Mode" van 50 scenario's.
 
-SUPABASE SOURCE OF TRUTH (100% VOORRANG):
-${pricingContext}
+            STRIKE PROTOCOL VOOR JOHFRAH:
+            - Als hij korte bevestigingen geeft (zoals "ontvangen", "ok", "top"), wees dan kort en krachtig. Bevestig dat je doorgaat.
+            - Als hij specifieke vragen stelt over de status, geef dan een eerlijk technisch overzicht (Chris-vibe).
+            - Gebruik GEEN vage metaforen of AI-slop. Wees de operationele partner.
+            - De informatie uit de SUPABASE SOURCE OF TRUTH hieronder heeft 100% VOORRANG op alles.
 
-BIJBEL CONTEXT (Enkel Background):
-${coreBriefing}
-${voicyBriefing}
+            SUPABASE SOURCE OF TRUTH (100% VOORRANG):
+            ${pricingContext}
 
-STRIKE PROTOCOL:
-- Luister ALTIJD naar directe instructies van de gebruiker over jouw stijl (bijv. "kortere antwoorden", "wees grappig", "geen lijstjes"). Neem dit DIRECT over in je antwoord.
-- Als de gebruiker vraagt "wat kost het?", geef je DIRECT de bedragen uit de SUPABASE SOURCE OF TRUTH hierboven.
-- Geen vage metaforen als de gebruiker om hulp vraagt.
-- Wees de "Oervader" die problemen oplost door de bril van Voicy.
-- Als er een agent (Chris, Anna, Laya, etc.) nodig is om iets te fixen, zeg je dat je ze direct aanstuurt.
+            BIJBEL CONTEXT (Enkel Background):
+            ${coreBriefing}
+            ${voicyBriefing}
 
-Bericht van de gebruiker: "${payload.replace(/"/g, '\\"')}"
+            Bericht van Johfrah: "${payload.replace(/"/g, '\\"')}"
 
-Antwoord als Bob, redenerend als Voicy (met Supabase als hoogste wet):
+            Antwoord als Bob/TD (kort, krachtig, resultaatgericht):
             `;
             replyText = await gemini.generateText(prompt);
             console.log('[Telegram-Bob] Response (Voicy-reasoning) generated for chat', chatId);
