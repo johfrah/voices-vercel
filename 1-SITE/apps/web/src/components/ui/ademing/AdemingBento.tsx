@@ -13,7 +13,7 @@ import { Moon, Zap, Clock, ArrowRight, Compass, Users, Instagram, Globe } from '
 import { VoicesDropdown } from '../VoicesDropdown';
 import { ElementIcon } from './ElementIcon';
 import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
-import { ContainerInstrument, HeadingInstrument, TextInstrument, SectionInstrument } from '../LayoutInstrumentsServer';
+import { ContainerInstrument, HeadingInstrument, TextInstrument, SectionInstrument } from '../LayoutInstruments';
 
 interface AdemingBentoProps {
   tracks: any[];
@@ -51,6 +51,21 @@ export const AdemingBento = ({ tracks, initialTrack, mode = 'home' }: AdemingBen
         {/* Main Container - Minimalist MVP View */}
         <ContainerInstrument className="max-w-6xl mx-auto px-6 space-y-40 py-32">
           
+          {/* Softlaunch Message Section */}
+          <SectionInstrument className="animate-fade-in text-center space-y-12" style={{ animationDelay: '0.1s' }}>
+            <div className="max-w-3xl mx-auto space-y-8">
+              <HeadingInstrument level={2} className="text-3xl md:text-5xl font-serif font-bold tracking-tight">
+                <VoiceglotText translationKey="softlaunch.title" defaultText="Binnenkort openen we de volledige bibliotheek" />
+              </HeadingInstrument>
+              <TextInstrument className="text-xl text-muted-foreground font-light leading-relaxed">
+                <VoiceglotText 
+                  translationKey="softlaunch.subtitle" 
+                  defaultText="We leggen momenteel de laatste hand aan een collectie van meer dan 50 meditaties. Voor nu nodigen we je uit om te landen met onze eerste sessie." 
+                />
+              </TextInstrument>
+            </div>
+          </SectionInstrument>
+
           {/* Tracks Grid Section - Show only the first (Lente) track */}
           <SectionInstrument className="animate-fade-in" style={{ animationDelay: '0.2s' }}>
             {mode === 'home' && (
@@ -79,6 +94,24 @@ export const AdemingBento = ({ tracks, initialTrack, mode = 'home' }: AdemingBen
                 </ContainerInstrument>
               )}
             </ContainerInstrument>
+          </SectionInstrument>
+
+          {/* Breathing Section - Softlaunch focus */}
+          <SectionInstrument className="animate-fade-in py-16" style={{ animationDelay: '0.3s' }}>
+            <div className="max-w-4xl mx-auto space-y-16">
+              <div className="text-center space-y-6">
+                <HeadingInstrument level={2} className="text-4xl md:text-5xl font-serif font-bold tracking-tight">
+                  <VoiceglotText translationKey="softlaunch.breathing.title" defaultText="Even ademen" />
+                </HeadingInstrument>
+                <TextInstrument className="text-xl text-muted-foreground font-light leading-relaxed max-w-2xl mx-auto">
+                  <VoiceglotText 
+                    translationKey="softlaunch.breathing.subtitle" 
+                    defaultText="Soms is één bewuste ademhaling genoeg om weer te landen. Probeer onze ademhalingstool." 
+                  />
+                </TextInstrument>
+              </div>
+              <BreathingInstrument />
+            </div>
           </SectionInstrument>
 
         </ContainerInstrument>

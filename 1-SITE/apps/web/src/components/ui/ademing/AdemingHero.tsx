@@ -25,7 +25,7 @@ export const AdemingHero = () => {
           <p className="text-xl md:text-2xl text-muted-foreground max-w-4xl mx-auto leading-relaxed font-light animate-fade-in" style={{ animationDelay: '0.2s' }}>
             <VoiceglotText 
               translationKey="hero.main.subtitle" 
-              defaultText="Hoi, ik ben Julie. Samen met Johfrah maakten we Ademing—een zachte plek waar je even mag thuiskomen bij jezelf. We starten vandaag met onze eerste aflevering: Lente." 
+              defaultText="Hoi, ik ben Julie. Samen met Johfrah maakten we Ademing—een zachte plek waar je even mag thuiskomen bij jezelf. We bereiden ons voor op de grote lancering, maar je kunt nu alvast kennismaken met onze eerste aflevering: Lente." 
             />
           </p>
 
