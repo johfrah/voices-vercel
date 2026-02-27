@@ -8,23 +8,18 @@ import { chromium } from 'playwright';
 
 const DEMO_FILES = [
   {
-    name: 'Corporate (Video)',
+    name: 'Corporate 1 (Video)',
     path: 'agency/voices/be/nl/male/johfrah-A-182508/demos/johfrah-A-182508-flemish-voiceover-corporate.mp3',
     type: 'video'
   },
   {
-    name: 'Q-Team (Telephony)',
-    path: 'agency/voices/be/nl/male/johfrah-A-182508/demos/telephony/johfrah-qteam.mp3',
-    type: 'telephony'
+    name: 'Corporate 2 (Video)',
+    path: 'agency/voices/be/nl/male/johfrah-A-182508/demos/johfrah-A-182508-johfrah-corporate.mp3',
+    type: 'video'
   },
   {
-    name: 'FAVV (Telephony)',
-    path: 'agency/voices/be/nl/male/johfrah-A-182508/demos/telephony/johfrah-favv.mp3',
-    type: 'telephony'
-  },
-  {
-    name: 'Voices (Telephony)',
-    path: 'agency/voices/be/nl/male/johfrah-A-182508/demos/telephony/johfrah-voices.mp3',
+    name: 'Be (Telephony)',
+    path: 'agency/voices/be/nl/male/johfrah-A-182508/demos/johfrah-A-182508-johfrah-be-johfrah.mp3',
     type: 'telephony'
   }
 ];

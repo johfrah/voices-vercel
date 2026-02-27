@@ -18,7 +18,7 @@ async function checkSystemEvents() {
         context,
         created_at
       FROM system_events
-      WHERE created_at > NOW() - INTERVAL '2 hours'
+      WHERE created_at > NOW() - INTERVAL '24 hours'
       AND severity IN ('error', 'critical')
       ORDER BY created_at DESC
       LIMIT 20
