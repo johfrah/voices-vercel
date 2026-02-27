@@ -43,13 +43,13 @@ export function ArtistDetailClient({ artistData, isYoussef, params, donors = [] 
 
   const jsonLd = {
     "@context": "https://schema.org",
-    "@type": "MusicGroup",
+    "@type": "Person",
     "@id": `${siteUrl}/artist/${params.slug}#artist`,
     "name": artistData.display_name,
     "image": artistData.photo_url || undefined,
     "description": artistData.bio,
     "url": `${siteUrl}/artist/${params.slug}`,
-    "genre": artistData.iapContext?.genre || "Pop",
+    "jobTitle": "Artist",
     "sameAs": [
         artistData.spotify_url || artistData.iapContext?.socials?.spotify,
         artistData.youtube_url || artistData.iapContext?.socials?.youtube,
@@ -231,11 +231,13 @@ export function ArtistDetailClient({ artistData, isYoussef, params, donors = [] 
       ]
     };
 
-    return (
-      <PageWrapperInstrument className={cn(
-        "min-h-screen relative z-10",
-        isYoussef ? 'theme-youssef !bg-va-black !text-white' : 'max-w-6xl mx-auto px-6 py-20'
-      )}>
+      <PageWrapperInstrument 
+        data-world="artist"
+        className={cn(
+          "min-h-screen relative z-10",
+          isYoussef ? 'theme-youssef !bg-va-black !text-white' : 'max-w-6xl mx-auto px-6 py-20'
+        )}
+      >
         {isYoussef && <ContainerInstrument className="absolute inset-0 bg-va-black -z-10" />}
         <script
           type="application/ld+json"
@@ -252,20 +254,18 @@ export function ArtistDetailClient({ artistData, isYoussef, params, donors = [] 
               {isYoussef ? (
                 <>
                   <div className="voices-hero-visual-container rounded-[32px] overflow-hidden shadow-aura-lg bg-va-black border border-white/5 aspect-[9/16] w-full max-w-[500px] mx-auto">
-                    <Suspense fallback={<div className="w-full h-full bg-va-black flex items-center justify-center"><Loader2 className="animate-spin text-white/20" /></div>}>
-                      <VideoPlayer 
-                        src="https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices/visuals/youssef/crowdfunding/youssef-crowdfunding.mp4"
-                        poster="/assets/common/branding/founder/youssef-poster.jpg"
-                        aspectRatio="portrait"
-                        subtitles={[
-                          { label: 'English', srcLang: 'en', data: subtitles.en },
-                          { label: 'Nederlands', srcLang: 'nl', data: subtitles.nl },
-                          { label: 'Français', srcLang: 'fr', data: subtitles.fr },
-                          { label: 'Italiano', srcLang: 'it', data: subtitles.it },
-                          { label: 'العربية', srcLang: 'ar', data: subtitles.ar }
-                        ]}
-                      />
-                    </Suspense>
+                    <VideoPlayer 
+                      src="https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices/visuals/youssef/crowdfunding/youssef-crowdfunding.mp4"
+                      poster="/assets/common/branding/founder/youssef-poster.jpg"
+                      aspectRatio="portrait"
+                      subtitles={[
+                        { label: 'English', srcLang: 'en', data: subtitles.en },
+                        { label: 'Nederlands', srcLang: 'nl', data: subtitles.nl },
+                        { label: 'Français', srcLang: 'fr', data: subtitles.fr },
+                        { label: 'Italiano', srcLang: 'it', data: subtitles.it },
+                        { label: 'العربية', srcLang: 'ar', data: subtitles.ar }
+                      ]}
+                    />
                   </div>
 
                 {/* DONOR OVERVIEW (Integrated) */}
@@ -318,12 +318,10 @@ export function ArtistDetailClient({ artistData, isYoussef, params, donors = [] 
 
             {isYoussef && (
               <ContainerInstrument id="support" className="bg-white/5 p-10 rounded-[32px] border border-white/10 mb-12 max-w-xl backdrop-blur-md shadow-aura-lg relative overflow-hidden group/support">
-                <Suspense fallback={null}>
-                  <LiquidBackground 
-                    strokeWidth={1} 
-                    className="opacity-20 group-hover/support:opacity-40 transition-opacity duration-1000" 
-                  />
-                </Suspense>
+                <LiquidBackground 
+                  strokeWidth={1} 
+                  className="opacity-20 group-hover/support:opacity-40 transition-opacity duration-1000" 
+                />
                 <div className="absolute top-0 right-0 p-4 opacity-10">
                   <Heart size={120} className="text-[#FFC421] fill-current" />
                 </div>
@@ -610,12 +608,10 @@ export function ArtistDetailClient({ artistData, isYoussef, params, donors = [] 
               {artistData.demos?.map((demo: any) => (
                 <div key={demo.id} className="flex flex-col gap-4 group">
                   <div className="relative aspect-video rounded-[20px] overflow-hidden shadow-aura bg-va-black border border-white/5">
-                    <Suspense fallback={<div className="w-full h-full bg-va-black flex items-center justify-center"><Loader2 className="animate-spin text-white/20" /></div>}>
-                      <VideoPlayer 
-                        src={demo.url}
-                        aspectRatio="video"
-                      />
-                    </Suspense>
+                    <VideoPlayer 
+                      src={demo.url}
+                      aspectRatio="video"
+                    />
                   </div>
                   <div>
                     <TextInstrument className="text-white/40 text-[10px] font-black tracking-widest uppercase">{demo.category}</TextInstrument>
