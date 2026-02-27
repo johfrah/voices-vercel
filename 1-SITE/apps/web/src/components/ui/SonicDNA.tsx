@@ -131,14 +131,8 @@ export function SonicDNAHandler({ isAdeming = false }: { isAdeming?: boolean }) 
   const { playClick } = useSonicDNA();
 
   useEffect(() => {
-    //  STARTUP CHIME: Play when the engine is ready
-    const handleFirstInteraction = () => {
-      if (!isAdeming) {
-        playClick('startup');
-      }
-    };
-
-    window.addEventListener('click', handleFirstInteraction, { once: true });
+    // 🛡️ CHRIS-PROTOCOL: Startup chime disabled to prevent system prompt (v2.15.086)
+    // We no longer trigger audio on first interaction to avoid "Access to other apps" vibes.
     
     const handleGlobalClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
@@ -147,7 +141,8 @@ export function SonicDNAHandler({ isAdeming = false }: { isAdeming?: boolean }) 
       if (sonicType) {
         playClick(sonicType as any);
       } else if (target.tagName === 'BUTTON' || target.closest('button') || target.tagName === 'A') {
-        playClick('soft'); // Default click
+        // 'soft' clicks are now silent by default in the engine unless already initialized
+        playClick('soft'); 
       }
     };
 

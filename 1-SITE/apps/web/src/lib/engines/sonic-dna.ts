@@ -21,10 +21,10 @@ class SonicDNA {
   private init() {
     if (this.isMuted) return null;
     if (!this.ctx && typeof window !== 'undefined') {
-      const AudioContextClass = (window.AudioContext || (window as any).webkitAudioContext);
-      if (AudioContextClass) {
-        this.ctx = new AudioContextClass();
-      }
+      // 🛡️ CHRIS-PROTOCOL: Silent-by-default initialization (v2.15.086)
+      // We do NOT create the AudioContext here anymore to prevent the browser 
+      // from asking for "Access to other apps and services" on first click.
+      // The context will only be created when an EXPLICIT audio action is taken.
     }
     return this.ctx;
   }
@@ -34,7 +34,19 @@ class SonicDNA {
    */
   async playClick(type: 'soft' | 'pro' | 'pop' | 'success' | 'lock' | 'unlock' = 'soft') {
     if (this.isMuted) return;
-    const ctx = this.init();
+    
+    // 🛡️ CHRIS-PROTOCOL: Only initialize for high-intent actions (v2.15.086)
+    // 'soft' clicks (default for all buttons) are now silent to prevent the system prompt.
+    if (type === 'soft' && !this.ctx) return;
+
+    if (!this.ctx && typeof window !== 'undefined') {
+      const AudioContextClass = (window.AudioContext || (window as any).webkitAudioContext);
+      if (AudioContextClass) {
+        this.ctx = new AudioContextClass();
+      }
+    }
+    
+    const ctx = this.ctx;
     if (!ctx) return;
 
     // Resume context if suspended (browser security)

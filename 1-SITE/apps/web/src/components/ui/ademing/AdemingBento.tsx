@@ -46,7 +46,12 @@ export const AdemingBento = ({ tracks, initialTrack, mode = 'home' }: AdemingBen
       <AdemingNav />
       
       <ContainerInstrument plain>
-        {mode === 'home' && <AdemingHero />}
+        {mode === 'home' && (
+          <AdemingHero 
+            featuredTrack={filteredTracks[0]} 
+            onTrackClick={(track) => setActiveTrack(track)} 
+          />
+        )}
 
         {/* Main Container - Minimalist MVP View */}
         <ContainerInstrument className="max-w-6xl mx-auto px-6 space-y-40 py-32">

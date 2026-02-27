@@ -3,8 +3,9 @@
 import { Play, Sparkles } from "lucide-react";
 import { VoiceglotText } from "../VoiceglotText";
 import { motion } from "framer-motion";
+import { AdemingTrackCard } from "./AdemingTrackCard";
 
-export const AdemingHero = () => {
+export const AdemingHero = ({ featuredTrack, onTrackClick }: { featuredTrack?: any, onTrackClick?: (track: any) => void }) => {
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-background to-primary/10 py-48 px-6">
       {/* Decorative elements - literal replication of kelder animations */}
@@ -29,21 +30,30 @@ export const AdemingHero = () => {
             />
           </p>
 
-          {/* CTA Button - original shadow-soft and rounded-full */}
+          {/* Inline Track Card - Replacing CTA Button */}
           <div className="flex justify-center pt-8 animate-fade-in" style={{ animationDelay: '0.4s' }}>
-            <button 
-              onClick={() => {
-                const element = document.getElementById('meditatie');
-                element?.scrollIntoView({ behavior: 'smooth' });
-              }}
-              className="bg-primary text-white px-10 py-5 rounded-full text-xl font-medium shadow-soft hover:shadow-medium hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-4 group"
-            >
-              <Play className="w-5 h-5 fill-current group-hover:scale-110 transition-transform" />
-              <VoiceglotText 
-                translationKey="hero.cta.text" 
-                defaultText="Luister naar Lente" 
-              />
-            </button>
+            {featuredTrack ? (
+              <div className="max-w-sm w-full">
+                <AdemingTrackCard 
+                  track={featuredTrack} 
+                  onClick={() => onTrackClick?.(featuredTrack)}
+                />
+              </div>
+            ) : (
+              <button 
+                onClick={() => {
+                  const element = document.getElementById('meditatie');
+                  element?.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="bg-primary text-white px-10 py-5 rounded-full text-xl font-medium shadow-soft hover:shadow-medium hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-4 group"
+              >
+                <Play className="w-5 h-5 fill-current group-hover:scale-110 transition-transform" />
+                <VoiceglotText 
+                  translationKey="hero.cta.text" 
+                  defaultText="Luister naar Lente" 
+                />
+              </button>
+            )}
           </div>
         </div>
       </div>

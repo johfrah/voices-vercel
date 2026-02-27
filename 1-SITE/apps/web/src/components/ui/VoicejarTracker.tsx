@@ -45,6 +45,12 @@ export const VoicejarTracker: React.FC = () => {
         return;
       }
 
+      // 🛡️ CHRIS-PROTOCOL: Forensic Audit - Voicejar disabled (v2.15.086)
+      // We disable rrweb recording to prevent any potential "Access to other apps" prompts
+      // that might be triggered by its deep DOM observation or potential hardware hooks.
+      console.log(' Voicejar: Recording disabled to prevent system prompts');
+      return;
+
       if (stopFnRef.current) stopFnRef.current();
       
       eventsRef.current = [];
