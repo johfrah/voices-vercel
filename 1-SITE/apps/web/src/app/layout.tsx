@@ -261,7 +261,7 @@ export default async function RootLayout({
   
   const isAdeming = market.market_code === 'ADEMING';
   const isOffline = process.env.ADEMING_OFFLINE === 'true';
-  const htmlClass = `${raleway.className} ${inter.className} ${cormorant.variable} theme-${isAdeming ? 'ademing' : market.theme} ${raleway.variable}`;
+  const htmlClass = `${isAdeming ? cormorant.className : raleway.className} ${inter.className} ${cormorant.variable} theme-${isAdeming ? 'ademing' : market.theme} ${raleway.variable}`;
   const bodyClass = cn(
     "pb-24 md:pb-0 touch-manipulation va-main-layout",
     !isAdeming && "pt-[80px] md:pt-[110px]",
