@@ -1,6 +1,6 @@
 {
   "name": "voices-experience-layer",
-  "version": "2.16.003",
+  "version": "2.16.005",
   "private": true,
   "scripts": {
     "dev": "PORT=3000 next dev",
@@ -15,7 +15,7 @@
     "bob-fix": "tsx ../../../3-WETTEN/scripts/watchdog.ts",
     "mollie:fix": "tsx src/scripts/fix-mollie-icons.ts",
     "check:pre-vercel": "tsx ../../../3-WETTEN/scripts/pre-vercel-check.ts",
-    "env:pull": "vercel env pull .env.local",
+    "check:build": "next build",
     "logs:live": "vercel logs voices-vercel-gazw8trp5-johfrahs-projects.vercel.app -f",
     "logs:nuclear": "tsx ../../../3-WETTEN/scripts/live-watchdog.ts",
     "audit:forensic": "tsx ../../../3-WETTEN/scripts/forensic-audit.ts",
