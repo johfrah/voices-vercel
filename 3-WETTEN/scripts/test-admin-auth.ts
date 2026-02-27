@@ -5,7 +5,7 @@
  */
 
 async function testAdminAuth() {
-  const url = 'https://www.voices.be/api/auth/admin-key?key=ak_0980d72ab40b410e83dc0c3b933ecc59';
+  const url = 'https://www.voices.be/api/auth/admin-key?key=ak_96500c055a574cc2ae1faaa1c6168289';
   
   console.log('🔍 Testing Admin Authentication Flow...\n');
   console.log(`URL: ${url}\n`);

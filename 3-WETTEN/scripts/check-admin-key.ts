@@ -1,48 +1,36 @@
-import { db, users } from '../../1-SITE/apps/web/src/lib/system/voices-config';
-import { eq } from 'drizzle-orm';
+import dotenv from 'dotenv';
+import path from 'path';
+import { createClient } from '@supabase/supabase-js';
+
+// Load .env.local from the web app directory
+dotenv.config({ path: path.resolve(process.cwd(), '1-SITE/apps/web/.env.local') });
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 async function checkAdminKey() {
-  const key = 'ak_8f5b4ebdb5c246848302bbcc5bd8d869';
+  console.log('🔍 Checking admin_key for Johfrah...');
   
-  console.log(`🔍 Checking for admin_key: ${key.substring(0, 10)}...`);
-  
-  const result = await db.select({ 
-    id: users.id, 
-    email: users.email, 
-    role: users.role, 
-    admin_key: users.admin_key 
-  })
-  .from(users)
-  .where(eq(users.admin_key, key))
-  .limit(1);
+  try {
+    const { data: users, error } = await supabase
+      .from('users')
+      .select('id, email, role, admin_key')
+      .ilike('email', '%johfrah%');
 
-  if (result.length === 0) {
-    console.log('❌ Admin key NOT found in database');
-    
-    // Check all admin users
-    const admins = await db.select({
-      id: users.id,
-      email: users.email,
-      role: users.role,
-      admin_key: users.admin_key
-    })
-    .from(users)
-    .where(eq(users.role, 'admin'))
-    .limit(5);
-    
-    console.log('\n📋 All admin users:');
-    admins.forEach(admin => {
-      console.log(`  - ${admin.email} (ID: ${admin.id})`);
-      console.log(`    admin_key: ${admin.admin_key || 'NULL'}`);
-    });
-  } else {
-    console.log('✅ Admin key found:');
-    console.log(`  - Email: ${result[0].email}`);
-    console.log(`  - Role: ${result[0].role}`);
-    console.log(`  - ID: ${result[0].id}`);
+    if (error) throw error;
+
+    if (!users || users.length === 0) {
+      console.log('❌ No user found with email containing "johfrah"');
+    } else {
+      console.log(`📥 Found ${users.length} user(s):`);
+      users.forEach((user: any) => {
+        console.log(`[${user.id}] ${user.email} | Role: ${user.role} | Key: ${user.admin_key || 'MISSING'}`);
+      });
+    }
+  } catch (error: any) {
+    console.error('❌ Error querying users:', error.message);
   }
-  
-  process.exit(0);
 }
 
-checkAdminKey().catch(console.error);
+checkAdminKey();

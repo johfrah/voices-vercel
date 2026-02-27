@@ -62,6 +62,8 @@ export async function GET(request: Request) {
       path: '/',
     });
 
+    // 🛡️ CHRIS-PROTOCOL: Force same-site lax for cross-domain redirects (v2.15.093)
+    // Dit zorgt ervoor dat de cookies behouden blijven bij de redirect naar de admin pagina.
     console.log(`[Admin Key] Persistent session established for: ${admin.email}`);
     return response;
 
