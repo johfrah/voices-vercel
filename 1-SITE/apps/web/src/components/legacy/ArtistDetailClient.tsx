@@ -231,6 +231,7 @@ export function ArtistDetailClient({ artistData, isYoussef, params, donors = [] 
       ]
     };
 
+  return (
       <PageWrapperInstrument 
         data-world="artist"
         className={cn(
@@ -511,11 +512,11 @@ export function ArtistDetailClient({ artistData, isYoussef, params, donors = [] 
             </ContainerInstrument>
           </SectionInstrument>
         )}
-          </ContainerInstrument>
-        </SectionInstrument>
+      </ContainerInstrument>
 
-        {/*  PERFORMANCES SECTION */}
-        {isYoussef && (
+      {/*  PERFORMANCES SECTION */}
+      {isYoussef && (
+        <ContainerInstrument className="max-w-6xl mx-auto px-6 mb-32">
           <SectionInstrument id="music" className="mb-32">
             <div className="flex items-center gap-6 mb-16">
               <div className="h-px flex-grow bg-white/10" />
@@ -621,8 +622,8 @@ export function ArtistDetailClient({ artistData, isYoussef, params, donors = [] 
               ))}
             </div>
           </SectionInstrument>
-        )}
-      </ContainerInstrument>
+        </ContainerInstrument>
+      )}
 
       <DonationModal 
         artistId={artistData.id}
