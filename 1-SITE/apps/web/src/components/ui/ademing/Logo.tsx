@@ -38,11 +38,10 @@ export const Logo = ({ className }: LogoProps) => {
         <span
           key={index}
           className={cn(
-            "text-3xl italic font-medium text-foreground inline-block",
+            "text-3xl italic font-medium text-foreground inline-block font-serif",
             getAnimationClass(index)
           )}
           style={{
-            fontFamily: 'var(--font-cormorant)',
             animationDelay: `${index * 0.15}s`,
           }}
         >
