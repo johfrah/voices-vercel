@@ -25,7 +25,7 @@ export default function MoveParticipantClient({
       const res = await fetch('/api/admin/studio/move-participant', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ orderItemId, newEditionId })
+        body: JSON.stringify({ orderItemId, editionId: newEditionId })
       });
       
       if (res.ok) {

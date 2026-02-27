@@ -1,5 +1,3 @@
-import fetch from 'node-fetch';
-
 async function testWorkshopPage() {
   console.log('🧪 Testing workshop detail page...\n');
   
