@@ -638,6 +638,22 @@ export class MarketManagerServer {
     const s = segment?.toLowerCase();
     return ['johfrah', 'youssef', 'ademing'].includes(s);
   }
+
+  /**
+   * 🛡️ CHRIS-PROTOCOL: Nuclear Test Safety (v2.15.094)
+   * Centralized allowed domains for test mail redirects.
+   */
+  static getAllowedTestRecipients(): string[] {
+    return ['johfrah@voices.be', 'bernadette@voices.be', 'voices.be', 'ademing.be'];
+  }
+
+  /**
+   * 🛡️ CHRIS-PROTOCOL: Nuclear Test Safety (v2.15.094)
+   * Centralized fallback email for test mail redirects.
+   */
+  static getFallbackTestEmail(): string {
+    return 'johfrah@voices.be';
+  }
 }
 
 // CHRIS-PROTOCOL: Alias for backward compatibility

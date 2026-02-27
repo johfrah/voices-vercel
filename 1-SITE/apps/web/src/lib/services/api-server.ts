@@ -27,7 +27,7 @@ const supabase = createClient(supabaseUrl, supabaseKey, {
  * @lock-file
  */
 
-export async function getArtist(slugOrId: string, lang: string = 'nl'): Promise<any> {
+export async function getArtist(slugOrId: string, lang: string = 'nl-BE'): Promise<any> {
   console.log(' API: Querying artist from the artists table:', slugOrId);
   
   // 🛡️ CHRIS-PROTOCOL: Use SDK for stability (v2.14.273)
@@ -132,7 +132,7 @@ function getGlobalCache() {
 
 const ACTORS_CACHE_TTL = 1000 * 60 * 5; // 5 minutes
 
-export async function getActors(params: Record<string, string> = {}, lang: string = 'nl'): Promise<SearchResults> {
+export async function getActors(params: Record<string, string> = {}, lang: string = 'nl-BE'): Promise<SearchResults> {
   const { language, country, attribute, search, gender, style, market: marketParam } = params;
   const market = marketParam || 'BE'; // Default to BE if not provided
   const cache = getGlobalCache();
@@ -536,7 +536,7 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
   }
 }
 
-export async function getArticle(slug: string, lang: string = 'nl'): Promise<any> {
+export async function getArticle(slug: string, lang: string = 'nl-BE'): Promise<any> {
   // 🛡️ CHRIS-PROTOCOL: Use SDK for stability (v2.14.273)
   const { data: article, error } = await supabase
     .from('content_articles')
@@ -566,7 +566,7 @@ export async function getArticle(slug: string, lang: string = 'nl'): Promise<any
   };
 }
 
-export async function getActor(slug: string, lang: string = 'nl'): Promise<Actor> {
+export async function getActor(slug: string, lang: string = 'nl-BE'): Promise<Actor> {
   const cleanSlug = slug?.trim().toLowerCase();
   const isNumericId = /^\d+$/.test(cleanSlug);
   

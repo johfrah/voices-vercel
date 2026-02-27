@@ -31,13 +31,13 @@ export type {
  * Database-interacties zijn verplaatst naar api-server.ts.
  */
 
-export async function getActor(slug: string, lang: string = 'nl'): Promise<Actor> {
+export async function getActor(slug: string, lang: string = 'nl-BE'): Promise<Actor> {
   const res = await fetch(`/api/admin/config?type=actor&slug=${slug}&lang=${lang}`);
   if (!res.ok) throw new Error("Actor not found");
   return res.json();
 }
 
-export async function getActors(params: Record<string, string> = {}, lang: string = 'nl'): Promise<SearchResults> {
+export async function getActors(params: Record<string, string> = {}, lang: string = 'nl-BE'): Promise<SearchResults> {
   const res = await fetch(`/api/admin/config?type=actors&lang=${lang}&${new URLSearchParams(params).toString()}`);
   if (!res.ok) return { count: 0, results: [], filters: { genders: [], languages: [], styles: [] } };
   return res.json();
