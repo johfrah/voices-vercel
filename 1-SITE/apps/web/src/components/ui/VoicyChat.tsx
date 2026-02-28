@@ -1041,6 +1041,7 @@ export const VoicyChatV2: React.FC = () => {
             { id: 'mail', icon: Mail, label: 'Mail', translationKey: 'chat.tabs.mail' },
             { id: 'phone', icon: Phone, label: 'Bel', translationKey: 'chat.tabs.phone' },
             { id: 'faq', icon: HelpCircle, label: 'FAQ', translationKey: 'chat.tabs.faq' },
+            ...(isAuthenticated && !isAdmin ? [{ id: 'orders', icon: ShoppingCart, label: 'Orders', translationKey: 'chat.tabs.orders' }] : []),
             ...(isAdmin ? [{ id: 'admin', icon: Shield, label: 'Admin', translationKey: 'chat.tabs.admin' }] : []),
           ].map((tab) => {
             const Icon = tab.icon;
@@ -1712,6 +1713,54 @@ export const VoicyChatV2: React.FC = () => {
                     <Send strokeWidth={1.5} size={14} className="opacity-0 group-hover:opacity-40 transition-opacity" />
                   </ButtonInstrument>
               ))}
+            </ContainerInstrument>
+          )}
+
+          {activeTab === 'orders' && isAuthenticated && (
+            <ContainerInstrument plain className="flex-1 p-6 overflow-y-auto space-y-6 custom-scrollbar">
+              <HeadingInstrument level={4} className="text-[15px] font-medium tracking-widest text-va-black/30 mb-4">
+                <VoiceglotText translationKey="chat.orders.title" defaultText="Mijn Bestellingen" />
+              </HeadingInstrument>
+              
+              {customer360?.dna?.totalOrders > 0 ? (
+                <div className="space-y-4">
+                  <div className="p-4 bg-va-off-white rounded-2xl border border-black/5">
+                    <TextInstrument className="text-[13px] font-medium mb-1">
+                      <VoiceglotText translationKey="chat.orders.latest_status" defaultText="Status laatste bestelling" />
+                    </TextInstrument>
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-green-500 rounded-full" />
+                      <span className="text-[15px] font-bold uppercase tracking-wider text-green-600">
+                        {customer360?.dna?.lastOrderStatus || 'In behandeling'}
+                      </span>
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 gap-2">
+                    <ButtonInstrument 
+                      as="a" 
+                      href="/account/orders"
+                      className="w-full py-3 bg-va-black text-white rounded-xl text-[13px] font-black tracking-widest uppercase hover:opacity-80 transition-all text-center"
+                    >
+                      <VoiceglotText translationKey="chat.orders.view_all" defaultText="ALLE BESTELLINGEN" />
+                    </ButtonInstrument>
+                    <ButtonInstrument 
+                      as="a" 
+                      href="/account/vault"
+                      className="w-full py-3 bg-va-off-white text-va-black rounded-xl text-[13px] font-black tracking-widest uppercase hover:bg-black/5 transition-all text-center"
+                    >
+                      <VoiceglotText translationKey="chat.orders.vault" defaultText="MIJN BESTANDEN (VAULT)" />
+                    </ButtonInstrument>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center py-10 opacity-40">
+                  <ShoppingCart size={48} className="mx-auto mb-4" />
+                  <TextInstrument className="text-[15px] font-light">
+                    <VoiceglotText translationKey="chat.orders.none" defaultText="Je hebt nog geen bestellingen." />
+                  </TextInstrument>
+                </div>
+              )}
             </ContainerInstrument>
           )}
 
