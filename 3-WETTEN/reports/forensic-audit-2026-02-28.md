@@ -1,4 +1,4 @@
-# 🛡️ Forensic Audit Report (2/28/2026, 7:27:56 PM)
+# 🛡️ Forensic Audit Report (2/28/2026, 7:32:31 PM)
 
 ## Summary
 - **Status**: ✅ PASSED
@@ -2372,9 +2372,9 @@
   > `question: lang === 'nl' ? f.questionNl : f.questionEn,`
 - **WARNING** `1-SITE/apps/web/src/app/api/chat/faq/route.ts:37`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `answer: lang === 'nl' ? f.answerNl : f.answerEn`
-- **WARNING** `1-SITE/apps/web/src/app/api/chat/route.ts:96`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
-  > `language = 'nl',`
 - **WARNING** `1-SITE/apps/web/src/app/api/chat/route.ts:108`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+  > `language = 'nl',`
+- **WARNING** `1-SITE/apps/web/src/app/api/chat/route.ts:120`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `const isEnglish = language === 'en' || /hello|hi|price|how|can you/i.test(message);`
 - **WARNING** `1-SITE/apps/web/src/app/api/checkout/webhook/route.ts:178`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `language: 'nl'`
