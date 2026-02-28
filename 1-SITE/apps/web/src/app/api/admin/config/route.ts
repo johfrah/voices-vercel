@@ -162,14 +162,14 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({
           general_settings: config[0]?.value || {},
           ademing_offline: process.env.ADEMING_OFFLINE === 'true',
-          _version: '2.16.009'
+          _version: '2.16.011'
         });
       } catch (err: any) {
         console.warn(`[Admin Config] General settings fetch failed, returning empty: ${err.message}`);
         return NextResponse.json({
           general_settings: {},
           ademing_offline: process.env.ADEMING_OFFLINE === 'true',
-          _version: '2.16.009'
+          _version: '2.16.011'
         });
       }
     }
@@ -260,7 +260,7 @@ export async function POST(request: NextRequest) {
         }
       });
 
-    return NextResponse.json({ success: true, _version: '2.16.005' });
+    return NextResponse.json({ success: true, _version: '2.16.011' });
   } catch (error) {
     console.error('[Admin Config POST Error]:', error);
     return NextResponse.json({ error: 'Failed to update config' }, { status: 500 });
