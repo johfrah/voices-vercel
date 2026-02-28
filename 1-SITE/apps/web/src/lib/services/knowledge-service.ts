@@ -71,6 +71,7 @@ export class KnowledgeService {
    */
   async getCoreBriefing(): Promise<string> {
     try {
+      //  NUCLEAR FIX: Gebruik relatieve paden t.o.v. de bijbelPath
       const coreFiles = [
         'BIJBEL-GOVERNANCE.md',
         '1-Strategie/BIJBEL-AI-MANIFESTO.md',
@@ -92,6 +93,61 @@ export class KnowledgeService {
     } catch (error) {
       console.error('Knowledge Service Error:', error);
       return "No briefing available.";
+    }
+  }
+
+  /**
+   * Haalt de pricing configuratie op uit de database.
+   */
+  async getPricingConfig(): Promise<any> {
+    try {
+      const { db, app_configs } = await import('@/lib/system/voices-config');
+      const { eq } = await import('drizzle-orm');
+      const [config] = await db.select().from(app_configs).where(eq(app_configs.key, 'pricing_config'));
+      return config?.value || {};
+    } catch (e) {
+      console.error('Failed to fetch pricing config:', e);
+      return {};
+    }
+  }
+
+  /**
+   * Haalt de FAQs op uit de database.
+   */
+  async getFaqs(): Promise<any[]> {
+    try {
+      const { db, faq } = await import('@/lib/system/voices-config');
+      return await db.select().from(faq);
+    } catch (e) {
+      console.error('Failed to fetch FAQs:', e);
+      return [];
+    }
+  }
+
+  /**
+   * Haalt de workshop edities op uit de database.
+   */
+  async getWorkshopEditions(): Promise<any[]> {
+    try {
+      const { db, workshopEditions } = await import('@/lib/system/voices-config');
+      const { eq } = await import('drizzle-orm');
+      return await db.select().from(workshopEditions).where(eq(workshopEditions.status, 'upcoming'));
+    } catch (e) {
+      console.error('Failed to fetch workshop editions:', e);
+      return [];
+    }
+  }
+
+  /**
+   * Haalt de workshops op uit de database.
+   */
+  async getWorkshops(): Promise<any[]> {
+    try {
+      const { db, workshops } = await import('@/lib/system/voices-config');
+      return await db.select().from(workshops);
+    } catch (e) {
+      console.error('Failed to fetch workshops:', e);
+      return [];
     }
   }
 

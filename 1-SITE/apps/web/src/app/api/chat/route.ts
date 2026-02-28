@@ -127,11 +127,11 @@ async function handleSendMessage(params: any, request?: NextRequest) {
         )
       ).limit(1);
 
-      if (faqResults.length > 0) {
+      if (faqResults.length > 0 && message.length < 100) { // Alleen FAQ gebruiken voor korte, specifieke vragen
         aiContent = (isEnglish ? faqResults[0].answerEn : faqResults[0].answerNl) || "";
         console.log('[Voicy API] FAQ Match found:', aiContent.substring(0, 50));
       } else {
-        console.log('[Voicy API] No FAQ match found.');
+        console.log('[Voicy API] No FAQ match found or message too long.');
       }
     } catch (e: any) {
       console.warn('[Voicy API] FAQ Check failed (DB issue):', e.message);
@@ -164,13 +164,13 @@ async function handleSendMessage(params: any, request?: NextRequest) {
     //  PRICING CONTEXT: Inject real-time pricing data from Supabase app_configs
     const pricingContext = `
 ACTUELE TARIEVEN (SUPABASE SOURCE OF TRUTH):
-- Basis Video (unpaid): ${dbPricing.videoBasePrice / 100} (tot 200 woorden)
-- Telefoon/IVR: ${dbPricing.telephonyBasePrice / 100} (tot 25 woorden)
-- Academy: ${dbPricing.academyPrice / 100}
-- Studio Workshop: ${dbPricing.workshopPrice / 100}
-- Commercial (paid): Vanaf ${dbPricing.basePrice / 100} (excl. buyout)
-- Extra woorden (Video): ${dbPricing.videoWordRate / 100 || 0.20} per woord
-- Wachtmuziek: ${dbPricing.musicSurcharge / 100} per track
+- Basis Video (unpaid): €${dbPricing.videoBasePrice / 100} (tot 200 woorden)
+- Telefoon/IVR: €${dbPricing.telephonyBasePrice / 100} (tot 25 woorden)
+- Academy: €${dbPricing.academyPrice / 100}
+- Studio Workshop: €${dbPricing.workshopPrice / 100}
+- Commercial (paid): Vanaf €${dbPricing.basePrice / 100} (excl. buyout)
+- Extra woorden (Video): €${dbPricing.videoWordRate / 100 || 0.20} per woord
+- Wachtmuziek: €${dbPricing.musicSurcharge / 100} per track
 - BTW: ${Math.round((dbPricing.vatRate || 0.21) * 100)}%
 
 USER INTELLIGENCE (MAT-MANDATE):
@@ -322,6 +322,7 @@ ${workshopEditionsData.filter((ed: any) => ed.status === 'upcoming').map((ed: an
       Vakmanschap:
       - Wees warm, vakkundig en behulpzaam.
       - Antwoord kort en krachtig (max 5 zinnen).
+      - Gebruik Natural Capitalization.
     `;
         
         aiContent = await gemini.generateText(prompt, { jsonMode: true, lang: language });

@@ -225,7 +225,7 @@ async function generateMD() {
       WHERE edition_id IS NOT NULL
       GROUP BY edition_id
     )
-    SELECT w.id, w.title, w.slug, w.is_public, w.has_demo_bundle, w.preparation_template,
+    SELECT w.id, w.title, w.slug, w.is_public, w.has_demo_bundle, w.preparation_text, w.script_drive_link,
            ws.label as status_label, ws.id as status_id,
            w.meta,
            wm.file_path as featured_image_path,
@@ -240,6 +240,7 @@ async function generateMD() {
              'status_id', wes.id,
              'location_id', we.location_id,
              'location_name', l.name,
+             'location_access', l.access_instructions,
              'program', we.program,
              'participants', ep.participants,
              'total_net', ep.total_edition_net,
@@ -375,11 +376,14 @@ async function generateMD() {
     md += `### 📖 Uitgebreide Workshop Inhoud\n${meta.workshop_content_detail || '❌'}\n\n`;
     md += `### 🎬 Aftermovie & Context\n${meta.aftermovie_description || '❌'}\n\n`;
     
-    md += `### ✉️ Mail Voorbereiding (Template)\n`;
-    if (w.preparation_template) {
-      md += `> ${w.preparation_template.replace(/\n/g, '\n> ')}\n`;
+    md += `### ✉️ Mail Voorbereiding (Smart Handshake)\n`;
+    if (w.preparation_text) {
+      md += `#### 📝 Kerntekst (Herbruikbaar)\n> ${w.preparation_text.replace(/\n/g, '\n> ')}\n\n`;
+      if (w.script_drive_link) {
+        md += `- **🔗 Script Link:** [Google Drive](${w.script_drive_link})\n`;
+      }
     } else {
-      md += `❌ Geen voorbereidings-template aanwezig\n`;
+      md += `❌ Geen voorbereidings-data aanwezig\n`;
     }
     md += `\n`;
     
@@ -496,6 +500,10 @@ async function generateMD() {
         const timeStr = (e.start_time && e.end_time) ? ` | 🕒 ${e.start_time.substring(0, 5)} - ${e.end_time.substring(0, 5)}` : '';
         md += `#### 📍 Editie: ${e.date ? new Date(e.date).toLocaleDateString('nl-BE') : '❌'} (${e.location_name || '❌'})${timeStr}\n`;
         md += `- **ID:** \`${e.id}\` | **Status:** \`${e.status_label}\` (ID: \`${e.status_id}\`)  \n`;
+        
+        if (e.location_access) {
+          md += `- **📍 Bereikbaarheid:** ${e.location_access}\n`;
+        }
         
         if (vaultLink) {
           md += `- **📂 Workshop Assets:** [${vaultLink.label_nl}](${vaultLink.vault_folder_path}) (Hard Handshake)\n`;
