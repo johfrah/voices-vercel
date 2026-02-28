@@ -39,7 +39,7 @@ export async function middleware(request: NextRequest) {
   // 1. SECURITY & ASSET BYPASS
   // 🛡️ CHRIS-PROTOCOL: Absolute API Isolation (v2.15.084)
   // API requests moeten NOOIT door i18n of market redirects gaan.
-  if (pathname.startsWith('/api') || pathname.startsWith('/wp-content')) {
+  if (pathname.startsWith('/api') || pathname.startsWith('/wp-content') || pathname.startsWith('/wp-includes')) {
     return NextResponse.next()
   }
 
@@ -471,9 +471,9 @@ export const config = {
      * - admin, backoffice, account, auth (systeem dashboards)
      * - assets, static (statische assets)
      * - reviews, agency, active, studio, visuals (dynamische storage paden)
-     * - wp-content (legacy assets)
+     * - wp-content, wp-includes (legacy assets)
      * - alle bestanden met een extensie (svg, png, jpg, etc.)
      */
-    '/((?!_next/static|_next/image|favicon.ico|api|admin|backoffice|account|auth|assets|static|reviews|agency|active|studio|visuals|wp-content|[\\w-]+\\.\\w+).*)',
+    '/((?!_next/static|_next/image|favicon.ico|api|admin|backoffice|account|auth|assets|static|reviews|agency|active|studio|visuals|wp-content|wp-includes|[\\w-]+\\.\\w+).*)',
   ],
 }
