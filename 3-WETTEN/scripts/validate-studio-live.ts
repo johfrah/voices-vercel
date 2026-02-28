@@ -1,7 +1,7 @@
 #!/usr/bin/env tsx
 /**
  * Final Gate Guardian - Studio Page Live Validation
- * Verifies v2.16.074 deployment on https://www.voices.be/studio/
+ * Verifies v2.16.075 deployment on https://www.voices.be/studio/
  */
 
 import { chromium } from 'playwright';
@@ -36,7 +36,7 @@ async function validateStudioLive() {
     const apiData = await apiResponse?.json();
     console.log(`   /api/admin/config version = ${apiData?.version}`);
     
-    const versionMatch = version === '2.16.074' || apiData?.version === '2.16.074';
+    const versionMatch = version === '2.16.075' || apiData?.version === '2.16.075';
     console.log(`   ✅ Version Match: ${versionMatch ? 'YES' : 'NO'}`);
     
     // Navigate back to studio
@@ -126,7 +126,7 @@ async function validateStudioLive() {
     const allGreen = versionMatch && typeErrors.length === 0 && !tlError && workshopButtons > 0;
     
     if (allGreen) {
-      console.log('✅ VERIFIED LIVE: v2.16.074 - Console Clean - UI Functional');
+      console.log('✅ VERIFIED LIVE: v2.16.075 - Console Clean - UI Functional');
     } else {
       console.log('❌ VALIDATION FAILED - Issues detected above');
     }

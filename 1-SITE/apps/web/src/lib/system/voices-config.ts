@@ -34,7 +34,6 @@ export const {
   orders, 
   orderItems, 
   users, 
-  translations,
   contentArticles,
   castingLists,
   faq,

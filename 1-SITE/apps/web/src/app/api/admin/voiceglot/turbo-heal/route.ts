@@ -1,4 +1,6 @@
-import { db, translations, translationRegistry } from '@/lib/system/voices-config';
+import { db, getTable, translationRegistry } from '@/lib/system/voices-config';
+
+const translations = getTable('translations');
 import { eq } from 'drizzle-orm';
 import { GeminiService } from '@/lib/services/gemini-service';
 import { NextResponse } from 'next/server';

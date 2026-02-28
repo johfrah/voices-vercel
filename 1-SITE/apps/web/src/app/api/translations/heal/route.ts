@@ -2,7 +2,9 @@ import { OpenAIService } from '@/lib/services/openai-service';
 import { MarketManagerServer } from '@/lib/system/market-manager-server';
 import { MarketDatabaseService } from '@/lib/system/market-manager-db';
 import { db } from '@/lib/system/voices-config';
-import { translations } from '@/lib/system/voices-config';
+import { getTable } from '@/lib/system/voices-config';
+
+const translations = getTable('translations');
 import { and, eq } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
 import { SlopFilter } from '@/lib/engines/slop-filter';

@@ -1,4 +1,6 @@
-import { db, translations } from '@/lib/system/voices-config';
+import { db, getTable } from '@/lib/system/voices-config';
+
+const translations = getTable('translations');
 import { like, or } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth/api-auth';

@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
-import { db, translations, workshops } from '@/lib/system/voices-config';
+import { db, getTable, workshops } from '@/lib/system/voices-config';
+
+const translations = getTable('translations');
 import { eq, and } from 'drizzle-orm';
 import { requireAdmin } from '@/lib/auth/api-auth';
 
