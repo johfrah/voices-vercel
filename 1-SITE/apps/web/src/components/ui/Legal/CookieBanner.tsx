@@ -51,30 +51,39 @@ export const CookieBanner: React.FC = () => {
             <ContainerInstrument plain className="absolute -bottom-20 -right-20 w-64 h-64 bg-primary/5 rounded-full blur-[80px]" />
 
             <ContainerInstrument plain className="relative z-10 space-y-4">
-              <TextInstrument className="text-white/60 text-[15px] font-light"><VoiceglotText  
-                  translationKey="legal.cookie.text" 
-                  defaultText="Wij gebruiken cookies om jouw ervaring te personaliseren." 
-                />{' '}
-                <Link  
-                  href="/cookies/" 
-                  className="text-white/80 underline underline-offset-2 hover:text-white transition-colors"
-                >
-                  <VoiceglotText  translationKey="legal.cookie.policy" defaultText="Cookiebeleid" />
-                </Link>
-              </TextInstrument>
+              <ContainerInstrument plain className="space-y-1">
+                <TextInstrument className="text-white text-[16px] font-medium tracking-tight">
+                  <VoiceglotText 
+                    translationKey="legal.cookie.title" 
+                    defaultText="Mag Voicy je onthouden?" 
+                  />
+                </TextInstrument>
+                <TextInstrument className="text-white/60 text-[14px] font-light leading-relaxed">
+                  <VoiceglotText  
+                    translationKey="legal.cookie.text_v2" 
+                    defaultText="Accepteer cookies voor een gepersonaliseerde ervaring met Voicy en snellere toegang tot je projecten." 
+                  />{' '}
+                  <Link  
+                    href="/cookies/" 
+                    className="text-white/40 underline underline-offset-2 hover:text-white transition-colors"
+                  >
+                    <VoiceglotText  translationKey="legal.cookie.policy" defaultText="Details" />
+                  </Link>
+                </TextInstrument>
+              </ContainerInstrument>
 
-              <ContainerInstrument plain className="flex items-center gap-4">
+              <ContainerInstrument plain className="flex items-center gap-3">
                 <ButtonInstrument 
                   onClick={() => handleAccept('all')}
-                  className="bg-primary text-va-black px-5 py-2.5 rounded-[20px] text-[15px] font-bold tracking-tight hover:scale-105 transition-all"
+                  className="bg-primary text-va-black px-6 py-2.5 rounded-[18px] text-[15px] font-bold tracking-tight hover:scale-105 transition-all shadow-lg shadow-primary/20"
                 >
-                  <VoiceglotText  translationKey="legal.cookie.accept" defaultText="Accepteer" />
+                  <VoiceglotText  translationKey="legal.cookie.accept_v2" defaultText="Ja, graag" />
                 </ButtonInstrument>
                 <ButtonInstrument 
                   onClick={() => handleAccept('essential')}
-                  className="text-[15px] font-medium tracking-tight text-white/90 hover:text-white transition-colors border border-white/10 px-4 py-2 rounded-[15px] hover:bg-white/5"
+                  className="text-[14px] font-light tracking-tight text-white/40 hover:text-white transition-colors px-3 py-2"
                 >
-                  <VoiceglotText  translationKey="legal.cookie.essential" defaultText="Noodzakelijk" />
+                  <VoiceglotText  translationKey="legal.cookie.essential_v2" defaultText="Liever niet" />
                 </ButtonInstrument>
               </ContainerInstrument>
             </ContainerInstrument>

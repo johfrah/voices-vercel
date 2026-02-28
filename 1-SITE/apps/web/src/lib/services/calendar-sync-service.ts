@@ -101,7 +101,7 @@ export class CalendarSyncService {
       .from(appointments)
       .where(
         and(
-          eq(appointments.startTime, startTime.toISOString()),
+          eq(appointments.startTime, startTime),
           ne(appointments.status, 'cancelled')
         )
       )

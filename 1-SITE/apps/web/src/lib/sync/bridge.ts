@@ -167,7 +167,7 @@ export async function syncAllData() {
           preferences: user.preferences || {}
         }).onConflictDoUpdate({
           target: users.wpUserId,
-          set: { lastActive: new Date().toISOString() as any }
+          set: { lastActive: new Date() as any }
         });
       }
     }
@@ -216,7 +216,7 @@ export async function syncAllData() {
           rates: ratesObj,
           dropbox_url: photoPath,
           is_manually_edited: false,
-          updatedAt: new Date().toISOString() as any
+          updatedAt: new Date() as any
         }).onConflictDoUpdate({
           target: actors.wp_product_id,
           set: { 
@@ -229,7 +229,7 @@ export async function syncAllData() {
             price_online: actor.price_online?.toString(),
             price_ivr: actor.price_ivr?.toString(),
             price_live_regie: actor.price_live_regie?.toString(),
-            updatedAt: new Date().toISOString() as any 
+            updatedAt: new Date() as any 
           }
         });
 
