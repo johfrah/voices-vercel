@@ -6,6 +6,7 @@ import { ReviewGrid, type ReviewItem } from "./ReviewGrid";
 import { ContainerInstrument, HeadingInstrument, TextInstrument } from "@/components/ui/LayoutInstruments";
 import { ChevronDown, ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { VoiceglotText } from "@/components/ui/VoiceglotText";
 
 export interface WorkshopApiItem {
   id: number;
@@ -22,7 +23,7 @@ export interface WorkshopApiItem {
   upcoming_editions: Array<{
     id: number;
     date: string;
-    location: { name: string; city: string | null; address: string | null } | null;
+    location: { id?: number; name: string; city: string | null; address: string | null } | null;
     capacity: number;
     status: string | null;
   }>;
@@ -95,7 +96,7 @@ export const StudioWorkshopsSection: React.FC<StudioWorkshopsSectionProps> = ({ 
 
   // Flatten all upcoming editions for the calendar
   const allUpcomingEditions = carouselWorkshops
-    .flatMap(w => w.editions.map(e => ({ ...e, workshopTitle: w.title, workshopSlug: w.slug })))
+    .flatMap(w => w.editions.map(e => ({ ...e, workshopTitle: w.title, workshopSlug: w.slug, workshopId: w.id })))
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
     .slice(0, 8);
 
@@ -106,13 +107,13 @@ export const StudioWorkshopsSection: React.FC<StudioWorkshopsSectionProps> = ({ 
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
             <div className="max-w-2xl">
               <TextInstrument className="text-[11px] font-bold tracking-[0.3em] uppercase text-primary mb-4">
-                Onze Workshops
+                <VoiceglotText translationKey="studio.section.workshops.title" defaultText="Onze Workshops" />
               </TextInstrument>
               <HeadingInstrument level={2} className="text-4xl md:text-6xl font-light tracking-tighter text-va-black">
-                Vaste Waarden
+                <VoiceglotText translationKey="studio.section.vaste_waarden.title" defaultText="Vaste Waarden" />
               </HeadingInstrument>
               <TextInstrument className="text-lg md:text-xl text-va-black/40 font-light mt-6">
-                De fundamenten voor elke stem. Deze workshops keren maandelijks terug en vormen de basis van je opleiding.
+                <VoiceglotText translationKey="studio.section.vaste_waarden.description" defaultText="De fundamenten voor elke stem. Deze workshops keren maandelijks terug en vormen de basis van je opleiding." />
               </TextInstrument>
             </div>
           </div>
@@ -125,13 +126,13 @@ export const StudioWorkshopsSection: React.FC<StudioWorkshopsSectionProps> = ({ 
               <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
                 <div className="max-w-2xl">
                   <TextInstrument className="text-[11px] font-bold tracking-[0.3em] uppercase text-primary mb-4">
-                    Specialisaties
+                    <VoiceglotText translationKey="studio.section.specialisaties.title" defaultText="Specialisaties" />
                   </TextInstrument>
                   <HeadingInstrument level={2} className="text-4xl md:text-6xl font-light tracking-tighter text-va-black">
-                    Gastworkshops
+                    <VoiceglotText translationKey="studio.section.gastworkshops.title" defaultText="Gastworkshops" />
                   </HeadingInstrument>
                   <TextInstrument className="text-lg md:text-xl text-va-black/40 font-light mt-6">
-                    Verdiep je in specifieke niches met experts uit het veld. Unieke kansen om je horizon te verbreden.
+                    <VoiceglotText translationKey="studio.section.gastworkshops.description" defaultText="Verdiep je in specifieke niches met experts uit het veld. Unieke kansen om je horizon te verbreden." />
                   </TextInstrument>
                 </div>
               </div>
@@ -142,6 +143,50 @@ export const StudioWorkshopsSection: React.FC<StudioWorkshopsSectionProps> = ({ 
       </section>
       <ReviewGrid reviews={uniqueReviews} maxItems={9} />
 
+      {/* Instructors Section */}
+      <section className="py-32 bg-white">
+        <ContainerInstrument className="max-w-7xl mx-auto px-6">
+          <div className="flex flex-col items-center text-center mb-20">
+            <TextInstrument className="text-[11px] font-bold tracking-[0.3em] uppercase text-primary mb-4">
+              <VoiceglotText translationKey="studio.section.vakmanschap.title" defaultText="Vakmanschap" />
+            </TextInstrument>
+            <HeadingInstrument level={2} className="text-4xl md:text-6xl font-light tracking-tighter text-va-black">
+              <VoiceglotText translationKey="studio.section.instructeurs.title" defaultText="Maak kennis met je instructeurs" />
+            </HeadingInstrument>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+            {instructors.map((instructor) => (
+              <div key={instructor.id} className="group flex flex-col">
+                <div className="relative aspect-[4/5] overflow-hidden rounded-[20px] mb-8 bg-va-off-white shadow-aura group-hover:shadow-aura-lg transition-all duration-700">
+                  {instructor.photo_url ? (
+                    <img 
+                      src={instructor.photo_url} 
+                      alt={instructor.name}
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-va-black/10">
+                      <VoiceglotText translationKey="common.no_photo" defaultText="Geen foto" />
+                    </div>
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-va-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                </div>
+                <HeadingInstrument level={3} className="text-2xl font-light tracking-tight text-va-black mb-2">
+                  <VoiceglotText translationKey={`instructor.${instructor.id}.name`} defaultText={instructor.name} />
+                </HeadingInstrument>
+                <TextInstrument className="text-[13px] font-medium tracking-widest uppercase text-primary mb-4">
+                  <VoiceglotText translationKey={`instructor.${instructor.id}.tagline`} defaultText={instructor.tagline || ''} />
+                </TextInstrument>
+                <TextInstrument className="text-[15px] text-va-black/50 font-light leading-relaxed line-clamp-4">
+                  <VoiceglotText translationKey={`instructor.${instructor.id}.bio`} defaultText={instructor.bio || ''} />
+                </TextInstrument>
+              </div>
+            ))}
+          </div>
+        </ContainerInstrument>
+      </section>
+
       {/* Calendar Section */}
       <section className="py-32 bg-va-black text-white overflow-hidden relative">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[1000px] bg-primary/5 rounded-full blur-[120px] -translate-y-1/2" />
@@ -150,10 +195,10 @@ export const StudioWorkshopsSection: React.FC<StudioWorkshopsSectionProps> = ({ 
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-20">
             <div className="max-w-2xl">
               <TextInstrument className="text-[11px] font-bold tracking-[0.3em] uppercase text-primary mb-4">
-                Planning
+                <VoiceglotText translationKey="studio.section.planning.title" defaultText="Planning" />
               </TextInstrument>
               <HeadingInstrument level={2} className="text-4xl md:text-6xl font-light tracking-tighter text-white">
-                De Studio Kalender
+                <VoiceglotText translationKey="studio.section.kalender.title" defaultText="De Studio Kalender" />
               </HeadingInstrument>
             </div>
           </div>
@@ -176,11 +221,15 @@ export const StudioWorkshopsSection: React.FC<StudioWorkshopsSectionProps> = ({ 
                   </div>
                   <div>
                     <HeadingInstrument level={4} className="text-2xl font-light tracking-tight mb-1 group-hover:text-primary transition-colors">
-                      {edition.workshopTitle}
+                      <VoiceglotText translationKey={`studio.workshop.${edition.workshopId}.title`} defaultText={edition.workshopTitle} />
                     </HeadingInstrument>
                     <TextInstrument className="text-[13px] text-white/40 font-light tracking-widest uppercase flex items-center gap-2">
                       <span className="w-1.5 h-1.5 rounded-full bg-primary/40" />
-                      {edition.location?.name || 'Locatie nog onbekend'}
+                      {edition.location?.name ? (
+                        <VoiceglotText translationKey={`location.${edition.location.id}.name`} defaultText={edition.location.name} />
+                      ) : (
+                        <VoiceglotText translationKey="studio.location.unknown" defaultText="Locatie nog onbekend" />
+                      )}
                     </TextInstrument>
                   </div>
                 </div>
@@ -188,10 +237,14 @@ export const StudioWorkshopsSection: React.FC<StudioWorkshopsSectionProps> = ({ 
                 <div className="flex items-center gap-8">
                   <div className="hidden lg:flex flex-col items-end">
                     <TextInstrument className="text-[11px] text-white/20 font-bold uppercase tracking-[0.2em] mb-1">
-                      Status
+                      <VoiceglotText translationKey="common.status" defaultText="Status" />
                     </TextInstrument>
                     <TextInstrument className="text-[13px] text-primary font-medium tracking-widest uppercase">
-                      {edition.status === 'live' ? 'Inschrijvingen Open' : edition.status}
+                      {edition.status === 'live' ? (
+                        <VoiceglotText translationKey="studio.status.open" defaultText="Inschrijvingen Open" />
+                      ) : (
+                        <VoiceglotText translationKey={`studio.status.${edition.status}`} defaultText={edition.status || ''} />
+                      )}
                     </TextInstrument>
                   </div>
                   <div className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center group-hover:bg-primary group-hover:border-primary group-hover:text-va-black transition-all duration-500">
@@ -204,59 +257,15 @@ export const StudioWorkshopsSection: React.FC<StudioWorkshopsSectionProps> = ({ 
         </ContainerInstrument>
       </section>
 
-      {/* Instructors Section */}
-      <section className="py-32 bg-white">
-        <ContainerInstrument className="max-w-7xl mx-auto px-6">
-          <div className="flex flex-col items-center text-center mb-20">
-            <TextInstrument className="text-[11px] font-bold tracking-[0.3em] uppercase text-primary mb-4">
-              Vakmanschap
-            </TextInstrument>
-            <HeadingInstrument level={2} className="text-4xl md:text-6xl font-light tracking-tighter text-va-black">
-              Maak kennis met je instructeurs
-            </HeadingInstrument>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
-            {instructors.map((instructor) => (
-              <div key={instructor.id} className="group flex flex-col">
-                <div className="relative aspect-[4/5] overflow-hidden rounded-[20px] mb-8 bg-va-off-white shadow-aura group-hover:shadow-aura-lg transition-all duration-700">
-                  {instructor.photo_url ? (
-                    <img 
-                      src={instructor.photo_url} 
-                      alt={instructor.name}
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-va-black/10">
-                      Geen foto
-                    </div>
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-va-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-                </div>
-                <HeadingInstrument level={3} className="text-2xl font-light tracking-tight text-va-black mb-2">
-                  {instructor.name}
-                </HeadingInstrument>
-                <TextInstrument className="text-[13px] font-medium tracking-widest uppercase text-primary mb-4">
-                  {instructor.tagline}
-                </TextInstrument>
-                <TextInstrument className="text-[15px] text-va-black/50 font-light leading-relaxed line-clamp-4">
-                  {instructor.bio}
-                </TextInstrument>
-              </div>
-            ))}
-          </div>
-        </ContainerInstrument>
-      </section>
-
       {/* FAQ Section */}
       <section className="py-32 bg-va-off-white border-t border-black/[0.03]">
         <ContainerInstrument className="max-w-4xl mx-auto px-6">
           <div className="flex flex-col items-center text-center mb-20">
             <TextInstrument className="text-[11px] font-bold tracking-[0.3em] uppercase text-primary mb-4">
-              Ondersteuning
+              <VoiceglotText translationKey="studio.section.ondersteuning.title" defaultText="Ondersteuning" />
             </TextInstrument>
             <HeadingInstrument level={2} className="text-4xl md:text-6xl font-light tracking-tighter text-va-black">
-              Veelgestelde vragen
+              <VoiceglotText translationKey="studio.section.faq.title" defaultText="Veelgestelde vragen" />
             </HeadingInstrument>
           </div>
 
@@ -265,7 +274,7 @@ export const StudioWorkshopsSection: React.FC<StudioWorkshopsSectionProps> = ({ 
               <details key={faq.id} className="group bg-white rounded-[20px] shadow-aura border border-black/[0.02] overflow-hidden transition-all duration-500">
                 <summary className="flex items-center justify-between p-8 cursor-pointer list-none">
                   <HeadingInstrument level={4} className="text-xl font-light tracking-tight text-va-black">
-                    {faq.question}
+                    <VoiceglotText translationKey={`faq.${faq.id}.question`} defaultText={faq.question} />
                   </HeadingInstrument>
                   <div className="w-8 h-8 rounded-full bg-va-off-white flex items-center justify-center group-open:rotate-180 transition-transform duration-500">
                     <ChevronDown size={16} className="text-va-black/40" />
@@ -273,7 +282,7 @@ export const StudioWorkshopsSection: React.FC<StudioWorkshopsSectionProps> = ({ 
                 </summary>
                 <div className="px-8 pb-8 animate-in fade-in slide-in-from-top-2 duration-500">
                   <TextInstrument className="text-[15px] text-va-black/50 font-light leading-relaxed">
-                    {faq.answer}
+                    <VoiceglotText translationKey={`faq.${faq.id}.answer`} defaultText={faq.answer} />
                   </TextInstrument>
                 </div>
               </details>

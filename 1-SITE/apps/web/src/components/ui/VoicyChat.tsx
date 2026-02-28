@@ -78,7 +78,7 @@ export const VoicyChatV2: React.FC = () => {
   const [isSendingMail, setIsSendingMail] = useState(false);
   const [mailSent, setMailSent] = useState(false);
   const [isFullMode, setIsFullMode] = useState(false);
-  const [activeTab, setActiveTab] = useState<'chat' | 'mail' | 'phone' | 'faq' | 'admin'>('chat');
+  const [activeTab, setActiveTab] = useState<'chat' | 'mail' | 'phone' | 'faq' | 'admin' | 'orders'>('chat');
   const [telephonyConfig, setTelephonyConfig] = useState<{ isLive: boolean; whisperMode: string }>({ isLive: true, whisperMode: 'robot' });
 
   //  CHRIS-PROTOCOL: Sync telephony config from DB

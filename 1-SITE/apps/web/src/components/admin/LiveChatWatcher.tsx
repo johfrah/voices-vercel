@@ -29,25 +29,19 @@ import { nl } from "date-fns/locale";
 interface Conversation {
   id: number;
   status: string;
-  updatedAt?: string;
-  updated_at?: string;
-  iapContext?: any;
-  iap_context?: any;
+  updated_at: string;
+  iap_context: any;
   user_id: string | null;
-  guestName?: string;
   guest_name?: string;
-  guestEmail?: string;
   guest_email?: string;
   lastMessage?: string;
 }
 
 interface Message {
   id: string;
-  senderType: 'user' | 'ai' | 'admin';
+  sender_type: 'user' | 'ai' | 'admin';
   message: string;
-  createdAt?: string;
-  created_at?: string;
-  timestamp?: string;
+  created_at: string;
 }
 
 // Helper voor Base64 naar Uint8Array (nodig voor VAPID key)
@@ -214,9 +208,9 @@ export const LiveChatWatcher = () => {
           const newMsgs = data.messages.filter((m: any) => !prev.find(p => p.id === m.id.toString()));
           return [...prev, ...newMsgs.map((m: any) => ({
             id: m.id.toString(),
-            senderType: m.senderType,
+            sender_type: m.sender_type || m.senderType,
             message: m.message,
-            createdAt: m.createdAt
+            created_at: m.created_at || m.createdAt
           }))];
         });
       }
@@ -313,44 +307,39 @@ export const LiveChatWatcher = () => {
                     </ContainerInstrument>
                     <div className="flex flex-col">
                       <span className="text-sm font-bold">
-                        {conv.guest_name || conv.guestName || `Klant #${conv.id}`}
+                        {conv.guest_name || `Klant #${conv.id}`}
                       </span>
-                      {(conv.guest_email || conv.guestEmail) && (
+                      {conv.guest_email && (
                         <span className="text-[10px] text-va-black/40 truncate max-w-[120px]">
-                          {conv.guest_email || conv.guestEmail}
+                          {conv.guest_email}
                         </span>
                       )}
                     </div>
                   </div>
                   <span className="text-[10px] opacity-40 font-medium">
                     {(() => {
-                      const dateStr = conv.updated_at || conv.updatedAt;
-                      if (!dateStr) return "Onbekend";
-                      const date = new Date(dateStr);
+                      if (!conv.updated_at) return "Onbekend";
+                      const date = new Date(conv.updated_at);
                       if (isNaN(date.getTime())) return "Ongeldige datum";
                       return formatDistanceToNow(date, { addSuffix: true, locale: nl });
                     })()}
                   </span>
                 </div>
-                {(() => {
-                  const ctx = conv.iap_context || conv.iapContext;
-                  if (!ctx?.journey) return null;
-                  return (
-                    <div className="flex gap-1 flex-wrap">
-                      <span className="text-[9px] px-2 py-0.5 bg-primary/10 text-primary rounded-full font-bold uppercase tracking-wider">
-                        {ctx.journey}
+                {conv.iap_context?.journey && (
+                  <div className="flex gap-1 flex-wrap">
+                    <span className="text-[9px] px-2 py-0.5 bg-primary/10 text-primary rounded-full font-bold uppercase tracking-wider">
+                      {conv.iap_context.journey}
+                    </span>
+                    {conv.iap_context?.vibe && (
+                      <span className={cn(
+                        "text-[9px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider",
+                        conv.iap_context.vibe === 'burning' ? "bg-orange-500/10 text-orange-500" : "bg-blue-500/10 text-blue-500"
+                      )}>
+                        {conv.iap_context.vibe}
                       </span>
-                      {ctx?.vibe && (
-                        <span className={cn(
-                          "text-[9px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider",
-                          ctx.vibe === 'burning' ? "bg-orange-500/10 text-orange-500" : "bg-blue-500/10 text-blue-500"
-                        )}>
-                          {ctx.vibe}
-                        </span>
-                      )}
-                    </div>
-                  );
-                })()}
+                    )}
+                  </div>
+                )}
               </button>
             ))
           )}
@@ -375,24 +364,23 @@ export const LiveChatWatcher = () => {
                     key={msg.id}
                     className={cn(
                       "flex flex-col max-w-[85%]",
-                      msg.senderType === 'user' ? "mr-auto" : "ml-auto items-end"
+                      msg.sender_type === 'user' ? "mr-auto" : "ml-auto items-end"
                     )}
                   >
                     <div className={cn(
                       "p-4 rounded-[20px] text-sm font-medium leading-relaxed shadow-sm",
-                      (msg.senderType === 'user' || (msg as any).role === 'user')
+                      msg.sender_type === 'user'
                         ? "bg-white text-va-black rounded-tl-none" 
-                        : (msg.senderType === 'ai' || (msg as any).role === 'assistant')
+                        : msg.sender_type === 'ai'
                           ? "bg-va-black text-white rounded-tr-none"
                           : "bg-primary text-white rounded-tr-none"
                     )}>
-                      {msg.message || (msg as any).content}
+                      {msg.message}
                     </div>
                     <span className="text-[9px] mt-1 opacity-30 font-bold uppercase tracking-widest">
-                      {msg.senderType === 'ai' ? 'Voicy' : msg.senderType === 'user' ? 'Klant' : 'Admin'} • {(() => {
-                        const dateStr = msg.createdAt || msg.created_at || msg.timestamp;
-                        if (!dateStr) return "N/A";
-                        const date = new Date(dateStr);
+                      {msg.sender_type === 'ai' ? 'Voicy' : msg.sender_type === 'user' ? 'Klant' : 'Admin'} • {(() => {
+                        if (!msg.created_at) return "N/A";
+                        const date = new Date(msg.created_at);
                         if (isNaN(date.getTime())) return "N/A";
                         return date.toLocaleTimeString('nl-BE', { hour: '2-digit', minute: '2-digit' });
                       })()}
@@ -446,7 +434,28 @@ export const LiveChatWatcher = () => {
 
               {/* Quick Actions (Future: Intervene) */}
               <div className="p-4 bg-white border-t border-black/5 flex gap-2 overflow-x-auto no-scrollbar">
-                <ButtonInstrument className="whitespace-nowrap bg-va-black text-white text-[10px] font-bold tracking-widest uppercase px-4 py-2 rounded-full flex items-center gap-2">
+                <ButtonInstrument 
+                  onClick={async () => {
+                    if (!selectedId) return;
+                    try {
+                      const res = await fetch('/api/chat/', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ 
+                          action: 'update_status', 
+                          conversationId: selectedId,
+                          status: 'admin_active'
+                        })
+                      });
+                      if (res.ok) {
+                        alert("Voicy is nu stil. Jij hebt de regie.");
+                      }
+                    } catch (err) {
+                      console.error("Failed to take over chat", err);
+                    }
+                  }}
+                  className="whitespace-nowrap bg-va-black text-white text-[10px] font-bold tracking-widest uppercase px-4 py-2 rounded-full flex items-center gap-2"
+                >
                   <Zap size={12} className="text-primary" /> Overnemen
                 </ButtonInstrument>
                 <ButtonInstrument className="whitespace-nowrap bg-va-off-white text-va-black/40 text-[10px] font-bold tracking-widest uppercase px-4 py-2 rounded-full">

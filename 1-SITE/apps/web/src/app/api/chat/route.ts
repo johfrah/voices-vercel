@@ -21,6 +21,11 @@ export async function POST(request: NextRequest) {
         return handleGetConversations(params);
       case 'history':
         return handleGetHistory(params);
+      case 'update_status':
+        const { conversationId, status } = params;
+        if (!conversationId || !status) return NextResponse.json({ error: 'Missing params' }, { status: 400 });
+        await db.update(chatConversations).set({ status }).where(eq(chatConversations.id, conversationId));
+        return NextResponse.json({ success: true });
       default:
         return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
     }
@@ -60,8 +65,13 @@ async function handleSendMessage(params: any, request?: NextRequest) {
     const langLabel = isEnglish ? MarketManager.getLanguageLabel('en-gb') : MarketManager.getLanguageLabel('nl-nl');
     const nativeLabel = isEnglish ? MarketManager.getLanguageLabel('en-gb') : MarketManager.getLanguageLabel('nl-nl');
     
-    //  NUCLEAR BRAIN: Gebruik Gemini voor complexe vragen als FAQ niet volstaat
-    let aiContent = "";
+    //  CHRIS-PROTOCOL: Admin Intervention Check
+    //  Als de status 'admin_active' is, mag Voicy niet antwoorden
+    const [conv] = await db.select().from(chatConversations).where(eq(chatConversations.id, conversationId));
+    if (conv?.status === 'admin_active' && senderType !== 'admin') {
+      console.log(`[Voicy API] Admin is active on chat #${conversationId}. AI response suppressed.`);
+      return NextResponse.json({ success: true, message: "Admin is handling this chat." });
+    }
     let actions: any[] = [];
 
     //  LIFECYCLE DETECTION (v2.16.029)
@@ -600,7 +610,7 @@ async function handleGetConversations(params: any) {
       query.where(eq(chatConversations.user_id, userId));
     }
 
-    const results = await query.orderBy(desc(chatConversations.updatedAt));
+    const results = await query.orderBy(desc(chatConversations.updated_at));
     return NextResponse.json(results);
   } catch (error) {
     return NextResponse.json({ error: 'Failed to fetch conversations' }, { status: 500 });
@@ -626,13 +636,13 @@ async function handleGetHistory(params: any) {
       success: true,
       messages: results.map((m: any) => ({
         id: m.id.toString(),
-        senderType: m.senderType,
+        sender_type: m.sender_type || m.senderType,
         message: m.message,
-        createdAt: m.createdAt,
+        created_at: m.created_at || m.createdAt,
         // Fallbacks voor compatibiliteit met verschillende componenten
-        role: m.senderType === 'ai' ? 'assistant' : m.senderType,
+        role: (m.sender_type || m.senderType) === 'ai' ? 'assistant' : (m.sender_type || m.senderType),
         content: m.message,
-        timestamp: m.createdAt
+        timestamp: m.created_at || m.createdAt
       }))
     });
   } catch (error) {
