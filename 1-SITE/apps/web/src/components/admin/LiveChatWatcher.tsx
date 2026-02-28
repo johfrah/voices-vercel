@@ -29,8 +29,8 @@ import { nl } from "date-fns/locale";
 interface Conversation {
   id: number;
   status: string;
-  updatedAt: string;
-  metadata: any;
+  updated_at: string;
+  iap_context: any;
   user_id: string | null;
   lastMessage?: string;
 }
@@ -305,20 +305,20 @@ export const LiveChatWatcher = () => {
                     <span className="text-sm font-bold">Klant #{conv.id}</span>
                   </div>
                   <span className="text-[10px] opacity-40 font-medium">
-                    {formatDistanceToNow(new Date(conv.updatedAt), { addSuffix: true, locale: nl })}
+                    {formatDistanceToNow(new Date(conv.updated_at), { addSuffix: true, locale: nl })}
                   </span>
                 </div>
-                {conv.metadata?.journey && (
+                {conv.iap_context?.journey && (
                   <div className="flex gap-1 flex-wrap">
                     <span className="text-[9px] px-2 py-0.5 bg-primary/10 text-primary rounded-full font-bold uppercase tracking-wider">
-                      {conv.metadata.journey}
+                      {conv.iap_context.journey}
                     </span>
-                    {conv.metadata?.vibe && (
+                    {conv.iap_context?.vibe && (
                       <span className={cn(
                         "text-[9px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider",
-                        conv.metadata.vibe === 'burning' ? "bg-orange-500/10 text-orange-500" : "bg-blue-500/10 text-blue-500"
+                        conv.iap_context.vibe === 'burning' ? "bg-orange-500/10 text-orange-500" : "bg-blue-500/10 text-blue-500"
                       )}>
-                        {conv.metadata.vibe}
+                        {conv.iap_context.vibe}
                       </span>
                     )}
                   </div>
