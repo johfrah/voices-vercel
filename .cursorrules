@@ -71,6 +71,7 @@ Rapporteer vóór uitvoering:
 ### 4. ANTI-DRIFT MANDATE (The "Nuclear Truth" Lock)
 - **Geen Abstractie-Gokken**: Bij nieuwe tabellen of kritieke data-fetches is het gebruik van ORM-abstracties (Drizzle/SDK) STRIKT VERBODEN in de eerste fase. Gebruik `db.execute(sql`...`)` om directe database-integriteit te garanderen.
 - **Pooler-Awareness**: Ga er ALTIJD vanuit dat de Supabase Pooler (6543) verouderde schema-aliassen kan cachen. Forceer Raw SQL voor alle admin-cockpit data.
+- **Storage API Auth Mandate**: Bij het direct uploaden van media naar Supabase Storage via REST (curl/fetch) is het STRIKT VERPLICHT om zowel de `Authorization: Bearer [key]` als de `apiKey: [key]` header mee te sturen. Gebruik bij voorkeur `curl --data-binary` voor grote bestanden (>50MB) om sandbox-timeouts te voorkomen.
 - **Handshake Validatie**: Bevestig bij elke API-wijziging dat de server-logs de verwachte `count` matchen met de database-status.
 
 ### 5. FAST-TRACK AUDIT (De Smoking Gun)

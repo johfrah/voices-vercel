@@ -52,6 +52,9 @@ export default async function FinancialDashboardPage() {
   const totalCosts = studioStats.totalCosts + agencyStats.totalCosts + academyStats.totalCosts;
   const totalNet = totalRevenue - totalCosts;
 
+  // 🌳 ANCESTRY TRACING: Fetch World-specific stats if needed
+  // This dashboard is currently global, but we could add a World-Aware mode here too.
+
   const JourneyCard = ({ title, stats, icon: Icon, color, href }: any) => (
     <BentoCard className="bg-white shadow-aura border border-black/5 p-8 group hover:border-primary/20 transition-all rounded-[20px]">
       <div className="flex justify-between items-start mb-8">

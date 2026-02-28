@@ -13,6 +13,7 @@ import { BentoGrid, BentoCard } from '@/components/ui/BentoGrid';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useAdminTracking } from '@/hooks/useAdminTracking';
 import { useAuth } from '@/contexts/AuthContext';
+import { useWorld } from '@/contexts/WorldContext';
 import { ArrowLeft, Edit3, Loader2, Mail, MoreHorizontal, Search as SearchIcon, Shield, UserPlus, Users, RefreshCw, Ghost } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
@@ -28,6 +29,7 @@ export const dynamic = 'force-dynamic';
 export default function AdminUsersPage() {
   const { logAction } = useAdminTracking();
   const { impersonate } = useAuth();
+  const { activeWorld } = useWorld();
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -35,7 +37,8 @@ export default function AdminUsersPage() {
   const fetchUsers = async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/admin/users');
+      const worldParam = activeWorld ? `?world=${activeWorld.code}` : '';
+      const res = await fetch(`/api/admin/users${worldParam}`);
       if (res.ok) {
         const data = await res.json();
         setUsers(data);
@@ -49,7 +52,7 @@ export default function AdminUsersPage() {
 
   useEffect(() => {
     fetchUsers();
-  }, []);
+  }, [activeWorld]);
 
   //  CHRIS-PROTOCOL: Build Safety
   if (process.env.NEXT_PHASE === 'phase-production-build') {

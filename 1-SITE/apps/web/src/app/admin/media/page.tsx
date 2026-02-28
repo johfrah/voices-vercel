@@ -12,17 +12,20 @@ import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { ArrowLeft, LayoutDashboard, Film, Music, FileText, RefreshCw, HardDrive, Download, Eye } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { useWorld } from '@/contexts/WorldContext';
 import { format } from 'date-fns';
 import { nl } from 'date-fns/locale';
 
 export default function MediaEnginePage() {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const { activeWorld } = useWorld();
 
   const fetchData = async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/admin/operational');
+      const worldParam = activeWorld ? `?world=${activeWorld.code}` : '';
+      const res = await fetch(`/api/admin/operational${worldParam}`);
       const json = await res.json();
       setData(json.media);
     } catch (err) {
@@ -34,7 +37,7 @@ export default function MediaEnginePage() {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [activeWorld]);
 
   return (
     <PageWrapperInstrument className="min-h-screen bg-va-off-white p-6 md:p-8 pt-24">

@@ -216,7 +216,7 @@ export class StudioDataBridge {
       const studioOrders = await db.select()
         .from(orders)
         .where(and(
-          eq(orders.journey, 'studio'),
+          eq(orders.worldId, 5), // 🌳 World-Aware: Studio World (ID 5)
           sql`${orders.status} IN ('completed', 'wc-completed', 'processing', 'wc-processing')`
         ));
       
@@ -229,7 +229,7 @@ export class StudioDataBridge {
       // 4. NUCLEAR CALCULATION: Real-time review statistics for Studio
       const allStudioReviews = await db.select({
         rating: reviews.rating
-      }).from(reviews).where(eq(reviews.businessSlug, 'voices-studio'));
+      }).from(reviews).where(eq(reviews.worldIdNew, 5)); // 🌳 World-Aware: Studio World (ID 5)
       
       const totalReviewsCount = allStudioReviews.length;
       const averageRating = totalReviewsCount > 0 
@@ -310,13 +310,13 @@ export class StudioDataBridge {
       const { data: studioOrders, error: ordersError } = await supabase
         .from('orders')
         .select('total, raw_meta, status')
-        .eq('journey', 'studio')
+        .eq('world_id', 5) // 🌳 World-Aware: Studio World (ID 5)
         .in('status', ['completed', 'wc-completed', 'processing', 'wc-processing', 'wc-onbetaald']);
 
       const { data: studioCosts, error: costsError } = await supabase
         .from('costs')
         .select('amount, is_partner_payout')
-        .eq('journey', 'studio');
+        .eq('world_id', 5); // 🌳 World-Aware: Studio World (ID 5)
 
       if (ordersError) {
         console.error(' [StudioBridge] Orders SDK Error:', ordersError.message);
@@ -679,7 +679,7 @@ export class StudioDataBridge {
       return await db.query.costs.findMany({
         where: and(
           eq(costs.workshopEditionId, editionId),
-          eq(costs.journey, 'studio')
+          eq(costs.worldId, 5) // 🌳 World-Aware: Studio World (ID 5)
         ),
         orderBy: [desc(costs.createdAt)]
       });
@@ -694,14 +694,22 @@ export class StudioDataBridge {
    */
   static async getFinancialStatsByJourney(journey: 'studio' | 'agency' | 'academy') {
     try {
+      // 🌳 World-Aware mapping
+      const worldMap: Record<string, number> = {
+        'agency': 1,
+        'studio': 5,
+        'academy': 6
+      };
+      const worldId = worldMap[journey];
+
       // 1. Haal alle orders op voor deze journey (EXCL BTW)
       const journeyOrders = await db.select().from(orders).where(and(
-        eq(orders.journey, journey),
+        eq(orders.worldId, worldId),
         sql`${orders.status} IN ('completed', 'wc-completed', 'processing', 'wc-processing')`
       ));
       
       // 2. Haal alle kosten op voor deze journey
-      const journeyCosts = await db.select().from(costs).where(eq(costs.journey, journey));
+      const journeyCosts = await db.select().from(costs).where(eq(costs.worldId, worldId));
 
       const totalRevenue = journeyOrders.reduce((acc, o) => {
         const total = parseFloat(o.total || '0');
@@ -746,7 +754,7 @@ export class StudioDataBridge {
         where: (oi, { isNull, exists, eq, and, or }) => {
           // Wees = geen editionId OF de gekoppelde editie is geannuleerd
           return and(
-            eq(sql`(SELECT journey FROM orders WHERE id = ${oi.orderId})`, 'studio'),
+            eq(sql`(SELECT world_id FROM orders WHERE id = ${oi.orderId})`, 5), // 🌳 World-Aware: Studio World (ID 5)
             or(
               isNull(oi.editionId),
               sql`EXISTS (SELECT 1 FROM workshop_editions WHERE id = ${oi.editionId} AND status = 'cancelled')`

@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { ContainerInstrument } from '@/components/ui/LayoutInstruments';
 import { VoiceglotImage } from '@/components/ui/VoiceglotImage';
+import { WorldSelector } from './WorldSelector';
 
 export const AdminHeader = () => {
   const { market } = useTranslation();
@@ -37,6 +38,8 @@ export const AdminHeader = () => {
         </Link>
         
         <nav className="flex items-center gap-8">
+          <WorldSelector />
+          <div className="w-px h-4 bg-black/10 mx-2" />
           <Link href="/admin/ademing" className="text-[13px] font-light tracking-widest text-va-black/40 hover:text-primary transition-colors uppercase">Ademing</Link>
           <Link href="/admin/orders" className="text-[13px] font-light tracking-widest text-va-black/40 hover:text-primary transition-colors uppercase">Orders</Link>
           <Link href="/admin/users" className="text-[13px] font-light tracking-widest text-va-black/40 hover:text-primary transition-colors uppercase">Users</Link>

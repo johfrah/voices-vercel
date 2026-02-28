@@ -2,6 +2,7 @@
 
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useAdminTracking } from '@/hooks/useAdminTracking';
+import { useWorld } from '@/contexts/WorldContext';
 import { cn } from '@/lib/utils/index';
 import { format } from 'date-fns';
 import { nl } from 'date-fns/locale';
@@ -55,6 +56,7 @@ export default function OrdersPage() {
   const [expandedOrderId, setExpandedOrderId] = useState<number | null>(null);
   const [expandedOrderData, setExpandedOrderData] = useState<any | null>(null);
   const [isExpanding, setIsExpanding] = useState(false);
+  const { activeWorld } = useWorld();
 
   const toggleExpand = async (orderId: number) => {
     if (expandedOrderId === orderId) {
@@ -85,7 +87,8 @@ export default function OrdersPage() {
         page: page.toString(),
         limit: '20',
         search: searchQuery,
-        status: statusFilter !== 'all' ? statusFilter : ''
+        status: statusFilter !== 'all' ? statusFilter : '',
+        world: activeWorld?.code || ''
       });
       const res = await fetch(`/api/admin/orders?${params.toString()}`);
       const data = await res.json();
@@ -102,7 +105,7 @@ export default function OrdersPage() {
 
   useEffect(() => {
     fetchOrders();
-  }, [fetchOrders]);
+  }, [fetchOrders, activeWorld]);
 
   const getStatusBadge = (status: string) => {
     switch (status) {

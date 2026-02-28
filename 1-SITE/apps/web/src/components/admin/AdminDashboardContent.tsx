@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/LayoutInstruments";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { useAdminTracking } from '@/hooks/useAdminTracking';
+import { useWorld } from '@/contexts/WorldContext';
 import {
     Activity,
     ArrowRight,
@@ -49,6 +50,7 @@ export default function AdminDashboardContent() {
   const [quickLinkNames, setQuickLinkNames] = useState('');
   const [isGeneratingLink, setIsGeneratingLink] = useState(false);
   const { logAction } = useAdminTracking();
+  const { activeWorld } = useWorld();
 
   const handleQuickLink = async () => {
     if (!quickLinkNames.trim()) return;
@@ -86,7 +88,8 @@ export default function AdminDashboardContent() {
         const healsData = await healsRes.json();
         if (healsData.success) setRecentHeals(healsData.heals);
 
-        const notifyRes = await fetch('/api/admin/system/logs');
+        const worldParam = activeWorld ? `&world=${activeWorld.code}` : '';
+        const notifyRes = await fetch(`/api/admin/system/logs?limit=5${worldParam}`);
         const notifyData = await notifyRes.json();
         
         if (notifyData && notifyData.logs) {
@@ -107,7 +110,7 @@ export default function AdminDashboardContent() {
     };
 
     fetchData();
-  }, []);
+  }, [activeWorld]);
 
   const stats = [
     { label: <VoiceglotText  translationKey="admin.stats.mails" defaultText="Nieuwe Mails" />, value: '...', icon: <Mail strokeWidth={1.5} size={20} />, trend: 'Inbox', color: 'text-blue-500', href: '/admin/mailbox' },

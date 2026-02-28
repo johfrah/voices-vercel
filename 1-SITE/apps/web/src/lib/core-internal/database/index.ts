@@ -40,12 +40,14 @@ const getDb = () => {
       
       // CHRIS-PROTOCOL: Direct DB Host for Stability (v2.17)
       // The Supabase Pooler (6543) is currently unstable. We bypass it and use the direct host.
+      /*
       if (connectionString.includes('pooler.supabase.com')) {
         connectionString = connectionString.replace('aws-1-eu-west-1.pooler.supabase.com', 'vcbxyyjsxuquytcsskpj.supabase.co');
         connectionString = connectionString.replace(':6543', ':5432');
         connectionString = connectionString.replace('postgres.vcbxyyjsxuquytcsskpj', 'postgres');
         connectionString = connectionString.split('?')[0]; 
       }
+      */
 
       // LEX-MANDATE: IPv6 is unstable on some build machines. Force IPv4 if direct host.
       if (connectionString.includes('vcbxyyjsxuquytcsskpj.supabase.co')) {
@@ -76,13 +78,13 @@ CMTyZKG3XEu5Ghl1LEnI3QmEKsqaCLv12BnVjbkSeZsMnevJPs1Ye6TjjJwdik5P
 o/bKiIz+Fq8=
 -----END CERTIFICATE-----`;
 
-      const poolSize = process.env.NEXT_PHASE === 'phase-production-build' ? 5 : (process.env.NODE_ENV === 'production' ? 10 : 10);
+      const poolSize = 10;
       
       if (!(globalThis as any).postgresClient) {
         (globalThis as any).postgresClient = postgres(connectionString, { 
           prepare: false, 
-          ssl: { ca: supabaseRootCA, rejectUnauthorized: false },
-          connect_timeout: 10,
+          ssl: { rejectUnauthorized: false },
+          connect_timeout: 30,
           idle_timeout: 10,
           max: poolSize,
         });

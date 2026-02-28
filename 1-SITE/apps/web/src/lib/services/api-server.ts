@@ -110,13 +110,15 @@ async function fetchFeaturedVideo(artist: any): Promise<any | null> {
 /**
  *  NUCLEAR CALCULATION: Real-time review statistics (SQL-First)
  */
-export async function getReviewStats(businessSlug: string = 'voices-be', journeyId?: string) {
+export async function getReviewStats(businessSlug: string = 'voices-be', journeyId?: string, worldId?: number) {
   // 🛡️ CHRIS-PROTOCOL: Use SDK for stability (v2.14.273)
   let query = supabase
     .from('reviews')
     .select('rating');
   
-  if (journeyId) {
+  if (worldId) {
+    query = query.eq('world_id_new', worldId);
+  } else if (journeyId) {
     query = query.eq('journey_id', journeyId);
   } else {
     query = query.eq('business_slug', businessSlug);
@@ -162,7 +164,7 @@ function getGlobalCache() {
 const ACTORS_CACHE_TTL = 1000 * 60 * 5; // 5 minutes
 
 export async function getActors(params: Record<string, string> = {}, lang: string = 'nl-BE'): Promise<SearchResults> {
-  const { language, country, attribute, search, gender, style, market: marketParam } = params;
+  const { language, country, attribute, search, gender, style, market: marketParam, worldId: worldIdParam } = params;
   const market = marketParam || 'BE'; // Default to BE if not provided
   const cache = getGlobalCache();
   const cacheKey = JSON.stringify({ params, lang });
@@ -185,6 +187,11 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
           
         if (process.env.NODE_ENV === 'production') {
           query = query.eq('is_public', true);
+        }
+
+        // 🌳 World-Aware filtering
+        if (worldIdParam) {
+          query = query.eq('world_id', parseInt(worldIdParam));
         }
           
         // 🛡️ NUCLEAR HANDSHAKE: ID-First Filtering (v2.14.740)
@@ -880,14 +887,19 @@ export async function getAcademyLesson(id: string): Promise<any> {
   return lesson || null;
 }
 
-export async function getFaqs(category: string, limit: number = 5): Promise<any[]> {
+export async function getFaqs(category: string, limit: number = 5, worldId?: number): Promise<any[]> {
   // 🛡️ CHRIS-PROTOCOL: Use SDK for stability (v2.14.273)
-  const { data, error } = await supabase
+  let query = supabase
     .from('faq')
     .select('*')
     .eq('category', category)
-    .eq('is_public', true)
-    .limit(limit);
+    .eq('is_public', true);
+
+  if (worldId) {
+    query = query.eq('world_id', worldId);
+  }
+
+  const { data, error } = await query.limit(limit);
 
   if (error) {
     const { ServerWatchdog } = await import('./server-watchdog');
