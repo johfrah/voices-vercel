@@ -9,6 +9,7 @@ import { TranslationProvider } from '@/contexts/TranslationContext';
 import { VoicesMasterControlProvider } from '@/contexts/VoicesMasterControlContext';
 import { VoicesStateProvider } from '@/contexts/VoicesStateContext';
 import { WatchdogProvider } from '@/contexts/WatchdogContext';
+import { WorldProvider } from '@/contexts/WorldContext';
 import { ClientLogger } from '@/lib/system/client-logger';
 import { usePathname } from 'next/navigation';
 import React, { ReactNode } from 'react';
@@ -33,7 +34,7 @@ export function Providers({
   initialUsage?: any;
 }) {
   const pathname = usePathname();
-  const currentVersion = '2.16.015';
+  const currentVersion = '2.16.018';
 
 
   //  CHRIS-PROTOCOL: Initialize Client Logger for real-time error reporting
@@ -70,41 +71,43 @@ export function Providers({
 
   return (
     <WatchdogProvider>
-      <AuthProvider>
-        <VoicesStateProvider>
-          <CheckoutProvider>
-            <VoicesMasterControlProvider initialJourney={initialJourney} initialUsage={initialUsage}>
-              <TranslationProvider lang={activeLang} market={market} initialTranslations={initialTranslations}>
-                <VersionGuard currentVersion={currentVersion} />
-                <Toaster
-                  position="top-center"
-                  reverseOrder={false}
-                  containerStyle={{
-                    top: '40%',
-                  }}
-                  toastOptions={{
-                    style: market.market_code === 'ADEMING' ? {
-                      background: 'hsl(160 28% 98%)',
-                      color: 'hsl(160 28% 25%)',
-                      borderRadius: '32px',
-                      border: '2px solid hsl(160 28% 48% / 0.1)',
-                      fontFamily: 'var(--font-cormorant), serif',
-                      boxShadow: '0 8px 32px rgba(123, 168, 150, 0.15)',
-                    } : undefined
-                  }}
-                />
-                <EditModeProvider>
-                  <GlobalAudioProvider>
-                    <NotificationProvider>
-                      {children}
-                    </NotificationProvider>
-                  </GlobalAudioProvider>
-                </EditModeProvider>
-              </TranslationProvider>
-            </VoicesMasterControlProvider>
-          </CheckoutProvider>
-        </VoicesStateProvider>
-      </AuthProvider>
+      <WorldProvider>
+        <AuthProvider>
+          <VoicesStateProvider>
+            <CheckoutProvider>
+              <VoicesMasterControlProvider initialJourney={initialJourney} initialUsage={initialUsage}>
+                <TranslationProvider lang={activeLang} market={market} initialTranslations={initialTranslations}>
+                  <VersionGuard currentVersion={currentVersion} />
+                  <Toaster
+                    position="top-center"
+                    reverseOrder={false}
+                    containerStyle={{
+                      top: '40%',
+                    }}
+                    toastOptions={{
+                      style: market.market_code === 'ADEMING' ? {
+                        background: 'hsl(160 28% 98%)',
+                        color: 'hsl(160 28% 25%)',
+                        borderRadius: '32px',
+                        border: '2px solid hsl(160 28% 48% / 0.1)',
+                        fontFamily: 'var(--font-cormorant), serif',
+                        boxShadow: '0 8px 32px rgba(123, 168, 150, 0.15)',
+                      } : undefined
+                    }}
+                  />
+                  <EditModeProvider>
+                    <GlobalAudioProvider>
+                      <NotificationProvider>
+                        {children}
+                      </NotificationProvider>
+                    </GlobalAudioProvider>
+                  </EditModeProvider>
+                </TranslationProvider>
+              </VoicesMasterControlProvider>
+            </CheckoutProvider>
+          </VoicesStateProvider>
+        </AuthProvider>
+      </WorldProvider>
     </WatchdogProvider>
   );
 }

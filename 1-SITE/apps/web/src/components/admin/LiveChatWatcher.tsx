@@ -363,6 +363,49 @@ export const LiveChatWatcher = () => {
                 ))}
               </ContainerInstrument>
 
+              {/* Reply Input */}
+              <div className="p-4 bg-white border-t border-black/5">
+                <form 
+                  onSubmit={async (e) => {
+                    e.preventDefault();
+                    const form = e.currentTarget;
+                    const input = form.elements.namedItem('reply') as HTMLInputElement;
+                    const message = input.value.trim();
+                    if (!message || !selectedId) return;
+
+                    try {
+                      const res = await fetch('/api/chat/', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ 
+                          action: 'send', 
+                          conversationId: selectedId,
+                          message,
+                          senderType: 'admin'
+                        })
+                      });
+                      if (res.ok) {
+                        input.value = '';
+                        // Berichten worden via SSE of polling bijgewerkt
+                      }
+                    } catch (err) {
+                      console.error("Failed to send reply", err);
+                    }
+                  }}
+                  className="flex gap-2"
+                >
+                  <input 
+                    name="reply"
+                    type="text" 
+                    placeholder="Typ je antwoord..." 
+                    className="flex-1 px-4 py-2 bg-va-off-white rounded-full text-sm border-none focus:ring-2 focus:ring-primary/20 outline-none"
+                  />
+                  <ButtonInstrument type="submit" className="bg-primary text-white text-[10px] font-bold tracking-widest uppercase px-6 py-2 rounded-full">
+                    Verstuur
+                  </ButtonInstrument>
+                </form>
+              </div>
+
               {/* Quick Actions (Future: Intervene) */}
               <div className="p-4 bg-white border-t border-black/5 flex gap-2 overflow-x-auto no-scrollbar">
                 <ButtonInstrument className="whitespace-nowrap bg-va-black text-white text-[10px] font-bold tracking-widest uppercase px-4 py-2 rounded-full flex items-center gap-2">
