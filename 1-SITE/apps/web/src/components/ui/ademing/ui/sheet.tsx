@@ -5,6 +5,11 @@ import * as SheetPrimitive from "@radix-ui/react-dialog";
 import { cva, type VariantProps } from "class-variance-authority";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { 
+  ContainerInstrument, 
+  HeadingInstrument, 
+  TextInstrument 
+} from "../LayoutInstruments";
 
 const Sheet = SheetPrimitive.Root;
 const SheetTrigger = SheetPrimitive.Trigger;
@@ -63,7 +68,7 @@ const SheetContent = React.forwardRef<
       {children}
       <SheetPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-secondary">
         <X className="h-4 w-4" />
-        <span className="sr-only">Close</span>
+        <TextInstrument as="span" className="sr-only">Close</TextInstrument>
       </SheetPrimitive.Close>
     </SheetPrimitive.Content>
   </SheetPortal>
@@ -74,7 +79,7 @@ const SheetHeader = ({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) => (
-  <div
+  <ContainerInstrument
     className={cn(
       "flex flex-col space-y-2 text-center sm:text-left",
       className
@@ -88,7 +93,7 @@ const SheetFooter = ({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) => (
-  <div
+  <ContainerInstrument
     className={cn(
       "flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2",
       className
@@ -104,9 +109,14 @@ const SheetTitle = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <SheetPrimitive.Title
     ref={ref}
-    className={cn("text-lg font-semibold text-foreground", className)}
-    {...props}
-  />
+    asChild
+  >
+    <HeadingInstrument
+      level={2}
+      className={cn("text-lg font-semibold text-foreground", className)}
+      {...props}
+    />
+  </SheetPrimitive.Title>
 ));
 SheetTitle.displayName = SheetPrimitive.Title.displayName;
 
@@ -116,9 +126,13 @@ const SheetDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <SheetPrimitive.Description
     ref={ref}
-    className={cn("text-sm text-muted-foreground", className)}
-    {...props}
-  />
+    asChild
+  >
+    <TextInstrument
+      className={cn("text-sm text-muted-foreground", className)}
+      {...props}
+    />
+  </SheetPrimitive.Description>
 ));
 SheetDescription.displayName = SheetPrimitive.Description.displayName;
 

@@ -16,6 +16,7 @@ import {
   SheetContent,
   SheetTrigger,
 } from "@/components/ui/ademing/ui/sheet";
+import { ContainerInstrument } from "../LayoutInstruments";
 
 export const AdemingNav = () => {
   const pathname = usePathname();
@@ -46,10 +47,10 @@ export const AdemingNav = () => {
         isScrolled ? "bg-white/80 backdrop-blur-md py-4 shadow-soft" : "bg-transparent py-8"
       )}
     >
-      <div className="max-w-6xl mx-auto flex justify-center items-center">
+      <ContainerInstrument className="max-w-6xl mx-auto flex justify-center items-center">
         {/* Center: Logo Only for MVP */}
         <Logo />
-      </div>
+      </ContainerInstrument>
     </nav>
   );
 };

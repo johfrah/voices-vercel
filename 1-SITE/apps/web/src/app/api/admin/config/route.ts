@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
   const type = searchParams.get('type');
 
   // appConfigs en overige types: admin only
-  const publicTypes = ['actor', 'actors', 'music', 'navigation', 'telephony', 'general', 'languages', 'genders', 'journeys', 'worlds', 'media_types', 'countries', 'sectors', 'blueprints', 'demos_enriched', 'telephony_subtypes', 'experience-levels', 'actor-statuses', 'voice-tones'];
+  const publicTypes = ['actor', 'actors', 'music', 'navigation', 'telephony', 'general', 'languages', 'genders', 'journeys', 'worlds', 'media_types', 'countries', 'sectors', 'blueprints', 'demos_enriched', 'telephony_subtypes', 'experience_levels', 'actor_statuses', 'voice_tones'];
   if (!type || !publicTypes.includes(type)) {
     const auth = await requireAdmin();
     if (auth instanceof NextResponse) return auth;
@@ -53,17 +53,17 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ results: results || [] });
     }
 
-    if (type === 'experience-levels') {
+    if (type === 'experience_levels') {
       const { data: results } = await supabase.from('experience_levels').select('*').order('label', { ascending: true });
       return NextResponse.json({ results: results || [] });
     }
 
-    if (type === 'actor-statuses') {
+    if (type === 'actor_statuses') {
       const { data: results } = await supabase.from('actor_statuses').select('*').order('label', { ascending: true });
       return NextResponse.json({ results: results || [] });
     }
 
-    if (type === 'voice-tones') {
+    if (type === 'voice_tones') {
       const { data: results } = await supabase.from('voice_tones').select('*').order('label', { ascending: true });
       return NextResponse.json({ results: results || [] });
     }
@@ -161,29 +161,27 @@ export async function GET(request: NextRequest) {
         const config = await dbWithTimeout(db.select().from(appConfigs).where(eq(appConfigs.key, 'general_settings')).limit(1)) as any[];
         return NextResponse.json({
           general_settings: config[0]?.value || {},
-          ademing_offline: process.env.ADEMING_OFFLINE === 'true',
-          _version: '2.16.091'
+          _version: '2.16.093'
         });
       } catch (err: any) {
         console.warn(`[Admin Config] General settings fetch failed, returning empty: ${err.message}`);
         return NextResponse.json({
           general_settings: {},
-          ademing_offline: process.env.ADEMING_OFFLINE === 'true',
-          _version: '2.16.091'
+          _version: '2.16.093'
         });
       }
     }
 
     if (type === 'actor') {
       const slug = searchParams.get('slug');
-      const lang = searchParams.get('lang') || 'nl';
+      const lang = searchParams.get('lang') || 'nl-BE';
       if (!slug) return NextResponse.json({ error: 'Slug is required' }, { status: 400 });
       const actor = await getActor(slug, lang);
       return NextResponse.json(actor);
     }
 
     if (type === 'actors') {
-      const lang = searchParams.get('lang') || 'nl';
+      const lang = searchParams.get('lang') || 'nl-BE';
       const params: Record<string, string> = {};
       searchParams.forEach((value, key) => {
         if (key !== 'type' && key !== 'lang') params[key] = value;
@@ -260,7 +258,7 @@ export async function POST(request: NextRequest) {
         }
       });
 
-    return NextResponse.json({ success: true, _version: '2.16.091' });
+    return NextResponse.json({ success: true, _version: '2.16.092' });
   } catch (error) {
     console.error('[Admin Config POST Error]:', error);
     return NextResponse.json({ error: 'Failed to update config' }, { status: 500 });

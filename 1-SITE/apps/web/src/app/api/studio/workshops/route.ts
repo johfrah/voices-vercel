@@ -79,7 +79,7 @@ export async function GET() {
     // 1. Fetch Workshops
     const workshopsRaw = await db.execute(sql`
       SELECT
-        w.id, w.title, w.slug, w.description, w.price, w.status, w.media_id, w.meta, w.journey,
+        w.id, w.title, w.slug, w.description, w.price, w.status, w.media_id, w.meta,
         m.file_path AS media_file_path, m.alt_text AS media_alt_text
       FROM workshops w
       LEFT JOIN media m ON m.id = w.media_id
@@ -206,7 +206,7 @@ export async function GET() {
         description: w.description,
         price: w.price,
         status: w.status,
-        journey: w.journey,
+        journey: w.journey ?? 'studio',
         taxonomy,
         skill_dna: (meta.skill_dna as Record<string, number>) || {},
         level: (meta.level as string) || 'Starter',

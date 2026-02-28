@@ -30,7 +30,7 @@ export function PortfolioFooter({ market, actor, activeSocials }: any) {
       <ContainerInstrument className="md:col-span-6 space-y-10">
         <ContainerInstrument className="space-y-6">
           <TextInstrument className="text-4xl font-light tracking-tighter text-va-black">
-            {actorFirstName} <span className="text-primary italic">{actorLastName}</span>
+            {actorFirstName} <TextInstrument as="span" className="text-primary italic">{actorLastName}</TextInstrument>
           </TextInstrument>
           <TextInstrument className="text-xl text-va-black/60 font-light leading-relaxed max-w-md text-left">
             <VoiceglotText 
@@ -106,20 +106,20 @@ export function PortfolioFooter({ market, actor, activeSocials }: any) {
             </TextInstrument>
           )}
 
-          <div className="pt-6 space-y-4">
+          <ContainerInstrument className="pt-6 space-y-4">
             {actor?.phone && (
               <a href={`tel:${actor.phone.replace(/\s+/g, '')}`} className="flex items-center gap-3 text-[15px] font-light text-va-black/60 hover:text-primary transition-colors group">
                 <Phone size={16} strokeWidth={1.5} className="text-primary/40 group-hover:text-primary" />
-                <span>{actor.phone}</span>
+                <TextInstrument as="span">{actor.phone}</TextInstrument>
               </a>
             )}
             {actor?.email && (
               <a href={`mailto:${actor.email}`} className="flex items-center gap-3 text-[15px] font-light text-va-black/60 hover:text-primary transition-colors group">
                 <Mail size={16} strokeWidth={1.5} className="text-primary/40 group-hover:text-primary" />
-                <span>{actor.email}</span>
+                <TextInstrument as="span">{actor.email}</TextInstrument>
               </a>
             )}
-          </div>
+          </ContainerInstrument>
         </ContainerInstrument>
       </ContainerInstrument>
     </ContainerInstrument>

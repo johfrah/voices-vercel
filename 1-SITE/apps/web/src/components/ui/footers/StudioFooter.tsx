@@ -61,12 +61,12 @@ export function StudioFooter({ market, activeSocials, activePhone, activeEmail }
             </li>
           ))}
         </ul>
-        <div className="pt-4 border-t border-black/5 w-full">
+        <ContainerInstrument className="pt-4 border-t border-black/5 w-full">
           <VoicesLink href="/studio/workshops" className="flex items-center gap-2 text-[13px] font-bold text-primary hover:opacity-70 transition-opacity">
             <Calendar size={14} />
             <VoiceglotText translationKey="footer.link.studio.editions" defaultText="Bekijk alle komende edities" />
           </VoicesLink>
-        </div>
+        </ContainerInstrument>
       </ContainerInstrument>
 
       {/* Kolom 4: Contact & Info */}

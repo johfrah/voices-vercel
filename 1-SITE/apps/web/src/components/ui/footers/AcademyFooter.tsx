@@ -15,7 +15,7 @@ export function AcademyFooter({ market, activeSocials, activePhone, activeEmail 
       <ContainerInstrument className="space-y-8 flex flex-col items-start">
         <VoicesLink href="/academy" className="flex items-center gap-3 group justify-start">
           <TextInstrument className="text-2xl font-light tracking-tighter text-va-black">
-            Voices <span className="text-primary italic">Academy</span>
+            Voices <TextInstrument as="span" className="text-primary italic">Academy</TextInstrument>
           </TextInstrument>
         </VoicesLink>
         <TextInstrument className="text-va-black/40 text-lg font-light leading-relaxed max-w-sm text-left">
@@ -72,11 +72,11 @@ export function AcademyFooter({ market, activeSocials, activePhone, activeEmail 
         <ContainerInstrument className="space-y-3">
           <a href={`mailto:${activeEmail}`} className="flex items-center gap-2 text-[15px] font-light text-va-black/60 hover:text-primary transition-colors">
             <Mail size={14} strokeWidth={1.5} />
-            <span>{activeEmail}</span>
+            <TextInstrument as="span">{activeEmail}</TextInstrument>
           </a>
           <a href={`tel:${activePhone.replace(/\s+/g, '')}`} className="flex items-center gap-2 text-[15px] font-light text-va-black/60 hover:text-primary transition-colors">
             <Phone size={14} strokeWidth={1.5} />
-            <span>{activePhone}</span>
+            <TextInstrument as="span">{activePhone}</TextInstrument>
           </a>
         </ContainerInstrument>
       </ContainerInstrument>

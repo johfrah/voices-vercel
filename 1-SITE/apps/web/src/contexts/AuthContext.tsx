@@ -4,6 +4,7 @@ import { createClient } from '@/utils/supabase/client';
 import { User } from '@supabase/supabase-js';
 import { ShieldCheck } from 'lucide-react';
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
+import { ContainerInstrument } from '@/components/ui/LayoutInstruments';
 
 /** Controleert of een error een AbortError is (auth-js gooit soms zonder reason). */
 function isAbortError(err: unknown): boolean {
@@ -230,7 +231,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       logout,
       resetPassword
     }}>
-      <div className="hidden"><ShieldCheck strokeWidth={1.5} /></div>
+      <ContainerInstrument className="hidden"><ShieldCheck strokeWidth={1.5} /></ContainerInstrument>
       {children}
     </AuthContext.Provider>
   );

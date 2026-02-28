@@ -54,14 +54,14 @@ export const CookieBanner: React.FC = () => {
               <ContainerInstrument plain className="space-y-1">
                 <TextInstrument className="text-white text-[16px] font-medium tracking-tight">
                   <VoiceglotText 
-                    translationKey="legal.cookie.title" 
-                    defaultText="Mag Voicy je onthouden?" 
+                    translationKey="legal.cookie.title_v3" 
+                    defaultText="Mogen we je ervaring optimaliseren?" 
                   />
                 </TextInstrument>
                 <TextInstrument className="text-white/60 text-[14px] font-light leading-relaxed">
                   <VoiceglotText  
-                    translationKey="legal.cookie.text_v2" 
-                    defaultText="Accepteer cookies voor een gepersonaliseerde ervaring met Voicy en snellere toegang tot je projecten." 
+                    translationKey="legal.cookie.text_v3" 
+                    defaultText="We gebruiken cookies om je voorkeuren te onthouden en je bezoek aan Voices soepeler te maken." 
                   />{' '}
                   <Link  
                     href="/cookies/" 
@@ -77,13 +77,13 @@ export const CookieBanner: React.FC = () => {
                   onClick={() => handleAccept('all')}
                   className="bg-primary text-va-black px-6 py-2.5 rounded-[18px] text-[15px] font-bold tracking-tight hover:scale-105 transition-all shadow-lg shadow-primary/20"
                 >
-                  <VoiceglotText  translationKey="legal.cookie.accept_v2" defaultText="Ja, graag" />
+                  <VoiceglotText  translationKey="legal.cookie.accept_v3" defaultText="Ja, prima" />
                 </ButtonInstrument>
                 <ButtonInstrument 
                   onClick={() => handleAccept('essential')}
                   className="text-[14px] font-light tracking-tight text-white/40 hover:text-white transition-colors px-3 py-2"
                 >
-                  <VoiceglotText  translationKey="legal.cookie.essential_v2" defaultText="Liever niet" />
+                  <VoiceglotText  translationKey="legal.cookie.essential_v3" defaultText="Instellingen" />
                 </ButtonInstrument>
               </ContainerInstrument>
             </ContainerInstrument>

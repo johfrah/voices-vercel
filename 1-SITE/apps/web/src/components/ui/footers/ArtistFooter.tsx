@@ -56,11 +56,11 @@ export function ArtistFooter({ market, activeSocials, activePhone, activeEmail }
         <ContainerInstrument className="space-y-3">
           <a href={`mailto:${activeEmail}`} className="flex items-center gap-2 text-[15px] font-light text-white/40 hover:text-white transition-colors">
             <Mail size={14} strokeWidth={1.5} />
-            <span>{activeEmail}</span>
+            <TextInstrument as="span">{activeEmail}</TextInstrument>
           </a>
           <a href={`tel:${activePhone.replace(/\s+/g, '')}`} className="flex items-center gap-2 text-[15px] font-light text-white/40 hover:text-white transition-colors">
             <Phone size={14} strokeWidth={1.5} />
-            <span>{activePhone}</span>
+            <TextInstrument as="span">{activePhone}</TextInstrument>
           </a>
         </ContainerInstrument>
       </ContainerInstrument>
