@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
       whereClause = `WHERE id::text ILIKE '%' || $1 || '%' OR billing_email_alt ILIKE '%' || $1 || '%'`;
     }
 
-    const countResult = await db.execute(sql.raw(`SELECT count(*) as value FROM orders_v2 ${whereClause.replace('$1', search ? \`'\${search}'\` : '')}`));
+    const countResult = await db.execute(sql.raw(`SELECT count(*) as value FROM orders_v2 ${whereClause.replace('$1', search ? `'${search}'` : '')}`));
     const countRows: any = Array.isArray(countResult) ? countResult : (countResult.rows || []);
     const totalInDb = countRows[0] ? Number(countRows[0].value || countRows[0].count || 0) : 0;
 
@@ -55,10 +55,10 @@ export async function GET(request: NextRequest) {
         id, user_id, world_id, journey_id, status_id, payment_method_id, 
         amount_net, amount_total, purchase_order, billing_email_alt, created_at
       FROM orders_v2
-      ${whereClause.replace('$1', search ? \`'\${search}'\` : '')}
+      ${whereClause.replace('$1', search ? `'${search}'` : '')}
       ORDER BY created_at DESC
-      LIMIT \${limit}
-      OFFSET \${offset}
+      LIMIT ${limit}
+      OFFSET ${offset}
     `));
 
     const rows: any = Array.isArray(rowsResult) ? rowsResult : (rowsResult.rows || []);

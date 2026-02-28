@@ -261,6 +261,8 @@ export default async function RootLayout({
   
   const isAdeming = market.market_code === 'ADEMING';
   const isOffline = process.env.ADEMING_OFFLINE === 'true';
+  const isAdmin = isAdminRoute; // Simple check for layout logic
+  
   const htmlClass = `${isAdeming ? cormorant.className : raleway.className} ${inter.className} ${cormorant.variable} theme-${isAdeming ? 'ademing' : market.theme} ${raleway.variable}`;
   const bodyClass = cn(
     "pb-24 md:pb-0 touch-manipulation va-main-layout",
@@ -272,7 +274,7 @@ export default async function RootLayout({
   if (isAdminRoute || isStudioPage || (isAdeming && isOffline && !isAdmin)) {
     return (
       <html lang={lang} className={htmlClass} suppressHydrationWarning>
-        <body className={bodyClass}>
+        <body className={bodyClass} suppressHydrationWarning>
           <Providers lang={lang} market={market} initialTranslations={translations} initialJourney={initialJourney} initialUsage={initialUsage}>
             <SafeErrorGuard>
               <Suspense fallback={isAdeming && isOffline ? null : <LoadingScreenInstrument text={isAdminRoute ? "Beheer laden..." : "Studio laden..."} />}>
