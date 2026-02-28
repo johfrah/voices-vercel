@@ -15,9 +15,10 @@ export const VOICES_CONFIG = REAL_CONFIG;
 // 🛡️ CHRIS-PROTOCOL: Schema Exports (Internalized for Vercel)
 // We only export schema on the server to prevent bundling large schema objects in the browser,
 // which can lead to minification collisions (e.g. 'tl' ReferenceError).
-export const schema = typeof window === 'undefined' 
-  ? require('../core-internal/database/schema/index.ts')
-  : {};
+// ⚠️ TDZ WARNING: Do NOT use require() here as it breaks TypeScript module resolution for other files.
+// Instead, we export everything and let the build process handle it, but we renamed internal variables
+// in TranslationContext to avoid the 'tl' collision.
+export * from '../core-internal/database/schema/index.ts';
 
 // 🛡️ CHRIS-PROTOCOL: Conditional DB Export
 // We only export 'db' on the server to prevent bundling 'postgres' in the browser.
