@@ -46,7 +46,7 @@ export class ServerWatchdog {
               payload: scrubbedPayload,
               schema: options.schema,
               extra: options.details,
-              timestamp: new Date().toISOString()
+              timestamp: new Date()
             },
             createdAt: new Date()
           }).catch((e: any) => console.warn('[ServerWatchdog] Direct DB logging failed:', e.message));
