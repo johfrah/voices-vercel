@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import { ContainerInstrument, HeadingInstrument, TextInstrument } from "@/components/ui/LayoutInstruments";
 import { MapPin, Info, ExternalLink } from "lucide-react";
 
@@ -33,9 +34,11 @@ export const InstructorLocationIsland: React.FC<InstructorLocationIslandProps> =
           <div className="flex flex-col bg-white rounded-[30px] overflow-hidden shadow-aura border border-black/[0.01] group hover:shadow-aura-lg transition-all duration-700">
             <div className="relative aspect-[16/9] overflow-hidden">
               {instructor.photo_url ? (
-                <img 
+                <Image 
                   src={instructor.photo_url} 
                   alt={instructor.name}
+                  fill
+                  sizes="(max-width: 768px) 100vw, 50vw"
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                 />
               ) : (

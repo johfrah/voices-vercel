@@ -99,7 +99,7 @@ export function StudioLaunchpad({ initialActors = [], initialJourney }: StudioLa
       }
     };
     fetchConfig();
-  }, [calcUsage]);
+  }, [calcUsage, pricingConfig]);
 
   useEffect(() => {
     if (calcUsage === 'telefonie') {
@@ -190,7 +190,7 @@ export function StudioLaunchpad({ initialActors = [], initialJourney }: StudioLa
       toast.error(err.message || t('launchpad.error.submit', 'Er is iets misgegaan bij het aanvragen. Probeer het later opnieuw.'));
       setIsLaunching(false);
     }
-  }, [script, projectName, clientName, clientCompany, clientEmail, selectedMedia, spotsDetail, yearsDetail, calcWords, deadline, selectedActors, actorNotes, selectedVibe, t]);
+  }, [script, projectName, clientName, clientCompany, clientEmail, selectedMedia, spotsDetail, yearsDetail, calcWords, deadline, selectedActors, actorNotes, selectedVibe, t, router]);
 
   const handleFileDrop = useCallback(async (e: React.DragEvent) => {
     e.preventDefault();

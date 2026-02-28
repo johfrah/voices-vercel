@@ -1,6 +1,7 @@
 "use client";
 
 import { Play, Heart, MessageCircle, Clock, UserCircle } from "lucide-react";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { ElementIcon } from "./ElementIcon";
@@ -37,9 +38,11 @@ export const AdemingTrackCard = ({ track, onClick, variant = "default" }: Ademin
         className="flex items-center gap-3 p-3 bg-white rounded-xl hover:shadow-soft transition-all cursor-pointer group animate-fade-in"
       >
         <ContainerInstrument className="relative flex-shrink-0 w-16 h-16 overflow-hidden rounded-lg">
-          <img
+          <Image
             src={track.cover_image_url}
             alt=""
+            fill
+            sizes="64px"
             className="w-full h-full object-cover"
           />
           <ContainerInstrument className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-opacity" />
@@ -93,9 +96,11 @@ export const AdemingTrackCard = ({ track, onClick, variant = "default" }: Ademin
         </ContainerInstrument>
       )}
       <ContainerInstrument className="relative aspect-[4/5]">
-        <img 
+        <Image 
           src={track.cover_image_url} 
           alt="" 
+          fill
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" 
         />
         <ContainerInstrument className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity" />

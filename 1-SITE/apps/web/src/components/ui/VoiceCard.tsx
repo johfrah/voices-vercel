@@ -98,7 +98,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
 
     window.addEventListener('voices:actor-updated', handleGlobalUpdate as EventListener);
     return () => window.removeEventListener('voices:actor-updated', handleGlobalUpdate as EventListener);
-  }, [voice.id, voice.display_name]);
+  }, [voice.id]);
 
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
@@ -167,7 +167,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
 
     video.addEventListener('timeupdate', handleTimeUpdate);
     return () => video.removeEventListener('timeupdate', handleTimeUpdate);
-  }, [activeVideo, t]);
+  }, [activeVideo, t, isPlaying]);
 
   const cleanDescription = (text: string) => {
     if (!text) return '';
@@ -484,7 +484,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
     }
 
     return { price: SlimmeKassa.format(result.subtotal || 0).replace('', '').trim(), status, mediaBreakdown: result.mediaBreakdown };
-  }, [voice, masterControlState?.journey, masterControlState?.currentStep, masterControlState?.filters, checkoutState?.briefing, checkoutState?.plan, checkoutState?.prompts, checkoutState?.music, eventData?.media, eventData?.spotsDetail, eventData?.yearsDetail, checkoutState?.pricingConfig]);
+  }, [voice, eventData?.media, eventData?.spotsDetail, eventData?.yearsDetail, checkoutState, masterControlState]);
 
   const sectorDemo = useMemo(() => {
     if (!voice) return null;

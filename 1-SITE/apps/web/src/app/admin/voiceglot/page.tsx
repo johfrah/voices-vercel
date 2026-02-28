@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   PageWrapperInstrument, 
   SectionInstrument, 
@@ -49,29 +49,13 @@ export default function VoiceglotMasterPage() {
   const [isFetchingMore, setIsFetchingMore] = useState(false);
 
   const [isSaving, setIsSaving] = useState(false);
-
-  useEffect(() => {
-    fetchTranslations(1, true);
-    fetchStats();
-    
-    // Auto-refresh stats every 10 seconds during healing
-    const interval = setInterval(fetchStats, 10000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    fetchTranslations(1, true);
-  }, [sortBy]);
-
   const [isHealingAll, setIsHealingAll] = useState(false);
 
-  const fetchStats = async () => {
+  const fetchStats = useCallback(async () => {
     console.log('📡 [Voiceglot Page] Fetching stats...');
     try {
-      console.log('📡 [Voiceglot Page] Fetching stats...');
       const res = await fetch('/api/admin/voiceglot/stats');
       const text = await res.text();
-      console.log('📡 [Voiceglot Page] Raw Stats Response:', text);
       
       let data;
       try {
@@ -81,8 +65,6 @@ export default function VoiceglotMasterPage() {
         toast.error('Stats API gaf geen geldige JSON terug');
         return;
       }
-      
-      console.log('📊 [Voiceglot Page] Stats Received:', data);
       
       if (res.ok) {
         setStats(data);
@@ -94,73 +76,15 @@ export default function VoiceglotMasterPage() {
       console.error('❌ [Voiceglot Page] Stats Fetch Failed:', e.message);
       toast.error(`Netwerkfout bij ophalen stats: ${e.message}`);
     }
-  };
+  }, []);
 
-  //  CHRIS-PROTOCOL: Live Polling (Godmode 2026)
-  // We verversen de data elke 5 seconden als er healing bezig is
-  useEffect(() => {
-    const hasHealing = translations.some(t => t.status === 'healing');
-    if (hasHealing || isHealingAll) {
-      const timer = setTimeout(() => {
-        fetchStats();
-        // We verversen alleen de huidige pagina
-        fetchTranslations(page, false);
-      }, 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [translations, isHealingAll, page]);
-
-  const handleHealAll = async () => {
-    if (!confirm('Weet je zeker dat je alle ontbrekende vertalingen wilt genereren via AI? Dit kan even duren.')) return;
-    
-    setIsHealingAll(true);
-    playClick('pro');
-    
-    let totalHealedOverall = 0;
-    let keepGoing = true;
-
-    try {
-      while (keepGoing) {
-        const res = await fetch('/api/admin/voiceglot/heal-all', { method: 'POST' });
-        const data = await res.json();
-        
-        if (res.ok) {
-          totalHealedOverall += data.healedCount;
-          
-          // Als er 0 geheald zijn, betekent dit dat de queue leeg is
-          if (data.healedCount === 0) {
-            keepGoing = false;
-            toast.success(`Healing voltooid! Totaal ${totalHealedOverall} vertalingen gegenereerd.`);
-          } else {
-            // Update UI tussentijds
-            fetchTranslations(1, false);
-            fetchStats();
-            // Korte pauze om de server te ontlasten
-            await new Promise(resolve => setTimeout(resolve, 1000));
-          }
-        } else {
-          throw new Error(data.error || 'Batch healing mislukt');
-        }
-      }
-    } catch (e: any) {
-      console.error('❌ [Voiceglot Page] Auto-Healing Error:', e);
-      toast.error(`Healing gestopt: ${e.message}`);
-    } finally {
-      setIsHealingAll(false);
-      fetchTranslations(1, true);
-      fetchStats();
-      playClick('success');
-    }
-  };
-
-  const fetchTranslations = async (pageNum: number, isInitial: boolean = false) => {
+  const fetchTranslations = useCallback(async (pageNum: number, isInitial: boolean = false) => {
     if (isInitial) setLoading(true);
     else setIsFetchingMore(true);
 
     try {
       const res = await fetch(`/api/admin/voiceglot/list?page=${pageNum}&limit=100&sort=${sortBy}`);
       const text = await res.text();
-      console.log(`📋 [Voiceglot Page] Raw List Response (Page ${pageNum}):`, text);
       
       let data;
       try {
@@ -171,8 +95,6 @@ export default function VoiceglotMasterPage() {
         return;
       }
       
-      console.log(`📋 [Voiceglot Page] List Received (Page ${pageNum}):`, data);
-      
       if (!res.ok) {
         throw new Error(data.error || `Server error ${res.status}`);
       }
@@ -180,11 +102,9 @@ export default function VoiceglotMasterPage() {
       if (isInitial) {
         setTranslations(data.translations || []);
       } else {
-        // Alleen toevoegen als ze er nog niet in zitten (voorkom dubbelen bij polling)
         setTranslations(prev => {
           const existingIds = new Set(prev.map(t => t.id));
           const newItems = (data.translations || []).filter((t: any) => !existingIds.has(t.id));
-          // Als we polling doen (isInitial=false maar pageNum=page), willen we de bestaande items updaten
           if (pageNum === page && !isFetchingMore) {
             return prev.map(item => {
               const updated = (data.translations || []).find((t: any) => t.id === item.id);
@@ -204,7 +124,30 @@ export default function VoiceglotMasterPage() {
       setLoading(false);
       setIsFetchingMore(false);
     }
-  };
+  }, [sortBy, page, isFetchingMore]);
+
+  useEffect(() => {
+    fetchTranslations(1, true);
+    fetchStats();
+    
+    const interval = setInterval(fetchStats, 10000);
+    return () => clearInterval(interval);
+  }, [fetchTranslations, fetchStats]);
+
+  useEffect(() => {
+    fetchTranslations(1, true);
+  }, [sortBy, fetchTranslations]);
+
+  useEffect(() => {
+    const hasHealing = translations.some(t => t.status === 'healing');
+    if (hasHealing || isHealingAll) {
+      const timer = setTimeout(() => {
+        fetchStats();
+        fetchTranslations(page, false);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [translations, isHealingAll, page, fetchStats, fetchTranslations]);
 
   const loadMore = () => {
     if (!isFetchingMore && hasMore) {

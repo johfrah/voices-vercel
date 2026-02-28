@@ -201,7 +201,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
       const timer = setTimeout(validateVat, 800);
       return () => clearTimeout(timer);
     }
-  }, [formData.vat_number, formData.country, playClick, updateCustomer, vatStatus.lastChecked, t]);
+  }, [formData.vat_number, formData.country, formData.address_street, formData.postal_code, formData.city, playClick, updateCustomer, vatStatus.lastChecked, t]);
 
   useEffect(() => {
     // CHRIS-PROTOCOL: Alleen lookup doen als de gebruiker is ingelogd (Privacy Fix)
@@ -235,7 +235,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
       const timer = setTimeout(fetchUserData, 500);
       return () => clearTimeout(timer);
     }
-  }, [formData.email, isAdmin, playClick, updateCustomer]);
+  }, [formData.email, auth.isAuthenticated, playClick, updateCustomer]);
 
   const handleChange = (field: string, value: any) => {
     playClick('light');

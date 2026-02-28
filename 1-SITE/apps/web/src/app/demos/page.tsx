@@ -104,7 +104,7 @@ export default function DemoDiscoveryPage() {
           </div>
           <div className="space-y-2">
             <h1 className="text-3xl font-light tracking-tight text-va-black">Admin Toegang Vereist</h1>
-            <p className="text-va-black/40 font-light">Deze pagina is momenteel in 'Masterclass' ontwikkeling en alleen toegankelijk voor beheerders.</p>
+            <p className="text-va-black/40 font-light">Deze pagina is momenteel in &apos;Masterclass&apos; ontwikkeling en alleen toegankelijk voor beheerders.</p>
           </div>
           <button 
             onClick={() => window.location.href = '/'}
@@ -136,7 +136,7 @@ export default function DemoDiscoveryPage() {
               Ontdek de *stem* van jouw sector.
             </HeadingInstrument>
             <TextInstrument className="text-xl md:text-2xl font-light text-va-black/40 leading-tight tracking-tight max-w-2xl">
-              Verken duizenden geanalyseerde demo's en blueprints, direct gekoppeld aan jouw branche.
+              Verken duizenden geanalyseerde demo&apos;s en blueprints, direct gekoppeld aan jouw branche.
             </TextInstrument>
           </div>
 
@@ -226,7 +226,7 @@ export default function DemoDiscoveryPage() {
                       <div className="space-y-1">
                         <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/60">{demo.sector_name || "Algemeen"}</p>
                         <h3 className="text-2xl font-light tracking-tight text-va-black">{demo.actor_name}</h3>
-                        <p className="text-[14px] text-va-black/40 font-light italic">"{demo.name}"</p>
+                        <p className="text-[14px] text-va-black/40 font-light italic">&quot;{demo.name}&quot;</p>
                       </div>
                       <button 
                         onClick={() => setActiveDemoId(activeDemoId === demo.id ? null : demo.id)}
@@ -276,7 +276,7 @@ export default function DemoDiscoveryPage() {
                   <div className="w-20 h-20 bg-va-off-white rounded-full flex items-center justify-center mx-auto text-va-black/10">
                     <Search size={40} strokeWidth={1} />
                   </div>
-                  <h3 className="text-2xl font-light text-va-black/40">Geen demo's gevonden voor deze filters.</h3>
+                  <h3 className="text-2xl font-light text-va-black/40">Geen demo&apos;s gevonden voor deze filters.</h3>
                   <button onClick={() => { setSelectedSector(null); setSearchQuery(""); }} className="text-primary font-bold uppercase tracking-widest text-[11px] hover:underline">Reset Filters</button>
                 </div>
               )}

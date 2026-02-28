@@ -6,7 +6,7 @@ import { CSS } from '@dnd-kit/utilities';
 import Image from 'next/image';
 import { ContainerInstrument, HeadingInstrument, TextInstrument, ButtonInstrument, InputInstrument } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
-import { CheckCircle2, Clock, MoreVertical, Save, GripVertical } from 'lucide-react';
+import { CheckCircle2, Clock, MoreVertical, Save, GripVertical, Settings } from 'lucide-react';
 
 interface SortableActorRowProps {
   actor: any;

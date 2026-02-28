@@ -208,11 +208,10 @@ function HomeContent({
       shown_count: (result || []).length || 0,
       shown_names: (result || []).map(a => `${a?.display_name || '?'} (Native: ${a?.native_lang || '?'}, Country: ${a?.country || '?'})`),
       hidden_count: (actors || []).length - ((result || []).length || 0),
-      hidden_names: (actors || []).filter(a => !((result || []).find(r => r?.id === a?.id))).map(a => `${a?.display_name || '?'} (Native: ${a?.native_lang || '?'})`)
     });
 
     return result || [];
-    }, [actors, masterControlState?.journey, masterControlState?.filters, checkoutState?.selectedActor?.id, masterControlState?.currentStep, market]);
+    }, [actors, checkoutState?.selectedActor?.id, marketCode, masterControlState]);
 
   const isTelephony = customerDNA?.intelligence?.lastIntent === 'telephony' || customerDNA?.intelligence?.detectedSector === 'it';
 
@@ -264,7 +263,7 @@ function HomeContent({
     });
 
     return Array.from(extraLangsSet).sort();
-  }, [actors, masterControlState?.journey, masterControlState?.filters?.language]);
+  }, [actors, masterControlState]);
 
   //  CHRIS-PROTOCOL: Dynamic Filters from DB
   const filters = useMemo(() => {
@@ -757,7 +756,7 @@ export default function Home() {
       });
 
     return () => controller.abort();
-  }, [mounted, searchParamsKey]);
+  }, [mounted, searchParamsKey, data]);
 
   if (!mounted || (!data && isLoading)) {
     return (

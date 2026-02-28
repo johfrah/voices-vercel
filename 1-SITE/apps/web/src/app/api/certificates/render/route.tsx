@@ -46,6 +46,7 @@ export async function GET(request: NextRequest) {
           }}
         >
           {/* Legacy Background */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img 
             src={bgUrl} 
             alt="background"

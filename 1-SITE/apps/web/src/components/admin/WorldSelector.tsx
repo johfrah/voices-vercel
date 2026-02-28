@@ -66,7 +66,7 @@ export const WorldSelector = () => {
           </div>
           
           <div className="mt-4 p-4 bg-va-off-white rounded-[16px] text-[11px] text-va-black/40 leading-relaxed italic">
-            "Switching worlds updates all dashboard data and logs to the selected unit."
+            &quot;Switching worlds updates all dashboard data and logs to the selected unit.&quot;
           </div>
         </Dialog.Content>
       </Dialog.Portal>

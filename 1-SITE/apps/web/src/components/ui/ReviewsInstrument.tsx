@@ -240,7 +240,7 @@ export const ReviewsInstrument: React.FC<{
       .sort((a, b) => b[1] - a[1])
       .slice(0, 8)
       .map((entry: [string, any]) => entry[0]);
-  }, [localReviews]);
+  }, [localReviews, reviews]);
 
   // 🛡️ CHRIS-PROTOCOL: Sector Discovery (v2.14.764)
   const availableSectors = useMemo(() => {
@@ -251,19 +251,19 @@ export const ReviewsInstrument: React.FC<{
     return Array.from(s).sort();
   }, [localReviews]);
 
-  const checkScroll = () => {
+  const checkScroll = useCallback(() => {
     if (scrollRef.current) {
       const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
       setCanScrollLeft(scrollLeft > 10);
       setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10);
     }
-  };
+  }, []);
 
   useEffect(() => {
     checkScroll();
     window.addEventListener('resize', checkScroll);
     return () => window.removeEventListener('resize', checkScroll);
-  }, [filteredReviews]);
+  }, [filteredReviews, checkScroll]);
 
   const scroll = (direction: 'left' | 'right') => {
     if (scrollRef.current) {

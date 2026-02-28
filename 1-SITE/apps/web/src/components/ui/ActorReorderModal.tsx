@@ -197,7 +197,7 @@ export const ActorReorderModal = ({ isOpen, onClose, language, actors: initialAc
       
       setItems(filtered);
     }
-  }, [isOpen, initialActors, language]);
+  }, [isOpen, initialActors, language, market.market_code, market.primary_language]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {

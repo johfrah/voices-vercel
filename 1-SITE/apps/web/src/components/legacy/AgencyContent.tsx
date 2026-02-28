@@ -4,7 +4,7 @@ import ConfiguratorPageClient from '@/app/checkout/configurator/ConfiguratorPage
 import { CheckoutForm } from '@/components/checkout/CheckoutForm';
 import { PricingSummary } from '@/components/checkout/PricingSummary';
 import { QuoteDownloadButton } from '@/components/checkout/QuoteDownloadButton';
-import { ContainerInstrument, HeadingInstrument, LoadingScreenInstrument, TextInstrument } from "@/components/ui/LayoutInstruments";
+import { ContainerInstrument, HeadingInstrument, LoadingScreenInstrument, TextInstrument, ButtonInstrument } from "@/components/ui/LayoutInstruments";
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { VoiceGrid } from "@/components/ui/VoiceGrid";
 import { VoicesMasterControl } from "@/components/ui/VoicesMasterControl";

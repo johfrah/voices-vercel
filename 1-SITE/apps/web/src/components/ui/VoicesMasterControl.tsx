@@ -241,7 +241,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
         updateFilters({ countryId: match.id, country: null });
       }
     }
-  }, [languagesData, gendersData, journeysData, mediaTypesData, countriesData, filteredLanguagesData, filteredGendersData, filteredCountriesData, state.filters.language, state.filters.gender, state.filters.country]);
+  }, [languagesData, gendersData, journeysData, mediaTypesData, countriesData, filteredLanguagesData, filteredGendersData, filteredCountriesData, state.filters.language, state.filters.gender, state.filters.country, state.filters.languageId, state.filters.genderId, state.filters.countryId, updateFilters]);
 
   const handleReorderClick = (language: string) => {
     setReorderLanguage(language);
@@ -388,7 +388,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
     // We prefer ISO-specific codes (e.g. nl-be, nl-nl) over general codes (e.g. nl).
     const uniqueLangsMap = new Map<string, any>();
     
-    filteredLanguagesData.forEach(l => {
+    (filteredLanguagesData || []).forEach(l => {
       const cleanLabel = l.label.replace(/\s*\(algemeen\)\s*/i, '').trim();
       const existing = uniqueLangsMap.get(cleanLabel);
       
@@ -447,7 +447,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
     }));
 
     return mappedConfig;
-  }, [languagesData, activeJourneyId, actors]);
+  }, [activeJourneyId, actors, filteredLanguagesData]);
 
   const sortedLanguages = useMemo(() => {
     // 🛡️ CHRIS-PROTOCOL: Nuclear Safety Guard (v2.15.070)

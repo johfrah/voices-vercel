@@ -36,10 +36,7 @@ export const PricingSummary: React.FC<{
   const { t } = useTranslation();
   
   // CHRIS-PROTOCOL: Hydration Guard to prevent Error #419
-  if (!isHydrated) return null;
-
   const [selectedItem, setSelectedItem] = useState<any>(null);
-
   const [couponCode, setCouponCode] = useState('');
   const [isApplyingCoupon, setIsCouponApplying] = useState(false);
   const [couponError, setCouponError] = useState<string | null>(null);
@@ -48,6 +45,7 @@ export const PricingSummary: React.FC<{
   const [reviewStats, setReviewStats] = useState<{ averageRating: number, totalCount: number } | null>(null);
 
   useEffect(() => {
+    if (!isHydrated) return;
     const fetchStats = async () => {
       try {
         //  CHRIS-PROTOCOL: Fetch stats directly from public API to avoid proxy overhead and admin auth
@@ -59,7 +57,7 @@ export const PricingSummary: React.FC<{
       }
     };
     fetchStats();
-  }, []);
+  }, [isHydrated]);
 
   const applyCoupon = async () => {
     const cleanCode = couponCode.trim().toUpperCase();
@@ -202,6 +200,8 @@ export const PricingSummary: React.FC<{
   const vatRate = isVatExempt ? 0 : 0.21;
   const tax = subtotalAfterDiscount * vatRate;
   const total = subtotalAfterDiscount + tax;
+
+  if (!isHydrated) return null;
 
   return (
     <ContainerInstrument className={cn("space-y-6 w-full max-w-full", className)}>

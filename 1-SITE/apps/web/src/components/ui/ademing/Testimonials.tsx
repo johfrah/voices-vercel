@@ -1,6 +1,7 @@
 "use client";
 
 import React from 'react';
+import Image from 'next/image';
 import { Quote } from "lucide-react";
 import { VoiceglotText } from "../VoiceglotText";
 import { 
@@ -74,11 +75,13 @@ export const Testimonials = () => {
               </ContainerInstrument>
               
               <ContainerInstrument className="flex items-center gap-5 pt-8 border-t border-black/5">
-                <ContainerInstrument className="h-16 w-16 rounded-full overflow-hidden border-4 border-primary/10 shadow-medium">
+                <ContainerInstrument className="h-16 w-16 rounded-full overflow-hidden border-4 border-primary/10 shadow-medium relative">
                   {testimonial.image ? (
-                    <img
+                    <Image
                       src={testimonial.image}
                       alt={testimonial.name}
+                      fill
+                      sizes="64px"
                       className="h-full w-full object-cover"
                     />
                   ) : (

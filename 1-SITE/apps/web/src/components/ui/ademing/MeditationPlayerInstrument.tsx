@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import {
   Play, Pause, X, Heart, Minimize2,
   Flame, Droplet, Wind, Leaf, Music, RotateCcw,
@@ -259,13 +260,19 @@ export const MeditationPlayerInstrument = ({
             "relative z-10 w-48 h-48 md:w-64 md:h-64 rounded-full border-8 border-white/10 overflow-hidden shadow-[0_0_80px_rgba(0,0,0,0.5)] transition-all duration-1000",
             isPlaying ? "scale-110 border-primary/20" : "scale-100"
           )}>
-            <img src={track.cover_image_url} alt="" className="w-full h-full object-cover" />
+            <Image 
+              src={track.cover_image_url} 
+              alt="" 
+              fill
+              sizes="(max-width: 768px) 192px, 256px"
+              className="w-full h-full object-cover" 
+            />
           </div>
           
           {/* Subtitles / Intentions */}
           <div className="mt-20 max-w-3xl text-center px-6">
             <p className="text-2xl md:text-4xl font-serif italic text-white/90 leading-relaxed drop-shadow-2xl animate-gentle-pulse">
-              "Laat je adem de weg wijzen naar binnen."
+              &quot;Laat je adem de weg wijzen naar binnen.&quot;
             </p>
           </div>
         </div>

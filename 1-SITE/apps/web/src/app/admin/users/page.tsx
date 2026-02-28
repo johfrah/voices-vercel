@@ -16,7 +16,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useWorld } from '@/contexts/WorldContext';
 import { ArrowLeft, Edit3, Loader2, Mail, MoreHorizontal, Search as SearchIcon, Shield, UserPlus, Users, RefreshCw, Ghost } from 'lucide-react';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { toast } from 'react-hot-toast';
 
 export const dynamic = 'force-dynamic';
@@ -34,7 +34,7 @@ export default function AdminUsersPage() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     setLoading(true);
     try {
       const worldParam = activeWorld ? `?world=${activeWorld.code}` : '';
@@ -48,11 +48,11 @@ export default function AdminUsersPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [activeWorld]);
 
   useEffect(() => {
     fetchUsers();
-  }, [activeWorld]);
+  }, [fetchUsers]);
 
   //  CHRIS-PROTOCOL: Build Safety
   if (process.env.NEXT_PHASE === 'phase-production-build') {

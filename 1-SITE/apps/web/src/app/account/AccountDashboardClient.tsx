@@ -37,7 +37,8 @@ import {
   ExternalLink,
   Shield,
   Bell,
-  CheckCircle2
+  CheckCircle2,
+  Sparkles
 } from 'lucide-react';
 import { VoicesLink as Link } from '@/components/ui/VoicesLink';
 import { useTranslation } from '@/contexts/TranslationContext';

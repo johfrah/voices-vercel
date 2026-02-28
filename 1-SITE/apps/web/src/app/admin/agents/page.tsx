@@ -111,7 +111,7 @@ export default function AgentControlCenter() {
     }
   };
 
-  if (isLoading) return <LoadingScreenInstrument message="Gegevens ophalen..." />;
+  if (isLoading) return <LoadingScreenInstrument text="Gegevens ophalen..." />;
 
   return (
     <PageWrapperInstrument className="min-h-screen bg-va-off-white p-8 pt-24">

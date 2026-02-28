@@ -227,7 +227,7 @@ export const LiveChatWatcher = () => {
     };
 
     return () => eventSource.close();
-  }, [selectedId]);
+  }, [selectedId, messages]);
 
   useEffect(() => {
     if (scrollRef.current) {

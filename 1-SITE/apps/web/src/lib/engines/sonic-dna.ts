@@ -155,14 +155,8 @@ export const sonicDNA = new SonicDNA();
 
 export const useSonicDNA = () => {
   // 🛡️ CHRIS-PROTOCOL: Resilient Context Access (v2.14.787)
-  // We use a try/catch or a safe check to prevent ReferenceError during module evaluation.
-  let masterControl: any = null;
-  try {
-    masterControl = useContext(VoicesMasterControlContext);
-  } catch (e) {
-    // Silently fail during evaluation
-  }
-  
+  // We use a safe check to prevent ReferenceError during module evaluation.
+  const masterControl = useContext(VoicesMasterControlContext);
   const state = masterControl?.state;
   
   const playClick = useCallback((type: 'soft' | 'pro' | 'pop' | 'success' | 'lock' | 'unlock' = 'soft') => {

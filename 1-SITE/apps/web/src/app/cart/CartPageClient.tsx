@@ -43,7 +43,7 @@ export default function CartPageClient() {
       } catch (e) {}
     };
     fetchStats();
-  }, []);
+  }, [isHydrated]);
 
   if (!isHydrated) return <LoadingScreenInstrument />;
 

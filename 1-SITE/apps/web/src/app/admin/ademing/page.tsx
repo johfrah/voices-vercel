@@ -10,8 +10,9 @@ import {
   LoadingScreenInstrument
 } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Plus, Search, Edit, Trash2, Eye, EyeOff, Sparkles, Music, Clock, User, LayoutGrid, List } from "lucide-react";
+import Image from "next/image";
 import { createClient } from "@supabase/supabase-js";
 import toast from "react-hot-toast";
 import { AdemingSmartUpload } from "@/components/ui/ademing/admin/AdemingSmartUpload";
@@ -32,11 +33,25 @@ export default function AdemingAdminPage() {
   const [editingTrack, setEditingTrack] = useState<any | null>(null);
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('table');
 
-  useEffect(() => {
-    checkAuth();
+  const loadTracks = useCallback(async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from("ademing_tracks")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+      setTracks(data || []);
+    } catch (error: any) {
+      console.error("Error loading tracks:", error);
+      toast.error("Kon meditaties niet laden: " + error.message);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  const checkAuth = async () => {
+  const checkAuth = useCallback(async () => {
     const { data: { user } } = await supabase.auth.getUser();
     
     if (!user) {
@@ -56,25 +71,11 @@ export default function AdemingAdminPage() {
     } else {
       setIsAuthorized(false);
     }
-  };
+  }, [loadTracks]);
 
-  const loadTracks = async () => {
-    try {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from("ademing_tracks")
-        .select("*")
-        .order("created_at", { ascending: false });
-
-      if (error) throw error;
-      setTracks(data || []);
-    } catch (error: any) {
-      console.error("Error loading tracks:", error);
-      toast.error("Kon meditaties niet laden: " + error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
 
   const filteredTracks = tracks.filter(t => 
     t.title.toLowerCase().includes(searchQuery.toLowerCase())
@@ -85,8 +86,8 @@ export default function AdemingAdminPage() {
     return null;
   }
 
-  if (isAuthorized === null) return <LoadingScreenInstrument message="Toegang controleren..." />;
-  if (loading && tracks.length === 0) return <LoadingScreenInstrument message="Ademing content laden..." />;
+  if (isAuthorized === null) return <LoadingScreenInstrument text="Toegang controleren..." />;
+  if (loading && tracks.length === 0) return <LoadingScreenInstrument text="Ademing content laden..." />;
 
   return (
     <PageWrapperInstrument className="min-h-screen bg-va-off-white p-8 pt-24">
@@ -191,9 +192,9 @@ export default function AdemingAdminPage() {
                   <tr key={track.id} className="group hover:bg-va-off-white/30 transition-colors">
                     <td className="px-8 py-6">
                       <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-xl bg-primary/5 flex items-center justify-center text-primary overflow-hidden">
+                        <div className="w-12 h-12 rounded-xl bg-primary/5 flex items-center justify-center text-primary overflow-hidden relative">
                           {track.cover_image_url ? (
-                            <img src={track.cover_image_url} alt="" className="w-full h-full object-cover" />
+                            <Image src={track.cover_image_url} alt="" fill className="object-cover" sizes="48px" />
                           ) : (
                             <Music size={20} />
                           )}
@@ -280,7 +281,7 @@ export default function AdemingAdminPage() {
               <div key={track.id} className="group bg-white rounded-[32px] border border-black/[0.03] shadow-sm hover:shadow-aura transition-all overflow-hidden flex flex-col">
                 <div className="aspect-video relative overflow-hidden">
                   {track.cover_image_url ? (
-                    <img src={track.cover_image_url} alt="" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                    <Image src={track.cover_image_url} alt="" fill className="object-cover group-hover:scale-110 transition-transform duration-700" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw" />
                   ) : (
                     <div className="w-full h-full bg-primary/5 flex items-center justify-center text-primary/20">
                       <Music size={48} />

@@ -2,6 +2,7 @@
 
 import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import { cn } from '@/lib/utils';
+import { ButtonInstrument, ContainerInstrument } from '@/components/ui/LayoutInstruments';
 import { Maximize, Pause, Play, RotateCcw, Volume2, VolumeX } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
 

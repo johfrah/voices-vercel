@@ -17,9 +17,10 @@ interface BentoGridProps {
   className?: string;
   columns?: number;
   id?: string;
+  strokeWidth?: number;
 }
 
-export function BentoGrid({ children, className, columns = 3, id }: BentoGridProps) {
+export function BentoGrid({ children, className, columns = 3, id, strokeWidth }: BentoGridProps) {
   const { isEditMode } = useEditMode();
   const gridCols = {
     1: 'grid-cols-1',

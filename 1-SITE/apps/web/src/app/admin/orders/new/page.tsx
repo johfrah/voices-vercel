@@ -8,7 +8,8 @@ import {
   TextInstrument, 
   ButtonInstrument,
   FixedActionDockInstrument,
-  LoadingScreenInstrument
+  LoadingScreenInstrument,
+  LabelInstrument
 } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useAdminTracking } from '@/hooks/useAdminTracking';
@@ -146,8 +147,8 @@ export default function NewOrderPage() {
     }
   };
 
-  if (!isMounted) return <LoadingScreenInstrument message="Systeem initialiseren..." />;
-  if (isLoadingUsers) return <LoadingScreenInstrument message="Klantgegevens laden..." />;
+  if (!isMounted) return <LoadingScreenInstrument text="Systeem initialiseren..." />;
+  if (isLoadingUsers) return <LoadingScreenInstrument text="Klantgegevens laden..." />;
 
   return (
     <PageWrapperInstrument className="min-h-screen bg-va-off-white p-8 pt-24">
@@ -177,7 +178,7 @@ export default function NewOrderPage() {
           <div className="bg-white rounded-[20px] p-10 border border-black/[0.03] shadow-sm space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="space-y-3">
-                <label className="text-[11px] font-medium tracking-[0.2em] text-va-black/30 uppercase Raleway">Selecteer Klant</label>
+                <LabelInstrument className="text-[11px] font-medium tracking-[0.2em] text-va-black/30 uppercase Raleway">Selecteer Klant</LabelInstrument>
                 <select 
                   value={selectedUserId}
                   onChange={(e) => setSelectedUserId(e.target.value === 'new' ? 'new' : parseInt(e.target.value))}
@@ -194,7 +195,7 @@ export default function NewOrderPage() {
               </div>
 
               <div className="space-y-3">
-                <label className="text-[11px] font-medium tracking-[0.2em] text-va-black/30 uppercase Raleway">Journey</label>
+                <LabelInstrument className="text-[11px] font-medium tracking-[0.2em] text-va-black/30 uppercase Raleway">Journey</LabelInstrument>
                 <div className="flex bg-va-off-white/50 border border-black/[0.03] rounded-[10px] p-1">
                   {(['agency', 'studio', 'academy'] as const).map((j) => (
                     <button
@@ -223,7 +224,7 @@ export default function NewOrderPage() {
               {items.map((item, index) => (
                 <div key={index} className="grid grid-cols-[1fr_100px_150px_50px] gap-4 items-end p-6 bg-va-off-white/20 rounded-[15px] border border-black/[0.02]">
                   <div className="space-y-2">
-                    <label className="text-[10px] font-medium tracking-widest text-va-black/20 uppercase">Omschrijving</label>
+                    <LabelInstrument className="text-[10px] font-medium tracking-widest text-va-black/20 uppercase">Omschrijving</LabelInstrument>
                     <input 
                       type="text"
                       placeholder="Bijv. Voice-over opname..."
@@ -233,7 +234,7 @@ export default function NewOrderPage() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[10px] font-medium tracking-widest text-va-black/20 uppercase">Aantal</label>
+                    <LabelInstrument className="text-[10px] font-medium tracking-widest text-va-black/20 uppercase">Aantal</LabelInstrument>
                     <input 
                       type="number"
                       min="1"
@@ -243,7 +244,7 @@ export default function NewOrderPage() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[10px] font-medium tracking-widest text-va-black/20 uppercase">Prijs (€)</label>
+                    <LabelInstrument className="text-[10px] font-medium tracking-widest text-va-black/20 uppercase">Prijs (€)</LabelInstrument>
                     <input 
                       type="number"
                       step="0.01"
@@ -264,7 +265,7 @@ export default function NewOrderPage() {
 
             <div className="flex justify-end pt-6 border-t border-black/[0.03]">
               <div className="text-right space-y-1">
-                <div className="text-[11px] font-medium tracking-[0.2em] text-va-black/30 uppercase">Totaal (Excl. BTW)</div>
+                <LabelInstrument className="text-[11px] font-medium tracking-[0.2em] text-va-black/30 uppercase">Totaal (Excl. BTW)</LabelInstrument>
                 <div className="text-4xl font-medium tracking-tighter text-va-black">
                   €{calculateTotal().toFixed(2)}
                 </div>
@@ -275,7 +276,7 @@ export default function NewOrderPage() {
           {/* Notities & Yuki Sectie */}
           <div className="bg-white rounded-[20px] p-10 border border-black/[0.03] shadow-sm space-y-8">
             <div className="space-y-3">
-              <label className="text-[11px] font-medium tracking-[0.2em] text-va-black/30 uppercase Raleway">Interne Notities</label>
+              <LabelInstrument className="text-[11px] font-medium tracking-[0.2em] text-va-black/30 uppercase Raleway">Interne Notities</LabelInstrument>
               <textarea 
                 value={internalNotes}
                 onChange={(e) => setInternalNotes(e.target.value)}
@@ -291,7 +292,7 @@ export default function NewOrderPage() {
                 </div>
                 <div>
                   <div className="text-[15px] font-medium tracking-tight">Direct Yuki Factuur aanmaken</div>
-                  <div className="text-[12px] font-light text-va-black/40 tracking-tight">De order wordt direct als 'verwerkt' naar Yuki gestuurd.</div>
+                  <div className="text-[12px] font-light text-va-black/40 tracking-tight">De order wordt direct als &apos;verwerkt&apos; naar Yuki gestuurd.</div>
                 </div>
               </div>
               <button 

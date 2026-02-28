@@ -15,6 +15,8 @@ export interface ButtonInstrumentProps extends ButtonHTMLAttributes<HTMLButtonEl
   size?: 'default' | 'sm' | 'lg' | 'icon' | 'none';
   noTranslate?: boolean;
   ariaLabel?: string;
+  target?: string;
+  download?: any;
 }
 
 export const ClientButtonInstrument = forwardRef<HTMLButtonElement, ButtonInstrumentProps>(({ 
@@ -26,6 +28,8 @@ export const ClientButtonInstrument = forwardRef<HTMLButtonElement, ButtonInstru
   size = 'default',
   noTranslate,
   ariaLabel,
+  target,
+  download,
   ...props
 }, ref) => {
   const { playClick } = useSonicDNA();
@@ -56,6 +60,8 @@ export const ClientButtonInstrument = forwardRef<HTMLButtonElement, ButtonInstru
       ref={ref}
       type={Component === 'button' ? type : undefined}
       href={(Component === 'a' || Component === Link || (Component as any).displayName === 'VoicesLink' || (Component as any).name === 'VoicesLink' || (Component as any).name === 'Link') ? href : undefined}
+      target={target}
+      download={download}
       className={cn(
         "rounded-[10px] active:scale-95 transition-all duration-500 text-[15px] ease-va-bezier inline-flex items-center justify-center whitespace-nowrap cursor-pointer",
         !className.includes('font-') && "font-light",

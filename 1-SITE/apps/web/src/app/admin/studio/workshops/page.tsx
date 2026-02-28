@@ -82,7 +82,7 @@ export default async function StudioAdminWorkshopsPage() {
             </div>
             <div>
               <TextInstrument className="font-black text-amber-900 uppercase tracking-tight">Actie Vereist</TextInstrument>
-              <TextInstrument className="text-amber-700/70 text-sm font-medium">{needsAction.length} edities liggen in het verleden maar staan nog op 'upcoming'.</TextInstrument>
+              <TextInstrument className="text-amber-700/70 text-sm font-medium">{needsAction.length} edities liggen in het verleden maar staan nog op &apos;upcoming&apos;.</TextInstrument>
             </div>
           </div>
           <Link href="/admin/studio/workshops/audit" className="va-btn-pro !bg-amber-200 !text-amber-900 !text-[11px]">START AUTO-HEAL</Link>

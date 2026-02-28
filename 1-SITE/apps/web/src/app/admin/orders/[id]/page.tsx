@@ -86,7 +86,7 @@ export default function OrderDetailPage() {
     }
   };
 
-  if (isLoading) return <LoadingScreenInstrument message="Order details laden..." />;
+  if (isLoading) return <LoadingScreenInstrument text="Order details laden..." />;
   if (!order) return <div className="p-20 text-center">Order niet gevonden.</div>;
 
   return (

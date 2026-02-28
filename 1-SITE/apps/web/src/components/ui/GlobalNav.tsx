@@ -367,7 +367,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
     };
 
     fetchNavConfig();
-  }, [market.market_code, pathname, getJourneyKey, isAdmin]);
+  }, [market.market_code, pathname, getJourneyKey, isAdmin, initialNavConfig, links.length]);
 
   const saveNav = async (newLinks: any[], newLogo?: any) => {
     try {

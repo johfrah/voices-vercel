@@ -186,7 +186,7 @@ export const VoicyChatV2: React.FC = () => {
       window.removeEventListener('voices:persona_change', handlePersonaChange);
       window.removeEventListener('voicy:open', handleOpenVoicy);
     };
-  }, [playSonicClick]);
+  }, [playSonicClick, t]);
 
   //  BUTLER BRIDGE: Execute suggested actions from Voicy
   useEffect(() => {
@@ -444,7 +444,9 @@ export const VoicyChatV2: React.FC = () => {
     updateMusic,
     t,
     conversationId,
-    isAuthenticated
+    isAuthenticated,
+    state.pricingConfig?.wordsPerMinute,
+    state.prompts
   ]);
 
   //  CHRIS-PROTOCOL: Escape key support for closing the chat
@@ -547,7 +549,7 @@ export const VoicyChatV2: React.FC = () => {
 
     window.addEventListener('voicy:suggestion', handleSuggestion);
     return () => window.removeEventListener('voicy:suggestion', handleSuggestion);
-  }, [playSonicClick, market.market_code, pathname]);
+  }, [playSonicClick, market.market_code, pathname, t]);
 
   //  UCI Integration: Fetch Customer 360 data when authenticated
   useEffect(() => {
@@ -579,7 +581,7 @@ export const VoicyChatV2: React.FC = () => {
       }
     };
     fetchUCI();
-  }, [isAuthenticated, isAdmin, user, isPortfolioJourney]);
+  }, [isAuthenticated, isAdmin, user, isPortfolioJourney, t]);
 
   //  Real-time SSE Integration
   useEffect(() => {
@@ -642,7 +644,7 @@ export const VoicyChatV2: React.FC = () => {
         eventSource = null;
       }
     };
-  }, [isOpen, conversationId, playSonicClick]); //  Removed messages from dependency array to prevent constant reconnects, logic uses functional updates
+  }, [isOpen, conversationId, playSonicClick, language]); //  Removed messages from dependency array to prevent constant reconnects, logic uses functional updates
 
   useEffect(() => {
     if (!isInitialLoading && messages.length === 0) {
@@ -670,7 +672,7 @@ export const VoicyChatV2: React.FC = () => {
         }
       ]);
     }
-  }, [messages.length, isInitialLoading, isPortfolioJourney, t, user, customer360, hasConsent]);
+  }, [messages.length, isInitialLoading, isPortfolioJourney, t, user, customer360, hasConsent, isJohfrah]);
 
   useEffect(() => {
     if (scrollRef.current) {

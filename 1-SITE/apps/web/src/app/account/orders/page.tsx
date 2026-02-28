@@ -62,7 +62,7 @@ export default function OrdersPage() {
     }
   }, [highlightedOrderId, ordersList]);
 
-  if (isLoading) return <LoadingScreenInstrument message={t('account.orders.loading', "Bestellingen laden...")} />;
+  if (isLoading) return <LoadingScreenInstrument text={t('account.orders.loading', "Bestellingen laden...")} />;
 
   return (
     <PageWrapperInstrument>
@@ -201,7 +201,7 @@ export default function OrdersPage() {
                                     <div className="mt-6 pt-6 border-t border-black/[0.03]">
                                       <LabelInstrument className="text-[10px] font-bold tracking-[0.2em] text-va-black/20 uppercase mb-3 block">Jouw Script / Briefing</LabelInstrument>
                                       <div className="bg-white p-6 rounded-[15px] border border-black/[0.02] shadow-inner italic text-va-black/70 leading-relaxed font-light text-[15px] whitespace-pre-wrap">
-                                        "{item.metaData.script || item.metaData.briefing}"
+                                        &quot;{item.metaData.script || item.metaData.briefing}&quot;
                                       </div>
                                     </div>
                                   )}

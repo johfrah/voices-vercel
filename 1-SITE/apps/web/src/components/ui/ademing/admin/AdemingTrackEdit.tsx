@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import { 
   ContainerInstrument, 
   HeadingInstrument, 
@@ -277,7 +278,7 @@ export const AdemingTrackEdit = ({ track, open, onOpenChange, onSaved }: Ademing
                 <TextInstrument className="text-[11px] font-bold uppercase tracking-widest text-va-black/20 mb-4">Media Preview</TextInstrument>
                 <ContainerInstrument plain className="aspect-video bg-white rounded-xl border border-black/5 flex items-center justify-center overflow-hidden relative">
                   {formData.cover_image_url ? (
-                    <img src={formData.cover_image_url} alt="" className="w-full h-full object-cover" />
+                    <Image src={formData.cover_image_url} alt="" fill sizes="300px" className="w-full h-full object-cover" />
                   ) : (
                     <TextInstrument className="text-va-black/10 italic">Geen preview</TextInstrument>
                   )}

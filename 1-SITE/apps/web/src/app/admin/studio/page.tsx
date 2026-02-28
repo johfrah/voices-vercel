@@ -10,7 +10,7 @@ import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { StudioDataBridge } from "@/lib/bridges/studio-bridge";
 import { FixedCostsInstrument } from "@/components/admin/FixedCostsInstrument";
 import { createClient } from "@supabase/supabase-js";
-import { ArrowRight, DollarSign, Mail, Settings, Upload, Plus } from "lucide-react";
+import { ArrowRight, DollarSign, Mail, Settings, Upload, Plus, Calendar, History, Users, MapPin } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 

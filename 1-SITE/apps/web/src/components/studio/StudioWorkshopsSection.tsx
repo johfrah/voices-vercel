@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import { WorkshopCarousel } from "./WorkshopCarousel";
 import { ReviewGrid, type ReviewItem } from "./ReviewGrid";
 import { ContainerInstrument, HeadingInstrument, TextInstrument } from "@/components/ui/LayoutInstruments";
@@ -160,9 +161,11 @@ export const StudioWorkshopsSection: React.FC<StudioWorkshopsSectionProps> = ({ 
               <div key={instructor.id} className="group flex flex-col">
                 <div className="relative aspect-[4/5] overflow-hidden rounded-[20px] mb-8 bg-va-off-white shadow-aura group-hover:shadow-aura-lg transition-all duration-700">
                   {instructor.photo_url ? (
-                    <img 
+                    <Image 
                       src={instructor.photo_url} 
                       alt={instructor.name}
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                     />
                   ) : (

@@ -63,7 +63,7 @@ export const VoiceglotText: React.FC<VoiceglotTextProps> = ({
     // Na hydration halen we de echte vertaling op
     const translated = noTranslate ? defaultText : t(translationKey, defaultText, values, !!components);
     setContent(translated);
-  }, []);
+  }, [noTranslate, defaultText, t, translationKey, values, components]);
 
   //  CHRIS-PROTOCOL: Force content update when translation or edit mode changes
   useEffect(() => {
@@ -121,7 +121,7 @@ export const VoiceglotText: React.FC<VoiceglotTextProps> = ({
     if (language === sourceLang || isEditMode) {
       registerString();
     }
-  }, [translationKey, defaultText, language, isEditMode]);
+  }, [translationKey, defaultText, language, isEditMode, mounted, context]);
 
   //  SELF-HEALING LOGIC
   useEffect(() => {
@@ -176,7 +176,7 @@ export const VoiceglotText: React.FC<VoiceglotTextProps> = ({
     } else {
       setContent(t(translationKey, defaultText, values));
     }
-  }, [translationKey, defaultText, t, language, noTranslate, isHealing, values]);
+  }, [translationKey, defaultText, t, language, noTranslate, isHealing, values, isEditMode]);
 
   const handleBlur = async () => {
     if (noTranslate) return;

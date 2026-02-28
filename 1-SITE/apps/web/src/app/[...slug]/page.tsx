@@ -11,6 +11,7 @@ import Image from 'next/image';
 import { notFound, redirect } from 'next/navigation';
 import { Suspense } from "react";
 import { getActor, getArtist, getActors, getWorkshops, getArticle } from "@/lib/services/api-server";
+import { WorkshopApiResponse } from "@/app/api/studio/workshops/route";
 import { MarketManagerServer as MarketManager } from "@/lib/system/market-manager-server";
 import { headers } from "next/headers";
 import { VoiceDetailClient } from "@/components/legacy/VoiceDetailClient";
@@ -666,7 +667,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
         const res = await fetch(`${base}/api/studio/workshops`, { cache: "no-store" });
         if (res.ok) {
           const data: WorkshopApiResponse = await res.json();
-          const workshop = data.workshops.find(w => w.id === resolved.entity_id);
+          const workshop = data.workshops.find((w: any) => w.id === resolved.entity_id);
           
           if (workshop) {
             // 🛡️ CHRIS-PROTOCOL: Workshop Detail Handshake (v2.16.097)
