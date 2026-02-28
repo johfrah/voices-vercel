@@ -1,4 +1,4 @@
-# 🛡️ Forensic Audit Report (2/28/2026, 10:30:15 PM)
+# 🛡️ Forensic Audit Report (2/28/2026, 10:31:59 PM)
 
 ## Summary
 - **Status**: ✅ PASSED
@@ -24,43 +24,43 @@
   > `<div className="h-12 bg-va-off-white rounded-[10px] flex items-center px-4 gap-2">`
 - **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:962`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="w-8 h-8 bg-va-black rounded-full flex items-center justify-center text-white">`
-- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1176`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1179`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<Suspense fallback={<div className="w-full h-full bg-va-black/5 animate-pulse rounded-[32px]" />}>`
-- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1221`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1224`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<Suspense fallback={<div className="h-96 w-full bg-va-black/5 animate-pulse rounded-[20px]" />}>`
-- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1248`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1251`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<Suspense fallback={<div className="h-64 w-full bg-va-black/5 animate-pulse rounded-[20px]" />}>`
-- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1278`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1281`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<Suspense fallback={<div className="h-48 w-full bg-va-black/5 animate-pulse rounded-[20px]" />}>`
-- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1356`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="space-y-6">`
 - **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1359`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="space-y-6">`
+- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1362`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex flex-col items-center gap-4">`
-- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1363`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-12 border-t border-black/[0.03]">`
-- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1365`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div key={i} className="flex flex-col items-center gap-4">`
 - **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1366`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-12 border-t border-black/[0.03]">`
+- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1368`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div key={i} className="flex flex-col items-center gap-4">`
+- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1369`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="w-12 h-12 rounded-full bg-primary/5 flex items-center justify-center text-primary">`
-- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1373`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1376`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="pt-12">`
-- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1390`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1393`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="grid grid-cols-1 lg:grid-cols-12 gap-24">`
-- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1391`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1394`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="lg:col-span-4 space-y-6">`
-- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1398`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1401`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="lg:col-span-8 space-y-12">`
-- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1400`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1403`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div key={i} className="space-y-4 pb-12 border-b border-black/[0.03] last:border-none last:pb-0">`
-- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1472`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1475`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<Suspense fallback={<div className="aspect-video w-full bg-va-black/20 animate-pulse" />}>`
-- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1550`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1553`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<Suspense fallback={<div className="h-96 w-full bg-va-black/5 animate-pulse rounded-[20px]" />}>`
 - **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:949`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `translationKey={`common.language.${(item.actor.native_lang || item.actor.native_lang)?.toLowerCase() || 'nl'}`}`
 - **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:950`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `defaultText={MarketManager.getLanguageLabel(item.actor.native_lang || item.actor.native_lang || 'nl')}`
-- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1460`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1463`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `const currentLang = (page.iapContext as { lang?: string } | null)?.lang || 'nl';`
 - **WARNING** `1-SITE/apps/web/src/app/account/AccountDashboardClient.tsx:118`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="va-home-container">`

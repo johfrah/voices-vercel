@@ -151,7 +151,8 @@ export async function POST(request: Request) {
           url: request.headers.get('referer'),
           userAgent: request.headers.get('user-agent'),
           timestamp: new Date()
-        }
+        },
+        created_at: new Date()
       });
 
       if (insertError) throw insertError;
