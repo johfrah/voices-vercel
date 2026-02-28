@@ -323,7 +323,7 @@ export default async function RootLayout({
     return (
       <html lang={lang} className={htmlClass} suppressHydrationWarning>
       <body className={bodyClass}>
-        <Providers lang={lang} market={market} initialTranslations={translations} initialJourney={initialJourney} initialUsage={initialUsage}>
+        <Providers lang={lang} market={market} initialTranslations={studioTranslations} initialJourney={initialJourney} initialUsage={initialUsage}>
           <Suspense fallback={null}>
             <SonicDNAHandler />
           </Suspense>
