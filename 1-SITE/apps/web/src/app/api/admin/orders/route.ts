@@ -45,12 +45,12 @@ export async function GET(request: NextRequest) {
       whereClause = `WHERE \${conditions.join(' AND ')}`;
     }
 
-    const countResult = await db.execute(sql.raw(`SELECT count(*) as value FROM orders \${whereClause}`));
+    const countResult = await db.execute(sql.raw(`SELECT count(*) as value FROM orders_v2 \${whereClause}`));
     const countRows: any = Array.isArray(countResult) ? countResult : (countResult.rows || []);
     const totalInDb = countRows[0] ? Number(countRows[0].value || countRows[0].count || 0) : 0;
 
     let debugInfo: any = {
-      version: '2.16.015',
+      version: '2.16.016',
       db_host: process.env.DATABASE_URL?.split('@')[1]?.split('/')[0] || 'unknown',
       page,
       limit,
@@ -63,8 +63,8 @@ export async function GET(request: NextRequest) {
     const rowsResult = await db.execute(sql.raw(`
       SELECT 
         id, user_id, world_id, journey_id, status_id, payment_method_id, 
-        amount_net, total as amount_total, purchase_order, billing_email_alt, created_at
-      FROM orders
+        amount_net, amount_total, purchase_order, billing_email_alt, created_at
+      FROM orders_v2
       \${whereClause}
       ORDER BY created_at DESC
       LIMIT \${limit}
