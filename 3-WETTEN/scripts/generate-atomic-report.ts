@@ -12,19 +12,21 @@ async function generateAtomicLeadReport() {
   console.log('🚀 Generating Atomic Chat & Lead Report...');
 
   try {
-    // 1. Haal alle gesprekken op met berichten, gesorteerd op recentheid
+    // 1. Haal alleen gesprekken op met berichten en sluit gearchiveerde uit
     const conversations = await db.select()
       .from(chatConversations)
-      .where(sql`EXISTS (SELECT 1 FROM chat_messages WHERE conversation_id = chat_conversations.id)`)
-      .orderBy(desc(chatConversations.id));
+      .where(sql`EXISTS (SELECT 1 FROM chat_messages WHERE conversation_id = chat_conversations.id) AND status != 'archived'`)
+      .orderBy(desc(chatConversations.id))
+      .limit(100); // Limit voor snelheid
+
+    console.log(`🔍 Processing ${conversations.length} active conversations...`);
 
     let md = `# 💎 Atomic Chat & Lead Intelligence Report\n`;
     md += `*Gegenereerd op: ${new Date().toLocaleString('nl-BE')}*\n\n`;
     
     md += `## 📊 Executive Summary\n`;
-    md += `- **Totaal gesprekken met inhoud**: ${conversations.length}\n`;
-    md += `- **Potentiële Leads (met contactinfo)**: ${conversations.filter((c: any) => c.guestEmail || c.guestName).length}\n`;
-    md += `- **Hoogste Vibe**: ${conversations.filter((c: any) => c.iapContext?.vibe === 'burning').length} burning sessies\n\n`;
+    md += `- **Geanalyseerde gesprekken**: ${conversations.length}\n`;
+    md += `- **Potentiële Leads (met contactinfo)**: ${conversations.filter((c: any) => c.guestEmail || c.guestName).length}\n\n`;
 
     md += `## 🎯 High-Value Leads & Interacties\n\n`;
 
@@ -37,21 +39,10 @@ async function generateAtomicLeadReport() {
       if (messages.length === 0) continue;
 
       const userMsgs = messages.filter((m: any) => m.senderType === 'user');
-      const aiMsgs = messages.filter((m: any) => m.senderType === 'ai');
       
-      // Lead Scoring
-      const hasEmail = !!conv.guestEmail;
-      const hasName = !!conv.guestName;
-      const isBurning = conv.iapContext?.vibe === 'burning';
-      const mentionsPrice = userMsgs.some((m: any) => /prijs|kost|offerte|euro|€/i.test(m.message));
-      const mentionsBooking = userMsgs.some((m: any) => /boeken|bestellen|inschrijven/i.test(m.message));
-
-      if (!hasEmail && !isBurning && !mentionsPrice && !mentionsBooking && userMsgs.length < 2) continue;
-
-      md += `### 💬 Gesprek #${conv.id} ${isBurning ? '🔥' : ''}\n`;
+      md += `### 💬 Gesprek #${conv.id}\n`;
       md += `- **Klant**: ${conv.guestName || 'Anoniem'} ${conv.guestEmail ? `(${conv.guestEmail})` : ''}\n`;
       md += `- **Status**: \`${conv.status}\` | **Journey**: \`${conv.iapContext?.journey || 'onbekend'}\`\n`;
-      md += `- **Context**: Pagina: \`${conv.iapContext?.sensor?.current_page || 'onbekend'}\`\n`;
       
       md += `\n**Dialoog:**\n`;
       messages.forEach((m: any) => {
