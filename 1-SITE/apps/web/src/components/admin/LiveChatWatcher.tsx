@@ -367,13 +367,13 @@ export const LiveChatWatcher = () => {
                   >
                     <div className={cn(
                       "p-4 rounded-[20px] text-sm font-medium leading-relaxed shadow-sm",
-                      msg.senderType === 'user' 
+                      (msg.senderType === 'user' || (msg as any).role === 'user')
                         ? "bg-white text-va-black rounded-tl-none" 
-                        : msg.senderType === 'ai'
+                        : (msg.senderType === 'ai' || (msg as any).role === 'assistant')
                           ? "bg-va-black text-white rounded-tr-none"
                           : "bg-primary text-white rounded-tr-none"
                     )}>
-                      {msg.message}
+                      {msg.message || (msg as any).content}
                     </div>
                     <span className="text-[9px] mt-1 opacity-30 font-bold uppercase tracking-widest">
                       {msg.senderType === 'ai' ? 'Voicy' : msg.senderType === 'user' ? 'Klant' : 'Admin'} • {(() => {

@@ -595,11 +595,13 @@ async function handleGetHistory(params: any) {
       success: true,
       messages: results.map((m: any) => ({
         id: m.id.toString(),
+        senderType: m.senderType,
+        message: m.message,
+        createdAt: m.createdAt,
+        // Fallbacks voor compatibiliteit met verschillende componenten
         role: m.senderType === 'ai' ? 'assistant' : m.senderType,
         content: m.message,
-        timestamp: m.createdAt,
-        createdAt: m.createdAt,
-        senderType: m.senderType
+        timestamp: m.createdAt
       }))
     });
   } catch (error) {

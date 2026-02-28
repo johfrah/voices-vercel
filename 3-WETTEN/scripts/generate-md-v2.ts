@@ -385,7 +385,7 @@ async function generateMD() {
     
     md += `### ✉️ Mail Voorbereiding (Personal Briefing Handshake)\n`;
     if (w.direct_instructor_prep) {
-      md += `#### 👤 Instructeur Template (Source of Truth)\n> ${w.direct_instructor_prep.replace(/\n/g, '\n> ')}\n\n`;
+      md += `#### 👤 Instructeur Template (Source of Truth)\n${w.direct_instructor_prep}\n\n`;
     } else {
       md += `❌ Geen persoonlijke instructeurs-briefing aanwezig\n\n`;
     }
@@ -514,7 +514,7 @@ async function generateMD() {
         }
 
         if (e.prep_override) {
-          md += `- **✉️ Editie Briefing (Override):** ⚠️ *Deze editie gebruikt een aangepaste tekst:*\n> ${e.prep_override.replace(/\n/g, '\n> ')}\n`;
+          md += `- **✉️ Editie Briefing (Override):** ⚠️ *Deze editie gebruikt een aangepaste tekst:*\n${e.prep_override}\n`;
         }
         
         if (vaultLink) {
