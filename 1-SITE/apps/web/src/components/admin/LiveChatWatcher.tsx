@@ -29,8 +29,10 @@ import { nl } from "date-fns/locale";
 interface Conversation {
   id: number;
   status: string;
-  updated_at: string;
-  iap_context: any;
+  updatedAt?: string;
+  updated_at?: string;
+  iapContext?: any;
+  iap_context?: any;
   user_id: string | null;
   lastMessage?: string;
 }
@@ -39,7 +41,9 @@ interface Message {
   id: string;
   senderType: 'user' | 'ai' | 'admin';
   message: string;
-  createdAt: string;
+  createdAt?: string;
+  created_at?: string;
+  timestamp?: string;
 }
 
 // Helper voor Base64 naar Uint8Array (nodig voor VAPID key)
@@ -305,24 +309,34 @@ export const LiveChatWatcher = () => {
                     <span className="text-sm font-bold">Klant #{conv.id}</span>
                   </div>
                   <span className="text-[10px] opacity-40 font-medium">
-                    {formatDistanceToNow(new Date(conv.updated_at), { addSuffix: true, locale: nl })}
+                    {(() => {
+                      const dateStr = conv.updated_at || conv.updatedAt;
+                      if (!dateStr) return "Onbekend";
+                      const date = new Date(dateStr);
+                      if (isNaN(date.getTime())) return "Ongeldige datum";
+                      return formatDistanceToNow(date, { addSuffix: true, locale: nl });
+                    })()}
                   </span>
                 </div>
-                {conv.iap_context?.journey && (
-                  <div className="flex gap-1 flex-wrap">
-                    <span className="text-[9px] px-2 py-0.5 bg-primary/10 text-primary rounded-full font-bold uppercase tracking-wider">
-                      {conv.iap_context.journey}
-                    </span>
-                    {conv.iap_context?.vibe && (
-                      <span className={cn(
-                        "text-[9px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider",
-                        conv.iap_context.vibe === 'burning' ? "bg-orange-500/10 text-orange-500" : "bg-blue-500/10 text-blue-500"
-                      )}>
-                        {conv.iap_context.vibe}
+                {(() => {
+                  const ctx = conv.iap_context || conv.iapContext;
+                  if (!ctx?.journey) return null;
+                  return (
+                    <div className="flex gap-1 flex-wrap">
+                      <span className="text-[9px] px-2 py-0.5 bg-primary/10 text-primary rounded-full font-bold uppercase tracking-wider">
+                        {ctx.journey}
                       </span>
-                    )}
-                  </div>
-                )}
+                      {ctx?.vibe && (
+                        <span className={cn(
+                          "text-[9px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider",
+                          ctx.vibe === 'burning' ? "bg-orange-500/10 text-orange-500" : "bg-blue-500/10 text-blue-500"
+                        )}>
+                          {ctx.vibe}
+                        </span>
+                      )}
+                    </div>
+                  );
+                })()}
               </button>
             ))
           )}
@@ -361,7 +375,13 @@ export const LiveChatWatcher = () => {
                       {msg.message}
                     </div>
                     <span className="text-[9px] mt-1 opacity-30 font-bold uppercase tracking-widest">
-                      {msg.senderType === 'ai' ? 'Voicy' : msg.senderType === 'user' ? 'Klant' : 'Admin'} • {new Date(msg.createdAt).toLocaleTimeString('nl-BE', { hour: '2-digit', minute: '2-digit' })}
+                      {msg.senderType === 'ai' ? 'Voicy' : msg.senderType === 'user' ? 'Klant' : 'Admin'} • {(() => {
+                        const dateStr = msg.createdAt || msg.created_at || msg.timestamp;
+                        if (!dateStr) return "N/A";
+                        const date = new Date(dateStr);
+                        if (isNaN(date.getTime())) return "N/A";
+                        return date.toLocaleTimeString('nl-BE', { hour: '2-digit', minute: '2-digit' });
+                      })()}
                     </span>
                   </div>
                 ))}

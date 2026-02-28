@@ -597,7 +597,9 @@ async function handleGetHistory(params: any) {
         id: m.id.toString(),
         role: m.senderType === 'ai' ? 'assistant' : m.senderType,
         content: m.message,
-        timestamp: m.createdAt
+        timestamp: m.createdAt,
+        createdAt: m.createdAt,
+        senderType: m.senderType
       }))
     });
   } catch (error) {
