@@ -9,6 +9,7 @@
  */
 
 import { ContainerInstrument, HeadingInstrument, PageWrapperInstrument, TextInstrument } from "@/components/ui/LayoutInstruments";
+import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { Metadata } from "next";
 import { Suspense } from "react";
 import nextDynamic from "next/dynamic";
@@ -54,20 +55,25 @@ export default async function StudioPage() {
         <LiquidBackground />
       </Suspense>
 
-      {/* Hero */}
       <section className="relative z-10 pt-32 pb-24">
         <ContainerInstrument className="max-w-4xl mx-auto text-center">
-          <HeadingInstrument level={1} className="text-5xl md:text-7xl font-light tracking-tighter leading-none text-va-black mb-8">
-            Workshops voor je stem
+          <TextInstrument className="text-[13px] font-light tracking-[0.3em] uppercase text-primary mb-6">
+            <VoiceglotText translationKey="page.studio.projecttype" defaultText="Workshop World" />
+          </TextInstrument>
+          <HeadingInstrument level={1} className="text-5xl md:text-7xl font-light tracking-tighter leading-tight text-va-black mb-8">
+            <VoiceglotText translationKey="page.studio.title" defaultText="Workshops voor je stem" />
           </HeadingInstrument>
-          <TextInstrument className="text-xl md:text-2xl text-va-black/50 font-light leading-relaxed mb-12">
-            Van basisuitspraak tot professionele voice-over technieken. Leer van de besten in onze maandelijkse workshops.
+          <TextInstrument className="text-xl md:text-2xl text-va-black/50 font-light leading-relaxed mb-12 max-w-2xl mx-auto">
+            <VoiceglotText 
+              translationKey="page.studio.description" 
+              defaultText="Van basisuitspraak tot professionele voice-over technieken. Leer van de besten in onze maandelijkse workshops." 
+            />
           </TextInstrument>
           <Link
             href="#workshops"
-            className="inline-flex items-center gap-3 px-12 py-6 bg-va-black text-white rounded-[10px] font-light tracking-widest hover:bg-primary transition-all duration-500"
+            className="inline-flex items-center gap-3 px-12 py-6 bg-va-black text-white rounded-[10px] font-light tracking-widest hover:bg-primary transition-all duration-500 shadow-aura hover:shadow-aura-lg"
           >
-            Bekijk workshops
+            <VoiceglotText translationKey="page.studio.cta" defaultText="Bekijk workshops" />
             <ArrowRight size={18} strokeWidth={1.5} />
           </Link>
         </ContainerInstrument>

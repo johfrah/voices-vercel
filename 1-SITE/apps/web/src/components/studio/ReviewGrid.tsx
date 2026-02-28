@@ -11,6 +11,7 @@ export interface ReviewItem {
   rating: number;
   provider: string | null;
   is_google: boolean;
+  metadata?: string;
 }
 
 interface ReviewGridProps {
@@ -54,9 +55,13 @@ export const ReviewGrid: React.FC<ReviewGridProps> = ({
                     className={i < review.rating ? "text-primary fill-primary" : "text-va-black/20"}
                   />
                 ))}
-                {review.is_google && (
+                {review.is_google ? (
                   <span className="ml-2 text-[10px] font-bold tracking-widest uppercase text-va-black/30">
                     Google
+                  </span>
+                ) : (
+                  <span className="ml-2 text-[10px] font-bold tracking-widest uppercase text-primary/40">
+                    Geverifieerd
                   </span>
                 )}
               </div>
@@ -65,9 +70,16 @@ export const ReviewGrid: React.FC<ReviewGridProps> = ({
                   &ldquo;{review.text}&rdquo;
                 </TextInstrument>
               )}
-              <TextInstrument className="text-[13px] font-light text-va-black/40 mt-4 tracking-widest">
-                {review.author_name}
-              </TextInstrument>
+              <div className="mt-4">
+                <TextInstrument className="text-[13px] font-medium text-va-black/60 tracking-widest">
+                  {review.author_name}
+                </TextInstrument>
+                {review.metadata && (
+                  <TextInstrument className="text-[11px] font-light text-va-black/30 tracking-wider mt-1">
+                    {review.metadata}
+                  </TextInstrument>
+                )}
+              </div>
             </ContainerInstrument>
           ))}
         </div>

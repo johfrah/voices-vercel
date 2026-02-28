@@ -146,6 +146,21 @@ export async function GET() {
       {} as Record<number, any[]>
     );
 
+    // Fetch internal feedback snippets
+    const feedbackRows = await db.execute(sql`
+      SELECT 
+        wf.workshop_id, 
+        wf.public_snippet as text, 
+        wf.public_rating as rating, 
+        we.date as edition_date,
+        w.title as workshop_title
+      FROM workshop_feedback wf
+      JOIN workshops w ON w.id = wf.workshop_id
+      LEFT JOIN workshop_editions we ON we.id = wf.edition_id
+      WHERE wf.public_snippet IS NOT NULL
+      ORDER BY wf.submitted_at DESC
+    `);
+
     const reviewsByWorkshop = (reviewsRows as any[]).reduce(
       (acc, r) => {
         const iap = typeof r.iap_context === 'string' ? JSON.parse(r.iap_context || '{}') : r.iap_context || {};
@@ -171,6 +186,26 @@ export async function GET() {
       },
       {} as Record<string | number, any[]>
     );
+
+    // Add internal feedback to the reviewsByWorkshop map
+    (feedbackRows as any[]).forEach((f) => {
+      const wid = Number(f.workshop_id);
+      const dateStr = f.edition_date ? new Date(f.edition_date).toLocaleDateString('nl-BE', { day: 'numeric', month: 'long', year: 'numeric' }) : 'onlangs';
+      const item = {
+        id: Math.random(), // Temporary ID for grid
+        author_name: `Deelnemer ${f.workshop_title}`,
+        text: f.text,
+        rating: f.rating,
+        provider: 'internal',
+        is_google: false,
+        metadata: `Workshop op ${dateStr}`
+      };
+      if (!reviewsByWorkshop[wid]) reviewsByWorkshop[wid] = [];
+      reviewsByWorkshop[wid].push(item);
+      
+      if (!reviewsByWorkshop._studio) reviewsByWorkshop._studio = [];
+      reviewsByWorkshop._studio.push(item);
+    });
 
     const workshops: WorkshopApiResponse['workshops'] = (workshopsList as any[]).map((w) => {
       const meta = (w.meta as Record<string, unknown>) || {};

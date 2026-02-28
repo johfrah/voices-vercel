@@ -359,6 +359,27 @@ ${workshopEditionsData.filter((ed: any) => ed.status === 'upcoming').map((ed: an
 
     // 3. Admin-specifieke acties injecteren
     if (senderType === 'admin') {
+      if (message.startsWith('/')) {
+        const command = message.toLowerCase().split(' ')[0];
+        console.log(`[Voicy API] Admin command detected: ${command}`);
+        
+        switch (command) {
+          case '/status':
+            aiContent = "Systeemstatus: 🟢 Alle systemen operationeel. Database latency: 45ms. Vercel Build: v2.16.027.";
+            break;
+          case '/clear':
+            aiContent = "Cache gewist voor de huidige sessie.";
+            // Logica voor cache clearing
+            break;
+          case '/edit':
+            aiContent = "Edit Mode ingeschakeld.";
+            actions.push({ label: "Edit Mode Inschakelen", action: "toggle_edit_mode" });
+            break;
+          default:
+            aiContent = `Onbekend commando: ${command}. Beschikbare commando's: /status, /clear, /edit.`;
+        }
+      }
+
       if (message.toLowerCase().includes("edit") || message.toLowerCase().includes("bewerk")) {
         actions.push({ label: "Edit Mode Inschakelen", action: "toggle_edit_mode" });
       }

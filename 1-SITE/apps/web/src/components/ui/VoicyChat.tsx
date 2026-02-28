@@ -499,16 +499,17 @@ export const VoicyChatV2: React.FC = () => {
   //  UCI Integration: Fetch Customer 360 data when authenticated
   useEffect(() => {
     const fetchUCI = async () => {
-      if (isAuthenticated && user?.email) {
+      if ((isAuthenticated || isAdmin) && (user?.email || isAdmin)) {
         try {
-          const res = await fetch(`/api/intelligence/customer-360?email=${user.email}`);
+          const emailParam = user?.email ? `?email=${user.email}` : '';
+          const res = await fetch(`/api/intelligence/customer-360${emailParam}`);
           if (res.ok) {
             const data = await res.json();
             setCustomer360(data);
             
             // Proactive Welcome based on Vibe
             const currentVibe = data.intelligence?.leadVibe || 'cold';
-            if (currentVibe === 'burning') {
+            if (currentVibe === 'burning' && !isAdmin) {
               setMessages(prev => [...prev, {
                 id: 'proactive-burning',
                 role: 'assistant',
@@ -525,7 +526,7 @@ export const VoicyChatV2: React.FC = () => {
       }
     };
     fetchUCI();
-  }, [isAuthenticated, user, isPortfolioJourney]);
+  }, [isAuthenticated, isAdmin, user, isPortfolioJourney]);
 
   //  Real-time SSE Integration
   useEffect(() => {
@@ -1065,6 +1066,60 @@ export const VoicyChatV2: React.FC = () => {
         <ContainerInstrument plain className="flex-1 overflow-hidden relative flex flex-col">
           {activeTab === 'chat' && (
             <ContainerInstrument plain className={`flex-1 overflow-hidden relative flex ${isFullMode ? 'flex-row' : 'flex-col'}`}>
+              {/* 🛡️ CHRIS-PROTOCOL: Admin God View Sidebar (v2.16.028) */}
+              {isAdmin && isFullMode && (
+                <ContainerInstrument plain className="w-64 bg-va-black text-white p-6 border-r border-white/5 space-y-6 overflow-y-auto custom-scrollbar">
+                  <HeadingInstrument level={4} className="text-[11px] font-black tracking-[0.2em] uppercase text-primary">System Intelligence</HeadingInstrument>
+                  
+                  <div className="space-y-4">
+                    <div className="p-4 bg-white/5 rounded-2xl border border-white/5">
+                      <TextInstrument className="text-[10px] font-bold tracking-widest uppercase opacity-40 mb-2">Visitor Vibe</TextInstrument>
+                      <div className="flex items-center gap-2">
+                        <div className={cn(
+                          "w-2 h-2 rounded-full animate-pulse",
+                          customer360?.intelligence?.leadVibe === 'burning' ? "bg-orange-500" : "bg-blue-500"
+                        )} />
+                        <span className="text-[13px] font-medium capitalize">{customer360?.intelligence?.leadVibe || 'Neutral'}</span>
+                      </div>
+                    </div>
+
+                    <div className="p-4 bg-white/5 rounded-2xl border border-white/5">
+                      <TextInstrument className="text-[10px] font-bold tracking-widest uppercase opacity-40 mb-2">Detected Intent</TextInstrument>
+                      <span className="text-[13px] font-medium">{customer360?.intelligence?.intent || 'Browsing'}</span>
+                    </div>
+
+                    <div className="p-4 bg-white/5 rounded-2xl border border-white/5">
+                      <TextInstrument className="text-[10px] font-bold tracking-widest uppercase opacity-40 mb-2">Customer DNA</TextInstrument>
+                      <div className="space-y-1">
+                        <div className="flex justify-between text-[11px]">
+                          <span className="opacity-40">Orders:</span>
+                          <span>{customer360?.dna?.totalOrders || 0}</span>
+                        </div>
+                        <div className="flex justify-between text-[11px]">
+                          <span className="opacity-40">Journey:</span>
+                          <span className="text-primary">{customer360?.dna?.topJourneys?.[0] || 'New'}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="pt-4 border-t border-white/5">
+                    <TextInstrument className="text-[10px] font-bold tracking-widest uppercase opacity-40 mb-4">Admin Commands</TextInstrument>
+                    <div className="grid grid-cols-1 gap-2">
+                      {['/status', '/clear', '/edit'].map(cmd => (
+                        <button 
+                          key={cmd}
+                          onClick={() => handleSend(undefined, cmd)}
+                          className="text-left px-3 py-2 bg-white/5 hover:bg-white/10 rounded-lg text-[12px] font-mono transition-all"
+                        >
+                          {cmd}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </ContainerInstrument>
+              )}
+
               <ContainerInstrument plain className="flex-1 flex flex-col overflow-hidden border-r border-black/5">
                 <ContainerInstrument plain ref={scrollRef} className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4 custom-scrollbar">
                   {isInitialLoading ? (
