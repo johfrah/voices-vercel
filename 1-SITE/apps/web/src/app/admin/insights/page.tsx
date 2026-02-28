@@ -125,7 +125,12 @@ export default function KlantInzichtenPage() {
                       <div className="text-right">
                         <TextInstrument className="text-[13px] font-medium text-primary uppercase tracking-widest">{user.journeyState}</TextInstrument>
                         <TextInstrument className="text-[12px] text-black/20">
-                          {formatDistanceToNow(new Date(user.lastActive), { addSuffix: true, locale: nl })}
+                          {(() => {
+                            if (!user.lastActive) return "Nooit";
+                            const date = new Date(user.lastActive);
+                            if (isNaN(date.getTime())) return "Ongeldig";
+                            return formatDistanceToNow(date, { addSuffix: true, locale: nl });
+                          })()}
                         </TextInstrument>
                       </div>
                     </div>

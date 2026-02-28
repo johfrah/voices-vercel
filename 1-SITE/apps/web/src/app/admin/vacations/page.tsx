@@ -99,8 +99,22 @@ export default function VakantiesPage() {
                         </div>
                       </div>
                       <div className="text-right">
-                        <TextInstrument className="text-[14px] font-medium text-va-black">Tot {format(new Date(v.holiday_till), 'dd MMM', { locale: nl })}</TextInstrument>
-                        <TextInstrument className="text-[12px] text-black/20">Terug over {formatDistanceToNow(new Date(v.holiday_till), { locale: nl })}</TextInstrument>
+                        <TextInstrument className="text-[14px] font-medium text-va-black">
+                          {(() => {
+                            if (!v.holiday_till) return "Geen einddatum";
+                            const date = new Date(v.holiday_till);
+                            if (isNaN(date.getTime())) return "Ongeldige datum";
+                            return `Tot ${format(date, 'dd MMM', { locale: nl })}`;
+                          })()}
+                        </TextInstrument>
+                        <TextInstrument className="text-[12px] text-black/20">
+                          {(() => {
+                            if (!v.holiday_till) return "";
+                            const date = new Date(v.holiday_till);
+                            if (isNaN(date.getTime())) return "";
+                            return `Terug over ${formatDistanceToNow(date, { locale: nl })}`;
+                          })()}
+                        </TextInstrument>
                       </div>
                     </div>
                   ))}

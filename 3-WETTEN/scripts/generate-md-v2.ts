@@ -177,7 +177,7 @@ async function generateMD() {
   `);
 
   // 13. Fetch Internal Feedback (Relational)
-  const internalFeedback = await db.execute(sql`
+    const internalFeedback = await db.execute(sql`
     SELECT 
       wf.workshop_id, 
       u.first_name, 
@@ -201,7 +201,7 @@ async function generateMD() {
     return acc;
   }, {});
 
-    const workshops = await db.execute(sql`
+  const workshops = await db.execute(sql`
     WITH edition_participants AS (
       SELECT 
         edition_id,
@@ -225,12 +225,18 @@ async function generateMD() {
       WHERE edition_id IS NOT NULL
       GROUP BY edition_id
     )
-    SELECT w.id, w.title, w.slug, w.is_public, w.has_demo_bundle, w.preparation_text, w.preparation_pdf_id,
+    SELECT w.id, w.title, w.slug, w.is_public, w.has_demo_bundle, w.preparation_pdf_id,
            ws.label as status_label, ws.id as status_id,
            w.meta,
            wm.file_path as featured_image_path,
            wi.id as direct_instructor_id, wi.name as direct_instructor_name, wi.tagline as direct_instructor_tagline,
-           json_agg(DISTINCT jsonb_build_object('id', i.id, 'name', i.name, 'tagline', i.tagline)) FILTER (WHERE i.id IS NOT NULL) as edition_instructors,
+           wi.preparation_text_template as direct_instructor_prep,
+           json_agg(DISTINCT jsonb_build_object(
+             'id', i.id, 
+             'name', i.name, 
+             'tagline', i.tagline,
+             'prep_template', i.preparation_text_template
+           )) FILTER (WHERE i.id IS NOT NULL) as edition_instructors,
            json_agg(DISTINCT jsonb_build_object(
              'id', we.id, 
              'date', we.date, 
@@ -241,6 +247,7 @@ async function generateMD() {
              'location_id', we.location_id,
              'location_name', l.name,
              'location_access', l.access_instructions,
+             'prep_override', we.preparation_text_override,
              'program', we.program,
              'participants', ep.participants,
              'total_net', ep.total_edition_net,
@@ -257,7 +264,7 @@ async function generateMD() {
     LEFT JOIN instructors i ON i.id = ei.instructor_id
     LEFT JOIN edition_participants ep ON ep.edition_id = we.id
     WHERE w.id IN (260250, 260261, 260263, 260265, 260266, 260271, 260272, 260273, 260274, 263913, 267780, 267781, 272702, 272907, 274488)
-    GROUP BY w.id, ws.id, wm.file_path, wi.id, wi.name, wi.tagline
+    GROUP BY w.id, ws.id, wm.file_path, wi.id, wi.name, wi.tagline, wi.preparation_text_template
     ORDER BY w.title ASC
   `);
 
@@ -376,16 +383,15 @@ async function generateMD() {
     md += `### 📖 Uitgebreide Workshop Inhoud\n${meta.workshop_content_detail || '❌'}\n\n`;
     md += `### 🎬 Aftermovie & Context\n${meta.aftermovie_description || '❌'}\n\n`;
     
-    md += `### ✉️ Mail Voorbereiding (Smart Handshake)\n`;
-    if (w.preparation_text) {
-      md += `#### 📝 Kerntekst (Dynamisch)\n> ${w.preparation_text.replace(/\n/g, '\n> ')}\n\n`;
-      if (w.preparation_pdf_id) {
-        md += `- **📎 PDF Attachment:** Gekoppeld via Media ID \`${w.preparation_pdf_id}\` (Hard Handshake)\n`;
-      } else {
-        md += `- **📎 PDF Attachment:** ⏳ *Nog niet gekoppeld in backend*\n`;
-      }
+    md += `### ✉️ Mail Voorbereiding (Personal Briefing Handshake)\n`;
+    if (w.direct_instructor_prep) {
+      md += `#### 👤 Instructeur Template (Source of Truth)\n> ${w.direct_instructor_prep.replace(/\n/g, '\n> ')}\n\n`;
     } else {
-      md += `❌ Geen voorbereidings-data aanwezig\n`;
+      md += `❌ Geen persoonlijke instructeurs-briefing aanwezig\n\n`;
+    }
+    
+    if (w.preparation_pdf_id) {
+      md += `- **📎 PDF Attachment:** Gekoppeld via Media ID \`${w.preparation_pdf_id}\` (Hard Handshake)\n`;
     }
     md += `\n`;
     
