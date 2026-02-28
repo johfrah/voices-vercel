@@ -432,7 +432,7 @@ ${workshopEditionsData.filter((ed: any) => ed.status === 'upcoming').map((ed: an
         
         switch (command) {
           case '/status':
-            aiContent = "Systeemstatus: 🟢 Alle systemen operationeel. Database latency: 45ms. Vercel Build: v2.16.057.";
+            aiContent = "Systeemstatus: 🟢 Alle systemen operationeel. Database latency: 45ms. Vercel Build: v2.16.058.";
             break;
           case '/clear':
             aiContent = "Cache gewist voor de huidige sessie.";
@@ -691,6 +691,7 @@ async function handleGetHistory(params: any) {
         message: m.message,
         created_at: m.created_at || m.createdAt,
         metadata: m.metadata,
+        attachments: m.attachments,
         // Fallbacks voor compatibiliteit met verschillende componenten
         role: (m.sender_type || m.senderType) === 'ai' ? 'assistant' : (m.sender_type || m.senderType),
         content: m.message,

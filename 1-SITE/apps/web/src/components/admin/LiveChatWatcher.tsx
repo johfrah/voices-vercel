@@ -46,6 +46,7 @@ interface Message {
     interaction_type?: 'text' | 'chip' | 'tool';
     current_page?: string;
   };
+  attachments?: any;
 }
 
 // Helper voor Base64 naar Uint8Array (nodig voor VAPID key)
@@ -218,7 +219,8 @@ export const LiveChatWatcher = () => {
             sender_type: m.sender_type || m.senderType,
             message: m.message,
             created_at: m.created_at || m.createdAt,
-            metadata: m.metadata
+            metadata: m.metadata,
+            attachments: m.attachments
           }))];
         });
       }
@@ -386,21 +388,31 @@ export const LiveChatWatcher = () => {
                       {msg.message}
                       
                       {/* Interaction Type Badge */}
-                      {msg.metadata?.interaction_type && msg.metadata.interaction_type !== 'text' && (
-                        <div className={cn(
-                          "absolute -top-2 -right-2 px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-tighter shadow-sm",
-                          msg.metadata.interaction_type === 'chip' ? "bg-primary text-white" : "bg-orange-500 text-white"
-                        )}>
-                          {msg.metadata.interaction_type}
-                        </div>
-                      )}
+                      {(() => {
+                        const type = msg.metadata?.interaction_type || msg.attachments?.interaction_type;
+                        if (!type || type === 'text') return null;
+                        
+                        return (
+                          <div className={cn(
+                            "absolute -top-2 -right-2 px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-tighter shadow-sm",
+                            type === 'chip' ? "bg-primary text-white" : "bg-orange-500 text-white"
+                          )}>
+                            {type}
+                          </div>
+                        );
+                      })()}
 
                       {/* Page Context */}
-                      {msg.metadata?.current_page && (
-                        <div className="mt-2 pt-2 border-t border-black/5 text-[9px] opacity-40 font-mono truncate max-w-full">
-                          📍 {msg.metadata.current_page}
-                        </div>
-                      )}
+                      {(() => {
+                        const page = msg.metadata?.current_page || msg.attachments?.current_page;
+                        if (!page) return null;
+                        
+                        return (
+                          <div className="mt-2 pt-2 border-t border-black/5 text-[9px] opacity-40 font-mono truncate max-w-full">
+                            📍 {page}
+                          </div>
+                        );
+                      })()}
                     </div>
                     <span className="text-[9px] mt-1 opacity-30 font-bold uppercase tracking-widest">
                       {msg.sender_type === 'ai' ? 'Voicy' : msg.sender_type === 'user' ? 'Klant' : 'Admin'} • {(() => {
