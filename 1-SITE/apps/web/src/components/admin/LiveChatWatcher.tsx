@@ -486,15 +486,51 @@ export const LiveChatWatcher = () => {
                       });
                       if (res.ok) {
                         alert("Voicy is nu stil. Jij hebt de regie.");
+                        // Update lokale state om UI te verversen
+                        setConversations(prev => prev.map(c => c.id === selectedId ? { ...c, status: 'admin_active' } : c));
                       }
                     } catch (err) {
                       console.error("Failed to take over chat", err);
                     }
                   }}
-                  className="whitespace-nowrap bg-va-black text-white text-[10px] font-bold tracking-widest uppercase px-4 py-2 rounded-full flex items-center gap-2"
+                  className={cn(
+                    "whitespace-nowrap text-[10px] font-bold tracking-widest uppercase px-4 py-2 rounded-full flex items-center gap-2 transition-all",
+                    conversations.find(c => c.id === selectedId)?.status === 'admin_active' 
+                      ? "bg-primary text-white scale-105" 
+                      : "bg-va-black text-white hover:bg-va-black/80"
+                  )}
                 >
-                  <Zap size={12} className="text-primary" /> Overnemen
+                  <Zap size={12} className={cn(conversations.find(c => c.id === selectedId)?.status === 'admin_active' ? "text-white" : "text-primary")} /> 
+                  {conversations.find(c => c.id === selectedId)?.status === 'admin_active' ? "In Regie" : "Overnemen"}
                 </ButtonInstrument>
+
+                {conversations.find(c => c.id === selectedId)?.status === 'admin_active' && (
+                  <ButtonInstrument 
+                    onClick={async () => {
+                      if (!selectedId) return;
+                      try {
+                        const res = await fetch('/api/chat/', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ 
+                            action: 'update_status', 
+                            conversationId: selectedId,
+                            status: 'open'
+                          })
+                        });
+                        if (res.ok) {
+                          alert("Voicy heeft de regie weer terug.");
+                          setConversations(prev => prev.map(c => c.id === selectedId ? { ...c, status: 'open' } : c));
+                        }
+                      } catch (err) {
+                        console.error("Failed to release chat", err);
+                      }
+                    }}
+                    className="whitespace-nowrap bg-green-500 text-white text-[10px] font-bold tracking-widest uppercase px-4 py-2 rounded-full flex items-center gap-2 hover:bg-green-600 transition-all"
+                  >
+                    <Bot size={12} className="text-white" /> Vrijgeven aan Voicy
+                  </ButtonInstrument>
+                )}
                 <ButtonInstrument className="whitespace-nowrap bg-va-off-white text-va-black/40 text-[10px] font-bold tracking-widest uppercase px-4 py-2 rounded-full">
                   Stuur Notificatie
                 </ButtonInstrument>
