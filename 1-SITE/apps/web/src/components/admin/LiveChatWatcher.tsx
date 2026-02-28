@@ -148,7 +148,11 @@ export const LiveChatWatcher = () => {
   useEffect(() => {
     const fetchConversations = async () => {
       try {
-        const res = await fetch('/api/chat/?action=conversations&userId=all'); // We hebben een admin endpoint nodig of deze moet all supporten
+        const res = await fetch('/api/chat/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'conversations', userId: 'all' })
+        });
         if (res.ok) {
           const data = await res.json();
           setConversations(data);
