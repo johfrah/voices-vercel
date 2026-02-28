@@ -1051,8 +1051,11 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
 
     // 4. Check voor CMS Artikel (Legacy Fallback by Slug)
     const isAgencySubRoute = segments.length === 2 && MarketManager.isAgencySegment(segments[0]);
-    if (segments.length === 1 || isAgencySubRoute) {
-      const cmsSlug = isAgencySubRoute ? segments[1] : lookupSlug;
+    const isArticlePrefix = segments[0] === 'article' && segments.length === 2;
+    const isStudioAgendaPrefix = segments[0] === 'studio-agenda' && segments.length === 2;
+
+    if (segments.length === 1 || isAgencySubRoute || isArticlePrefix || isStudioAgendaPrefix) {
+      const cmsSlug = isArticlePrefix || isStudioAgendaPrefix ? segments[1] : (isAgencySubRoute ? segments[1] : lookupSlug);
       try {
         console.log(` [SmartRouter] Fetching CMS article: ${cmsSlug}`);
         // 🛡️ CHRIS-PROTOCOL: Use SDK for stability (v2.14.273)
