@@ -1,9 +1,9 @@
-# 🛡️ Forensic Audit Report (2/28/2026, 5:20:06 PM)
+# 🛡️ Forensic Audit Report (2/28/2026, 5:41:38 PM)
 
 ## Summary
 - **Status**: ✅ PASSED
 - **Errors**: 0
-- **Warnings**: 3747
+- **Warnings**: 3750
 
 ## Detailed Issues
 - **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:700`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -3184,43 +3184,43 @@
   > `<p className="text-[14px] font-light text-white/70">`
 - **WARNING** `1-SITE/apps/web/src/components/admin/GhostModeBar.tsx:34`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `Je bent nu ingelogd als <span className="text-white font-bold">{user?.email}</span>`
-- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:241`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:242`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex items-center gap-3">`
-- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:255`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="flex items-center gap-2">`
-- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:273`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:256`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex items-center gap-2">`
 - **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:274`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />`
-- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:290`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="p-10 text-center opacity-20">`
-- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:292`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<p className="text-sm uppercase tracking-widest font-bold">Geen actieve chats</p>`
-- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:304`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="flex justify-between items-start">`
-- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:305`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex items-center gap-2">`
-- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:309`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:275`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />`
+- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:291`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="p-10 text-center opacity-20">`
+- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:293`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<p className="text-sm uppercase tracking-widest font-bold">Geen actieve chats</p>`
+- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:305`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="flex justify-between items-start">`
+- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:306`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="flex items-center gap-2">`
+- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:310`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span className="text-sm font-bold">Klant #{conv.id}</span>`
-- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:311`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:312`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span className="text-[10px] opacity-40 font-medium">`
-- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:325`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="flex gap-1 flex-wrap">`
 - **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:326`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="flex gap-1 flex-wrap">`
+- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:327`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span className="text-[9px] px-2 py-0.5 bg-primary/10 text-primary rounded-full font-bold uppercase tracking-wider">`
-- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:330`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:331`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span className={cn(`
-- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:360`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:361`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div`
-- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:367`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:368`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className={cn(`
-- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:377`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:378`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span className="text-[9px] mt-1 opacity-30 font-bold uppercase tracking-widest">`
-- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:391`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:392`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="p-4 bg-white border-t border-black/5">`
-- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:434`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:435`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="p-4 bg-white border-t border-black/5 flex gap-2 overflow-x-auto no-scrollbar">`
-- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:444`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:445`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="text-center">`
 - **WARNING** `1-SITE/apps/web/src/components/admin/SortableActorRow.tsx:47`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div ref={setNodeRef} style={style} className="touch-none">`
@@ -4558,6 +4558,12 @@
   > `<div className="w-5 h-5 rounded-full bg-primary flex items-center justify-center animate-in zoom-in duration-300">`
 - **WARNING** `1-SITE/apps/web/src/components/studio/MusicSelector.tsx:206`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="py-12 text-center bg-va-off-white/50 rounded-2xl border border-dashed border-black/5">`
+- **WARNING** `1-SITE/apps/web/src/components/studio/ReviewGrid.tsx:41`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">`
+- **WARNING** `1-SITE/apps/web/src/components/studio/ReviewGrid.tsx:48`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="flex items-center gap-2 mb-4">`
+- **WARNING** `1-SITE/apps/web/src/components/studio/ReviewGrid.tsx:58`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<span className="ml-2 text-[10px] font-bold tracking-widest uppercase text-va-black/30">`
 - **WARNING** `1-SITE/apps/web/src/components/studio/WorkshopCard.tsx:168`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className={`absolute top-6 left-6 z-30 px-3 py-1.5 rounded-full text-[10px] font-black tracking-[0.2em] uppercase shadow-lg ${availability.color}`}>`
 - **WARNING** `1-SITE/apps/web/src/components/studio/WorkshopCard.tsx:195`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.

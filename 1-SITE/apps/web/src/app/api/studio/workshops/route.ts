@@ -108,7 +108,7 @@ export async function GET() {
         : sql`SELECT NULL AS id, NULL AS workshop_id, NULL AS date, NULL AS capacity, NULL AS status, NULL AS location_name, NULL AS location_city, NULL AS location_address WHERE false`
     );
 
-    // Fetch reviews: Google (provider = 'google_places') + studio sector or iapContext workshopId
+    // Fetch reviews: Google (provider = 'google_places') + studio business_slug or iapContext workshopId
     const reviewsRows = await db.execute(sql`
       SELECT
         r.id,
@@ -121,10 +121,9 @@ export async function GET() {
       FROM reviews r
       WHERE (
         r.business_slug = 'voices-studio'
-        OR r.sector = 'studio'
         OR r.iap_context->>'workshopId' IS NOT NULL
       )
-      ORDER BY r.sentiment_velocity DESC NULLS LAST, r.created_at DESC
+      ORDER BY COALESCE(r.sentiment_velocity, 0) DESC, r.created_at DESC
       LIMIT 50
     `);
 

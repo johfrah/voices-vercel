@@ -34,6 +34,10 @@ interface Conversation {
   iapContext?: any;
   iap_context?: any;
   user_id: string | null;
+  guestName?: string;
+  guest_name?: string;
+  guestEmail?: string;
+  guest_email?: string;
   lastMessage?: string;
 }
 
@@ -307,7 +311,16 @@ export const LiveChatWatcher = () => {
                     <ContainerInstrument className="w-8 h-8 rounded-full bg-va-black/5 flex items-center justify-center">
                       <User size={14} className="text-va-black/40" />
                     </ContainerInstrument>
-                    <span className="text-sm font-bold">Klant #{conv.id}</span>
+                    <div className="flex flex-col">
+                      <span className="text-sm font-bold">
+                        {conv.guest_name || conv.guestName || `Klant #${conv.id}`}
+                      </span>
+                      {(conv.guest_email || conv.guestEmail) && (
+                        <span className="text-[10px] text-va-black/40 truncate max-w-[120px]">
+                          {conv.guest_email || conv.guestEmail}
+                        </span>
+                      )}
+                    </div>
                   </div>
                   <span className="text-[10px] opacity-40 font-medium">
                     {(() => {
