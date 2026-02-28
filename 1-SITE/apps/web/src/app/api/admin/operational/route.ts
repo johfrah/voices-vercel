@@ -79,3 +79,44 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Failed to fetch operational data' }, { status: 500 });
   }
 }
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { action, consent } = body;
+
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
+
+    if (action === 'log_consent' && consent) {
+      // ⚖️ LEX-MANDATE: Forensic Consent Audit Trail (v2.16.078)
+      // We log consent even for non-admins to maintain a legal audit trail.
+      const { error } = await supabase.from('system_events').insert({
+        event_type: 'cookie_consent',
+        severity: 'info',
+        message: `Consent updated: ${consent.type} (v${consent.version})`,
+        metadata: {
+          consent_type: consent.type,
+          consent_version: consent.version,
+          visitor_hash: consent.visitor_hash,
+          user_agent: request.headers.get('user-agent'),
+          ip_address: request.headers.get('x-forwarded-for') || 'unknown'
+        }
+      });
+
+      if (error) throw error;
+      return NextResponse.json({ success: true });
+    }
+
+    // Other POST actions require admin
+    const auth = await requireAdmin();
+    if (auth instanceof NextResponse) return auth;
+
+    return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
+  } catch (error: any) {
+    console.error('[Operational POST Error]:', error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}

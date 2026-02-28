@@ -5,6 +5,7 @@ import { useCheckout } from '@/contexts/CheckoutContext';
 import { useEditMode } from '@/contexts/EditModeContext';
 import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import { useTranslation } from '@/contexts/TranslationContext';
+import { useConsent } from '@/hooks/useConsent';
 import { cn } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
@@ -104,19 +105,7 @@ export const VoicyChatV2: React.FC = () => {
     lastInteraction: new Date().toISOString()
   });
 
-  const [hasConsent, setHasConsent] = useState<boolean>(false);
-
-  // 🛡️ CHRIS-PROTOCOL: Cookie Consent Check (v2.16.077)
-  useEffect(() => {
-    const checkConsent = () => {
-      const consent = typeof window !== 'undefined' ? localStorage.getItem('voices_cookie_consent') : null;
-      setHasConsent(consent === 'all');
-    };
-    
-    checkConsent();
-    window.addEventListener('voices:consent', checkConsent);
-    return () => window.removeEventListener('voices:consent', checkConsent);
-  }, []);
+  const { hasFullConsent: hasConsent } = useConsent();
 
   //  SENSOR MODE: Track visitor behavior and sync to DB
   useEffect(() => {

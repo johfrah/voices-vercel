@@ -169,7 +169,7 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({
           general_settings: {},
           ademing_offline: process.env.ADEMING_OFFLINE === 'true',
-          _version: '2.16.077'
+          _version: '2.16.078'
         });
       }
     }

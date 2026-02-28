@@ -1,5 +1,6 @@
 "use client";
 
+import { useConsent } from '@/hooks/useConsent';
 import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import { AnimatePresence, motion } from 'framer-motion';
 import { VoicesLink as Link } from '@/components/ui/VoicesLink';
@@ -7,39 +8,31 @@ import React, { useEffect, useState } from 'react';
 import { ButtonInstrument, ContainerInstrument, TextInstrument } from '../LayoutInstruments';
 import { VoiceglotText } from '../VoiceglotText';
 
-const CONSENT_VERSION = '2026.1';
+const CONSENT_VERSION = '2026.2';
 
 /**
  *  NUCLEAR COOKIE BANNER (2026)
  *
  * Voldoet aan de Zero Laws en het Master Voices Protocol.
- * LEX: Policy link, consent metadata (timestamp, version).
+ * LEX: Policy link, consent metadata (timestamp, version, visitor hash).
  * HITL: Gebruiker heeft de controle, machine onthoudt de voorkeur.
+ * SONIC: DNA feedback bij interactie.
  */
 export const CookieBanner: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
   const { playClick } = useSonicDNA();
+  const { consent, updateConsent, isLoaded } = useConsent();
 
   useEffect(() => {
-    const consent = typeof window !== 'undefined' ? localStorage.getItem('voices_cookie_consent') : null;
-    if (!consent) {
+    if (isLoaded && consent === 'none') {
       const timer = setTimeout(() => setIsVisible(true), 2000);
       return () => clearTimeout(timer);
     }
-  }, []);
+  }, [isLoaded, consent]);
 
-  const handleAccept = (type: 'all' | 'essential') => {
-    playClick('success');
-    if (typeof window !== 'undefined') {
-      const meta = {
-        type,
-        version: CONSENT_VERSION,
-        timestamp: new Date().toISOString()
-      };
-      localStorage.setItem('voices_cookie_consent', type);
-      localStorage.setItem('voices_cookie_consent_meta', JSON.stringify(meta));
-      window.dispatchEvent(new CustomEvent('voices:consent', { detail: meta }));
-    }
+  const handleAccept = async (type: 'all' | 'essential') => {
+    playClick(type === 'all' ? 'success' : 'light');
+    await updateConsent(type, CONSENT_VERSION);
     setIsVisible(false);
   };
 
