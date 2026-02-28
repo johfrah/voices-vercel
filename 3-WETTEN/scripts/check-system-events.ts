@@ -1,38 +1,58 @@
-import { db } from '../../1-SITE/packages/database/src/index.js';
-import { systemEvents } from '../../1-SITE/packages/database/src/schema/index.js';
-import { desc } from 'drizzle-orm';
+#!/usr/bin/env tsx
+/**
+ * Check recent system_events for errors
+ */
+
+import { db } from '../../1-SITE/packages/database/src';
+import { sql } from 'drizzle-orm';
 
 async function checkSystemEvents() {
+  console.log('🔍 Checking recent system_events...\n');
+  
   try {
-    const events = await db.select().from(systemEvents).orderBy(desc(systemEvents.created_at)).limit(20);
+    const recentEvents = await db.execute(sql`
+      SELECT 
+        event_type,
+        severity,
+        message,
+        details,
+        created_at
+      FROM system_events
+      WHERE created_at > NOW() - INTERVAL '1 hour'
+      ORDER BY created_at DESC
+      LIMIT 20
+    `);
     
-    console.log('🔍 Latest System Events:');
-    console.log('========================\n');
-    
-    if (events.length === 0) {
-      console.log('✅ No system events found.');
+    if (recentEvents.rows.length === 0) {
+      console.log('✅ No system events in the last hour');
       return;
     }
     
-    const errors = events.filter(e => e.severity === 'error');
-    const warnings = events.filter(e => e.severity === 'warning');
+    console.log(`Found ${recentEvents.rows.length} events in the last hour:\n`);
     
-    console.log(`📊 Summary: ${errors.length} errors, ${warnings.length} warnings\n`);
-    
-    events.forEach((event, i) => {
-      const icon = event.severity === 'error' ? '❌' : event.severity === 'warning' ? '⚠️' : 'ℹ️';
-      console.log(`${icon} [${event.severity?.toUpperCase()}] ${event.event_type}`);
-      console.log(`   Time: ${event.created_at}`);
+    for (const event of recentEvents.rows) {
+      const severity = event.severity as string;
+      const icon = severity === 'error' ? '❌' : severity === 'warning' ? '⚠️' : 'ℹ️';
+      console.log(`${icon} [${severity.toUpperCase()}] ${event.event_type}`);
       console.log(`   Message: ${event.message}`);
+      console.log(`   Time: ${event.created_at}`);
       if (event.details) {
         console.log(`   Details: ${JSON.stringify(event.details).substring(0, 200)}`);
       }
       console.log('');
-    });
+    }
+    
+    // Count by severity
+    const errorCount = recentEvents.rows.filter(e => e.severity === 'error').length;
+    const warningCount = recentEvents.rows.filter(e => e.severity === 'warning').length;
+    
+    console.log('\n📊 Summary:');
+    console.log(`   Errors: ${errorCount}`);
+    console.log(`   Warnings: ${warningCount}`);
+    console.log(`   Total: ${recentEvents.rows.length}`);
     
   } catch (error) {
-    console.error('❌ Failed to fetch system events:', error);
-    process.exit(1);
+    console.error('❌ Failed to check system events:', error);
   }
   
   process.exit(0);

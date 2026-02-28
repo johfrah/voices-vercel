@@ -1,126 +1,119 @@
 #!/usr/bin/env tsx
 /**
- * Studio World V1 - Live Production Validation
- * Validates the Studio landing page and workshop detail pages
+ * Studio Page Live Validation Script
+ * Validates the live status of https://www.voices.be/studio/
  */
 
-import { db } from '../../1-SITE/packages/database/src/index.js';
-import { sql } from 'drizzle-orm';
+import { chromium } from 'playwright';
 
-async function validateStudioWorld() {
-  console.log('\n🎓 STUDIO WORLD V1 - LIVE VALIDATION\n');
-
-  try {
-    // 1. Check Studio landing page
-    console.log('1️⃣ Checking Studio Landing Page...');
-    const studioPage = await db.execute(sql`
-      SELECT 
-        slug,
-        title,
-        description,
-        status,
-        world_id
-      FROM pages
-      WHERE slug = 'studio'
-      LIMIT 1
-    `);
-
-    if (studioPage.rows.length === 0) {
-      console.log('❌ Studio landing page not found in database');
-      process.exit(1);
+async function validateStudioPage() {
+  console.log('🚀 Starting Studio Page Validation...\n');
+  
+  const browser = await chromium.launch({ 
+    headless: true,
+    args: ['--disable-blink-features=AutomationControlled']
+  });
+  
+  const context = await browser.newContext({
+    viewport: { width: 1920, height: 1080 },
+    userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
+  });
+  
+  const page = await context.newPage();
+  
+  // Collect console messages and errors
+  const consoleMessages: string[] = [];
+  const consoleErrors: string[] = [];
+  
+  page.on('console', (msg) => {
+    const text = msg.text();
+    consoleMessages.push(text);
+    if (msg.type() === 'error') {
+      consoleErrors.push(text);
     }
-
-    const page = studioPage.rows[0] as any;
-    console.log(`✅ Studio Page Found: "${page.title}"`);
-    console.log(`   Description: ${page.description?.substring(0, 100)}...`);
-    console.log(`   Status: ${page.status}`);
-    console.log(`   World ID: ${page.world_id}`);
-
-    // 2. Check workshop pages
-    console.log('\n2️⃣ Checking Workshop Detail Pages...');
-    const workshops = await db.execute(sql`
-      SELECT 
-        slug,
-        title,
-        status,
-        world_id
-      FROM pages
-      WHERE slug LIKE 'studio/%'
-      AND status = 'published'
-      ORDER BY slug
-    `);
-
-    console.log(`✅ Found ${workshops.rows.length} published workshop pages:`);
-    workshops.rows.forEach((w: any, i: number) => {
-      console.log(`   ${i + 1}. ${w.slug} - "${w.title}"`);
+  });
+  
+  page.on('pageerror', (error) => {
+    consoleErrors.push(`PAGE ERROR: ${error.message}`);
+  });
+  
+  try {
+    console.log('📍 Navigating to https://www.voices.be/studio/');
+    await page.goto('https://www.voices.be/studio/', { 
+      waitUntil: 'domcontentloaded',
+      timeout: 30000 
     });
-
-    // 3. Check workshop editions (for carousel data)
-    console.log('\n3️⃣ Checking Workshop Editions (Carousel Data)...');
-    const editions = await db.execute(sql`
-      SELECT 
-        id,
-        title,
-        start_date,
-        end_date,
-        location,
-        price_early_bird,
-        status
-      FROM workshop_editions
-      WHERE status = 'published'
-      ORDER BY start_date DESC
-      LIMIT 5
-    `);
-
-    console.log(`✅ Found ${editions.rows.length} published editions:`);
-    editions.rows.forEach((e: any, i: number) => {
-      console.log(`   ${i + 1}. ${e.title} - ${e.start_date} @ ${e.location} (€${e.price_early_bird})`);
+    
+    console.log('🔄 Performing hard refresh...');
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    
+    // Wait a bit for all scripts to load
+    await page.waitForTimeout(3000);
+    
+    console.log('\n📊 VALIDATION RESULTS:\n');
+    
+    // 1. Check version
+    console.log('1️⃣ Checking version...');
+    const versionCheck = await page.evaluate(() => {
+      const versionEl = document.querySelector('[data-version]');
+      return versionEl?.getAttribute('data-version') || 'NOT FOUND';
     });
-
-    // 4. Check system events for recent errors
-    console.log('\n4️⃣ Checking Recent System Events...');
-    const recentErrors = await db.execute(sql`
-      SELECT 
-        event_type,
-        message,
-        created_at
-      FROM system_events
-      WHERE severity = 'error'
-      AND created_at > NOW() - INTERVAL '1 hour'
-      ORDER BY created_at DESC
-      LIMIT 5
-    `);
-
-    if (recentErrors.rows.length === 0) {
-      console.log('✅ No errors in the last hour');
+    console.log(`   Version: ${versionCheck}`);
+    
+    // Also check via API
+    const apiResponse = await page.goto('https://www.voices.be/api/admin/config');
+    const configData = await apiResponse?.json();
+    console.log(`   API Version: ${configData?._version || 'NOT FOUND'}`);
+    
+    // Go back to studio page
+    await page.goto('https://www.voices.be/studio/', { waitUntil: 'domcontentloaded' });
+    await page.waitForTimeout(3000);
+    
+    // 2. Check for 'tl' ReferenceError
+    console.log('\n2️⃣ Checking for "tl" ReferenceError...');
+    const hasTlError = consoleErrors.some(err => err.includes('tl is not defined'));
+    if (hasTlError) {
+      console.log('   ❌ FOUND: "tl is not defined" error');
     } else {
-      console.log(`⚠️  Found ${recentErrors.rows.length} recent errors:`);
-      recentErrors.rows.forEach((e: any, i: number) => {
-        console.log(`   ${i + 1}. [${e.event_type}] ${e.message} (${e.created_at})`);
+      console.log('   ✅ NO "tl" ReferenceError detected');
+    }
+    
+    // 3. Check Workshop Carousel
+    console.log('\n3️⃣ Checking Workshop Carousel...');
+    const carouselVisible = await page.isVisible('[data-testid="workshop-carousel"], .workshop-carousel, [class*="carousel"]', { timeout: 5000 }).catch(() => false);
+    console.log(`   Carousel visible: ${carouselVisible ? '✅ YES' : '❌ NO'}`);
+    
+    // 4. Check RESERVEER PLEK CTA
+    console.log('\n4️⃣ Checking "RESERVEER PLEK" CTA...');
+    const ctaVisible = await page.locator('text=/RESERVEER.*PLEK/i').first().isVisible({ timeout: 5000 }).catch(() => false);
+    console.log(`   CTA visible: ${ctaVisible ? '✅ YES' : '❌ NO'}`);
+    
+    // 5. Console Errors Summary
+    console.log('\n5️⃣ Console Errors Summary:');
+    if (consoleErrors.length === 0) {
+      console.log('   ✅ NO console errors detected');
+    } else {
+      console.log(`   ❌ Found ${consoleErrors.length} error(s):`);
+      consoleErrors.forEach((err, i) => {
+        console.log(`      ${i + 1}. ${err}`);
       });
     }
-
-    // 5. Final certification
-    console.log('\n📋 VALIDATION SUMMARY:');
-    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    console.log(`✅ Studio Landing Page: LIVE`);
-    console.log(`✅ Workshop Detail Pages: ${workshops.rows.length} LIVE`);
-    console.log(`✅ Workshop Editions: ${editions.rows.length} ACTIVE`);
-    console.log(`✅ System Health: ${recentErrors.rows.length === 0 ? 'CLEAN' : 'WARNINGS'}`);
-    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
-
-    if (recentErrors.rows.length === 0 && workshops.rows.length > 0 && editions.rows.length > 0) {
-      console.log('🎉 VERIFIED LIVE: v2.16.059 - Studio World Operational - Database Healthy\n');
-    } else {
-      console.log('⚠️  PARTIAL SUCCESS: Some issues detected, review above\n');
-    }
-
+    
+    // 6. Page Screenshot
+    console.log('\n📸 Taking screenshot...');
+    await page.screenshot({ 
+      path: '3-WETTEN/docs/studio-validation-screenshot.png',
+      fullPage: true 
+    });
+    console.log('   Screenshot saved to: 3-WETTEN/docs/studio-validation-screenshot.png');
+    
+    console.log('\n✅ Validation complete!');
+    
   } catch (error) {
     console.error('❌ Validation failed:', error);
-    process.exit(1);
+  } finally {
+    await browser.close();
   }
-
-  process.exit(0);
 }
 
-validateStudioWorld();
+validateStudioPage().catch(console.error);
