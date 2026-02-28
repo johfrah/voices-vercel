@@ -56,7 +56,7 @@ export async function GET(request: NextRequest) {
       limit,
       offset,
       totalInDb,
-      timestamp: new Date().toISOString()
+      timestamp: new Date()
     };
 
     // 🚀 NUCLEAR RAW SQL FETCH (v2.14.652)

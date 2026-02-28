@@ -48,7 +48,7 @@ export class ServerWatchdog {
               extra: options.details,
               timestamp: new Date().toISOString()
             },
-            createdAt: new Date().toISOString()
+            createdAt: new Date()
           }).catch((e: any) => console.warn('[ServerWatchdog] Direct DB logging failed:', e.message));
         }
       } catch (dbErr) {

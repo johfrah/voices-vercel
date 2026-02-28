@@ -72,7 +72,7 @@ export async function GET(request: NextRequest) {
       },
       meetings: appointments || [],
       vacations: actorHolidays || [],
-      timestamp: new Date().toISOString()
+      timestamp: new Date()
     });
   } catch (error) {
     console.error('[Operational API Error]:', error);

@@ -1,4 +1,4 @@
-# 🛡️ Forensic Audit Report (2/28/2026, 9:31:21 PM)
+# 🛡️ Forensic Audit Report (2/28/2026, 9:36:39 PM)
 
 ## Summary
 - **Status**: ✅ PASSED
@@ -7074,89 +7074,89 @@
   > `label={t('filter.sort', language === 'fr' ? 'Trier?' : language === 'en' ? 'Sort?' : 'Sorteer?')}`
 - **WARNING** `1-SITE/apps/web/src/components/ui/VoicesMasterControl.tsx:956`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `label={t('filter.sort', language === 'fr' ? 'Trier?' : language === 'en' ? 'Sort?' : 'Sorteer?')}`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1164`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1153`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="space-y-4">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1165`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1154`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="p-4 bg-white/5 rounded-2xl border border-white/5">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1167`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1156`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="space-y-2">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1168`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1157`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex justify-between text-[11px]">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1169`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1158`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span className="opacity-40">Pagina:</span>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1170`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1159`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span className="text-primary truncate max-w-[120px]">{customer360?.iap_context?.sensor?.current_page || 'Home'}</span>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1172`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1161`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex justify-between text-[11px]">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1173`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1162`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span className="opacity-40">Scroll:</span>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1174`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1163`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span>{customer360?.iap_context?.sensor?.scroll_depth || 0}%</span>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1176`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1165`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex justify-between text-[11px]">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1177`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1166`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span className="opacity-40">Laatst:</span>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1178`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1167`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span>{customer360?.iap_context?.sensor?.last_interaction ? new Date(customer360.iap_context.sensor.last_interaction).toLocaleTimeString('nl-BE', { hour: '2-digit', minute: '2-digit' }) : 'N/A'}</span>`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1172`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="p-4 bg-white/5 rounded-2xl border border-white/5">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1174`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="flex items-center gap-2">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1175`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className={cn(`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1179`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<span className="text-[13px] font-medium capitalize">{customer360?.intelligence?.leadVibe || 'Neutral'}</span>`
 - **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1183`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="p-4 bg-white/5 rounded-2xl border border-white/5">`
 - **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1185`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex items-center gap-2">`
 - **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1186`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className={cn(`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1190`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<span className="text-[13px] font-medium capitalize">{customer360?.intelligence?.leadVibe || 'Neutral'}</span>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1194`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="p-4 bg-white/5 rounded-2xl border border-white/5">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1196`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="flex items-center gap-2">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1197`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span className={cn(`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1207`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1196`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="p-4 bg-white/5 rounded-2xl border border-white/5">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1209`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1198`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span className="text-[13px] font-medium">{customer360?.intelligence?.intent || 'Browsing'}</span>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1212`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1201`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="p-4 bg-white/5 rounded-2xl border border-white/5">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1214`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1203`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="space-y-1">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1215`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1204`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex justify-between text-[11px]">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1216`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1205`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span className="opacity-40">Orders:</span>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1217`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1206`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span>{customer360?.dna?.totalOrders || 0}</span>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1219`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1208`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex justify-between text-[11px]">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1220`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1209`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span className="opacity-40">Journey:</span>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1221`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1210`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span className="text-primary">{customer360?.dna?.topJourneys?.[0] || 'New'}</span>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1227`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1216`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="pt-4 border-t border-white/5">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1229`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1218`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="grid grid-cols-1 gap-2">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1724`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1713`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span className="block mt-1 font-medium text-primary text-[12px]">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1833`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1822`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="space-y-4">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1834`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1823`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="p-4 bg-va-off-white rounded-2xl border border-black/5">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1838`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1827`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex items-center gap-2">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1839`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1828`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="w-2 h-2 bg-green-500 rounded-full" />`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1840`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1829`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span className="text-[15px] font-bold uppercase tracking-wider text-green-600">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1846`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1835`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="grid grid-cols-1 gap-2">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1864`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1853`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="text-center py-10 opacity-40">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:529`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:518`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `const language = typeof window !== 'undefined' ? (document.cookie.split('; ').find(row => row.startsWith('voices_lang='))?.split('=')[1] || 'nl') : 'nl';`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:529`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:518`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `const language = typeof window !== 'undefined' ? (document.cookie.split('; ').find(row => row.startsWith('voices_lang='))?.split('=')[1] || 'nl') : 'nl';`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:817`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:806`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `if (language !== 'nl' && aiResponse.content) {`
 - **WARNING** `1-SITE/apps/web/src/components/ui/WorkshopEditModal.tsx:308`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 md:p-10">`

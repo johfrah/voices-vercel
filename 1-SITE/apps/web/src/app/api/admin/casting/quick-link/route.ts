@@ -44,9 +44,9 @@ export async function POST(request: NextRequest) {
       is_public: true, // Admin links zijn direct deelbaar
       settings: {
         isAdminGenerated: true,
-        createdAt: new Date().toISOString()
+        createdAt: new Date()
       },
-      createdAt: new Date().toISOString()
+      createdAt: new Date()
     }).returning();
 
     // 2. Koppel de stemmen

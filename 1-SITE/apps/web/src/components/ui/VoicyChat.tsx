@@ -40,6 +40,37 @@ import { VoiceglotText } from './VoiceglotText';
 import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
 
 export const VoicyChatV2: React.FC = () => {
+  // 🛡️ CHRIS-PROTOCOL: All State at the top to prevent TDZ errors
+  const [conversationId, setConversationId] = useState<number | null>(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const [messages, setMessages] = useState<any[]>([]);
+  const [inputValue, setInputValue] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
+  const [mailForm, setMailForm] = useState({ email: '', message: '' });
+  const [isSendingMail, setIsSendingMail] = useState(false);
+  const [mailSent, setMailSent] = useState(false);
+  const [isFullMode, setIsFullMode] = useState(false);
+  const [activeTab, setActiveTab] = useState<'chat' | 'mail' | 'phone' | 'faq' | 'admin' | 'orders'>('chat');
+  const [telephonyConfig, setTelephonyConfig] = useState<{ isLive: boolean; whisperMode: string }>({ isLive: true, whisperMode: 'robot' });
+  const [chatMode, setChatMode] = useState<'ask' | 'agent'>('ask');
+  const [isCalling, setIsCalling] = useState(false);
+  const [callRequested, setCallRequested] = useState(false);
+  const [callError, setCallError] = useState<string | null>(null);
+  const [persona, setPersona] = useState<'voicy' | 'johfrah'>('voicy');
+  const [customer360, setCustomer360] = useState<any>(null);
+  const [generalSettings, setGeneralSettings] = useState<any>(null);
+  const [isInitialLoading, setIsInitialLoading] = useState(false);
+  const [clickedChips, setClickedChips] = useState<string[]>([]);
+  const [isHoveringVoicy, setIsHoveringVoicy] = useState(false);
+  const [showChips, setShowChips] = useState(false);
+  const [showLeadForm, setShowLeadForm] = useState(false);
+  const [leadFormData, setLeadFormData] = useState({ name: '', email: '' });
+  const [sensorData, setSensorData] = useState<any>({
+    currentPage: typeof window !== 'undefined' ? window.location.pathname : '',
+    scrollDepth: 0,
+    lastInteraction: new Date().toISOString()
+  });
+
   const { 
     state, 
     updateBriefing, 
@@ -71,16 +102,12 @@ export const VoicyChatV2: React.FC = () => {
   const activeEmail = market.email;
   const activePhone = market.phone;
 
-  const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState<any[]>([]);
-  const [inputValue, setInputValue] = useState('');
-  const [isTyping, setIsTyping] = useState(false);
-  const [mailForm, setMailForm] = useState({ email: '', message: '' });
-  const [isSendingMail, setIsSendingMail] = useState(false);
-  const [mailSent, setMailSent] = useState(false);
-  const [isFullMode, setIsFullMode] = useState(false);
-  const [activeTab, setActiveTab] = useState<'chat' | 'mail' | 'phone' | 'faq' | 'admin' | 'orders'>('chat');
-  const [telephonyConfig, setTelephonyConfig] = useState<{ isLive: boolean; whisperMode: string }>({ isLive: true, whisperMode: 'robot' });
+  const { hasFullConsent: hasConsent } = useConsent();
+
+  const chipsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const lastIdRef = useRef<number>(0);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
 
   //  CHRIS-PROTOCOL: Sync telephony config from DB
   useEffect(() => {
@@ -93,19 +120,6 @@ export const VoicyChatV2: React.FC = () => {
       })
       .catch(err => console.error('Failed to fetch telephony config', err));
   }, [isOpen]); // Re-check when chat opens
-  const [chatMode, setChatMode] = useState<'ask' | 'agent'>('ask');
-  const [isCalling, setIsCalling] = useState(false);
-  const [callRequested, setCallRequested] = useState(false);
-  const [callError, setCallError] = useState<string | null>(null);
-  const [persona, setPersona] = useState<'voicy' | 'johfrah'>('voicy');
-  const [customer360, setCustomer360] = useState<any>(null);
-  const [sensorData, setSensorData] = useState<any>({
-    currentPage: typeof window !== 'undefined' ? window.location.pathname : '',
-    scrollDepth: 0,
-    lastInteraction: new Date().toISOString()
-  });
-
-  const { hasFullConsent: hasConsent } = useConsent();
 
   //  SENSOR MODE: Track visitor behavior and sync to DB
   useEffect(() => {
@@ -147,9 +161,7 @@ export const VoicyChatV2: React.FC = () => {
     trackSensor();
 
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [conversationId, isAdmin]);
-  const [showLeadForm, setShowLeadForm] = useState(false);
-  const [leadFormData, setLeadFormData] = useState({ name: '', email: '' });
+  }, [conversationId, isAdmin, hasConsent]);
 
   const isJohfrah = persona === 'johfrah';
 
@@ -175,17 +187,6 @@ export const VoicyChatV2: React.FC = () => {
       window.removeEventListener('voicy:open', handleOpenVoicy);
     };
   }, [playSonicClick]);
-
-  const [generalSettings, setGeneralSettings] = useState<any>(null);
-  const [conversationId, setConversationId] = useState<number | null>(null);
-  const [isInitialLoading, setIsInitialLoading] = useState(false);
-  const [clickedChips, setClickedChips] = useState<string[]>([]);
-  const [isHoveringVoicy, setIsHoveringVoicy] = useState(false);
-  const [showChips, setShowChips] = useState(false);
-  const chipsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const lastIdRef = useRef<number>(0);
-  const chatContainerRef = useRef<HTMLDivElement>(null);
 
   //  BUTLER BRIDGE: Execute suggested actions from Voicy
   useEffect(() => {
@@ -294,7 +295,7 @@ export const VoicyChatV2: React.FC = () => {
         case 'ANALYZE_SCRIPT':
           if (params.text) {
             const words = params.text.trim().split(/\s+/).length;
-            const wordsPerMinute = state.pricingConfig?.wordsPerMinute || SlimmeKassa.getDefaultConfig().wordsPerMinute || 155;
+            const wordsPerMinute = state.pricingConfig?.wordsPerMinute || 155;
             const estSeconds = Math.round((words / wordsPerMinute) * 60);
             const target = params.targetDuration || 30;
             const diff = estSeconds - target;
@@ -441,7 +442,9 @@ export const VoicyChatV2: React.FC = () => {
     addItem, 
     resetSelection,
     updateMusic,
-    t
+    t,
+    conversationId,
+    isAuthenticated
   ]);
 
   //  CHRIS-PROTOCOL: Escape key support for closing the chat
@@ -667,7 +670,7 @@ export const VoicyChatV2: React.FC = () => {
         }
       ]);
     }
-  }, [messages.length, isInitialLoading, isPortfolioJourney, t, user, customer360]);
+  }, [messages.length, isInitialLoading, isPortfolioJourney, t, user, customer360, hasConsent]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -1545,389 +1548,6 @@ export const VoicyChatV2: React.FC = () => {
                   </ContainerInstrument>
                 </ContainerInstrument>
               )}
-            </ContainerInstrument>
-          )}
-
-          {activeTab === 'mail' && (
-            <ContainerInstrument plain className="flex-1 p-4 overflow-y-auto custom-scrollbar">
-              <AnimatePresence  mode="wait">
-                {mailSent ? (
-                  <motion.div 
-                    initial={{ opacity: 0, scale: 0.9 }} 
-                    animate={{ opacity: 1, scale: 1 }} 
-                    className="h-full flex flex-col items-center justify-center text-center space-y-3"
-                  >
-                    <ContainerInstrument plain className="w-12 h-12 rounded-full bg-green-500/10 flex items-center justify-center text-green-500">
-                      <Check strokeWidth={1.5} size={24} />
-                    </ContainerInstrument>
-                    <HeadingInstrument level={4} className="text-lg font-light tracking-tighter">
-                      <VoiceglotText  translationKey="chat.mail.sent.title" defaultText="Bericht verzonden!" />
-                    </HeadingInstrument>
-                    <TextInstrument className="text-[14px] text-va-black/40 font-light">
-                      <VoiceglotText  translationKey="chat.mail.sent.text" defaultText="Bedankt! We reageren zo snel mogelijk." />
-                    </TextInstrument>
-                    <ButtonInstrument 
-                      onClick={() => setMailSent(false)}
-                      className="va-btn-pro px-6 py-2 text-[14px]"
-                    >
-                      <VoiceglotText  translationKey="chat.mail.sent.cta" defaultText="Nog een bericht" />
-                    </ButtonInstrument>
-                  </motion.div>
-                ) : (
-                  <motion.div 
-                    initial={{ opacity: 0, y: 10 }} 
-                    animate={{ opacity: 1, y: 0 }} 
-                    className="space-y-4"
-                  >
-                    <ContainerInstrument plain className="flex flex-col items-center text-center space-y-1">
-                      <ContainerInstrument plain className="w-12 h-12 rounded-full bg-green-500/10 flex items-center justify-center text-green-600 shadow-lg mb-2">
-                        <Mail strokeWidth={1.5} size={24} className="animate-bounce" />
-                      </ContainerInstrument>
-                      <HeadingInstrument level={4} className="text-xl font-light tracking-tighter">
-                        <VoiceglotText  translationKey="chat.mail.title" defaultText="Stuur ons een bericht" />
-                      </HeadingInstrument>
-                      <TextInstrument className="text-[15px] text-va-black/40 font-light leading-relaxed">
-                        <VoiceglotText  translationKey="chat.mail.subtitle" defaultText="We reageren meestal binnen het uur." />
-                      </TextInstrument>
-                    </ContainerInstrument>
-
-                    <FormInstrument onSubmit={handleMailSubmit} className="space-y-3">
-                      <ContainerInstrument plain className="relative group">
-                        <ContainerInstrument plain className="absolute left-5 top-1/2 -translate-y-1/2 text-va-black/40 group-focus-within:text-primary transition-colors">
-                          <User size={16} strokeWidth={1.5} />
-                        </ContainerInstrument>
-                        <InputInstrument 
-                          type="email" 
-                          required
-                          value={mailForm.email}
-                          onChange={(e) => setMailForm(prev => ({ ...prev, email: e.target.value }))}
-                          placeholder={t('chat.mail.placeholder.email', "naam@bedrijf.be")}
-                          className="w-full bg-va-off-white border-none rounded-xl py-3 pl-12 pr-5 text-[14px] font-light focus:ring-2 focus:ring-va-black/10 transition-all placeholder:text-va-black/60"
-                        />
-                      </ContainerInstrument>
-                      <ContainerInstrument plain className="relative group">
-                        <ContainerInstrument plain className="absolute left-5 top-5 text-va-black/40 group-focus-within:text-primary transition-colors">
-                          <MessageCircle size={16} strokeWidth={1.5} />
-                        </ContainerInstrument>
-                        <textarea 
-                          required
-                          value={mailForm.message}
-                          onChange={(e) => setMailForm(prev => ({ ...prev, message: e.target.value }))}
-                          placeholder={t('chat.mail.placeholder.message', "Hoe kunnen we je helpen?")}
-                          className="w-full bg-va-off-white border-none rounded-xl py-3 pl-12 pr-5 text-[14px] font-light min-h-[100px] focus:ring-2 focus:ring-va-black/10 transition-all resize-none outline-none placeholder:text-va-black/60"
-                        />
-                      </ContainerInstrument>
-                      <ButtonInstrument 
-                        type="submit" 
-                        disabled={isSendingMail}
-                        className="w-full py-4 bg-va-black text-white rounded-xl text-[14px] font-medium tracking-widest hover:opacity-80 transition-all flex items-center justify-center gap-2 shadow-lg disabled:opacity-50"
-                      >
-                        {isSendingMail ? <Loader2 className="animate-spin" size={16} /> : <Send strokeWidth={1.5} size={14} />}
-                        <TextInstrument className="font-black tracking-widest text-[14px] uppercase">
-                          <VoiceglotText translationKey="chat.mail.send_button" defaultText="BERICHT VERSTUREN" />
-                        </TextInstrument>
-                      </ButtonInstrument>
-                    </FormInstrument>
-
-                    <ContainerInstrument plain className="flex items-center gap-3 py-1">
-                      <ContainerInstrument plain className="flex-1 h-px bg-black/5" />
-                      <TextInstrument className="text-[10px] text-va-black/20 tracking-widest uppercase">
-                        <VoiceglotText translationKey="common.or" defaultText="of" />
-                      </TextInstrument>
-                      <ContainerInstrument plain className="flex-1 h-px bg-black/5" />
-                    </ContainerInstrument>
-
-                        <ButtonInstrument 
-                          as="a" 
-                          href={`mailto:${activeEmail}`} 
-                          className="w-full py-3 bg-va-off-white border border-black/5 rounded-xl flex items-center justify-center gap-2 hover:bg-black/5 transition-all group"
-                        >
-                          <Mail size={14} strokeWidth={1.5} className="text-va-black/40 group-hover:text-primary transition-colors" />
-                          <TextInstrument className="text-[14px] font-light tracking-widest">{activeEmail}</TextInstrument>
-                        </ButtonInstrument>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </ContainerInstrument>
-          )}
-
-          {activeTab === 'phone' && (
-            <ContainerInstrument plain className="flex-1 p-4 flex flex-col items-center justify-center text-center space-y-4">
-              {(() => {
-                const isOfficeOpenStatus = generalSettings?.opening_hours ? isOfficeOpen(generalSettings.opening_hours) : true;
-                const isTelephonyLive = telephonyConfig.isLive !== false;
-                const isActuallyOpen = isOfficeOpenStatus && isTelephonyLive;
-                
-                if (callRequested) {
-                  return (
-                    <motion.div 
-                      initial={{ opacity: 0, scale: 0.9 }} 
-                      animate={{ opacity: 1, scale: 1 }} 
-                      className="space-y-3"
-                    >
-                      <ContainerInstrument plain className="w-12 h-12 rounded-full bg-green-500/10 flex items-center justify-center text-green-500 mx-auto">
-                        <Check strokeWidth={1.5} size={24} />
-                      </ContainerInstrument>
-                      <HeadingInstrument level={4} className="text-lg font-light tracking-tighter">
-                        <VoiceglotText  translationKey="chat.phone.requested.title" defaultText="Verbinding wordt opgezet!" />
-                      </HeadingInstrument>
-                      <TextInstrument className="text-[14px] text-va-black/40 font-light">
-                        <VoiceglotText  translationKey="chat.phone.requested.text" defaultText="Je telefoon gaat over over enkele seconden." />
-                      </TextInstrument>
-                      <ButtonInstrument 
-                        onClick={() => setCallRequested(false)}
-                        className="va-btn-pro px-6 py-2 text-[14px]"
-                      >
-                        <VoiceglotText  translationKey="chat.phone.requested.cta" defaultText="Terug" />
-                      </ButtonInstrument>
-                    </motion.div>
-                  );
-                }
-
-                return (
-                  <>
-                    <ContainerInstrument plain className={cn("w-12 h-12 rounded-full flex items-center justify-center transition-colors shadow-lg", isActuallyOpen ? "bg-green-500/10 text-green-600" : "bg-amber-500/10 text-amber-600")}>
-                      <Phone strokeWidth={1.5} size={24} className={cn(isActuallyOpen && "animate-bounce")} />
-                    </ContainerInstrument>
-                    <ContainerInstrument plain className="space-y-1">
-                      <HeadingInstrument level={4} className="text-lg font-light tracking-tighter">
-                        {isActuallyOpen ? (
-                          <VoiceglotText translationKey="chat.phone.title.open" defaultText="Directe Studio Lijn" />
-                        ) : (
-                          <VoiceglotText translationKey="chat.phone.title.closed" defaultText="Studio gesloten" />
-                        )}
-                      </HeadingInstrument>
-                      <TextInstrument className="text-[14px] text-va-black/40 font-light leading-relaxed">
-                        {isActuallyOpen ? (
-                          <VoiceglotText translationKey="chat.phone.subtitle.open" defaultText="We bellen je binnen 10 seconden." />
-                        ) : (
-                          <>
-                            {!isTelephonyLive ? (
-                              <VoiceglotText translationKey="chat.phone.subtitle.manual_offline" defaultText="Johfrah is momenteel in een opname en niet direct bereikbaar." />
-                            ) : (
-                              <VoiceglotText translationKey="chat.phone.subtitle.closed" defaultText="Momenteel niet bereikbaar." />
-                            )}
-                            {isTelephonyLive && (() => {
-                              const next = generalSettings?.phone_hours ? getNextOpeningTime(generalSettings.phone_hours) : null;
-                              return next ? (
-                                <span className="block mt-1 font-medium text-primary text-[12px]">
-                                  <VoiceglotText translationKey="chat.phone.back_at" defaultText={`Terug vanaf ${next.day} ${next.time}`} noTranslate={true} />
-                                </span>
-                              ) : null;
-                            })()}
-                          </>
-                        )}
-                      </TextInstrument>
-                    </ContainerInstrument>
-
-                    {isActuallyOpen && (
-                        <ContainerInstrument plain className="w-full space-y-3">
-                        <ContainerInstrument plain className="relative group">
-                          <ContainerInstrument plain className="absolute left-5 top-1/2 -translate-y-1/2 text-va-black/40 group-focus-within:text-primary transition-colors">
-                            <Phone size={16} strokeWidth={1.5} />
-                          </ContainerInstrument>
-                          <InputInstrument 
-                            type="tel"
-                            placeholder={t('chat.phone.placeholder', "0475 00 00 00")}
-                            className="w-full bg-va-off-white border-none rounded-xl py-3 pl-12 pr-5 text-[14px] font-light focus:ring-2 focus:ring-va-black/10 transition-all placeholder:text-va-black/60"
-                            value={inputValue}
-                            onChange={(e) => setInputValue(e.target.value)}
-                          />
-                          {callError && (
-                            <TextInstrument className="text-red-500 text-[11px] mt-1 text-center">
-                              <VoiceglotText translationKey="chat.phone.error" defaultText={callError} noTranslate={true} />
-                            </TextInstrument>
-                          )}
-                        </ContainerInstrument>
-                        
-                        <ButtonInstrument 
-                          onClick={() => handleCallbackRequest(inputValue)}
-                          disabled={isCalling || !inputValue}
-                          className={cn(
-                            "va-btn-pro w-full flex flex-col items-center justify-center py-3 gap-0.5 h-auto",
-                            isCalling && "opacity-70"
-                          )}
-                        >
-                          <ContainerInstrument plain className="flex items-center gap-2">
-                            {isCalling ? (
-                              <Loader2 className="animate-spin" size={16} />
-                            ) : (
-                              <Zap size={14} className="text-primary animate-pulse" />
-                            )}
-                            <TextInstrument className="font-black tracking-widest text-[14px] uppercase">
-                              <VoiceglotText translationKey="chat.phone.call_me_now" defaultText="BEL MIJ NU" />
-                            </TextInstrument>
-                          </ContainerInstrument>
-                          <TextInstrument className="text-[9px] opacity-60 font-light tracking-widest uppercase">
-                            <VoiceglotText translationKey="chat.phone.call_me_now_desc" defaultText="Je telefoon gaat direct over" />
-                          </TextInstrument>
-                        </ButtonInstrument>
-
-                        <ContainerInstrument plain className="flex items-center gap-3 py-1">
-                          <ContainerInstrument plain className="flex-1 h-px bg-black/5" />
-                          <TextInstrument className="text-[10px] text-va-black/20 tracking-widest uppercase">
-                            <VoiceglotText translationKey="common.or" defaultText="of" />
-                          </TextInstrument>
-                          <ContainerInstrument plain className="flex-1 h-px bg-black/5" />
-                        </ContainerInstrument>
-
-                        <ButtonInstrument 
-                          as="a" 
-                          href={`tel:${activePhone.replace(/\s+/g, '')}`} 
-                          className="w-full py-3 bg-va-off-white border border-black/5 rounded-xl flex items-center justify-center gap-2 hover:bg-black/5 transition-all group"
-                        >
-                          <Phone size={14} strokeWidth={1.5} className="text-va-black/40 group-hover:text-primary transition-colors" />
-                          <TextInstrument className="text-[14px] font-light tracking-widest">{activePhone}</TextInstrument>
-                        </ButtonInstrument>
-                      </ContainerInstrument>
-                    )}
-                  </>
-                );
-              })()}
-            </ContainerInstrument>
-          )}
-
-          {activeTab === 'faq' && (
-            <ContainerInstrument plain className="flex-1 p-6 overflow-y-auto space-y-4 custom-scrollbar">
-              <HeadingInstrument level={4} className="text-[15px] font-medium tracking-widest text-va-black/30 mb-4"><VoiceglotText  translationKey="chat.faq.title" defaultText="Veelgestelde vragen" /></HeadingInstrument>
-              {[
-                { q: "Wat zijn de tarieven?", key: "chat.faq.q1" },
-                { q: "Hoe snel wordt er geleverd?", key: "chat.faq.q2" },
-                ...(state.usage !== 'telefonie' ? [{ q: "Kan ik een gratis proefopname krijgen?", key: "chat.faq.q3" }] : []),
-                { q: "Welke talen bieden jullie aan?", key: "chat.faq.q4" }
-              ].map((faq, i) => (
-                    <ButtonInstrument
-                      key={i}
-                      onClick={() => {
-                        setActiveTab('chat');
-                        handleSend(undefined, faq.q, 'chip');
-                      }}
-                      variant="plain"
-                      className="w-full text-left p-4 rounded-2xl bg-va-off-white hover:bg-va-black/5 text-va-black transition-all text-[15px] font-light flex justify-between items-center group"
-                    >
-                    <TextInstrument as="span"><VoiceglotText  translationKey={faq.key} defaultText={faq.q} /></TextInstrument>
-                    <Send strokeWidth={1.5} size={14} className="opacity-0 group-hover:opacity-40 transition-opacity" />
-                  </ButtonInstrument>
-              ))}
-            </ContainerInstrument>
-          )}
-
-          {activeTab === 'orders' && isAuthenticated && (
-            <ContainerInstrument plain className="flex-1 p-6 overflow-y-auto space-y-6 custom-scrollbar">
-              <HeadingInstrument level={4} className="text-[15px] font-medium tracking-widest text-va-black/30 mb-4">
-                <VoiceglotText translationKey="chat.orders.title" defaultText="Mijn Bestellingen" />
-              </HeadingInstrument>
-              
-              {customer360?.dna?.totalOrders > 0 ? (
-                <div className="space-y-4">
-                  <div className="p-4 bg-va-off-white rounded-2xl border border-black/5">
-                    <TextInstrument className="text-[13px] font-medium mb-1">
-                      <VoiceglotText translationKey="chat.orders.latest_status" defaultText="Status laatste bestelling" />
-                    </TextInstrument>
-                    <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 bg-green-500 rounded-full" />
-                      <span className="text-[15px] font-bold uppercase tracking-wider text-green-600">
-                        {customer360?.dna?.lastOrderStatus || 'In behandeling'}
-                      </span>
-                    </div>
-                  </div>
-                  
-                  <div className="grid grid-cols-1 gap-2">
-                    <ButtonInstrument 
-                      as="a" 
-                      href="/account/orders"
-                      className="w-full py-3 bg-va-black text-white rounded-xl text-[13px] font-black tracking-widest uppercase hover:opacity-80 transition-all text-center"
-                    >
-                      <VoiceglotText translationKey="chat.orders.view_all" defaultText="ALLE BESTELLINGEN" />
-                    </ButtonInstrument>
-                    <ButtonInstrument 
-                      as="a" 
-                      href="/account/vault"
-                      className="w-full py-3 bg-va-off-white text-va-black rounded-xl text-[13px] font-black tracking-widest uppercase hover:bg-black/5 transition-all text-center"
-                    >
-                      <VoiceglotText translationKey="chat.orders.vault" defaultText="MIJN BESTANDEN (VAULT)" />
-                    </ButtonInstrument>
-                  </div>
-                </div>
-              ) : (
-                <div className="text-center py-10 opacity-40">
-                  <ShoppingCart size={48} className="mx-auto mb-4" />
-                  <TextInstrument className="text-[15px] font-light">
-                    <VoiceglotText translationKey="chat.orders.none" defaultText="Je hebt nog geen bestellingen." />
-                  </TextInstrument>
-                </div>
-              )}
-            </ContainerInstrument>
-          )}
-
-          {activeTab === 'admin' && isAdmin && (
-            <ContainerInstrument plain className="flex-1 p-6 overflow-y-auto space-y-6 custom-scrollbar">
-              <HeadingInstrument level={4} className="text-[15px] font-medium tracking-widest text-va-black/30 mb-4"><VoiceglotText  translationKey="chat.admin.title" defaultText="Admin Control Panel" /></HeadingInstrument>
-              
-              <ContainerInstrument plain className="space-y-4">
-                <ButtonInstrument
-                  onClick={() => {
-                    playSonicClick('pro');
-                    toggleEditMode();
-                  }}
-                  className={`w-full p-6 rounded-[24px] flex items-center justify-between transition-all ${
-                    isEditMode ? 'bg-va-black text-white shadow-lg shadow-black/20' : 'bg-va-off-white text-va-black hover:bg-black/5'
-                  }`}
-                >
-                  <ContainerInstrument plain className="flex items-center gap-4">
-                    <ContainerInstrument plain className={`w-10 h-10 rounded-full flex items-center justify-center ${isEditMode ? 'bg-white/20' : 'bg-va-black/5'}`}>
-                      <Zap strokeWidth={1.5} size={20} className={isEditMode ? 'text-white' : 'text-va-black'} />
-                    </ContainerInstrument>
-                    <ContainerInstrument plain className="text-left">
-                      <TextInstrument className="text-[15px] font-light tracking-tight"><VoiceglotText  translationKey="admin.edit_mode.title" defaultText="Edit Mode" /></TextInstrument>
-                      <TextInstrument className={`text-[15px] font-light opacity-60 ${isEditMode ? 'text-white' : 'text-va-black'}`}>
-                        {isEditMode ? <VoiceglotText  translationKey="common.enabled" defaultText="Ingeschakeld" /> : <VoiceglotText  translationKey="common.disabled" defaultText="Uitgeschakeld" />}
-                      </TextInstrument>
-                    </ContainerInstrument>
-                  </ContainerInstrument>
-                  <ContainerInstrument plain className={`w-12 h-6 rounded-full relative transition-all duration-300 ${isEditMode ? 'bg-white/30' : 'bg-va-black/10'}`}>
-                    <ContainerInstrument plain className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all duration-300 ${isEditMode ? 'left-7' : 'left-1'}`} />
-                  </ContainerInstrument>
-                </ButtonInstrument>
-
-                <ContainerInstrument plain className="grid grid-cols-2 gap-3">
-                  <ButtonInstrument
-                    as="a"
-                    href="/admin/dashboard"
-                    className="p-4 rounded-2xl bg-va-off-white hover:bg-black/5 transition-all text-left space-y-1"
-                  >
-                    <ContainerInstrument plain className="w-4 h-4 mb-1">
-                      <LayoutDashboard strokeWidth={1.5} size={16} className="text-va-black/40" />
-                    </ContainerInstrument>
-                    <TextInstrument className="text-[15px] font-light tracking-widest block"><VoiceglotText  translationKey="nav.dashboard" defaultText="Dashboard" /></TextInstrument>
-                  </ButtonInstrument>
-                  <ButtonInstrument
-                    as="a"
-                    href="/admin/mailbox"
-                    className="p-4 rounded-2xl bg-va-off-white hover:bg-black/5 transition-all text-left space-y-1"
-                  >
-                    <ContainerInstrument plain className="w-4 h-4 mb-1">
-                      <Mail strokeWidth={1.5} size={16} className="text-va-black/40" />
-                    </ContainerInstrument>
-                    <TextInstrument className="text-[15px] font-light tracking-widest block"><VoiceglotText  translationKey="nav.mailbox" defaultText="Mailbox" /></TextInstrument>
-                  </ButtonInstrument>
-                </ContainerInstrument>
-
-                {customer360 && (
-                  <ContainerInstrument plain className="p-4 bg-va-black text-white rounded-[24px] space-y-3">
-                    <HeadingInstrument level={5} className="text-[15px] font-light tracking-widest opacity-40"><VoiceglotText  translationKey="account.dna.title" defaultText="Klant DNA" /></HeadingInstrument>
-                    <ContainerInstrument plain className="flex items-center gap-3">
-                      <ContainerInstrument plain className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center font-light">{customer360.first_name?.[0]}</ContainerInstrument>
-                      <ContainerInstrument plain>
-                        <TextInstrument className="text-[15px] font-light"><VoiceglotText  translationKey={`user.${customer360.id}.name`} defaultText={`${customer360.first_name} ${customer360.last_name}`} noTranslate={true} /></TextInstrument>
-                        <TextInstrument className="text-[15px] font-light opacity-40">
-                          {customer360.intelligence?.leadVibe || 'cold'} <VoiceglotText  translationKey="common.vibe" defaultText="Vibe" />
-                        </TextInstrument>
-                      </ContainerInstrument>
-                    </ContainerInstrument>
-                  </ContainerInstrument>
-                )}
-              </ContainerInstrument>
             </ContainerInstrument>
           )}
         </ContainerInstrument>

@@ -70,7 +70,7 @@ export async function GET(request: NextRequest) {
       interestStats: formattedInterest,
       workshopOrders: formattedOrders,
       recentEvents: recentEvents || [],
-      timestamp: new Date().toISOString()
+      timestamp: new Date()
     });
   } catch (error) {
     console.error('[Funnel API Error]:', error);

@@ -105,32 +105,31 @@ export async function POST(request: Request) {
     // Gebruik een echt Date object voor Drizzle (v2.16.001)
     const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
     
-    try {
-      const recent = await db.select().from(systemEvents)
-        .where(and(
-          eq(systemEvents.message, message),
-          gte(systemEvents.createdAt, tenMinutesAgo)
-        ))
-        .limit(1);
+      try {
+        const recent = await db.select().from(systemEvents)
+          .where(and(
+            eq(systemEvents.message, message),
+            gte(systemEvents.createdAt, tenMinutesAgo)
+          ))
+          .limit(1);
 
-      if (recent.length > 0) {
-        return NextResponse.json({ success: true, status: 'consolidated' });
-      }
+        if (recent.length > 0) {
+          return NextResponse.json({ success: true, status: 'consolidated' });
+        }
 
-      const nowIso = new Date().toISOString();
-      await db.insert(systemEvents).values({
-        level,
-        source,
-        message,
-        details: {
-          ...details,
-          url: request.headers.get('referer'),
-          userAgent: request.headers.get('user-agent'),
-          timestamp: new Date().toISOString()
-        },
-        createdAt: new Date().toISOString()
-      });
-    } catch (dbError) {
+        await db.insert(systemEvents).values({
+          level,
+          source,
+          message,
+          details: {
+            ...details,
+            url: request.headers.get('referer'),
+            userAgent: request.headers.get('user-agent'),
+            timestamp: new Date()
+          },
+          createdAt: new Date()
+        });
+      } catch (dbError) {
       console.warn('[Logs Reporting] Drizzle failed, falling back to Supabase SDK:', dbError);
       
       const { data: recent } = await supabase.from('system_events')
@@ -151,7 +150,7 @@ export async function POST(request: Request) {
           ...details,
           url: request.headers.get('referer'),
           userAgent: request.headers.get('user-agent'),
-          timestamp: new Date().toISOString()
+          timestamp: new Date()
         }
       });
 

@@ -60,9 +60,9 @@ export async function POST(request: NextRequest) {
             stack,
             url,
             userAgent: request.headers.get('user-agent'),
-            timestamp: new Date().toISOString()
+            timestamp: new Date()
           },
-          createdAt: new Date().toISOString()
+          createdAt: new Date()
         }).returning({ id: systemEvents.id });
         eventId = event.id;
         console.log(`[Watchdog] Event logged to DB: #${eventId}`);
@@ -119,7 +119,7 @@ export async function POST(request: NextRequest) {
       }
 
       //  BOB'S MANDATE: Rate limiting voor mails (max 1 per 10 minuten)
-      const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000).toISOString();
+      const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
       
       let recentMailSent = false;
       try {
@@ -151,7 +151,7 @@ export async function POST(request: NextRequest) {
           level: 'info',
           source: 'WatchdogMail',
           message: `Watchdog summary mail sent: ${error.substring(0, 50)}`,
-          createdAt: sql`now()`
+          createdAt: new Date()
         });
       } catch (e) {
         console.error('[Watchdog] Failed to log mail event:', e);

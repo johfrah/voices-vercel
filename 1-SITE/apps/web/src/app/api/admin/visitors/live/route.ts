@@ -81,7 +81,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ 
       visitors,
       count: visitors.length,
-      timestamp: new Date().toISOString()
+      timestamp: new Date()
     });
 
   } catch (error) {

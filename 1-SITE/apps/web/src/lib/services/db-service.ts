@@ -1,7 +1,4 @@
 import { db, getTable } from "@/lib/system/voices-config";
-const languages = getTable('languages');
-const voiceTones = getTable('voiceTones');
-const countries = getTable('countries');
 import { asc, eq } from "drizzle-orm";
 
 /**
@@ -20,6 +17,14 @@ export class DbService {
    */
   static async getTaxonomies() {
     try {
+      const languages = getTable('languages');
+      const voiceTones = getTable('voiceTones');
+      const countries = getTable('countries');
+
+      if (!db || !languages || !voiceTones || !countries) {
+        throw new Error('Database or tables not available');
+      }
+
       const [allLangs, allTones, allCountries] = await Promise.all([
         db.select().from(languages).orderBy(asc(languages.label)).catch(() => []),
         db.select().from(voiceTones).orderBy(asc(voiceTones.label)).catch(() => []),
@@ -46,6 +51,7 @@ export class DbService {
     data: Record<string, any>, 
     userId?: number
   ) {
+    if (!db) throw new Error('Database not available');
     return await db.transaction(async (tx) => {
       // 1. Bereid de update voor
       const updateData = {
@@ -74,6 +80,7 @@ export class DbService {
     data: Record<string, any>, 
     userId?: number
   ) {
+    if (!db) throw new Error('Database not available');
     return await db.transaction(async (tx) => {
       const insertData = {
         ...data,
@@ -96,6 +103,7 @@ export class DbService {
    * Voert een veilige delete uit
    */
   static async deleteRecord(table: any, id: number) {
+    if (!db) throw new Error('Database not available');
     return await db.transaction(async (tx) => {
       return await tx.delete(table).where(eq(table.id, id));
     });

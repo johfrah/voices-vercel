@@ -76,7 +76,7 @@ export class TelegramService {
       payloadMsg = `\n\n<b>PAYLOAD:</b>\n<code>${json.substring(0, 500)}${json.length > 500 ? '...' : ''}</code>`;
     }
 
-    const message = `${title}\n\n${errorMsg}${urlMsg}${payloadMsg}\n\n<i>-- Chris / Autist</i>\n\n<small>💡 Deze fout is gelogd in de Watchdog en ik ben al op zoek naar een fix.</small>`;
+    const message = `${title}\n\n${errorMsg}${urlMsg}${payloadMsg}\n\n<i>-- Chris / Autist</i>\n\n<code>💡 Deze fout is gelogd in de Watchdog en ik ben al op zoek naar een fix.</code>`;
     
     await this.sendAlert(message);
   }

@@ -71,12 +71,12 @@ export async function POST(request: NextRequest) {
           sensor: {
             ...(existingConv?.iapContext?.sensor || {}),
             ...sensorData,
-            last_seen: new Date().toISOString()
+            last_seen: new Date()
           }
         };
         
         await db.update(chatConversations)
-          .set({ iapContext: updatedIap, updatedAt: new Date().toISOString() })
+          .set({ iapContext: updatedIap, updatedAt: new Date() })
           .where(eq(chatConversations.id, sensorConvId));
           
         return NextResponse.json({ success: true });
@@ -513,7 +513,7 @@ ${workshopEditionsData.filter((ed: any) => ed.status === 'upcoming').map((ed: an
             .set({ 
               guestEmail: leadEmail || undefined,
               guestName: leadName || undefined,
-              updatedAt: new Date().toISOString() 
+              updatedAt: new Date() 
             })
             .where(eq(chatConversations.id, convId));
         }
@@ -530,11 +530,11 @@ ${workshopEditionsData.filter((ed: any) => ed.status === 'upcoming').map((ed: an
             interaction_type: context?.interaction_type || 'text',
             current_page: context?.currentPage
           },
-          createdAt: new Date().toISOString()
+          createdAt: new Date()
         }).returning();
 
         await tx.update(chatConversations)
-          .set({ updatedAt: new Date().toISOString() })
+          .set({ updatedAt: new Date() })
           .where(eq(chatConversations.id, convId));
 
         if (!conversationId || message.toLowerCase().includes("prijs") || message.toLowerCase().includes("offerte")) {

@@ -1,6 +1,4 @@
 import { db, getTable } from '@/lib/system/voices-config';
-
-const translations = getTable('translations');
 import { eq, and } from 'drizzle-orm';
 import { createClient } from '@supabase/supabase-js';
 
@@ -31,6 +29,21 @@ export class VoiceglotBridge {
     if (this.cache[cacheKey]) return this.cache[cacheKey];
 
     try {
+      const translations = getTable('translations');
+      
+      // 🛡️ CHRIS-PROTOCOL: Client-safety check
+      if (!translations || !db) {
+        // Fallback to SDK on client
+        const query = supabase.from('translations').select('*').eq('lang', lang);
+        if (isKey) query.eq('translation_key', textOrKey);
+        else query.eq('original_text', textOrKey);
+        
+        const { data } = await query.maybeSingle();
+        const translated = data?.translated_text || textOrKey;
+        this.cache[cacheKey] = translated;
+        return translated;
+      }
+
       const condition = isKey 
         ? eq(translations.translationKey, textOrKey)
         : eq(translations.originalText, textOrKey);
@@ -53,7 +66,7 @@ export class VoiceglotBridge {
         if (isKey) query.eq('translation_key', textOrKey);
         else query.eq('original_text', textOrKey);
         
-        const { data } = await query.single();
+        const { data } = await query.maybeSingle();
         if (data) {
           result = {
             ...data,
@@ -83,6 +96,17 @@ export class VoiceglotBridge {
     }
 
     try {
+      const translations = getTable('translations');
+      
+      if (!translations || !db) {
+        const { data } = await supabase.from('translations').select('*').eq('lang', lang);
+        const translationMap: Record<string, string> = {};
+        (data || []).forEach(r => {
+          if (r.original_text) translationMap[r.original_text] = r.translated_text || '';
+        });
+        return texts.reduce((acc, text) => ({ ...acc, [text]: translationMap[text] || text }), {});
+      }
+
       let results: any[] = [];
       try {
         results = await db.select()

@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
       title: 'Welkom bij Voices',
       message: 'Fijn dat je er bent! Ontdek onze stemmen in het portfolio.',
       type: 'info',
-      createdAt: new Date().toISOString(),
+      createdAt: new Date(),
       read: false
     }
   ];

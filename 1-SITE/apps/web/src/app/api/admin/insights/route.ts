@@ -82,7 +82,7 @@ export async function GET(request: NextRequest) {
       })),
       orderValueStats: formattedOrderStats,
       chatIntents: formattedChatIntents,
-      timestamp: new Date().toISOString()
+      timestamp: new Date()
     });
   } catch (error) {
     console.error('[Insights API Error]:', error);

@@ -45,7 +45,7 @@ export async function GET(request: NextRequest) {
       feedback: feedback || [],
       chats: chats || [],
       aiSettings: aiSettings || [],
-      timestamp: new Date().toISOString()
+      timestamp: new Date()
     });
   } catch (error) {
     console.error('[Operational API 2 Error]:', error);

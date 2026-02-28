@@ -3,7 +3,6 @@ import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { VoicesLink } from '@/components/ui/VoicesLink';
 import { db, contentArticles, actors, castingLists, getTable } from '@/lib/system/voices-config';
 
-const translations = getTable('translations');
 import { eq, or, ilike, and } from 'drizzle-orm';
 import { ArrowRight, CreditCard, Info, ShieldCheck, Star, Zap, Play, Instagram, Globe } from 'lucide-react';
 import { Metadata } from 'next';
@@ -143,7 +142,7 @@ async function resolveSlugFromRegistry(slug: string, marketCode: string = 'ALL',
       .eq('is_active', true)
       .order('entity_type_id', { ascending: false })
       .limit(1)
-      .single();
+      .maybeSingle();
 
     if (!error && entry) {
       return {
@@ -194,8 +193,8 @@ async function discoverAndRegisterSlug(slug: string, marketCode: string, journey
           market_code: marketCode === 'ADEMING' ? 'BE' : marketCode,
           journey: 'agency',
           is_active: true,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
+          created_at: new Date(),
+          updated_at: new Date()
         })
         .select('entity_id, journey')
         .single();
@@ -222,8 +221,8 @@ async function discoverAndRegisterSlug(slug: string, marketCode: string, journey
           market_code: 'ALL',
           journey: 'agency',
           is_active: true,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
+          created_at: new Date(),
+          updated_at: new Date()
         })
         .select('entity_id, journey')
         .single();
@@ -249,8 +248,8 @@ async function discoverAndRegisterSlug(slug: string, marketCode: string, journey
           market_code: 'ALL',
           journey: 'artist',
           is_active: true,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
+          created_at: new Date(),
+          updated_at: new Date()
         })
         .select('entity_id, journey')
         .single();
@@ -327,7 +326,7 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
   const getTranslatedSEO = async (key: string, defaultText: string) => {
     try {
       // 🛡️ CHRIS-PROTOCOL: Use Drizzle for stability in Metadata (v2.14.547)
-      const { db: directDb, translations: transTable } = await import('@/lib/system/voices-config');
+      const { db: directDb, translationsTable: transTable } = await import('@/lib/system/voices-config');
       if (directDb) {
         const results = await directDb.select().from(transTable).where(and(eq(transTable.lang, lang), eq(transTable.translationKey, key))).limit(1);
         return results[0]?.translatedText || defaultText;

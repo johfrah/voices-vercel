@@ -51,7 +51,7 @@ export async function GET(request: NextRequest) {
         totalStudents: uniqueStudents,
       },
       recentSubmissions: recentSubmissions || [],
-      timestamp: new Date().toISOString()
+      timestamp: new Date()
     });
   } catch (error) {
     console.error('[Academy API Error]:', error);

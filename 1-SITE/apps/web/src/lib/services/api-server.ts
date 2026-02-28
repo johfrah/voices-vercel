@@ -446,7 +446,7 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
         const mediaItem = mediaResults.find((m: any) => m.id === actor.photo_id);
         if (mediaItem) {
           const fp = mediaItem.file_path || mediaItem.filePath;
-          if (fp) photoUrl = fp.startsWith('http') ? fp : `${SUPABASE_STORAGE_URL}/${fp}`;
+          if (fp) photoUrl = fp.startsWith('http') ? fp : `/api/proxy/?path=${encodeURIComponent(fp)}`;
         }
       }
 
@@ -734,7 +734,7 @@ async function processActorData(actor: any, slug: string): Promise<Actor> {
       const [mediaItem] = await directDb.select().from(mediaTable).where(eq(mediaTable.id, actor.photo_id)).limit(1);
       if (mediaItem) {
         const fp = mediaItem.fileName || mediaItem.filePath; // Use fileName as fallback
-        if (fp) photoUrl = fp.startsWith('http') ? fp : `${SUPABASE_STORAGE_URL}/${fp}`;
+        if (fp) photoUrl = fp.startsWith('http') ? fp : `/api/proxy/?path=${encodeURIComponent(fp)}`;
       }
     } catch (e) {}
   }

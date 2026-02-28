@@ -100,7 +100,7 @@ export async function GET(request: NextRequest) {
       totalStrings,
       coverage,
       status: totalStrings > 0 ? 'ACTIVE' : 'INITIALIZING',
-      updatedAt: new Date().toISOString()
+      updatedAt: new Date()
     };
 
     // 3. Update Cache
@@ -108,7 +108,7 @@ export async function GET(request: NextRequest) {
       await supabase.from('app_configs').upsert({
         key: CACHE_KEY,
         value: freshData,
-        updated_at: new Date().toISOString()
+        updated_at: new Date()
       });
     } catch (cacheErr) {
       console.error('Cache update failed:', cacheErr);

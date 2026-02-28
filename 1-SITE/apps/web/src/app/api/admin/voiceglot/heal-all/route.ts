@@ -90,7 +90,7 @@ export async function POST(request: NextRequest) {
           original_text: item.original_text,
           translated_text: '...',
           status: 'healing',
-          updated_at: new Date().toISOString()
+          updated_at: new Date()
         }, { onConflict: 'translation_key, lang' });
 
         let sourceText = item.original_text;
@@ -119,7 +119,7 @@ export async function POST(request: NextRequest) {
               translated_text: item.original_text,
               status: 'active',
               is_manually_edited: true,
-              updated_at: new Date().toISOString()
+              updated_at: new Date()
             }, { onConflict: 'translation_key, lang' });
             
             sourceText = detection.dutch_version;
@@ -150,14 +150,14 @@ export async function POST(request: NextRequest) {
           original_text: sourceText,
           translated_text: cleanTranslation,
           status: 'active',
-          updated_at: new Date().toISOString()
+          updated_at: new Date()
         }, { onConflict: 'translation_key, lang' });
 
         totalHealed++;
       } catch (err) {
         console.error(`❌ [Heal-All SDK] Failed for ${item.string_hash} (${lang}):`, err);
         await supabase.from('translations')
-          .update({ status: 'healing_failed', updated_at: new Date().toISOString() })
+          .update({ status: 'healing_failed', updated_at: new Date() })
           .match({ translation_key: item.string_hash, lang: lang });
       }
     }
