@@ -143,8 +143,11 @@ export async function generateMetadata(): Promise<Metadata> {
     : "Een warm en vertrouwd geluid voor elk project. Wij helpen je de perfecte stem te vinden.";
 
   const icons = isAdeming ? {
-    icon: '/assets/ademing/favicon.ico',
-    apple: '/assets/ademing/apple-touch-icon.png',
+    icon: '/favicon.svg',
+    apple: '/favicon.svg',
+  } : isJohfrah ? {
+    icon: '/favicon.svg',
+    apple: '/favicon.svg',
   } : {
     icon: '/favicon.svg',
     apple: '/favicon.svg',

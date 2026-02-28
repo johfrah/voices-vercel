@@ -31,3 +31,4 @@ yarn-error.log*
 # TypeScript
 *.tsbuildinfo
 next-env.d.ts
+1-SITE/apps/web/chrome/
