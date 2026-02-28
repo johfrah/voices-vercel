@@ -20,7 +20,6 @@ import { useState, Suspense } from "react";
 import { cn } from "@/lib/utils";
 import dynamic from "next/dynamic";
 import React from "react";
-import { subtitles } from "./ArtistSubtitles";
 
 //  NUCLEAR LOADING MANDATE
 const LiquidBackground = dynamic(() => import("@/components/ui/LiquidBackground").then(mod => mod.LiquidBackground), { 
@@ -37,7 +36,8 @@ export function ArtistDetailClient({ artistData, isYoussef, params, donors = [] 
   const [isDonationOpen, setIsDonationOpen] = useState(false);
   const [donationAmount, setDonationAmount] = useState(25);
 
-  const manifesto = artistData.labelManifesto || artistData.iapContext?.manifesto;
+  const manifesto = artistData.labelManifesto || artistData.iap_context?.manifesto;
+  const dbSubtitles = artistData.iap_context?.video_metadata?.subtitles || {};
 
   const market = MarketManager.getCurrentMarket();
   const siteUrl = MarketManager.getMarketDomains()[market.market_code] || MarketManager.getMarketDomains()['BE'];
@@ -77,11 +77,11 @@ export function ArtistDetailClient({ artistData, isYoussef, params, donors = [] 
                     poster="/assets/common/branding/founder/youssef-poster.jpg"
                     aspectRatio="portrait"
                     subtitles={[
-                      { label: 'English', srcLang: 'en', data: subtitles.en },
-                      { label: 'Nederlands', srcLang: 'nl', data: subtitles.nl },
-                      { label: 'Français', srcLang: 'fr', data: subtitles.fr },
-                      { label: 'Italiano', srcLang: 'it', data: subtitles.it },
-                      { label: 'Arabic', srcLang: 'ar', data: (subtitles as any).ar }
+                      { label: 'English', srcLang: 'en', data: dbSubtitles.en || [] },
+                      { label: 'Nederlands', srcLang: 'nl', data: dbSubtitles.nl || [] },
+                      { label: 'Français', srcLang: 'fr', data: dbSubtitles.fr || [] },
+                      { label: 'Italiano', srcLang: 'it', data: dbSubtitles.it || [] },
+                      { label: 'Arabic', srcLang: 'ar', data: dbSubtitles.ar || [] }
                     ]}
                   />
                 </div>
