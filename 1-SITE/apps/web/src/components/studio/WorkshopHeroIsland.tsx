@@ -6,6 +6,7 @@ import { VideoPlayer } from "@/components/ui/VideoPlayer";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { ArrowRight, ShoppingCart } from "lucide-react";
 import { useSonicDNA } from "@/lib/engines/sonic-dna";
+import { useVoicesRouter } from "@/components/ui/VoicesLink";
 
 interface WorkshopHeroIslandProps {
   workshop: any;
@@ -22,6 +23,7 @@ interface WorkshopHeroIslandProps {
  */
 export const WorkshopHeroIsland: React.FC<WorkshopHeroIslandProps> = ({ workshop }) => {
   const { playClick } = useSonicDNA();
+  const router = useVoicesRouter();
   const videoPath = workshop.featured_image?.file_path;
   const nextEdition = workshop.upcoming_editions?.[0];
   const price = nextEdition?.price || workshop.price || "0";

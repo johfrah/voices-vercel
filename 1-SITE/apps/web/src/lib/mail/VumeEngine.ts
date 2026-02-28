@@ -36,7 +36,7 @@ export class VumeEngine {
           name: context.name,
           link: context.link,
           host: host,
-          language: context.language || 'nl'
+          language: context.language || 'nl-BE'
         });
         break;
       
@@ -49,7 +49,7 @@ export class VumeEngine {
           location: context.location,
           headerImage: context.headerImage, // Pass specific workshop header
           host: host,
-          language: context.language || 'nl',
+          language: context.language || 'nl-BE',
           optOutToken: context.optOutToken,
           email: to
         });
@@ -61,7 +61,7 @@ export class VumeEngine {
           invoiceNumber: context.invoiceNumber,
           amount: context.amount,
           host: host,
-          language: context.language || 'nl'
+          language: context.language || 'nl-BE'
         });
         break;
 
@@ -76,7 +76,7 @@ export class VumeEngine {
           briefing: context.briefing,
           deliveryTime: context.deliveryTime,
           host: host,
-          language: context.language || 'nl'
+          language: context.language || 'nl-BE'
         });
         break;
 
@@ -84,7 +84,7 @@ export class VumeEngine {
         html = VumeNewAccountTemplate({
           name: context.name,
           host: host,
-          language: context.language || 'nl'
+          language: context.language || 'nl-BE'
         });
         break;
 
@@ -95,7 +95,7 @@ export class VumeEngine {
           artistName: context.artistName,
           message: context.message,
           host: host,
-          language: context.language || 'nl'
+          language: context.language || 'nl-BE'
         });
         break;
 
@@ -107,7 +107,7 @@ export class VumeEngine {
           items: context.items,
           paymentMethod: context.paymentMethod,
           host: host,
-          language: context.language || 'nl'
+          language: context.language || 'nl-BE'
         });
         break;
 
@@ -117,7 +117,7 @@ export class VumeEngine {
           orderId: context.orderId,
           actorName: context.actorName,
           host: host,
-          language: context.language || 'nl'
+          language: context.language || 'nl-BE'
         });
         break;
 

@@ -1,9 +1,9 @@
-# 🛡️ Forensic Audit Report (2/28/2026, 7:05:04 PM)
+# 🛡️ Forensic Audit Report (2/28/2026, 7:15:11 PM)
 
 ## Summary
 - **Status**: ✅ PASSED
 - **Errors**: 0
-- **Warnings**: 3898
+- **Warnings**: 3876
 
 ## Detailed Issues
 - **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:700`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -2770,14 +2770,6 @@
   > `const TopBar = dynamic(() => import("@/components/ui/TopBar").then(mod => mod.TopBar), { ssr: false, loading: () => <div className="h-[80px] bg-va-off-white/50 backdrop-blur-md" /> });`
 - **WARNING** `1-SITE/apps/web/src/app/layout.tsx:36`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `const GlobalNav = dynamic(() => import("@/components/ui/GlobalNav"), { ssr: false, loading: () => <div className="h-[60px] bg-va-off-white/50 backdrop-blur-md" /> });`
-- **WARNING** `1-SITE/apps/web/src/app/layout.tsx:384`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="fixed top-0 left-0 right-0 z-[200]">`
-- **WARNING** `1-SITE/apps/web/src/app/layout.tsx:385`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<SafeErrorGuard name="GlobalNav" fallback={<div className="h-[60px] bg-white/80 backdrop-blur-md border-b border-black/5 flex items-center px-6"><div className="h-8 w-32 bg-va-black/10 animate-pulse rounded-md" /></div>}>`
-- **WARNING** `1-SITE/apps/web/src/app/layout.tsx:385`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<SafeErrorGuard name="GlobalNav" fallback={<div className="h-[60px] bg-white/80 backdrop-blur-md border-b border-black/5 flex items-center px-6"><div className="h-8 w-32 bg-va-black/10 animate-pulse rounded-md" /></div>}>`
-- **WARNING** `1-SITE/apps/web/src/app/layout.tsx:386`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<Suspense fallback={<div className="h-10 bg-va-off-white/50 animate-pulse" />}>`
 - **WARNING** `1-SITE/apps/web/src/app/layout.tsx:393`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<SafeErrorGuard name="Footer" fallback={<div className="py-12 bg-va-off-white border-t border-black/5 text-center text-[11px] text-va-black/20 uppercase tracking-widest">Voices Footer Safe-Mode</div>}>`
 - **WARNING** `1-SITE/apps/web/src/app/layout.tsx:113`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
@@ -3220,51 +3212,51 @@
   > `<p className="text-[14px] font-light text-white/70">`
 - **WARNING** `1-SITE/apps/web/src/components/admin/GhostModeBar.tsx:34`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `Je bent nu ingelogd als <span className="text-white font-bold">{user?.email}</span>`
-- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:248`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:250`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex items-center gap-3">`
-- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:262`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:264`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex items-center gap-2">`
-- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:280`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:282`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex items-center gap-2">`
-- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:281`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:283`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />`
-- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:297`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="p-10 text-center opacity-20">`
 - **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:299`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="p-10 text-center opacity-20">`
+- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:301`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<p className="text-sm uppercase tracking-widest font-bold">Geen actieve chats</p>`
-- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:311`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:313`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex justify-between items-start">`
-- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:312`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:314`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex items-center gap-2">`
-- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:316`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:318`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex flex-col">`
-- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:317`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:319`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span className="text-sm font-bold">`
-- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:321`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:323`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span className="text-[10px] text-va-black/40 truncate max-w-[120px]">`
-- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:327`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:329`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span className="text-[10px] opacity-40 font-medium">`
-- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:337`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:339`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex gap-1 flex-wrap">`
-- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:338`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:340`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span className="text-[9px] px-2 py-0.5 bg-primary/10 text-primary rounded-full font-bold uppercase tracking-wider">`
-- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:342`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:344`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span className={cn(`
-- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:371`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:373`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div`
-- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:378`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:380`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className={cn(`
-- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:390`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:396`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className={cn(`
-- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:400`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:411`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="mt-2 pt-2 border-t border-black/5 text-[9px] opacity-40 font-mono truncate max-w-full">`
-- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:405`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:417`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span className="text-[9px] mt-1 opacity-30 font-bold uppercase tracking-widest">`
-- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:418`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:430`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="p-4 bg-white border-t border-black/5">`
-- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:461`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:473`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="p-4 bg-white border-t border-black/5 flex gap-2 overflow-x-auto no-scrollbar">`
-- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:492`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:504`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="text-center">`
 - **WARNING** `1-SITE/apps/web/src/components/admin/SortableActorRow.tsx:47`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div ref={setNodeRef} style={style} className="touch-none">`
@@ -7414,18 +7406,6 @@
   > `<span>{activeEmail}</span>`
 - **WARNING** `1-SITE/apps/web/src/components/ui/footers/AcademyFooter.tsx:79`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span>{activePhone}</span>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/footers/AgencyFooter.tsx:60`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `{averageRating}<span className="text-[13px] text-va-black/20 ml-0.5">/5</span>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/footers/AgencyFooter.tsx:105`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="pt-4 space-y-4">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/footers/AgencyFooter.tsx:155`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="pt-4">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/footers/AgencyFooter.tsx:176`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="flex flex-col">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/footers/AgencyFooter.tsx:184`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="flex flex-col">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/footers/AgencyFooter.tsx:196`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="flex gap-3 pt-2">`
 - **WARNING** `1-SITE/apps/web/src/components/ui/footers/ArtistFooter.tsx:59`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span>{activeEmail}</span>`
 - **WARNING** `1-SITE/apps/web/src/components/ui/footers/ArtistFooter.tsx:63`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -7438,38 +7418,14 @@
   > `<span>{actor.phone}</span>`
 - **WARNING** `1-SITE/apps/web/src/components/ui/footers/PortfolioFooter.tsx:119`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span>{actor.email}</span>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/footers/StudioFooter.tsx:34`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `Voices <span className="text-primary italic">Studio</span>`
 - **WARNING** `1-SITE/apps/web/src/components/ui/footers/StudioFooter.tsx:64`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="pt-4 border-t border-black/5 w-full">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/footers/StudioFooter.tsx:79`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="flex flex-col gap-1 list-none">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/footers/StudioFooter.tsx:83`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="flex flex-col gap-1 list-none pb-4">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/footers/StudioFooter.tsx:88`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="pt-4 border-t border-black/5 space-y-3">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/footers/StudioFooter.tsx:91`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<span>{activeEmail}</span>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/footers/StudioFooter.tsx:95`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<span>{activePhone}</span>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/footers/StudioFooter.tsx:100`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="pt-4 space-y-3 w-full border-t border-black/5">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/footers/StudioFooter.tsx:103`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<span>Naar de Academy</span>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/footers/StudioFooter.tsx:107`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<span>Veelgestelde vragen</span>`
 - **WARNING** `1-SITE/apps/web/src/contexts/AuthContext.tsx:233`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="hidden"><ShieldCheck strokeWidth={1.5} /></div>`
 - **WARNING** `1-SITE/apps/web/src/contexts/CheckoutContext.tsx:744`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="hidden"><CheckCircle2 strokeWidth={1.5} /></div>`
-- **WARNING** `1-SITE/apps/web/src/contexts/TranslationContext.tsx:21`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
-  > `}> = ({ children, lang = 'nl', market, initialTranslations = {} }) => {`
-- **WARNING** `1-SITE/apps/web/src/contexts/TranslationContext.tsx:23`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
-  > `const [loading, setLoading] = useState(Object.keys(initialTranslations).length === 0 && lang !== 'nl');`
 - **WARNING** `1-SITE/apps/web/src/contexts/TranslationContext.tsx:33`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `if (dataLang === 'nl') {`
-- **WARNING** `1-SITE/apps/web/src/contexts/TranslationContext.tsx:56`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
-  > `if (lang !== 'nl' && !key.startsWith('admin.') && !key.startsWith('command.')) {`
 - **WARNING** `1-SITE/apps/web/src/db-cli.ts:22`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `language: 'nl',`
 - **WARNING** `1-SITE/apps/web/src/db-cli.ts:44`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.

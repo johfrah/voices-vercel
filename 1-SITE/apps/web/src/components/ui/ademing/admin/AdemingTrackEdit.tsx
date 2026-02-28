@@ -7,7 +7,7 @@ import {
   TextInstrument, 
   ButtonInstrument 
 } from '@/components/ui/LayoutInstruments';
-import { X, Loader2, Save, Music, Image as ImageIcon, Video } from "lucide-react";
+import { X, Loader2, Save, Music, Image as ImageIcon, Video, Clock } from "lucide-react";
 import { createClient } from "@supabase/supabase-js";
 import toast from "react-hot-toast";
 
@@ -122,8 +122,8 @@ export const AdemingTrackEdit = ({ track, open, onOpenChange, onSaved }: Ademing
   };
 
   return (
-    <div className="fixed inset-0 z-[200] flex items-center justify-center p-6">
-      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => !loading && onOpenChange(false)} />
+    <ContainerInstrument plain className="fixed inset-0 z-[200] flex items-center justify-center p-6">
+      <ContainerInstrument plain className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => !loading && onOpenChange(false)} />
       
       <ContainerInstrument className="relative bg-white rounded-[32px] shadow-magic max-w-4xl w-full max-h-[90vh] overflow-y-auto p-12 animate-in fade-in zoom-in-95 duration-300">
         <button 
@@ -134,20 +134,20 @@ export const AdemingTrackEdit = ({ track, open, onOpenChange, onSaved }: Ademing
           <X size={20} className="text-va-black/20" />
         </button>
 
-        <div className="mb-12">
+        <ContainerInstrument plain className="mb-12">
           <HeadingInstrument level={2} className="text-3xl font-light tracking-tighter mb-2">
             {track ? "Meditatie Bewerken" : "Nieuwe Meditatie"}
           </HeadingInstrument>
           <TextInstrument className="text-va-black/40 font-light">
             Pas de details en media van de meditatie aan.
           </TextInstrument>
-        </div>
+        </ContainerInstrument>
 
         <form onSubmit={handleSubmit} className="space-y-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <ContainerInstrument plain className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Left Column: Info */}
-            <div className="space-y-6">
-              <div>
+            <ContainerInstrument plain className="space-y-6">
+              <ContainerInstrument plain>
                 <label className="text-[11px] font-bold uppercase tracking-widest text-va-black/40 mb-2 block ml-1">Titel</label>
                 <input 
                   type="text" 
@@ -156,9 +156,9 @@ export const AdemingTrackEdit = ({ track, open, onOpenChange, onSaved }: Ademing
                   className="w-full px-4 py-3 bg-va-off-white rounded-[12px] border-none focus:ring-2 focus:ring-primary/20 transition-all font-light"
                   required
                 />
-              </div>
+              </ContainerInstrument>
 
-              <div>
+              <ContainerInstrument plain>
                 <label className="text-[11px] font-bold uppercase tracking-widest text-va-black/40 mb-2 block ml-1">Slug (URL)</label>
                 <input 
                   type="text" 
@@ -167,10 +167,10 @@ export const AdemingTrackEdit = ({ track, open, onOpenChange, onSaved }: Ademing
                   className="w-full px-4 py-3 bg-va-off-white rounded-[12px] border-none focus:ring-2 focus:ring-primary/20 transition-all font-light"
                   placeholder="bijv. ochtend-rust"
                 />
-              </div>
+              </ContainerInstrument>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
+              <ContainerInstrument plain className="grid grid-cols-2 gap-4">
+                <ContainerInstrument plain>
                   <label className="text-[11px] font-bold uppercase tracking-widest text-va-black/40 mb-2 block ml-1">Thema</label>
                   <select 
                     value={formData.theme}
@@ -181,8 +181,8 @@ export const AdemingTrackEdit = ({ track, open, onOpenChange, onSaved }: Ademing
                     <option value="energie">Energie</option>
                     <option value="ritme">Ritme</option>
                   </select>
-                </div>
-                <div>
+                </ContainerInstrument>
+                <ContainerInstrument plain>
                   <label className="text-[11px] font-bold uppercase tracking-widest text-va-black/40 mb-2 block ml-1">Element</label>
                   <select 
                     value={formData.element}
@@ -194,19 +194,19 @@ export const AdemingTrackEdit = ({ track, open, onOpenChange, onSaved }: Ademing
                     <option value="lucht">Lucht</option>
                     <option value="vuur">Vuur</option>
                   </select>
-                </div>
-              </div>
+                </ContainerInstrument>
+              </ContainerInstrument>
 
-              <div>
+              <ContainerInstrument plain>
                 <label className="text-[11px] font-bold uppercase tracking-widest text-va-black/40 mb-2 block ml-1">Korte Beschrijving</label>
                 <textarea 
                   value={formData.short_description}
                   onChange={(e) => setFormData({ ...formData, short_description: e.target.value })}
                   className="w-full px-4 py-3 bg-va-off-white rounded-[12px] border-none focus:ring-2 focus:ring-primary/20 transition-all font-light min-h-[80px]"
                 />
-              </div>
+              </ContainerInstrument>
 
-              <div className="flex items-center gap-3 p-4 bg-primary/5 rounded-2xl border border-primary/10">
+              <ContainerInstrument plain className="flex items-center gap-3 p-4 bg-primary/5 rounded-2xl border border-primary/10">
                 <input 
                   type="checkbox" 
                   id="is_public"
@@ -217,12 +217,12 @@ export const AdemingTrackEdit = ({ track, open, onOpenChange, onSaved }: Ademing
                 <label htmlFor="is_public" className="text-sm font-medium text-va-black/60 cursor-pointer">
                   Deze meditatie is publiek zichtbaar op de site
                 </label>
-              </div>
-            </div>
+              </ContainerInstrument>
+            </ContainerInstrument>
 
             {/* Right Column: Media */}
-            <div className="space-y-6">
-              <div>
+            <ContainerInstrument plain className="space-y-6">
+              <ContainerInstrument plain>
                 <label className="text-[11px] font-bold uppercase tracking-widest text-va-black/40 mb-2 block ml-1 flex items-center gap-2">
                   <Music size={14} /> Audio URL
                 </label>
@@ -233,9 +233,9 @@ export const AdemingTrackEdit = ({ track, open, onOpenChange, onSaved }: Ademing
                   className="w-full px-4 py-3 bg-va-off-white rounded-[12px] border-none focus:ring-2 focus:ring-primary/20 transition-all font-light"
                   placeholder="https://..."
                 />
-              </div>
+              </ContainerInstrument>
 
-              <div>
+              <ContainerInstrument plain>
                 <label className="text-[11px] font-bold uppercase tracking-widest text-va-black/40 mb-2 block ml-1 flex items-center gap-2">
                   <ImageIcon size={14} /> Cover Image URL
                 </label>
@@ -246,9 +246,9 @@ export const AdemingTrackEdit = ({ track, open, onOpenChange, onSaved }: Ademing
                   className="w-full px-4 py-3 bg-va-off-white rounded-[12px] border-none focus:ring-2 focus:ring-primary/20 transition-all font-light"
                   placeholder="https://..."
                 />
-              </div>
+              </ContainerInstrument>
 
-              <div>
+              <ContainerInstrument plain>
                 <label className="text-[11px] font-bold uppercase tracking-widest text-va-black/40 mb-2 block ml-1 flex items-center gap-2">
                   <Video size={14} /> Video Background URL
                 </label>
@@ -259,9 +259,9 @@ export const AdemingTrackEdit = ({ track, open, onOpenChange, onSaved }: Ademing
                   className="w-full px-4 py-3 bg-va-off-white rounded-[12px] border-none focus:ring-2 focus:ring-primary/20 transition-all font-light"
                   placeholder="https://..."
                 />
-              </div>
+              </ContainerInstrument>
 
-              <div>
+              <ContainerInstrument plain>
                 <label className="text-[11px] font-bold uppercase tracking-widest text-va-black/40 mb-2 block ml-1 flex items-center gap-2">
                   <Clock size={14} /> Duur (seconden)
                 </label>
@@ -271,22 +271,22 @@ export const AdemingTrackEdit = ({ track, open, onOpenChange, onSaved }: Ademing
                   onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
                   className="w-full px-4 py-3 bg-va-off-white rounded-[12px] border-none focus:ring-2 focus:ring-primary/20 transition-all font-light"
                 />
-              </div>
+              </ContainerInstrument>
 
-              <div className="p-6 bg-va-off-white rounded-2xl border border-black/[0.03]">
-                <p className="text-[11px] font-bold uppercase tracking-widest text-va-black/20 mb-4">Media Preview</p>
-                <div className="aspect-video bg-white rounded-xl border border-black/5 flex items-center justify-center overflow-hidden relative">
+              <ContainerInstrument plain className="p-6 bg-va-off-white rounded-2xl border border-black/[0.03]">
+                <TextInstrument className="text-[11px] font-bold uppercase tracking-widest text-va-black/20 mb-4">Media Preview</TextInstrument>
+                <ContainerInstrument plain className="aspect-video bg-white rounded-xl border border-black/5 flex items-center justify-center overflow-hidden relative">
                   {formData.cover_image_url ? (
                     <img src={formData.cover_image_url} alt="" className="w-full h-full object-cover" />
                   ) : (
                     <TextInstrument className="text-va-black/10 italic">Geen preview</TextInstrument>
                   )}
-                </div>
-              </div>
-            </div>
-          </div>
+                </ContainerInstrument>
+              </ContainerInstrument>
+            </ContainerInstrument>
+          </ContainerInstrument>
 
-          <div className="flex justify-center gap-4 pt-8 border-t border-black/5">
+          <ContainerInstrument plain className="flex justify-center gap-4 pt-8 border-t border-black/5">
             <button 
               type="button"
               onClick={() => onOpenChange(false)}
@@ -312,9 +312,9 @@ export const AdemingTrackEdit = ({ track, open, onOpenChange, onSaved }: Ademing
                 </>
               )}
             </ButtonInstrument>
-          </div>
+          </ContainerInstrument>
         </form>
       </ContainerInstrument>
-    </div>
+    </ContainerInstrument>
   );
 };

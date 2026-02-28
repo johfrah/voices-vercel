@@ -83,17 +83,17 @@ export default async function StudioPage() {
             <div className="flex flex-col items-start animate-in fade-in slide-in-from-right-8 duration-1000 delay-200">
               <TextInstrument className="text-[13px] font-light tracking-[0.4em] uppercase text-primary mb-6 flex items-center gap-3">
                 <span className="w-8 h-[1px] bg-primary/30" />
-                <VoiceglotText translationKey="page.studio.projecttype" defaultText="Workshop World" />
+                <VoiceglotText translationKey="page.studio.projecttype" defaultText="Studio" />
               </TextInstrument>
               
               <HeadingInstrument level={1} className="text-5xl md:text-7xl font-light tracking-tighter leading-[1.1] text-va-black mb-8">
-                <VoiceglotText translationKey="page.studio.title" defaultText="Workshops voor je stem" />
+                <VoiceglotText translationKey="page.studio.title" defaultText="Workshops voor professionele sprekers" />
               </HeadingInstrument>
               
               <TextInstrument className="text-xl md:text-2xl text-va-black/60 font-light leading-relaxed mb-12 max-w-xl">
                 <VoiceglotText 
                   translationKey="page.studio.description" 
-                  defaultText="Van basisuitspraak tot professionele voice-over technieken. Leer van de besten in onze maandelijkse workshops." 
+                  defaultText="Verbeter je stem, ontdek verschillende voice-overstijlen en perfectioneer je opnamevaardigheden. Leer professioneler spreken met Bernadette en Johfrah." 
                 />
               </TextInstrument>
               

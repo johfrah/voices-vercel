@@ -11,7 +11,7 @@ interface TranslationContextType {
   loading: boolean;
 }
 
-const TranslationContext = createContext<TranslationContextType | undefined>(undefined);
+const StudioTranslationContext = createContext<TranslationContextType | undefined>(undefined);
 
 export const TranslationProvider: React.FC<{ 
   children: ReactNode; 
@@ -75,14 +75,14 @@ export const TranslationProvider: React.FC<{
   };
 
   return (
-    <TranslationContext.Provider value={{ t, language: lang, market, loading }}>
+    <StudioTranslationContext.Provider value={{ t, language: lang, market, loading }}>
       {children}
-    </TranslationContext.Provider>
+    </StudioTranslationContext.Provider>
   );
 };
 
 export const useTranslation = () => {
-  const context = useContext(TranslationContext);
+  const context = useContext(StudioTranslationContext);
   if (context === undefined) {
     throw new Error('useTranslation must be used within a TranslationProvider');
   }

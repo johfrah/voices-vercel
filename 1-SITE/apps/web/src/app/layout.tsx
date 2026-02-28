@@ -86,41 +86,41 @@ export async function generateMetadata(): Promise<Metadata> {
   if (pathname.startsWith('/studio')) lookupHost = `${cleanHost}/studio`;
   else if (pathname.startsWith('/academy')) lookupHost = `${cleanHost}/academy`;
 
-    // 🛡️ CHRIS-PROTOCOL: Parallel Pulse Fetching (v2.14.798)
-    // We fetch market, locales and translations in parallel to minimize TTFB
-    const [market, alternateLanguages, translations] = await Promise.all([
-      getMarketSafe(lookupHost),
-      (async () => {
-        try {
-          const localesPromise = MarketDatabaseService.getAllLocalesAsync();
-          const timeoutPromise = new Promise((_, reject) => 
-            setTimeout(() => reject(new Error('Locales Timeout')), 2500)
-          );
-          return await Promise.race([localesPromise, timeoutPromise]) as any;
-        } catch (err) {
-          console.error(' generateMetadata: Failed to load locales:', err);
-          const staticDomains = MarketManagerServer.getMarketDomains();
-          return {
-            'nl-BE': staticDomains['BE'],
-            'nl-NL': staticDomains['NLNL'],
-            'fr-FR': staticDomains['FR'],
-            'en-EU': staticDomains['EU']
-          };
-        }
-      })(),
-      (async () => {
-        try {
-          const translationPromise = getTranslationsServer(langHeader || 'nl');
-          const timeoutPromise = new Promise((_, reject) => 
-            setTimeout(() => reject(new Error('Translation Timeout')), 2500)
-          );
-          return await Promise.race([translationPromise, timeoutPromise]) as any;
-        } catch (err) {
-          console.error(' generateMetadata: Failed to load translations:', err);
-          return {};
-        }
-      })()
-    ]);
+  // 🛡️ CHRIS-PROTOCOL: Parallel Pulse Fetching (v2.14.798)
+  // We fetch market, locales and translations in parallel to minimize TTFB
+  const [market, alternateLanguages, studioTranslations] = await Promise.all([
+    getMarketSafe(lookupHost),
+    (async () => {
+      try {
+        const localesPromise = MarketDatabaseService.getAllLocalesAsync();
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Locales Timeout')), 2500)
+        );
+        return await Promise.race([localesPromise, timeoutPromise]) as any;
+      } catch (err) {
+        console.error(' generateMetadata: Failed to load locales:', err);
+        const staticDomains = MarketManagerServer.getMarketDomains();
+        return {
+          'nl-BE': staticDomains['BE'],
+          'nl-NL': staticDomains['NLNL'],
+          'fr-FR': staticDomains['FR'],
+          'en-EU': staticDomains['EU']
+        };
+      }
+    })(),
+    (async () => {
+      try {
+        const translationPromise = getTranslationsServer(langHeader || 'nl');
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Translation Timeout')), 2500)
+        );
+        return await Promise.race([translationPromise, timeoutPromise]) as any;
+      } catch (err) {
+        console.error(' generateMetadata: Failed to load translations:', err);
+        return {};
+      }
+    })()
+  ]);
 
   const baseUrl = `https://${market.market_code === 'BE' ? MarketManagerServer.getMarketDomains()['BE'].replace('https://', '') : (market.market_code === 'NLNL' ? (MarketManagerServer.getMarketDomains()['NLNL']?.replace('https://', '') || 'www.voices.nl') : cleanHost)}`;
 
@@ -210,7 +210,7 @@ export default async function RootLayout({
   else if (pathname.startsWith('/academy')) lookupHost = `${cleanHost}/academy`;
 
   //  CHRIS-PROTOCOL: Parallel Pulse Fetching (v2.14.798)
-  const [market, translations] = await Promise.all([
+  const [market, studioTranslations] = await Promise.all([
     getMarketSafe(lookupHost),
     (async () => {
       try {
@@ -275,7 +275,7 @@ export default async function RootLayout({
     return (
       <html lang={lang} className={htmlClass} suppressHydrationWarning>
         <body className={bodyClass} suppressHydrationWarning>
-          <Providers lang={lang} market={market} initialTranslations={translations} initialJourney={initialJourney} initialUsage={initialUsage}>
+          <Providers lang={lang} market={market} initialTranslations={studioTranslations} initialJourney={initialJourney} initialUsage={initialUsage}>
             <SafeErrorGuard>
               <Suspense fallback={isAdeming && isOffline ? null : <LoadingScreenInstrument text={isAdminRoute ? "Beheer laden..." : "Studio laden..."} />}>
                 {children}
@@ -343,7 +343,7 @@ export default async function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-        <Providers lang={lang} market={market} initialTranslations={translations} initialJourney={initialJourney} initialUsage={initialUsage}>
+        <Providers lang={lang} market={market} initialTranslations={studioTranslations} initialJourney={initialJourney} initialUsage={initialUsage}>
           <SafeErrorGuard>
             <PageWrapperInstrument>
               <Suspense fallback={<LoadingScreenInstrument text="Voices laden..." />}>
