@@ -104,9 +104,23 @@ export const VoicyChatV2: React.FC = () => {
     lastInteraction: new Date().toISOString()
   });
 
+  const [hasConsent, setHasConsent] = useState<boolean>(false);
+
+  // 🛡️ CHRIS-PROTOCOL: Cookie Consent Check (v2.16.077)
+  useEffect(() => {
+    const checkConsent = () => {
+      const consent = typeof window !== 'undefined' ? localStorage.getItem('voices_cookie_consent') : null;
+      setHasConsent(consent === 'all');
+    };
+    
+    checkConsent();
+    window.addEventListener('voices:consent', checkConsent);
+    return () => window.removeEventListener('voices:consent', checkConsent);
+  }, []);
+
   //  SENSOR MODE: Track visitor behavior and sync to DB
   useEffect(() => {
-    if (!conversationId || isAdmin) return;
+    if (!conversationId || isAdmin || !hasConsent) return;
 
     const trackSensor = async () => {
       const scrollPercent = Math.round((window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100);
@@ -640,8 +654,9 @@ export const VoicyChatV2: React.FC = () => {
 
   useEffect(() => {
     if (!isInitialLoading && messages.length === 0) {
-      // 🛡️ CHRIS-PROTOCOL: DNA-Based Personalized Greeting (v2.16.065)
-      const guestName = typeof window !== 'undefined' ? localStorage.getItem('voices_guest_name') : null;
+      // 🛡️ CHRIS-PROTOCOL: DNA-Based Personalized Greeting (v2.16.077)
+      // Only personalize if user has given consent for cookies/tracking
+      const guestName = (typeof window !== 'undefined' && hasConsent) ? localStorage.getItem('voices_guest_name') : null;
       const firstName = user?.first_name || customer360?.first_name || guestName;
       
       let welcomeContent = isPortfolioJourney 
