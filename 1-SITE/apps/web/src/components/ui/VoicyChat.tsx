@@ -1259,7 +1259,7 @@ export const VoicyChatV2: React.FC = () => {
                                 <Shield strokeWidth={1.5} size={10} /> Offline Mode
                               </ContainerInstrument>
                             )}
-                            {msg.content.includes("Oeps, er ging iets mis") ? (
+                            {msg.content && typeof msg.content === 'string' && msg.content.includes("Oeps, er ging iets mis") ? (
                               <ContainerInstrument plain className="space-y-4">
                                 <ContainerInstrument plain className="flex items-center gap-3 text-red-500">
                                   <Info strokeWidth={1.5} size={18} className="text-primary" />
