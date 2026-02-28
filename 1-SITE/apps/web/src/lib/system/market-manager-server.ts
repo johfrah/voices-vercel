@@ -250,7 +250,7 @@ export class MarketManagerServer {
       }
     },
     'youssefzaki.eu': {
-      market_code: 'PORTFOLIO',
+      market_code: 'ARTIST',
       language: 'en',
       primary_language: 'en-US',
       supported_languages: ['en-GB', 'nl-NL', 'nl-BE', 'fr-FR', 'de-DE'],
@@ -263,7 +263,7 @@ export class MarketManagerServer {
         youtube: 'https://www.youtube.com/@youssefzaki'
       },
       seo_data: {
-        description: 'The voice of a new generation. Discover the music and story of Youssef Zaki.',
+        description: 'Muzieklabel & Artist World. Ontdek de releases en steun de kunst van Youssef Zaki.',
         schema_type: 'Person'
       }
     },
@@ -321,7 +321,8 @@ export class MarketManagerServer {
       'PORTFOLIO': 'https://www.christina.be',
       'ADEMING': 'https://www.ademing.be',
       'FREELANCE': 'https://www.johfrah.be',
-      'JOHFRAI': 'https://www.johfrai.be'
+      'JOHFRAI': 'https://www.johfrai.be',
+      'ARTIST': 'https://www.youssefzaki.eu'
     };
   }
 

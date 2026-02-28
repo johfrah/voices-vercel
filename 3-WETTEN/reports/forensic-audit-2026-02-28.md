@@ -1,4 +1,4 @@
-# 🛡️ Forensic Audit Report (2/28/2026, 10:30:22 AM)
+# 🛡️ Forensic Audit Report (2/28/2026, 10:41:33 AM)
 
 ## Summary
 - **Status**: ✅ PASSED
@@ -4190,9 +4190,9 @@
   > `<div className="mt-12 pt-8 border-t border-black/[0.03] flex justify-center">`
 - **WARNING** `1-SITE/apps/web/src/components/legacy/AgencyContent.tsx:326`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="rotate-180">`
-- **WARNING** `1-SITE/apps/web/src/components/legacy/ArtistDetailClient.tsx:28`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/legacy/ArtistDetailClient.tsx:27`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `loading: () => <div className="fixed inset-0 z-0 bg-va-black" />`
-- **WARNING** `1-SITE/apps/web/src/components/legacy/ArtistDetailClient.tsx:32`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/legacy/ArtistDetailClient.tsx:31`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `loading: () => <div className="w-full h-full bg-va-black flex items-center justify-center"><Loader2 className="animate-spin text-white/20" /></div>`
 - **WARNING** `1-SITE/apps/web/src/components/legacy/ArtistDetailClient.tsx:74`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="voices-hero-visual-container rounded-[32px] overflow-hidden shadow-aura-lg bg-va-black border border-white/5 aspect-[9/16] w-full max-w-[500px] mx-auto">`
@@ -4321,13 +4321,13 @@
 - **WARNING** `1-SITE/apps/web/src/components/legacy/ArtistDetailClient.tsx:436`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div>`
 - **WARNING** `1-SITE/apps/web/src/components/legacy/ArtistDetailClient.tsx:80`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
-  > `{ label: 'English', srcLang: 'en', data: subtitles.en },`
+  > `{ label: 'English', srcLang: 'en', data: dbSubtitles.en || [] },`
 - **WARNING** `1-SITE/apps/web/src/components/legacy/ArtistDetailClient.tsx:81`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
-  > `{ label: 'Nederlands', srcLang: 'nl', data: subtitles.nl },`
+  > `{ label: 'Nederlands', srcLang: 'nl', data: dbSubtitles.nl || [] },`
 - **WARNING** `1-SITE/apps/web/src/components/legacy/ArtistDetailClient.tsx:82`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
-  > `{ label: 'Français', srcLang: 'fr', data: subtitles.fr },`
+  > `{ label: 'Français', srcLang: 'fr', data: dbSubtitles.fr || [] },`
 - **WARNING** `1-SITE/apps/web/src/components/legacy/ArtistDetailClient.tsx:83`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
-  > `{ label: 'Italiano', srcLang: 'it', data: subtitles.it },`
+  > `{ label: 'Italiano', srcLang: 'it', data: dbSubtitles.it || [] },`
 - **WARNING** `1-SITE/apps/web/src/components/legacy/VoiceDetailClient.tsx:24`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `loading: () => <div className="h-[400px] w-full bg-va-black/5 animate-pulse rounded-[40px]" />`
 - **WARNING** `1-SITE/apps/web/src/components/legacy/VoiceDetailClient.tsx:159`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
