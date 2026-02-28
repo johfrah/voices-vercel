@@ -300,8 +300,8 @@ export default async function RootLayout({
   const isArtistJourney = market.market_code === 'ARTIST' || pathname.includes('/artist/') || pathname.includes('/voice/');
 
   const showVoicy = !isArtistJourney && !isUnderConstruction && market.market_code !== 'ADEMING';
-  const showTopBar = !isArtistJourney && !isUnderConstruction && market.market_code !== 'ADEMING';
-  const showGlobalNav = !isUnderConstruction && market.market_code !== 'ADEMING';
+  const showTopBar = !isArtistJourney && !isUnderConstruction && market.market_code !== 'ADEMING' && market.market_code !== 'PORTFOLIO';
+  const showGlobalNav = !isUnderConstruction && market.market_code !== 'ADEMING' && market.market_code !== 'PORTFOLIO';
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -381,6 +381,23 @@ export default async function RootLayout({
                   </Suspense>
                 )}
               </SafeErrorGuard>
+              
+              {/* 🎭 PORTFOLIO WORLD: Custom Navigation (Johfrah Branding) */}
+              {market.market_code === 'PORTFOLIO' && (
+                <ContainerInstrument plain className="fixed top-0 left-0 right-0 z-[200]">
+                  <ContainerInstrument plain className="h-[80px] bg-white/80 backdrop-blur-md border-b border-black/5 flex items-center justify-between px-8">
+                    <Link href="/" className="text-2xl font-light tracking-tighter">
+                      JOHFRAH<span className="text-primary">.</span>
+                    </Link>
+                    <div className="flex gap-8 items-center text-[13px] font-bold tracking-[0.2em] uppercase text-va-black/40">
+                      <Link href="/portfolio" className="hover:text-primary transition-colors">Portfolio</Link>
+                      <Link href="/tarieven" className="hover:text-primary transition-colors">Tarieven</Link>
+                      <Link href="/contact" className="hover:text-primary transition-colors">Contact</Link>
+                    </div>
+                  </ContainerInstrument>
+                </ContainerInstrument>
+              )}
+
               <ContainerInstrument plain className="fixed top-0 left-0 right-0 z-[200]">
                 <SafeErrorGuard name="GlobalNav" fallback={<ContainerInstrument plain className="h-[60px] bg-white/80 backdrop-blur-md border-b border-black/5 flex items-center px-6"><ContainerInstrument plain className="h-8 w-32 bg-va-black/10 animate-pulse rounded-md" /></ContainerInstrument>}>
                   <Suspense fallback={<ContainerInstrument plain className="h-10 bg-va-off-white/50 animate-pulse" />}>
@@ -391,7 +408,26 @@ export default async function RootLayout({
               </ContainerInstrument>
               <CookieBanner />
               <SafeErrorGuard name="Footer" fallback={<div className="py-12 bg-va-off-white border-t border-black/5 text-center text-[11px] text-va-black/20 uppercase tracking-widest">Voices Footer Safe-Mode</div>}>
-                {market.market_code !== 'ADEMING' && <FooterWrapper />}
+                {market.market_code !== 'ADEMING' && market.market_code !== 'PORTFOLIO' && <FooterWrapper />}
+                
+                {/* 🎭 PORTFOLIO WORLD: Custom Footer */}
+                {market.market_code === 'PORTFOLIO' && (
+                  <footer className="py-24 bg-va-black text-white">
+                    <ContainerInstrument className="max-w-7xl mx-auto px-8 flex flex-col md:flex-row justify-between items-center gap-12">
+                      <div className="text-3xl font-light tracking-tighter">
+                        JOHFRAH<span className="text-primary">.</span>
+                      </div>
+                      <div className="flex gap-12 text-[11px] font-bold tracking-[0.3em] uppercase text-white/40">
+                        <Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link>
+                        <Link href="/terms" className="hover:text-white transition-colors">Terms</Link>
+                        <Link href="/contact" className="hover:text-white transition-colors">Contact</Link>
+                      </div>
+                      <div className="text-[11px] font-bold tracking-[0.3em] uppercase text-white/20">
+                        © 2026 Pure Excellence
+                      </div>
+                    </ContainerInstrument>
+                  </footer>
+                )}
               </SafeErrorGuard>
             </EditModeOverlay>
           </SafeErrorGuard>

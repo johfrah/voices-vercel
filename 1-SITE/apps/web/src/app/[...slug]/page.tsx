@@ -759,6 +759,56 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
             try {
               const { data: lessons } = await supabase.from('lessons').select('*').order('display_order');
               extraData.lessons = lessons || [];
+              
+              // 🎓 CHRIS-PROTOCOL: Academy Entry Handshake (v2.16.101)
+              // If we are on the main /academy page, we force the LessonGrid
+              if (lookupSlug === 'academy') {
+                return (
+                  <PageWrapperInstrument className="bg-va-off-white min-h-screen">
+                    <Suspense fallback={null}><LiquidBackground /></Suspense>
+                    <ContainerInstrument className="max-w-7xl mx-auto px-6 py-32">
+                      <header className="mb-24 text-center space-y-6">
+                        <ContainerInstrument className="inline-block bg-primary/10 text-primary text-[13px] font-bold px-4 py-1.5 rounded-full tracking-[0.2em] uppercase">
+                          Voices Academy
+                        </ContainerInstrument>
+                        <HeadingInstrument level={1} className="text-7xl md:text-9xl font-light tracking-tighter leading-none text-va-black">
+                          Meester de <span className="text-primary italic">Microfoon</span>
+                        </HeadingInstrument>
+                        <TextInstrument className="text-xl md:text-2xl text-va-black/40 font-light max-w-2xl mx-auto leading-relaxed">
+                          Leer het vak van de pro's. Van stemtechniek tot home-studio management.
+                        </TextInstrument>
+                      </header>
+                      
+                      {/* 🎓 Academy Lesson Grid (v2.16.101) */}
+                      <BentoGrid columns={3}>
+                        {(extraData.lessons || []).map((lesson: any) => (
+                          <BentoCard 
+                            key={lesson.id} 
+                            span="md"
+                            className="group p-10 bg-white hover:bg-va-black transition-all duration-700 rounded-[20px] shadow-aura hover:shadow-aura-lg border border-black/5"
+                          >
+                            <ContainerInstrument className="flex justify-between items-start mb-12">
+                              <ContainerInstrument className="bg-va-black/5 group-hover:bg-white/10 text-va-black group-hover:text-white text-[11px] font-bold px-3 py-1 rounded-full tracking-[0.2em] uppercase transition-colors ">ACADEMY</ContainerInstrument>
+                              <TextInstrument className="text-[11px] font-bold text-va-black/30 group-hover:text-white/30 tracking-[0.2em] uppercase transition-colors ">Les {lesson.display_order || lesson.id}</TextInstrument>
+                            </ContainerInstrument>
+                            <HeadingInstrument level={3} className="text-4xl font-light tracking-tighter leading-[0.9] mb-8 text-va-black group-hover:text-white transition-colors">{lesson.title}</HeadingInstrument>
+                            <TextInstrument className="text-va-black/40 group-hover:text-white/40 text-[15px] mb-8 font-light leading-relaxed">{lesson.description}</TextInstrument>
+                            <Link href={`/academy/lesson/${lesson.display_order || lesson.id}`} className="mt-auto flex justify-between items-end">
+                              <ContainerInstrument>
+                                <TextInstrument className="text-[11px] text-va-black/40 group-hover:text-white/40 font-bold tracking-[0.2em] uppercase mb-1 transition-colors ">Start nu</TextInstrument>
+                                <TextInstrument as="span" className="text-2xl font-light tracking-tighter text-va-black group-hover:text-white transition-colors">Bekijk les</TextInstrument>
+                              </ContainerInstrument>
+                              <ButtonInstrument className="!bg-va-black group-hover:!bg-white group-hover:!text-va-black !rounded-[10px] !px-6 transition-all">
+                                <Play strokeWidth={1.5} size={16} fill="currentColor" />
+                              </ButtonInstrument>
+                            </Link>
+                          </BentoCard>
+                        ))}
+                      </BentoGrid>
+                    </ContainerInstrument>
+                  </PageWrapperInstrument>
+                );
+              }
             } catch (err) {
               console.error("[SmartRouter] Failed to fetch lessons for academy page:", err);
             }
@@ -856,6 +906,40 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
         // Redirect to main FAQ or Provider page with anchor/context if needed
         // For now, render as a CMS page if possible, or redirect to /agency
         return redirect('/agency');
+      }
+
+      // 🎭 JOHFRAI WORLD: AI Mixer Entry (v2.16.101)
+      if (lookupSlug === 'johfrai') {
+        const LiveMixer = nextDynamic(() => import("@/components/johfrai/LiveMixerInstrument").then(mod => mod.LiveMixerInstrument), { ssr: false });
+        const SmartDemoExplorer = nextDynamic(() => import("@/components/johfrai/SmartDemoExplorer").then(mod => mod.SmartDemoExplorer), { ssr: false });
+        
+        return (
+          <PageWrapperInstrument className="bg-va-black min-h-screen text-white">
+            <ContainerInstrument className="max-w-7xl mx-auto px-6 py-32 space-y-32">
+              <header className="text-center space-y-8">
+                <ContainerInstrument className="inline-block bg-primary/20 text-primary text-[13px] font-bold px-4 py-1.5 rounded-full tracking-[0.2em] uppercase border border-primary/20">
+                  Johfrai AI World
+                </ContainerInstrument>
+                <HeadingInstrument level={1} className="text-7xl md:text-9xl font-light tracking-tighter leading-none text-white">
+                  The Future of <span className="text-primary italic">Voice</span>
+                </HeadingInstrument>
+              </header>
+              
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+                <div className="lg:col-span-8">
+                  <Suspense fallback={<div className="h-[600px] bg-white/5 animate-pulse rounded-[40px]" />}>
+                    <LiveMixer />
+                  </Suspense>
+                </div>
+                <div className="lg:col-span-4">
+                  <Suspense fallback={<div className="h-[600px] bg-white/5 animate-pulse rounded-[40px]" />}>
+                    <SmartDemoExplorer />
+                  </Suspense>
+                </div>
+              </div>
+            </ContainerInstrument>
+          </PageWrapperInstrument>
+        );
       }
     }
 
