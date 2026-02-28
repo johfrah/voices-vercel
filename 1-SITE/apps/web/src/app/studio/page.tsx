@@ -52,7 +52,7 @@ export const metadata: Metadata = {
 };
 
 export default async function StudioPage() {
-  const { workshops, instructors } = await getWorkshops();
+  const { workshops, instructors, faqs } = await getWorkshops();
 
   return (
     <PageWrapperInstrument className="bg-va-off-white min-h-screen">
