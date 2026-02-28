@@ -118,8 +118,21 @@ export class MarketManagerServer {
     };
 
     const worldCode = marketToWorldMap[code] || 'agency';
-    const world = this.worldsRegistry.find(w => w.code === worldCode);
-    return world ? world.id : null;
+    
+    // 🛡️ CHRIS-PROTOCOL: Handshake Truth (v2.16.093)
+    // Try to find the world in the registry first
+    if (this.worldsRegistry.length > 0) {
+      const world = this.worldsRegistry.find(w => w.code === worldCode || w.code === code);
+      if (world) return world.id;
+    }
+
+    // Fallback to global handshake if available
+    if (typeof global !== 'undefined' && (global as any).handshakeWorlds) {
+      const world = (global as any).handshakeWorlds.find((w: any) => w.code === worldCode || w.code === code);
+      if (world) return world.id;
+    }
+
+    return null;
   }
 
   public static MARKETS_STATIC: Record<string, Partial<MarketConfig>> = {

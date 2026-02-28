@@ -927,9 +927,10 @@ export async function getFaqs(category: string, limit: number = 5, worldId?: num
   return data || [];
 }
 
-export async function getWorkshops(limit: number = 50): Promise<any[]> {
+export async function getWorkshops(params: { limit?: number, worldId?: number, journeyId?: number } = {}): Promise<any[]> {
+  const { limit = 50, worldId, journeyId } = params;
   // 🛡️ CHRIS-PROTOCOL: Use SDK for stability (v2.14.273)
-  const { data: workshopsData, error } = await supabase
+  let query = supabase
     .from('workshops')
     .select(`
       *,
@@ -940,7 +941,16 @@ export async function getWorkshops(limit: number = 50): Promise<any[]> {
         location:locations(id, name, address, city, zip, country)
       )
     `)
-    .eq('status', 'live')
+    .eq('status', 'live');
+
+  if (worldId) {
+    query = query.eq('world_id', worldId);
+  }
+  if (journeyId) {
+    query = query.eq('journey_id', journeyId);
+  }
+
+  const { data: workshopsData, error } = await query
     .order('id', { ascending: true })
     .limit(limit);
 

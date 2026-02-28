@@ -132,11 +132,11 @@ function generateArtistSchema(artist: any, host: string = '') {
  * Zoekt de entiteit op basis van de slug_registry (ID Handshake Truth).
  * 🛡️ CHRIS-PROTOCOL: Added Lazy Discovery (v2.15.043)
  */
-async function resolveSlugFromRegistry(slug: string, marketCode: string = 'ALL', journey: string = 'agency'): Promise<{ entity_id: number, routing_type: string, journey: string, canonical_slug?: string, metadata?: any, entity_type_id?: number, language_id?: number } | null> {
+async function resolveSlugFromRegistry(slug: string, marketCode: string = 'ALL', journey: string = 'agency'): Promise<{ entity_id: number, routing_type: string, journey: string, world_id?: number, canonical_slug?: string, metadata?: any, entity_type_id?: number, language_id?: number } | null> {
   try {
     const { data: entry, error } = await supabase
       .from('slug_registry')
-      .select('entity_id, journey, canonical_slug, metadata, entity_type_id, language_id, entity_types(code)')
+      .select('entity_id, journey, world_id, canonical_slug, metadata, entity_type_id, language_id, entity_types(code)')
       .eq('slug', slug.toLowerCase())
       .or(`market_code.eq.${marketCode},market_code.eq.ALL`)
       .eq('is_active', true)
@@ -149,6 +149,7 @@ async function resolveSlugFromRegistry(slug: string, marketCode: string = 'ALL',
         entity_id: Number(entry.entity_id),
         routing_type: (entry.entity_types as any)?.code || 'article',
         journey: entry.journey,
+        world_id: entry.world_id,
         canonical_slug: entry.canonical_slug,
         metadata: entry.metadata,
         entity_type_id: entry.entity_type_id,
@@ -630,7 +631,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
         return redirect(`/${resolved.canonical_slug}`);
       }
 
-      console.error(` [SmartRouter] Handshake SUCCESS: ${resolved.routing_type} (ID: ${resolved.entity_id})`);
+      console.error(` [SmartRouter] Handshake SUCCESS: ${resolved.routing_type} (ID: ${resolved.entity_id}, Journey: ${resolved.journey}, World: ${resolved.world_id})`);
       
       // Shift journey/medium for actor detail logic if it's a voice-like prefix
       // We detect this by checking if the resolved type is actor and there are more segments
@@ -666,7 +667,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
           // 🛡️ CHRIS-PROTOCOL: Unified Journey Handshake
           // We prioritize the journey from the slug_registry metadata (if it was a deep match)
           // Otherwise we look at the segment after the resolved path.
-          const registryJourney = resolved.metadata?.journey;
+          const registryJourney = resolved.metadata?.journey || resolved.journey;
           const lookupSegments = lookupSlug.split('/');
           const nextSegment = cleanSegments[lookupSegments.length];
           const mappedJourney = registryJourney || (nextSegment ? journeyMap[nextSegment.toLowerCase()] : undefined);
@@ -709,7 +710,42 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
       if (resolved.routing_type === 'blog' || resolved.routing_type === 'article') {
         const article = await getArticle(lookupSlug, lang);
         if (article) {
-          return <CmsPageContent page={article} slug={lookupSlug} />;
+          // 🛡️ CHRIS-PROTOCOL: Dynamic Extra Data based on Journey/World (v2.16.093)
+          let extraData: any = {};
+          const currentJourney = resolved.journey || article.iapContext?.journey;
+          
+          if (currentJourney === 'studio') {
+            try {
+              const workshops = await getWorkshops({ worldId: resolved.world_id || 2 }); // 2 = Studio
+              workshops.sort((a, b) => {
+                const nextA = a.editions && a.editions.length > 0 ? a.editions[0].date : null;
+                const nextB = b.editions && b.editions.length > 0 ? b.editions[0].date : null;
+                if (nextA && nextB) return new Date(nextA).getTime() - new Date(nextB).getTime();
+                if (nextA) return -1;
+                if (nextB) return 1;
+                return (a.title || '').localeCompare(b.title || '');
+              });
+              extraData.workshops = workshops;
+            } catch (err) {
+              console.error("[SmartRouter] Failed to fetch workshops for studio page:", err);
+            }
+          } else if (currentJourney === 'academy') {
+            try {
+              const { data: lessons } = await supabase.from('lessons').select('*').order('display_order');
+              extraData.lessons = lessons || [];
+            } catch (err) {
+              console.error("[SmartRouter] Failed to fetch lessons for academy page:", err);
+            }
+          } else if (currentJourney === 'ademing') {
+            try {
+              const { data: tracks } = await supabase.from('ademing_tracks').select('*').eq('is_public', true).limit(6);
+              extraData.tracks = tracks || [];
+            } catch (err) {
+              console.error("[SmartRouter] Failed to fetch tracks for ademing page:", err);
+            }
+          }
+
+          return <CmsPageContent page={article} slug={lookupSlug} extraData={extraData} />;
         }
       }
 
@@ -1058,7 +1094,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
     if (segments.length === 1 || isAgencySubRoute || isArticlePrefix || isStudioAgendaPrefix) {
       const cmsSlug = isArticlePrefix || isStudioAgendaPrefix ? segments[1] : (isAgencySubRoute ? segments[1] : lookupSlug);
       try {
-        console.log(` [SmartRouter] Fetching CMS article: ${cmsSlug}`);
+        console.log(` [SmartRouter] Fetching CMS article (Legacy Fallback): ${cmsSlug}`);
         // 🛡️ CHRIS-PROTOCOL: Use SDK for stability (v2.14.273)
         const { data: page, error } = await supabase
           .from('content_articles')
@@ -1082,13 +1118,15 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
             console.error(` [SmartRouter] Error fetching blocks for ${cmsSlug}:`, blocksError.message);
           }
 
-          console.log(` [SmartRouter] Successfully loaded CMS page: ${cmsSlug} with ${blocks?.length || 0} blocks.`);
+          console.log(` [SmartRouter] Successfully loaded CMS page (Legacy Fallback): ${cmsSlug} with ${blocks?.length || 0} blocks.`);
           
-          // Fetch extra data based on slug
+          // 🛡️ CHRIS-PROTOCOL: Dynamic Extra Data based on Journey (v2.16.093)
           let extraData: any = {};
-          if (cmsSlug === 'studio') {
+          const currentJourney = page.iapContext?.journey || (cmsSlug === 'studio' ? 'studio' : (cmsSlug === 'academy' ? 'academy' : (cmsSlug === 'ademing' ? 'ademing' : 'agency')));
+          
+          if (currentJourney === 'studio') {
             try {
-              const workshops = await getWorkshops();
+              const workshops = await getWorkshops({ worldId: 2 }); // 2 = Studio
               workshops.sort((a, b) => {
                 const nextA = a.editions && a.editions.length > 0 ? a.editions[0].date : null;
                 const nextB = b.editions && b.editions.length > 0 ? b.editions[0].date : null;
@@ -1101,14 +1139,14 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
             } catch (err) {
               console.error("[SmartRouter] Failed to fetch workshops for studio page:", err);
             }
-          } else if (cmsSlug === 'academy') {
+          } else if (currentJourney === 'academy') {
             try {
               const { data: lessons } = await supabase.from('lessons').select('*').order('display_order');
               extraData.lessons = lessons || [];
             } catch (err) {
               console.error("[SmartRouter] Failed to fetch lessons for academy page:", err);
             }
-          } else if (cmsSlug === 'ademing') {
+          } else if (currentJourney === 'ademing') {
             try {
               const { data: tracks } = await supabase.from('ademing_tracks').select('*').eq('is_public', true).limit(6);
               extraData.tracks = tracks || [];

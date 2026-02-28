@@ -172,4 +172,5 @@ export interface SearchResults {
   _nuclear?: boolean;
   _source?: string;
   _bridge_timestamp?: string;
+  _v?: string;
 }
