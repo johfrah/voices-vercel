@@ -225,7 +225,7 @@ async function generateMD() {
       WHERE edition_id IS NOT NULL
       GROUP BY edition_id
     )
-    SELECT w.id, w.title, w.slug, w.is_public, w.has_demo_bundle, w.preparation_text, w.script_drive_link,
+    SELECT w.id, w.title, w.slug, w.is_public, w.has_demo_bundle, w.preparation_text, w.preparation_pdf_id,
            ws.label as status_label, ws.id as status_id,
            w.meta,
            wm.file_path as featured_image_path,
@@ -378,9 +378,11 @@ async function generateMD() {
     
     md += `### ✉️ Mail Voorbereiding (Smart Handshake)\n`;
     if (w.preparation_text) {
-      md += `#### 📝 Kerntekst (Herbruikbaar)\n> ${w.preparation_text.replace(/\n/g, '\n> ')}\n\n`;
-      if (w.script_drive_link) {
-        md += `- **🔗 Script Link:** [Google Drive](${w.script_drive_link})\n`;
+      md += `#### 📝 Kerntekst (Dynamisch)\n> ${w.preparation_text.replace(/\n/g, '\n> ')}\n\n`;
+      if (w.preparation_pdf_id) {
+        md += `- **📎 PDF Attachment:** Gekoppeld via Media ID \`${w.preparation_pdf_id}\` (Hard Handshake)\n`;
+      } else {
+        md += `- **📎 PDF Attachment:** ⏳ *Nog niet gekoppeld in backend*\n`;
       }
     } else {
       md += `❌ Geen voorbereidings-data aanwezig\n`;
