@@ -444,7 +444,7 @@ ${workshopEditionsData.filter((ed: any) => ed.status === 'upcoming').map((ed: an
         
         switch (command) {
           case '/status':
-            aiContent = "Systeemstatus: 🟢 Alle systemen operationeel. Database latency: 45ms. Vercel Build: v2.16.064.";
+            aiContent = "Systeemstatus: 🟢 Alle systemen operationeel. Database latency: 45ms. Vercel Build: v2.16.073.";
             break;
           case '/clear':
             aiContent = "Cache gewist voor de huidige sessie.";

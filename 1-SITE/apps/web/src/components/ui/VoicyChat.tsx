@@ -640,18 +640,30 @@ export const VoicyChatV2: React.FC = () => {
 
   useEffect(() => {
     if (!isInitialLoading && messages.length === 0) {
+      // 🛡️ CHRIS-PROTOCOL: DNA-Based Personalized Greeting (v2.16.065)
+      const guestName = typeof window !== 'undefined' ? localStorage.getItem('voices_guest_name') : null;
+      const firstName = user?.first_name || customer360?.first_name || guestName;
+      
+      let welcomeContent = isPortfolioJourney 
+        ? t('chat.welcome.portfolio', 'Hallo! Ik ben de assistent van deze stemacteur. Hoe kan ik je helpen met je project of een prijsberekening?')
+        : t('chat.welcome.general', 'Hallo! Ik ben Voicy, je AI-assistent. Hoe kan ik je vandaag helpen?');
+
+      if (firstName) {
+        welcomeContent = isPortfolioJourney
+          ? `Hoi ${firstName}! Welkom terug bij deze stemacteur. Hoe kan ik je vandaag helpen met je project?`
+          : `Hoi ${firstName}! Welkom terug bij Voices. Hoe kan ik je vandaag helpen?`;
+      }
+
       setMessages([
         {
           id: 'welcome',
           role: 'assistant',
-          content: isPortfolioJourney 
-            ? t('chat.welcome.portfolio', 'Hallo! Ik ben de assistent van deze stemacteur. Hoe kan ik je helpen met je project of een prijsberekening?')
-            : t('chat.welcome.general', 'Hallo! Ik ben Voicy, je AI-assistent. Hoe kan ik je vandaag helpen?'),
+          content: welcomeContent,
           timestamp: new Date().toISOString()
         }
       ]);
     }
-  }, [messages.length, isInitialLoading, isPortfolioJourney, t]);
+  }, [messages.length, isInitialLoading, isPortfolioJourney, t, user, customer360]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -775,6 +787,11 @@ export const VoicyChatV2: React.FC = () => {
         setConversationId(data.conversationId);
         localStorage.setItem('voicy_conversation_id', data.conversationId.toString());
       }
+
+      // 🛡️ CHRIS-PROTOCOL: Extract and persist guest name from AI response if available (v2.16.065)
+      if (data.extractedLead?.name) {
+        localStorage.setItem('voices_guest_name', data.extractedLead.name);
+      }
       
       aiResponse.content = data.content || data.message || "Ik ben even de verbinding kwijt, maar ik ben er nog!";
       aiResponse.actions = data.actions || [];
@@ -859,6 +876,12 @@ export const VoicyChatV2: React.FC = () => {
       if (response.ok) {
         const data = await response.json();
         setShowLeadForm(false);
+        
+        // 🛡️ CHRIS-PROTOCOL: Persist Lead Name for personalized greetings (v2.16.065)
+        if (leadFormData.name) {
+          localStorage.setItem('voices_guest_name', leadFormData.name);
+        }
+
         setMessages(prev => [...prev, {
           id: `lead-success-${Date.now()}`,
           role: 'assistant',
