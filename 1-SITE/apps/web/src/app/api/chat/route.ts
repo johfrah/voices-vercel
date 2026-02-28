@@ -19,13 +19,25 @@ export async function POST(request: NextRequest) {
         return handleSendMessage(params, request);
       case 'conversations':
         const { userId } = params;
-        const query = db.select().from(chatConversations);
+        
+        // 🛡️ CHRIS-PROTOCOL: Filter Empty Chats (v2.16.059)
+        // We tonen alleen gesprekken die minimaal 1 bericht hebben om ghost-sessies te verbergen.
+        const conditions = [
+          sql`EXISTS (SELECT 1 FROM chat_messages WHERE conversation_id = ${chatConversations.id})`
+        ];
+
         if (userId !== 'all') {
           if (!userId) return NextResponse.json({ error: 'Missing userId' }, { status: 400 });
-          query.where(eq(chatConversations.user_id, userId));
+          conditions.push(eq(chatConversations.user_id, userId));
         }
-        const results = await query.orderBy(desc(chatConversations.updatedAt));
-        console.log(`[Voicy API] Fetched ${results.length} conversations for userId: ${userId}`);
+
+        const results = await db
+          .select()
+          .from(chatConversations)
+          .where(and(...conditions))
+          .orderBy(desc(chatConversations.updatedAt));
+
+        console.log(`[Voicy API] Fetched ${results.length} active conversations for userId: ${userId}`);
         return NextResponse.json(results);
       case 'history':
         const { conversationId: histId } = params;
@@ -432,7 +444,7 @@ ${workshopEditionsData.filter((ed: any) => ed.status === 'upcoming').map((ed: an
         
         switch (command) {
           case '/status':
-            aiContent = "Systeemstatus: 🟢 Alle systemen operationeel. Database latency: 45ms. Vercel Build: v2.16.058.";
+            aiContent = "Systeemstatus: 🟢 Alle systemen operationeel. Database latency: 45ms. Vercel Build: v2.16.062.";
             break;
           case '/clear':
             aiContent = "Cache gewist voor de huidige sessie.";

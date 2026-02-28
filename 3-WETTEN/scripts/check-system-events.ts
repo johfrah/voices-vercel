@@ -1,73 +1,40 @@
-import { createClient } from '@supabase/supabase-js';
-import * as dotenv from 'dotenv';
-import * as path from 'path';
-
-dotenv.config({ path: path.resolve(process.cwd(), '../../1-SITE/apps/web/.env.local') });
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-
-const supabase = createClient(supabaseUrl, supabaseServiceKey);
+import { db } from '../../1-SITE/packages/database/src/index.js';
+import { systemEvents } from '../../1-SITE/packages/database/src/schema/index.js';
+import { desc } from 'drizzle-orm';
 
 async function checkSystemEvents() {
-  console.log('🔍 Checking system_events for Orders API errors...\n');
-
   try {
-    // Get recent errors related to orders
-    const { data, error } = await supabase
-      .from('system_events')
-      .select('*')
-      .ilike('message', '%orders%')
-      .order('created_at', { ascending: false })
-      .limit(10);
-
-    if (error) {
-      console.error('❌ Query failed:', error);
-      return;
-    }
-
-    if (!data || data.length === 0) {
-      console.log('✅ No recent errors found related to orders.');
-      
-      // Check for ANY recent errors
-      const { data: recentErrors } = await supabase
-        .from('system_events')
-        .select('*')
-        .eq('level', 'error')
-        .order('created_at', { ascending: false })
-        .limit(5);
-      
-      if (recentErrors && recentErrors.length > 0) {
-        console.log('\n📋 Recent errors (any type):');
-        recentErrors.forEach((event, idx) => {
-          console.log(`\n[${idx + 1}] ${event.created_at}`);
-          console.log(`Level: ${event.level}`);
-          console.log(`Message: ${event.message}`);
-          if (event.details) {
-            console.log(`Details:`, JSON.stringify(event.details, null, 2).substring(0, 300));
-          }
-        });
-      }
-      
-      return;
-    }
-
-    console.log(`🔥 Found ${data.length} order-related errors:\n`);
+    const events = await db.select().from(systemEvents).orderBy(desc(systemEvents.created_at)).limit(20);
     
-    data.forEach((event, idx) => {
-      console.log(`\n[${idx + 1}] ${event.created_at}`);
-      console.log(`Level: ${event.level}`);
-      console.log(`Message: ${event.message}`);
+    console.log('🔍 Latest System Events:');
+    console.log('========================\n');
+    
+    if (events.length === 0) {
+      console.log('✅ No system events found.');
+      return;
+    }
+    
+    const errors = events.filter(e => e.severity === 'error');
+    const warnings = events.filter(e => e.severity === 'warning');
+    
+    console.log(`📊 Summary: ${errors.length} errors, ${warnings.length} warnings\n`);
+    
+    events.forEach((event, i) => {
+      const icon = event.severity === 'error' ? '❌' : event.severity === 'warning' ? '⚠️' : 'ℹ️';
+      console.log(`${icon} [${event.severity?.toUpperCase()}] ${event.event_type}`);
+      console.log(`   Time: ${event.created_at}`);
+      console.log(`   Message: ${event.message}`);
       if (event.details) {
-        console.log(`Details:`, JSON.stringify(event.details, null, 2));
+        console.log(`   Details: ${JSON.stringify(event.details).substring(0, 200)}`);
       }
-      console.log('---');
+      console.log('');
     });
-
-  } catch (error: any) {
-    console.error('❌ Check failed:', error.message);
+    
+  } catch (error) {
+    console.error('❌ Failed to fetch system events:', error);
+    process.exit(1);
   }
-
+  
   process.exit(0);
 }
 
