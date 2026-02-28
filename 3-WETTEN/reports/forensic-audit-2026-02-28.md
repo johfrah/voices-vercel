@@ -1,4 +1,4 @@
-# 🛡️ Forensic Audit Report (2/28/2026, 7:40:32 PM)
+# 🛡️ Forensic Audit Report (2/28/2026, 7:45:05 PM)
 
 ## Summary
 - **Status**: ✅ PASSED
@@ -3256,7 +3256,7 @@
   > `<div className="p-4 bg-white border-t border-black/5">`
 - **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:473`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="p-4 bg-white border-t border-black/5 flex gap-2 overflow-x-auto no-scrollbar">`
-- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:504`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:540`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="text-center">`
 - **WARNING** `1-SITE/apps/web/src/components/admin/SortableActorRow.tsx:47`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div ref={setNodeRef} style={style} className="touch-none">`
