@@ -18,9 +18,36 @@ export async function POST(request: NextRequest) {
       case 'send':
         return handleSendMessage(params, request);
       case 'conversations':
-        return handleGetConversations(params);
+        const { userId } = params;
+        const query = db.select().from(chatConversations);
+        if (userId !== 'all') {
+          if (!userId) return NextResponse.json({ error: 'Missing userId' }, { status: 400 });
+          query.where(eq(chatConversations.user_id, userId));
+        }
+        const results = await query.orderBy(desc(chatConversations.updatedAt));
+        console.log(`[Voicy API] Fetched ${results.length} conversations for userId: ${userId}`);
+        return NextResponse.json(results);
       case 'history':
-        return handleGetHistory(params);
+        const { conversationId: histId } = params;
+        if (!histId) return NextResponse.json({ error: 'Missing conversationId' }, { status: 400 });
+        const { asc } = await import('drizzle-orm');
+        const histResults = await db
+          .select()
+          .from(chatMessages)
+          .where(eq(chatMessages.conversationId, histId))
+          .orderBy(asc(chatMessages.id));
+        return NextResponse.json({
+          success: true,
+          messages: histResults.map((m: any) => ({
+            id: m.id.toString(),
+            sender_type: m.senderType,
+            message: m.message,
+            created_at: m.createdAt,
+            role: m.senderType === 'ai' ? 'assistant' : m.senderType,
+            content: m.message,
+            timestamp: m.createdAt
+          }))
+        });
       case 'sensor_update':
         const { conversationId: sensorConvId, sensorData } = params;
         if (!sensorConvId || !sensorData) return NextResponse.json({ error: 'Missing params' }, { status: 400 });
