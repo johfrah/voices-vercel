@@ -753,7 +753,8 @@ export const VoicyChatV2: React.FC = () => {
             isAuthenticated,
             user: user?.email,
             customer360: customer360,
-            generalSettings: generalSettings
+            generalSettings: generalSettings,
+            visitorHash: typeof window !== 'undefined' ? localStorage.getItem('voices_visitor_hash') : null
           }
         })
       });

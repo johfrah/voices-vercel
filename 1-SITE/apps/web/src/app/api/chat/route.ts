@@ -242,6 +242,7 @@ USER INTELLIGENCE (MAT-MANDATE):
 - User DNA: ${context?.customer360?.intelligence?.leadVibe || 'nieuw'}
 - Vorige aankopen: ${context?.customer360?.dna?.totalOrders || 0}
 - Top Journeys: ${context?.customer360?.dna?.topJourneys?.join(', ') || 'geen'}
+- Visitor Hash: ${context?.visitorHash || 'onbekend'}
 
 TAAL CONTEXT:
 - Huidige taal: ${langLabel}
@@ -489,7 +490,8 @@ ${workshopEditionsData.filter((ed: any) => ed.status === 'upcoming').map((ed: an
               journey: journey,
               lifecycle_stage: stage,
               market: context?.market_code,
-              vibe: context?.customer360?.intelligence?.leadVibe
+              vibe: context?.customer360?.intelligence?.leadVibe,
+              visitor_hash: context?.visitorHash
             }
           }).returning({ id: chatConversations.id });
           convId = newConv.id;
