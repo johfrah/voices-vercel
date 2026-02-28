@@ -512,6 +512,10 @@ async function generateMD() {
         if (e.location_access) {
           md += `- **📍 Bereikbaarheid:** ${e.location_access}\n`;
         }
+
+        if (e.prep_override) {
+          md += `- **✉️ Editie Briefing (Override):** ⚠️ *Deze editie gebruikt een aangepaste tekst:*\n> ${e.prep_override.replace(/\n/g, '\n> ')}\n`;
+        }
         
         if (vaultLink) {
           md += `- **📂 Workshop Assets:** [${vaultLink.label_nl}](${vaultLink.vault_folder_path}) (Hard Handshake)\n`;

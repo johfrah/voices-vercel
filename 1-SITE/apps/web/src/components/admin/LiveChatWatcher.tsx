@@ -201,7 +201,8 @@ export const LiveChatWatcher = () => {
     fetchMessages();
     
     // SSE for real-time updates
-    const eventSource = new EventSource(`/api/chat/sse/?conversationId=${selectedId}`);
+    const lastId = messages.length > 0 ? Math.max(...messages.map(m => isNaN(parseInt(m.id)) ? 0 : parseInt(m.id))) : 0;
+    const eventSource = new EventSource(`/api/chat/sse/?conversationId=${selectedId}&lastMessageId=${lastId}`);
     eventSource.onmessage = (event) => {
       const data = JSON.parse(event.data);
       if (data.type === 'new_messages') {
