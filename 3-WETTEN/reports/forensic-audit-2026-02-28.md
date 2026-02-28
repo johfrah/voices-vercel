@@ -1,66 +1,66 @@
-# 🛡️ Forensic Audit Report (2/28/2026, 9:36:39 PM)
+# 🛡️ Forensic Audit Report (2/28/2026, 10:19:57 PM)
 
 ## Summary
 - **Status**: ✅ PASSED
 - **Errors**: 0
-- **Warnings**: 3812
+- **Warnings**: 3795
 
 ## Detailed Issues
-- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:702`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:701`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="!pt-0 -mt-24 relative z-40">`
-- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:762`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:761`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="!pt-0 -mt-24 relative z-40">`
-- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:853`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:852`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="!pt-0 -mt-24 relative z-40">`
-- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:934`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:933`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex items-center gap-4">`
-- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:935`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:934`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="w-16 h-16 bg-va-off-white rounded-full flex items-center justify-center text-2xl font-light text-va-black/20 overflow-hidden relative">`
-- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:945`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:944`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div>`
-- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:947`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:946`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex items-center justify-between mt-1">`
-- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:962`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:961`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="h-12 bg-va-off-white rounded-[10px] flex items-center px-4 gap-2">`
-- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:963`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:962`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="w-8 h-8 bg-va-black rounded-full flex items-center justify-center text-white">`
-- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1177`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1176`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<Suspense fallback={<div className="w-full h-full bg-va-black/5 animate-pulse rounded-[32px]" />}>`
-- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1222`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1221`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<Suspense fallback={<div className="h-96 w-full bg-va-black/5 animate-pulse rounded-[20px]" />}>`
-- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1249`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1248`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<Suspense fallback={<div className="h-64 w-full bg-va-black/5 animate-pulse rounded-[20px]" />}>`
-- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1279`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1278`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<Suspense fallback={<div className="h-48 w-full bg-va-black/5 animate-pulse rounded-[20px]" />}>`
-- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1357`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1356`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="space-y-6">`
-- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1360`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1359`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex flex-col items-center gap-4">`
-- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1364`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1363`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-12 border-t border-black/[0.03]">`
-- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1366`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1365`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div key={i} className="flex flex-col items-center gap-4">`
-- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1367`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1366`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="w-12 h-12 rounded-full bg-primary/5 flex items-center justify-center text-primary">`
-- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1374`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1373`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="pt-12">`
-- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1391`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1390`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="grid grid-cols-1 lg:grid-cols-12 gap-24">`
-- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1392`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1391`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="lg:col-span-4 space-y-6">`
-- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1399`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1398`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="lg:col-span-8 space-y-12">`
-- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1401`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1400`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div key={i} className="space-y-4 pb-12 border-b border-black/[0.03] last:border-none last:pb-0">`
-- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1473`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1472`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<Suspense fallback={<div className="aspect-video w-full bg-va-black/20 animate-pulse" />}>`
-- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1551`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1550`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<Suspense fallback={<div className="h-96 w-full bg-va-black/5 animate-pulse rounded-[20px]" />}>`
-- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:950`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:949`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `translationKey={`common.language.${(item.actor.native_lang || item.actor.native_lang)?.toLowerCase() || 'nl'}`}`
-- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:951`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:950`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `defaultText={MarketManager.getLanguageLabel(item.actor.native_lang || item.actor.native_lang || 'nl')}`
-- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1461`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1460`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `const currentLang = (page.iapContext as { lang?: string } | null)?.lang || 'nl';`
 - **WARNING** `1-SITE/apps/web/src/app/account/AccountDashboardClient.tsx:118`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="va-home-container">`
@@ -4242,9 +4242,7 @@
   > `<div className="lg:col-span-7">`
 - **WARNING** `1-SITE/apps/web/src/components/legacy/AgencyContent.tsx:314`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="lg:col-span-5 sticky top-10 space-y-6">`
-- **WARNING** `1-SITE/apps/web/src/components/legacy/AgencyContent.tsx:321`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="mt-12 pt-8 border-t border-black/[0.03] flex justify-center">`
-- **WARNING** `1-SITE/apps/web/src/components/legacy/AgencyContent.tsx:326`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/legacy/AgencyContent.tsx:328`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="rotate-180">`
 - **WARNING** `1-SITE/apps/web/src/components/legacy/ArtistDetailClient.tsx:27`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `loading: () => <div className="fixed inset-0 z-0 bg-va-black" />`
@@ -5444,151 +5442,141 @@
   > `<div className="relative z-10 space-y-12">`
 - **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:236`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex justify-center">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:237`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="flex p-1 bg-white rounded-2xl border border-black/5 shadow-sm">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:258`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="flex items-center gap-2">`
 - **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:260`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<span>{u.label}</span>`
+  > `<div className="flex items-center gap-2">`
 - **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:262`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<span>{u.label}</span>`
+- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:264`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span className={cn("text-[9px] tracking-widest font-medium opacity-40")}>{u.sub}</span>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:269`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="space-y-10">`
 - **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:271`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="space-y-10">`
 - **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:273`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="space-y-4">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:277`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="grid grid-cols-2 md:grid-cols-4 gap-4">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:295`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="flex items-center justify-between w-full">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:296`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className={cn(`
-- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:304`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:305`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<span className={cn("font-bold text-[13px] block leading-tight", calcType === key ? "text-va-black" : "text-va-black/40")}>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:308`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<span className="text-[9px] text-va-black/20 font-medium tracking-widest block mt-1 uppercase">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:318`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="space-y-4">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:319`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="flex items-center justify-between">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:324`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="flex p-1 bg-white rounded-2xl border border-black/5 shadow-sm h-[64px]">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:344`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="space-y-4">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:348`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="flex p-1 bg-white rounded-2xl border border-black/5 shadow-sm h-[64px]">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:366`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="space-y-8">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:367`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="bg-white rounded-[32px] p-8 border border-black/5 shadow-aura">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:368`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="flex justify-between items-center mb-8">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:372`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="px-4 py-2 bg-va-off-white rounded-full border border-black/5 shadow-inner flex items-center gap-2">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:373`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<span className="font-bold text-primary text-[15px]">{calcWords} <VoiceglotText translationKey="common.words" defaultText="woorden" /></span>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:376`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="space-y-8">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:386`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="flex items-center gap-4 bg-va-off-white rounded-2xl p-1.5 border border-black/5 shadow-inner max-w-xs mx-auto">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:388`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="flex-1 text-center"><span className="font-bold text-2xl text-primary">{calcWords}</span></div>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:388`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="flex-1 text-center"><span className="font-bold text-2xl text-primary">{calcWords}</span></div>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:398`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="pt-8 border-t border-black/5 space-y-4">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:404`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="flex items-center justify-between p-4 bg-white rounded-2xl border border-black/5 shadow-sm hover:border-primary/20 transition-all group">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:405`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="flex items-center gap-4">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:406`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className={cn(`
-- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:412`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:413`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<span className={cn("font-bold text-[14px] block leading-tight", calcLive ? "text-va-black" : "text-va-black/40")}>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:416`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<span className="text-[10px] text-va-black/20 font-medium tracking-widest block mt-1 uppercase">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:435`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="flex items-center justify-between p-4 bg-white rounded-2xl border border-black/5 shadow-sm hover:border-primary/20 transition-all group">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:436`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="flex items-center gap-4">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:437`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className={cn(`
-- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:443`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:444`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<span className={cn("font-bold text-[14px] block leading-tight", calcMusic ? "text-va-black" : "text-va-black/40")}>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:447`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<span className="text-[10px] text-va-black/20 font-medium tracking-widest block mt-1 uppercase">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:472`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="pt-10 border-t border-black/[0.03] flex flex-col md:flex-row items-center justify-between gap-8 animate-in fade-in slide-in-from-bottom-4 duration-700">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:473`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="text-center md:text-left">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:477`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="text-6xl font-extralight tracking-tighter text-va-black">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:497`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="pt-10 border-t border-black/[0.03] space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:498`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="flex items-center justify-between">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:516`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="bg-white rounded-[24px] border border-black/5 overflow-hidden shadow-sm">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:517`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="overflow-x-auto">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:544`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="flex flex-col items-center gap-3">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:545`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="w-6 h-6 border-2 border-primary/20 border-t-primary rounded-full animate-spin" />`
-- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:546`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<span className="text-[11px] font-bold text-va-black/20 uppercase tracking-widest">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:556`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="flex items-center gap-3">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:557`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="relative w-10 h-10 rounded-full overflow-hidden bg-va-off-white border border-black/5">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:566`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="w-full h-full flex items-center justify-center text-va-black/20 font-bold">{a.display_name?.[0]}</div>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:569`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:570`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="text-[14px] font-bold text-va-black">{a.display_name}</div>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:571`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="text-[10px] text-va-black/40 font-medium uppercase tracking-widest">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:578`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="text-right md:text-left">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:579`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="text-xl font-extralight tracking-tighter text-va-black">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:581`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<span className="text-[13px] font-bold text-va-black/20 uppercase tracking-widest italic">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:588`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="text-[9px] text-va-black/30 font-bold uppercase tracking-widest">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:590`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<span className="text-primary flex items-center gap-1">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:594`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<span className="text-primary flex items-center gap-1">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:629`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="px-6 py-4 border-t border-black/5 flex items-center justify-between bg-va-off-white/30">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:633`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="flex gap-2">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:657`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="lg:col-span-5 p-12 bg-white space-y-12">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:658`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="space-y-2">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:664`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `highlight: (children) => <span className="text-primary italic">{children}</span>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:673`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="space-y-10">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:675`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div key={step.num} className="flex gap-6 group">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:275`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="space-y-4">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:299`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="flex items-center justify-between w-full">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:300`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className={cn(`
+- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:308`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div>`
+- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:309`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<span className={cn("font-bold text-[13px] block leading-tight", calcType === key ? "text-va-black" : "text-va-black/40")}>`
+- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:312`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<span className="text-[9px] text-va-black/20 font-medium tracking-widest block mt-1 uppercase">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:322`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="space-y-4">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:323`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="flex items-center justify-between">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:350`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="space-y-4">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:372`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="space-y-8">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:373`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="bg-white rounded-[32px] p-8 border border-black/5 shadow-aura">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:374`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="flex justify-between items-center mb-8">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:378`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="px-4 py-2 bg-va-off-white rounded-full border border-black/5 shadow-inner flex items-center gap-2">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:379`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<span className="font-bold text-primary text-[15px]">{calcWords} <VoiceglotText translationKey="common.words" defaultText="woorden" /></span>`
+- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:382`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="space-y-8">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:392`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="flex items-center gap-4 bg-va-off-white rounded-2xl p-1.5 border border-black/5 shadow-inner max-w-xs mx-auto">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:394`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="flex-1 text-center"><span className="font-bold text-2xl text-primary">{calcWords}</span></div>`
+- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:394`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="flex-1 text-center"><span className="font-bold text-2xl text-primary">{calcWords}</span></div>`
+- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:404`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="pt-8 border-t border-black/5 space-y-4">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:410`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="flex items-center justify-between p-4 bg-white rounded-2xl border border-black/5 shadow-sm hover:border-primary/20 transition-all group">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:411`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="flex items-center gap-4">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:412`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className={cn(`
+- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:418`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div>`
+- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:419`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<span className={cn("font-bold text-[14px] block leading-tight", calcLive ? "text-va-black" : "text-va-black/40")}>`
+- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:422`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<span className="text-[10px] text-va-black/20 font-medium tracking-widest block mt-1 uppercase">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:441`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="flex items-center justify-between p-4 bg-white rounded-2xl border border-black/5 shadow-sm hover:border-primary/20 transition-all group">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:442`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="flex items-center gap-4">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:443`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className={cn(`
+- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:449`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div>`
+- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:450`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<span className={cn("font-bold text-[14px] block leading-tight", calcMusic ? "text-va-black" : "text-va-black/40")}>`
+- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:453`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<span className="text-[10px] text-va-black/20 font-medium tracking-widest block mt-1 uppercase">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:478`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="pt-10 border-t border-black/[0.03] flex flex-col md:flex-row items-center justify-between gap-8 animate-in fade-in slide-in-from-bottom-4 duration-700">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:479`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="text-center md:text-left">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:483`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="text-6xl font-extralight tracking-tighter text-va-black">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:503`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="pt-10 border-t border-black/[0.03] space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:504`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="flex items-center justify-between">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:524`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="bg-white rounded-[24px] border border-black/5 overflow-hidden shadow-sm">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:525`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="overflow-x-auto">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:552`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="flex flex-col items-center gap-3">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:553`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="w-6 h-6 border-2 border-primary/20 border-t-primary rounded-full animate-spin" />`
+- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:554`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<span className="text-[11px] font-bold text-va-black/20 uppercase tracking-widest">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:564`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="flex items-center gap-3">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:565`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="relative w-10 h-10 rounded-full overflow-hidden bg-va-off-white border border-black/5">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:574`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="w-full h-full flex items-center justify-center text-va-black/20 font-bold">{a.display_name?.[0]}</div>`
+- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:577`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div>`
+- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:578`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="text-[14px] font-bold text-va-black">{a.display_name}</div>`
+- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:579`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="text-[10px] text-va-black/40 font-medium uppercase tracking-widest">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:586`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="text-right md:text-left">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:587`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="text-xl font-extralight tracking-tighter text-va-black">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:589`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<span className="text-[13px] font-bold text-va-black/20 uppercase tracking-widest italic">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:596`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="text-[9px] text-va-black/30 font-bold uppercase tracking-widest">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:598`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<span className="text-primary flex items-center gap-1">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:602`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<span className="text-primary flex items-center gap-1">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:637`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="px-6 py-4 border-t border-black/5 flex items-center justify-between bg-va-off-white/30">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:669`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="lg:col-span-5 p-12 bg-white space-y-12">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:670`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="space-y-2">`
 - **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:676`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `highlight: (children) => <span className="text-primary italic">{children}</span>`
+- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:685`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="space-y-10">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:687`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div key={step.num} className="flex gap-6 group">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:688`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0 font-bold border border-primary/10 group-hover:scale-110 transition-transform duration-500">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:679`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:691`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="space-y-1">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:689`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:701`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="pt-8 border-t border-black/[0.03] space-y-6">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:699`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:711`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex items-center gap-3 px-5 py-3 bg-va-off-white rounded-full border border-black/5 w-fit shadow-sm">`
 - **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:188`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `const isFr = language.startsWith('fr');`
@@ -6550,18 +6538,12 @@
   > `<span className="inline-block px-4 py-2 bg-va-black/80 backdrop-blur-md rounded-[12px] text-white text-[15px] md:text-[16px] font-light leading-relaxed shadow-aura-lg border border-white/5">`
 - **WARNING** `1-SITE/apps/web/src/components/ui/StudioVideoPlayer.tsx:199`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className={cn(`
-- **WARNING** `1-SITE/apps/web/src/components/ui/StudioVideoPlayer.tsx:215`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="w-full space-y-4">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/StudioVideoPlayer.tsx:216`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="h-1 w-full bg-white/20 rounded-full overflow-hidden">`
 - **WARNING** `1-SITE/apps/web/src/components/ui/StudioVideoPlayer.tsx:217`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="w-full space-y-4">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/StudioVideoPlayer.tsx:218`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="h-1 w-full bg-white/20 rounded-full overflow-hidden">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/StudioVideoPlayer.tsx:219`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div`
-- **WARNING** `1-SITE/apps/web/src/components/ui/StudioVideoPlayer.tsx:223`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="flex items-center justify-between">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/StudioVideoPlayer.tsx:224`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="flex items-center gap-4">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/StudioVideoPlayer.tsx:232`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="flex gap-4">`
 - **WARNING** `1-SITE/apps/web/src/components/ui/TopBar.tsx:56`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex-1">`
 - **WARNING** `1-SITE/apps/web/src/components/ui/TopBar.tsx:75`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -6620,107 +6602,107 @@
   > `<div className="relative bg-va-black overflow-hidden shrink-0 aspect-square w-full">`
 - **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:530`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="absolute inset-0 z-10 bg-black">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:565`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="w-full h-full bg-va-off-white flex flex-col items-center justify-center gap-2 md:gap-4">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:566`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="w-16 h-16 md:w-24 md:h-24 rounded-full bg-va-black/5 flex items-center justify-center border-2 border-dashed border-va-black/10">`
 - **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:567`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="w-full h-full bg-va-off-white flex flex-col items-center justify-center gap-2 md:gap-4">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:568`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="w-16 h-16 md:w-24 md:h-24 rounded-full bg-va-black/5 flex items-center justify-center border-2 border-dashed border-va-black/10">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:569`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span className="text-2xl md:text-3xl font-light text-va-black/20 tracking-tighter">{(voice?.display_name || '').split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}</span>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:574`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:576`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className={cn("absolute inset-0 flex flex-col p-2 md:p-4 transition-opacity duration-500 z-10", isCurrentlyPlaying ? "opacity-100" : "opacity-0 group-hover:opacity-100")}>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:575`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:577`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex-grow flex items-center justify-center">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:621`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:625`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="mt-auto pb-2 md:pb-4 text-center animate-in fade-in slide-in-from-bottom-2">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:622`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:626`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span className="px-2 md:px-4 py-1 md:py-2 rounded-lg bg-black/60 backdrop-blur-md text-white text-[10px] md:text-xs font-medium border border-white/10">{activeSubtitle}</span>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:628`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:632`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="absolute bottom-2 md:bottom-4 right-2 md:right-4 z-40">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:630`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:639`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `{isSelected ? <Check size={14} className="md:w-4.5 md:h-4.5" strokeWidth={3} /> : <><Plus size={14} className="md:w-4.5 md:h-4.5 shrink-0 transition-transform group-hover/studio:rotate-90 duration-500" /><span className="max-w-0 group-hover:max-w-[180px] opacity-0 group-hover:opacity-100 transition-all duration-500 text-[8px] md:text-[10px] font-black tracking-widest uppercase whitespace-nowrap"><VoiceglotText translationKey="common.free_demo_cta" defaultText="Gratis proefopname" /></span></>}`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:642`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:656`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="p-0 flex flex-col flex-grow">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:643`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:657`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex items-start justify-between px-4 md:px-6 pt-4 md:pt-6 pb-2 md:pb-3 border-b border-black/[0.02]">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:644`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:658`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex flex-col gap-1.5 md:gap-2">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:645`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:659`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex items-center gap-1 bg-va-off-white/50 px-1.5 md:px-2 py-0.5 md:py-1 rounded-full border border-black/[0.05] w-fit relative">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:648`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<span className="text-[11px] md:text-[13px] font-light text-va-black tracking-tight"><VoiceglotText translationKey={voice?.native_lang_id ? `language.${voice.native_lang_id}` : `common.language.${voice?.native_lang?.toLowerCase()}`} defaultText={voice?.native_lang_label || MarketManager.getLanguageLabel(voice?.native_lang || '') || t('common.unknown_language', 'Onbekende taal')} /></span>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:650`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="flex items-center gap-1 ml-1">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:661`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="max-h-48 overflow-y-auto no-scrollbar">`
 - **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:662`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `{availableLangs.map(langItem => { const isSelectedLang = langItem.id === voice.native_lang_id; return ( <button key={langItem.id} onClick={() => handleLangChange(langItem.id)} className={cn("w-full px-4 py-2.5 text-left text-[13px] font-bold transition-colors flex items-center justify-between group", isSelectedLang ? "bg-primary/10 text-primary" : "text-va-black hover:bg-va-off-white")}><span>{langItem.label}</span>{isSelectedLang && <Check size={14} strokeWidth={3} className="text-primary" />}</button> ); })}`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:668`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="max-h-64 overflow-y-auto no-scrollbar">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:669`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `{availableCountries.map(item => { const isSelected = item.id === (voice as any).country_id; return ( <button key={item.id} onClick={() => handleCountryChange(item.id)} className={cn("w-full px-4 py-2.5 text-left text-[13px] font-bold transition-colors flex items-center justify-between group", isSelected ? "bg-primary/10 text-primary" : "text-va-black hover:bg-va-off-white")}><span>{item.label}</span>{isSelected && <Check size={14} strokeWidth={3} className="text-primary" />}</button> ); })}`
+  > `<span className="text-[11px] md:text-[13px] font-light text-va-black tracking-tight"><VoiceglotText translationKey={voice?.native_lang_id ? `language.${voice.native_lang_id}` : `common.language.${voice?.native_lang?.toLowerCase()}`} defaultText={voice?.native_lang_label || MarketManager.getLanguageLabel(voice?.native_lang || '') || t('common.unknown_language', 'Onbekende taal')} /></span>`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:664`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="flex items-center gap-1 ml-1">`
 - **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:675`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="max-h-64 overflow-y-auto no-scrollbar">`
+  > `<div className="max-h-48 overflow-y-auto no-scrollbar">`
 - **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:676`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `{availableGenders.map(item => { const isSelected = item.id === (voice as any).gender_id; return ( <button key={item.id} onClick={() => handleGenderChange(item.id)} className={cn("w-full px-4 py-2.5 text-left text-[13px] font-bold transition-colors flex items-center justify-between group", isSelected ? "bg-primary/10 text-primary" : "text-va-black hover:bg-va-off-white")}><span>{item.label}</span>{isSelected && <Check size={14} strokeWidth={3} className="text-primary" />}</button> ); })}`
+  > `{availableLangs.map(langItem => { const isSelectedLang = langItem.id === voice.native_lang_id; return ( <button key={langItem.id} onClick={() => handleLangChange(langItem.id)} className={cn("w-full px-4 py-2.5 text-left text-[13px] font-bold transition-colors flex items-center justify-between group", isSelectedLang ? "bg-primary/10 text-primary" : "text-va-black hover:bg-va-off-white")}><span>{langItem.label}</span>{isSelectedLang && <Check size={14} strokeWidth={3} className="text-primary" />}</button> ); })}`
 - **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:682`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="max-h-64 overflow-y-auto no-scrollbar">`
 - **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:683`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `{availableExperienceLevels.map(item => { const isSelected = item.id === (voice as any).experience_level_id; return ( <button key={item.id} onClick={() => handleExperienceChange(item.id)} className={cn("w-full px-4 py-2.5 text-left text-[13px] font-bold transition-colors flex items-center justify-between group", isSelected ? "bg-primary/10 text-primary" : "text-va-black hover:bg-va-off-white")}><span>{item.label}</span>{isSelected && <Check size={14} strokeWidth={3} className="text-primary" />}</button> ); })}`
+  > `{availableCountries.map(item => { const isSelected = item.id === (voice as any).country_id; return ( <button key={item.id} onClick={() => handleCountryChange(item.id)} className={cn("w-full px-4 py-2.5 text-left text-[13px] font-bold transition-colors flex items-center justify-between group", isSelected ? "bg-primary/10 text-primary" : "text-va-black hover:bg-va-off-white")}><span>{item.label}</span>{isSelected && <Check size={14} strokeWidth={3} className="text-primary" />}</button> ); })}`
 - **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:689`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="max-h-64 overflow-y-auto no-scrollbar">`
 - **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:690`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `{availableGenders.map(item => { const isSelected = item.id === (voice as any).gender_id; return ( <button key={item.id} onClick={() => handleGenderChange(item.id)} className={cn("w-full px-4 py-2.5 text-left text-[13px] font-bold transition-colors flex items-center justify-between group", isSelected ? "bg-primary/10 text-primary" : "text-va-black hover:bg-va-off-white")}><span>{item.label}</span>{isSelected && <Check size={14} strokeWidth={3} className="text-primary" />}</button> ); })}`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:696`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="max-h-64 overflow-y-auto no-scrollbar">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:697`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `{availableExperienceLevels.map(item => { const isSelected = item.id === (voice as any).experience_level_id; return ( <button key={item.id} onClick={() => handleExperienceChange(item.id)} className={cn("w-full px-4 py-2.5 text-left text-[13px] font-bold transition-colors flex items-center justify-between group", isSelected ? "bg-primary/10 text-primary" : "text-va-black hover:bg-va-off-white")}><span>{item.label}</span>{isSelected && <Check size={14} strokeWidth={3} className="text-primary" />}</button> ); })}`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:703`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="max-h-64 overflow-y-auto no-scrollbar">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:704`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `{availableStatuses.map(item => { const isSelected = item.id === (voice as any).status_id; return ( <button key={item.id} onClick={() => handleStatusChange(item.id)} className={cn("w-full px-4 py-2.5 text-left text-[13px] font-bold transition-colors flex items-center justify-between group", isSelected ? "bg-primary/10 text-primary" : "text-va-black hover:bg-va-off-white")}><span>{item.label}</span>{isSelected && <Check size={14} strokeWidth={3} className="text-primary" />}</button> ); })}`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:698`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:712`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 px-1 animate-in fade-in slide-in-from-left-1 duration-500">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:705`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div key={idx} className={cn("flex items-center gap-1.5 transition-all duration-500", isSelectedInFilter ? "scale-110" : "opacity-60")}>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:706`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className={cn("w-4 h-4 rounded-full border border-black/5 flex items-center justify-center overflow-hidden shadow-sm shrink-0", isSelectedInFilter ? "ring-2 ring-primary ring-offset-1" : "bg-va-off-white")}>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:709`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<span className={cn("text-[10px] font-bold uppercase tracking-widest whitespace-nowrap", isSelectedInFilter ? "text-primary" : "text-va-black/40")}><VoiceglotText translationKey={`common.language.${trimmed}`} defaultText={label} /></span>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:718`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className={cn("flex flex-col items-end justify-center px-2 md:px-2.5 py-0.5 md:py-1 rounded-lg md:rounded-xl border transition-colors duration-500", (deliveryInfo as any).isToday || deliveryInfo.delivery_days_max <= 1 ? "bg-green-500/5 border-green-500/10 text-green-600" : "bg-blue-500/5 border-blue-500/10 text-blue-600")}>`
 - **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:719`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<span className="text-[7px] md:text-[8px] font-black tracking-[0.1em] uppercase leading-none mb-0.5 md:mb-1 flex items-center gap-1 opacity-40"><Clock size={8} className="md:w-2.5 md:h-2.5" strokeWidth={3} /><VoiceglotText translationKey="common.delivery" defaultText="Levering" /></span>`
+  > `<div key={idx} className={cn("flex items-center gap-1.5 transition-all duration-500", isSelectedInFilter ? "scale-110" : "opacity-60")}>`
 - **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:720`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<span className="text-[10px] md:text-[12px] font-bold tracking-tight leading-none"><VoiceglotText translationKey={`actor.${voice.id}.delivery_info`} defaultText={deliveryInfo.formattedShort} /></span>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:725`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="flex flex-col flex-grow px-4 md:px-6 pt-3 md:pt-4 pb-4 md:pb-6">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:726`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="flex flex-col mb-2 md:mb-3">`
+  > `<div className={cn("w-4 h-4 rounded-full border border-black/5 flex items-center justify-center overflow-hidden shadow-sm shrink-0", isSelectedInFilter ? "ring-2 ring-primary ring-offset-1" : "bg-va-off-white")}>`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:723`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<span className={cn("text-[10px] font-bold uppercase tracking-widest whitespace-nowrap", isSelectedInFilter ? "text-primary" : "text-va-black/40")}><VoiceglotText translationKey={`common.language.${trimmed}`} defaultText={label} /></span>`
 - **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:732`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="flex flex-wrap gap-1 animate-in fade-in slide-in-from-bottom-1 duration-500 relative">`
+  > `<div className={cn("flex flex-col items-end justify-center px-2 md:px-2.5 py-0.5 md:py-1 rounded-lg md:rounded-xl border transition-colors duration-500", (deliveryInfo as any).isToday || deliveryInfo.delivery_days_max <= 1 ? "bg-green-500/5 border-green-500/10 text-green-600" : "bg-blue-500/5 border-blue-500/10 text-blue-600")}>`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:733`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<span className="text-[7px] md:text-[8px] font-black tracking-[0.1em] uppercase leading-none mb-0.5 md:mb-1 flex items-center gap-1 opacity-40"><Clock size={8} className="md:w-2.5 md:h-2.5" strokeWidth={3} /><VoiceglotText translationKey="common.delivery" defaultText="Levering" /></span>`
 - **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:734`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<span key={i} className="text-[7px] md:text-[8px] font-light tracking-[0.2em] uppercase px-1.5 py-0.5 bg-primary/5 text-primary rounded-full border border-primary/10"><VoiceglotText translationKey={`actor.${voice.id}.tone.${i}`} context="Voice characteristic" defaultText={toneItem.trim()} /></span>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:737`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="flex items-center gap-1">`
+  > `<span className="text-[10px] md:text-[12px] font-bold tracking-tight leading-none"><VoiceglotText translationKey={`actor.${voice.id}.delivery_info`} defaultText={deliveryInfo.formattedShort} /></span>`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:739`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="flex flex-col flex-grow px-4 md:px-6 pt-3 md:pt-4 pb-4 md:pb-6">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:740`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="flex flex-col mb-2 md:mb-3">`
 - **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:746`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="flex flex-wrap gap-1 animate-in fade-in slide-in-from-bottom-1 duration-500 relative">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:748`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<span key={i} className="text-[7px] md:text-[8px] font-light tracking-[0.2em] uppercase px-1.5 py-0.5 bg-primary/5 text-primary rounded-full border border-primary/10"><VoiceglotText translationKey={`actor.${voice.id}.tone.${i}`} context="Voice characteristic" defaultText={toneItem.trim()} /></span>`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:751`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="flex items-center gap-1">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:760`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="max-h-48 overflow-y-auto no-scrollbar flex flex-wrap gap-2">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:753`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:767`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex items-center gap-2 mb-4 bg-va-off-white px-3 py-2 rounded-full border border-black/5">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:757`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:771`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="max-h-64 overflow-y-auto no-scrollbar flex flex-wrap gap-2">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:768`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:782`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="mb-2 md:mb-4 h-[40px] md:h-[60px] overflow-y-auto no-scrollbar">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:769`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:783`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span className="text-va-black/60 text-[11px] md:text-[13px] font-medium leading-relaxed italic">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:784`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:798`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex items-center gap-1.5 mb-1.5">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:785`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:799`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex gap-0.5">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:806`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:820`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex justify-between items-center mt-auto pt-2 md:pt-4 border-t border-black/[0.03]">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:807`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:821`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex flex-col items-start">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:810`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:824`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span className="text-[7px] md:text-[9px] font-light tracking-[0.2em] text-va-black/30 uppercase leading-none mb-0.5 md:mb-1"><VoiceglotText translationKey="common.starting_from" defaultText="Vanaf" /></span>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:811`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:825`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex items-baseline gap-0.5 md:gap-1">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:812`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:826`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span className="text-base md:text-xl font-extralight tracking-tighter text-va-black">{displayPrice.price}</span>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:820`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:834`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `{isSelected ? <Check size={14} strokeWidth={3} className="md:w-4.5 md:h-4.5 animate-in zoom-in duration-300" /> : <div className="flex flex-col items-center leading-none gap-0.5 md:gap-1"><VoiceglotText translationKey={onSelect ? "common.choose_voice" : "common.add_to_casting"} defaultText={onSelect ? "Kies stem" : "Proefopname +"} />{!onSelect && <span className="text-[7px] md:text-[8px] font-black tracking-[0.2em] opacity-50"><VoiceglotText translationKey="common.free" defaultText="GRATIS" /></span>}</div>}`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:820`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:834`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `{isSelected ? <Check size={14} strokeWidth={3} className="md:w-4.5 md:h-4.5 animate-in zoom-in duration-300" /> : <div className="flex flex-col items-center leading-none gap-0.5 md:gap-1"><VoiceglotText translationKey={onSelect ? "common.choose_voice" : "common.add_to_casting"} defaultText={onSelect ? "Kies stem" : "Proefopname +"} />{!onSelect && <span className="text-[7px] md:text-[8px] font-black tracking-[0.2em] opacity-50"><VoiceglotText translationKey="common.free" defaultText="GRATIS" /></span>}</div>}`
 - **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:38`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `lowLang.includes('nl') || lowLang === 'nederlands' || lowLang === 'dutch' ? FlagNL :`
@@ -7074,89 +7056,73 @@
   > `label={t('filter.sort', language === 'fr' ? 'Trier?' : language === 'en' ? 'Sort?' : 'Sorteer?')}`
 - **WARNING** `1-SITE/apps/web/src/components/ui/VoicesMasterControl.tsx:956`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `label={t('filter.sort', language === 'fr' ? 'Trier?' : language === 'en' ? 'Sort?' : 'Sorteer?')}`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1153`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="space-y-4">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1154`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="p-4 bg-white/5 rounded-2xl border border-white/5">`
 - **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1156`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="space-y-2">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1157`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="flex justify-between text-[11px]">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1158`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<span className="opacity-40">Pagina:</span>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1159`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<span className="text-primary truncate max-w-[120px]">{customer360?.iap_context?.sensor?.current_page || 'Home'}</span>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1161`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="flex justify-between text-[11px]">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1162`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<span className="opacity-40">Scroll:</span>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1163`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<span>{customer360?.iap_context?.sensor?.scroll_depth || 0}%</span>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1165`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="flex justify-between text-[11px]">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1166`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<span className="opacity-40">Laatst:</span>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1167`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<span>{customer360?.iap_context?.sensor?.last_interaction ? new Date(customer360.iap_context.sensor.last_interaction).toLocaleTimeString('nl-BE', { hour: '2-digit', minute: '2-digit' }) : 'N/A'}</span>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1172`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="p-4 bg-white/5 rounded-2xl border border-white/5">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1174`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="flex items-center gap-2">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1175`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className={cn(`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1179`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<span className="text-[13px] font-medium capitalize">{customer360?.intelligence?.leadVibe || 'Neutral'}</span>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1183`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="p-4 bg-white/5 rounded-2xl border border-white/5">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1185`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="flex items-center gap-2">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1186`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<span className={cn(`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1196`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="p-4 bg-white/5 rounded-2xl border border-white/5">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1198`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<span className="text-[13px] font-medium">{customer360?.intelligence?.intent || 'Browsing'}</span>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1201`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="p-4 bg-white/5 rounded-2xl border border-white/5">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1203`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="space-y-1">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1204`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="flex justify-between text-[11px]">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1205`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<span className="opacity-40">Orders:</span>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1206`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<span>{customer360?.dna?.totalOrders || 0}</span>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1208`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="flex justify-between text-[11px]">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1209`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<span className="opacity-40">Journey:</span>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1210`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<span className="text-primary">{customer360?.dna?.topJourneys?.[0] || 'New'}</span>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1216`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="pt-4 border-t border-white/5">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1218`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="grid grid-cols-1 gap-2">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1713`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<span className="block mt-1 font-medium text-primary text-[12px]">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1822`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="space-y-4">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1823`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="p-4 bg-va-off-white rounded-2xl border border-black/5">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1827`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1157`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="p-4 bg-white/5 rounded-2xl border border-white/5">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1159`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="space-y-2">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1160`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="flex justify-between text-[11px]">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1161`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<span className="opacity-40">Pagina:</span>`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1162`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<span className="text-primary truncate max-w-[120px]">{customer360?.iap_context?.sensor?.current_page || 'Home'}</span>`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1164`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="flex justify-between text-[11px]">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1165`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<span className="opacity-40">Scroll:</span>`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1166`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<span>{customer360?.iap_context?.sensor?.scroll_depth || 0}%</span>`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1168`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="flex justify-between text-[11px]">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1169`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<span className="opacity-40">Laatst:</span>`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1170`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<span>{customer360?.iap_context?.sensor?.last_interaction ? new Date(customer360.iap_context.sensor.last_interaction).toLocaleTimeString('nl-BE', { hour: '2-digit', minute: '2-digit' }) : 'N/A'}</span>`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1175`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="p-4 bg-white/5 rounded-2xl border border-white/5">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1177`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex items-center gap-2">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1828`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="w-2 h-2 bg-green-500 rounded-full" />`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1829`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<span className="text-[15px] font-bold uppercase tracking-wider text-green-600">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1835`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1178`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className={cn(`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1182`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<span className="text-[13px] font-medium capitalize">{customer360?.intelligence?.leadVibe || 'Neutral'}</span>`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1186`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="p-4 bg-white/5 rounded-2xl border border-white/5">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1188`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="flex items-center gap-2">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1189`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<span className={cn(`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1199`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="p-4 bg-white/5 rounded-2xl border border-white/5">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1201`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<span className="text-[13px] font-medium">{customer360?.intelligence?.intent || 'Browsing'}</span>`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1204`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="p-4 bg-white/5 rounded-2xl border border-white/5">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1206`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="space-y-1">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1207`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="flex justify-between text-[11px]">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1208`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<span className="opacity-40">Orders:</span>`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1209`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<span>{customer360?.dna?.totalOrders || 0}</span>`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1211`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="flex justify-between text-[11px]">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1212`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<span className="opacity-40">Journey:</span>`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1213`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<span className="text-primary">{customer360?.dna?.topJourneys?.[0] || 'New'}</span>`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1219`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="pt-4 border-t border-white/5">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1221`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="grid grid-cols-1 gap-2">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:1853`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="text-center py-10 opacity-40">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:518`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:521`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `const language = typeof window !== 'undefined' ? (document.cookie.split('; ').find(row => row.startsWith('voices_lang='))?.split('=')[1] || 'nl') : 'nl';`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:518`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:521`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `const language = typeof window !== 'undefined' ? (document.cookie.split('; ').find(row => row.startsWith('voices_lang='))?.split('=')[1] || 'nl') : 'nl';`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:806`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:809`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `if (language !== 'nl' && aiResponse.content) {`
 - **WARNING** `1-SITE/apps/web/src/components/ui/WorkshopEditModal.tsx:308`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 md:p-10">`
@@ -7598,7 +7564,7 @@
   > `} else if (lowLang === 'fr') {`
 - **WARNING** `1-SITE/apps/web/src/lib/services/api-server.ts:217`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `} else if (lowLang === 'en') {`
-- **WARNING** `1-SITE/apps/web/src/lib/services/api-server.ts:957`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `1-SITE/apps/web/src/lib/services/api-server.ts:969`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `if (lang === 'nl') return {};`
 - **WARNING** `1-SITE/apps/web/src/lib/services/johfrai-mail-bridge.ts:26`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div style="background: #f9f9f9; padding: 15px; border-radius: 10px; margin: 20px 0;">`
