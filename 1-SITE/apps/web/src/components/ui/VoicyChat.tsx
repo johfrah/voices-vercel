@@ -98,6 +98,53 @@ export const VoicyChatV2: React.FC = () => {
   const [callError, setCallError] = useState<string | null>(null);
   const [persona, setPersona] = useState<'voicy' | 'johfrah'>('voicy');
   const [customer360, setCustomer360] = useState<any>(null);
+  const [sensorData, setSensorData] = useState<any>({
+    currentPage: typeof window !== 'undefined' ? window.location.pathname : '',
+    scrollDepth: 0,
+    lastInteraction: new Date().toISOString()
+  });
+
+  //  SENSOR MODE: Track visitor behavior and sync to DB
+  useEffect(() => {
+    if (!conversationId || isAdmin) return;
+
+    const trackSensor = async () => {
+      const scrollPercent = Math.round((window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100);
+      
+      try {
+        await fetch('/api/chat/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'sensor_update',
+            conversationId,
+            sensorData: {
+              current_page: window.location.pathname,
+              scroll_depth: scrollPercent,
+              last_interaction: new Date().toISOString()
+            }
+          })
+        });
+      } catch (e) {
+        console.warn("[Voicy Sensor] Failed to sync", e);
+      }
+    };
+
+    const handleScroll = () => {
+      // Throttle sensor updates
+      if ((window as any)._sensorTimeout) return;
+      (window as any)._sensorTimeout = setTimeout(() => {
+        trackSensor();
+        (window as any)._sensorTimeout = null;
+      }, 5000);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    // Initial sync
+    trackSensor();
+
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [conversationId, isAdmin]);
   const [showLeadForm, setShowLeadForm] = useState(false);
   const [leadFormData, setLeadFormData] = useState({ name: '', email: '' });
 
@@ -1073,6 +1120,24 @@ export const VoicyChatV2: React.FC = () => {
                   <HeadingInstrument level={4} className="text-[11px] font-black tracking-[0.2em] uppercase text-primary">System Intelligence</HeadingInstrument>
                   
                   <div className="space-y-4">
+                    <div className="p-4 bg-white/5 rounded-2xl border border-white/5">
+                      <TextInstrument className="text-[10px] font-bold tracking-widest uppercase opacity-40 mb-2">Live Sensor</TextInstrument>
+                      <div className="space-y-2">
+                        <div className="flex justify-between text-[11px]">
+                          <span className="opacity-40">Pagina:</span>
+                          <span className="text-primary truncate max-w-[120px]">{customer360?.iap_context?.sensor?.current_page || 'Home'}</span>
+                        </div>
+                        <div className="flex justify-between text-[11px]">
+                          <span className="opacity-40">Scroll:</span>
+                          <span>{customer360?.iap_context?.sensor?.scroll_depth || 0}%</span>
+                        </div>
+                        <div className="flex justify-between text-[11px]">
+                          <span className="opacity-40">Laatst:</span>
+                          <span>{customer360?.iap_context?.sensor?.last_interaction ? new Date(customer360.iap_context.sensor.last_interaction).toLocaleTimeString('nl-BE', { hour: '2-digit', minute: '2-digit' }) : 'N/A'}</span>
+                        </div>
+                      </div>
+                    </div>
+
                     <div className="p-4 bg-white/5 rounded-2xl border border-white/5">
                       <TextInstrument className="text-[10px] font-bold tracking-widest uppercase opacity-40 mb-2">Visitor Vibe</TextInstrument>
                       <div className="flex items-center gap-2">

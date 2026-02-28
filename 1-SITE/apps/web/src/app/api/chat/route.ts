@@ -21,6 +21,26 @@ export async function POST(request: NextRequest) {
         return handleGetConversations(params);
       case 'history':
         return handleGetHistory(params);
+      case 'sensor_update':
+        const { conversationId: sensorConvId, sensorData } = params;
+        if (!sensorConvId || !sensorData) return NextResponse.json({ error: 'Missing params' }, { status: 400 });
+        
+        // Update IAP Context met sensor data (current_page, scroll_depth, etc)
+        const [existingConv] = await db.select().from(chatConversations).where(eq(chatConversations.id, sensorConvId));
+        const updatedIap = { 
+          ...(existingConv?.iapContext || {}), 
+          sensor: {
+            ...(existingConv?.iapContext?.sensor || {}),
+            ...sensorData,
+            last_seen: new Date().toISOString()
+          }
+        };
+        
+        await db.update(chatConversations)
+          .set({ iapContext: updatedIap, updatedAt: new Date().toISOString() })
+          .where(eq(chatConversations.id, sensorConvId));
+          
+        return NextResponse.json({ success: true });
       case 'update_status':
         const { conversationId, status } = params;
         if (!conversationId || !status) return NextResponse.json({ error: 'Missing params' }, { status: 400 });
