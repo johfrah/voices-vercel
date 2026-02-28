@@ -1084,6 +1084,19 @@ export const VoicyChatV2: React.FC = () => {
                     </div>
 
                     <div className="p-4 bg-white/5 rounded-2xl border border-white/5">
+                      <TextInstrument className="text-[10px] font-bold tracking-widest uppercase opacity-40 mb-2">Lifecycle Stage</TextInstrument>
+                      <div className="flex items-center gap-2">
+                        <span className={cn(
+                          "text-[11px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider",
+                          !isAuthenticated ? "bg-blue-500/20 text-blue-400" : 
+                          (customer360?.dna?.totalOrders > 0 ? "bg-green-500/20 text-green-400" : "bg-orange-500/20 text-orange-400")
+                        )}>
+                          {!isAuthenticated ? 'Presales' : (customer360?.dna?.totalOrders > 0 ? 'Aftersales' : 'Sales')}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="p-4 bg-white/5 rounded-2xl border border-white/5">
                       <TextInstrument className="text-[10px] font-bold tracking-widest uppercase opacity-40 mb-2">Detected Intent</TextInstrument>
                       <span className="text-[13px] font-medium">{customer360?.intelligence?.intent || 'Browsing'}</span>
                     </div>

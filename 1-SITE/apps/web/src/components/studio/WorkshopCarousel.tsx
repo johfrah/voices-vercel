@@ -21,7 +21,7 @@ export const WorkshopCarousel: React.FC<WorkshopCarouselProps> = ({ workshops: i
 
   const scroll = (direction: 'left' | 'right') => {
     if (scrollRef.current) {
-      playClick('light');
+      playClick('soft');
       const { scrollLeft, clientWidth } = scrollRef.current;
       const scrollTo = direction === 'left' ? scrollLeft - clientWidth : scrollLeft + clientWidth;
       scrollRef.current.scrollTo({ left: scrollTo, behavior: 'smooth' });

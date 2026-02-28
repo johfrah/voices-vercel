@@ -118,7 +118,7 @@ export const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onUpdate }
       videoRef.current.pause();
       videoRef.current.muted = true;
       setIsPlaying(false);
-      playClick('light');
+      playClick('soft');
     } else {
       videoRef.current.play();
       videoRef.current.muted = false;

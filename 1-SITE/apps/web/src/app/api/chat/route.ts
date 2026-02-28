@@ -64,22 +64,30 @@ async function handleSendMessage(params: any, request?: NextRequest) {
     let aiContent = "";
     let actions: any[] = [];
 
-    //  JOURNEY-AWARE ACTIONS
+    //  LIFECYCLE DETECTION (v2.16.029)
+    const hasOrders = (context?.customer360?.dna?.totalOrders || 0) > 0;
+    const stage = !isAuthenticated ? 'presales' : (hasOrders ? 'aftersales' : 'sales');
+    console.log(`[Voicy API] Lifecycle stage detected: ${stage}`);
+
+    //  JOURNEY & STAGE AWARE ACTIONS
+    if (stage === 'aftersales') {
+      actions.push({ label: isEnglish ? "My Orders" : "Mijn Bestellingen", action: "/account/orders" });
+      actions.push({ label: isEnglish ? "The Vault" : "Mijn Bestanden", action: "/account/vault" });
+    }
+
     if (journey === 'studio') {
-      actions = [
-        { label: isEnglish ? "View Workshops" : "Bekijk Workshops", action: "browse_workshops" },
-        { label: isEnglish ? "Get Started" : "Aan de slag", action: "book_session" }
-      ];
+      actions.push({ label: isEnglish ? "View Workshops" : "Bekijk Workshops", action: "browse_workshops" });
+      if (stage === 'presales') {
+        actions.push({ label: isEnglish ? "Get Started" : "Aan de slag", action: "book_session" });
+      }
     } else if (journey === 'academy') {
-      actions = [
-        { label: isEnglish ? "View Courses" : "Bekijk Cursussen", action: "browse_courses" },
-        { label: isEnglish ? "Start Free Lesson" : "Start Gratis Les", action: "start_free_lesson" }
-      ];
+      actions.push({ label: isEnglish ? "View Courses" : "Bekijk Cursussen", action: "browse_courses" });
+      if (stage === 'presales') {
+        actions.push({ label: isEnglish ? "Start Free Lesson" : "Start Gratis Les", action: "start_free_lesson" });
+      }
     } else {
-      actions = [
-        { label: isEnglish ? "Request Quote" : "Offerte aanvragen", action: "quote" },
-        { label: isEnglish ? "Browse Voices" : "Stemmen bekijken", action: "browse_voices" }
-      ];
+      actions.push({ label: isEnglish ? "Request Quote" : "Offerte aanvragen", action: "quote" });
+      actions.push({ label: isEnglish ? "Browse Voices" : "Stemmen bekijken", action: "browse_voices" });
     }
 
     // 1. Check FAQ eerst (snelste)
@@ -172,6 +180,7 @@ ACTUELE TARIEVEN (SUPABASE SOURCE OF TRUTH):
 
 USER INTELLIGENCE (MAT-MANDATE):
 - Gedetecteerde Intentie: ${intent || 'onbekend'}
+- Lifecycle Stage: ${stage} (presales, sales, aftersales)
 - Journey: ${journey}
 - User DNA: ${context?.customer360?.intelligence?.leadVibe || 'nieuw'}
 - Vorige aankopen: ${context?.customer360?.dna?.totalOrders || 0}
@@ -421,6 +430,7 @@ ${workshopEditionsData.filter((ed: any) => ed.status === 'upcoming').map((ed: an
             metadata: { 
               initial_intent: intent,
               journey: journey,
+              lifecycle_stage: stage,
               market: context?.market_code,
               vibe: context?.customer360?.intelligence?.leadVibe
             }
