@@ -17,11 +17,13 @@ export class SelfHealingService {
 
   static async logEvent(level: 'info' | 'warn' | 'error', message: string, details: any = {}) {
     try {
-      // 🛡️ CHRIS-PROTOCOL: Consolideer events om mail-spam te voorkomen
-      if (!systemEvents) {
-        console.warn(' [HEAL] systemEvents table not available');
+      // 🛡️ CHRIS-PROTOCOL: Hydration Guard - Check if table is available
+      if (!db || !systemEvents) {
+        console.warn(` [HEAL] systemEvents table not available (Level: ${level}, Message: ${message})`);
         return;
       }
+      
+      // 🛡️ CHRIS-PROTOCOL: Consolideer events om mail-spam te voorkomen
       const recentEvents = await db.select().from(systemEvents)
         .where(eq(systemEvents.message, message))
         .orderBy(desc(systemEvents.createdAt))
