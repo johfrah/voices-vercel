@@ -22,10 +22,32 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const limit = parseInt(searchParams.get("limit") || "50");
     const level = searchParams.get("level");
+    const worldCode = searchParams.get("world");
 
     try {
-      const results = await db.select().from(systemEvents)
-        .where(level && level !== 'all' ? eq(systemEvents.level, level) : undefined)
+      let query = db.select().from(systemEvents);
+      let conditions = [];
+
+      if (level && level !== 'all') {
+        conditions.push(eq(systemEvents.level, level));
+      }
+
+      if (worldCode) {
+        // 🌍 World-Aware filtering: Get world ID first
+        const { data: worldData } = await supabase
+          .from('worlds')
+          .select('id')
+          .eq('code', worldCode)
+          .single();
+        
+        if (worldData) {
+          // @ts-ignore - world_id exists in DB but might not be in Drizzle schema yet
+          conditions.push(eq(systemEvents.worldId, worldData.id));
+        }
+      }
+
+      const results = await query
+        .where(conditions.length > 0 ? and(...conditions) : undefined)
         .orderBy(desc(systemEvents.createdAt))
         .limit(limit);
 
@@ -36,6 +58,18 @@ export async function GET(request: Request) {
       let query = supabase.from('system_events').select('*').order('created_at', { ascending: false }).limit(limit);
       if (level && level !== 'all') {
         query = query.eq('level', level);
+      }
+      
+      if (worldCode) {
+        const { data: worldData } = await supabase
+          .from('worlds')
+          .select('id')
+          .eq('code', worldCode)
+          .single();
+        
+        if (worldData) {
+          query = query.eq('world_id', worldData.id);
+        }
       }
       
       const { data, error } = await query;

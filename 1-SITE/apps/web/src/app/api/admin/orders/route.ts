@@ -34,23 +34,23 @@ export async function GET(request: NextRequest) {
     let conditions = [];
     
     if (search) {
-      conditions.push(`(id::text ILIKE '%' || '${search}' || '%' OR billing_email_alt ILIKE '%' || '${search}' || '%')`);
+      conditions.push(`(id::text ILIKE '%' || \${sql.raw(\`'\${search}'\`)} || '%' OR billing_email_alt ILIKE '%' || \${sql.raw(\`'\${search}'\`)} || '%')`);
     }
     
     if (worldCode) {
-      conditions.push(`world_id = (SELECT id FROM worlds WHERE code = '${worldCode}')`);
+      conditions.push(`world_id = (SELECT id FROM worlds WHERE code = \${sql.raw(\`'\${worldCode}'\`)})`);
     }
 
     if (conditions.length > 0) {
-      whereClause = `WHERE ${conditions.join(' AND ')}`;
+      whereClause = `WHERE \${conditions.join(' AND ')}`;
     }
 
-    const countResult = await db.execute(sql.raw(`SELECT count(*) as value FROM orders_v2 ${whereClause}`));
+    const countResult = await db.execute(sql.raw(`SELECT count(*) as value FROM orders \${whereClause}`));
     const countRows: any = Array.isArray(countResult) ? countResult : (countResult.rows || []);
     const totalInDb = countRows[0] ? Number(countRows[0].value || countRows[0].count || 0) : 0;
 
     let debugInfo: any = {
-      version: '2.16.010',
+      version: '2.16.015',
       db_host: process.env.DATABASE_URL?.split('@')[1]?.split('/')[0] || 'unknown',
       page,
       limit,
@@ -63,12 +63,12 @@ export async function GET(request: NextRequest) {
     const rowsResult = await db.execute(sql.raw(`
       SELECT 
         id, user_id, world_id, journey_id, status_id, payment_method_id, 
-        amount_net, amount_total, purchase_order, billing_email_alt, created_at
-      FROM orders_v2
-      ${whereClause}
+        amount_net, total as amount_total, purchase_order, billing_email_alt, created_at
+      FROM orders
+      \${whereClause}
       ORDER BY created_at DESC
-      LIMIT ${limit}
-      OFFSET ${offset}
+      LIMIT \${limit}
+      OFFSET \${offset}
     `));
 
     const rows: any = Array.isArray(rowsResult) ? rowsResult : (rowsResult.rows || []);
@@ -87,7 +87,7 @@ export async function GET(request: NextRequest) {
       createdAt: row.created_at
     }));
     
-    debugInfo.source = 'hybrid_sql.orders_v2';
+    debugInfo.source = 'hybrid_sql.orders';
     debugInfo.fetchedCount = allOrders.length;
 
     // 🕵️ GUEST & USER RESOLVER

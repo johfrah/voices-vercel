@@ -50,12 +50,19 @@ export class MarketManagerServer {
   private static languagesRegistry: Array<{ id: number, code: string, label: string, icon?: string }> = [];
   private static countriesRegistry: Array<{ id: number, code: string, label: string }> = [];
   private static journeysRegistry: Array<{ id: number, code: string, label: string }> = [];
+  private static worldsRegistry: Array<{ id: number, code: string, label: string, description?: string }> = [];
   private static mediaTypesRegistry: Array<{ id: number, code: string, label: string }> = [];
 
   /**
    * 🛡️ CHRIS-PROTOCOL: Handshake Truth Registry (v2.14.667)
    * Primes the manager with real data from Supabase.
    */
+  public static setWorlds(worlds: any[]) {
+    this.worldsRegistry = worlds;
+    if (typeof global !== 'undefined') (global as any).handshakeWorlds = worlds;
+    if (typeof window !== 'undefined') (window as any).handshakeWorlds = worlds;
+  }
+
   public static setLanguages(langs: any[]) {
     this.languagesRegistry = langs;
     if (typeof global !== 'undefined') (global as any).handshakeLanguages = langs;
@@ -83,7 +90,37 @@ export class MarketManagerServer {
   public static get languages() { return this.languagesRegistry; }
   public static get countries() { return this.countriesRegistry; }
   public static get journeys() { return this.journeysRegistry; }
+  public static get worlds() { return this.worldsRegistry; }
   public static get mediaTypes() { return this.mediaTypesRegistry; }
+
+  /**
+   * 🌳 ANCESTRY RESOLVER (v2.16.013)
+   * Haalt de World ID op basis van de market code of host.
+   */
+  public static getWorldId(marketCode?: string): number | null {
+    const code = marketCode?.toLowerCase() || this.getCurrentMarket().market_code.toLowerCase();
+    
+    // 🛡️ CHRIS-PROTOCOL: Map market codes to World codes
+    const marketToWorldMap: Record<string, string> = {
+      'be': 'agency',
+      'nlnl': 'agency',
+      'fr': 'agency',
+      'es': 'agency',
+      'pt': 'agency',
+      'eu': 'agency',
+      'academy': 'academy',
+      'studio': 'studio',
+      'freelance': 'freelance',
+      'portfolio': 'portfolio',
+      'artist': 'artist',
+      'ademing': 'ademing',
+      'johfrai': 'johfrai'
+    };
+
+    const worldCode = marketToWorldMap[code] || 'agency';
+    const world = this.worldsRegistry.find(w => w.code === worldCode);
+    return world ? world.id : null;
+  }
 
   public static MARKETS_STATIC: Record<string, Partial<MarketConfig>> = {
     'voices.be': {

@@ -294,6 +294,7 @@ export const demoTypes = pgTable('demo_types', {
 export const actorDemos = pgTable('actor_demos', {
   id: serial('id').primaryKey(),
   wpId: bigint('wp_id', { mode: 'number' }).unique(), // Added for traceability
+  worldId: integer('world_id').references(() => worlds.id), // 🌍 V2: Koppeling naar World
   actorId: integer('actor_id').references(() => actors.id).notNull(),
   mediaId: integer('media_id').references(() => media.id), // 🔗 Link naar Media Engine
   name: text('name').notNull(),
@@ -306,6 +307,7 @@ export const actorDemos = pgTable('actor_demos', {
 
 export const actorVideos = pgTable('actor_videos', {
   id: serial('id').primaryKey(),
+  worldId: integer('world_id').references(() => worlds.id), // 🌍 V2: Koppeling naar World
   actorId: integer('actor_id').references(() => actors.id).notNull(),
   mediaId: integer('media_id').references(() => media.id), // 🔗 Link naar Media Engine (External of Local)
   name: text('name').notNull(),
@@ -645,6 +647,7 @@ export const ademingMakers = pgTable('ademing_makers', {
 export const ademingTracks = pgTable('ademing_tracks', {
   id: serial('id').primaryKey(),
   wpId: bigint('wp_id', { mode: 'number' }).unique(),
+  worldId: integer('world_id').references(() => worlds.id), // 🌍 V2: Koppeling naar World
   mediaId: integer('media_id').references(() => media.id), // 🔗 Link naar Media Engine
   title: text('title').notNull(),
   slug: text('slug').unique().notNull(),
@@ -752,6 +755,7 @@ export const vouchers = pgTable('vouchers', {
 // 📚 SYSTEM KNOWLEDGE (De 'Grondwet' van Voicy)
 export const systemKnowledge = pgTable('system_knowledge', {
   id: serial('id').primaryKey(),
+  worldId: integer('world_id').references(() => worlds.id), // 🌍 V2: Koppeling naar World
   slug: text('slug').unique().notNull(), // bijv. 'de-grondwet'
   title: text('title').notNull(),
   category: text('category').notNull(), // 'finance', 'brand', 'communication'
@@ -835,6 +839,7 @@ export const voiceAffinity = pgTable('voice_affinity', {
 // 🧲 CENTRAL LEADS
 export const centralLeads = pgTable('central_leads', {
   id: serial('id').primaryKey(),
+  worldId: integer('world_id').references(() => worlds.id), // 🌍 V2: Koppeling naar World
   email: text('email').notNull(),
   first_name: text('first_name'),
   last_name: text('last_name'),
@@ -1072,6 +1077,7 @@ export const visitorLogs = pgTable('visitor_logs', {
 export const reviews = pgTable('reviews', {
   id: serial('id').primaryKey(),
   wpId: bigint('wp_id', { mode: 'number' }).unique(),
+  worldIdNew: integer('world_id_new').references(() => worlds.id), // 🌍 V2: Koppeling naar World
   provider: text('provider').default('google_places'),
   businessSlug: text('business_slug'),
   authorName: text('author_name').notNull(),
@@ -1091,6 +1097,13 @@ export const reviews = pgTable('reviews', {
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
 });
+
+export const reviewsRelations = relations(reviews, ({ one }) => ({
+  world: one(worlds, {
+    fields: [reviews.worldIdNew],
+    references: [worlds.id],
+  }),
+}));
 
 // ⚙️ SYSTEM & CONFIG
 export const appConfigs = pgTable('app_configs', {
@@ -1148,6 +1161,7 @@ export const freePreviews = pgTable('free_previews', {
 
 export const systemEvents = pgTable('system_events', {
   id: serial('id').primaryKey(),
+  worldId: integer('world_id').references(() => worlds.id), // 🌍 V2: Koppeling naar World
   level: text('level').default('info'), // info, warn, error, critical
   source: text('source').notNull(), // sync, api, auth, etc.
   message: text('message').notNull(),
@@ -1158,6 +1172,7 @@ export const systemEvents = pgTable('system_events', {
 // 💰 COSTS (Centralized Financial Tracking)
 export const costs = pgTable('costs', {
   id: serial('id').primaryKey(),
+  worldId: integer('world_id').references(() => worlds.id), // 🌍 V2: Koppeling naar World
   amount: decimal('amount', { precision: 10, scale: 2 }).notNull(),
   type: text('type').notNull(), // 'locatie', 'instructeur', 'materiaal', 'overig'
   journey: text('journey'), // Legacy string
@@ -1595,7 +1610,18 @@ export const workshopGalleryRelations = relations(workshopGallery, ({ one }) => 
     references: [media.id],
   }),
 }));
+export const systemEventsRelations = relations(systemEvents, ({ one }) => ({
+  world: one(worlds, {
+    fields: [systemEvents.worldId],
+    references: [worlds.id],
+  }),
+}));
+
 export const costsRelations = relations(costs, ({ one }) => ({
+  world: one(worlds, {
+    fields: [costs.worldId],
+    references: [worlds.id],
+  }),
   edition: one(workshopEditions, {
     fields: [costs.workshopEditionId],
     references: [workshopEditions.id],
@@ -1659,6 +1685,10 @@ export const lessonsRelations = relations(lessons, ({ one }) => ({
   }),
 }));
 export const ademingTracksRelations = relations(ademingTracks, ({ one }) => ({
+  world: one(worlds, {
+    fields: [ademingTracks.worldId],
+    references: [worlds.id],
+  }),
   media: one(media, {
     fields: [ademingTracks.mediaId],
     references: [media.id],

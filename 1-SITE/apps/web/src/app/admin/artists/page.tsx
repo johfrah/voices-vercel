@@ -37,16 +37,11 @@ export default function ArtistAdminPage() {
   const fetchArtists = async () => {
     setLoading(true);
     try {
-      // We gebruiken de bestaande actors API maar filteren op 'artist' type of specifieke slugs
-      const res = await fetch('/api/admin/actors');
+      // 🌍 World-Aware API call: Fetch only artists from the 'artist' world
+      const res = await fetch('/api/admin/actors?world=artist');
       const data = await res.json();
       if (data.success) {
-        // Voor nu filteren we handmatig op Youssef of anderen die als artist gemarkeerd zijn
-        // In de toekomst kunnen we een 'type' kolom toevoegen aan de actors tabel
-        const artistList = data.actors.filter((a: any) => 
-          a.slug === 'youssef' || a.styles?.includes('Artist')
-        );
-        setArtists(artistList);
+        setArtists(data.actors);
       }
     } catch (error) {
       console.error('Failed to fetch artists:', error);

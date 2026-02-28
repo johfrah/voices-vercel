@@ -5,19 +5,23 @@ import { createClient } from "@supabase/supabase-js";
 export const dynamic = 'force-dynamic';
 
 /**
- * 🛡️ CHRIS-PROTOCOL: NUCLEAR ADMIN ACTORS API (v2.14.534)
+ * 🛡️ CHRIS-PROTOCOL: NUCLEAR ADMIN ACTORS API (v2.16.014)
  * 
  * 1 TRUTH HANDSHAKE:
  * We use the Supabase SDK directly for 100% stability.
  * We strictly prioritize media_id for photos and audio.
+ * Added: World-Aware filtering (v2.16.014)
  */
-export async function GET() {
+export async function GET(request: NextRequest) {
   if (process.env.NEXT_PHASE === 'phase-production-build' || (process.env.NODE_ENV === 'production' && !process.env.VERCEL_URL)) {
     return NextResponse.json({ success: true, actors: [] });
   }
 
   const auth = await requireAdmin();
   if (auth instanceof NextResponse) return auth;
+
+  const { searchParams } = new URL(request.url);
+  const worldCode = searchParams.get('world');
 
   try {
     const supabase = createClient(
@@ -26,14 +30,29 @@ export async function GET() {
     );
     
     // 1. Fetch all actors with their related data via SDK
-    const { data: sdkData, error: sdkError } = await supabase
+    let query = supabase
       .from('actors')
       .select(`
         *,
         demos:actor_demos(*),
         actor_videos:actor_videos(*),
         actor_languages:actor_languages(*)
-      `)
+      `);
+
+    if (worldCode) {
+      // 🌍 World-Aware filtering: Get world ID first
+      const { data: worldData } = await supabase
+        .from('worlds')
+        .select('id')
+        .eq('code', worldCode)
+        .single();
+      
+      if (worldData) {
+        query = query.eq('world_id', worldData.id);
+      }
+    }
+
+    const { data: sdkData, error: sdkError } = await query
       .order('menu_order', { ascending: true })
       .order('first_name', { ascending: true });
       
