@@ -37,7 +37,11 @@ export function ArtistDetailClient({ artistData, isYoussef, params, donors = [] 
   const [donationAmount, setDonationAmount] = useState(25);
 
   const manifesto = artistData.labelManifesto || artistData.iap_context?.manifesto;
-  const dbSubtitles = artistData.iap_context?.video_metadata?.subtitles || {};
+  
+  // 🛡️ CHRIS-PROTOCOL: Use Masterclass Featured Video (v2.16.008)
+  const featuredVideo = artistData.featured_video;
+  const videoUrl = featuredVideo?.url || "https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices/visuals/youssef/crowdfunding/youssef-crowdfunding.mp4";
+  const dbSubtitles = featuredVideo?.metadata?.subtitles || {};
 
   const market = MarketManager.getCurrentMarket();
   const siteUrl = MarketManager.getMarketDomains()[market.market_code] || MarketManager.getMarketDomains()['BE'];
@@ -73,7 +77,7 @@ export function ArtistDetailClient({ artistData, isYoussef, params, donors = [] 
               <>
                 <div className="voices-hero-visual-container rounded-[32px] overflow-hidden shadow-aura-lg bg-va-black border border-white/5 aspect-[9/16] w-full max-w-[500px] mx-auto">
                   <VideoPlayer 
-                    src="https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices/visuals/youssef/crowdfunding/youssef-crowdfunding.mp4"
+                    src={videoUrl}
                     poster="/assets/common/branding/founder/youssef-poster.jpg"
                     aspectRatio="portrait"
                     subtitles={[

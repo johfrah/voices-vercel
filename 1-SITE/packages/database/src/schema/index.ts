@@ -933,6 +933,7 @@ export const aiRecommendations = pgTable('ai_recommendations', {
 export const faq = pgTable('faq', {
   id: serial('id').primaryKey(),
   wpId: bigint('wp_id', { mode: 'number' }).unique(), // Link naar originele post
+  worldId: integer('world_id').references(() => worlds.id), // 🌍 V2: Koppeling naar World
   category: text('category'),
   questionNl: text('question_nl'),
   answerNl: text('answer_nl'),
@@ -960,6 +961,7 @@ export const faq = pgTable('faq', {
 export const contentArticles = pgTable('content_articles', {
   id: serial('id').primaryKey(),
   wpId: bigint('wp_id', { mode: 'number' }).unique(),
+  worldId: integer('world_id').references(() => worlds.id), // 🌍 V2: Koppeling naar World
   title: text('title').notNull(),
   slug: text('slug').unique().notNull(),
   content: text('content'), // De ruwe of opgeschoonde HTML
@@ -1103,6 +1105,7 @@ export const appConfigs = pgTable('app_configs', {
 export const media = pgTable('media', {
   id: serial('id').primaryKey(),
   wpId: bigint('wp_id', { mode: 'number' }).unique(),
+  worldId: integer('world_id').references(() => worlds.id), // 🌍 V2: Koppeling naar World
   fileName: text('file_name').notNull(),
   filePath: text('file_path').notNull(), // Relatief aan /assets
   fileType: text('file_type'), // image/jpeg, audio/mpeg, etc.
@@ -1334,6 +1337,7 @@ export const mailContent = pgTable('mail_content', {
 
 export const vaultFiles = pgTable('vault_files', {
   id: serial('id').primaryKey(),
+  worldId: integer('world_id').references(() => worlds.id), // 🌍 V2: Koppeling naar World
   
   // 📁 FILE INFO
   fileName: text('file_name').notNull(),
@@ -1510,7 +1514,34 @@ export const castingListItems = pgTable("casting_list_items", {
 	}),
 ]);
 
+export const mediaRelations = relations(media, ({ one }) => ({
+  world: one(worlds, {
+    fields: [media.worldId],
+    references: [worlds.id],
+  }),
+}));
+export const faqRelations = relations(faq, ({ one }) => ({
+  world: one(worlds, {
+    fields: [faq.worldId],
+    references: [worlds.id],
+  }),
+}));
+export const contentArticlesRelations = relations(contentArticles, ({ one, many }) => ({
+  world: one(worlds, {
+    fields: [contentArticles.worldId],
+    references: [worlds.id],
+  }),
+  author: one(users, {
+    fields: [contentArticles.authorId],
+    references: [users.id],
+  }),
+  blocks: many(contentBlocks),
+}));
 export const vaultFilesRelations = relations(vaultFiles, ({ one }) => ({
+  world: one(worlds, {
+    fields: [vaultFiles.worldId],
+    references: [worlds.id],
+  }),
   actor: one(actors, {
     fields: [vaultFiles.actorId],
     references: [actors.id],
@@ -1527,270 +1558,6 @@ export const vaultFilesRelations = relations(vaultFiles, ({ one }) => ({
     fields: [vaultFiles.promotedMediaId],
     references: [media.id],
   }),
-}));
-export const productsRelations = relations(products, ({ one }) => ({
-  media: one(media, {
-    fields: [products.mediaId],
-    references: [media.id],
-  }),
-}));
-export const actorsRelations = relations(actors, ({ one, many }) => ({
-  user: one(users, {
-    fields: [actors.user_id],
-    references: [users.id],
-  }),
-  gender: one(genders, {
-    fields: [actors.genderId],
-    references: [genders.id],
-  }),
-  nativeLanguage: one(languages, {
-    fields: [actors.nativeLanguageId],
-    references: [languages.id],
-  }),
-  experienceLevel: one(experienceLevels, {
-    fields: [actors.experienceLevelId],
-    references: [experienceLevels.id],
-  }),
-  status: one(actorStatuses, {
-    fields: [actors.statusId],
-    references: [actorStatuses.id],
-  }),
-  demos: many(actorDemos),
-  videos: many(actorVideos),
-  dialects: many(actorDialects),
-  orderItems: many(orderItems), // 📦 Project historie voor de acteur
-  actor_languages: many(actorLanguages),
-  actorTones: many(actorTones),
-  country: one(countries, {
-    fields: [actors.countryId],
-    references: [countries.id],
-  }),
-}));
-export const languagesRelations = relations(languages, ({ many }) => ({
-  actor_languages: many(actorLanguages),
-}));
-export const actorLanguagesRelations = relations(actorLanguages, ({ one }) => ({
-  actor: one(actors, {
-    fields: [actorLanguages.actorId],
-    references: [actors.id],
-  }),
-  language: one(languages, {
-    fields: [actorLanguages.languageId],
-    references: [languages.id],
-  }),
-}));
-export const voiceTonesRelations = relations(voiceTones, ({ many }) => ({
-  actorTones: many(actorTones),
-}));
-export const actorTonesRelations = relations(actorTones, ({ one }) => ({
-  actor: one(actors, {
-    fields: [actorTones.actorId],
-    references: [actors.id],
-  }),
-  tone: one(voiceTones, {
-    fields: [actorTones.toneId],
-    references: [voiceTones.id],
-  }),
-}));
-export const countriesRelations = relations(countries, ({ many }) => ({
-  actors: many(actors),
-}));
-export const dialectsRelations = relations(dialects, ({ one, many }) => ({
-  language: one(languages, {
-    fields: [dialects.languageId],
-    references: [languages.id],
-  }),
-  actorDialects: many(actorDialects),
-}));
-export const actorDialectsRelations = relations(actorDialects, ({ one }) => ({
-  actor: one(actors, {
-    fields: [actorDialects.actorId],
-    references: [actors.id],
-  }),
-  dialect: one(dialects, {
-    fields: [actorDialects.dialectId],
-    references: [dialects.id],
-  }),
-  proficiency: one(proficiencies, {
-    fields: [actorDialects.proficiencyId],
-    references: [proficiencies.id],
-  }),
-}));
-
-export const actorReviews = pgTable('actor_reviews', {
-  id: serial('id').primaryKey(),
-  actorId: integer('actor_id').references(() => actors.id, { onDelete: 'cascade' }).notNull(),
-  reviewId: integer('review_id').references(() => reviews.id, { onDelete: 'cascade' }).notNull(),
-  createdAt: timestamp('created_at').defaultNow(),
-}, (table) => [
-  unique('actor_reviews_actor_id_review_id_key').on(table.actorId, table.reviewId),
-]);
-
-export const actorReviewsRelations = relations(actorReviews, ({ one }) => ({
-  actor: one(actors, {
-    fields: [actorReviews.actorId],
-    references: [actors.id],
-  }),
-  review: one(reviews, {
-    fields: [actorReviews.reviewId],
-    references: [reviews.id],
-  }),
-}));
-export const proficienciesRelations = relations(proficiencies, ({ many }) => ({
-  actorDialects: many(actorDialects),
-}));
-export const demoTypesRelations = relations(demoTypes, ({ many }) => ({
-  actorDemos: many(actorDemos),
-}));
-export const deliveryStatusesRelations = relations(deliveryStatuses, ({ many }) => ({
-  orderItems: many(orderItems),
-}));
-export const actorDemosRelations = relations(actorDemos, ({ one }) => ({
-  actor: one(actors, {
-    fields: [actorDemos.actorId],
-    references: [actors.id],
-  }),
-  demoType: one(demoTypes, {
-    fields: [actorDemos.typeId],
-    references: [demoTypes.id],
-  }),
-}));
-export const actorVideosRelations = relations(actorVideos, ({ one }) => ({
-  actor: one(actors, {
-    fields: [actorVideos.actorId],
-    references: [actors.id],
-  }),
-}));
-export const locationsRelations = relations(locations, ({ many }) => ({
-  costs: many(costs),
-  editions: many(workshopEditions),
-}));
-export const workshopsRelations = relations(workshops, ({ one, many }) => ({
-  media: one(media, {
-    fields: [workshops.mediaId],
-    references: [media.id],
-  }),
-  instructor: one(instructors, {
-    fields: [workshops.instructorId],
-    references: [instructors.id],
-  }),
-  editions: many(workshopEditions),
-  gallery: many(workshopGallery),
-  costs: many(costs),
-}));
-export const workshopEditionsRelations = relations(workshopEditions, ({ one, many }) => ({
-  participants: many(orderItems),
-  workshop: one(workshops, {
-    fields: [workshopEditions.workshopId],
-    references: [workshops.id],
-  }),
-  location: one(locations, {
-    fields: [workshopEditions.locationId],
-    references: [locations.id],
-  }),
-  instructor: one(instructors, {
-    fields: [workshopEditions.instructorId],
-    references: [instructors.id],
-  }),
-  costs: many(costs),
-}));
-export const instructorsRelations = relations(instructors, ({ one, many }) => ({
-  photo: one(media, {
-    fields: [instructors.photo_id],
-    references: [media.id],
-  }),
-  user: one(users, {
-    fields: [instructors.user_id],
-    references: [users.id],
-  }),
-  workshops: many(workshops),
-  costs: many(costs),
-}));
-export const worldsRelations = relations(worlds, ({ many }) => ({
-  journeys: many(journeys),
-  orders: many(orders),
-  ordersV2: many(ordersV2),
-}));
-export const journeysRelations = relations(journeys, ({ one, many }) => ({
-  world: one(worlds, {
-    fields: [journeys.worldId],
-    references: [worlds.id],
-  }),
-  orders: many(orders),
-}));
-export const ordersRelations = relations(orders, ({ one, many }) => ({
-  user: one(users, {
-    fields: [orders.user_id],
-    references: [users.id],
-  }),
-  world: one(worlds, {
-    fields: [orders.worldId],
-    references: [worlds.id],
-  }),
-  journey: one(journeys, {
-    fields: [orders.journeyId],
-    references: [journeys.id],
-  }),
-  items: many(orderItems),
-}));
-export const ordersV2Relations = relations(ordersV2, ({ one }) => ({
-  user: one(users, {
-    fields: [ordersV2.userId],
-    references: [users.id],
-  }),
-  world: one(worlds, {
-    fields: [ordersV2.worldId],
-    references: [worlds.id],
-  }),
-  journey: one(journeys, {
-    fields: [ordersV2.journeyId],
-    references: [journeys.id],
-  }),
-}));
-export const orderItemsRelations = relations(orderItems, ({ one, many }) => ({
-  order: one(orders, {
-    fields: [orderItems.orderId],
-    references: [orders.id],
-  }),
-  actor: one(actors, {
-    fields: [orderItems.actorId],
-    references: [actors.id],
-  }),
-  edition: one(workshopEditions, {
-    fields: [orderItems.editionId],
-    references: [workshopEditions.id],
-  }),
-  deliveryStatus: one(deliveryStatuses, {
-    fields: [orderItems.deliveryStatusId],
-    references: [deliveryStatuses.id],
-  }),
-  costs: many(costs),
-}));
-export const approvalQueueRelations = relations(approvalQueue, ({ one }) => ({
-  approver: one(users, {
-    fields: [approvalQueue.approvedBy],
-    references: [users.id],
-  }),
-}));
-export const voicejarSessionsRelations = relations(voicejarSessions, ({ one, many }) => ({
-  user: one(users, {
-    fields: [voicejarSessions.user_id],
-    references: [users.id],
-  }),
-  events: many(voicejarEvents),
-}));
-export const voicejarEventsRelations = relations(voicejarEvents, ({ one }) => ({
-  session: one(voicejarSessions, {
-    fields: [voicejarEvents.sessionId],
-    references: [voicejarSessions.visitorHash],
-  }),
-}));
-export const contentArticlesRelations = relations(contentArticles, ({ one, many }) => ({
-  author: one(users, {
-    fields: [contentArticles.authorId],
-    references: [users.id],
-  }),
-  blocks: many(contentBlocks),
 }));
 export const contentBlocksRelations = relations(contentBlocks, ({ one, many }) => ({
   article: one(contentArticles, {

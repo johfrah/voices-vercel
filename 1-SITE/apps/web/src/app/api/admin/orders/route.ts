@@ -26,21 +26,31 @@ export async function GET(request: NextRequest) {
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '50');
     const search = searchParams.get('search') || '';
+    const worldCode = searchParams.get('world'); // 🌍 Filter op World
     const offset = (page - 1) * limit;
 
     // 🛡️ CHRIS-PROTOCOL: 1 TRUTH MANDATE (v2.14.638)
-    // NUCLEAR: We gebruiken db.execute met sql.raw om Drizzle abstractie volledig te passeren
     let whereClause = '';
+    let conditions = [];
+    
     if (search) {
-      whereClause = `WHERE id::text ILIKE '%' || $1 || '%' OR billing_email_alt ILIKE '%' || $1 || '%'`;
+      conditions.push(`(id::text ILIKE '%' || '${search}' || '%' OR billing_email_alt ILIKE '%' || '${search}' || '%')`);
+    }
+    
+    if (worldCode) {
+      conditions.push(`world_id = (SELECT id FROM worlds WHERE code = '${worldCode}')`);
     }
 
-    const countResult = await db.execute(sql.raw(`SELECT count(*) as value FROM orders_v2 ${whereClause.replace('$1', search ? `'${search}'` : '')}`));
+    if (conditions.length > 0) {
+      whereClause = `WHERE ${conditions.join(' AND ')}`;
+    }
+
+    const countResult = await db.execute(sql.raw(`SELECT count(*) as value FROM orders_v2 ${whereClause}`));
     const countRows: any = Array.isArray(countResult) ? countResult : (countResult.rows || []);
     const totalInDb = countRows[0] ? Number(countRows[0].value || countRows[0].count || 0) : 0;
 
     let debugInfo: any = {
-      version: '2.15.028',
+      version: '2.16.010',
       db_host: process.env.DATABASE_URL?.split('@')[1]?.split('/')[0] || 'unknown',
       page,
       limit,
@@ -55,7 +65,7 @@ export async function GET(request: NextRequest) {
         id, user_id, world_id, journey_id, status_id, payment_method_id, 
         amount_net, amount_total, purchase_order, billing_email_alt, created_at
       FROM orders_v2
-      ${whereClause.replace('$1', search ? `'${search}'` : '')}
+      ${whereClause}
       ORDER BY created_at DESC
       LIMIT ${limit}
       OFFSET ${offset}

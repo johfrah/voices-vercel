@@ -57,6 +57,9 @@ export async function getArtist(slugOrId: string, lang: string = 'nl-BE'): Promi
     .eq('actor_id', artist.id)
     .eq('is_public', true);
 
+  // 🛡️ CHRIS-PROTOCOL: Fetch Masterclass Featured Video (v2.16.008)
+  const featuredVideo = await fetchFeaturedVideo(artist);
+
   return {
     ...artist,
     display_name: artist.display_name || artist.first_name || artist.displayName || artist.first_name,
@@ -68,6 +71,7 @@ export async function getArtist(slugOrId: string, lang: string = 'nl-BE'): Promi
     youtube_url: artist.youtube_url || '',
     instagram_url: artist.instagram_url || artist.instagramUrl || '',
     tiktok_url: artist.tiktok_url || artist.tiktokUrl || '',
+    featured_video: featuredVideo,
     demos: (demos || []).map(d => ({
       id: d.id,
       title: d.name,
@@ -75,6 +79,31 @@ export async function getArtist(slugOrId: string, lang: string = 'nl-BE'): Promi
       category: d.type || 'performance'
     })),
     albums: artist.iapContext?.albums || [] // Fallback to context if not in separate table
+  };
+}
+
+/**
+ * 🛡️ CHRIS-PROTOCOL: Fetch Featured Video for Artist (v2.16.008)
+ */
+async function fetchFeaturedVideo(artist: any): Promise<any | null> {
+  const featuredVideoId = artist.iap_context?.featured_video_id || artist.iapContext?.featured_video_id;
+  if (!featuredVideoId) return null;
+
+  const { data: media } = await supabase
+    .from('media')
+    .select('*')
+    .eq('id', featuredVideoId)
+    .single();
+
+  if (!media) return null;
+
+  const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://vcbxyyjsxuquytcsskpj.supabase.co';
+  const SUPABASE_STORAGE_URL = `${SUPABASE_URL.replace(/\/$/, '')}/storage/v1/object/public/voices`;
+
+  return {
+    id: media.id,
+    url: media.file_path.startsWith('http') ? media.file_path : `${SUPABASE_STORAGE_URL}/${media.file_path}`,
+    metadata: media.metadata || {}
   };
 }
 
