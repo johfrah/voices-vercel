@@ -1,9 +1,9 @@
-# 🛡️ Forensic Audit Report (2/28/2026, 7:15:11 PM)
+# 🛡️ Forensic Audit Report (2/28/2026, 7:21:43 PM)
 
 ## Summary
 - **Status**: ✅ PASSED
 - **Errors**: 0
-- **Warnings**: 3876
+- **Warnings**: 3812
 
 ## Detailed Issues
 - **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:700`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -4794,37 +4794,37 @@
   > `<div className="mt-10 h-3 w-full bg-va-black/5 rounded-full overflow-hidden p-[2px]">`
 - **WARNING** `1-SITE/apps/web/src/components/studio/WorkshopFunnel.tsx:108`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div`
-- **WARNING** `1-SITE/apps/web/src/components/studio/WorkshopHeroIsland.tsx:46`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/studio/WorkshopHeroIsland.tsx:48`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1200px] h-[1200px] bg-primary/5 rounded-full blur-[150px] -translate-y-1/2 pointer-events-none" />`
-- **WARNING** `1-SITE/apps/web/src/components/studio/WorkshopHeroIsland.tsx:49`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/studio/WorkshopHeroIsland.tsx:51`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">`
-- **WARNING** `1-SITE/apps/web/src/components/studio/WorkshopHeroIsland.tsx:52`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/studio/WorkshopHeroIsland.tsx:54`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="lg:col-span-7 relative group">`
-- **WARNING** `1-SITE/apps/web/src/components/studio/WorkshopHeroIsland.tsx:53`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/studio/WorkshopHeroIsland.tsx:55`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="absolute -inset-4 bg-primary/10 rounded-[30px] blur-2xl opacity-0 group-hover:opacity-100 transition-all duration-1000" />`
-- **WARNING** `1-SITE/apps/web/src/components/studio/WorkshopHeroIsland.tsx:62`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="lg:col-span-5 flex flex-col items-start space-y-10">`
-- **WARNING** `1-SITE/apps/web/src/components/studio/WorkshopHeroIsland.tsx:63`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="space-y-4">`
 - **WARNING** `1-SITE/apps/web/src/components/studio/WorkshopHeroIsland.tsx:64`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="flex items-center gap-3">`
+  > `<div className="lg:col-span-5 flex flex-col items-start space-y-10">`
 - **WARNING** `1-SITE/apps/web/src/components/studio/WorkshopHeroIsland.tsx:65`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="space-y-4">`
+- **WARNING** `1-SITE/apps/web/src/components/studio/WorkshopHeroIsland.tsx:66`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="flex items-center gap-3">`
+- **WARNING** `1-SITE/apps/web/src/components/studio/WorkshopHeroIsland.tsx:67`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span className="px-3 py-1 bg-primary/20 text-primary text-[10px] font-black tracking-[0.2em] uppercase rounded-full border border-primary/20">`
-- **WARNING** `1-SITE/apps/web/src/components/studio/WorkshopHeroIsland.tsx:68`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/studio/WorkshopHeroIsland.tsx:70`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span className="text-white/30 text-[10px] font-bold tracking-widest uppercase">`
-- **WARNING** `1-SITE/apps/web/src/components/studio/WorkshopHeroIsland.tsx:78`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/studio/WorkshopHeroIsland.tsx:80`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="relative pl-8 before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-primary/40">`
-- **WARNING** `1-SITE/apps/web/src/components/studio/WorkshopHeroIsland.tsx:85`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/studio/WorkshopHeroIsland.tsx:87`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="w-full pt-10 border-t border-white/10 flex flex-col md:flex-row md:items-center justify-between gap-8">`
-- **WARNING** `1-SITE/apps/web/src/components/studio/WorkshopHeroIsland.tsx:86`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/studio/WorkshopHeroIsland.tsx:88`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div>`
-- **WARNING** `1-SITE/apps/web/src/components/studio/WorkshopHeroIsland.tsx:90`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="flex items-baseline gap-2">`
-- **WARNING** `1-SITE/apps/web/src/components/studio/WorkshopHeroIsland.tsx:91`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<span className="text-4xl font-light tracking-tighter text-white">€{parseFloat(price).toFixed(2)}</span>`
 - **WARNING** `1-SITE/apps/web/src/components/studio/WorkshopHeroIsland.tsx:92`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div className="flex items-baseline gap-2">`
+- **WARNING** `1-SITE/apps/web/src/components/studio/WorkshopHeroIsland.tsx:93`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<span className="text-4xl font-light tracking-tighter text-white">€{parseFloat(price).toFixed(2)}</span>`
+- **WARNING** `1-SITE/apps/web/src/components/studio/WorkshopHeroIsland.tsx:94`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span className="text-[11px] text-white/20 font-bold uppercase tracking-widest">Excl. BTW</span>`
-- **WARNING** `1-SITE/apps/web/src/components/studio/WorkshopHeroIsland.tsx:101`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/studio/WorkshopHeroIsland.tsx:103`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span>RESERVEER PLEK</span>`
 - **WARNING** `1-SITE/apps/web/src/components/studio/WorkshopInterestForm.tsx:162`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div key={i} className="h-16 bg-va-black/5 rounded-[20px] animate-pulse" />`
@@ -7282,118 +7282,6 @@
   > `<p className="text-2xl text-muted-foreground italic max-w-3xl mx-auto font-serif leading-relaxed">`
 - **WARNING** `1-SITE/apps/web/src/components/ui/ademing/Testimonials.tsx:116`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<p className="mt-8 text-sm font-bold uppercase tracking-[0.3em] text-primary/60">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/ademing/admin/AdemingSmartUpload.tsx:145`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="fixed inset-0 z-[200] flex items-center justify-center p-6">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/ademing/admin/AdemingSmartUpload.tsx:146`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => !uploading && !analyzing && !saving && onOpenChange(false)} />`
-- **WARNING** `1-SITE/apps/web/src/components/ui/ademing/admin/AdemingSmartUpload.tsx:158`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="p-12">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/ademing/admin/AdemingSmartUpload.tsx:159`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="text-center mb-12">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/ademing/admin/AdemingSmartUpload.tsx:160`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center text-primary mx-auto mb-6">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/ademing/admin/AdemingSmartUpload.tsx:171`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="space-y-8">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/ademing/admin/AdemingSmartUpload.tsx:172`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="border-2 border-dashed border-primary/20 rounded-[24px] p-12 text-center hover:bg-primary/[0.02] transition-all cursor-pointer relative group">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/ademing/admin/AdemingSmartUpload.tsx:181`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<p className="text-lg font-medium text-va-black/60">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/ademing/admin/AdemingSmartUpload.tsx:184`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<p className="text-sm text-va-black/20 mt-2">MP3, WAV of M4A (max 50MB)</p>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/ademing/admin/AdemingSmartUpload.tsx:188`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="flex items-center gap-3 p-4 bg-green-50 rounded-xl border border-green-100">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/ademing/admin/AdemingSmartUpload.tsx:190`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<span className="text-sm font-medium text-green-700 flex-1 truncate">{audioFile.name}</span>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/ademing/admin/AdemingSmartUpload.tsx:222`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="flex flex-col h-full">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/ademing/admin/AdemingSmartUpload.tsx:224`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="p-12 pb-6 border-b border-black/5">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/ademing/admin/AdemingSmartUpload.tsx:225`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="flex items-center gap-4 mb-2">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/ademing/admin/AdemingSmartUpload.tsx:226`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="w-10 h-10 bg-green-50 rounded-xl flex items-center justify-center text-green-600">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/ademing/admin/AdemingSmartUpload.tsx:238`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="flex gap-8 mt-8">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/ademing/admin/AdemingSmartUpload.tsx:257`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="flex-1 overflow-y-auto p-12 pt-8">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/ademing/admin/AdemingSmartUpload.tsx:259`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="grid grid-cols-2 gap-8 animate-in fade-in slide-in-from-bottom-4 duration-500">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/ademing/admin/AdemingSmartUpload.tsx:260`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="space-y-6">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/ademing/admin/AdemingSmartUpload.tsx:261`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/ademing/admin/AdemingSmartUpload.tsx:270`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="grid grid-cols-2 gap-4">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/ademing/admin/AdemingSmartUpload.tsx:271`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/ademing/admin/AdemingSmartUpload.tsx:283`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/ademing/admin/AdemingSmartUpload.tsx:297`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/ademing/admin/AdemingSmartUpload.tsx:306`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="space-y-6">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/ademing/admin/AdemingSmartUpload.tsx:307`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/ademing/admin/AdemingSmartUpload.tsx:315`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/ademing/admin/AdemingSmartUpload.tsx:317`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="flex flex-wrap gap-2 mt-2">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/ademing/admin/AdemingSmartUpload.tsx:319`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<span key={i} className="px-3 py-1 bg-va-black/5 rounded-full text-[11px] font-bold uppercase tracking-widest text-va-black/40">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/ademing/admin/AdemingSmartUpload.tsx:330`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-2xl mx-auto">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/ademing/admin/AdemingSmartUpload.tsx:331`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/ademing/admin/AdemingSmartUpload.tsx:343`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/ademing/admin/AdemingSmartUpload.tsx:354`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/ademing/admin/AdemingSmartUpload.tsx:370`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="animate-in fade-in slide-in-from-bottom-4 duration-500 h-full">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/ademing/admin/AdemingSmartUpload.tsx:381`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="p-12 pt-6 border-t border-black/5 bg-va-off-white/30 flex justify-between items-center">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/ademing/admin/AdemingTrackEdit.tsx:125`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="fixed inset-0 z-[200] flex items-center justify-center p-6">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/ademing/admin/AdemingTrackEdit.tsx:126`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => !loading && onOpenChange(false)} />`
-- **WARNING** `1-SITE/apps/web/src/components/ui/ademing/admin/AdemingTrackEdit.tsx:137`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="mb-12">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/ademing/admin/AdemingTrackEdit.tsx:147`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="grid grid-cols-1 md:grid-cols-2 gap-8">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/ademing/admin/AdemingTrackEdit.tsx:149`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="space-y-6">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/ademing/admin/AdemingTrackEdit.tsx:150`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/ademing/admin/AdemingTrackEdit.tsx:161`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/ademing/admin/AdemingTrackEdit.tsx:172`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="grid grid-cols-2 gap-4">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/ademing/admin/AdemingTrackEdit.tsx:173`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/ademing/admin/AdemingTrackEdit.tsx:185`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/ademing/admin/AdemingTrackEdit.tsx:200`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/ademing/admin/AdemingTrackEdit.tsx:209`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="flex items-center gap-3 p-4 bg-primary/5 rounded-2xl border border-primary/10">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/ademing/admin/AdemingTrackEdit.tsx:224`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="space-y-6">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/ademing/admin/AdemingTrackEdit.tsx:225`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/ademing/admin/AdemingTrackEdit.tsx:238`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/ademing/admin/AdemingTrackEdit.tsx:251`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/ademing/admin/AdemingTrackEdit.tsx:264`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/ademing/admin/AdemingTrackEdit.tsx:276`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="p-6 bg-va-off-white rounded-2xl border border-black/[0.03]">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/ademing/admin/AdemingTrackEdit.tsx:277`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<p className="text-[11px] font-bold uppercase tracking-widest text-va-black/20 mb-4">Media Preview</p>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/ademing/admin/AdemingTrackEdit.tsx:278`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="aspect-video bg-white rounded-xl border border-black/5 flex items-center justify-center overflow-hidden relative">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/ademing/admin/AdemingTrackEdit.tsx:289`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="flex justify-center gap-4 pt-8 border-t border-black/5">`
 - **WARNING** `1-SITE/apps/web/src/components/ui/ademing/ui/sheet.tsx:66`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span className="sr-only">Close</span>`
 - **WARNING** `1-SITE/apps/web/src/components/ui/ademing/ui/sheet.tsx:77`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -7478,22 +7366,6 @@
   > `const separator = lang === "de" ? " bis " : " tot ";`
 - **WARNING** `1-SITE/apps/web/src/lib/engines/content-engine.ts:384`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `if (lang === "en") return format(date, "MMMM do", { locale: enUS });`
-- **WARNING** `1-SITE/apps/web/src/lib/mail/VumeEngine.ts:39`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
-  > `language: context.language || 'nl'`
-- **WARNING** `1-SITE/apps/web/src/lib/mail/VumeEngine.ts:52`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
-  > `language: context.language || 'nl',`
-- **WARNING** `1-SITE/apps/web/src/lib/mail/VumeEngine.ts:64`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
-  > `language: context.language || 'nl'`
-- **WARNING** `1-SITE/apps/web/src/lib/mail/VumeEngine.ts:79`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
-  > `language: context.language || 'nl'`
-- **WARNING** `1-SITE/apps/web/src/lib/mail/VumeEngine.ts:87`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
-  > `language: context.language || 'nl'`
-- **WARNING** `1-SITE/apps/web/src/lib/mail/VumeEngine.ts:98`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
-  > `language: context.language || 'nl'`
-- **WARNING** `1-SITE/apps/web/src/lib/mail/VumeEngine.ts:110`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
-  > `language: context.language || 'nl'`
-- **WARNING** `1-SITE/apps/web/src/lib/mail/VumeEngine.ts:120`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
-  > `language: context.language || 'nl'`
 - **WARNING** `1-SITE/apps/web/src/lib/mail/templates/VumeActorAssignmentTemplate.ts:40`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div style="margin-bottom: 30px;">`
 - **WARNING** `1-SITE/apps/web/src/lib/mail/templates/VumeActorAssignmentTemplate.ts:41`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.

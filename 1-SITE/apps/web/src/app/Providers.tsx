@@ -34,8 +34,8 @@ export function Providers({
   initialUsage?: any;
 }) {
   const pathname = usePathname();
-  // 🛡️ CHRIS-PROTOCOL: Version Sync Mandate (v2.16.060)
-  const currentVersion = '2.16.060';
+  // 🛡️ CHRIS-PROTOCOL: Version Sync Mandate (v2.16.061)
+  const currentVersion = '2.16.061';
 
 
   //  CHRIS-PROTOCOL: Initialize Client Logger for real-time error reporting
