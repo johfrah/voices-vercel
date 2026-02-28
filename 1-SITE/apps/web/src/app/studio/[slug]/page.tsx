@@ -11,7 +11,7 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import nextDynamic from "next/dynamic";
-import { WorkshopApiResponse } from "../../api/workshops/route";
+import { WorkshopApiResponse } from "../../api/studio/workshops/route";
 
 // NUCLEAR ISLANDS (ssr: false)
 const WorkshopHeroIsland = nextDynamic(() => import("@/components/studio/WorkshopHeroIsland").then(mod => mod.WorkshopHeroIsland), { ssr: false });
