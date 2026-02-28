@@ -57,7 +57,7 @@ export function AgencyFooter({ market, activeSocials, activePhone, activeEmail, 
           <ContainerInstrument className="w-px h-8 bg-black/5" />
           <ContainerInstrument className="flex flex-col">
             <TextInstrument className="text-xl font-light text-va-black leading-none">
-              {averageRating}<span className="text-[13px] text-va-black/20 ml-0.5">/5</span>
+              {averageRating}<TextInstrument as="span" className="text-[13px] text-va-black/20 ml-0.5">/5</TextInstrument>
             </TextInstrument>
             <TextInstrument className="text-[10px] font-bold text-va-black/20 uppercase tracking-tighter">
               {totalReviews} <VoiceglotText translationKey="footer.reviews.count_label" defaultText="reviews" />
@@ -102,7 +102,7 @@ export function AgencyFooter({ market, activeSocials, activePhone, activeEmail, 
           </li>
         </ul>
 
-        <div className="pt-4 space-y-4">
+        <ContainerInstrument className="pt-4 space-y-4">
           <HeadingInstrument level={4} className="text-[11px] font-bold tracking-[0.1em] text-va-black/20 uppercase">
             <VoiceglotText translationKey="footer.section.about.title" defaultText="Over Voices" />
           </HeadingInstrument>
@@ -126,7 +126,7 @@ export function AgencyFooter({ market, activeSocials, activePhone, activeEmail, 
               </VoicesLink>
             </li>
           </ul>
-        </div>
+        </ContainerInstrument>
       </ContainerInstrument>
 
       {/* Kolom 3: Vertrouwen & Support */}
@@ -152,7 +152,7 @@ export function AgencyFooter({ market, activeSocials, activePhone, activeEmail, 
           ))}
         </ul>
 
-        <div className="pt-4">
+        <ContainerInstrument className="pt-4">
           <HeadingInstrument level={4} className="text-[11px] font-bold tracking-[0.1em] text-va-black/20 uppercase mb-4">
             <VoiceglotText translationKey="footer.section.payment.title" defaultText="Veilig betalen" />
           </HeadingInstrument>
@@ -161,7 +161,7 @@ export function AgencyFooter({ market, activeSocials, activePhone, activeEmail, 
             <Image src="/assets/common/branding/payment/bancontact.svg" alt="Bancontact" width={25} height={15} className="h-4 w-auto" />
             <Image src="/assets/common/branding/payment/visa.svg" alt="Visa" width={30} height={15} className="h-2.5 w-auto" />
           </ContainerInstrument>
-        </div>
+        </ContainerInstrument>
       </ContainerInstrument>
 
       {/* Kolom 4: Contact & Bereikbaarheid */}
@@ -173,18 +173,18 @@ export function AgencyFooter({ market, activeSocials, activePhone, activeEmail, 
         <ContainerInstrument className="space-y-4 w-full">
           <a href={`mailto:${activeEmail}`} className="flex items-center gap-3 p-3 bg-va-black/5 rounded-[12px] border border-black/5 hover:bg-primary/5 hover:border-primary/10 transition-all group">
             <Mail size={18} strokeWidth={1.5} className="text-primary/40 group-hover:text-primary" />
-            <div className="flex flex-col">
+            <ContainerInstrument className="flex flex-col">
               <TextInstrument className="text-[11px] font-bold uppercase tracking-widest text-va-black/30">Email ons</TextInstrument>
               <TextInstrument className="text-[14px] font-medium text-va-black/70">{activeEmail}</TextInstrument>
-            </div>
+            </ContainerInstrument>
           </a>
 
           <a href={`tel:${activePhone.replace(/\s+/g, '')}`} className="flex items-center gap-3 p-3 bg-va-black/5 rounded-[12px] border border-black/5 hover:bg-primary/5 hover:border-primary/10 transition-all group">
             <Phone size={18} strokeWidth={1.5} className="text-primary/40 group-hover:text-primary" />
-            <div className="flex flex-col">
+            <ContainerInstrument className="flex flex-col">
               <TextInstrument className="text-[11px] font-bold uppercase tracking-widest text-va-black/30">Bel de studio</TextInstrument>
               <TextInstrument className="text-[14px] font-medium text-va-black/70">{activePhone}</TextInstrument>
-            </div>
+            </ContainerInstrument>
           </a>
 
           <VoicesLink href="/contact" className="flex items-center justify-center gap-2 w-full py-3 bg-va-black text-white rounded-[12px] text-[13px] font-bold hover:bg-primary transition-colors shadow-aura-sm">
@@ -193,7 +193,7 @@ export function AgencyFooter({ market, activeSocials, activePhone, activeEmail, 
           </VoicesLink>
         </ContainerInstrument>
 
-        <div className="flex gap-3 pt-2">
+        <ContainerInstrument className="flex gap-3 pt-2">
           {['instagram', 'linkedin', 'facebook'].map((id) => (
             activeSocials[id] && (
               <ButtonInstrument 
@@ -209,7 +209,7 @@ export function AgencyFooter({ market, activeSocials, activePhone, activeEmail, 
               </ButtonInstrument>
             )
           ))}
-        </div>
+        </ContainerInstrument>
       </ContainerInstrument>
     </ContainerInstrument>
   );

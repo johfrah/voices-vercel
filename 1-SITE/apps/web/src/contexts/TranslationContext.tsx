@@ -18,9 +18,9 @@ export const TranslationProvider: React.FC<{
   lang?: string;
   market: MarketConfig;
   initialTranslations?: Record<string, string>;
-}> = ({ children, lang = 'nl', market, initialTranslations = {} }) => {
+}> = ({ children, lang = 'nl-BE', market, initialTranslations = {} }) => {
   const [translations, setTranslations] = useState<Record<string, string>>(initialTranslations);
-  const [loading, setLoading] = useState(Object.keys(initialTranslations).length === 0 && lang !== 'nl');
+  const [loading, setLoading] = useState(Object.keys(initialTranslations).length === 0 && lang !== 'nl-BE');
   const healingKeys = React.useRef<Set<string>>(new Set());
 
   useEffect(() => {
@@ -53,7 +53,7 @@ export const TranslationProvider: React.FC<{
   const t = (key: string, defaultText: string, values?: Record<string, string | number>, skipPlaceholderReplacement = false): string => {
     let text = defaultText;
     
-    if (lang !== 'nl' && !key.startsWith('admin.') && !key.startsWith('command.')) {
+    if (lang !== 'nl-BE' && !key.startsWith('admin.') && !key.startsWith('command.')) {
       const translation = translations[key];
       
       //  STABILITEIT: Gebruik SlopFilter om AI-foutmeldingen te blokkeren

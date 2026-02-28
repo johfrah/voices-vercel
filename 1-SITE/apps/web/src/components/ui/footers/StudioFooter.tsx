@@ -31,7 +31,7 @@ export function StudioFooter({ market, activeSocials, activePhone, activeEmail }
       <ContainerInstrument className="space-y-8 flex flex-col items-start">
         <VoicesLink href="/studio" className="flex items-center gap-3 group justify-start">
           <TextInstrument className="text-2xl font-light tracking-tighter text-va-black">
-            Voices <span className="text-primary italic">Studio</span>
+            Voices <TextInstrument as="span" className="text-primary italic">Studio</TextInstrument>
           </TextInstrument>
         </VoicesLink>
         <TextInstrument className="text-va-black/40 text-[15px] font-light leading-relaxed max-w-sm text-left italic">
@@ -76,37 +76,37 @@ export function StudioFooter({ market, activeSocials, activePhone, activeEmail }
         </HeadingInstrument>
         
         <ContainerInstrument className="space-y-4 w-full">
-          <div className="flex flex-col gap-1 list-none">
+          <ContainerInstrument className="flex flex-col gap-1 list-none">
             <TextInstrument className="text-[14px] font-medium text-va-black/70">Bernadette Timmermans</TextInstrument>
             <TextInstrument className="text-[11px] font-light text-va-black/40 leading-snug italic">Gerenommeerde stemcoach</TextInstrument>
-          </div>
-          <div className="flex flex-col gap-1 list-none pb-4">
+          </ContainerInstrument>
+          <ContainerInstrument className="flex flex-col gap-1 list-none pb-4">
             <TextInstrument className="text-[14px] font-medium text-va-black/70">Johfrah Lefebvre</TextInstrument>
             <TextInstrument className="text-[11px] font-light text-va-black/40 leading-snug italic">Voice-over & regisseur</TextInstrument>
-          </div>
+          </ContainerInstrument>
           
-          <div className="pt-4 border-t border-black/5 space-y-3">
+          <ContainerInstrument className="pt-4 border-t border-black/5 space-y-3">
             <a href={`mailto:${activeEmail}`} className="flex items-center gap-2 text-[14px] font-light text-va-black/60 hover:text-primary transition-colors">
               <Mail size={14} strokeWidth={1.5} />
-              <span>{activeEmail}</span>
+              <TextInstrument as="span">{activeEmail}</TextInstrument>
             </a>
             <a href={`tel:${activePhone.replace(/\s+/g, '')}`} className="flex items-center gap-2 text-[14px] font-light text-va-black/60 hover:text-primary transition-colors">
               <Phone size={14} strokeWidth={1.5} />
-              <span>{activePhone}</span>
+              <TextInstrument as="span">{activePhone}</TextInstrument>
             </a>
-          </div>
+          </ContainerInstrument>
         </ContainerInstrument>
         
-        <div className="pt-4 space-y-3 w-full border-t border-black/5">
+        <ContainerInstrument className="pt-4 space-y-3 w-full border-t border-black/5">
           <VoicesLink href="/academy" className="flex items-center gap-2 text-[13px] font-light text-va-black/40 hover:text-primary transition-colors">
             <GraduationCap size={14} />
-            <span>Naar de Academy</span>
+            <TextInstrument as="span">Naar de Academy</TextInstrument>
           </VoicesLink>
           <VoicesLink href="/studio/faq" className="flex items-center gap-2 text-[13px] font-light text-va-black/40 hover:text-primary transition-colors">
             <BookOpen size={14} />
-            <span>Veelgestelde vragen</span>
+            <TextInstrument as="span">Veelgestelde vragen</TextInstrument>
           </VoicesLink>
-        </div>
+        </ContainerInstrument>
       </ContainerInstrument>
     </ContainerInstrument>
   );
