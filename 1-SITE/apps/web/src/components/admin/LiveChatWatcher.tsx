@@ -158,6 +158,9 @@ export const LiveChatWatcher = () => {
         if (res.ok) {
           const data = await res.json();
           setConversations(data);
+        } else {
+          const errData = await res.json().catch(() => ({}));
+          console.error("[LiveChatWatcher] Fetch error:", res.status, errData);
         }
       } catch (e) {
         console.error("Failed to fetch conversations", e);
