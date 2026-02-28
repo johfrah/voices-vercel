@@ -432,7 +432,7 @@ ${workshopEditionsData.filter((ed: any) => ed.status === 'upcoming').map((ed: an
         
         switch (command) {
           case '/status':
-            aiContent = "Systeemstatus: 🟢 Alle systemen operationeel. Database latency: 45ms. Vercel Build: v2.16.027.";
+            aiContent = "Systeemstatus: 🟢 Alle systemen operationeel. Database latency: 45ms. Vercel Build: v2.16.057.";
             break;
           case '/clear':
             aiContent = "Cache gewist voor de huidige sessie.";
@@ -514,7 +514,9 @@ ${workshopEditionsData.filter((ed: any) => ed.status === 'upcoming').map((ed: an
           metadata: {
             ai_persona: persona,
             ai_mode: mode,
-            has_actions: actions.length > 0
+            has_actions: actions.length > 0,
+            interaction_type: context?.interaction_type || 'text',
+            current_page: context?.currentPage
           },
           createdAt: new Date().toISOString()
         }).returning();
@@ -683,11 +685,12 @@ async function handleGetHistory(params: any) {
 
     return NextResponse.json({
       success: true,
-      messages: results.map((m: any) => ({
+            messages: results.map((m: any) => ({
         id: m.id.toString(),
         sender_type: m.sender_type || m.senderType,
         message: m.message,
         created_at: m.created_at || m.createdAt,
+        metadata: m.metadata,
         // Fallbacks voor compatibiliteit met verschillende componenten
         role: (m.sender_type || m.senderType) === 'ai' ? 'assistant' : (m.sender_type || m.senderType),
         content: m.message,

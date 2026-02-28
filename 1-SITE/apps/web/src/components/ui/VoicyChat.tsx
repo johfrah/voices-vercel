@@ -690,7 +690,7 @@ export const VoicyChatV2: React.FC = () => {
     setIsOpen(!isOpen);
   };
 
-  const handleSend = async (e?: React.FormEvent, overrideValue?: string) => {
+  const handleSend = async (e?: React.FormEvent, overrideValue?: string, interactionType: 'text' | 'chip' | 'tool' = 'text') => {
     e?.preventDefault();
     const messageToSend = overrideValue || inputValue;
     if (!messageToSend.trim()) return;
@@ -699,7 +699,8 @@ export const VoicyChatV2: React.FC = () => {
       id: `temp-${Date.now()}`,
       role: 'user',
       content: messageToSend,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      metadata: { interaction_type: interactionType }
     };
 
     setMessages(prev => [...prev, userMessage]);
@@ -754,7 +755,9 @@ export const VoicyChatV2: React.FC = () => {
             user: user?.email,
             customer360: customer360,
             generalSettings: generalSettings,
-            visitorHash: typeof window !== 'undefined' ? localStorage.getItem('voices_visitor_hash') : null
+            visitorHash: typeof window !== 'undefined' ? localStorage.getItem('voices_visitor_hash') : null,
+            interaction_type: interactionType,
+            currentPage: window.location.pathname
           }
         })
       });
@@ -999,7 +1002,7 @@ export const VoicyChatV2: React.FC = () => {
                   setClickedChips(prev => [...prev, chip.label]);
                   setIsOpen(true);
                   if (chip.action === 'toggle_edit_mode') toggleEditMode();
-                  else handleSend(undefined, chip.label);
+                  else handleSend(undefined, chip.label, 'chip');
                 }}
                 className="pointer-events-auto bg-white/95 backdrop-blur-md border border-black/5 px-4 py-2 rounded-full shadow-aura flex items-center gap-2 group hover:bg-va-black hover:text-white transition-all"
               >
@@ -1189,7 +1192,7 @@ export const VoicyChatV2: React.FC = () => {
                       {['/status', '/clear', '/edit'].map(cmd => (
                         <button 
                           key={cmd}
-                          onClick={() => handleSend(undefined, cmd)}
+                          onClick={() => handleSend(undefined, cmd, 'tool')}
                           className="text-left px-3 py-2 bg-white/5 hover:bg-white/10 rounded-lg text-[12px] font-mono transition-all"
                         >
                           {cmd}
@@ -1770,7 +1773,7 @@ export const VoicyChatV2: React.FC = () => {
                       key={i}
                       onClick={() => {
                         setActiveTab('chat');
-                        handleSend(undefined, faq.q);
+                        handleSend(undefined, faq.q, 'chip');
                       }}
                       variant="plain"
                       className="w-full text-left p-4 rounded-2xl bg-va-off-white hover:bg-va-black/5 text-va-black transition-all text-[15px] font-light flex justify-between items-center group"

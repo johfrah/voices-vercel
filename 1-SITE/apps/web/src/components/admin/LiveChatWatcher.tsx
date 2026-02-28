@@ -42,6 +42,10 @@ interface Message {
   sender_type: 'user' | 'ai' | 'admin';
   message: string;
   created_at: string;
+  metadata?: {
+    interaction_type?: 'text' | 'chip' | 'tool';
+    current_page?: string;
+  };
 }
 
 // Helper voor Base64 naar Uint8Array (nodig voor VAPID key)
@@ -208,12 +212,13 @@ export const LiveChatWatcher = () => {
       const data = JSON.parse(event.data);
       if (data.type === 'new_messages') {
         setMessages(prev => {
-          const newMsgs = data.messages.filter((m: any) => !prev.find(p => p.id === m.id.toString()));
+            const newMsgs = data.messages.filter((m: any) => !prev.find(p => p.id === m.id.toString()));
           return [...prev, ...newMsgs.map((m: any) => ({
             id: m.id.toString(),
             sender_type: m.sender_type || m.senderType,
             message: m.message,
-            created_at: m.created_at || m.createdAt
+            created_at: m.created_at || m.createdAt,
+            metadata: m.metadata
           }))];
         });
       }
@@ -371,7 +376,7 @@ export const LiveChatWatcher = () => {
                     )}
                   >
                     <div className={cn(
-                      "p-4 rounded-[20px] text-sm font-medium leading-relaxed shadow-sm",
+                      "p-4 rounded-[20px] text-sm font-medium leading-relaxed shadow-sm relative group/msg",
                       msg.sender_type === 'user'
                         ? "bg-white text-va-black rounded-tl-none" 
                         : msg.sender_type === 'ai'
@@ -379,6 +384,23 @@ export const LiveChatWatcher = () => {
                           : "bg-primary text-white rounded-tr-none"
                     )}>
                       {msg.message}
+                      
+                      {/* Interaction Type Badge */}
+                      {msg.metadata?.interaction_type && msg.metadata.interaction_type !== 'text' && (
+                        <div className={cn(
+                          "absolute -top-2 -right-2 px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-tighter shadow-sm",
+                          msg.metadata.interaction_type === 'chip' ? "bg-primary text-white" : "bg-orange-500 text-white"
+                        )}>
+                          {msg.metadata.interaction_type}
+                        </div>
+                      )}
+
+                      {/* Page Context */}
+                      {msg.metadata?.current_page && (
+                        <div className="mt-2 pt-2 border-t border-black/5 text-[9px] opacity-40 font-mono truncate max-w-full">
+                          📍 {msg.metadata.current_page}
+                        </div>
+                      )}
                     </div>
                     <span className="text-[9px] mt-1 opacity-30 font-bold uppercase tracking-widest">
                       {msg.sender_type === 'ai' ? 'Voicy' : msg.sender_type === 'user' ? 'Klant' : 'Admin'} • {(() => {
