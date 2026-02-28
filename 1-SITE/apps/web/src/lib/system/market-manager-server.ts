@@ -214,12 +214,12 @@ export class MarketManagerServer {
       }
     },
     'johfrah.be': {
-      market_code: 'PORTFOLIO',
+      market_code: 'FREELANCE',
       language: 'nl',
       primary_language: 'nl-BE',
       supported_languages: ['nl-BE', 'nl-NL', 'en-GB'],
       popular_languages: ['nl-BE', 'nl-NL', 'en-GB'],
-      name: 'Johfrah',
+      name: 'Johfrah Lefebvre',
       logo_url: VOICES_CONFIG.assets.logos.johfrah,
       theme: 'johfrah',
       has_voicy: true,
@@ -232,8 +232,25 @@ export class MarketManagerServer {
         schema_type: 'Person'
       }
     },
+    'christina.be': {
+      market_code: 'PORTFOLIO',
+      language: 'nl',
+      primary_language: 'nl-BE',
+      supported_languages: ['nl-BE', 'nl-NL', 'en-GB'],
+      popular_languages: ['nl-BE', 'nl-NL', 'en-GB'],
+      name: 'Christina Portfolio',
+      logo_url: VOICES_CONFIG.assets.logos.be,
+      theme: 'voices',
+      social_links: {
+        instagram: 'https://www.instagram.com/voices.be'
+      },
+      seo_data: {
+        description: 'Commissies en platform-leverage via het Voices ecosysteem.',
+        schema_type: 'Person'
+      }
+    },
     'youssefzaki.eu': {
-      market_code: 'ARTIST',
+      market_code: 'PORTFOLIO',
       language: 'en',
       primary_language: 'en-US',
       supported_languages: ['en-GB', 'nl-NL', 'nl-BE', 'fr-FR', 'de-DE'],
@@ -301,9 +318,9 @@ export class MarketManagerServer {
       'PT': 'https://www.voices.pt',
       'EU': 'https://www.voices.eu',
       'ACADEMY': 'https://www.voices.academy',
-      'PORTFOLIO': 'https://www.johfrah.be',
+      'PORTFOLIO': 'https://www.christina.be',
       'ADEMING': 'https://www.ademing.be',
-      'ARTIST': 'https://www.youssefzaki.eu',
+      'FREELANCE': 'https://www.johfrah.be',
       'JOHFRAI': 'https://www.johfrai.be'
     };
   }

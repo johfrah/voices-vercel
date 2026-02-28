@@ -1,4 +1,4 @@
-# 🛡️ Forensic Audit Report (2/28/2026, 9:33:09 AM)
+# 🛡️ Forensic Audit Report (2/28/2026, 10:30:22 AM)
 
 ## Summary
 - **Status**: ✅ PASSED
@@ -2178,9 +2178,9 @@
   > `<p className="text-va-black/40 font-light tracking-widest uppercase text-sm">Initializing Voice Manager...</p>`
 - **WARNING** `1-SITE/apps/web/src/app/api/actors/route.ts:23`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `const lang = searchParams.get('lang') || 'nl';`
-- **WARNING** `1-SITE/apps/web/src/app/api/admin/config/route.ts:174`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/config/route.ts:179`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `const lang = searchParams.get('lang') || 'nl';`
-- **WARNING** `1-SITE/apps/web/src/app/api/admin/config/route.ts:181`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/config/route.ts:186`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `const lang = searchParams.get('lang') || 'nl';`
 - **WARNING** `1-SITE/apps/web/src/app/api/admin/johfrai/mail/route.ts:38`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div style="background: #fcfaf7; padding: 20px; border-radius: 15px; border: 1px solid #eee; margin: 20px 0;">`
@@ -7182,7 +7182,7 @@
   > `.where(and(eq(translations.lang, 'fr'), ilike(translations.translatedText, '% ta %')));`
 - **WARNING** `1-SITE/apps/web/src/db-cli.ts:288`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `.where(and(eq(translations.lang, 'fr'), ilike(translations.translatedText, '% tes %')));`
-- **WARNING** `1-SITE/apps/web/src/lib/core-internal/database/schema/index.ts:1042`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `1-SITE/apps/web/src/lib/core-internal/database/schema/index.ts:1088`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `language: text('language').default('nl'),`
 - **WARNING** `1-SITE/apps/web/src/lib/engines/content-engine.ts:101`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `static async getPage(slug: string, locale: string = "nl", type: "pages" | "stories" = "pages"): Promise<PageContent | null> {`
