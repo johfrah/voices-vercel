@@ -47,6 +47,15 @@ export const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onUpdate }
 
   const availability = getAvailabilityStatus(nextEdition);
 
+  // 🛡️ CHRIS-PROTOCOL: Determine CTA label based on availability
+  const ctaLabel = nextEdition 
+    ? (availability?.label === 'VOLZET' ? 'studio.view_cta' : 'studio.book_cta') 
+    : 'studio.interest_cta';
+  
+  const ctaDefaultText = nextEdition
+    ? (availability?.label === 'VOLZET' ? 'Bekijk workshop' : 'Boek nu')
+    : 'Meld je aan';
+
   //  SUBTITLE LOGIC (VOICES 2026)
   const [shouldLoadVideo, setShouldLoadVideo] = useState(false);
 
@@ -315,14 +324,18 @@ export const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onUpdate }
             </ContainerInstrument>
             
             <Link 
-              href={`/studio/${workshop.slug}`}
+              href={nextEdition ? `/studio/${workshop.slug}` : `/studio/doe-je-mee?workshop=${workshop.slug}`}
               onClick={(e) => {
                 e.preventDefault();
-                handleCardClick();
+                if (nextEdition) {
+                  router.push(`/studio/${workshop.slug}`);
+                } else {
+                  router.push(`/studio/doe-je-mee?workshop=${workshop.slug}`);
+                }
               }}
               className="flex items-center gap-3 text-[15px] font-light tracking-widest text-primary group/btn min-h-[44px] px-4 py-2 bg-primary/5 hover:bg-primary/10 rounded-[10px] transition-all"
             >
-              <VoiceglotText translationKey="studio.book_cta" defaultText="Bekijk workshop" />
+              <VoiceglotText translationKey={ctaLabel} defaultText={ctaDefaultText} />
               <Image src="/assets/common/branding/icons/FORWARD.svg" width={16} height={16} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} className="group-hover/btn:translate-x-2 transition-transform" />
             </Link>
           </ContainerInstrument>

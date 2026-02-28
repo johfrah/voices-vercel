@@ -955,14 +955,18 @@ export async function getWorkshops(limit: number = 50): Promise<any[]> {
     return [];
   }
 
-  // 🛡️ CHRIS-PROTOCOL: Filter out past editions and sort by date
+  // 🛡️ CHRIS-PROTOCOL: Keep all live workshops, but only show upcoming editions
   const now = new Date().toISOString();
-  return (workshopsData || []).map(w => ({
-    ...w,
-    editions: (w.editions || [])
+  return (workshopsData || []).map(w => {
+    const upcomingEditions = (w.editions || [])
       .filter((e: any) => e.date >= now && e.status !== 'cancelled')
-      .sort((a: any, b: any) => a.date.localeCompare(b.date))
-  }));
+      .sort((a: any, b: any) => a.date.localeCompare(b.date));
+    
+    return {
+      ...w,
+      editions: upcomingEditions
+    };
+  });
 }
 
 export async function getTranslationsServer(lang: string): Promise<Record<string, string>> {

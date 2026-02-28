@@ -459,13 +459,14 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
 export default async function SmartRoutePage({ params }: { params: SmartRouteParams }) {
   const [firstSegment] = params.slug;
   
-  // 🛡️ CHRIS-PROTOCOL: System Route Protection (v2.15.034)
+  // 🛡️ CHRIS-PROTOCOL: System Route Protection (v2.16.090)
   const reserved = [
-    'admin', 'backoffice', 'account', 'api', 'auth', 'checkout', 'cart', 
-    'demos', 'light', 'under-construction', 'favicon.ico', 'robots.txt', 
-    'sitemap.xml', 'sitemap', 'static', 'assets', '_next'
+    'admin', 'backoffice', 'account', 'api', 'auth', 'checkout', 'cart',
+    'demos', 'light', 'under-construction', 'favicon.ico', 'robots.txt',
+    'sitemap.xml', 'sitemap', 'static', 'assets', '_next',
+    'wp-content', 'wp-includes'
   ];
-  
+
   if (reserved.includes(firstSegment)) {
     console.error(` [SmartRouter] NUCLEAR BLOCK: Attempted to route system path "${firstSegment}" via SmartRouter. Redirecting to 404.`);
     return notFound();
