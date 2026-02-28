@@ -163,6 +163,11 @@ export interface SearchResults {
   results: Actor[];
   filters: SearchFilters;
   reviews?: any[];
+  reviewStats?: {
+    averageRating: number;
+    totalCount: number;
+    distribution: Record<number, number>;
+  };
   _handshake_languages?: any[]; // 🛡️ CHRIS-PROTOCOL: Relational languages for UI
   _nuclear?: boolean;
   _source?: string;

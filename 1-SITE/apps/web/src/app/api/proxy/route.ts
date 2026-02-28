@@ -116,7 +116,7 @@ export async function GET(request: NextRequest) {
     let normalizedPath = cleanPath.startsWith('/') ? cleanPath : `/${cleanPath}`;
 
     //  SUPABASE & GOOGLE STORAGE REDIRECT: Als het pad begint met 'agency/', 'active/', 'common/', 'studio/', 'ademing/', 'portfolio/', 'artists/', 'visuals/' of 'reviews/', fetch het dan van Supabase Storage
-    if (cleanPath.startsWith('agency/') || cleanPath.startsWith('active/') || cleanPath.startsWith('common/') || cleanPath.startsWith('studio/') || cleanPath.startsWith('ademing/') || cleanPath.startsWith('portfolio/') || cleanPath.startsWith('artists/') || cleanPath.startsWith('visuals/') || cleanPath.startsWith('reviews/') || cleanPath.startsWith('https://vcbxyyjsxuquytcsskpj.supabase.co') || cleanPath.includes('googleusercontent.com')) {
+    if (cleanPath.startsWith('agency/') || cleanPath.startsWith('active/') || cleanPath.startsWith('common/') || cleanPath.startsWith('studio/') || cleanPath.startsWith('ademing/') || cleanPath.startsWith('portfolio/') || cleanPath.startsWith('artists/') || cleanPath.startsWith('visuals/') || cleanPath.startsWith('reviews/') || cleanPath.startsWith('https://vcbxyyjsxuquytcsskpj.supabase.co') || cleanPath.includes('googleusercontent.com') || cleanPath.startsWith('voices/')) {
       const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://vcbxyyjsxuquytcsskpj.supabase.co';
       const SUPABASE_STORAGE_URL = `${SUPABASE_URL.replace(/\/$/, '')}/storage/v1`;
       
@@ -143,6 +143,16 @@ export async function GET(request: NextRequest) {
         // Extract path after /public/voices/ or /public/
         const match = storagePath.match(/\/public\/(?:voices\/)?(.*)/);
         if (match) storagePath = match[1];
+      }
+
+      // 🛡️ CHRIS-PROTOCOL: Strip 'voices/' prefix if it's already there to prevent double prefixing
+      if (storagePath.startsWith('voices/')) {
+        storagePath = storagePath.replace('voices/', '');
+      }
+
+      // 🛡️ CHRIS-PROTOCOL: Forensic strip for direct Supabase URLs that leaked into the path
+      if (storagePath.includes('supabase.co/storage/v1/object/public/voices/')) {
+        storagePath = storagePath.split('supabase.co/storage/v1/object/public/voices/')[1];
       }
 
       const pathSegments = storagePath.split('/').filter(Boolean).map(segment => {

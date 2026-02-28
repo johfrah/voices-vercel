@@ -203,12 +203,14 @@ export const StudioVideoPlayer: React.FC<StudioVideoPlayerProps> = ({
         
         {/* Play Button Overlay */}
         {!isPlaying && isLoaded && (
-          <button 
+          <ButtonInstrument 
+            variant="pure"
+            size="none"
             onClick={togglePlay}
             className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 rounded-full bg-white text-va-black flex items-center justify-center shadow-2xl hover:scale-110 transition-all z-10"
           >
             <Play strokeWidth={1.5} size={32} fill="currentColor" className="ml-1" />
-          </button>
+          </ButtonInstrument>
         )}
 
         {/* Progress Bar */}
@@ -220,20 +222,30 @@ export const StudioVideoPlayer: React.FC<StudioVideoPlayerProps> = ({
             />
           </div>
           
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <button onClick={togglePlay} className="text-white/80 hover:text-white transition-colors">
+          <ContainerInstrument plain className="flex items-center justify-between">
+            <ContainerInstrument plain className="flex items-center gap-4">
+              <ButtonInstrument 
+                variant="pure"
+                size="none"
+                onClick={togglePlay} 
+                className="text-white/80 hover:text-white transition-colors"
+              >
                 {isPlaying ? <Pause strokeWidth={1.5} size={20} fill="currentColor" /> : <Play strokeWidth={1.5} size={20} fill="currentColor" />}
-              </button>
-              <button onClick={toggleMute} className="text-white/80 hover:text-white transition-colors">
+              </ButtonInstrument>
+              <ButtonInstrument 
+                variant="pure"
+                size="none"
+                onClick={toggleMute} 
+                className="text-white/80 hover:text-white transition-colors"
+              >
                 {isMuted ? <VolumeX strokeWidth={1.5} size={20} /> : <Volume2 strokeWidth={1.5} size={20} />}
-              </button>
-            </div>
-            <div className="flex gap-4">
-               <button className="text-white/40 hover:text-white transition-colors"><RotateCcw strokeWidth={1.5} size={18} /></button>
-               <button className="text-white/40 hover:text-white transition-colors"><Maximize strokeWidth={1.5} size={18} /></button>
-            </div>
-          </div>
+              </ButtonInstrument>
+            </ContainerInstrument>
+            <ContainerInstrument plain className="flex gap-4">
+               <ButtonInstrument variant="pure" size="none" className="text-white/40 hover:text-white transition-colors"><RotateCcw strokeWidth={1.5} size={18} /></ButtonInstrument>
+               <ButtonInstrument variant="pure" size="none" className="text-white/40 hover:text-white transition-colors"><Maximize strokeWidth={1.5} size={18} /></ButtonInstrument>
+            </ContainerInstrument>
+          </ContainerInstrument>
         </div>
       </div>
     </div>

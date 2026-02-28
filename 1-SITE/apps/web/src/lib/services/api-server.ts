@@ -451,21 +451,27 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
       }
 
       const actorDemosList = demosData.filter((d: any) => d.actor_id === actor.id);
-      const proxiedDemos = actorDemosList.map((d: any) => ({
-        id: d.id,
-        title: d.name,
-        audio_url: d.url?.startsWith('http') ? `/api/proxy/?path=${encodeURIComponent(d.url)}` : d.url,
-        category: d.type || 'demo',
-        status: d.status || 'approved'
-      }));
+      const proxiedDemos = actorDemosList.map((d: any) => {
+        const audioUrl = d.url?.startsWith('http') ? d.url : `/api/proxy/?path=${encodeURIComponent(d.url)}`;
+        return {
+          id: d.id,
+          title: d.name,
+          audio_url: audioUrl,
+          category: d.type || 'demo',
+          status: d.status || 'approved'
+        };
+      });
 
       const actorVideosList = videosData.filter((v: any) => v.actor_id === actor.id);
-      const proxiedVideos = actorVideosList.map((v: any) => ({
-        id: v.id,
-        name: v.name,
-        url: v.url?.startsWith('http') ? `/api/proxy/?path=${encodeURIComponent(v.url)}` : v.url,
-        type: v.type || 'portfolio'
-      }));
+      const proxiedVideos = actorVideosList.map((v: any) => {
+        const videoUrl = v.url?.startsWith('http') ? v.url : `/api/proxy/?path=${encodeURIComponent(v.url)}`;
+        return {
+          id: v.id,
+          name: v.name,
+          url: videoUrl,
+          type: v.type || 'portfolio'
+        };
+      });
 
       const nativeLangId = nativeLangMap.get(actor.id) || actor.native_language_id || null;
       const nativeLangInfo = nativeLangId ? langLookup.get(nativeLangId) : null;
@@ -703,20 +709,26 @@ async function processActorData(actor: any, slug: string): Promise<Actor> {
       directDb.select().from(videosTable).where(and(eq(videosTable.actorId, actor.id), eq(videosTable.is_public, true)))
     ]);
 
-    mappedDemos = (demos || []).map((d: any) => ({
-      id: d.id,
-      title: d.name,
-      audio_url: d.url?.startsWith('http') ? `/api/proxy/?path=${encodeURIComponent(d.url)}` : d.url,
-      category: d.type || 'demo',
-      status: d.status || 'approved'
-    }));
+    mappedDemos = (demos || []).map((d: any) => {
+      const audioUrl = d.url?.startsWith('http') ? d.url : `/api/proxy/?path=${encodeURIComponent(d.url)}`;
+      return {
+        id: d.id,
+        title: d.name,
+        audio_url: audioUrl,
+        category: d.type || 'demo',
+        status: d.status || 'approved'
+      };
+    });
 
-    mappedVideos = (videos || []).map((v: any) => ({
-      id: v.id,
-      name: v.name,
-      url: v.url?.startsWith('http') ? `/api/proxy/?path=${encodeURIComponent(v.url)}` : v.url,
-      type: v.type || 'portfolio'
-    }));
+    mappedVideos = (videos || []).map((v: any) => {
+      const videoUrl = v.url?.startsWith('http') ? v.url : `/api/proxy/?path=${encodeURIComponent(v.url)}`;
+      return {
+        id: v.id,
+        name: v.name,
+        url: videoUrl,
+        type: v.type || 'portfolio'
+      };
+    });
   } catch (err: any) {
     console.warn(` [api-server] processActorData: Drizzle relations failed, using empty arrays:`, err.message);
   }

@@ -233,37 +233,39 @@ export const AgencyCalculator = ({
           <div className="relative z-10 space-y-12">
             
             {/* 1. Journey Selector */}
-            <div className="flex justify-center">
-              <div className="flex p-1 bg-white rounded-2xl border border-black/5 shadow-sm">
-                {[
-                  { id: 'telefonie', label: t('common.telephony', 'Telefonie'), sub: t('common.telephony.sub', 'Voicemail & IVR'), icon: Phone },
-                  { id: 'unpaid', label: t('common.video', 'Video'), sub: t('common.video.sub', 'Corporate & Web'), icon: Video },
-                  { id: 'paid', label: t('common.commercial', 'Advertentie'), sub: t('common.commercial.sub', 'Radio, TV & Ads'), icon: Megaphone }
-                ].map((u) => (
-                  <button 
-                    key={u.id}
-                    onClick={() => {
-                      setCalcUsage(u.id as any);
-                      if (onJourneyChange) onJourneyChange(u.id as any);
-                      if (u.id === 'telefonie') { setCalcType('ivr'); setCalcWords(25); setCalcLive(false); }
-                      else if (u.id === 'unpaid') { setCalcType('webvideo'); setCalcWords(200); setCalcLive(false); setCalcMusic(false); }
-                      else { setCalcType('social'); setCalcWords(25); setCalcMusic(false); }
-                      setCalcYears(u.id === 'paid' && calcType === 'podcast' ? 0.25 : 1);
-                    }}
-                    className={cn(
-                      "flex-1 md:px-8 py-3 rounded-xl text-[13px] font-bold transition-all flex flex-col items-center justify-center gap-1",
-                      calcUsage === u.id ? "bg-va-black text-white shadow-lg" : "text-va-black/30 hover:text-va-black"
-                    )}
-                  >
-                    <div className="flex items-center gap-2">
-                      <u.icon size={14} className={calcUsage === u.id ? "text-primary" : ""} /> 
-                      <span>{u.label}</span>
-                    </div>
-                    <span className={cn("text-[9px] tracking-widest font-medium opacity-40")}>{u.sub}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
+          <div className="flex justify-center">
+            <ContainerInstrument plain className="flex p-1 bg-white rounded-2xl border border-black/5 shadow-sm">
+              {[
+                { id: 'telefonie', label: t('common.telephony', 'Telefonie'), sub: t('common.telephony.sub', 'Voicemail & IVR'), icon: Phone },
+                { id: 'unpaid', label: t('common.video', 'Video'), sub: t('common.video.sub', 'Corporate & Web'), icon: Video },
+                { id: 'paid', label: t('common.commercial', 'Advertentie'), sub: t('common.commercial.sub', 'Radio, TV & Ads'), icon: Megaphone }
+              ].map((u) => (
+                <ButtonInstrument 
+                  key={u.id}
+                  variant="pure"
+                  size="none"
+                  onClick={() => {
+                    setCalcUsage(u.id as any);
+                    if (onJourneyChange) onJourneyChange(u.id as any);
+                    if (u.id === 'telefonie') { setCalcType('ivr'); setCalcWords(25); setCalcLive(false); }
+                    else if (u.id === 'unpaid') { setCalcType('webvideo'); setCalcWords(200); setCalcLive(false); setCalcMusic(false); }
+                    else { setCalcType('social'); setCalcWords(25); setCalcMusic(false); }
+                    setCalcYears(u.id === 'paid' && calcType === 'podcast' ? 0.25 : 1);
+                  }}
+                  className={cn(
+                    "flex-1 md:px-8 py-3 rounded-xl text-[13px] font-bold transition-all flex flex-col items-center justify-center gap-1",
+                    calcUsage === u.id ? "bg-va-black text-white shadow-lg" : "text-va-black/30 hover:text-va-black"
+                  )}
+                >
+                  <div className="flex items-center gap-2">
+                    <u.icon size={14} className={calcUsage === u.id ? "text-primary" : ""} /> 
+                    <span>{u.label}</span>
+                  </div>
+                  <span className={cn("text-[9px] tracking-widest font-medium opacity-40")}>{u.sub}</span>
+                </ButtonInstrument>
+              ))}
+            </ContainerInstrument>
+          </div>
 
             {/* 2. Contextual Grids */}
             <div className="space-y-10">
@@ -274,12 +276,14 @@ export const AgencyCalculator = ({
                     <LabelInstrument className="text-va-black/40 ml-0 tracking-[0.2em] text-[11px] font-bold uppercase">
                       <VoiceglotText translationKey="common.choose_medium" defaultText="Kies je medium" />
                     </LabelInstrument>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <ContainerInstrument plain className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       {Object.entries(calculatorRates)
                         .filter(([_, val]) => val.usage === 'paid')
                         .map(([key, val]) => (
-                        <button
+                        <ButtonInstrument
                           key={key}
+                          variant="pure"
+                          size="none"
                           onClick={() => {
                             setCalcType(key as any);
                             if (key === 'social' || key === 'podcast') setCalcRegion('national');
@@ -309,9 +313,9 @@ export const AgencyCalculator = ({
                               <VoiceglotText translationKey={`common.media.${key}.sub`} defaultText={val.sub} />
                             </span>
                           </div>
-                        </button>
+                        </ButtonInstrument>
                       ))}
-                    </div>
+                    </ContainerInstrument>
                   </div>
 
                   {/* Spots Grid */}
@@ -321,10 +325,12 @@ export const AgencyCalculator = ({
                         <VoiceglotText translationKey="common.spots_count" defaultText="Aantal spots" />
                       </LabelInstrument>
                     </div>
-                    <div className="flex p-1 bg-white rounded-2xl border border-black/5 shadow-sm h-[64px]">
+                    <ContainerInstrument plain className="flex p-1 bg-white rounded-2xl border border-black/5 shadow-sm h-[64px]">
                       {[1, 2, 3, 4, 5].map((num) => (
-                        <button
+                        <ButtonInstrument
                           key={num}
+                          variant="pure"
+                          size="none"
                           onClick={() => setCalcSpots(num)}
                           className={cn(
                             "flex-1 rounded-xl text-[13px] font-bold transition-all",
@@ -332,9 +338,9 @@ export const AgencyCalculator = ({
                           )}
                         >
                           {num} {num === 1 ? t('common.spot', 'Spot') : t('common.spots', 'Spots')}
-                        </button>
+                        </ButtonInstrument>
                       ))}
-                    </div>
+                    </ContainerInstrument>
                     <TextInstrument className="text-[10px] text-va-black/30 leading-relaxed italic px-1">
                       <VoiceglotText translationKey="calculator.spots_info" defaultText="Een campagne bestaat meestal uit 1 hoofdspot met variaties (vb. 30s, 20s en 6s) of verschillende call-to-actions. Elke variatie telt als een aparte spot." />
                     </TextInstrument>
@@ -345,17 +351,17 @@ export const AgencyCalculator = ({
                     <LabelInstrument className="text-va-black/40 ml-0 tracking-[0.2em] text-[11px] font-bold uppercase">
                       {calcType === 'podcast' ? <VoiceglotText translationKey="common.duration_period" defaultText="Duurtijd (Periode)" /> : <VoiceglotText translationKey="common.duration_license" defaultText="Duurtijd (Licentie)" />}
                     </LabelInstrument>
-                    <div className="flex p-1 bg-white rounded-2xl border border-black/5 shadow-sm h-[64px]">
+                    <ContainerInstrument plain className="flex p-1 bg-white rounded-2xl border border-black/5 shadow-sm h-[64px]">
                       {calcType === 'podcast' ? [3, 6, 12].map((m) => (
-                        <button key={m} onClick={() => setCalcYears(m / 12)} className={cn("flex-1 rounded-xl text-[13px] font-bold transition-all", calcYears === m / 12 ? "bg-va-off-white text-primary shadow-inner" : "text-va-black/30 hover:text-va-black")}>
+                        <ButtonInstrument key={m} variant="pure" size="none" onClick={() => setCalcYears(m / 12)} className={cn("flex-1 rounded-xl text-[13px] font-bold transition-all", calcYears === m / 12 ? "bg-va-off-white text-primary shadow-inner" : "text-va-black/30 hover:text-va-black")}>
                           {m} <VoiceglotText translationKey="common.months" defaultText="Maanden" />
-                        </button>
+                        </ButtonInstrument>
                       )) : [1, 2, 3, 5].map((y) => (
-                        <button key={y} onClick={() => setCalcYears(y)} className={cn("flex-1 rounded-xl text-[13px] font-bold transition-all", calcYears === y ? "bg-va-off-white text-primary shadow-inner" : "text-va-black/30 hover:text-va-black")}>
+                        <ButtonInstrument key={y} variant="pure" size="none" onClick={() => setCalcYears(y)} className={cn("flex-1 rounded-xl text-[13px] font-bold transition-all", calcYears === y ? "bg-va-off-white text-primary shadow-inner" : "text-va-black/30 hover:text-va-black")}>
                           {y} {y === 1 ? t('common.year', 'Jaar') : t('common.years', 'Jaar')}
-                        </button>
+                        </ButtonInstrument>
                       ))}
-                    </div>
+                    </ContainerInstrument>
                     <TextInstrument className="text-[10px] text-va-black/30 leading-relaxed italic px-1">
                       <VoiceglotText translationKey="calculator.duration_info" defaultText="De periode waarin de advertentie actief gepusht wordt (met mediabudget) op radio, TV of online. Na deze termijn kan de licentie eenvoudig worden verlengd." />
                     </TextInstrument>
@@ -499,18 +505,20 @@ export const AgencyCalculator = ({
                 <TextInstrument className="text-va-black/30 text-[11px] tracking-[0.2em] font-bold uppercase">
                   {calcUsage === 'paid' ? <VoiceglotText translationKey="calculator.rates_per_actor" defaultText="Tarieven per stemacteur (excl. BTW)" /> : <VoiceglotText translationKey="calculator.available_actors" defaultText="Beschikbare stemacteurs" />}
                 </TextInstrument>
-                <button 
-                  onClick={() => {
-                    playClick('soft');
-                    const params = new URLSearchParams();
-                    params.set('usage', calcUsage);
-                    if (calcUsage === 'paid') params.set('medium', calcType);
-                    router.push(`/agency?${params.toString()}`);
-                  }} 
-                  className="text-[11px] font-bold text-primary uppercase tracking-widest hover:opacity-70 transition-opacity"
-                >
-                  <VoiceglotText translationKey="common.view_all" defaultText="Bekijk alle" />
-                </button>
+                  <ButtonInstrument 
+                    variant="pure"
+                    size="none"
+                    onClick={() => {
+                      playClick('soft');
+                      const params = new URLSearchParams();
+                      params.set('usage', calcUsage);
+                      if (calcUsage === 'paid') params.set('medium', calcType);
+                      router.push(`/agency?${params.toString()}`);
+                    }} 
+                    className="text-[11px] font-bold text-primary uppercase tracking-widest hover:opacity-70 transition-opacity"
+                  >
+                    <VoiceglotText translationKey="common.view_all" defaultText="Bekijk alle" />
+                  </ButtonInstrument>
               </div>
               
               <div className="bg-white rounded-[24px] border border-black/5 overflow-hidden shadow-sm">
@@ -630,22 +638,26 @@ export const AgencyCalculator = ({
                     <TextInstrument className="text-[10px] font-bold text-va-black/30 uppercase tracking-widest">
                       {currentPage} / {totalPages}
                     </TextInstrument>
-                    <div className="flex gap-2">
-                      <button 
+                    <ContainerInstrument plain className="flex gap-2">
+                      <ButtonInstrument 
+                        variant="pure"
+                        size="none"
                         onClick={() => { onPageChange?.(Math.max(1, currentPage - 1)); playClick('soft'); }}
                         disabled={currentPage === 1}
                         className="p-2 rounded-lg bg-white border border-black/5 hover:border-primary/20 disabled:opacity-30 transition-all"
                       >
                         <Minus size={12} />
-                      </button>
-                      <button 
+                      </ButtonInstrument>
+                      <ButtonInstrument 
+                        variant="pure"
+                        size="none"
                         onClick={() => { onPageChange?.(Math.min(totalPages, currentPage + 1)); playClick('soft'); }}
                         disabled={currentPage === totalPages}
                         className="p-2 rounded-lg bg-white border border-black/5 hover:border-primary/20 disabled:opacity-30 transition-all"
                       >
                         <Plus size={12} />
-                      </button>
-                    </div>
+                      </ButtonInstrument>
+                    </ContainerInstrument>
                   </div>
                 )}
               </div>

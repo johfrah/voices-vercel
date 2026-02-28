@@ -318,8 +318,10 @@ export function AgencyContent({ mappedActors, filters }: { mappedActors: any[], 
                 </div>
                 
                 {/* Terug knop voor checkout */}
-                <div className="mt-12 pt-8 border-t border-black/[0.03] flex justify-center">
-                  <button 
+                <ContainerInstrument plain className="mt-12 pt-8 border-t border-black/[0.03] flex justify-center">
+                  <ButtonInstrument 
+                    variant="pure"
+                    size="none"
                     onClick={() => updateStep('script')}
                     className="text-[11px] font-bold tracking-widest text-va-black/20 hover:text-primary uppercase transition-colors flex items-center gap-2"
                   >
@@ -327,8 +329,8 @@ export function AgencyContent({ mappedActors, filters }: { mappedActors: any[], 
                       <ChevronRight size={14} />
                     </div>
                     Terug naar script aanpassen
-                  </button>
-                </div>
+                  </ButtonInstrument>
+                </ContainerInstrument>
               </div>
             </motion.div>
           )}

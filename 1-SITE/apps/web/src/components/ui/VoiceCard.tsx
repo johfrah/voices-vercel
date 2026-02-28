@@ -537,12 +537,14 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
               crossOrigin="anonymous"
               onEnded={() => setIsPlaying(false)}
             />
-            <button 
-              onClick={(e) => { e.stopPropagation(); setActiveVideo(null); setIsPlaying(false); }}
-              className="absolute top-2 md:top-4 right-2 md:right-4 z-20 w-8 h-8 rounded-full bg-black/40 backdrop-blur-md text-white flex items-center justify-center hover:bg-black/60 transition-all"
-            >
-              <Plus className="rotate-45" size={16} />
-            </button>
+                      <ButtonInstrument 
+                        variant="pure"
+                        size="none"
+                        onClick={(e) => { e.stopPropagation(); setActiveVideo(null); setIsPlaying(false); }}
+                        className="absolute top-2 md:top-4 right-2 md:right-4 z-20 w-8 h-8 rounded-full bg-black/40 backdrop-blur-md text-white flex items-center justify-center hover:bg-black/60 transition-all"
+                      >
+                        <Plus className="rotate-45" size={16} />
+                      </ButtonInstrument>
           </div>
         ) : voice?.video_url ? (
           <video 
@@ -573,7 +575,9 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
 
         <div className={cn("absolute inset-0 flex flex-col p-2 md:p-4 transition-opacity duration-500 z-10", isCurrentlyPlaying ? "opacity-100" : "opacity-0 group-hover:opacity-100")}>
           <div className="flex-grow flex items-center justify-center">
-            <button 
+            <ButtonInstrument 
+              variant="pure"
+              size="none"
               onClick={(e) => {
                 e.stopPropagation();
                 if (activeVideo) {
@@ -615,7 +619,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
               className="w-12 h-12 md:w-20 md:h-20 rounded-full bg-white/20 backdrop-blur-xl border border-white/30 flex items-center justify-center text-white hover:scale-110 hover:bg-white/30 transition-all duration-500 shadow-2xl group/play"
             >
               {isCurrentlyPlaying ? <Pause size={24} className="md:w-8 md:h-8" fill="currentColor" /> : <Play size={24} className="md:w-8 md:h-8 ml-1 group-hover/play:scale-110 transition-transform" />}
-            </button>
+            </ButtonInstrument>
           </div>
           {activeSubtitle && (
             <div className="mt-auto pb-2 md:pb-4 text-center animate-in fade-in slide-in-from-bottom-2">
@@ -626,16 +630,26 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
 
         {!activeVideo && (voice as any).allow_free_trial !== false && masterControlState.journey !== 'telephony' && (
           <div className="absolute bottom-2 md:bottom-4 right-2 md:right-4 z-40">
-            <button onClick={handleStudioToggle} className={cn("h-8 md:h-10 rounded-full backdrop-blur-md flex items-center transition-all duration-500 shadow-lg border border-white/10 group/studio overflow-hidden", isSelected ? "bg-primary text-white border-primary px-2 md:px-3 gap-1 md:gap-2" : "bg-va-black/40 hover:bg-va-black/60 text-white px-2 md:px-3 gap-0 group-hover:gap-1 md:group-hover:gap-2 backdrop-blur-md")}>
+            <ButtonInstrument 
+              variant="pure"
+              size="none"
+              onClick={handleStudioToggle} 
+              className={cn("h-8 md:h-10 rounded-full backdrop-blur-md flex items-center transition-all duration-500 shadow-lg border border-white/10 group/studio overflow-hidden", isSelected ? "bg-primary text-white border-primary px-2 md:px-3 gap-1 md:gap-2" : "bg-va-black/40 hover:bg-va-black/60 text-white px-2 md:px-3 gap-0 group-hover:gap-1 md:group-hover:gap-2 backdrop-blur-md")}
+            >
               {isSelected ? <Check size={14} className="md:w-4.5 md:h-4.5" strokeWidth={3} /> : <><Plus size={14} className="md:w-4.5 md:h-4.5 shrink-0 transition-transform group-hover/studio:rotate-90 duration-500" /><span className="max-w-0 group-hover:max-w-[180px] opacity-0 group-hover:opacity-100 transition-all duration-500 text-[8px] md:text-[10px] font-black tracking-widest uppercase whitespace-nowrap"><VoiceglotText translationKey="common.free_demo_cta" defaultText="Gratis proefopname" /></span></>}
-            </button>
+            </ButtonInstrument>
           </div>
         )}
 
         {isAdmin && (
-          <button onClick={handleAdminClick} className="absolute top-4 left-4 z-40 w-10 h-10 rounded-full bg-va-black/40 backdrop-blur-md text-white flex items-center justify-center hover:bg-primary transition-all duration-300 shadow-lg border border-white/10 group/admin">
+          <ButtonInstrument 
+            variant="pure"
+            size="none"
+            onClick={handleAdminClick} 
+            className="absolute top-4 left-4 z-40 w-10 h-10 rounded-full bg-va-black/40 backdrop-blur-md text-white flex items-center justify-center hover:bg-primary transition-all duration-300 shadow-lg border border-white/10 group/admin"
+          >
             <Edit3 size={18} className="group-hover/admin:rotate-12 transition-transform" />
-          </button>
+          </ButtonInstrument>
         )}
       </div>
 
@@ -648,11 +662,11 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
               <span className="text-[11px] md:text-[13px] font-light text-va-black tracking-tight"><VoiceglotText translationKey={voice?.native_lang_id ? `language.${voice.native_lang_id}` : `common.language.${voice?.native_lang?.toLowerCase()}`} defaultText={voice?.native_lang_label || MarketManager.getLanguageLabel(voice?.native_lang || '') || t('common.unknown_language', 'Onbekende taal')} /></span>
               {isEditMode && (
                 <div className="flex items-center gap-1 ml-1">
-                  <button onClick={(e) => { e.stopPropagation(); setIsLangSelectorOpen(!isLangSelectorOpen); playClick('pro'); }} className="text-primary hover:scale-110 transition-transform" title="Taal wijzigen"><ChevronDown size={14} strokeWidth={3} /></button>
-                  <button onClick={(e) => { e.stopPropagation(); setIsCountrySelectorOpen(!isCountrySelectorOpen); playClick('pro'); }} className="text-primary hover:scale-110 transition-transform" title="Land wijzigen"><MapPin size={14} strokeWidth={1.5} /></button>
-                  <button onClick={(e) => { e.stopPropagation(); setIsGenderSelectorOpen(!isGenderSelectorOpen); playClick('pro'); }} className="text-primary hover:scale-110 transition-transform" title="Geslacht wijzigen"><Mic size={14} strokeWidth={1.5} /></button>
-                  <button onClick={(e) => { e.stopPropagation(); setIsExperienceSelectorOpen(!isExperienceSelectorOpen); playClick('pro'); }} className="text-primary hover:scale-110 transition-transform" title="Ervaring wijzigen"><Zap size={14} strokeWidth={1.5} /></button>
-                  <button onClick={(e) => { e.stopPropagation(); setIsStatusSelectorOpen(!isStatusSelectorOpen); playClick('pro'); }} className="text-primary hover:scale-110 transition-transform" title="Status wijzigen"><Settings size={14} strokeWidth={1.5} /></button>
+                  <ButtonInstrument variant="pure" size="none" onClick={(e) => { e.stopPropagation(); setIsLangSelectorOpen(!isLangSelectorOpen); playClick('pro'); }} className="text-primary hover:scale-110 transition-transform" title="Taal wijzigen"><ChevronDown size={14} strokeWidth={3} /></ButtonInstrument>
+                  <ButtonInstrument variant="pure" size="none" onClick={(e) => { e.stopPropagation(); setIsCountrySelectorOpen(!isCountrySelectorOpen); playClick('pro'); }} className="text-primary hover:scale-110 transition-transform" title="Land wijzigen"><MapPin size={14} strokeWidth={1.5} /></ButtonInstrument>
+                  <ButtonInstrument variant="pure" size="none" onClick={(e) => { e.stopPropagation(); setIsGenderSelectorOpen(!isGenderSelectorOpen); playClick('pro'); }} className="text-primary hover:scale-110 transition-transform" title="Geslacht wijzigen"><Mic size={14} strokeWidth={1.5} /></ButtonInstrument>
+                  <ButtonInstrument variant="pure" size="none" onClick={(e) => { e.stopPropagation(); setIsExperienceSelectorOpen(!isExperienceSelectorOpen); playClick('pro'); }} className="text-primary hover:scale-110 transition-transform" title="Ervaring wijzigen"><Zap size={14} strokeWidth={1.5} /></ButtonInstrument>
+                  <ButtonInstrument variant="pure" size="none" onClick={(e) => { e.stopPropagation(); setIsStatusSelectorOpen(!isStatusSelectorOpen); playClick('pro'); }} className="text-primary hover:scale-110 transition-transform" title="Status wijzigen"><Settings size={14} strokeWidth={1.5} /></ButtonInstrument>
                 </div>
               )}
               <AnimatePresence>
@@ -735,8 +749,8 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
                 ))}
                 {isEditMode && (
                   <div className="flex items-center gap-1">
-                    <button onClick={(e) => { e.stopPropagation(); setIsToneSelectorOpen(!isToneSelectorOpen); playClick('pro'); }} className="w-5 h-5 rounded-full bg-primary text-white flex items-center justify-center hover:scale-110 transition-all shadow-sm" title="Relational Tones"><Zap size={10} strokeWidth={3} /></button>
-                    <button onClick={(e) => { e.stopPropagation(); setIsTagSelectorOpen(!isTagSelectorOpen); playClick('pro'); }} className="w-5 h-5 rounded-full bg-va-black/20 text-white flex items-center justify-center hover:scale-110 transition-all shadow-sm" title="Legacy Tags"><Plus size={10} strokeWidth={3} /></button>
+                    <ButtonInstrument variant="pure" size="none" onClick={(e) => { e.stopPropagation(); setIsToneSelectorOpen(!isToneSelectorOpen); playClick('pro'); }} className="w-5 h-5 rounded-full bg-primary text-white flex items-center justify-center hover:scale-110 transition-all shadow-sm" title="Relational Tones"><Zap size={10} strokeWidth={3} /></ButtonInstrument>
+                    <ButtonInstrument variant="pure" size="none" onClick={(e) => { e.stopPropagation(); setIsTagSelectorOpen(!isTagSelectorOpen); playClick('pro'); }} className="w-5 h-5 rounded-full bg-va-black/20 text-white flex items-center justify-center hover:scale-110 transition-all shadow-sm" title="Legacy Tags"><Plus size={10} strokeWidth={3} /></ButtonInstrument>
                   </div>
                 )}
                 <AnimatePresence>
