@@ -34,7 +34,23 @@ export const {
   castingLists,
   faq,
   workshopMedia,
-  media
+  media,
+  approvalQueue,
+  vaultFiles,
+  chatPushSubscriptions,
+  courseProgress,
+  systemKnowledge,
+  systemEvents,
+  genders,
+  languages,
+  journeys,
+  mediaTypes,
+  actorDemos,
+  actorLanguages,
+  navMenus,
+  quizSteps,
+  workshopInterest,
+  appConfigs
 } = typeof window === 'undefined' 
   ? require('../core-internal/database/schema/index.ts')
   : {};
