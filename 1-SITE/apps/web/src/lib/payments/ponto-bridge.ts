@@ -1,4 +1,7 @@
-import { db, orders, users, approvalQueue } from '@/lib/system/voices-config';
+import { db, getTable } from '@/lib/system/voices-config';
+const orders = getTable('orders');
+const users = getTable('users');
+const approvalQueue = getTable('approvalQueue');
 import { eq, inArray, sql } from "drizzle-orm";
 
 /**

@@ -284,7 +284,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
   const { notifications: customerNotifications, unreadCount: customerUnreadCount, markAsRead: markCustomerAsRead, markAllAsRead: markAllCustomerAsRead } = useNotifications();
   const auth = useAuth();
   const isAdmin = auth.isAdmin;
-  const market = MarketManager.getCurrentMarket(); 
+  const market = MarketManager.getCurrentMarket(undefined, pathname); 
   const [mounted, setMounted] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -333,7 +333,9 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
       if (initialNavConfig && links.length > 0) return;
 
       try {
-        const res = await fetch(`/api/admin/config?type=navigation&journey=${getJourneyKey()}`);
+        const journeyKey = getJourneyKey();
+        console.log(`[GlobalNav] Fetching nav for journey: ${journeyKey}`);
+        const res = await fetch(`/api/admin/config?type=navigation&journey=${journeyKey}`);
         if (!res.ok) {
           throw new Error(`Nav fetch failed with status: ${res.status}`);
         }

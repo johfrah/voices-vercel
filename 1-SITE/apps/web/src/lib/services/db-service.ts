@@ -1,4 +1,7 @@
-import { db, languages, voiceTones, countries } from "@/lib/system/voices-config";
+import { db, getTable } from "@/lib/system/voices-config";
+const languages = getTable('languages');
+const voiceTones = getTable('voiceTones');
+const countries = getTable('countries');
 import { asc, eq } from "drizzle-orm";
 
 /**

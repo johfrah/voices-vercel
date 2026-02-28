@@ -366,11 +366,16 @@ export class MarketManagerServer {
   /**
    * Haalt de huidige markt op basis van de host (Server-Side of Client-Side)
    */
-  static getCurrentMarket(host?: string): MarketConfig {
+  static getCurrentMarket(host?: string, path?: string): MarketConfig {
     let activeHost = host;
+    let activePath = path;
     
     if (!activeHost && typeof window !== 'undefined') {
       activeHost = window.location.host;
+    }
+    
+    if (!activePath && typeof window !== 'undefined') {
+      activePath = window.location.pathname;
     }
     
     if (!activeHost) activeHost = 'voices.be';
@@ -378,9 +383,10 @@ export class MarketManagerServer {
     let cleanHost = activeHost.replace('www.', '').replace('https://', '').replace('http://', '').split('/')[0];
     
     // 🛡️ CHRIS-PROTOCOL: Sub-journey detection for static resolution (e.g. voices.be/studio)
-    if (cleanHost === 'voices.be' && typeof window !== 'undefined') {
-      if (window.location.pathname.startsWith('/studio')) cleanHost = 'voices.be/studio';
-      if (window.location.pathname.startsWith('/academy')) cleanHost = 'voices.be/academy';
+    if (cleanHost === 'voices.be' || cleanHost === 'localhost:3000') {
+      const checkPath = activePath || '';
+      if (checkPath.startsWith('/studio')) cleanHost = 'voices.be/studio';
+      else if (checkPath.startsWith('/academy')) cleanHost = 'voices.be/academy';
     }
 
     // Check cache first

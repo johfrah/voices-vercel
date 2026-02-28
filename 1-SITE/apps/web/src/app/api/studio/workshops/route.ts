@@ -83,7 +83,7 @@ export async function GET() {
         m.file_path AS media_file_path, m.alt_text AS media_alt_text
       FROM workshops w
       LEFT JOIN media m ON m.id = w.media_id
-      WHERE w.status IN ('publish', 'live')
+      WHERE w.status IN ('publish', 'live') OR w.is_public = true
       ORDER BY w.title
     `);
 

@@ -162,7 +162,7 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({
           general_settings: config[0]?.value || {},
           ademing_offline: process.env.ADEMING_OFFLINE === 'true',
-          _version: '2.16.077'
+          _version: '2.16.078'
         });
       } catch (err: any) {
         console.warn(`[Admin Config] General settings fetch failed, returning empty: ${err.message}`);

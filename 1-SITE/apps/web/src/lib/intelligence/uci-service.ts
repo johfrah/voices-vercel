@@ -1,5 +1,8 @@
-import { db } from '@/lib/system/voices-config';
-import { users, orders, utmTouchpoints, reviews } from '@/lib/system/voices-config';
+import { db, getTable } from '@/lib/system/voices-config';
+const users = getTable('users');
+const orders = getTable('orders');
+const utmTouchpoints = getTable('utmTouchpoints');
+const reviews = getTable('reviews');
 import { eq, sql, desc, sum, count } from 'drizzle-orm';
 import { createClient } from '@supabase/supabase-js';
 
