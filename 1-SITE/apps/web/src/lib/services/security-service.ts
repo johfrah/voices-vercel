@@ -1,4 +1,7 @@
-import { db, courseProgress, users } from '@/lib/system/voices-config';
+import { db, getTable } from '@/lib/system/voices-config';
+
+const courseProgress = getTable('courseProgress');
+const users = getTable('users');
 import { eq, and } from "drizzle-orm";
 import { createClient } from '@supabase/supabase-js';
 
@@ -20,11 +23,11 @@ export const SecurityService = {
   async checkAccess(user_id: number, courseId: number) {
     let user: any = null;
     try {
-      const [dbUser] = await db.select().from(users).where(eq(users.id, userId)).limit(1);
+      const [dbUser] = await db.select().from(users).where(eq(users.id, user_id)).limit(1);
       user = dbUser;
     } catch (dbError) {
       console.warn(' Security Service Access Drizzle failed, falling back to SDK');
-      const { data } = await supabase.from('users').select('*').eq('id', userId).single();
+      const { data } = await supabase.from('users').select('*').eq('id', user_id).single();
       user = data;
     }
     
@@ -45,11 +48,11 @@ export const SecurityService = {
   async trackDevice(user_id: number, fingerprint: string) {
     let user: any = null;
     try {
-      const [dbUser] = await db.select().from(users).where(eq(users.id, userId)).limit(1);
+      const [dbUser] = await db.select().from(users).where(eq(users.id, user_id)).limit(1);
       user = dbUser;
     } catch (dbError) {
       console.warn(' Security Service Track Drizzle failed, falling back to SDK');
-      const { data } = await supabase.from('users').select('*').eq('id', userId).single();
+      const { data } = await supabase.from('users').select('*').eq('id', user_id).single();
       user = data;
     }
 
@@ -73,16 +76,16 @@ export const SecurityService = {
       try {
         await db.update(users)
           .set({ activityLog: newLog })
-          .where(eq(users.id, userId));
+          .where(eq(users.id, user_id));
       } catch (updateError) {
         console.warn(' Security Service Update Drizzle failed, falling back to SDK');
-        await supabase.from('users').update({ activity_log: newLog }).eq('id', userId);
+        await supabase.from('users').update({ activity_log: newLog }).eq('id', user_id);
       }
 
       // Als er meer dan 3 devices zijn, stuur een waarschuwing naar de admin
       const deviceCount = new Set(newLog.filter(l => l.type === 'device_login').map(l => l.fingerprint)).size;
       if (deviceCount > 3) {
-        console.warn(` Account sharing alert: User ${userId} has ${deviceCount} active devices.`);
+        console.warn(` Account sharing alert: User ${user_id} has ${deviceCount} active devices.`);
       }
     }
   }

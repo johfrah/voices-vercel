@@ -19,7 +19,12 @@ export const schema = typeof window === 'undefined'
   ? require('../core-internal/database/schema/index.ts')
   : {};
 
-// Export individual tables only on server to prevent client-side leakage
+// 🛡️ NUCLEAR BUNDLE PROTECTION: Only export critical tables
+// This prevents the minifier from creating 'tl' collisions by overwhelming the bundle.
+const fullSchema = typeof window === 'undefined' 
+  ? require('../core-internal/database/schema/index.ts')
+  : {};
+
 export const { 
   actors, 
   workshops, 
@@ -35,25 +40,17 @@ export const {
   faq,
   workshopMedia,
   media,
-  approvalQueue,
-  vaultFiles,
-  chatPushSubscriptions,
-  courseProgress,
-  systemKnowledge,
-  systemEvents,
-  genders,
-  languages,
-  journeys,
-  mediaTypes,
-  actorDemos,
-  actorLanguages,
-  navMenus,
-  quizSteps,
-  workshopInterest,
   appConfigs
-} = typeof window === 'undefined' 
-  ? require('../core-internal/database/schema/index.ts')
-  : {};
+} = fullSchema;
+
+/**
+ * 🚀 DYNAMIC TABLE LOADER
+ * Use this for non-critical tables to keep the client bundle small.
+ */
+export function getTable(tableName: string) {
+  if (typeof window !== 'undefined') return null;
+  return fullSchema[tableName];
+}
 
 // 🛡️ CHRIS-PROTOCOL: Conditional DB Export
 // We only export 'db' on the server to prevent bundling 'postgres' in the browser.

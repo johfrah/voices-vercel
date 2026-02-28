@@ -1,4 +1,7 @@
-import { db, orders, systemEvents } from '@/lib/system/voices-config';
+import { db, getTable } from '@/lib/system/voices-config';
+
+const orders = getTable('orders');
+const systemEvents = getTable('systemEvents');
 import { eq } from "drizzle-orm";
 import { InvoiceService } from "../commerce/invoice-service";
 import { SmartmailService } from "./smartmail-service";

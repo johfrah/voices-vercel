@@ -1,5 +1,6 @@
-import { db } from '@/lib/system/voices-config';
-import { navMenus } from '@/lib/system/voices-config';
+import { db, getTable } from '@/lib/system/voices-config';
+
+const navMenus = getTable('navMenus');
 import { eq } from "drizzle-orm";
 import { createClient } from "@supabase/supabase-js";
 

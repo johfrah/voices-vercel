@@ -1,5 +1,9 @@
 import { and, eq } from 'drizzle-orm';
-import { db, approvalQueue, orderItems, vaultFiles } from '@/lib/system/voices-config';
+import { db, getTable } from '@/lib/system/voices-config';
+
+const approvalQueue = getTable('approvalQueue');
+const orderItems = getTable('orderItems');
+const vaultFiles = getTable('vaultFiles');
 
 /**
  *  PAYOUT READINESS SERVICE (NUCLEAR 2026)

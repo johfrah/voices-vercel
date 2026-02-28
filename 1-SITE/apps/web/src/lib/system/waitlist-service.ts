@@ -1,5 +1,8 @@
-import { db } from '@/lib/system/voices-config';
-import { workshopInterest, workshops, systemEvents } from '@/lib/system/voices-config';
+import { db, getTable } from '@/lib/system/voices-config';
+
+const workshopInterest = getTable('workshopInterest');
+const workshops = getTable('workshops');
+const systemEvents = getTable('systemEvents');
 import { eq, sql } from "drizzle-orm";
 import { DbService } from "../services/db-service";
 

@@ -1,5 +1,7 @@
 import webpush from 'web-push';
-import { db, chatPushSubscriptions } from '../system/voices-config';
+import { db, getTable } from '../system/voices-config';
+
+const chatPushSubscriptions = getTable('chatPushSubscriptions');
 import { MarketManager } from '../system/market-manager-server';
 import { eq, inArray } from 'drizzle-orm';
 

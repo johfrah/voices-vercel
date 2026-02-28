@@ -1,4 +1,9 @@
-import { db, orders, orderItems, workshops, users } from '@/lib/system/voices-config';
+import { db, getTable } from '@/lib/system/voices-config';
+
+const orders = getTable('orders');
+const orderItems = getTable('orderItems');
+const workshops = getTable('workshops');
+const users = getTable('users');
 import { eq, and } from "drizzle-orm";
 
 /**

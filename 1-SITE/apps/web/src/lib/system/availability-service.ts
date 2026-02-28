@@ -1,4 +1,6 @@
-import { db, actors } from '@/lib/system/voices-config';
+import { db, getTable } from '@/lib/system/voices-config';
+
+const actors = getTable('actors');
 import { eq, sql } from "drizzle-orm";
 import { DbService } from "../services/db-service";
 

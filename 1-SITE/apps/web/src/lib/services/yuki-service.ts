@@ -1,6 +1,8 @@
 import * as soap from 'soap';
 import { create } from 'xmlbuilder2';
-import { db, systemEvents } from '@/lib/system/voices-config';
+import { db, getTable } from '@/lib/system/voices-config';
+
+const systemEvents = getTable('systemEvents');
 
 /**
  *  YUKI NUCLEAR SERVICE (2026)

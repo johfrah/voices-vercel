@@ -32,22 +32,25 @@ export class ServerWatchdog {
       
       // 🛡️ CHRIS-PROTOCOL: Direct DB logging fallback (Atomic Pulse)
       try {
-        const { db, systemEvents } = await import('@/lib/system/voices-config');
+        const { db, getTable } = await import('@/lib/system/voices-config');
+        const systemEvents = getTable('systemEvents');
         
-        await db.insert(systemEvents).values({
-          level: options.level || 'error',
-          source: options.component || 'ServerWatchdog',
-          message: options.error,
-          details: {
-            stack: options.stack,
-            url: options.url || 'Server-Side',
-            payload: scrubbedPayload,
-            schema: options.schema,
-            extra: options.details,
-            timestamp: new Date().toISOString()
-          },
-          createdAt: new Date().toISOString()
-        }).catch(e => console.warn('[ServerWatchdog] Direct DB logging failed:', e.message));
+        if (db && systemEvents) {
+          await db.insert(systemEvents).values({
+            level: options.level || 'error',
+            source: options.component || 'ServerWatchdog',
+            message: options.error,
+            details: {
+              stack: options.stack,
+              url: options.url || 'Server-Side',
+              payload: scrubbedPayload,
+              schema: options.schema,
+              extra: options.details,
+              timestamp: new Date().toISOString()
+            },
+            createdAt: new Date().toISOString()
+          }).catch((e: any) => console.warn('[ServerWatchdog] Direct DB logging failed:', e.message));
+        }
       } catch (dbErr) {
         // Silent fail for DB, fetch will try next
       }

@@ -1,4 +1,8 @@
-import { db, media, orders, users } from '@/lib/system/voices-config';
+import { db, getTable } from '@/lib/system/voices-config';
+
+const media = getTable('media');
+const orders = getTable('orders');
+const users = getTable('users');
 import { eq, sql } from 'drizzle-orm';
 import { DropboxService } from '@/lib/services/dropbox-service';
 

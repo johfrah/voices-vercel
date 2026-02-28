@@ -1,11 +1,10 @@
-import { db } from '@/lib/system/voices-config';
+import { db, getTable } from '@/lib/system/voices-config';
 export { db };
-import {
-    actorDemos,
-    actors,
-    instructors,
-    users
-} from '@/lib/system/voices-config';
+
+const actorDemos = getTable('actorDemos');
+const actors = getTable('actors');
+const instructors = getTable('instructors');
+const users = getTable('users');
 import { eq } from 'drizzle-orm';
 import * as fs from 'fs';
 import * as path from 'path';
