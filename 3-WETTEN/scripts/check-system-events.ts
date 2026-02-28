@@ -1,61 +1,27 @@
 #!/usr/bin/env tsx
-/**
- * Check recent system_events for errors
- */
+import dotenv from 'dotenv';
+import path from 'path';
+import { db, systemEvents } from '../../1-SITE/apps/web/src/lib/system/voices-config';
+import { desc } from 'drizzle-orm';
 
-import { db } from '../../1-SITE/packages/database/src';
-import { sql } from 'drizzle-orm';
+dotenv.config({ path: path.resolve(process.cwd(), '1-SITE/apps/web/.env.local') });
 
-async function checkSystemEvents() {
-  console.log('🔍 Checking recent system_events...\n');
-  
-  try {
-    const recentEvents = await db.execute(sql`
-      SELECT 
-        event_type,
-        severity,
-        message,
-        details,
-        created_at
-      FROM system_events
-      WHERE created_at > NOW() - INTERVAL '1 hour'
-      ORDER BY created_at DESC
-      LIMIT 20
-    `);
-    
-    if (recentEvents.rows.length === 0) {
-      console.log('✅ No system events in the last hour');
-      return;
-    }
-    
-    console.log(`Found ${recentEvents.rows.length} events in the last hour:\n`);
-    
-    for (const event of recentEvents.rows) {
-      const severity = event.severity as string;
-      const icon = severity === 'error' ? '❌' : severity === 'warning' ? '⚠️' : 'ℹ️';
-      console.log(`${icon} [${severity.toUpperCase()}] ${event.event_type}`);
-      console.log(`   Message: ${event.message}`);
-      console.log(`   Time: ${event.created_at}`);
-      if (event.details) {
-        console.log(`   Details: ${JSON.stringify(event.details).substring(0, 200)}`);
-      }
+async function checkEvents() {
+  const events = await db.select().from(systemEvents).orderBy(desc(systemEvents.createdAt)).limit(10);
+  console.log('📊 Last 10 system events:');
+  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+  if (events.length === 0) {
+    console.log('✅ No recent errors');
+  } else {
+    events.forEach(e => {
+      console.log(`[${e.severity}] ${e.eventType} - ${e.message}`);
+      console.log(`   Time: ${e.createdAt}`);
       console.log('');
-    }
-    
-    // Count by severity
-    const errorCount = recentEvents.rows.filter(e => e.severity === 'error').length;
-    const warningCount = recentEvents.rows.filter(e => e.severity === 'warning').length;
-    
-    console.log('\n📊 Summary:');
-    console.log(`   Errors: ${errorCount}`);
-    console.log(`   Warnings: ${warningCount}`);
-    console.log(`   Total: ${recentEvents.rows.length}`);
-    
-  } catch (error) {
-    console.error('❌ Failed to check system events:', error);
+    });
   }
-  
-  process.exit(0);
 }
 
-checkSystemEvents();
+checkEvents().then(() => process.exit(0)).catch(err => {
+  console.error('Error:', err);
+  process.exit(1);
+});

@@ -145,9 +145,12 @@ async function resolveSlugFromRegistry(slug: string, marketCode: string = 'ALL',
       .maybeSingle();
 
     if (!error && entry) {
+      // 🛡️ CHRIS-PROTOCOL: Map entity_type_id 5 to 'workshop' if code is missing (v2.16.097)
+      const routingType = (entry.entity_types as any)?.code || (entry.entity_type_id === 5 ? 'workshop' : 'article');
+      
       return {
         entity_id: Number(entry.entity_id),
-        routing_type: (entry.entity_types as any)?.code || 'article',
+        routing_type: routingType,
         journey: entry.journey,
         world_id: entry.world_id,
         canonical_slug: entry.canonical_slug,
@@ -231,7 +234,37 @@ async function discoverAndRegisterSlug(slug: string, marketCode: string, journey
       if (newEntry) return { entity_id: article.id, routing_type: 'article', journey: 'agency' };
     }
 
-    // 3. Check Artists
+    // 4. Check Workshops (v2.16.097)
+    const workshopSlug = slug.toLowerCase().startsWith('studio/') ? slug.toLowerCase().replace('studio/', '') : slug.toLowerCase();
+    const { data: workshop } = await supabase
+      .from('workshops')
+      .select('id, slug, status')
+      .eq('slug', workshopSlug)
+      .or(`status.eq.publish,status.eq.live`)
+      .maybeSingle();
+
+    if (workshop) {
+      console.error(` [SmartRouter] DISCOVERED Workshop: ${workshop.id}. Registering...`);
+      const { data: newEntry } = await supabase
+        .from('slug_registry')
+        .insert({
+          slug: slug.toLowerCase().startsWith('studio/') ? slug.toLowerCase() : `studio/${slug.toLowerCase()}`,
+          entity_id: workshop.id,
+          entity_type_id: 5, // workshop
+          world_id: 2, // Studio
+          market_code: 'ALL',
+          journey: 'studio',
+          is_active: true,
+          created_at: new Date(),
+          updated_at: new Date()
+        })
+        .select('entity_id, journey')
+        .single();
+      
+      if (newEntry) return { entity_id: workshop.id, routing_type: 'workshop', journey: 'studio', world_id: 2 };
+    }
+
+    // 5. Check Artists
     const { data: artist } = await supabase
       .from('artists')
       .select('id, slug')
@@ -510,8 +543,9 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
     const host = headersList.get('host') || '';
     const market = MarketManager.getCurrentMarket(host);
     
-    // 🛡️ CHRIS-PROTOCOL: Market-Specific Routing for Ademing (v2.14.722)
-    if (market.market_code === 'ADEMING') {
+    // 🛡️ CHRIS-PROTOCOL: Market-Specific Routing for Ademing (v2.16.096)
+    // This block is now only for the root Ademing landing page if not in registry
+    if (market.market_code === 'ADEMING' && cleanSegments.length === 0) {
       let tracks = [];
       try {
         const tracksRes = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/api/ademing?action=tracks`, {
@@ -528,59 +562,6 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
         console.error("[SmartRouter] Ademing tracks fetch failed:", err);
       }
       
-      // Handle Ademing sub-pages
-      const ademingSlug = cleanSegments[0];
-      
-      if (ademingSlug === 'bibliotheek') {
-        return (
-          <PageWrapperInstrument className="bg-va-off-white">
-            <Suspense fallback={null}><LiquidBackground /></Suspense>
-            <AdemingBento tracks={tracks} mode="library" />
-          </PageWrapperInstrument>
-        );
-      }
-
-      if (ademingSlug === 'favorieten') {
-        return (
-          <PageWrapperInstrument className="bg-va-off-white">
-            <Suspense fallback={null}><LiquidBackground /></Suspense>
-            <AdemingBento tracks={tracks} mode="favorites" />
-          </PageWrapperInstrument>
-        );
-      }
-
-      if (ademingSlug === 'zoeken') {
-        return (
-          <PageWrapperInstrument className="bg-va-off-white">
-            <Suspense fallback={null}><LiquidBackground /></Suspense>
-            <AdemingBento tracks={tracks} mode="search" />
-          </PageWrapperInstrument>
-        );
-      }
-
-      if (ademingSlug === 'mijn-ademing') {
-        return (
-          <PageWrapperInstrument className="bg-va-off-white">
-            <Suspense fallback={null}><LiquidBackground /></Suspense>
-            <AdemingBento tracks={tracks} mode="profile" />
-          </PageWrapperInstrument>
-        );
-      }
-
-      // Handle deep meditation routes on ademing.be
-      if (cleanSegments.length > 0) {
-        const meditationSlug = cleanSegments[cleanSegments.length - 1];
-        const track = tracks.find((t: any) => t.slug === meditationSlug);
-        if (track) {
-          return (
-            <PageWrapperInstrument className="bg-va-off-white">
-              <Suspense fallback={null}><LiquidBackground /></Suspense>
-              <AdemingBento tracks={tracks} initialTrack={track} />
-            </PageWrapperInstrument>
-          );
-        }
-      }
-
       return (
         <PageWrapperInstrument className="bg-va-off-white">
           <Suspense fallback={null}><LiquidBackground /></Suspense>
@@ -678,6 +659,50 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
         }
       }
 
+      if (resolved.routing_type === 'workshop') {
+        // 🛡️ CHRIS-PROTOCOL: Workshop Data Handshake (v2.16.097)
+        // We use the internal API logic directly to ensure full enrichment
+        const base = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+        const res = await fetch(`${base}/api/studio/workshops`, { cache: "no-store" });
+        if (res.ok) {
+          const data: WorkshopApiResponse = await res.json();
+          const workshop = data.workshops.find(w => w.id === resolved.entity_id);
+          
+          if (workshop) {
+            // 🛡️ CHRIS-PROTOCOL: Workshop Detail Handshake (v2.16.097)
+            const WorkshopHeroIsland = nextDynamic(() => import("@/components/studio/WorkshopHeroIsland").then(mod => mod.WorkshopHeroIsland), { ssr: false });
+            const SkillDNAIsland = nextDynamic(() => import("@/components/studio/SkillDNAIsland").then(mod => mod.SkillDNAIsland), { ssr: false });
+            const DayScheduleIsland = nextDynamic(() => import("@/components/studio/DayScheduleIsland").then(mod => mod.DayScheduleIsland), { ssr: false });
+            const InstructorLocationIsland = nextDynamic(() => import("@/components/studio/InstructorLocationIsland").then(mod => mod.InstructorLocationIsland), { ssr: false });
+            const ReviewGrid = nextDynamic(() => import("@/components/studio/ReviewGrid").then(mod => mod.ReviewGrid), { ssr: false });
+
+            return (
+              <PageWrapperInstrument className="bg-va-off-white min-h-screen pb-32">
+                <Suspense fallback={<div className="h-[600px] bg-va-black animate-pulse" />}>
+                  <WorkshopHeroIsland workshop={workshop} />
+                </Suspense>
+                <ContainerInstrument className="max-w-7xl mx-auto px-6 mt-24 space-y-32">
+                  <Suspense fallback={<div className="h-96 bg-white rounded-[30px] animate-pulse" />}>
+                    <SkillDNAIsland workshop={workshop} />
+                  </Suspense>
+                  <Suspense fallback={<div className="h-96 bg-white rounded-[30px] animate-pulse" />}>
+                    <DayScheduleIsland workshop={workshop} />
+                  </Suspense>
+                  <Suspense fallback={<div className="h-96 bg-white rounded-[30px] animate-pulse" />}>
+                    <InstructorLocationIsland workshop={workshop} />
+                  </Suspense>
+                </ContainerInstrument>
+                <div className="mt-32">
+                  <Suspense fallback={<div className="h-96 bg-va-off-white animate-pulse" />}>
+                    <ReviewGrid reviews={workshop.reviews} title={`Wat deelnemers zeggen over ${workshop.title}`} maxItems={6} />
+                  </Suspense>
+                </div>
+              </PageWrapperInstrument>
+            );
+          }
+        }
+      }
+
       if (resolved.routing_type === 'artist') {
         const artist = await getArtist(resolved.entity_id.toString(), lang);
         if (artist) {
@@ -710,7 +735,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
       if (resolved.routing_type === 'blog' || resolved.routing_type === 'article') {
         const article = await getArticle(lookupSlug, lang);
         if (article) {
-          // 🛡️ CHRIS-PROTOCOL: Dynamic Extra Data based on Journey/World (v2.16.093)
+          // 🛡️ CHRIS-PROTOCOL: Dynamic Extra Data based on Journey/World (v2.16.096)
           let extraData: any = {};
           const currentJourney = resolved.journey || article.iapContext?.journey;
           
@@ -738,8 +763,32 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
             }
           } else if (currentJourney === 'ademing') {
             try {
-              const { data: tracks } = await supabase.from('ademing_tracks').select('*').eq('is_public', true).limit(6);
-              extraData.tracks = tracks || [];
+              // 🛡️ CHRIS-PROTOCOL: Ademing Handshake (v2.16.096)
+              let tracks = [];
+              try {
+                const tracksRes = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/api/ademing?action=tracks`, {
+                  next: { revalidate: 60 }
+                });
+                if (tracksRes.ok) {
+                  const data = await tracksRes.json();
+                  if (Array.isArray(data)) tracks = data;
+                }
+              } catch (err) {
+                console.error("[SmartRouter] Ademing tracks fetch failed:", err);
+              }
+
+              // Handle Ademing sub-pages via registry
+              const lastSegment = cleanSegments[cleanSegments.length - 1];
+              if (lastSegment === 'bibliotheek') return <PageWrapperInstrument className="bg-va-off-white"><Suspense fallback={null}><LiquidBackground /></Suspense><AdemingBento tracks={tracks} mode="library" /></PageWrapperInstrument>;
+              if (lastSegment === 'favorieten') return <PageWrapperInstrument className="bg-va-off-white"><Suspense fallback={null}><LiquidBackground /></Suspense><AdemingBento tracks={tracks} mode="favorites" /></PageWrapperInstrument>;
+              if (lastSegment === 'zoeken') return <PageWrapperInstrument className="bg-va-off-white"><Suspense fallback={null}><LiquidBackground /></Suspense><AdemingBento tracks={tracks} mode="search" /></PageWrapperInstrument>;
+              if (lastSegment === 'mijn-ademing') return <PageWrapperInstrument className="bg-va-off-white"><Suspense fallback={null}><LiquidBackground /></Suspense><AdemingBento tracks={tracks} mode="profile" /></PageWrapperInstrument>;
+
+              // Handle deep meditation routes
+              const track = tracks.find((t: any) => t.slug === lastSegment);
+              if (track) return <PageWrapperInstrument className="bg-va-off-white"><Suspense fallback={null}><LiquidBackground /></Suspense><AdemingBento tracks={tracks} initialTrack={track} /></PageWrapperInstrument>;
+
+              extraData.tracks = tracks.slice(0, 6);
             } catch (err) {
               console.error("[SmartRouter] Failed to fetch tracks for ademing page:", err);
             }

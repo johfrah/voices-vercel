@@ -20,6 +20,7 @@ export const slugRegistry = pgTable("slug_registry", {
 	slug: text().notNull(),
 	routingType: text("routing_type").notNull(), // actor, artist, article, workshop, language, attribute, country, music, blog
 	entityId: integer("entity_id").notNull(),
+    worldId: integer("world_id"), // 🌍 V2: Koppeling naar World (Handshake Truth)
 	journey: text().default('agency'),
 	marketCode: text("market_code").default('ALL'),
 	canonicalSlug: text("canonical_slug"),
@@ -181,6 +182,7 @@ export const ademingMakers = pgTable("ademing_makers", {
 export const ademingTracks = pgTable("ademing_tracks", {
 	id: serial().primaryKey().notNull(),
 	wpId: integer("wp_id"),
+    worldId: integer("world_id"), // 🌍 V2: Koppeling naar World
 	title: text().notNull(),
 	slug: text().unique(),
 	url: text().notNull(),
@@ -211,6 +213,7 @@ export const ademingTracks = pgTable("ademing_tracks", {
 
 export const ademingSeries = pgTable("ademing_series", {
 	id: serial().primaryKey().notNull(),
+    worldId: integer("world_id"), // 🌍 V2: Koppeling naar World
 	title: text().notNull(),
 	slug: text().unique(),
 	description: text(),
@@ -881,13 +884,15 @@ export const ademingTracks = pgTable("ademing_tracks", {
 
 export const workshops = pgTable("workshops", {
 	id: bigint("id", { mode: "number" }).primaryKey().notNull(),
+	worldId: integer("world_id"), // 🌍 V2: Koppeling naar World
+	journeyId: integer("journey_id"), // 🛤️ V2: Koppeling naar Journey
 	title: text().notNull(),
     slug: text().unique(),
 	description: text(),
 	price: numeric({ precision: 10, scale:  2 }),
 	status: text().default('publish'), // publish, draft, archive
 	mediaId: integer("media_id"),
-    journey: text().default('studio'), // studio, academy
+    journey: text().default('studio'), // legacy string
     isOnDemand: boolean("is_on_demand").default(false), // Voor de Academy (instappen wanneer je wilt)
 	program: jsonb(),
 	meta: jsonb(),

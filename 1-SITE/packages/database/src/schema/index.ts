@@ -340,6 +340,8 @@ export const instructors = pgTable('instructors', {
 
 export const workshops = pgTable('workshops', {
   id: bigint('id', { mode: 'number' }).primaryKey(), // Gebruik originele WooCommerce Product ID
+  worldId: integer('world_id').references(() => worlds.id), // 🌍 V2: Koppeling naar World (Studio/Academy)
+  journeyId: integer('journey_id').references(() => journeys.id), // 🛤️ V2: Koppeling naar Journey
   mediaId: integer('media_id').references(() => media.id), // 🔗 Link naar Media Engine (Video/Aftermovie)
   title: text('title').notNull(),
   description: text('description'),
@@ -431,6 +433,7 @@ export const workshopInterestProducts = pgTable('workshop_interest_products', {
 // 🎓 ACADEMY (LMS)
 export const courses = pgTable('courses', {
   id: serial('id').primaryKey(),
+  worldId: integer('world_id').references(() => worlds.id), // 🌍 V2: Koppeling naar World
   title: text('title').notNull(),
   description: text('description'),
   slug: text('slug').unique().notNull(),
@@ -439,6 +442,7 @@ export const courses = pgTable('courses', {
 
 export const lessons = pgTable('lessons', {
   id: serial('id').primaryKey(),
+  worldId: integer('world_id').references(() => worlds.id), // 🌍 V2: Koppeling naar World
   courseId: integer('course_id').references(() => courses.id).notNull(),
   title: text('title').notNull(),
   description: text('description'),
@@ -648,6 +652,7 @@ export const ademingTracks = pgTable('ademing_tracks', {
   id: serial('id').primaryKey(),
   wpId: bigint('wp_id', { mode: 'number' }).unique(),
   worldId: integer('world_id').references(() => worlds.id), // 🌍 V2: Koppeling naar World
+  journeyId: integer('journey_id').references(() => journeys.id), // 🛤️ V2: Koppeling naar Journey
   mediaId: integer('media_id').references(() => media.id), // 🔗 Link naar Media Engine
   title: text('title').notNull(),
   slug: text('slug').unique().notNull(),
@@ -671,6 +676,7 @@ export const ademingTracks = pgTable('ademing_tracks', {
 
 export const ademingSeries = pgTable('ademing_series', {
   id: serial('id').primaryKey(),
+  worldId: integer('world_id').references(() => worlds.id), // 🌍 V2: Koppeling naar World
   title: text('title').notNull(),
   slug: text('slug').unique().notNull(),
   description: text('description'),

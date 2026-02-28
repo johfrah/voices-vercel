@@ -100,36 +100,22 @@ export class MarketManagerServer {
   public static getWorldId(marketCode?: string): number | null {
     const code = marketCode?.toLowerCase() || this.getCurrentMarket().market_code.toLowerCase();
     
-    // 🛡️ CHRIS-PROTOCOL: Map market codes to World codes
-    const marketToWorldMap: Record<string, string> = {
-      'be': 'agency',
-      'nlnl': 'agency',
-      'fr': 'agency',
-      'es': 'agency',
-      'pt': 'agency',
-      'eu': 'agency',
-      'academy': 'academy',
-      'studio': 'studio',
-      'freelance': 'freelance',
-      'portfolio': 'portfolio',
-      'artist': 'artist',
-      'ademing': 'ademing',
-      'johfrai': 'johfrai'
-    };
+    // 🛡️ CHRIS-PROTOCOL: Handshake Truth (v2.16.096)
+    // We prioritize the registry which is populated from the database.
+    // This allows adding new Worlds without code changes.
+    const registry = this.worldsRegistry.length > 0 ? this.worldsRegistry : 
+                    (typeof global !== 'undefined' && (global as any).handshakeWorlds ? (global as any).handshakeWorlds : []);
 
-    const worldCode = marketToWorldMap[code] || 'agency';
-    
-    // 🛡️ CHRIS-PROTOCOL: Handshake Truth (v2.16.093)
-    // Try to find the world in the registry first
-    if (this.worldsRegistry.length > 0) {
-      const world = this.worldsRegistry.find(w => w.code === worldCode || w.code === code);
+    if (registry.length > 0) {
+      // Direct match by code
+      const world = registry.find((w: any) => w.code.toLowerCase() === code);
       if (world) return world.id;
-    }
 
-    // Fallback to global handshake if available
-    if (typeof global !== 'undefined' && (global as any).handshakeWorlds) {
-      const world = (global as any).handshakeWorlds.find((w: any) => w.code === worldCode || w.code === code);
-      if (world) return world.id;
+      // Special case: Agency markets (BE, NL, etc) map to 'agency' world
+      if (['be', 'nlnl', 'fr', 'es', 'pt', 'eu'].includes(code)) {
+        const agency = registry.find((w: any) => w.code === 'agency');
+        if (agency) return agency.id;
+      }
     }
 
     return null;

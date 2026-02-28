@@ -429,6 +429,7 @@ export const workshopInterestProducts = pgTable('workshop_interest_products', {
 // 🎓 ACADEMY (LMS)
 export const courses = pgTable('courses', {
   id: serial('id').primaryKey(),
+  worldId: integer('world_id').references(() => worlds.id), // 🌍 V2: Koppeling naar World
   title: text('title').notNull(),
   description: text('description'),
   slug: text('slug').unique().notNull(),
@@ -437,6 +438,7 @@ export const courses = pgTable('courses', {
 
 export const lessons = pgTable('lessons', {
   id: serial('id').primaryKey(),
+  worldId: integer('world_id').references(() => worlds.id), // 🌍 V2: Koppeling naar World
   courseId: integer('course_id').references(() => courses.id).notNull(),
   title: text('title').notNull(),
   description: text('description'),
