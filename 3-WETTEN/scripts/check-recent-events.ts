@@ -1,27 +1,42 @@
-import { db } from '../../1-SITE/packages/database/index.js';
-import { system_events } from '../../1-SITE/packages/database/schema/system-events.js';
-import { desc } from 'drizzle-orm';
+#!/usr/bin/env tsx
+import { db } from '../../1-SITE/packages/database/src/index.js';
+import { sql } from 'drizzle-orm';
 
 async function checkRecentEvents() {
-  const events = await db
-    .select()
-    .from(system_events)
-    .orderBy(desc(system_events.created_at))
-    .limit(20);
+  try {
+    const events = await db.execute(sql`
+      SELECT 
+        created_at,
+        event_type,
+        severity,
+        message,
+        details
+      FROM system_events
+      WHERE created_at > NOW() - INTERVAL '2 hours'
+      ORDER BY created_at DESC
+      LIMIT 20
+    `);
 
-  console.log('Recent System Events (Last 20):');
-  console.log('================================\n');
-  
-  events.forEach(e => {
-    console.log(`[${e.severity}] ${e.event_type} - ${e.message?.substring(0, 100)}`);
-    console.log(`  Time: ${e.created_at}`);
-    if (e.context) {
-      console.log(`  Context: ${JSON.stringify(e.context).substring(0, 150)}`);
+    console.log('Recent System Events (Last 2 Hours):');
+    console.log('=====================================\n');
+    
+    if (events.rows.length === 0) {
+      console.log('✅ No events in the last 2 hours - System is clean');
+    } else {
+      events.rows.forEach((e: any) => {
+        console.log(`[${e.created_at}] ${e.severity} - ${e.event_type}`);
+        console.log(`  Message: ${e.message}`);
+        if (e.details) {
+          const detailStr = typeof e.details === 'string' ? e.details : JSON.stringify(e.details);
+          console.log(`  Details: ${detailStr.substring(0, 200)}`);
+        }
+        console.log('');
+      });
     }
-    console.log('---\n');
-  });
-
-  process.exit(0);
+  } catch (error) {
+    console.error('Error checking events:', error);
+    process.exit(1);
+  }
 }
 
 checkRecentEvents();

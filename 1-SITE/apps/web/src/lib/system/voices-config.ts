@@ -40,7 +40,9 @@ export const {
   faq,
   workshopMedia,
   media,
-  appConfigs
+  appConfigs,
+  systemEvents,
+  languages
 } = fullSchema;
 
 /**

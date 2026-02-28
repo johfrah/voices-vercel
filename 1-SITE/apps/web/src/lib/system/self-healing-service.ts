@@ -1,5 +1,6 @@
-import { db } from '@/lib/system/voices-config';
-import { systemEvents } from '@/lib/system/voices-config';
+import { db, getTable } from '@/lib/system/voices-config';
+
+const systemEvents = getTable('systemEvents');
 import { eq, desc } from 'drizzle-orm';
 
 export class SelfHealingService {
@@ -17,6 +18,10 @@ export class SelfHealingService {
   static async logEvent(level: 'info' | 'warn' | 'error', message: string, details: any = {}) {
     try {
       // 🛡️ CHRIS-PROTOCOL: Consolideer events om mail-spam te voorkomen
+      if (!systemEvents) {
+        console.warn(' [HEAL] systemEvents table not available');
+        return;
+      }
       const recentEvents = await db.select().from(systemEvents)
         .where(eq(systemEvents.message, message))
         .orderBy(desc(systemEvents.createdAt))
