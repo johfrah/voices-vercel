@@ -10,7 +10,7 @@
 import { chromium } from 'playwright';
 
 const PRODUCTION_URL = 'https://www.voices.be/studio/';
-const EXPECTED_VERSION = 'v2.16.065';
+const EXPECTED_VERSION = 'v2.16.066';
 
 interface ValidationResult {
   category: string;
