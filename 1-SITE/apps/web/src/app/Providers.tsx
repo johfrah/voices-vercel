@@ -34,26 +34,14 @@ export function Providers({
   initialUsage?: any;
 }) {
   const pathname = usePathname();
-  // 🛡️ CHRIS-PROTOCOL: Version Sync Mandate (v2.16.073)
-  const currentVersion = '2.16.074';
+  // 🛡️ CHRIS-PROTOCOL: Version Sync Mandate (v2.16.075)
+  const currentVersion = '2.16.075';
 
-
-  //  CHRIS-PROTOCOL: Initialize Client Logger for real-time error reporting
-  React.useEffect(() => {
-    ClientLogger.init();
-    console.log(`🚀 [Voices] Nuclear Version: v${currentVersion} (Godmode Zero)`);
-    
-    // Expose version to window for verification scripts
-    if (typeof window !== 'undefined') {
-      (window as any).__VOICES_VERSION__ = currentVersion;
-    }
-  }, [currentVersion]);
-
-  //  CHRIS-PROTOCOL: Language is now strictly passed from Server (Source of Truth)
+  // 🛡️ CHRIS-PROTOCOL: Language is now strictly passed from Server (Source of Truth)
   // to prevent Hydration Mismatch errors (#419, #425).
   // We use the 'lang' prop directly instead of calculating it from pathname
   // to ensure consistency between SSR and Client.
-  const activeLang = lang || (market.primary_language || 'nl-BE');
+  const activeLang = lang || (market?.primary_language || 'nl-BE');
 
   // 🛡️ CHRIS-PROTOCOL: Prime MarketManager on the client with the server-provided market data
   // This prevents the client from falling back to static defaults during hydration.
@@ -69,6 +57,17 @@ export function Providers({
       g.__marketPrimed = true;
     }
   }
+
+  //  CHRIS-PROTOCOL: Initialize Client Logger for real-time error reporting
+  React.useEffect(() => {
+    ClientLogger.init();
+    console.log(`🚀 [Voices] Nuclear Version: v${currentVersion} (Godmode Zero)`);
+    
+    // Expose version to window for verification scripts
+    if (typeof window !== 'undefined') {
+      (window as any).__VOICES_VERSION__ = currentVersion;
+    }
+  }, [currentVersion]);
 
   return (
     <WatchdogProvider>

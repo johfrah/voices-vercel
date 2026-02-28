@@ -1,119 +1,141 @@
 #!/usr/bin/env tsx
 /**
- * Studio Page Live Validation Script
- * Validates the live status of https://www.voices.be/studio/
+ * Final Gate Guardian - Studio Page Live Validation
+ * Verifies v2.16.074 deployment on https://www.voices.be/studio/
  */
 
 import { chromium } from 'playwright';
 
-async function validateStudioPage() {
-  console.log('🚀 Starting Studio Page Validation...\n');
+async function validateStudioLive() {
+  console.log('🚀 FINAL GATE GUARDIAN - Studio Live Validation\n');
   
-  const browser = await chromium.launch({ 
-    headless: true,
-    args: ['--disable-blink-features=AutomationControlled']
-  });
-  
+  const browser = await chromium.launch({ headless: true });
   const context = await browser.newContext({
-    viewport: { width: 1920, height: 1080 },
     userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
   });
-  
   const page = await context.newPage();
   
-  // Collect console messages and errors
-  const consoleMessages: string[] = [];
-  const consoleErrors: string[] = [];
-  
-  page.on('console', (msg) => {
-    const text = msg.text();
-    consoleMessages.push(text);
-    if (msg.type() === 'error') {
-      consoleErrors.push(text);
-    }
-  });
-  
-  page.on('pageerror', (error) => {
-    consoleErrors.push(`PAGE ERROR: ${error.message}`);
-  });
-  
   try {
-    console.log('📍 Navigating to https://www.voices.be/studio/');
+    // Navigate to studio page
+    console.log('📍 Navigating to https://www.voices.be/studio/...');
     await page.goto('https://www.voices.be/studio/', { 
       waitUntil: 'domcontentloaded',
       timeout: 30000 
     });
+    await page.waitForTimeout(2000);
     
-    console.log('🔄 Performing hard refresh...');
-    await page.reload({ waitUntil: 'domcontentloaded' });
-    
-    // Wait a bit for all scripts to load
-    await page.waitForTimeout(3000);
-    
-    console.log('\n📊 VALIDATION RESULTS:\n');
-    
-    // 1. Check version
-    console.log('1️⃣ Checking version...');
-    const versionCheck = await page.evaluate(() => {
-      const versionEl = document.querySelector('[data-version]');
-      return versionEl?.getAttribute('data-version') || 'NOT FOUND';
+    // 1. VERSION CHECK
+    console.log('\n1️⃣ VERSION CHECK');
+    const version = await page.evaluate(() => {
+      return (window as any).__VOICES_VERSION__;
     });
-    console.log(`   Version: ${versionCheck}`);
+    console.log(`   window.__VOICES_VERSION__ = ${version}`);
     
-    // Also check via API
+    // Also check API endpoint
     const apiResponse = await page.goto('https://www.voices.be/api/admin/config');
-    const configData = await apiResponse?.json();
-    console.log(`   API Version: ${configData?._version || 'NOT FOUND'}`);
+    const apiData = await apiResponse?.json();
+    console.log(`   /api/admin/config version = ${apiData?.version}`);
     
-    // Go back to studio page
-    await page.goto('https://www.voices.be/studio/', { waitUntil: 'domcontentloaded' });
+    const versionMatch = version === '2.16.074' || apiData?.version === '2.16.074';
+    console.log(`   ✅ Version Match: ${versionMatch ? 'YES' : 'NO'}`);
+    
+    // Navigate back to studio
+    await page.goto('https://www.voices.be/studio/', { 
+      waitUntil: 'domcontentloaded',
+      timeout: 30000 
+    });
+    await page.waitForTimeout(2000);
+    
+    // 2. CONSOLE AUDIT
+    console.log('\n2️⃣ CONSOLE AUDIT');
+    const consoleErrors: string[] = [];
+    const consoleWarnings: string[] = [];
+    
+    page.on('console', msg => {
+      const type = msg.type();
+      const text = msg.text();
+      if (type === 'error') {
+        consoleErrors.push(text);
+      } else if (type === 'warning') {
+        consoleWarnings.push(text);
+      }
+    });
+    
+    page.on('pageerror', error => {
+      consoleErrors.push(`PageError: ${error.message}`);
+    });
+    
+    // Wait for any console messages to appear
     await page.waitForTimeout(3000);
     
-    // 2. Check for 'tl' ReferenceError
-    console.log('\n2️⃣ Checking for "tl" ReferenceError...');
-    const hasTlError = consoleErrors.some(err => err.includes('tl is not defined'));
-    if (hasTlError) {
-      console.log('   ❌ FOUND: "tl is not defined" error');
+    const typeErrors = consoleErrors.filter(e => 
+      e.includes('TypeError') || e.includes('ReferenceError') || e.toLowerCase().includes("'tl'")
+    );
+    
+    console.log(`   Total Console Errors: ${consoleErrors.length}`);
+    console.log(`   TypeErrors/ReferenceErrors: ${typeErrors.length}`);
+    if (typeErrors.length > 0) {
+      console.log('   ❌ Critical Errors Found:');
+      typeErrors.forEach(e => console.log(`      - ${e}`));
     } else {
-      console.log('   ✅ NO "tl" ReferenceError detected');
+      console.log('   ✅ No TypeErrors or ReferenceErrors');
     }
     
-    // 3. Check Workshop Carousel
-    console.log('\n3️⃣ Checking Workshop Carousel...');
-    const carouselVisible = await page.isVisible('[data-testid="workshop-carousel"], .workshop-carousel, [class*="carousel"]', { timeout: 5000 }).catch(() => false);
-    console.log(`   Carousel visible: ${carouselVisible ? '✅ YES' : '❌ NO'}`);
-    
-    // 4. Check RESERVEER PLEK CTA
-    console.log('\n4️⃣ Checking "RESERVEER PLEK" CTA...');
-    const ctaVisible = await page.locator('text=/RESERVEER.*PLEK/i').first().isVisible({ timeout: 5000 }).catch(() => false);
-    console.log(`   CTA visible: ${ctaVisible ? '✅ YES' : '❌ NO'}`);
-    
-    // 5. Console Errors Summary
-    console.log('\n5️⃣ Console Errors Summary:');
-    if (consoleErrors.length === 0) {
-      console.log('   ✅ NO console errors detected');
+    // Check specifically for 'tl' reference error
+    const tlError = consoleErrors.find(e => e.includes("'tl'") || e.includes('"tl"'));
+    if (tlError) {
+      console.log(`   ❌ 'tl' Reference Error Found: ${tlError}`);
     } else {
-      console.log(`   ❌ Found ${consoleErrors.length} error(s):`);
-      consoleErrors.forEach((err, i) => {
-        console.log(`      ${i + 1}. ${err}`);
-      });
+      console.log(`   ✅ No 'tl' reference errors`);
     }
     
-    // 6. Page Screenshot
-    console.log('\n📸 Taking screenshot...');
-    await page.screenshot({ 
-      path: '3-WETTEN/docs/studio-validation-screenshot.png',
-      fullPage: true 
+    // 3. UI VERIFICATION
+    console.log('\n3️⃣ UI VERIFICATION');
+    
+    // Check for Workshop Carousel
+    const carouselExists = await page.locator('[data-testid="workshop-carousel"], .workshop-carousel, [class*="carousel"]').count() > 0;
+    console.log(`   Workshop Carousel Present: ${carouselExists ? '✅ YES' : '❌ NO'}`);
+    
+    // Check for "Bekijk workshop" buttons
+    const workshopButtons = await page.locator('a:has-text("Bekijk workshop"), button:has-text("Bekijk workshop")').count();
+    console.log(`   "Bekijk workshop" Buttons: ${workshopButtons > 0 ? `✅ ${workshopButtons} found` : '❌ NONE'}`);
+    
+    // Check for any workshop-related content
+    const workshopContent = await page.locator('[class*="workshop"], [data-workshop]').count();
+    console.log(`   Workshop-related Elements: ${workshopContent}`);
+    
+    // Take screenshot for visual proof
+    const screenshotPath = '/Users/voices/Library/CloudStorage/Dropbox/voices-headless/3-WETTEN/reports/studio-live-validation.png';
+    await page.screenshot({ path: screenshotPath, fullPage: true });
+    console.log(`   📸 Screenshot saved: ${screenshotPath}`);
+    
+    // 4. PERFORMANCE CHECK
+    console.log('\n4️⃣ PERFORMANCE CHECK');
+    const metrics = await page.evaluate(() => {
+      const perf = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
+      return {
+        domContentLoaded: Math.round(perf.domContentLoadedEventEnd - perf.fetchStart),
+        loadComplete: Math.round(perf.loadEventEnd - perf.fetchStart),
+      };
     });
-    console.log('   Screenshot saved to: 3-WETTEN/docs/studio-validation-screenshot.png');
+    console.log(`   DOM Content Loaded: ${metrics.domContentLoaded}ms`);
+    console.log(`   Load Complete: ${metrics.loadComplete}ms`);
     
-    console.log('\n✅ Validation complete!');
+    // FINAL VERDICT
+    console.log('\n🏁 FINAL VERDICT');
+    const allGreen = versionMatch && typeErrors.length === 0 && !tlError && workshopButtons > 0;
+    
+    if (allGreen) {
+      console.log('✅ VERIFIED LIVE: v2.16.074 - Console Clean - UI Functional');
+    } else {
+      console.log('❌ VALIDATION FAILED - Issues detected above');
+    }
     
   } catch (error) {
-    console.error('❌ Validation failed:', error);
+    console.error('❌ VALIDATION ERROR:', error);
   } finally {
     await browser.close();
   }
 }
 
-validateStudioPage().catch(console.error);
+validateStudioLive().catch(console.error);
