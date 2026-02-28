@@ -52,7 +52,7 @@ export async function GET(request: NextRequest) {
     // 🚀 NUCLEAR RAW SQL FETCH (v2.14.652)
     const rowsResult = await db.execute(sql.raw(`
       SELECT 
-        id, user_id, journey_id, status_id, payment_method_id, 
+        id, user_id, world_id, journey_id, status_id, payment_method_id, 
         amount_net, amount_total, purchase_order, billing_email_alt, created_at
       FROM orders_v2
       ${whereClause.replace('$1', search ? `'${search}'` : '')}
@@ -66,6 +66,7 @@ export async function GET(request: NextRequest) {
     const allOrders = rows.map((row: any) => ({
       id: row.id,
       userId: row.user_id,
+      worldId: row.world_id,
       journeyId: row.journey_id,
       statusId: row.status_id,
       paymentMethodId: row.payment_method_id,
@@ -156,6 +157,7 @@ export async function GET(request: NextRequest) {
           billingEmailAlt: order.billingEmailAlt || null,
           status: displayStatus, 
           journey: 'agency', // Default for now
+          worldId: order.worldId,
           journeyId: order.journeyId,
           statusId: order.statusId,
           paymentMethodId: order.paymentMethodId,

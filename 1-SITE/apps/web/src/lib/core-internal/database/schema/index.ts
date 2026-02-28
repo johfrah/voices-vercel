@@ -17,14 +17,25 @@ export const experienceLevelEnum = pgEnum('experience_level', ['junior', 'pro', 
 export const payoutStatusEnum = pgEnum('payout_status', ['pending', 'approved', 'paid', 'cancelled']);
 export const genderEnum = pgEnum('gender', ['male', 'female', 'non-binary']);
 
+// 🌍 WORLDS (The High-Level Units)
+export const worlds = pgTable('worlds', {
+  id: serial('id').primaryKey(),
+  code: text('code').unique().notNull(), // agency, studio, academy, artist, portfolio, ademing, freelance
+  label: text('label').notNull(),
+  description: text('description'),
+  isPublic: boolean('is_public').default(true),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
 // 🛤️ JOURNEYS (The Flow Architecture)
 export const journeys = pgTable('journeys', {
   id: serial('id').primaryKey(),
+  worldId: integer('world_id').references(() => worlds.id), // 🌍 Link naar de World
   code: text('code').unique().notNull(), // bijv. 'studio', 'agency_vo', 'agency_ivr'
   label: text('label').notNull(), // bijv. 'Voices Studio', 'Agency: Voice-over'
   description: text('description'),
-  icon: text('icon'), // lucide icon name
-  color: text('color'), // tailwind color class or hex
+  icon: text('icon'),
+  color: text('color'),
   createdAt: timestamp('created_at').defaultNow(),
 });
 
@@ -62,10 +73,8 @@ export const languages = pgTable('languages', {
   id: serial('id').primaryKey(),
   code: text('code').unique().notNull(),
   label: text('label').notNull(),
-  icon: text('icon'), // flag component name or asset path
   isPopular: boolean('is_popular').default(false),
   isNativeOnly: boolean('is_native_only').default(false),
-  displayOrder: integer('display_order').default(0), // 🛡️ Handshake Truth
   createdAt: timestamp('created_at').defaultNow(),
 });
 
@@ -73,7 +82,6 @@ export const countries = pgTable('countries', {
   id: serial('id').primaryKey(),
   code: text('code').unique().notNull(),
   label: text('label').notNull(),
-  displayOrder: integer('display_order').default(0), // 🛡️ Handshake Truth
   createdAt: timestamp('created_at').defaultNow(),
 });
 
@@ -82,19 +90,6 @@ export const genders = pgTable('genders', {
   id: serial('id').primaryKey(),
   code: text('code').unique().notNull(), // male, female, non-binary, boy, girl
   label: text('label').notNull(), // Man, Vrouw, Non-binair, Jongen, Meisje
-  displayOrder: integer('display_order').default(0), // 🛡️ Handshake Truth
-  createdAt: timestamp('created_at').defaultNow(),
-});
-
-// 📺 MEDIA TYPES (Commercial usage types)
-export const mediaTypes = pgTable('media_types', {
-  id: serial('id').primaryKey(),
-  code: text('code').unique().notNull(), // online, radio_national, tv_national, podcast
-  label: text('label').notNull(), // Online & Socials, Radio, TV, Podcast
-  description: text('description'),
-  icon: text('icon'), // lucide icon name
-  hasRegions: boolean('has_regions').default(false),
-  displayOrder: integer('display_order').default(0), // 🛡️ Handshake Truth
   createdAt: timestamp('created_at').defaultNow(),
 });
 
@@ -165,7 +160,6 @@ export const users = pgTable('users', {
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
   lastActive: timestamp('last_active').defaultNow(),
-  admin_key: text('admin_key'), // 🛡️ CHRIS-PROTOCOL: Reusable Admin Key for Mobile PWA (v2.14.775)
 });
 
 // ❤️ FAVORITES
@@ -252,6 +246,7 @@ export const actors = pgTable('actors', {
   slug: text('slug').unique(),
   website: text('website'), // 🌐 Persoonlijke website van de acteur (Privé/Admin)
   linkedin: text('linkedin'), // 🔗 LinkedIn profiel (Privé/Admin)
+  instagram: text('instagram'), // 📸 Instagram profiel
   internal_notes: text('internal_notes'), // Privé veld voor admin
   is_manually_edited: boolean('is_manually_edited').default(false), // 🛡️ NUCLEAR LOCK MANDATE
   createdAt: timestamp('created_at').defaultNow(),
@@ -263,11 +258,36 @@ export const actors = pgTable('actors', {
 });
 
 // 🗣️ DIALECTS (Linguistic Nuance)
+export const dialects = pgTable('dialects', {
+  id: serial('id').primaryKey(),
+  code: text('code').unique().notNull(), // bijv. 'nl_vlaams', 'fr_be'
+  label: text('label').notNull(), // bijv. 'Vlaams', 'Belgisch Frans'
+  languageId: integer('language_id').references(() => languages.id), // Koppeling aan de hoofdtaal
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+export const proficiencies = pgTable('proficiencies', {
+  id: serial('id').primaryKey(),
+  code: text('code').unique().notNull(), // native, fluent, imitation
+  label: text('label').notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
 export const actorDialects = pgTable('actor_dialects', {
   id: serial('id').primaryKey(),
-  actorId: integer('actor_id').references(() => actors.id).notNull(),
-  dialect: text('dialect').notNull(), // e.g., 'West-Vlaams', 'Limburgs-NL', 'Paulista'
-  proficiency: text('proficiency').default('native'), // native, fluent, imitation
+  actorId: integer('actor_id').references(() => actors.id, { onDelete: 'cascade' }).notNull(),
+  dialect: text('dialect'), // Legacy string
+  dialectId: integer('dialect_id').references(() => dialects.id), // 🛡️ Handshake Truth
+  proficiency: text('proficiency').default('native'), // Legacy string
+  proficiencyId: integer('proficiency_id').references(() => proficiencies.id), // 🛡️ Handshake Truth
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+// 🎙️ DEMO TYPES
+export const demoTypes = pgTable('demo_types', {
+  id: serial('id').primaryKey(),
+  code: text('code').unique().notNull(), // bijv. 'commercial', 'telephony', 'corporate'
+  label: text('label').notNull(),
   createdAt: timestamp('created_at').defaultNow(),
 });
 
@@ -278,7 +298,8 @@ export const actorDemos = pgTable('actor_demos', {
   mediaId: integer('media_id').references(() => media.id), // 🔗 Link naar Media Engine
   name: text('name').notNull(),
   url: text('url').notNull(),
-  type: text('type'), // demo, telephony, corporate, etc.
+  type: text('type'), // Legacy string
+  typeId: integer('type_id').references(() => demoTypes.id), // 🛡️ Handshake Truth
   is_public: boolean('is_public').default(true), // Sommige demo's kunnen privé blijven voor offertes
   menu_order: integer('menu_order').default(0),
 });
@@ -472,6 +493,7 @@ export const ordersLegacyBloat = pgTable('orders_legacy_bloat', {
 export const ordersV2 = pgTable('orders_v2', {
   id: bigint('id', { mode: 'number' }).primaryKey(), // 🛡️ WP Order ID is nu de PK
   userId: integer('user_id').references(() => users.id),
+  worldId: integer('world_id').references(() => worlds.id), // 🌍 V2: Koppeling naar World
   journeyId: integer('journey_id').references(() => journeys.id),
   statusId: integer('status_id').references(() => orderStatuses.id),
   paymentMethodId: integer('payment_method_id').references(() => paymentMethods.id),
@@ -514,6 +536,7 @@ export const orders = pgTable('orders', {
   id: serial('id').primaryKey(),
   wpOrderId: bigint('wp_order_id', { mode: 'number' }).unique(),
   user_id: integer('user_id').references(() => users.id),
+  worldId: integer('world_id').references(() => worlds.id), // 🌍 V2: Koppeling naar World
   journeyId: integer('journey_id').references(() => journeys.id), // 🛤️ V2: Koppeling naar journeys tabel
   statusId: integer('status_id').references(() => orderStatuses.id), // 🚦 V2: Koppeling naar statuses tabel
   paymentMethodId: integer('payment_method_id').references(() => paymentMethods.id), // 💳 V2: Koppeling naar payment_methods
@@ -548,6 +571,14 @@ export const orders = pgTable('orders', {
   createdAt: timestamp('created_at').defaultNow(),
 });
 
+// 🚚 DELIVERY STATUSES
+export const deliveryStatuses = pgTable('delivery_statuses', {
+  id: serial('id').primaryKey(),
+  code: text('code').unique().notNull(), // bijv. 'waiting', 'uploaded', 'approved'
+  label: text('label').notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
 export const orderItems = pgTable('order_items', {
   id: serial('id').primaryKey(),
   orderId: integer('order_id').references(() => orders.id),
@@ -558,10 +589,12 @@ export const orderItems = pgTable('order_items', {
   price: decimal('price', { precision: 10, scale: 2 }),
   cost: decimal('cost', { precision: 10, scale: 2 }), // 🤫 De COG per line item (inkoopwaarde stem)
   tax: decimal('tax', { precision: 10, scale: 2 }),
-  deliveryStatus: text('delivery_status').default('waiting'), // waiting, uploaded, admin_review, client_review, approved, rejected
+  deliveryStatus: text('delivery_status').default('waiting'), // Legacy string
+  deliveryStatusId: integer('delivery_status_id').references(() => deliveryStatuses.id), // 🛡️ Handshake Truth
   deliveryFileUrl: text('delivery_file_url'), // Pad naar de audio in Supabase Storage
   invoiceFileUrl: text('invoice_file_url'), // De geüploade factuur van de acteur
   payoutStatus: payoutStatusEnum('payout_status').default('pending'), // pending, approved, paid, cancelled
+  payoutStatusId: integer('payout_status_id'), // 🛡️ Handshake Truth (Future)
   metaData: jsonb('meta_data'), // Bevat script, usage, instructions, deadline, etc.
   meta: jsonb('meta'), // 📦 Extra meta data
   editionId: integer('edition_id').references(() => workshopEditions.id), // 📅 Link naar specifieke workshop editie
@@ -598,10 +631,14 @@ export const appointments = pgTable('appointments', {
 // 🧘 ADEMING JOURNEY (Meditatie & Rust)
 export const ademingMakers = pgTable('ademing_makers', {
   id: serial('id').primaryKey(),
-  name: text('name').notNull(),
-  slug: text('slug').unique().notNull(),
+  short_name: text('short_name').unique().notNull(), // "Julie" | "Johfrah"
+  full_name: text('full_name').notNull(),
+  avatar_url: text('avatar_url'),
+  hero_image_url: text('hero_image_url'),
   bio: text('bio'),
-  photo_url: text('photo_url'),
+  website: text('website'),
+  instagram: text('instagram'),
+  is_public: boolean('is_public').default(true),
   createdAt: timestamp('created_at').defaultNow(),
 });
 
@@ -609,18 +646,22 @@ export const ademingTracks = pgTable('ademing_tracks', {
   id: serial('id').primaryKey(),
   wpId: bigint('wp_id', { mode: 'number' }).unique(),
   mediaId: integer('media_id').references(() => media.id), // 🔗 Link naar Media Engine
-  makerId: integer('maker_id').references(() => ademingMakers.id),
-  seriesId: integer('series_id').references(() => ademingSeries.id),
   title: text('title').notNull(),
-  slug: text('slug').unique(),
-  url: text('url').notNull(),
-  cover_image_url: text('cover_image_url'),
+  slug: text('slug').unique().notNull(),
+  url: text('url').notNull(), // audio_url
   duration: integer('duration'),
   vibe: text('vibe'),
-  element: text('element'), // water, fire, earth, air
-  seriesOrder: integer('series_order').default(0),
+  theme: text('theme'), // "rust" | "energie" | "ritme"
+  element: text('element'), // "aarde" | "water" | "lucht" | "vuur"
+  makerId: integer('maker_id').references(() => ademingMakers.id),
+  seriesId: integer('series_id').references(() => ademingSeries.id),
+  seriesOrder: integer('series_order'),
   short_description: text('short_description'),
   long_description: text('long_description'),
+  cover_image_url: text('cover_image_url'),
+  video_background_url: text('video_background_url'),
+  subtitle_data: jsonb('subtitle_data'),
+  transcript: text('transcript'),
   is_public: boolean('is_public').default(true),
   createdAt: timestamp('created_at').defaultNow(),
 });
@@ -628,18 +669,21 @@ export const ademingTracks = pgTable('ademing_tracks', {
 export const ademingSeries = pgTable('ademing_series', {
   id: serial('id').primaryKey(),
   title: text('title').notNull(),
-  slug: text('slug').unique(),
+  slug: text('slug').unique().notNull(),
   description: text('description'),
   cover_image_url: text('cover_image_url'),
+  theme: text('theme').default('rust'),
   is_public: boolean('is_public').default(true),
   createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
 });
 
 export const ademingBackgroundMusic = pgTable('ademing_background_music', {
   id: serial('id').primaryKey(),
-  title: text('title').notNull(),
-  url: text('url').notNull(),
-  is_public: boolean('is_public').default(true),
+  element: text('element').notNull(), // "aarde" | "water" | "lucht" | "vuur"
+  audio_url: text('audio_url').notNull(),
+  mediaId: integer('media_id').references(() => media.id),
+  is_active: boolean('is_active').default(true),
   createdAt: timestamp('created_at').defaultNow(),
 });
 
@@ -1037,6 +1081,8 @@ export const reviews = pgTable('reviews', {
   textDe: text('text_de'),
   responseText: text('response_text'),
   conversionScore: decimal('conversion_score', { precision: 5, scale: 2 }),
+  journeyId: text('journey_id'), // 🛤️ Koppeling naar specifieke journey (telephony, commercial, etc.)
+  worldId: text('world_id'), // 🌍 Koppeling naar de world (agency, studio, academy)
   iapContext: jsonb('iap_context'), // Intent, Persona, Segment
   sentimentVelocity: integer('sentiment_velocity').default(0),
   language: text('language').default('nl'),
@@ -1111,7 +1157,8 @@ export const costs = pgTable('costs', {
   id: serial('id').primaryKey(),
   amount: decimal('amount', { precision: 10, scale: 2 }).notNull(),
   type: text('type').notNull(), // 'locatie', 'instructeur', 'materiaal', 'overig'
-  journey: text('journey').notNull().default('studio'), // 🎭 'studio', 'agency', 'academy'
+  journey: text('journey'), // Legacy string
+  journeyId: integer('journey_id').references(() => journeys.id), // 🛡️ Handshake Truth
   note: text('note'),
   workshopEditionId: integer('workshop_edition_id').references(() => workshopEditions.id),
   locationId: integer('location_id').references(() => locations.id),
@@ -1394,6 +1441,38 @@ export const products = pgTable('products', {
 
 // 🔗 RELATIONS (Moved to end to prevent 'referencedTable' undefined errors)
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 export const castingLists = pgTable("casting_lists", {
 	id: serial().primaryKey().notNull(),
 	user_id: integer("user_id"),
@@ -1516,16 +1595,64 @@ export const actorTonesRelations = relations(actorTones, ({ one }) => ({
 export const countriesRelations = relations(countries, ({ many }) => ({
   actors: many(actors),
 }));
+export const dialectsRelations = relations(dialects, ({ one, many }) => ({
+  language: one(languages, {
+    fields: [dialects.languageId],
+    references: [languages.id],
+  }),
+  actorDialects: many(actorDialects),
+}));
 export const actorDialectsRelations = relations(actorDialects, ({ one }) => ({
   actor: one(actors, {
     fields: [actorDialects.actorId],
     references: [actors.id],
   }),
+  dialect: one(dialects, {
+    fields: [actorDialects.dialectId],
+    references: [dialects.id],
+  }),
+  proficiency: one(proficiencies, {
+    fields: [actorDialects.proficiencyId],
+    references: [proficiencies.id],
+  }),
+}));
+
+export const actorReviews = pgTable('actor_reviews', {
+  id: serial('id').primaryKey(),
+  actorId: integer('actor_id').references(() => actors.id, { onDelete: 'cascade' }).notNull(),
+  reviewId: integer('review_id').references(() => reviews.id, { onDelete: 'cascade' }).notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
+}, (table) => [
+  unique('actor_reviews_actor_id_review_id_key').on(table.actorId, table.reviewId),
+]);
+
+export const actorReviewsRelations = relations(actorReviews, ({ one }) => ({
+  actor: one(actors, {
+    fields: [actorReviews.actorId],
+    references: [actors.id],
+  }),
+  review: one(reviews, {
+    fields: [actorReviews.reviewId],
+    references: [reviews.id],
+  }),
+}));
+export const proficienciesRelations = relations(proficiencies, ({ many }) => ({
+  actorDialects: many(actorDialects),
+}));
+export const demoTypesRelations = relations(demoTypes, ({ many }) => ({
+  actorDemos: many(actorDemos),
+}));
+export const deliveryStatusesRelations = relations(deliveryStatuses, ({ many }) => ({
+  orderItems: many(orderItems),
 }));
 export const actorDemosRelations = relations(actorDemos, ({ one }) => ({
   actor: one(actors, {
     fields: [actorDemos.actorId],
     references: [actors.id],
+  }),
+  demoType: one(demoTypes, {
+    fields: [actorDemos.typeId],
+    references: [demoTypes.id],
   }),
 }));
 export const actorVideosRelations = relations(actorVideos, ({ one }) => ({
@@ -1579,10 +1706,26 @@ export const instructorsRelations = relations(instructors, ({ one, many }) => ({
   workshops: many(workshops),
   costs: many(costs),
 }));
+export const worldsRelations = relations(worlds, ({ many }) => ({
+  journeys: many(journeys),
+  orders: many(orders),
+  ordersV2: many(ordersV2),
+}));
+export const journeysRelations = relations(journeys, ({ one, many }) => ({
+  world: one(worlds, {
+    fields: [journeys.worldId],
+    references: [worlds.id],
+  }),
+  orders: many(orders),
+}));
 export const ordersRelations = relations(orders, ({ one, many }) => ({
   user: one(users, {
     fields: [orders.user_id],
     references: [users.id],
+  }),
+  world: one(worlds, {
+    fields: [orders.worldId],
+    references: [worlds.id],
   }),
   journey: one(journeys, {
     fields: [orders.journeyId],
@@ -1590,8 +1733,19 @@ export const ordersRelations = relations(orders, ({ one, many }) => ({
   }),
   items: many(orderItems),
 }));
-export const journeysRelations = relations(journeys, ({ many }) => ({
-  orders: many(orders),
+export const ordersV2Relations = relations(ordersV2, ({ one }) => ({
+  user: one(users, {
+    fields: [ordersV2.userId],
+    references: [users.id],
+  }),
+  world: one(worlds, {
+    fields: [ordersV2.worldId],
+    references: [worlds.id],
+  }),
+  journey: one(journeys, {
+    fields: [ordersV2.journeyId],
+    references: [journeys.id],
+  }),
 }));
 export const orderItemsRelations = relations(orderItems, ({ one, many }) => ({
   order: one(orders, {
@@ -1605,6 +1759,10 @@ export const orderItemsRelations = relations(orderItems, ({ one, many }) => ({
   edition: one(workshopEditions, {
     fields: [orderItems.editionId],
     references: [workshopEditions.id],
+  }),
+  deliveryStatus: one(deliveryStatuses, {
+    fields: [orderItems.deliveryStatusId],
+    references: [deliveryStatuses.id],
   }),
   costs: many(costs),
 }));
@@ -1687,6 +1845,10 @@ export const costsRelations = relations(costs, ({ one }) => ({
     fields: [costs.orderItemId],
     references: [orderItems.id],
   }),
+  journey: one(journeys, {
+    fields: [costs.journeyId],
+    references: [journeys.id],
+  }),
 }));
 export const recordingSessionsRelations = relations(recordingSessions, ({ one, many }) => ({
   order: one(orders, {
@@ -1729,25 +1891,11 @@ export const lessonsRelations = relations(lessons, ({ one }) => ({
     references: [courses.id],
   }),
 }));
-export const castingListsRelations = relations(castingLists, ({ one, many }) => ({
-  user: one(users, {
-    fields: [castingLists.user_id],
-    references: [users.id],
-  }),
-  items: many(castingListItems),
-}));
-export const castingListItemsRelations = relations(castingListItems, ({ one }) => ({
-  list: one(castingLists, {
-    fields: [castingListItems.listId],
-    references: [castingLists.id],
-  }),
-  actor: one(actors, {
-    fields: [castingListItems.actorId],
-    references: [actors.id],
-  }),
-}));
-
 export const ademingTracksRelations = relations(ademingTracks, ({ one }) => ({
+  media: one(media, {
+    fields: [ademingTracks.mediaId],
+    references: [media.id],
+  }),
   maker: one(ademingMakers, {
     fields: [ademingTracks.makerId],
     references: [ademingMakers.id],
@@ -1764,4 +1912,36 @@ export const ademingSeriesRelations = relations(ademingSeries, ({ many }) => ({
 
 export const ademingMakersRelations = relations(ademingMakers, ({ many }) => ({
   tracks: many(ademingTracks),
+}));
+
+export const ademingReflectionsRelations = relations(ademingReflections, ({ one }) => ({
+  user: one(users, {
+    fields: [ademingReflections.user_id],
+    references: [users.id],
+  }),
+}));
+
+export const ademingStatsRelations = relations(ademingStats, ({ one }) => ({
+  user: one(users, {
+    fields: [ademingStats.user_id],
+    references: [users.id],
+  }),
+}));
+
+export const castingListsRelations = relations(castingLists, ({ one, many }) => ({
+  user: one(users, {
+    fields: [castingLists.user_id],
+    references: [users.id],
+  }),
+  items: many(castingListItems),
+}));
+export const castingListItemsRelations = relations(castingListItems, ({ one }) => ({
+  list: one(castingLists, {
+    fields: [castingListItems.listId],
+    references: [castingLists.id],
+  }),
+  actor: one(actors, {
+    fields: [castingListItems.actorId],
+    references: [actors.id],
+  }),
 }));

@@ -94,6 +94,15 @@ async function runAudit() {
   console.log('🔍 Anna-Check: Valideren van code-stabiliteit...');
   console.log('✅ Linter: Clean (verified manually via npm run lint).');
 
+  // 📝 SAVE AUDIT RESULT TO REPORTS
+  const reportsDir = '3-WETTEN/reports';
+  if (!fs.existsSync(reportsDir)) {
+    fs.mkdirSync(reportsDir, { recursive: true });
+  }
+  const timestamp = new Date().toISOString().replace(/[:.]/g, '-').split('T')[0];
+  const auditLog = `Audit uitgevoerd op ${new Date().toLocaleString()}\nIssues found: ${issuesFound}\nStatus: ${issuesFound > 0 ? 'FAILED' : 'PASSED'}`;
+  fs.writeFileSync(`${reportsDir}/watchdog-audit-${timestamp}.txt`, auditLog);
+
   if (issuesFound > 0) {
     console.error(`\n🚨 AUDIT GEFAALD: ${issuesFound} integriteitsfouten gevonden.`);
     process.exit(1);

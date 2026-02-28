@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
   const type = searchParams.get('type');
 
   // appConfigs en overige types: admin only
-  const publicTypes = ['actor', 'actors', 'music', 'navigation', 'telephony', 'general', 'languages', 'genders', 'journeys', 'media_types', 'countries', 'sectors', 'blueprints', 'demos_enriched', 'telephony_subtypes', 'experience-levels', 'actor-statuses', 'voice-tones'];
+  const publicTypes = ['actor', 'actors', 'music', 'navigation', 'telephony', 'general', 'languages', 'genders', 'journeys', 'worlds', 'media_types', 'countries', 'sectors', 'blueprints', 'demos_enriched', 'telephony_subtypes', 'experience-levels', 'actor-statuses', 'voice-tones'];
   if (!type || !publicTypes.includes(type)) {
     const auth = await requireAdmin();
     if (auth instanceof NextResponse) return auth;
@@ -43,6 +43,11 @@ export async function GET(request: NextRequest) {
   try {
     // 🛡️ CHRIS-PROTOCOL: SDK-First for Public Config (v2.14.750)
     // Drizzle can be unstable in some serverless environments. We use SDK for critical public data.
+    if (type === 'worlds') {
+      const { data: results } = await supabase.from('worlds').select('*').order('id', { ascending: true });
+      return NextResponse.json({ results: results || [] });
+    }
+
     if (type === 'languages') {
       const { data: results } = await supabase.from('languages').select('*').order('label', { ascending: true });
       return NextResponse.json({ results: results || [] });

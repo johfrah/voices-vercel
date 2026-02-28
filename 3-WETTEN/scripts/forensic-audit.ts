@@ -10,6 +10,11 @@ import chalk from 'chalk';
  */
 
 const ROOT_DIR = process.cwd();
+const REPORTS_DIR = path.join(ROOT_DIR, '3-WETTEN/reports');
+if (!fs.existsSync(REPORTS_DIR)) {
+  fs.mkdirSync(REPORTS_DIR, { recursive: true });
+}
+
 const WEB_APP_DIR = fs.existsSync(path.join(ROOT_DIR, 'src')) 
   ? path.join(ROOT_DIR, 'src')
   : path.join(ROOT_DIR, '1-SITE/apps/web/src');
@@ -179,6 +184,23 @@ issues.forEach(issue => {
 console.log(chalk.bold('Audit Summary:'));
 console.log(chalk.red(`❌ Errors: ${errors.length}`));
 console.log(chalk.yellow(`⚠️ Warnings: ${warnings.length}\n`));
+
+// 📝 SAVE REPORT TO 3-WETTEN/reports
+const timestamp = new Date().toISOString().replace(/[:.]/g, '-').split('T')[0];
+const reportPath = path.join(REPORTS_DIR, `forensic-audit-${timestamp}.md`);
+const reportContent = `# 🛡️ Forensic Audit Report (${new Date().toLocaleString()})
+
+## Summary
+- **Status**: ${errors.length > 0 ? '❌ FAILED' : '✅ PASSED'}
+- **Errors**: ${errors.length}
+- **Warnings**: ${warnings.length}
+
+## Detailed Issues
+${issues.map(i => `- **${i.type.toUpperCase()}** \`${i.file}:${i.line}\`: ${i.message}\n  > \`${i.context}\``).join('\n')}
+`;
+
+fs.writeFileSync(reportPath, reportContent);
+console.log(chalk.blue(`📄 Audit report saved to: ${path.relative(ROOT_DIR, reportPath)}\n`));
 
 if (errors.length > 0) {
   console.log(chalk.bold.red('☢️ AUDIT FAILED: Fix errors before pushing slop to production!\n'));

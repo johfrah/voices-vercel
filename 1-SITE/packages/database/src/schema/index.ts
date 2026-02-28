@@ -17,12 +17,25 @@ export const experienceLevelEnum = pgEnum('experience_level', ['junior', 'pro', 
 export const payoutStatusEnum = pgEnum('payout_status', ['pending', 'approved', 'paid', 'cancelled']);
 export const genderEnum = pgEnum('gender', ['male', 'female', 'non-binary']);
 
+// 🌍 WORLDS (The High-Level Units)
+export const worlds = pgTable('worlds', {
+  id: serial('id').primaryKey(),
+  code: text('code').unique().notNull(), // agency, studio, academy, artist, portfolio, ademing, freelance
+  label: text('label').notNull(),
+  description: text('description'),
+  isPublic: boolean('is_public').default(true),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
 // 🛤️ JOURNEYS (The Flow Architecture)
 export const journeys = pgTable('journeys', {
   id: serial('id').primaryKey(),
+  worldId: integer('world_id').references(() => worlds.id), // 🌍 Link naar de World
   code: text('code').unique().notNull(), // bijv. 'studio', 'agency_vo', 'agency_ivr'
   label: text('label').notNull(), // bijv. 'Voices Studio', 'Agency: Voice-over'
   description: text('description'),
+  icon: text('icon'),
+  color: text('color'),
   createdAt: timestamp('created_at').defaultNow(),
 });
 
@@ -480,6 +493,7 @@ export const ordersLegacyBloat = pgTable('orders_legacy_bloat', {
 export const ordersV2 = pgTable('orders_v2', {
   id: bigint('id', { mode: 'number' }).primaryKey(), // 🛡️ WP Order ID is nu de PK
   userId: integer('user_id').references(() => users.id),
+  worldId: integer('world_id').references(() => worlds.id), // 🌍 V2: Koppeling naar World
   journeyId: integer('journey_id').references(() => journeys.id),
   statusId: integer('status_id').references(() => orderStatuses.id),
   paymentMethodId: integer('payment_method_id').references(() => paymentMethods.id),
@@ -522,6 +536,7 @@ export const orders = pgTable('orders', {
   id: serial('id').primaryKey(),
   wpOrderId: bigint('wp_order_id', { mode: 'number' }).unique(),
   user_id: integer('user_id').references(() => users.id),
+  worldId: integer('world_id').references(() => worlds.id), // 🌍 V2: Koppeling naar World
   journeyId: integer('journey_id').references(() => journeys.id), // 🛤️ V2: Koppeling naar journeys tabel
   statusId: integer('status_id').references(() => orderStatuses.id), // 🚦 V2: Koppeling naar statuses tabel
   paymentMethodId: integer('payment_method_id').references(() => paymentMethods.id), // 💳 V2: Koppeling naar payment_methods
@@ -1691,10 +1706,26 @@ export const instructorsRelations = relations(instructors, ({ one, many }) => ({
   workshops: many(workshops),
   costs: many(costs),
 }));
+export const worldsRelations = relations(worlds, ({ many }) => ({
+  journeys: many(journeys),
+  orders: many(orders),
+  ordersV2: many(ordersV2),
+}));
+export const journeysRelations = relations(journeys, ({ one, many }) => ({
+  world: one(worlds, {
+    fields: [journeys.worldId],
+    references: [worlds.id],
+  }),
+  orders: many(orders),
+}));
 export const ordersRelations = relations(orders, ({ one, many }) => ({
   user: one(users, {
     fields: [orders.user_id],
     references: [users.id],
+  }),
+  world: one(worlds, {
+    fields: [orders.worldId],
+    references: [worlds.id],
   }),
   journey: one(journeys, {
     fields: [orders.journeyId],
@@ -1702,8 +1733,19 @@ export const ordersRelations = relations(orders, ({ one, many }) => ({
   }),
   items: many(orderItems),
 }));
-export const journeysRelations = relations(journeys, ({ many }) => ({
-  orders: many(orders),
+export const ordersV2Relations = relations(ordersV2, ({ one }) => ({
+  user: one(users, {
+    fields: [ordersV2.userId],
+    references: [users.id],
+  }),
+  world: one(worlds, {
+    fields: [ordersV2.worldId],
+    references: [worlds.id],
+  }),
+  journey: one(journeys, {
+    fields: [ordersV2.journeyId],
+    references: [journeys.id],
+  }),
 }));
 export const orderItemsRelations = relations(orderItems, ({ one, many }) => ({
   order: one(orders, {

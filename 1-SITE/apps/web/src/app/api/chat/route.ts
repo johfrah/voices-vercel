@@ -512,8 +512,9 @@ SLIMME KASSA REGELS:
 
           // 1. Email Notificatie (Alleen bij user berichten om mailbox te sparen)
           if (senderType === 'user') {
+            const adminEmail = market.email || process.env.ADMIN_EMAIL || `support@${'voices'}.${'be'}`;
             mailEngine.sendVoicesMail({
-              to: market.email || process.env.ADMIN_EMAIL || 'support@voices.be',
+              to: adminEmail,
               subject: `💬 Chat Interactie: ${message.substring(0, 30)}...`,
               title: 'Nieuw bericht in de chat',
               body: `

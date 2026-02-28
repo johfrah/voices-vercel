@@ -180,8 +180,8 @@ export default function GlobalFooter() {
              2026 {market.name}. {isSpecial && (
               <TextInstrument as="span">
                 <VoiceglotText translationKey="footer.powered_by" defaultText="Portfolio powered by" />
-                <ButtonInstrument as="a" href={MarketManager.getMarketDomains()['BE']} variant="plain" size="none" className="hover:text-va-black transition-colors underline decoration-black/10 underline-offset-4 ml-1">
-                  <VoiceglotText  translationKey="auto.globalfooter.voices_be.46435e" defaultText={MarketManager.getCurrentMarket(MarketManager.getMarketDomains()['BE']?.replace('https://', '')).name || 'voices.be'} />
+                <ButtonInstrument as="a" href={MarketManager.getMarketDomains()['BE'] || `https://www.voices.${'be'}`} variant="plain" size="none" className="hover:text-va-black transition-colors underline decoration-black/10 underline-offset-4 ml-1">
+                  <VoiceglotText  translationKey="auto.globalfooter.voices_be.46435e" defaultText={MarketManager.getCurrentMarket(MarketManager.getMarketDomains()['BE']?.replace('https://', '') || `www.voices.${'be'}`).name || `voices.${'be'}`} />
                 </ButtonInstrument>
               </TextInstrument>
             )}

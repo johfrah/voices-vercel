@@ -23,13 +23,11 @@ async function generateTelephonyImportReport() {
         oi.dropbox_url,
         a.first_name,
         a.last_name,
-        u.customer_insights->>'sector' as sector,
-        l.label as language
+        u.customer_insights->>'sector' as sector
       FROM public.order_items oi
       JOIN public.orders o ON oi.order_id = o.id
       JOIN public.actors a ON oi.actor_id = a.id
       LEFT JOIN public.users u ON o.user_id = u.id
-      LEFT JOIN public.languages l ON a.language_id = l.id
       WHERE o.created_at >= '2023-01-01'
         AND o.journey = 'agency'
         AND (
@@ -46,14 +44,11 @@ async function generateTelephonyImportReport() {
     console.log(`\n📊 Found ${candidates.length} potential candidates.`);
 
     const report = candidates.map(c => {
-      // Bepaal het vermoedelijke Dropbox pad op basis van protocol
-      // Protocol: /Voices.be/Projects/Exports/Voices Telephony/[OrderID] - [Klant]/...
       const dropboxPath = c.dropbox_url || `[AUTO-PATH] /Voices Telephony/${c.wp_order_id || c.order_id} - ${c.first_name} ${c.last_name}/Final/48khz/`;
       
       return {
         order_id: c.order_id,
         actor: `${c.first_name} ${c.last_name}`,
-        language: c.language || 'NL',
         sector: c.sector || 'Algemeen',
         briefing_snippet: c.briefing?.substring(0, 80).replace(/\n/g, ' ') + '...',
         source_quality: 'STRICT_48KHZ',
@@ -63,15 +58,6 @@ async function generateTelephonyImportReport() {
 
     console.log('\n--- TOP 20 IMPORT REPORT ---');
     console.table(report.slice(0, 20));
-
-    // Samenvatting per taal
-    const langStats = report.reduce((acc: any, curr) => {
-      acc[curr.language] = (acc[curr.language] || 0) + 1;
-      return acc;
-    }, {});
-
-    console.log('\n--- LANGUAGE DISTRIBUTION ---');
-    console.log(langStats);
 
     console.log('\n✅ Report generated. Ready for 48khz -> MP3 conversion pipeline.');
 

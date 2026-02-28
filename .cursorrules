@@ -139,6 +139,12 @@ Rapporteer vóór uitvoering:
     - De TypeScript property naam in `pgTable` moet EXACT overeenkomen met de kolomnaam (bijv. `first_name: text("first_name")`).
     - Dit elimineert de "bridge" laag en garandeert 1-op-1 metadata integriteit van DB tot UI.
 
+15. **BASSIE-PROTOCOL (Supabase Connectivity)**:
+    - **Pooler Mandate**: Indien poort 5432 een timeout geeft, gebruik ALTIJD de Pooler op poort 6543 (`aws-1-eu-west-1.pooler.supabase.com`).
+    - **Tenant Prefix**: Gebruik bij de Pooler ALTIJD de uitgebreide gebruikersnaam: `postgres.vcbxyyjsxuquytcsskpj`.
+    - **SSL Integrity**: Forceer `ssl: { rejectUnauthorized: false }` voor alle externe tools (SQLTools/DBeaver) om certificaatfouten te omzeilen.
+    - **Verify, Don't Trust**: Elke database-wijziging moet door de gebruiker geverifieerd kunnen worden via de SQLTools/DBeaver "Finder" view.
+
 ## 📂 De Onverwoestbare Structuur & Naming Mandate
 
 Volg strikt de regels in `100-BOB-ROUTING.mdc`, `200-CHRIS-DISCIPLINE.mdc`, `300-LAYA-AESTHETICS.mdc`, `500-NUCLEAR-WORKFLOW.mdc` en `600-ISO-LOCALIZATION.mdc`.
