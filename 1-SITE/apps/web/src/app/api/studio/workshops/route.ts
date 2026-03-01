@@ -16,11 +16,16 @@ export async function GET() {
   try {
     const data = await getStudioWorkshopsData();
     return NextResponse.json(data);
-  } catch (error) {
-    console.error('[Studio Workshops API]:', error);
+  } catch (error: any) {
+    console.error('[Studio Workshops API] Full Error:', error);
+    console.error('[Studio Workshops API] Stack:', error.stack);
+    console.error('[Studio Workshops API] Cause:', error.cause);
+    
     return NextResponse.json({ 
       error: 'Studio workshops fetch failed', 
-      message: error instanceof Error ? error.message : 'Unknown error' 
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error.stack?.split('\n').slice(0, 5).join('\n'),
+      cause: error.cause ? String(error.cause) : undefined
     }, { status: 500 });
   }
 }
