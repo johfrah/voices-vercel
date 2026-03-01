@@ -472,7 +472,14 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
           }
         }
 
-        const audioUrl = finalUrl?.startsWith('http') ? finalUrl : `/api/proxy/?path=${encodeURIComponent(finalUrl || '')}`;
+        // 🛡️ CHRIS-PROTOCOL: Zero-Slop Audio URL (v2.16.114)
+        // If finalUrl is empty, leave audio_url empty so MediaMaster falls back to the stream route.
+        // NEVER create a proxy URL with an empty path (causes 400 errors).
+        let audioUrl = '';
+        if (finalUrl) {
+          audioUrl = finalUrl.startsWith('http') ? finalUrl : `/api/proxy/?path=${encodeURIComponent(finalUrl)}`;
+        }
+
         return {
           id: d.id,
           title: d.name,

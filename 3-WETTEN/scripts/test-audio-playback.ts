@@ -1,131 +1,125 @@
 #!/usr/bin/env tsx
 /**
- * 🎙️ Audio Playback Test (v2.16.112)
+ * 🛡️ CHRIS-PROTOCOL: Audio Playback Forensic Test
  * 
- * Verifies:
- * 1. Version is v2.16.112
- * 2. Audio playback works (no /api/proxy/ errors)
- * 3. Play button is visually "round" (rounded-full)
+ * Dit script test de audio-playback op de live site door:
+ * 1. De database te scannen op acteurs met lege audio_urls (die via media_id moeten laden)
+ * 2. De proxy-route te testen met verschillende paden
+ * 3. De stream-route te testen voor demos
  */
 
-import { chromium } from 'playwright';
+import { db } from '../../1-SITE/packages/database/src/index';
+import { sql } from 'drizzle-orm';
 
 async function testAudioPlayback() {
-  console.log('🚀 Starting Audio Playback Test...\n');
+  console.log('🎯 AUDIO PLAYBACK FORENSIC TEST\n');
 
-  const browser = await chromium.launch({ headless: true });
-  const context = await browser.newContext({
-    viewport: { width: 1920, height: 1080 },
-    userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
-  });
-  const page = await context.newPage();
+  // 1. Scan database voor demos met lege audio_urls
+  console.log('📊 Scanning database for demos with empty audio_urls...\n');
+  
+  const result = await db.execute(sql`
+    SELECT 
+      d.id,
+      d.title,
+      d.audio_url,
+      d.media_id,
+      a.first_name,
+      a.last_name,
+      a.status,
+      a.is_public
+    FROM voice_demos d
+    JOIN voice_actors a ON d.actor_id = a.id
+    WHERE a.status = 'live' 
+      AND a.is_public = true
+      AND (d.audio_url IS NULL OR d.audio_url = '')
+    LIMIT 10
+  `);
 
-  // Track console errors
-  const consoleErrors: string[] = [];
-  page.on('console', msg => {
-    if (msg.type() === 'error') {
-      consoleErrors.push(msg.text());
-    }
-  });
-
-  // Track network errors
-  const networkErrors: string[] = [];
-  page.on('response', response => {
-    if (response.status() >= 400 && response.url().includes('/api/proxy/')) {
-      networkErrors.push(`${response.status()} ${response.url()}`);
-    }
-  });
-
-  try {
-    console.log('📍 Navigating to https://www.voices.be/...');
-    await page.goto('https://www.voices.be/', { waitUntil: 'domcontentloaded', timeout: 60000 });
-
-    // 1. Check version
-    console.log('\n🔍 Checking version...');
-    const version = await page.evaluate(() => {
-      const meta = document.querySelector('meta[name="version"]');
-      return meta?.getAttribute('content') || 'unknown';
-    });
-    console.log(`   Version: ${version}`);
-    if (version !== '2.16.112') {
-      console.log(`   ⚠️  WARNING: Expected v2.16.112, got ${version}`);
-    } else {
-      console.log('   ✅ Version match!');
-    }
-
-    // Wait for page to be interactive
-    await page.waitForTimeout(5000);
-
-    // 2. Check for voice cards or actors
-    console.log('\n🎭 Looking for voice elements...');
-    const voiceCards = await page.$$('[data-voice-card]');
-    const actorCards = await page.$$('[class*="VoiceCard"]');
-    const playButtons = await page.$$('button.rounded-full');
-    console.log(`   Voice cards (data-voice-card): ${voiceCards.length}`);
-    console.log(`   Actor cards (VoiceCard class): ${actorCards.length}`);
-    console.log(`   Play buttons (rounded-full): ${playButtons.length}`);
-
-    if (playButtons.length === 0) {
-      console.log('   ⚠️  No play buttons found - may need to scroll or wait longer');
-    }
-
-    // 3. Check play button styling
-    console.log('\n🎨 Checking play button styling...');
-    const playButton = await page.$('button.rounded-full[class*="w-12"][class*="h-12"]');
-    if (playButton) {
-      const classes = await playButton.getAttribute('class');
-      const hasRoundedFull = classes?.includes('rounded-full');
-      console.log(`   Play button classes: ${classes?.substring(0, 100)}...`);
-      console.log(`   ✅ Has rounded-full: ${hasRoundedFull}`);
-    } else {
-      console.log('   ⚠️  Play button not found (may require scrolling)');
-    }
-
-    // 4. Try to click play button
-    console.log('\n🎵 Testing audio playback...');
-    const firstPlayButton = await page.$('button.rounded-full');
-    if (firstPlayButton) {
-      await firstPlayButton.click();
-      console.log('   Clicked play button');
-      
-      // Wait a bit for audio to load
-      await page.waitForTimeout(3000);
-
-      // Check for errors
-      if (networkErrors.length > 0) {
-        console.log('\n❌ NETWORK ERRORS DETECTED:');
-        networkErrors.forEach(err => console.log(`   ${err}`));
-      } else {
-        console.log('   ✅ No /api/proxy/ errors');
-      }
-
-      if (consoleErrors.length > 0) {
-        console.log('\n⚠️  CONSOLE ERRORS:');
-        consoleErrors.forEach(err => console.log(`   ${err}`));
-      } else {
-        console.log('   ✅ No console errors');
-      }
-    } else {
-      console.log('   ⚠️  Could not find play button to click');
-    }
-
-    // 5. Take screenshot
-    console.log('\n📸 Taking screenshot...');
-    await page.screenshot({ path: '/tmp/voices-audio-test.png', fullPage: false });
-    console.log('   Screenshot saved to /tmp/voices-audio-test.png');
-
-  } catch (error) {
-    console.error('\n❌ TEST FAILED:', error);
-    await page.screenshot({ path: '/tmp/voices-audio-test-error.png' });
-    throw error;
-  } finally {
-    await browser.close();
+  console.log(`Found ${result.rows.length} demos with empty audio_urls:\n`);
+  
+  for (const row of result.rows) {
+    console.log(`  - Demo #${row.id}: "${row.title}"`);
+    console.log(`    Actor: ${row.first_name} ${row.last_name}`);
+    console.log(`    audio_url: ${row.audio_url || '(empty)'}`);
+    console.log(`    media_id: ${row.media_id || '(empty)'}`);
+    console.log('');
   }
 
-  console.log('\n✅ TEST COMPLETE\n');
+  // 2. Test de stream-route voor de eerste demo
+  if (result.rows.length > 0) {
+    const testDemo = result.rows[0];
+    console.log(`\n🧪 Testing stream route for demo #${testDemo.id}...\n`);
+    
+    const streamUrl = `https://www.voices.be/api/admin/actors/demos/${testDemo.id}/stream`;
+    console.log(`  Stream URL: ${streamUrl}`);
+    
+    try {
+      const response = await fetch(streamUrl);
+      console.log(`  Status: ${response.status} ${response.statusText}`);
+      console.log(`  Content-Type: ${response.headers.get('content-type')}`);
+      console.log(`  Content-Length: ${response.headers.get('content-length')}`);
+      
+      if (response.ok) {
+        console.log('  ✅ Stream route is working!');
+      } else {
+        console.log('  ❌ Stream route failed!');
+        const text = await response.text();
+        console.log(`  Error: ${text.substring(0, 200)}`);
+      }
+    } catch (error: any) {
+      console.log(`  ❌ Network error: ${error.message}`);
+    }
+  }
+
+  // 3. Scan voor demos MET audio_urls die via proxy moeten laden
+  console.log('\n\n📊 Scanning for demos WITH audio_urls (proxy test)...\n');
+  
+  const proxyResult = await db.execute(sql`
+    SELECT 
+      d.id,
+      d.title,
+      d.audio_url,
+      a.first_name,
+      a.last_name
+    FROM voice_demos d
+    JOIN voice_actors a ON d.actor_id = a.id
+    WHERE a.status = 'live' 
+      AND a.is_public = true
+      AND d.audio_url IS NOT NULL 
+      AND d.audio_url != ''
+    LIMIT 5
+  `);
+
+  console.log(`Found ${proxyResult.rows.length} demos with audio_urls:\n`);
+  
+  for (const row of proxyResult.rows) {
+    console.log(`  - Demo #${row.id}: "${row.title}"`);
+    console.log(`    Actor: ${row.first_name} ${row.last_name}`);
+    console.log(`    audio_url: ${row.audio_url}`);
+    
+    // Test of de URL via proxy moet
+    if (row.audio_url && !row.audio_url.startsWith('http')) {
+      const proxyUrl = `https://www.voices.be/api/proxy/?path=${encodeURIComponent(row.audio_url)}`;
+      console.log(`    Proxy URL: ${proxyUrl}`);
+      
+      try {
+        const response = await fetch(proxyUrl, { method: 'HEAD' });
+        console.log(`    Proxy Status: ${response.status} ${response.statusText}`);
+        
+        if (response.ok) {
+          console.log('    ✅ Proxy route is working!');
+        } else {
+          console.log('    ❌ Proxy route failed!');
+        }
+      } catch (error: any) {
+        console.log(`    ❌ Network error: ${error.message}`);
+      }
+    }
+    
+    console.log('');
+  }
+
+  console.log('\n✅ Audio playback forensic test complete.\n');
 }
 
-testAudioPlayback().catch(err => {
-  console.error(err);
-  process.exit(1);
-});
+testAudioPlayback().catch(console.error);
