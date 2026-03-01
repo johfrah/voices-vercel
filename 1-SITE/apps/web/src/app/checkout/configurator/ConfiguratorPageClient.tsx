@@ -988,7 +988,7 @@ export default function ConfiguratorPageClient({
                               <VoiceglotText translationKey="pricing.base_recording_sub" defaultText="Vergoeding voor de opnamesessie" />
                             </TextInstrument>
                           </ContainerInstrument>
-                        ) : <VoiceglotText translationKey="pricing.base_video" defaultText="Basistarief (Video)" />}
+                        ) : <VoiceglotText translationKey="pricing.base_video" defaultText="Basistarief (Voice-over)" />}
                       </TextInstrument>
                       <TextInstrument className="font-bold text-va-black">{SlimmeKassa.format(state.pricing.base)}</TextInstrument>
                     </ContainerInstrument>

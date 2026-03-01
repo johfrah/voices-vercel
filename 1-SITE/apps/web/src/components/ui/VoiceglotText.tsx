@@ -146,7 +146,8 @@ export const VoiceglotText: React.FC<VoiceglotTextProps> = ({
     // Als de vertaling gelijk is aan de default (Source) maar we zitten in een andere taal,
     // dan is er een grote kans dat de vertaling ontbreekt.
     // 🛡️ CHRIS-PROTOCOL: Live self-healing is disabled. We only allow it in Edit Mode for testing.
-    if (currentTranslation === defaultText && language !== sourceLang && !isHealing && !failedHeals.current.has(translationKey) && isEditMode) {
+    // 💀 TERMINATION: 'nl-be' is eliminated from self-healing to prevent slop.
+    if (currentTranslation === defaultText && language !== sourceLang && !isHealing && !failedHeals.current.has(translationKey) && isEditMode && language?.toLowerCase() !== 'nl-be') {
       const healTranslation = async () => {
         setIsHealing(true);
         

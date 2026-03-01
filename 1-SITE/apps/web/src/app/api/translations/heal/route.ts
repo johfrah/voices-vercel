@@ -74,6 +74,15 @@ export async function POST(request: NextRequest) {
 
     // 🛡️ CHRIS-PROTOCOL: Self-healing is disabled by user request.
     // We only allow registration of the key, but no live AI translation.
+    // 💀 TERMINATION: Force 'nl-be' check to prevent slop injection.
+    if (currentLang?.toLowerCase() === 'nl-be') {
+      return NextResponse.json({ 
+        success: true, 
+        message: 'Self-healing disabled for Source Truth (nl-be).',
+        text: originalText 
+      });
+    }
+
     return NextResponse.json({ 
       success: true, 
       message: 'Self-healing disabled. Key registered for background processing.',
