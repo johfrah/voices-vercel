@@ -83,11 +83,15 @@ export const StudioWorkshopsSection: React.FC<StudioWorkshopsSectionProps> = ({ 
   const carouselWorkshops = workshops.map(mapToCarouselFormat);
   
   // Filter workshops into categories (Bob-methode: Vaste vs. Gast)
+  // 🛡️ CHRIS-PROTOCOL: Inclusive filtering to ensure all Supabase workshops are visible (v2.16.102)
   const vasteWorkshops = carouselWorkshops.filter(w => 
-    !w.taxonomy.type || w.taxonomy.type === 'Vaste Workshop' || w.taxonomy.type === 'Anker (Maandelijks)'
+    !w.taxonomy.type || 
+    w.taxonomy.type === 'Vaste Workshop' || 
+    w.taxonomy.type === 'Anker (Maandelijks)' ||
+    (!w.taxonomy.type.includes('Gastworkshop') && !w.taxonomy.type.includes('Specialisatie'))
   );
   const gastWorkshops = carouselWorkshops.filter(w => 
-    w.taxonomy.type === 'Gastworkshop' || w.taxonomy.type === 'Gastworkshop (Expert)'
+    w.taxonomy.type && (w.taxonomy.type.includes('Gastworkshop') || w.taxonomy.type.includes('Specialisatie'))
   );
 
   const allReviews = workshops.flatMap((w) => w.reviews);

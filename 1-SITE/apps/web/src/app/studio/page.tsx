@@ -1,11 +1,12 @@
 /**
  * Studio Page (2026)
  *
- * Fetches workshops from /api/studio/workshops and renders:
+ * Fetches workshops directly via getStudioWorkshopsData and renders:
  * - WorkshopCarousel (next/dynamic ssr: false)
  * - ReviewGrid (next/dynamic ssr: false)
  *
  * @protocol BOB-METHODE: Islands, Nuclear Loading
+ * @protocol CHRIS-PROTOCOL: Direct DB access via StudioService (v2.16.102)
  */
 
 import { ContainerInstrument, HeadingInstrument, PageWrapperInstrument, TextInstrument } from "@/components/ui/LayoutInstruments";
@@ -14,8 +15,7 @@ import { VideoPlayer } from "@/components/ui/VideoPlayer";
 import { Metadata } from "next";
 import { Suspense } from "react";
 import nextDynamic from "next/dynamic";
-import Link from "next/link";
-import { ArrowRight, PlayCircle } from "lucide-react";
+import { getStudioWorkshopsData } from "@/lib/services/studio-service";
 
 const LiquidBackground = nextDynamic(
   () => import("@/components/ui/LiquidBackground").then((mod) => mod.LiquidBackground),
@@ -34,25 +34,14 @@ const StudioWorkshopsSection = nextDynamic(
   }
 );
 
-async function getWorkshops() {
-  const base = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
-  const res = await fetch(`${base}/api/studio/workshops`, { cache: "no-store" });
-  if (!res.ok) return { workshops: [], instructors: [], faqs: [] };
-  const data = await res.json();
-  return { 
-    workshops: data.workshops || [],
-    instructors: data.instructors || [],
-    faqs: data.faqs || []
-  };
-}
-
 export const metadata: Metadata = {
   title: "Workshops | Voices Studio",
   description: "Professionele voice-over workshops en studio-opnames. Leer van de besten.",
 };
 
 export default async function StudioPage() {
-  const { workshops, instructors, faqs } = await getWorkshops();
+  // 🛡️ CHRIS-PROTOCOL: Direct Service Call (No internal fetch)
+  const { workshops, instructors, faqs } = await getStudioWorkshopsData();
 
   return (
     <PageWrapperInstrument className="bg-va-off-white min-h-screen">
@@ -96,40 +85,13 @@ export default async function StudioPage() {
                   defaultText="Verbeter je stem, ontdek verschillende voice-overstijlen en perfectioneer je opnamevaardigheden. Leer professioneler spreken met Bernadette en Johfrah." 
                 />
               </TextInstrument>
-              
-              <div className="flex flex-wrap gap-6">
-                <Link
-                  href="#workshops"
-                  className="inline-flex items-center gap-3 px-10 py-5 bg-va-black text-white rounded-[12px] font-light tracking-widest hover:bg-primary transition-all duration-500 shadow-aura hover:shadow-aura-lg group"
-                >
-                  <VoiceglotText translationKey="page.studio.cta" defaultText="Bekijk workshops" />
-                  <ArrowRight size={18} strokeWidth={1.5} className="group-hover:translate-x-1 transition-transform" />
-                </Link>
-                
-                <Link
-                  href="/contact"
-                  className="inline-flex items-center gap-3 px-10 py-5 bg-white/50 backdrop-blur-md text-va-black border border-black/5 rounded-[12px] font-light tracking-widest hover:bg-white transition-all duration-500 shadow-aura-sm"
-                >
-                  <PlayCircle size={18} strokeWidth={1.5} className="text-primary" />
-                  <VoiceglotText translationKey="nav.studio.contact" defaultText="Contact" />
-                </Link>
-              </div>
             </div>
-
           </div>
         </ContainerInstrument>
       </section>
 
-      {/* Workshops Carousel + ReviewGrid (Nuclear: ssr: false) */}
-      <Suspense
-        fallback={
-          <div className="py-24 flex items-center justify-center">
-            <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
-          </div>
-        }
-      >
-        <StudioWorkshopsSection workshops={workshops} instructors={instructors} faqs={faqs} />
-      </Suspense>
+      {/* WORKSHOPS SECTION: Carousel Island */}
+      <StudioWorkshopsSection workshops={workshops} instructors={instructors} faqs={faqs} />
     </PageWrapperInstrument>
   );
 }
