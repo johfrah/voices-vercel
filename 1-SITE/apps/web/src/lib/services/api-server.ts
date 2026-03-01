@@ -204,17 +204,18 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
           if (!isNaN(parseInt(targetLangInput))) {
             query = query.eq('native_language_id', parseInt(targetLangInput));
           } else {
+            // 🛡️ CHRIS-PROTOCOL: ISO-5 Mandate (v2.18.2)
             // Resolve string to ID(s)
             const lowLang = targetLangInput.toLowerCase();
             const { data: allLangs } = await supabase.from('languages').select('id, code, label');
             
             if (allLangs) {
               // Special case: 'nl' should match both Vlaams (1) and Nederlands (2)
-              if (lowLang === 'nl') {
+              if (lowLang === 'nl' || lowLang === 'nl-be') {
                 query = query.in('native_language_id', [1, 2]);
-              } else if (lowLang === 'fr') {
+              } else if (lowLang === 'fr' || lowLang === 'fr-fr') {
                 query = query.in('native_language_id', [3, 4]);
-              } else if (lowLang === 'en') {
+              } else if (lowLang === 'en' || lowLang === 'en-gb') {
                 query = query.in('native_language_id', [5, 6]);
               } else {
                 const match = allLangs.find(l => 

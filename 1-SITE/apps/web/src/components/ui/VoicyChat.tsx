@@ -85,6 +85,11 @@ export const VoicyChatV2: React.FC = () => {
     updateMusic
   } = useCheckout();
   const { playClick: playSonicClick } = useSonicDNA();
+  const playClick = (type: "pop" | "pro" | "success" | "soft" | "lock" | "unlock" | undefined) => {
+    try {
+      playSonicClick(type);
+    } catch (e) {}
+  };
   const { t } = useTranslation();
   const { user, isAuthenticated, isAdmin } = useAuth();
   const { isEditMode, toggleEditMode } = useEditMode();
@@ -173,7 +178,7 @@ export const VoicyChatV2: React.FC = () => {
       setIsOpen(true);
       if (e.detail?.persona) setPersona(e.detail.persona);
       if (e.detail?.tab) setActiveTab(e.detail.tab);
-      playSonicClick('deep');
+      playClick('pro');
     };
     window.addEventListener('voices:persona_change', handlePersonaChange);
     window.addEventListener('voicy:open', handleOpenVoicy);
@@ -208,7 +213,7 @@ export const VoicyChatV2: React.FC = () => {
           
           //  MUZIEK RESTRICTIE: Alleen bij telefonie
           if (params.music !== undefined) {
-            if (params.usage === 'telephony' || state.usage === 'telephony') {
+            if (params.usage === 'telephony' || (state.usage as string) === 'telephony') {
               updateMusic({ asBackground: !!params.music });
               console.log("[Voicy Butler] Setting music:", params.music);
             } else {
@@ -220,7 +225,7 @@ export const VoicyChatV2: React.FC = () => {
             // We hebben geen directe updatePlan in de context exposed via de bridge, 
             // maar we kunnen de configurator wel sturen.
           }
-          playSonicClick('pro');
+          playClick('pro');
           break;
           
         case 'FILTER_VOICES':
@@ -262,7 +267,7 @@ export const VoicyChatV2: React.FC = () => {
                 timestamp: new Date().toISOString()
               }];
             });
-            playSonicClick('deep');
+            playClick('pro');
           }
           break;
           
@@ -396,7 +401,7 @@ export const VoicyChatV2: React.FC = () => {
             setMessages(prev => [...prev, {
               id: `cart-add-${Date.now()}`,
               role: 'assistant',
-              content: t('chat.cart.added', `Ik heb ${state.selectedActor?.first_name} toegevoegd aan je mandje. Wil je nog een stem zoeken of zal ik de checkout voorbereiden?`, { name: state.selectedActor?.first_name }),
+              content: t('chat.cart.added', `Ik heb ${state.selectedActor?.first_name} toegevoegd aan je mandje. Wil je nog een stem zoeken of zal ik de checkout voorbereiden?`, { name: state.selectedActor?.first_name || '' }),
               timestamp: new Date().toISOString()
             }]);
             
@@ -454,12 +459,12 @@ export const VoicyChatV2: React.FC = () => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isOpen) {
         setIsOpen(false);
-        playSonicClick('light');
+        playClick('soft');
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, playSonicClick]);
+  }, [isOpen]);
 
   //  CHRIS-PROTOCOL: Track last DB ID for SSE without triggering loops
   useEffect(() => {
@@ -534,7 +539,7 @@ export const VoicyChatV2: React.FC = () => {
       if (tab) setActiveTab(tab);
       else setActiveTab('chat');
       
-      playSonicClick('deep');
+      playClick('pro');
       
       setMessages(prev => [...prev, {
         id: `suggestion-${Date.now()}`,
@@ -564,13 +569,14 @@ export const VoicyChatV2: React.FC = () => {
             
             // Proactive Welcome based on Vibe
             const currentVibe = data.intelligence?.leadVibe || 'cold';
-            if (currentVibe === 'burning' && !isAdmin) {
+            const firstName = data.first_name || (user as any)?.first_name;
+            if (currentVibe === 'burning' && !isAdmin && firstName) {
               setMessages(prev => [...prev, {
                 id: 'proactive-burning',
                 role: 'assistant',
                 content: isPortfolioJourney 
-                  ? `Welkom terug, ${data.first_name}! Kan ik je helpen met een nieuwe boeking of heb je een vraag over mijn tarieven?`
-                  : `Welkom terug, ${data.first_name}! Ik zie dat je een trouwe klant bent. Kan ik je helpen met een nieuwe boeking voor ${data.dna.topJourneys[0] || 'je project'}?`,
+                  ? t('chat.proactive.burning_portfolio', `Welkom terug, ${firstName}! Kan ik je helpen met een nieuwe boeking of heb je een vraag over mijn tarieven?`, { name: String(firstName) })
+                  : t('chat.proactive.burning_general', `Welkom terug, ${firstName}! Ik zie dat je een trouwe klant bent. Kan ik je helpen met een nieuwe boeking voor ${data.dna.topJourneys[0] || 'je project'}?`, { name: String(firstName), journey: data.dna.topJourneys[0] || 'je project' }),
                 timestamp: new Date().toISOString()
               }]);
             }
@@ -596,7 +602,7 @@ export const VoicyChatV2: React.FC = () => {
         const data = JSON.parse(event.data);
         if (data.type === 'new_messages') {
           //  CHRIS-PROTOCOL: Gebruik een functionele update om de meest recente messages state te gebruiken zonder de dependency array te vervuilen
-          setMessages(prev => {
+            setMessages(prev => {
             const newMsgs = data.messages.filter((m: any) => {
               // Check of het bericht al bestaat op basis van ID
               const existsById = prev.find(existing => existing.id === m.id.toString());
@@ -615,7 +621,7 @@ export const VoicyChatV2: React.FC = () => {
             if (newMsgs.length === 0) return prev;
             
             //  Sonic feedback alleen bij echt nieuwe berichten
-            playSonicClick('deep');
+            playClick('pro');
             
             return [...prev, ...newMsgs.map((m: any) => ({
               id: m.id.toString(),
@@ -651,16 +657,16 @@ export const VoicyChatV2: React.FC = () => {
       // 🛡️ CHRIS-PROTOCOL: DNA-Based Personalized Greeting (v2.16.077)
       // Only personalize if user has given consent for cookies/tracking
       const guestName = (typeof window !== 'undefined' && hasConsent) ? localStorage.getItem('voices_guest_name') : null;
-      const firstName = user?.first_name || customer360?.first_name || guestName;
+      const firstName = (user as any)?.first_name || customer360?.first_name || guestName;
       
-      let welcomeContent = isPortfolioJourney 
+      let       welcomeContent = isPortfolioJourney 
         ? t('chat.welcome.portfolio', 'Hallo! Ik ben de assistent van deze stemacteur. Hoe kan ik je helpen met je project of een prijsberekening?')
         : t('chat.welcome.general', 'Hallo! Ik ben Voicy, je AI-assistent. Hoe kan ik je vandaag helpen?');
 
       if (firstName) {
         welcomeContent = isPortfolioJourney
-          ? `Hoi ${firstName}! Welkom terug bij deze stemacteur. Hoe kan ik je vandaag helpen met je project?`
-          : `Hoi ${firstName}! Welkom terug bij Voices. Hoe kan ik je vandaag helpen?`;
+          ? t('chat.welcome.portfolio_back', `Hoi ${firstName}! Welkom terug bij deze stemacteur. Hoe kan ik je vandaag helpen met je project?`, { name: String(firstName) })
+          : t('chat.welcome.general_back', `Hoi ${firstName}! Welkom terug bij Voices. Hoe kan ik je vandaag helpen?`, { name: String(firstName) });
       }
 
       setMessages([
@@ -707,7 +713,7 @@ export const VoicyChatV2: React.FC = () => {
   }, [isHoveringVoicy, isOpen]);
 
   const toggleChat = () => {
-    playSonicClick(isOpen ? 'light' : 'deep');
+    playClick(isOpen ? 'soft' : 'pro');
     setIsOpen(!isOpen);
   };
 
@@ -727,7 +733,7 @@ export const VoicyChatV2: React.FC = () => {
     setMessages(prev => [...prev, userMessage]);
     setInputValue('');
     setIsTyping(true);
-    playSonicClick('light');
+    playClick('soft');
 
     //  CORE MESSAGE HANDLER
     // Slaat berichten direct op in Supabase en triggeert AI-logica
@@ -829,7 +835,7 @@ export const VoicyChatV2: React.FC = () => {
       }
 
       setMessages(prev => [...prev, aiResponse]);
-      playSonicClick('deep');
+      playClick('pro');
     } catch (error: any) {
       console.error("Chat API error:", error);
       
@@ -859,7 +865,7 @@ export const VoicyChatV2: React.FC = () => {
     if (!leadFormData.email || !leadFormData.name) return;
 
     setIsTyping(true);
-    playSonicClick('success');
+    playClick('success');
 
     try {
       const response = await fetch('/api/chat/', {
@@ -910,7 +916,7 @@ export const VoicyChatV2: React.FC = () => {
     if (!mailForm.email || !mailForm.message) return;
 
     setIsSendingMail(true);
-    playSonicClick('light');
+    playClick('soft');
 
     try {
       const response = await fetch('/api/mailbox/contact', {
@@ -953,14 +959,14 @@ export const VoicyChatV2: React.FC = () => {
       const data = await response.json();
       if (data.success) {
         setCallRequested(true);
-        playSonicClick('pro');
+        playClick('pro');
       } else {
         setCallError(data.message || 'Er ging iets mis.');
-        playSonicClick('error');
+        playClick('soft');
       }
     } catch (err) {
       setCallError('Netwerkfout bij het opzetten van de verbinding.');
-      playSonicClick('error');
+      playClick('soft');
     } finally {
       setIsCalling(false);
     }
@@ -1132,7 +1138,7 @@ export const VoicyChatV2: React.FC = () => {
               <ButtonInstrument
                 key={tab.id}
                 onClick={() => {
-                  playSonicClick('light');
+                  playClick('soft');
                   setActiveTab(tab.id as any);
                 }}
                 className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg transition-all ${
@@ -1155,83 +1161,83 @@ export const VoicyChatV2: React.FC = () => {
                 <ContainerInstrument plain className="w-64 bg-va-black text-white p-6 border-r border-white/5 space-y-6 overflow-y-auto custom-scrollbar">
                   <HeadingInstrument level={4} className="text-[11px] font-black tracking-[0.2em] uppercase text-primary">System Intelligence</HeadingInstrument>
                   
-                  <div className="space-y-4">
-                    <div className="p-4 bg-white/5 rounded-2xl border border-white/5">
+                  <ContainerInstrument plain className="space-y-4">
+                    <ContainerInstrument plain className="p-4 bg-white/5 rounded-2xl border border-white/5">
                       <TextInstrument className="text-[10px] font-bold tracking-widest uppercase opacity-40 mb-2">Live Sensor</TextInstrument>
-                      <div className="space-y-2">
-                        <div className="flex justify-between text-[11px]">
-                          <span className="opacity-40">Pagina:</span>
-                          <span className="text-primary truncate max-w-[120px]">{customer360?.iap_context?.sensor?.current_page || 'Home'}</span>
-                        </div>
-                        <div className="flex justify-between text-[11px]">
-                          <span className="opacity-40">Scroll:</span>
-                          <span>{customer360?.iap_context?.sensor?.scroll_depth || 0}%</span>
-                        </div>
-                        <div className="flex justify-between text-[11px]">
-                          <span className="opacity-40">Laatst:</span>
-                          <span>{customer360?.iap_context?.sensor?.last_interaction ? new Date(customer360.iap_context.sensor.last_interaction).toLocaleTimeString('nl-BE', { hour: '2-digit', minute: '2-digit' }) : 'N/A'}</span>
-                        </div>
-                      </div>
-                    </div>
+                      <ContainerInstrument plain className="space-y-2">
+                        <ContainerInstrument plain className="flex justify-between text-[11px]">
+                          <TextInstrument as="span" className="opacity-40">Pagina:</TextInstrument>
+                          <TextInstrument as="span" className="text-primary truncate max-w-[120px]">{customer360?.iap_context?.sensor?.current_page || 'Home'}</TextInstrument>
+                        </ContainerInstrument>
+                        <ContainerInstrument plain className="flex justify-between text-[11px]">
+                          <TextInstrument as="span" className="opacity-40">Scroll:</TextInstrument>
+                          <TextInstrument as="span">{customer360?.iap_context?.sensor?.scroll_depth || 0}%</TextInstrument>
+                        </ContainerInstrument>
+                        <ContainerInstrument plain className="flex justify-between text-[11px]">
+                          <TextInstrument as="span" className="opacity-40">Laatst:</TextInstrument>
+                          <TextInstrument as="span">{customer360?.iap_context?.sensor?.last_interaction ? new Date(customer360.iap_context.sensor.last_interaction).toLocaleTimeString('nl-BE', { hour: '2-digit', minute: '2-digit' }) : 'N/A'}</TextInstrument>
+                        </ContainerInstrument>
+                      </ContainerInstrument>
+                    </ContainerInstrument>
 
-                    <div className="p-4 bg-white/5 rounded-2xl border border-white/5">
+                    <ContainerInstrument plain className="p-4 bg-white/5 rounded-2xl border border-white/5">
                       <TextInstrument className="text-[10px] font-bold tracking-widest uppercase opacity-40 mb-2">Visitor Vibe</TextInstrument>
-                      <div className="flex items-center gap-2">
-                        <div className={cn(
+                      <ContainerInstrument plain className="flex items-center gap-2">
+                        <ContainerInstrument plain className={cn(
                           "w-2 h-2 rounded-full animate-pulse",
                           customer360?.intelligence?.leadVibe === 'burning' ? "bg-orange-500" : "bg-blue-500"
                         )} />
-                        <span className="text-[13px] font-medium capitalize">{customer360?.intelligence?.leadVibe || 'Neutral'}</span>
-                      </div>
-                    </div>
+                        <TextInstrument as="span" className="text-[13px] font-medium capitalize">{customer360?.intelligence?.leadVibe || 'Neutral'}</TextInstrument>
+                      </ContainerInstrument>
+                    </ContainerInstrument>
 
-                    <div className="p-4 bg-white/5 rounded-2xl border border-white/5">
+                    <ContainerInstrument plain className="p-4 bg-white/5 rounded-2xl border border-white/5">
                       <TextInstrument className="text-[10px] font-bold tracking-widest uppercase opacity-40 mb-2">Lifecycle Stage</TextInstrument>
-                      <div className="flex items-center gap-2">
-                        <span className={cn(
+                      <ContainerInstrument plain className="flex items-center gap-2">
+                        <TextInstrument as="span" className={cn(
                           "text-[11px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider",
                           !isAuthenticated ? "bg-blue-500/20 text-blue-400" : 
                           (customer360?.dna?.totalOrders > 0 ? "bg-green-500/20 text-green-400" : "bg-orange-500/20 text-orange-400")
                         )}>
                           {!isAuthenticated ? 'Presales' : (customer360?.dna?.totalOrders > 0 ? 'Aftersales' : 'Sales')}
-                        </span>
-                      </div>
-                    </div>
+                        </TextInstrument>
+                      </ContainerInstrument>
+                    </ContainerInstrument>
 
-                    <div className="p-4 bg-white/5 rounded-2xl border border-white/5">
+                    <ContainerInstrument plain className="p-4 bg-white/5 rounded-2xl border border-white/5">
                       <TextInstrument className="text-[10px] font-bold tracking-widest uppercase opacity-40 mb-2">Detected Intent</TextInstrument>
-                      <span className="text-[13px] font-medium">{customer360?.intelligence?.intent || 'Browsing'}</span>
-                    </div>
+                      <TextInstrument as="span" className="text-[13px] font-medium">{customer360?.intelligence?.intent || 'Browsing'}</TextInstrument>
+                    </ContainerInstrument>
 
-                    <div className="p-4 bg-white/5 rounded-2xl border border-white/5">
+                    <ContainerInstrument plain className="p-4 bg-white/5 rounded-2xl border border-white/5">
                       <TextInstrument className="text-[10px] font-bold tracking-widest uppercase opacity-40 mb-2">Customer DNA</TextInstrument>
-                      <div className="space-y-1">
-                        <div className="flex justify-between text-[11px]">
-                          <span className="opacity-40">Orders:</span>
-                          <span>{customer360?.dna?.totalOrders || 0}</span>
-                        </div>
-                        <div className="flex justify-between text-[11px]">
-                          <span className="opacity-40">Journey:</span>
-                          <span className="text-primary">{customer360?.dna?.topJourneys?.[0] || 'New'}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                      <ContainerInstrument plain className="space-y-1">
+                        <ContainerInstrument plain className="flex justify-between text-[11px]">
+                          <TextInstrument as="span" className="opacity-40">Orders:</TextInstrument>
+                          <TextInstrument as="span">{customer360?.dna?.totalOrders || 0}</TextInstrument>
+                        </ContainerInstrument>
+                        <ContainerInstrument plain className="flex justify-between text-[11px]">
+                          <TextInstrument as="span" className="opacity-40">Journey:</TextInstrument>
+                          <TextInstrument as="span" className="text-primary">{customer360?.dna?.topJourneys?.[0] || 'New'}</TextInstrument>
+                        </ContainerInstrument>
+                      </ContainerInstrument>
+                    </ContainerInstrument>
+                  </ContainerInstrument>
 
-                  <div className="pt-4 border-t border-white/5">
+                  <ContainerInstrument plain className="pt-4 border-t border-white/5">
                     <TextInstrument className="text-[10px] font-bold tracking-widest uppercase opacity-40 mb-4">Admin Commands</TextInstrument>
-                    <div className="grid grid-cols-1 gap-2">
+                    <ContainerInstrument plain className="grid grid-cols-1 gap-2">
                       {['/status', '/clear', '/edit'].map(cmd => (
-                        <button 
+                        <ButtonInstrument 
                           key={cmd}
                           onClick={() => handleSend(undefined, cmd, 'tool')}
-                          className="text-left px-3 py-2 bg-white/5 hover:bg-white/10 rounded-lg text-[12px] font-mono transition-all"
+                          className="text-left px-3 py-2 bg-white/5 hover:bg-white/10 rounded-lg text-[12px] font-mono transition-all border-none"
                         >
                           {cmd}
-                        </button>
+                        </ButtonInstrument>
                       ))}
-                    </div>
-                  </div>
+                    </ContainerInstrument>
+                  </ContainerInstrument>
                 </ContainerInstrument>
               )}
 
@@ -1532,7 +1538,7 @@ export const VoicyChatV2: React.FC = () => {
                         <ContainerInstrument plain>
                           <TextInstrument className="text-[15px] font-light">{state.selectedActor.first_name}</TextInstrument>
                           <TextInstrument className="text-[15px] font-light opacity-40">
-                            <VoiceglotText translationKey={state.selectedActor.native_lang_id ? `language.${state.selectedActor.native_lang_id}` : `common.language.${state.selectedActor.native_lang}`} defaultText={state.selectedActor.native_lang_label || MarketManager.getLanguageLabel(state.selectedActor.native_lang)} noTranslate={true} />
+                            <VoiceglotText translationKey={state.selectedActor.native_lang_id ? `language.${state.selectedActor.native_lang_id}` : `common.language.${state.selectedActor.native_lang}`} defaultText={state.selectedActor.native_lang_label || MarketManager.getLanguageLabel(state.selectedActor.native_lang || '')} noTranslate={true} />
                           </TextInstrument>
                         </ContainerInstrument>
                       </ContainerInstrument>

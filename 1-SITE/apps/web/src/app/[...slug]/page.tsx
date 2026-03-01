@@ -817,7 +817,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
             } catch (err) {
               console.error("[SmartRouter] Failed to fetch lessons for academy page:", err);
             }
-          } else if (currentJourney === 'ademing') {
+          } else if (resolved?.journey === 'ademing' || market.market_code === 'ADEMING') {
             try {
               // 🛡️ CHRIS-PROTOCOL: Ademing Handshake (v2.16.096)
               let tracks = [];
@@ -1288,7 +1288,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
             } catch (err) {
               console.error("[SmartRouter] Failed to fetch lessons for academy page:", err);
             }
-          } else if (currentJourney === 'ademing') {
+          } else if (resolved?.journey === 'ademing' || market.market_code === 'ADEMING') {
             try {
               const { data: tracks } = await supabase.from('ademing_tracks').select('*').eq('is_public', true).limit(6);
               extraData.tracks = tracks || [];

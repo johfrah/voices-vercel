@@ -16,7 +16,8 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { ActorReorderModal } from './ActorReorderModal';
 import { AgencyFilterSheet } from './AgencyFilterSheet';
 import { FlagAR, FlagBE, FlagBR, FlagCN, FlagDE, FlagDK, FlagES, FlagFI, FlagFR, FlagGR, FlagIT, FlagJP, FlagKR, FlagNL, FlagPL, FlagPT, FlagRU, FlagSE, FlagTR, FlagUK, FlagUS } from './LayoutInstruments';
-import { ContainerInstrument, TextInstrument } from './LayoutInstrumentsServer';
+import { ContainerInstrument, TextInstrument, ButtonInstrument } from './LayoutInstruments';
+import { ContainerInstrument as ContainerInstrumentServer, TextInstrument as TextInstrumentServer } from './LayoutInstrumentsServer';
 import { OrderStepsInstrument } from './OrderStepsInstrument';
 import { VoiceglotImage } from './VoiceglotImage';
 import { VoiceglotText } from './VoiceglotText';
@@ -101,7 +102,6 @@ const VoiceFlag = ({ lang, size = 16 }: { lang?: string, size?: number }) => {
                  (iconName === 'FlagDK') ? FlagDK :
                  (iconName === 'FlagPT') ? FlagPT :
                  (iconName === 'FlagSE') ? FlagSE :
-                 (iconName === 'FlagNO') ? FlagNO :
                  (iconName === 'FlagFI') ? FlagFI :
                  (iconName === 'FlagGR') ? FlagGR :
                  (iconName === 'FlagTR') ? FlagTR :
@@ -162,11 +162,6 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
 
   const availableGenderIds = useMemo(() => {
     const ids = new Set<number>();
-    if (MarketManager.genders && (MarketManager.genders || []).length > 0) {
-      (MarketManager.genders || []).forEach(g => ids.add(g.id));
-      return ids;
-    }
-
     (actors || []).forEach(a => {
       if (a.gender_id) ids.add(a.gender_id);
     });
@@ -224,21 +219,21 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
         l.label.toLowerCase() === state.filters.language?.toLowerCase()
       );
       if (match) {
-        updateFilters({ languageId: match.id, languageIds: [match.id], language: null });
+        updateFilters({ languageId: match.id, languageIds: [match.id], language: undefined });
       }
     }
 
     if (state.filters.gender && !state.filters.genderId && filteredGendersData.length > 0) {
       const match = filteredGendersData.find(g => g.code.toLowerCase() === state.filters.gender?.toLowerCase());
       if (match) {
-        updateFilters({ genderId: match.id, gender: null });
+        updateFilters({ genderId: match.id, gender: undefined });
       }
     }
 
     if (state.filters.country && !state.filters.countryId && filteredCountriesData.length > 0) {
       const match = filteredCountriesData.find(c => c.code.toLowerCase() === state.filters.country?.toLowerCase());
       if (match) {
-        updateFilters({ countryId: match.id, country: null });
+        updateFilters({ countryId: match.id, country: undefined });
       }
     }
   }, [languagesData, gendersData, journeysData, mediaTypesData, countriesData, filteredLanguagesData, filteredGendersData, filteredCountriesData, state.filters.language, state.filters.gender, state.filters.country, state.filters.languageId, state.filters.genderId, state.filters.countryId, updateFilters]);
@@ -426,7 +421,6 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                        (langObj.icon === 'FlagDK') ? FlagDK :
                        (langObj.icon === 'FlagPT') ? FlagPT :
                        (langObj.icon === 'FlagSE') ? FlagSE :
-                       (langObj.icon === 'FlagNO') ? FlagNO :
                        (langObj.icon === 'FlagFI') ? FlagFI :
                        (langObj.icon === 'FlagGR') ? FlagGR :
                        (langObj.icon === 'FlagTR') ? FlagTR :
@@ -516,7 +510,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
           "flex items-center md:justify-center p-1.5 bg-va-off-white/50 rounded-[32px] overflow-x-auto no-scrollbar snap-x snap-mandatory",
           ((state.currentStep === 'voice' || activeJourneyId === 28) && !minimalMode) && "mb-3"
         )}>
-          <div className="flex items-center gap-1.5 min-w-full md:min-w-0">
+          <ContainerInstrument plain className="flex items-center gap-1.5 min-w-full md:min-w-0">
             {journeys.map((j) => {
               const isActive = activeJourneyId === j.id;
               const Icon = j.icon;
@@ -536,33 +530,33 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
               if (isUnsupported) return null;
 
               return (
-                <button
+                <ButtonInstrument
                   key={j.id}
                   onClick={() => handleJourneySwitch(j.id)}
                   className={cn(
-                    "flex-1 md:flex-none flex items-center justify-start gap-3 md:gap-4 px-4 md:px-6 py-3 rounded-[28px] transition-all duration-500 group/btn text-left snap-center min-w-[140px] md:min-w-0",
+                    "flex-1 md:flex-none flex items-center justify-start gap-3 md:gap-4 px-4 md:px-6 py-3 rounded-[28px] transition-all duration-500 group/btn text-left snap-center min-w-[140px] md:min-w-0 border-none",
                     isActive
                       ? "bg-va-black text-white shadow-xl scale-[1.02] z-10"
-                      : "text-va-black/40 hover:text-va-black hover:bg-white/50"
+                      : "bg-transparent text-va-black/40 hover:text-va-black hover:bg-white/50"
                   )}
                 >
                   <Icon size={20} strokeWidth={isActive ? 2 : 1.5} className={cn("transition-all duration-500 shrink-0 md:w-6 md:h-6", isActive && j.color)} />
-                  <div className="flex flex-col">
-                    <span className="text-[12px] md:text-[14px] font-bold tracking-widest leading-none mb-1 whitespace-nowrap">
+                  <ContainerInstrument plain className="flex flex-col">
+                    <TextInstrument className="text-[12px] md:text-[14px] font-bold tracking-widest leading-none mb-1 whitespace-nowrap">
                       <VoiceglotText translationKey={j.key} defaultText={j.label} />
-                    </span>
-                    <span className={cn(
+                    </TextInstrument>
+                    <TextInstrument className={cn(
                       "text-[9px] md:text-[10px] font-medium tracking-wider uppercase opacity-60 whitespace-nowrap",
                       isActive ? "text-white/80" : "text-va-black/40 group-hover/btn:text-va-black/60"
                     )}>
                       <VoiceglotText translationKey={`${j.key}.sub`} defaultText={j.subLabel} />
-                    </span>
-                  </div>
-                  {isActive && <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse ml-auto hidden md:block" />}
-                </button>
+                    </TextInstrument>
+                  </ContainerInstrument>
+                  {isActive && <ContainerInstrument className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse ml-auto hidden md:block" />}
+                </ButtonInstrument>
               );
             })}
-          </div>
+          </ContainerInstrument>
         </ContainerInstrument>
 
         {/* 2. Primary Filter Pill (Airbnb Style) */}
@@ -577,33 +571,33 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                 className="overflow-visible"
               >
                 {/* MOBILE FILTER TRIGGER (Moby-methode) */}
-                <div className="md:hidden p-1.5">
-                  <button
+                <ContainerInstrument plain className="md:hidden p-1.5">
+                  <ButtonInstrument
                     onClick={() => setIsSheetOpen(true)}
                     className="w-full h-16 bg-white rounded-full border border-black/10 shadow-sm flex items-center px-6 gap-4 active:scale-[0.98] transition-all"
                   >
-                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0">
+                    <ContainerInstrument className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0">
                       <SearchIcon size={18} />
-                    </div>
-                    <div className="flex flex-col items-start min-w-0">
-                      <span className="text-[13px] font-bold tracking-widest text-va-black uppercase">
+                    </ContainerInstrument>
+                    <ContainerInstrument plain className="flex flex-col items-start min-w-0">
+                      <TextInstrument className="text-[13px] font-bold tracking-widest text-va-black uppercase">
                         <VoiceglotText translationKey="filter.mobile_trigger" defaultText="Filters & Zoeken" />
-                      </span>
-                      <span className="text-[11px] text-va-black/40 truncate w-full text-left">
-                        {state.filters.language ? t(`common.language.${(state.filters.language || '').toLowerCase()}`, state.filters.language) : t('filter.all_languages', 'Alle talen')} • {state.filters.gender ? t(`common.gender.${(state.filters.gender || '').toLowerCase()}`, state.filters.gender) : t('gender.everyone', 'Iedereen')} • {activeJourneyId === 28 ? ((state.filters.media || []).length || 0) + ' ' + t('common.channels', 'kanalen') : (state.filters.words || 200) + ' ' + t('common.words', 'woorden')}
-                      </span>
-                    </div>
-                  </button>
-                </div>
+                      </TextInstrument>
+                      <TextInstrument className="text-[11px] text-va-black/40 truncate w-full text-left">
+                        {state.filters.languageId ? MarketManager.getLanguageLabel(String(state.filters.languageId)) : t('filter.all_languages', 'Alle talen')} • {state.filters.genderId ? filteredGendersData.find(g => g.id === state.filters.genderId)?.label : t('gender.everyone', 'Iedereen')} • {activeJourneyId === 28 ? ((state.filters.media || []).length || 0) + ' ' + t('common.channels', 'kanalen') : (state.filters.words || 200) + ' ' + t('common.words', 'woorden')}
+                      </TextInstrument>
+                    </ContainerInstrument>
+                  </ButtonInstrument>
+                </ContainerInstrument>
 
                 {/* DESKTOP FILTERS */}
                 <ContainerInstrument plain className="hidden md:block p-1.5">
-                  <div className="flex flex-col">
+                  <ContainerInstrument plain className="flex flex-col">
                     <ContainerInstrument plain className="flex items-center bg-white rounded-full shadow-md border border-black/10 divide-x divide-black/10 h-20">
 
                       {/* Language Segment - CHRIS-PROTOCOL: Hide in script flow */}
                       {state.currentStep === 'voice' ? (
-                        <div className="flex-1 h-full flex flex-col justify-center relative group/lang">
+                        <ContainerInstrument plain className="flex-1 h-full flex flex-col justify-center relative group/lang">
                           <VoicesDropdown
                             searchable
                             rounding="left"
@@ -696,16 +690,16 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                             required={true}
                             onOrderClick={handleReorderClick}
                           />
-                        </div>
+                        </ContainerInstrument>
                       ) : null}
 
                       {/* Gender Segment - CHRIS-PROTOCOL: Hide in script flow */}
                       {state.currentStep === 'voice' ? (
-                        <div className="flex-1 h-full flex flex-col justify-center relative group/gender">
+                        <ContainerInstrument plain className="flex-1 h-full flex flex-col justify-center relative group/gender">
                           <VoicesDropdown 
                             options={filteredGendersData.length > 0 
                               ? [
-                                  { label: t('gender.everyone', language === 'fr' ? 'Tout le monde' : language === 'en' ? 'Everyone' : 'Iedereen'), value: '', icon: Users },
+                                  { label: t('gender.everyone', 'Iedereen'), value: '', icon: Users },
                                   ...filteredGendersData.map(g => ({
                                     label: g.label,
                                     value: g.id, //  CHRIS-PROTOCOL: Use ID for Handshake Truth
@@ -730,12 +724,12 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                                 });
                               }
                             }}
-                            placeholder={t('gender.everyone', language === 'fr' ? 'Tout le monde' : language === 'en' ? 'Everyone' : 'Iedereen')}
-                            label={t('filter.who', language === 'fr' ? 'Qui?' : language === 'en' ? 'Who?' : 'Wie?')}
+                            placeholder={t('gender.everyone', 'Iedereen')}
+                            label={t('filter.who', 'Wie?')}
                             className="w-full h-full"
                             required={true}
                           />
-                        </div>
+                        </ContainerInstrument>
                       ) : null}
 
                       {/* Words Segment (Telephony & Video) - CHRIS-PROTOCOL: Hide in script flow */}
@@ -754,7 +748,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
 
                       {/* Media Segment (Commercial only) -  AIRBNB STEPPER MODE */}
                       {activeJourneyId === 28 && (
-                        <div className="flex-1 h-full flex flex-col justify-center relative group/media">
+                        <ContainerInstrument plain className="flex-1 h-full flex flex-col justify-center relative group/media">
                           <VoicesDropdown
                             stepperMode
                             rounding={state.currentStep !== 'voice' ? 'left' : 'none'}
@@ -815,7 +809,6 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                               updateFilters({ 
                                 spotsDetail: newSpotsDetail,
                                 media: mappedMedia,
-                                mediaIds: mediaIds // 🛡️ CHRIS-PROTOCOL: Handshake Truth (v2.14.740)
                               });
                             }}
                             yearsValue={state.filters.yearsDetail || {}}
@@ -872,12 +865,12 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                             label={t('filter.media_type', 'Mediatype?')}
                             className="h-full animate-in fade-in slide-in-from-left-4 duration-500"
                           />
-                        </div>
+                        </ContainerInstrument>
                       )}
 
                       {/* Country Segment (Commercial only) */}
                       {activeJourneyId === 28 && (
-                        <div className="flex-1 h-full flex flex-col justify-center relative group/country">
+                        <ContainerInstrument plain className="flex-1 h-full flex flex-col justify-center relative group/country">
                           <VoicesDropdown
                             searchable
                             rounding="right"
@@ -888,15 +881,15 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                                   code: c.code
                                 }))
                               : [
-                                  { label: t('country.be', language === 'fr' ? 'Belgique' : language === 'en' ? 'Belgium' : 'België'), value: 'BE', code: 'BE' },
-                                  { label: t('country.nl', language === 'fr' ? 'Pays-Bas' : language === 'en' ? 'Netherlands' : 'Nederland'), value: 'NL', code: 'NL' },
-                                  { label: t('country.fr', language === 'fr' ? 'France' : language === 'en' ? 'France' : 'Frankrijk'), value: 'FR', code: 'FR' },
-                                  { label: t('country.de', language === 'fr' ? 'Allemagne' : language === 'en' ? 'Germany' : 'Duitsland'), value: 'DE', code: 'DE' },
-                                  { label: t('country.uk', language === 'fr' ? 'Royaume-Uni' : language === 'en' ? 'United Kingdom' : 'Verenigd Koninkrijk'), value: 'UK', code: 'UK' },
-                                  { label: t('country.us', language === 'fr' ? 'États-Unis' : language === 'en' ? 'United States' : 'Verenigde Staten'), value: 'US', code: 'US' },
-                                  { label: t('country.es', language === 'fr' ? 'Espagne' : language === 'en' ? 'Spain' : 'Spanje'), value: 'ES', code: 'ES' },
-                                  { label: t('country.pt', language === 'fr' ? 'Portugal' : language === 'en' ? 'Portugal' : 'Portugal'), value: 'PT', code: 'PT' },
-                                  { label: t('country.it', language === 'fr' ? 'Italie' : language === 'en' ? 'Italy' : 'Italië'), value: 'IT', code: 'IT' },
+                                  { label: t('country.be', 'België'), value: 'BE', code: 'BE' },
+                                  { label: t('country.nl', 'Nederland'), value: 'NL', code: 'NL' },
+                                  { label: t('country.fr', 'Frankrijk'), value: 'FR', code: 'FR' },
+                                  { label: t('country.de', 'Duitsland'), value: 'DE', code: 'DE' },
+                                  { label: t('country.uk', 'Verenigd Koninkrijk'), value: 'UK', code: 'UK' },
+                                  { label: t('country.us', 'Verenigde Staten'), value: 'US', code: 'US' },
+                                  { label: t('country.es', 'Spanje'), value: 'ES', code: 'ES' },
+                                  { label: t('country.pt', 'Portugal'), value: 'PT', code: 'PT' },
+                                  { label: t('country.it', 'Italië'), value: 'IT', code: 'IT' },
                                 ]
                             }
                             value={state.filters.countryId || state.filters.countries || state.filters.country || 'BE'}
@@ -929,12 +922,12 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                                 updateCountry(vals as any);
                               }
                             }}
-                            placeholder={t('filter.select_countries', language === 'fr' ? 'Choisir pays' : language === 'en' ? 'Select countries' : 'Kies land(en)')}
-                            label={t('filter.broadcast_area', language === 'fr' ? 'Zone de diffusion?' : language === 'en' ? 'Broadcast area?' : 'Uitzendgebied?')}
+                            placeholder={t('filter.select_countries', 'Kies land(en)')}
+                            label={t('filter.broadcast_area', 'Uitzendgebied?')}
                             className="h-full animate-in fade-in slide-in-from-left-4 duration-500"
                             multiSelect={true}
                           />
-                        </div>
+                        </ContainerInstrument>
                       )}
 
                       {/* Sorting Segment (Airbnb Style) */}
@@ -942,21 +935,21 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                         <VoicesDropdown
                           rounding="right"
                           options={[
-                            { label: t('sort.popularity', language === 'fr' ? 'Popularité' : language === 'en' ? 'Popularity' : 'Populariteit'), value: 'popularity', icon: Star },
-                            { label: t('sort.delivery', language === 'fr' ? 'Délai de livraison' : language === 'en' ? 'Delivery time' : 'Levertijd'), value: 'delivery', icon: Clock },
-                            { label: t('sort.alphabetical_az', language === 'fr' ? 'Nom (A-Z)' : language === 'en' ? 'Name (A-Z)' : 'Naam (A-Z)'), value: 'alphabetical_az', icon: Type },
-                            { label: t('sort.alphabetical_za', language === 'fr' ? 'Nom (Z-A)' : language === 'en' ? 'Name (Z-A)' : 'Naam (Z-A)'), value: 'alphabetical_za', icon: Type },
+                            { label: t('sort.popularity', 'Populariteit'), value: 'popularity', icon: Star },
+                            { label: t('sort.delivery', 'Levertijd'), value: 'delivery', icon: Clock },
+                            { label: t('sort.alphabetical_az', 'Naam (A-Z)'), value: 'alphabetical_az', icon: Type },
+                            { label: t('sort.alphabetical_za', 'Naam (Z-A)'), value: 'alphabetical_za', icon: Type },
                           ]}
                           value={state.filters.sortBy || 'popularity'}
                           onChange={(val) => updateFilters({ sortBy: val as any })}
-                          placeholder={t('sort.placeholder', language === 'fr' ? 'Trier par' : language === 'en' ? 'Sort by' : 'Sorteer op')}
-                          label={t('filter.sort', language === 'fr' ? 'Trier?' : language === 'en' ? 'Sort?' : 'Sorteer?')}
+                          placeholder={t('sort.placeholder', 'Sorteer op')}
+                          label={t('filter.sort', 'Sorteer?')}
                           className="flex-1 h-full"
                         />
                       )}
                     </ContainerInstrument>
 
-                  </div>
+                  </ContainerInstrument>
                 </ContainerInstrument>
               </motion.div>
             )}
@@ -1001,7 +994,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
           )}
 
           {mounted && state.currentStep !== 'voice' && (
-            <button
+            <ButtonInstrument
               onClick={() => {
                 updateStep('voice');
                 // Scroll to top of anchor
@@ -1010,11 +1003,11 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                   element.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }
               }}
-              className="absolute right-0 text-[11px] font-bold tracking-widest text-primary uppercase hover:opacity-70 transition-opacity flex items-center gap-2"
+              className="absolute right-0 text-[11px] font-bold tracking-widest text-primary uppercase hover:opacity-70 transition-opacity flex items-center gap-2 bg-transparent border-none"
             >
               <VoiceglotImage src="/assets/common/branding/icons/BACK.svg" width={10} height={10} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
               <VoiceglotText translationKey="action.back_to_casting" defaultText="Terug naar Casting" />
-            </button>
+            </ButtonInstrument>
           )}
         </ContainerInstrument>
       )}
@@ -1029,9 +1022,9 @@ const Chip = ({ label, onRemove }: { label: string, onRemove: () => void }) => {
       <TextInstrument className="text-va-black/60 group-hover:text-va-black">
         {t(`language.${String(label || '').toLowerCase()}`, String(label || ''))}
       </TextInstrument>
-      <button onClick={onRemove} aria-label={t('action.remove', 'Verwijder')} className="hover:text-primary transition-colors p-0.5">
+      <ButtonInstrument onClick={onRemove} aria-label={t('action.remove', 'Verwijder')} className="hover:text-primary transition-colors p-0.5 bg-transparent border-none">
         <VoiceglotImage src="/assets/common/branding/icons/BACK.svg" width={10} height={10} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.4 }} />
-      </button>
+      </ButtonInstrument>
     </ContainerInstrument>
   );
 };

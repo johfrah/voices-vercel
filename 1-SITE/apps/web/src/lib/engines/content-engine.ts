@@ -98,8 +98,11 @@ export class ContentEngine {
    *  GOD MODE: Kijkt eerst in de database, valt terug op Markdown.
    *  VOICEGLOT: Vertaalt alle content on-the-fly via de database.
    */
-  static async getPage(slug: string, locale: string = "nl", type: "pages" | "stories" = "pages"): Promise<PageContent | null> {
+  static async getPage(slug: string, locale: string = "nl-BE", type: "pages" | "stories" = "pages"): Promise<PageContent | null> {
     let rawPage: PageContent | null = null;
+
+    // 🛡️ CHRIS-PROTOCOL: ISO-5 Mandate (v2.18.2)
+    const targetLocale = locale === 'nl' ? 'nl-be' : locale;
 
     // 1.  DATABASE-FIRST (GOD MODE)
     try {
@@ -166,16 +169,16 @@ export class ContentEngine {
     }
 
     // 3.  VOICEGLOT TRANSLATION LAYER
-    if (locale !== 'nl' && !rawPage.noTranslate) {
-      console.log(` CONTENT ENGINE: Translating [${slug}] to [${locale}] via Voiceglot...`);
+    if (targetLocale !== 'nl-be' && !rawPage.noTranslate) {
+      console.log(` CONTENT ENGINE: Translating [${slug}] to [${targetLocale}] via Voiceglot...`);
       
       // Vertaal Titel en Beschrijving
       const originalTitle = rawPage.title;
-      rawPage.title = await VoiceglotBridge.t(rawPage.title, locale);
+      rawPage.title = await VoiceglotBridge.t(rawPage.title, targetLocale);
       
       if (rawPage.description) {
         const originalDesc = rawPage.description;
-        rawPage.description = await VoiceglotBridge.t(rawPage.description, locale);
+        rawPage.description = await VoiceglotBridge.t(rawPage.description, targetLocale);
       }
 
       // Vertaal Secties
@@ -184,8 +187,8 @@ export class ContentEngine {
           const originalSecTitle = section.title;
           const originalSecContent = section.content;
           
-          section.title = await VoiceglotBridge.t(section.title, locale);
-          section.content = await VoiceglotBridge.t(section.content, locale);
+          section.title = await VoiceglotBridge.t(section.title, targetLocale);
+          section.content = await VoiceglotBridge.t(section.content, targetLocale);
 
           //  REGISTER FOR ADMIN (If translation is missing)
           if (section.title === originalSecTitle || section.content === originalSecContent) {
@@ -285,9 +288,12 @@ export class ContentEngine {
    * Haalt alle scripts op voor een specifiek kruispunt in de 84-matrix.
    * Prioriteert de huidige locale, maar toont ook andere talen als referentie.
    */
-  static async getScriptsByMatrix(journey: string, fase: string, locale: string = "nl"): Promise<ScriptContent[]> {
+  static async getScriptsByMatrix(journey: string, fase: string, locale: string = "nl-BE"): Promise<ScriptContent[]> {
     const scriptsPath = path.join(process.cwd(), `src/content/library/scripts/${journey}`);
     if (!fs.existsSync(scriptsPath)) return [];
+
+    // 🛡️ CHRIS-PROTOCOL: ISO-5 Mandate (v2.18.2)
+    const targetLocale = locale === 'nl' ? 'nl-be' : locale;
 
     const files = fs.readdirSync(scriptsPath);
     const scripts = files.map(file => {
@@ -296,7 +302,7 @@ export class ContentEngine {
       return {
         title: data.title || "",
         category: data.category || "",
-        lang: data.lang || "nl",
+        lang: data.lang || "nl-be",
         journey: data.journey || "",
         fase: data.fase || "",
         persona: data.persona || "",
@@ -310,8 +316,8 @@ export class ContentEngine {
 
     // Sorteer: huidige locale eerst
     return scripts.sort((a: ScriptContent, b: ScriptContent) => {
-      if (a.lang === locale && b.lang !== locale) return -1;
-      if (a.lang !== locale && b.lang === locale) return 1;
+      if (a.lang === targetLocale && b.lang !== targetLocale) return -1;
+      if (a.lang !== targetLocale && b.lang === targetLocale) return 1;
       return 0;
     });
   }
@@ -350,6 +356,7 @@ export class ContentEngine {
     if (parts.length !== 2) return raw;
 
     const locales: Record<string, any> = { nl, fr, de, en: enUS };
+    const lowLang = lang.split('-')[0].toLowerCase();
     
     try {
       // Handle cases like "9:30" or "09:30"
@@ -361,14 +368,14 @@ export class ContentEngine {
       const start = parseTime(parts[0]);
       const end = parseTime(parts[1]);
 
-      if (lang === "en") {
+      if (lowLang === "en") {
         return `${format(start, "h:mm a")} to ${format(end, "h:mm a")}`;
       }
-      if (lang === "fr") {
+      if (lowLang === "fr") {
         return `${format(start, "HH'h'mm")}  ${format(end, "HH'h'mm")}`;
       }
       // Default / NL / DE
-      const separator = lang === "de" ? " bis " : " tot ";
+      const separator = lowLang === "de" ? " bis " : " tot ";
       return `${format(start, "HH:mm")}${separator}${format(end, "HH:mm")}`;
     } catch (e) {
       return raw;
@@ -377,11 +384,12 @@ export class ContentEngine {
 
   private static formatSmartDate(raw: string, lang: string): string {
     const locales: Record<string, any> = { nl, fr, de, en: enUS };
-    const currentLocale = locales[lang] || nl;
+    const lowLang = lang.split('-')[0].toLowerCase();
+    const currentLocale = locales[lowLang] || nl;
 
     try {
       const date = new Date(raw);
-      if (lang === "en") return format(date, "MMMM do", { locale: enUS });
+      if (lowLang === "en") return format(date, "MMMM do", { locale: enUS });
       return format(date, "d MMMM", { locale: currentLocale });
     } catch (e) {
       return raw;

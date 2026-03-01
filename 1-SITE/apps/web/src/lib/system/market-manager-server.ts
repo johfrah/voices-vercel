@@ -840,10 +840,10 @@ export class MarketManagerServer {
    * 🛡️ CHRIS-PROTOCOL: Centralized Journey Segment Mapping
    * Voorkomt hardcoded slop in de Smart Router.
    */
-  static getJourneyFromSegment(segment: string): 'commercial' | 'telephony' | 'video' | 'video' {
+  static getJourneyFromSegment(segment: string): 'commercial' | 'telephony' | 'video' {
     const s = segment?.toLowerCase();
     if (['commercial', 'advertentie', 'reclame', 'publicité', 'werbung', 'ads'].includes(s)) return 'commercial';
-    if (['telephony', 'telefonie', 'telefoon', 'téléphonie', 'telefonie'].includes(s)) return 'telephony';
+    if (['telephony', 'telefonie', 'telefoon', 'téléphonie'].includes(s)) return 'telephony';
     if (['video', 'corporate', 'vidéo', 'film', 'bedrijfsfilm'].includes(s)) return 'video';
     return 'video';
   }
