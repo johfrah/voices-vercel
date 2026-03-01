@@ -13,7 +13,7 @@
 import { chromium, Browser, Page } from 'playwright';
 
 const STUDIO_URL = 'https://www.voices.be/studio/';
-const EXPECTED_VERSION = 'v2.16.066';
+const EXPECTED_VERSION = 'v2.16.128';
 
 interface ValidationResult {
   test: string;
