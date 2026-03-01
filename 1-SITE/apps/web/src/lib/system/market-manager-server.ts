@@ -131,10 +131,22 @@ export class MarketManagerServer {
       'tv_national': 9,
       'tv_regional': 10,
       'tv_local': 11,
-      'podcast': 12
+      'podcast': 12,
+      'social_media': 13,
+      'cinema': 14,
+      'pos': 15
     };
 
     return staticMap[lowCode] || null;
+  }
+
+  /**
+   * 🛡️ CHRIS-PROTOCOL: Service Type Handshake (v2.16.140)
+   * Bepaalt of een service ID een 'buyout' (BSF + Buyout) of 'all-in' type is.
+   */
+  static getServiceType(serviceId: number): 'buyout' | 'all-in' {
+    const buyoutIds = [5, 6, 9, 13, 14]; // Online, Radio Nat, TV Nat, Social, Cinema
+    return buyoutIds.includes(serviceId) ? 'buyout' : 'all-in';
   }
 
   /**

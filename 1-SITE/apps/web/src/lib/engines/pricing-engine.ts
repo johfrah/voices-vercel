@@ -211,12 +211,24 @@ export class SlimmeKassa {
 
     const getServicePrice = (serviceCode: string): number => {
       const val = countryRates[serviceCode] ?? globalRates[serviceCode];
-      if (val !== undefined && val !== null && val !== '') return this.toCents(val);
+      const serviceId = MarketManager.getServiceId(serviceCode);
+      const isBuyoutType = serviceId ? MarketManager.getServiceType(serviceId) === 'buyout' : false;
+      
+      if (val !== undefined && val !== null && val !== '') {
+        const cents = this.toCents(val);
+        // 🛡️ CHRIS-PROTOCOL: If it's a buyout type, the value in DB is now the pure buyout (v2.16.140)
+        return cents;
+      }
       
       // Legacy column fallbacks (only if JSONB is missing)
+      // Note: Legacy columns still store all-in prices, so we subtract BSF if needed
+      const bsf = activeConfig.basePrice || 19900;
       if (serviceCode === 'ivr' && actor.price_ivr) return this.toCents(actor.price_ivr);
       if (serviceCode === 'unpaid' && (actor.price_unpaid || actor.price_unpaid_media)) return this.toCents(actor.price_unpaid || actor.price_unpaid_media);
-      if (serviceCode === 'online' && actor.price_online) return this.toCents(actor.price_online);
+      if (serviceCode === 'online' && actor.price_online) {
+        const allIn = this.toCents(actor.price_online);
+        return isBuyoutType ? Math.max(0, allIn - bsf) : allIn;
+      }
       if (serviceCode === 'live_regie' && actor.price_live_regie) return this.toCents(actor.price_live_regie);
       if (serviceCode === 'bsf' && (actor.price_bsf || actor.bsf)) return this.toCents(actor.price_bsf || actor.bsf);
       
@@ -237,7 +249,7 @@ export class SlimmeKassa {
         baseCents = activeConfig.academyPrice || 19900;
       }
     } else if (input.usage === 'telefonie') {
-      // 🛡️ CHRIS-PROTOCOL: ID-First Handshake for Telephony (Service ID 2)
+      // 🛡️ CHRIS-PROTOCOL: ID-First Handshake for Telephony (Service ID 2) - All-in
       baseCents = getServicePrice('ivr');
       if (baseCents === 0) {
         baseCents = activeConfig.telephonyBasePrice || 8900;
@@ -264,7 +276,9 @@ export class SlimmeKassa {
       let mediaBreakdown: Record<string, { subtotal: number; discount: number; final: number }> = {};
 
       selectedMedia.forEach(m => {
-        // 🛡️ CHRIS-PROTOCOL: ID-First Handshake for Media Buyouts (Service IDs 5-12)
+        // 🛡️ CHRIS-PROTOCOL: ID-First Handshake for Media Buyouts (Service IDs 5-15)
+        const serviceId = MarketManager.getServiceId(m);
+        const isBuyoutType = serviceId ? MarketManager.getServiceType(serviceId) === 'buyout' : false;
         let feeCents = getServicePrice(m);
 
         if (feeCents === 0) {
@@ -272,22 +286,30 @@ export class SlimmeKassa {
           quoteReason = `Geen specifiek tarief gevonden voor mediatype '${m}' in ${country}.`;
           
           if (m === 'online') {
-            feeCents = getServicePrice('online') || BSF_Cents;
+            feeCents = getServicePrice('online') || 10000; // Default €100 buyout for online
           }
         }
 
         let buyoutForTypeCents = 0;
         const isSmallCampaign = m.includes('regional') || m.includes('local') || m === 'podcast' || country === 'BE-REGIONAL';
 
-        if (isSmallCampaign) {
-          const spots = (input.spots && input.spots[m]) || 1;
-          buyoutForTypeCents = feeCents * spots;
-        } else {
-          const baseBuyoutCents = Math.max(0, feeCents - BSF_Cents);
+        if (!isBuyoutType || isSmallCampaign) {
+          // All-in types (Podcast, Regional, Local)
           const spots = (input.spots && input.spots[m]) || 1;
           const years = (input.years && input.years[m]) || 1;
-          const effectiveBaseBuyoutCents = Math.max(10000, baseBuyoutCents);
-          buyoutForTypeCents = Math.round(effectiveBaseBuyoutCents * spots * years);
+          
+          // 🛡️ CHRIS-PROTOCOL: Podcast 3-month rule (v2.16.140)
+          // If it's a podcast, 'years' actually means '3-month periods'
+          buyoutForTypeCents = feeCents * spots * years;
+        } else {
+          // Buyout types (BSF + Pure Buyout)
+          const spots = (input.spots && input.spots[m]) || 1;
+          const years = (input.years && input.years[m]) || 1;
+          const pureBuyoutCents = feeCents;
+          
+          // 🛡️ CHRIS-PROTOCOL: Minimum buyout protection
+          const effectivePureBuyoutCents = Math.max(10000, pureBuyoutCents);
+          buyoutForTypeCents = Math.round(effectivePureBuyoutCents * spots * years);
         }
         
         totalBuyoutCents += buyoutForTypeCents;
@@ -299,8 +321,12 @@ export class SlimmeKassa {
       });
 
       mediaSurchargeCents = totalBuyoutCents;
-      const hasNationalCampaign = selectedMedia.some(m => !(m.includes('regional') || m.includes('local')));
-      baseCents = hasNationalCampaign ? BSF_Cents : 0;
+      const hasBuyoutCampaign = selectedMedia.some(m => {
+        const sid = MarketManager.getServiceId(m);
+        return sid && MarketManager.getServiceType(sid) === 'buyout' && !m.includes('regional') && !m.includes('local');
+      });
+      
+      baseCents = hasBuyoutCampaign ? BSF_Cents : 0;
 
       if (input.liveSession) {
         liveSessionSurchargeCents = getServicePrice('live_regie') || activeConfig.liveSessionSurcharge;
