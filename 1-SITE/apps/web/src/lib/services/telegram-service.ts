@@ -13,6 +13,10 @@ export class TelegramService {
    * Stuurt een alert naar alle geautoriseerde admins met rate-limiting
    */
   static async sendAlert(message: string, options: { parse_mode?: 'HTML' | 'MarkdownV2'; force?: boolean } = {}) {
+    // 🛡️ CHRIS-PROTOCOL: Telegram alerts zijn TIJDELIJK UITGESCHAKELD op verzoek van de gebruiker (teveel foutmeldingen).
+    // Om weer in te schakelen, verwijder de onderstaande return.
+    return;
+
     if (!this.BOT_TOKEN || this.ADMIN_IDS.length === 0) {
       console.warn('[TelegramService] Bot token or Admin IDs missing, skipping alert.');
       return;
