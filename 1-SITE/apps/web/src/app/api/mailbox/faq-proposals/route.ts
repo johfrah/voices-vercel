@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import OpenAI from 'openai';
+import { GeminiService } from '@/lib/services/gemini-service';
 import { requireAdmin } from '@/lib/auth/api-auth';
 import { createClient } from "@supabase/supabase-js";
 
@@ -8,16 +8,13 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY || '',
-});
-
 export const dynamic = 'force-dynamic';
 
 /**
  *  REAL FAQ PROPOSAL API (NUCLEAR SDK 2026)
  * 
  * Doel: Scant de mailbox op patronen van vragen en antwoorden via SDK.
+ * 🛡️ CHRIS-PROTOCOL: Volledig gemigreerd naar Gemini (v2.16.104)
  */
 export async function GET(request: Request) {
   const auth = await requireAdmin();
@@ -56,41 +53,34 @@ export async function GET(request: Request) {
       sender: m.sender
     }));
 
-    // 3. AI Analyse met GPT-4o-mini voor efficintie
+    // 3. AI Analyse met Gemini
     let proposals = [];
     try {
-      const response = await (openai.chat.completions as any).create({
-        model: "gpt-4o-mini",
-        messages: [
-          {
-            role: "system",
-            content: `Je bent een AI die e-mails analyseert voor een voice-over bureau (Voices). 
-            Je taak is om veelvoorkomende vragen van klanten te identificeren en daarvoor FAQ-voorstellen te doen.
-            
-            Geef je antwoord in een JSON array van objecten met deze structuur:
+      const gemini = GeminiService.getInstance();
+      const prompt = `
+        Je bent een AI die e-mails analyseert voor een voice-over bureau (Voices). 
+        Je taak is om veelvoorkomende vragen van klanten te identificeren en daarvoor FAQ-voorstellen te doen.
+        
+        Geef je antwoord in een JSON array van objecten met deze structuur:
+        {
+          "proposals": [
             {
               "question": "De veelgestelde vraag",
               "suggestedAnswer": "Een beknopt, professioneel antwoord gebaseerd op de context",
               "frequency": aantal keer dat dit ongeveer voorkomt (schatting op basis van context),
               "confidence": 0.0 tot 1.0 (hoe zeker ben je van dit voorstel),
               "sourceThreadId": "id van een relevante mail"
-            }`
-          },
-          {
-            role: "user",
-            content: `Analyseer de volgende recente e-mails en extraheer de belangrijkste FAQ voorstellen:\n\n${JSON.stringify(mailContext)}`
-          }
-        ],
-        response_format: { type: "json_object" },
-        timeout: 10000 // 10s timeout
-      });
+            }
+          ]
+        }
 
-      const content = response.choices[0].message.content;
-      if (!content) throw new Error("No content from OpenAI");
-      
-      const result = JSON.parse(content);
-      // De AI geeft soms een object met een key 'proposals' of direct de array
-      proposals = Array.isArray(result) ? result : (result.proposals || result.faq_proposals || Object.values(result)[0]);
+        RECENTE E-MAILS OM TE ANALYSEREN:
+        ${JSON.stringify(mailContext)}
+      `;
+
+      const response = await gemini.generateText(prompt, { jsonMode: true });
+      const result = JSON.parse(response);
+      proposals = result.proposals || result;
     } catch (aiError: any) {
       console.error(' AI FAQ Proposal Generation Failed:', aiError.message);
       return NextResponse.json([]);

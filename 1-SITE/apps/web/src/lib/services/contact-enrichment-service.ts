@@ -1,4 +1,4 @@
-import OpenAI from 'openai';
+import { GeminiService } from './gemini-service';
 import { db } from '@/lib/system/voices-config';
 import { users } from '@/lib/system/voices-config';
 import { eq } from 'drizzle-orm';
@@ -7,15 +7,14 @@ import { eq } from 'drizzle-orm';
  *  CONTACT ENRICHMENT SERVICE (2026)
  * 
  * Doel: Destilleert adresgegevens uit mail-handtekeningen en koppelt avatars.
+ * 🛡️ CHRIS-PROTOCOL: Volledig gemigreerd naar Gemini (v2.16.104)
  */
 export class ContactEnrichmentService {
-  private openai: OpenAI;
+  private gemini: GeminiService;
   private static instance: ContactEnrichmentService;
 
   constructor() {
-    this.openai = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY || '',
-    });
+    this.gemini = GeminiService.getInstance();
   }
 
   public static getInstance(): ContactEnrichmentService {
@@ -26,32 +25,27 @@ export class ContactEnrichmentService {
   }
 
   /**
-   * Scant de tekst van een mail op zoek naar contactgegevens.
+   * Scant de tekst van een mail op zoek naar contactgegevens via Gemini.
    */
-  async enrichFromText(user_id: number, text: string): Promise<void> {
+  async enrichFromText(userId: number, text: string): Promise<void> {
     if (!text || text.length < 50) return;
 
     try {
       // We pakken alleen de laatste 1000 tekens (waar de handtekening meestal zit)
       const signaturePart = text.substring(Math.max(0, text.length - 1000));
 
-      const response = await this.openai.chat.completions.create({
-        model: "gpt-4-turbo-preview",
-        messages: [
-          { 
-            role: "system", 
-            content: `Je bent een data-extractie expert. Extraheer contactgegevens uit de volgende email handtekening. 
-            Geef ALLEEN een JSON object terug met de volgende velden (indien gevonden): 
-            companyName, phone, addressStreet, addressZip, addressCity, addressCountry, vatNumber, website, linkedin.
-            Als een veld niet gevonden is, laat het dan weg.`
-          },
-          { role: "user", content: signaturePart }
-        ],
-        response_format: { type: "json_object" },
-        temperature: 0,
-      });
+      const prompt = `
+        Je bent een data-extractie expert. Extraheer contactgegevens uit de volgende email handtekening. 
+        Geef ALLEEN een JSON object terug met de volgende velden (indien gevonden): 
+        companyName, phone, addressStreet, addressZip, addressCity, addressCountry, vatNumber, website, linkedin.
+        Als een veld niet gevonden is, laat het dan weg.
 
-      const extractedData = JSON.parse(response.choices[0].message.content || '{}');
+        HANDTEKENING:
+        ${signaturePart}
+      `;
+
+      const response = await this.gemini.generateText(prompt, { jsonMode: true });
+      const extractedData = JSON.parse(response);
 
       if (Object.keys(extractedData).length > 0) {
         console.log(`    AI heeft gegevens gedestilleerd voor user ${userId}:`, extractedData);

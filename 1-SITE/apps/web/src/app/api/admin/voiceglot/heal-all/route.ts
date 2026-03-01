@@ -1,23 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { OpenAIService } from '@/lib/services/openai-service';
 import { GeminiService } from '@/lib/services/gemini-service';
 import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
 import { requireAdmin } from '@/lib/auth/api-auth';
 import { SlopFilter } from '@/lib/engines/slop-filter';
 import { createClient } from "@supabase/supabase-js";
-import OpenAI from 'openai';
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+export const dynamic = 'force-dynamic';
 
 /**
  *  API: VOICEGLOT HEAL-ALL (NUCLEAR SDK 2026)
  * 
- * CHRIS-PROTOCOL: We bypass Drizzle/postgres-js for this long-running 
- * batch process to avoid production driver instability.
+ * 🛡️ CHRIS-PROTOCOL: Volledig gemigreerd naar Gemini (v2.16.104)
  */
-
-export const dynamic = 'force-dynamic';
-
 export async function POST(request: NextRequest) {
   if (process.env.NEXT_PHASE === 'phase-production-build' || (process.env.NODE_ENV === 'production' && !process.env.VERCEL_URL)) {
     return NextResponse.json({ success: true, healedCount: 0, message: 'Skipping heal-all during build' });
@@ -36,7 +30,6 @@ export async function POST(request: NextRequest) {
 
     const host = request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || MarketManager.getMarketDomains()['BE']?.replace('https://', ''));
     const market = MarketManager.getCurrentMarket(host);
-    const adminEmail = process.env.ADMIN_EMAIL || market.email;
 
     // 1. Fetch Registry Items via SDK
     const { data: registryItems, error: regErr } = await supabase
@@ -73,12 +66,14 @@ export async function POST(request: NextRequest) {
     const BATCH_SIZE = 30;
     const itemsToProcess = itemsToHeal.slice(0, BATCH_SIZE);
 
-    console.log(`🚀 [Heal-All SDK] Processing ${itemsToProcess.length} items...`);
+    console.log(`🚀 [Heal-All SDK] Processing ${itemsToProcess.length} items via Gemini...`);
+
+    const gemini = GeminiService.getInstance();
 
     // 3. Cache Market DNA
     const dnaCache: Record<string, string> = {};
     for (const lang of targetLanguages) {
-      dnaCache[lang] = await GeminiService.getInstance().getMarketDNA(lang);
+      dnaCache[lang] = await gemini.getMarketDNA(lang);
     }
 
     for (const { item, lang } of itemsToProcess) {
@@ -95,17 +90,11 @@ export async function POST(request: NextRequest) {
 
         let sourceText = item.original_text;
         
-        // Source Language Detection for Bios/Taglines
+        // Source Language Detection for Bios/Taglines via Gemini
         if (item.string_hash.includes('.bio') || item.string_hash.includes('.tagline')) {
-          const detectionResponse = await openai.chat.completions.create({
-            model: "gpt-4o-mini",
-            messages: [
-              { role: "system", content: "Detect language. If not Dutch (NL), translate to Dutch. Return JSON: { \"detected_lang\": \"iso\", \"is_dutch\": bool, \"dutch_version\": \"str\" }" },
-              { role: "user", content: item.original_text }
-            ],
-            response_format: { type: "json_object" }
-          });
-          const detection = JSON.parse(detectionResponse.choices[0].message.content || '{}');
+          const detectionPrompt = `Detect language. If not Dutch (NL), translate to Dutch. Return JSON: { "detected_lang": "iso", "is_dutch": bool, "dutch_version": "str" }. TEXT: ${item.original_text}`;
+          const detectionResponse = await gemini.generateText(detectionPrompt, { jsonMode: true });
+          const detection = JSON.parse(detectionResponse);
           
           if (!detection.is_dutch && detection.detected_lang !== 'nl') {
             await supabase.from('translation_registry')
@@ -135,7 +124,7 @@ export async function POST(request: NextRequest) {
           OUTPUT: Translated text only. No quotes. No expansion.
         `;
 
-        const translatedText = await OpenAIService.generateText(prompt);
+        const translatedText = await gemini.generateText(prompt);
         const cleanTranslation = translatedText.trim().replace(/^"|"$/g, '');
 
         if (SlopFilter.isSlop(cleanTranslation, lang, sourceText)) {

@@ -1,11 +1,12 @@
 import { createClient } from '@supabase/supabase-js';
-import OpenAI from 'openai';
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import dotenv from 'dotenv';
 
 dotenv.config({ path: '.env.local' });
 
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY || '');
+const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
 
 const TARGET_LANGS = ['en', 'fr', 'de', 'es', 'pt', 'it'];
 
@@ -34,13 +35,8 @@ async function translate(text, targetLang, context) {
             3. Return ONLY the translated text. No quotes.
         `;
 
-        const response = await openai.chat.completions.create({
-            model: "gpt-4o-mini",
-            messages: [{ role: "user", content: prompt }],
-            temperature: 0.3,
-        });
-
-        return response.choices[0].message.content.trim().replace(/^"|"$/g, '');
+        const result = await model.generateContent(prompt);
+        return result.response.text().trim().replace(/^"|"$/g, '');
     } catch (err) {
         console.error(`Translation error for ${targetLang}:`, err.message);
         return null;

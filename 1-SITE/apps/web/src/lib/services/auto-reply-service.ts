@@ -1,4 +1,3 @@
-import OpenAI from 'openai';
 import { DirectMailService } from './direct-mail-service';
 import { db, approvalQueue } from '@/lib/system/voices-config';
 import { InvoiceReceivedTemplate } from '@legacy/php-codebase/backend-services/email-service/src/templates/invoice-received';
@@ -10,13 +9,9 @@ import { MarketManagerServer as MarketManager } from '@/lib/system/market-manage
  * Doel: Genereert zakelijke antwoorden voor facturen in het officile Voices HTML template.
  */
 export class AutoReplyService {
-  private openai: OpenAI;
   private static instance: AutoReplyService;
 
   constructor() {
-    this.openai = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY || '',
-    });
   }
 
   public static getInstance(): AutoReplyService {

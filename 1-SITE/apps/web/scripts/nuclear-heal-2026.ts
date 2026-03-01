@@ -1,15 +1,17 @@
 import postgres from 'postgres';
-import OpenAI from 'openai';
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 // --- CONFIGURATION ---
 const DATABASE_URL = process.env.DATABASE_URL!;
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY!;
+const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY!;
 const TARGET_LANGUAGES = ['en-gb', 'fr-fr', 'de-de', 'es-es', 'pt-pt'];
 
 const sql = postgres(DATABASE_URL, { ssl: 'require' });
-const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
+const genAI = new GoogleGenerativeAI(GOOGLE_API_KEY);
+const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
 
 // --- SLOP FILTER ---
+// ... (rest of slop filter remains same)
 const forbiddenPhrases = [
   'tijd nodig om na te denken', 'probeer je het zo nog eens', 'voldoende context',
   'meer informatie', 'langere tekst', 'niet compleet', 'accuraat', 'zou je',
@@ -75,13 +77,8 @@ async function translate(text: string, lang: string, context: string, dna: strin
     VERTALING:
   `;
 
-  const response = await openai.chat.completions.create({
-    model: "gpt-4o-mini",
-    messages: [{ role: "user", content: prompt }],
-    temperature: 0.3,
-  });
-
-  return (response.choices[0]?.message?.content || '').trim().replace(/^"|"$/g, '');
+  const result = await model.generateContent(prompt);
+  return result.response.text().trim().replace(/^"|"$/g, '');
 }
 
 // --- MAIN LOOP ---

@@ -1,17 +1,19 @@
 import postgres from 'postgres';
-import OpenAI from 'openai';
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import * as dotenv from 'dotenv';
 
 dotenv.config({ path: '.env.local' });
 
 const sql = postgres(process.env.DATABASE_URL!);
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY || '');
+const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
 
 /**
  * 🕵️ NUCLEAR SOURCE HEALER (2026)
  * 
  * Scans the translation_registry for texts that are NOT in Dutch.
  * If found, it translates them back to Dutch to ensure the "Source of Truth" is correct.
+ * 🛡️ CHRIS-PROTOCOL: Volledig gemigreerd naar Gemini (v2.16.104)
  */
 
 async function healSourceRegistry() {
@@ -36,32 +38,26 @@ async function healSourceRegistry() {
         continue;
       }
 
-      // 2. Detect Language & Translate if needed
-      const response = await openai.chat.completions.create({
-        model: "gpt-4o-mini",
-        messages: [
-          {
-            role: "system",
-            content: `You are a language auditor for Voices.be. 
-            Your task:
-            1. Detect the language of the provided text.
-            2. If it is NOT Dutch (NL), translate it to Dutch.
-            3. Return a JSON object: { "detected_lang": "iso-code", "is_dutch": boolean, "dutch_version": "string" }
-            
-            STRICT RULES:
-            - If it IS Dutch, dutch_version should be the same as input.
-            - Warm, professional tone.
-            - No AI-slop.`
-          },
-          {
-            role: "user",
-            content: item.original_text
-          }
-        ],
-        response_format: { type: "json_object" }
-      });
+      // 2. Detect Language & Translate if needed via Gemini
+      const prompt = `
+        You are a language auditor for Voices.be. 
+        Your task:
+        1. Detect the language of the provided text.
+        2. If it is NOT Dutch (NL), translate it to Dutch.
+        3. Return a JSON object: { "detected_lang": "iso-code", "is_dutch": boolean, "dutch_version": "string" }
+        
+        STRICT RULES:
+        - If it IS Dutch, dutch_version should be the same as input.
+        - Warm, professional tone.
+        - No AI-slop.
 
-      const result = JSON.parse(response.choices[0].message.content || '{}');
+        TEXT TO AUDIT:
+        ${item.original_text}
+      `;
+
+      const resultRaw = await model.generateContent(prompt);
+      const resultText = resultRaw.response.text().trim().replace(/```json|```/g, '').trim();
+      const result = JSON.parse(resultText);
 
       if (!result.is_dutch && result.detected_lang !== 'nl') {
         console.log(`⚠️ MISMATCH DETECTED [${item.string_hash}]`);
