@@ -86,8 +86,13 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
     ORDER BY f.display_order ASC NULLS LAST
   `);
 
-  // 5. Processing & Mapping
-  const editionsByWorkshop = (editionsRows as any[]).reduce((acc, e) => {
+    // 5. Processing & Mapping
+    const editionsData = Array.isArray(editionsRows) ? editionsRows : (editionsRows as any).rows || [];
+    const reviewsData = Array.isArray(reviewsRows) ? reviewsRows : (reviewsRows as any).rows || [];
+    const instructorsData = Array.isArray(instructorsRows) ? instructorsRows : (instructorsRows as any).rows || [];
+    const faqsData = Array.isArray(faqsRows) ? faqsRows : (faqsRows as any).rows || [];
+
+    const editionsByWorkshop = (editionsData as any[]).reduce((acc, e) => {
     const wid = String(e.workshop_id);
     if (!acc[wid]) acc[wid] = [];
     acc[wid].push({
@@ -107,7 +112,7 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
     return acc;
   }, {} as Record<string, any[]>);
 
-  const reviewsByWorkshop = (reviewsRows as any[]).reduce((acc, r) => {
+    const reviewsByWorkshop = (reviewsData as any[]).reduce((acc, r) => {
     const wid = String(r.workshop_id);
     if (!acc[wid]) acc[wid] = [];
     acc[wid].push({
@@ -120,7 +125,7 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
     return acc;
   }, {} as Record<string, any[]>);
 
-  const faqsByWorkshop = (faqsRows as any[]).reduce((acc, f) => {
+    const faqsByWorkshop = (faqsData as any[]).reduce((acc, f) => {
     if (f.workshop_id) {
       const wid = String(f.workshop_id);
       if (!acc[wid]) acc[wid] = [];
@@ -129,7 +134,7 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
     return acc;
   }, {} as Record<string, any[]>);
 
-  const workshops = (workshopsList as any[]).map((w) => {
+    const workshops = (workshopsList as any[]).map((w) => {
     const meta = (w.meta as Record<string, any>) || {};
     const wid = String(w.id);
     
@@ -155,12 +160,12 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
     };
   });
 
-  const instructors = (instructorsRows as any[]).map(i => ({
+    const instructors = (instructorsData as any[]).map(i => ({
     id: i.id, name: i.name, tagline: i.tagline, bio: i.bio, 
     photo_url: i.photo_url ? `https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices/${i.photo_url}` : null
   }));
 
-  const globalFaqs = (faqsRows as any[]).filter(f => !f.workshop_id).map(f => ({ id: f.id, question: f.question, answer: f.answer }));
+    const globalFaqs = (faqsData as any[]).filter(f => !f.workshop_id).map(f => ({ id: f.id, question: f.question, answer: f.answer }));
 
     return {
       workshops,
