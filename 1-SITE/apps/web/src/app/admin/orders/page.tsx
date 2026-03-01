@@ -1,11 +1,11 @@
 "use client";
 
-import {
-  ContainerInstrument,
-  SectionInstrument,
+import { 
+  ButtonInstrument, 
+  ContainerInstrument, 
   TextInstrument,
   HeadingInstrument,
-  ButtonInstrument,
+  SectionInstrument,
   PageWrapperInstrument
 } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
@@ -53,7 +53,7 @@ interface Order {
 }
 
 export default function OrdersPage() {
-  useAdminTracking('Orders List');
+  useAdminTracking();
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -166,7 +166,7 @@ export default function OrdersPage() {
             </ContainerInstrument>
 
             <ContainerInstrument className="flex flex-col md:flex-row gap-4 items-start md:items-end w-full md:w-auto mt-8 md:mt-0">
-              <ButtonInstrument asChild variant="pure" size="none">
+              <ButtonInstrument variant="pure" size="none">
                 <Link href="/admin/orders/new" className="va-btn-pro !bg-va-black flex items-center gap-2 mb-1 w-full md:w-auto justify-center">
                   <Plus strokeWidth={1.5} size={16} />
                   <VoiceglotText translationKey="admin.orders.add" defaultText="Nieuwe Bestelling" />
@@ -271,7 +271,7 @@ export default function OrdersPage() {
                       </td>
                       <td className="px-8 py-6 text-right">
                         <ContainerInstrument className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <ButtonInstrument asChild variant="pure" size="none">
+                          <ButtonInstrument variant="pure" size="none">
                             <Link
                               href={`/admin/orders/${order.id}`}
                               onClick={(e) => e.stopPropagation()}
@@ -344,7 +344,7 @@ export default function OrdersPage() {
                                               Betaallink Genereren
                                             </ButtonInstrument>
                                           )}
-                                          <ButtonInstrument asChild variant="pure" size="none">
+                                          <ButtonInstrument variant="pure" size="none">
                                             <Link 
                                               href={`/admin/orders/${order.id}`}
                                               className="px-4 py-2 bg-va-black text-white text-[11px] font-bold rounded-full uppercase tracking-widest hover:bg-va-black/80 transition-all"

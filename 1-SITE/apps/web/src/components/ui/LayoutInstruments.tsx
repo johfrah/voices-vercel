@@ -19,7 +19,7 @@ export {
   ContainerInstrument,
   HeadingInstrument,
   TextInstrument
-} from './LayoutInstrumentsServer';
+} from './LayoutInstrumentsClient';
 
 // Import client hooks for client components
 import { ClientButtonInstrument } from './LayoutInstrumentsClient';

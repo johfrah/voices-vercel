@@ -186,7 +186,7 @@ export default function AdminMarketsPage() {
                   <ContainerInstrument className="flex flex-col items-end">
                     <TextInstrument as="span" className="text-[10px] font-bold text-va-black/20 uppercase tracking-widest mb-1">Talen</TextInstrument>
                     <ContainerInstrument className="flex gap-1">
-                      {m.langs.map(l => (
+                      {m.langs.map((l: string) => (
                         <TextInstrument as="span" key={l} className="px-2 py-0.5 bg-white border border-black/5 rounded text-[10px] font-bold uppercase">{l}</TextInstrument>
                       ))}
                     </ContainerInstrument>
@@ -219,7 +219,7 @@ export default function AdminMarketsPage() {
           </ContainerInstrument>
 
           <ContainerInstrument className="relative z-10 space-y-4">
-            {activeLangs.map(lang => (
+            {activeLangs.map((lang: string) => (
               <ContainerInstrument key={lang} className="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/5 group hover:bg-white/10 transition-all">
                 <ContainerInstrument className="flex items-center gap-3">
                   <TextInstrument as="span" className="text-lg uppercase font-black text-primary/60">{lang}</TextInstrument>

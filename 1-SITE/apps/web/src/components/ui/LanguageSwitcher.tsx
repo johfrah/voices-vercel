@@ -10,13 +10,9 @@ import { MarketManagerServer as MarketManager } from '@/lib/system/market-manage
 
 import { 
   ButtonInstrument, 
-  // ContainerInstrument, 
-  // TextInstrument 
-} from './LayoutInstruments';
-import { 
   ContainerInstrument, 
   TextInstrument 
-} from './LayoutInstrumentsServer';
+} from './LayoutInstruments';
 import { VoiceglotText } from './VoiceglotText';
 
 import { useAuth } from '@/contexts/AuthContext';

@@ -303,6 +303,25 @@ export default function VoiceglotMasterPage() {
     return dutchWords.filter(word => lower.includes(word)).length >= 2;
   };
 
+  const handleHealAll = async () => {
+    setIsHealingAll(true);
+    playClick('pro');
+    toast.loading('Healing gestart...', { id: 'heal' });
+    try {
+      const res = await fetch('/api/admin/voiceglot/heal-all', { method: 'POST' });
+      if (res.ok) {
+        toast.success('Healing succesvol afgerond', { id: 'heal' });
+      } else {
+        toast.error('Healing mislukt', { id: 'heal' });
+      }
+    } catch (e) {
+      toast.error('Netwerkfout bij healing', { id: 'heal' });
+    } finally {
+      setIsHealingAll(false);
+      fetchStats();
+    }
+  };
+
   if (loading) return (
     <ContainerInstrument className="min-h-screen flex items-center justify-center">
       <Loader2 className="animate-spin text-primary" size={40} />

@@ -2,10 +2,15 @@ import { cn } from '@/lib/utils';
 import React, { ElementType, forwardRef, HTMLAttributes, ReactNode } from 'react';
 
 /**
- * ROOT LAYOUT INSTRUMENT (SERVER READY)
- * De vervanger voor <html> en <body>
+ * SERVER-ONLY LAYOUT INSTRUMENTS
+ * Use these only in Server Components that don't need interactivity.
+ * For Client Components, use LayoutInstruments.tsx which exports client-ready versions.
  */
-export const RootLayoutInstrument = ({ 
+
+/**
+ * ROOT LAYOUT INSTRUMENT (SERVER ONLY)
+ */
+export const RootLayoutInstrumentServer = ({ 
   children, 
   lang = 'nl',
   className = 'va-main-layout'
@@ -24,9 +29,9 @@ export const RootLayoutInstrument = ({
 };
 
 /**
- * PAGE WRAPPER INSTRUMENT (SERVER READY)
+ * PAGE WRAPPER INSTRUMENT (SERVER ONLY)
  */
-export const PageWrapperInstrument = ({ 
+export const PageWrapperInstrumentServer = ({ 
   children, 
   className = 'va-page-wrapper',
   ...props
@@ -43,9 +48,9 @@ export const PageWrapperInstrument = ({
 };
 
 /**
- * SECTION INSTRUMENT (SERVER READY)
+ * SECTION INSTRUMENT (SERVER ONLY)
  */
-export const SectionInstrument = ({ 
+export const SectionInstrumentServer = ({ 
   children, 
   className = 'va-section',
   ...props
@@ -58,7 +63,7 @@ export const SectionInstrument = ({
 };
 
 /**
- * CONTAINER INSTRUMENT (SERVER READY)
+ * CONTAINER INSTRUMENT (SERVER ONLY)
  */
 export interface ContainerInstrumentProps extends HTMLAttributes<HTMLElement> {
   as?: ElementType;
@@ -68,7 +73,7 @@ export interface ContainerInstrumentProps extends HTMLAttributes<HTMLElement> {
   plain?: boolean;
 }
 
-export const ContainerInstrument = forwardRef<HTMLElement, ContainerInstrumentProps>(({ 
+export const ContainerInstrumentServer = forwardRef<HTMLElement, ContainerInstrumentProps>(({ 
   children, 
   className = '',
   as: Component = 'div',
@@ -102,10 +107,10 @@ export const ContainerInstrument = forwardRef<HTMLElement, ContainerInstrumentPr
     </Component>
   );
 });
-ContainerInstrument.displayName = 'ContainerInstrument';
+ContainerInstrumentServer.displayName = 'ContainerInstrumentServer';
 
 /**
- * HEADING INSTRUMENT (SERVER READY)
+ * HEADING INSTRUMENT (SERVER ONLY)
  */
 export interface HeadingInstrumentProps extends HTMLAttributes<HTMLHeadingElement> {
   level?: 1 | 2 | 3 | 4 | 5 | 6;
@@ -113,7 +118,7 @@ export interface HeadingInstrumentProps extends HTMLAttributes<HTMLHeadingElemen
   ariaLabel?: string;
 }
 
-export const HeadingInstrument = forwardRef<HTMLHeadingElement, HeadingInstrumentProps>(({ 
+export const HeadingInstrumentServer = forwardRef<HTMLHeadingElement, HeadingInstrumentProps>(({ 
   children, 
   level = 1,
   className = '',
@@ -140,10 +145,10 @@ export const HeadingInstrument = forwardRef<HTMLHeadingElement, HeadingInstrumen
     </Tag>
   );
 });
-HeadingInstrument.displayName = 'HeadingInstrument';
+HeadingInstrumentServer.displayName = 'HeadingInstrumentServer';
 
 /**
- * TEXT INSTRUMENT (SERVER READY)
+ * TEXT INSTRUMENT (SERVER ONLY)
  */
 export interface TextInstrumentProps extends HTMLAttributes<HTMLElement> {
   as?: ElementType;
@@ -152,7 +157,7 @@ export interface TextInstrumentProps extends HTMLAttributes<HTMLElement> {
   ariaHidden?: boolean;
 }
 
-export const TextInstrument = forwardRef<HTMLElement, TextInstrumentProps>(({ 
+export const TextInstrumentServer = forwardRef<HTMLElement, TextInstrumentProps>(({ 
   children, 
   as: Component = 'p',
   className = '',
@@ -179,4 +184,4 @@ export const TextInstrument = forwardRef<HTMLElement, TextInstrumentProps>(({
     </Component>
   );
 });
-TextInstrument.displayName = 'TextInstrument';
+TextInstrumentServer.displayName = 'TextInstrumentServer';

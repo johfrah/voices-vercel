@@ -17,6 +17,7 @@ import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import { useEditMode } from '@/contexts/EditModeContext';
 import { useAdminTracking } from '@/hooks/useAdminTracking';
+import { cn } from '@/lib/utils';
 import { 
   Settings, 
   Building2, 
@@ -289,22 +290,21 @@ export default function AdminSettingsPage() {
                           const config = configs.general_settings.opening_hours?.[day] || { active: false, start: '09:00', end: '18:00' };
                           return (
                             <ContainerInstrument key={day} className="flex items-center gap-3 bg-va-off-white/50 p-2 rounded-xl border border-black/[0.03]">
-                              <ButtonInstrument
-                                variant="pure"
-                                size="none"
-                                disabled={!isEditMode}
-                                onClick={() => {
-                                  const next = { ...configs.general_settings.opening_hours };
-                                  next[day] = { ...config, active: !config.active };
-                                  updateConfig('general_settings', 'opening_hours', next);
-                                }}
-                                className={cn(
-                                  "w-10 h-10 rounded-lg text-[10px] font-black uppercase transition-all flex items-center justify-center shrink-0",
-                                  config.active ? "bg-va-black text-white" : "bg-white text-va-black/20 border border-black/5"
-                                )}
-                              >
-                                {day.substring(0, 2)}
-                              </ButtonInstrument>
+              <ButtonInstrument
+                variant="pure"
+                size="none"
+                onClick={() => {
+                  const next = { ...configs.general_settings.opening_hours };
+                  next[day] = { ...config, active: !config.active };
+                  updateConfig('general_settings', 'opening_hours', next);
+                }}
+                className={cn(
+                  "w-10 h-10 rounded-lg text-[10px] font-black uppercase transition-all flex items-center justify-center shrink-0",
+                  config.active ? "bg-va-black text-white" : "bg-white text-va-black/20 border border-black/5"
+                )}
+              >
+                {day.substring(0, 2)}
+              </ButtonInstrument>
                               
                               <ContainerInstrument className={cn("flex items-center gap-2 flex-grow transition-opacity", !config.active && "opacity-30 pointer-events-none")}>
                                 <InputInstrument 
