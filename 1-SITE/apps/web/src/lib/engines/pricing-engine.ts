@@ -10,7 +10,10 @@
  * @author Kelly (Transaction Guardian)
  */
 
-import { MarketManager } from '../system/market-manager-server';
+import { MarketManagerServer } from '../system/market-manager-server';
+import { formatCurrency } from '../utils/format-utils';
+
+const MarketManager = MarketManagerServer;
 
 export type UsageType = 'unpaid' | 'telefonie' | 'subscription' | 'commercial' | 'non-commercial';
 export type PlanType = 'basic' | 'pro' | 'studio';
@@ -481,10 +484,6 @@ export class SlimmeKassa {
   }
 
   static format(amount: number, locale: string = 'nl-BE', currency: string = 'EUR'): string {
-    return new Intl.NumberFormat(locale, {
-      style: 'currency',
-      currency: currency,
-      minimumFractionDigits: 2
-    }).format(amount);
+    return formatCurrency(amount, locale, currency);
   }
 }

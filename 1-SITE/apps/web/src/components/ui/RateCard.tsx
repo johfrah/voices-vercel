@@ -4,6 +4,7 @@ import React from 'react';
 import { BentoCard } from './BentoGrid';
 import { Phone, Video, Megaphone, CheckCircle2, Zap } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { SlimmeKassa } from '@/lib/engines/pricing-engine';
 
 interface RateCardProps {
   journey: 'telephony' | 'video' | 'commercial';

@@ -1,5 +1,5 @@
 import { BaseTemplate } from './VumeMasterWrapper';
-import { SlimmeKassa } from '@/lib/engines/pricing-engine';
+import { formatCurrency } from '@/lib/utils/format-utils';
 
 /**
  * 🛒 ORDER CONFIRMATION TEMPLATE (2026)
@@ -39,7 +39,7 @@ export const VumeOrderConfirmationTemplate = (props: OrderConfirmationProps) => 
       <div style="font-weight: bold; color: #1a1a1a;">${item.name}</div>
       <div style="font-size: 13px; color: #666; margin-top: 4px;">
         ${item.deliveryTime ? `${isNl ? 'Levering:' : 'Delivery:'} ${item.deliveryTime}` : ''}
-        <span style="float: right; font-weight: bold;">${SlimmeKassa.format(item.price)}</span>
+        <span style="float: right; font-weight: bold;">${formatCurrency(item.price)}</span>
       </div>
     </div>
   `).join('');
@@ -62,7 +62,7 @@ export const VumeOrderConfirmationTemplate = (props: OrderConfirmationProps) => 
       <table border="0" cellpadding="0" cellspacing="0" width="100%" style="border-top: 1px solid #eee; pt-15px;">
         <tr>
           <td style="padding-top: 15px; font-size: 16px; color: #1a1a1a; font-weight: bold;">${isNl ? 'Totaal (incl. BTW)' : 'Total (incl. VAT)'}:</td>
-          <td style="padding-top: 15px; font-size: 18px; color: #ff4f00; font-weight: bold; text-align: right;">${SlimmeKassa.format(total)}</td>
+          <td style="padding-top: 15px; font-size: 18px; color: #ff4f00; font-weight: bold; text-align: right;">${formatCurrency(total)}</td>
         </tr>
       </table>
     </div>
