@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
     // 🛡️ CHRIS-PROTOCOL: Use SDK for stability (v2.14.273)
     const { data: results, error } = await supabase
       .from('translations')
-      .select('translation_key, translated_text, original_text, is_manually_edited')
+      .select('translation_key, translated_text, original_text, is_manually_edited, lang_id')
       .eq('lang', lang);
 
     if (error) throw error;
@@ -47,12 +47,14 @@ export async function GET(request: NextRequest) {
       const key = row.translation_key || row.translationKey;
       let text = row.translated_text || row.translatedText || row.original_text || row.originalText || '';
       
-      // 🛡️ CHRIS-PROTOCOL: Force Original Text for Dutch (v2.19.3)
-      // nl-be (Source) is ALWAYS pure. 
-      // nl-nl (Variant) only allows manual overrides.
-      if (lang === 'nl-be' && row.original_text) {
+      // 🛡️ CHRIS-PROTOCOL: Force Original Text for Dutch (v2.19.4)
+      // nl-be (ID 1) is ALWAYS pure. 
+      // nl-nl (ID 2) only allows manual overrides.
+      const langId = row.lang_id || row.langId;
+      
+      if (langId === 1 && row.original_text) {
         text = row.original_text;
-      } else if (lang === 'nl-nl' && row.original_text && !row.is_manually_edited) {
+      } else if (langId === 2 && row.original_text && !row.is_manually_edited) {
         text = row.original_text;
       }
       

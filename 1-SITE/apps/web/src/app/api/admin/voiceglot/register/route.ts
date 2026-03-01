@@ -109,10 +109,13 @@ export async function POST(request: NextRequest) {
 
         for (const langObj of activeLanguages) {
           const lang = langObj.code.toLowerCase();
+          const langId = langObj.id;
           try {
-            // 🛡️ CHRIS-PROTOCOL: Skip healing for Dutch (v2.18.7)
-            // We don't want AI to "polish" or "translate" Dutch to Dutch.
-            // In the future, we could check if langObj.id === source_lang_id
+            // 🛡️ CHRIS-PROTOCOL: Skip healing for Source Language (v2.19.4)
+            // We don't want AI to "polish" or "translate" Source to Source.
+            if (langId === sourceLangId) continue;
+            
+            // 🛡️ CHRIS-PROTOCOL: Skip healing for Dutch (v2.18.7) - Extra safety
             if (lang.startsWith('nl')) continue;
 
             // Check of deze vertaling al bestaat
@@ -122,7 +125,7 @@ export async function POST(request: NextRequest) {
               .where(
                 and(
                   eq(translations.translationKey, key),
-                  eq(translations.lang, lang)
+                  eq(translations.langId, langId)
                 )
               )
               .limit(1)
@@ -161,6 +164,7 @@ export async function POST(request: NextRequest) {
                 await db.insert(translations).values({
                   translationKey: key,
                   lang: lang,
+                  langId: langId, // 🛡️ Handshake ID Truth
                   originalText: sourceText,
                   translatedText: cleanTranslation,
                   status: 'active',
@@ -170,6 +174,7 @@ export async function POST(request: NextRequest) {
                   target: [translations.translationKey, translations.lang],
                   set: {
                     translatedText: cleanTranslation,
+                    langId: langId,
                     updatedAt: new Date()
                   }
                 });

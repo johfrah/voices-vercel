@@ -732,6 +732,7 @@ export const translationRegistry = pgTable('translation_registry', {
   stringHash: text('string_hash').unique().notNull(),
   originalText: text('original_text').notNull(),
   context: text('context'),
+  sourceLangId: integer('source_lang_id').references(() => languages.id), // 🛡️ Handshake ID Truth
   lastSeen: timestamp('last_seen').defaultNow(),
 });
 
@@ -1020,6 +1021,7 @@ export const translations = pgTable('translations', {
   id: serial('id').primaryKey(),
   translationKey: text('translation_key').notNull(),
   lang: text('lang').notNull(),
+  langId: integer('lang_id').references(() => languages.id), // 🛡️ Handshake ID Truth
   originalText: text('original_text'),
   translatedText: text('translated_text'),
   context: text('context'),

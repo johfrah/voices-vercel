@@ -23,7 +23,7 @@ if (!supabaseUrl || !supabaseKey) {
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 async function inject() {
-  console.log('🚀 STARTING INSTRUMENT INJECTION...');
+  console.log('🚀 STARTING MASTERCLASS INSTRUMENT INJECTION (WITH REVIEWS)...');
 
   const pages = [
     {
@@ -38,6 +38,30 @@ async function inject() {
               highlight: 'stem',
               subtitle: 'Van bedrijfsfilm tot commercial. Ontdek 500+ professionele stemacteurs.',
               cta: { text: 'Ontdek stemmen', href: '/agency' }
+            }
+          }
+        },
+        {
+          type: 'HowItWorksInstrument',
+          settings: {
+            data: {
+              title: 'Hoe het werkt',
+              subtitle: 'In 3 eenvoudige stappen naar je perfecte opname.',
+              steps: [
+                { title: 'Kies je stem', description: 'Luister naar demo\'s en selecteer je favoriet.' },
+                { title: 'Briefing & Script', description: 'Upload je tekst en geef regie-aanwijzingen.' },
+                { title: 'Ontvang je audio', description: 'Binnen 24 uur geleverd in topkwaliteit.' }
+              ]
+            }
+          }
+        },
+        {
+          type: 'ReviewsInstrument',
+          settings: {
+            data: {
+              title: 'Wat onze klanten zeggen',
+              subtitle: 'Echte ervaringen van professionals die voor Voices kozen.',
+              category: 'agency'
             }
           }
         },
@@ -61,21 +85,6 @@ async function inject() {
               ]
             }
           }
-        }
-      ]
-    },
-    {
-      slug: 'tarieven',
-      title: 'Tarieven & Pakketten',
-      blocks: [
-        {
-          type: 'PricingInstrument',
-          settings: {
-            data: {
-              title: 'Onze Tarieven',
-              subtitle: 'Kies het pakket dat bij je past.'
-            }
-          }
         },
         {
           type: 'AccordionInstrument',
@@ -83,8 +92,9 @@ async function inject() {
             data: {
               title: 'Veelgestelde vragen',
               items: [
-                { question: 'Hoe snel wordt er geleverd?', answer: 'Meestal binnen 24 uur.' },
-                { question: 'Zijn de prijzen inclusief BTW?', answer: 'Nee, alle prijzen zijn exclusief BTW.' }
+                { question: 'Hoe snel wordt er geleverd?', answer: 'Onze standaard levertijd is binnen 24 uur.' },
+                { question: 'Zijn de prijzen inclusief BTW?', answer: 'Nee, alle getoonde prijzen zijn exclusief BTW.' },
+                { question: 'Krijg ik een factuur?', answer: 'Ja, direct na betaling ontvang je een factuur in je mailbox.' }
               ]
             }
           }
@@ -101,8 +111,18 @@ async function inject() {
             data: {
               title: 'Meester je Stem',
               highlight: 'stem',
-              subtitle: 'Fysieke workshops en masterclasses voor de stem van morgen. Onder leiding van Berny.',
+              subtitle: 'Fysieke workshops en masterclasses onder leiding van Berny.',
               cta: { text: 'Bekijk workshops', href: '#workshops' }
+            }
+          }
+        },
+        {
+          type: 'ReviewsInstrument',
+          settings: {
+            data: {
+              title: 'Ervaringen van Deelnemers',
+              subtitle: 'Lees hoe anderen hun stem vonden in onze studio.',
+              category: 'studio'
             }
           }
         },
@@ -110,10 +130,148 @@ async function inject() {
           type: 'BentoShowcase',
           settings: {
             data: {
-              title: 'Vakmanschap in de Studio',
+              title: 'Vakmanschap',
               items: [
-                { title: 'Berny', description: 'Studio & Academy Lead. Bewaker van het vakmanschap.', icon: 'User' },
-                { title: 'De Studio', description: 'High-end opnamefaciliteiten in het hart van de actie.', icon: 'Mic2' }
+                { title: 'Berny', description: 'Studio & Academy Lead.', icon: 'User' },
+                { title: 'De Studio', description: 'High-end opnamefaciliteiten.', icon: 'Mic2' }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      slug: 'tarieven',
+      title: 'Tarieven & Pakketten',
+      blocks: [
+        {
+          type: 'HeroInstrument',
+          settings: {
+            data: {
+              title: 'Onze Tarieven',
+              highlight: 'Tarieven',
+              subtitle: 'Eerlijke prijzen voor topkwaliteit voice-overs.'
+            }
+          }
+        },
+        {
+          type: 'PricingInstrument',
+          settings: {
+            data: {
+              title: 'Bereken je project',
+              subtitle: 'Gebruik onze calculator voor een exacte prijs.'
+            }
+          }
+        },
+        {
+          type: 'AccordionInstrument',
+          settings: {
+            data: {
+              title: 'Vragen over tarieven',
+              items: [
+                { question: 'Wat is een buyout?', answer: 'Een buyout is de vergoeding voor het gebruiksrecht van de opname.' },
+                { question: 'Zijn er verborgen kosten?', answer: 'Nee, de prijs die je ziet is de prijs die je betaalt.' }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      slug: 'academy',
+      title: 'Voices Academy',
+      blocks: [
+        {
+          type: 'HeroInstrument',
+          settings: {
+            data: {
+              title: 'Voices Academy',
+              highlight: 'Academy',
+              subtitle: 'Online leertrajecten voor wie op eigen tempo wil groeien als stemacteur.',
+              cta: { text: 'Ontdek cursussen', href: '#cursussen' }
+            }
+          }
+        },
+        {
+          type: 'HowItWorksInstrument',
+          settings: {
+            data: {
+              title: 'Jouw Leertraject',
+              subtitle: 'Stap voor stap naar een professionele stemcarrière.',
+              steps: [
+                { title: 'Start de basis', description: 'Leer de fundamenten van stemgebruik.' },
+                { title: 'Oefen in de praktijk', description: 'Krijg feedback op je opnames.' },
+                { title: 'Bouw je portfolio', description: 'Maak je eerste professionele demo.' }
+              ]
+            }
+          }
+        },
+        {
+          type: 'BentoShowcase',
+          settings: {
+            data: {
+              title: 'Het Aanbod',
+              items: [
+                { title: 'De Basis', description: '12 Lessen over video & audio technieken.', icon: 'BookOpen' },
+                { title: 'De Techniek', description: '8 Lessen over high-end studio setups.', icon: 'Settings' }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      slug: 'ademing',
+      title: 'Ademing',
+      blocks: [
+        {
+          type: 'HeroInstrument',
+          settings: {
+            data: {
+              title: 'Vind je rust in de chaos',
+              highlight: 'rust',
+              subtitle: 'Begeleide meditaties en ademwerk voor sprekers en creatieven.',
+              cta: { text: 'Start sessie', href: '#start' }
+            }
+          }
+        },
+        {
+          type: 'BentoShowcase',
+          settings: {
+            data: {
+              title: 'De Elementen',
+              items: [
+                { title: 'Aarde', description: 'Focus & Kracht (10 min)', icon: 'Mountain' },
+                { title: 'Lucht', description: 'Ruimte & Vrijheid (15 min)', icon: 'Wind' }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      slug: 'artist/youssef',
+      title: 'Youssef Zaki | Voices Artist',
+      blocks: [
+        {
+          type: 'HeroInstrument',
+          settings: {
+            data: {
+              title: 'Youssef Zaki',
+              highlight: 'Youssef',
+              subtitle: 'Help je mee om mijn eerste EP onafhankelijk te releasen?',
+              cta: { text: 'Support de release', href: '#support' }
+            }
+          }
+        },
+        {
+          type: 'BentoShowcase',
+          settings: {
+            data: {
+              title: 'De Weg naar Agora',
+              items: [
+                { title: 'De Docu', description: 'Bekijk de weg van The Voice naar eigen muziek.', icon: 'Play' },
+                { title: 'De Muziek', description: 'Luister naar de eerste previews.', icon: 'Music' }
               ]
             }
           }
@@ -130,7 +288,7 @@ async function inject() {
             data: {
               title: 'Het Theater van de Stem',
               highlight: 'Theater',
-              subtitle: 'Een ecosysteem van 9 harmonieuze werelden, georkestreerd door de Harmonieraad.',
+              subtitle: 'Een ecosysteem van 9 harmonieuze werelden.',
               cta: { text: 'Ontdek onze visie', href: '#visie' }
             }
           }
@@ -141,8 +299,8 @@ async function inject() {
             data: {
               title: 'De Harmonieraad',
               items: [
-                { title: 'Bob', description: 'Grand Visionary. De oervader van het ecosysteem.', icon: 'Zap' },
-                { title: 'Mark', description: 'Marketing & Dramaturgie. Bewaker van de Tone of Voice.', icon: 'Type' }
+                { title: 'Bob', description: 'Grand Visionary.', icon: 'Zap' },
+                { title: 'Mark', description: 'Marketing & Dramaturgie.', icon: 'Type' }
               ]
             }
           }
@@ -199,7 +357,7 @@ async function inject() {
     }
   }
 
-  console.log('🏁 INJECTION COMPLETED.');
+  console.log('🏁 MASTERCLASS INJECTION COMPLETED.');
 }
 
 inject();

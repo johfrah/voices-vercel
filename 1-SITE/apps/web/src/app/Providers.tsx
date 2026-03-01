@@ -34,8 +34,8 @@ export function Providers({
   initialUsage?: any;
 }) {
   const pathname = usePathname();
-  // 🛡️ CHRIS-PROTOCOL: Version Sync Mandate (v2.19.3)
-  const currentVersion = '2.19.3';
+  // 🛡️ CHRIS-PROTOCOL: Version Sync Mandate (v2.19.4)
+  const currentVersion = '2.19.4';
 
   // 🛡️ CHRIS-PROTOCOL: Language is now strictly passed from Server (Source of Truth)
   // to prevent Hydration Mismatch errors (#419, #425).
