@@ -614,7 +614,10 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
         return redirect(`/${resolved.canonical_slug}`);
       }
 
-      console.error(` [SmartRouter] Handshake SUCCESS: ${resolved.routing_type} (ID: ${resolved.entity_id}, Journey: ${resolved.journey}, World: ${resolved.world_id})`);
+      // 🛡️ CHRIS-PROTOCOL: World-Aware Handshake (v2.23.0)
+      // We use the world_id from the registry as the absolute truth for the theme/context.
+      const worldId = resolved.world_id ?? MarketManager.getWorldId(resolved.journey);
+      console.error(` [SmartRouter] Handshake SUCCESS: ${resolved.routing_type} (ID: ${resolved.entity_id}, World: ${worldId})`);
       
       // Shift journey/medium for actor detail logic if it's a voice-like prefix
       // We detect this by checking if the resolved type is actor and there are more segments

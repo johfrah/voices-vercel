@@ -220,6 +220,24 @@ async function inject() {
           }
         },
         {
+          type: 'WorkshopCarousel',
+          settings: {
+            data: {
+              title: 'Onze Workshops',
+              subtitle: 'Kies de workshop die bij jouw ambitie past.'
+            }
+          }
+        },
+        {
+          type: 'WorkshopCalendar',
+          settings: {
+            data: {
+              title: 'Agenda',
+              subtitle: 'Plan je volgende stap in je stemcarrière.'
+            }
+          }
+        },
+        {
           type: 'ReviewsInstrument',
           settings: {
             data: {
@@ -384,7 +402,16 @@ async function inject() {
               title: 'Laten we praten',
               highlight: 'Contact',
               subtitle: 'Heb je een vraag? Mat en de andere agents staan voor je klaar.',
-              cta: { text: 'Stuur een bericht', href: 'mailto:info@voices.be' }
+              cta: { text: 'Stuur een bericht', href: '#form' }
+            }
+          }
+        },
+        {
+          type: 'WorkshopInterestForm',
+          settings: {
+            data: {
+              title: 'Stuur ons een bericht',
+              subtitle: 'We reageren doorgaans binnen 2 uur.'
             }
           }
         },
@@ -396,6 +423,62 @@ async function inject() {
               items: [
                 { title: 'Email', description: 'info@voices.be', icon: 'Mail' },
                 { title: 'Telefoon', description: '+32 (0) ...', icon: 'Phone' }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      slug: 'terms',
+      title: 'Algemene Voorwaarden',
+      blocks: [
+        {
+          type: 'HeroInstrument',
+          settings: {
+            data: {
+              title: 'Algemene Voorwaarden',
+              highlight: 'Voorwaarden',
+              subtitle: 'De juridische spelregels van ons ecosysteem.'
+            }
+          }
+        },
+        {
+          type: 'AccordionInstrument',
+          settings: {
+            data: {
+              title: 'Onze Voorwaarden',
+              items: [
+                { title: '1. Definities', content: 'In deze voorwaarden wordt verstaan onder...' },
+                { title: '2. Toepasselijkheid', content: 'Deze voorwaarden zijn van toepassing op...' }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      slug: 'privacy',
+      title: 'Privacy Policy',
+      blocks: [
+        {
+          type: 'HeroInstrument',
+          settings: {
+            data: {
+              title: 'Privacy Policy',
+              highlight: 'Privacy',
+              subtitle: 'Hoe we met jouw data omgaan (Spoiler: heel voorzichtig).'
+            }
+          }
+        },
+        {
+          type: 'AccordionInstrument',
+          settings: {
+            data: {
+              title: 'Jouw Data',
+              items: [
+                { title: '1. Gegevensverzameling', content: 'We verzamelen alleen wat strikt noodzakelijk is...' },
+                { title: '2. Gebruik van gegevens', content: 'Jouw data wordt gebruikt voor...' }
               ]
             }
           }

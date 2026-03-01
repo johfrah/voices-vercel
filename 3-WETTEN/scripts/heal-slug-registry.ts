@@ -14,12 +14,46 @@ if (!supabaseUrl || !supabaseKey) {
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
+// 🛡️ CHRIS-PROTOCOL: World ID Bible (v2.23.0)
+const WORLD_BIBLE: Record<string, { world_id: number, routing_type: string, journey: string }> = {
+  'contact': { world_id: 0, routing_type: 'article', journey: 'agency' },
+  'terms': { world_id: 0, routing_type: 'article', journey: 'agency' },
+  'privacy': { world_id: 0, routing_type: 'article', journey: 'agency' },
+  'cookies': { world_id: 0, routing_type: 'article', journey: 'agency' },
+  'agency': { world_id: 1, routing_type: 'article', journey: 'agency' },
+  'studio': { world_id: 2, routing_type: 'article', journey: 'studio' },
+  'academy': { world_id: 3, routing_type: 'article', journey: 'academy' },
+  'portfolio': { world_id: 5, routing_type: 'article', journey: 'portfolio' },
+  'ademing': { world_id: 6, routing_type: 'article', journey: 'ademing' },
+  'freelance': { world_id: 7, routing_type: 'article', journey: 'freelance' },
+  'partners': { world_id: 8, routing_type: 'article', journey: 'partner' },
+  'johfrai': { world_id: 10, routing_type: 'article', journey: 'johfrai' },
+  'artist/youssef': { world_id: 25, routing_type: 'article', journey: 'artist' }
+};
+
 async function healRegistry() {
-  console.log('🚀 [CHRIS-PROTOCOL] Starting Slug Registry Healing...');
+  console.log('🚀 [CHRIS-PROTOCOL] Starting Slug Registry Healing & Bible Sync...');
 
   try {
-    // 1. Heal Actors
+    // 1. Sync Bible Worlds & Routing Types
+    console.log('\n--- SYNCING BIBLE WORLDS ---');
+    for (const [slug, bible] of Object.entries(WORLD_BIBLE)) {
+      console.log(`  📖 Syncing ${slug} -> World ${bible.world_id}`);
+      const { error } = await supabase
+        .from('slug_registry')
+        .update({ 
+          world_id: bible.world_id, 
+          routing_type: bible.routing_type,
+          journey: bible.journey 
+        })
+        .eq('slug', slug);
+      
+      if (error) console.error(`   ❌ Failed to sync ${slug}: ${error.message}`);
+    }
+
+    // 2. Heal Actors
     console.log('\n--- HEALING ACTORS ---');
+    // ... (existing actor healing logic)
     const { data: missingActors } = await supabase.rpc('get_missing_actors_in_registry');
     // Note: If RPC doesn't exist, we fallback to manual query
     

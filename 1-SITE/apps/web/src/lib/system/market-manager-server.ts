@@ -220,6 +220,7 @@ export class MarketManagerServer {
 
     // 🛡️ CHRIS-PROTOCOL: Static ID-First Fallback (v2.16.132)
     const staticMap: Record<string, number> = {
+      'foyer': 0, 'contact': 0, 'terms': 0, 'privacy': 0, 'cookies': 0,
       'agency': 1, 'be': 1, 'nlnl': 1, 'fr': 1, 'es': 1, 'pt': 1, 'eu': 1,
       'telephony': 1, 'video': 1, 'commercial': 1,
       'studio': 2,

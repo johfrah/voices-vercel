@@ -13,6 +13,12 @@ const HowItWorksInstrument = nextDynamic(() => import('./HowItWorksInstrument').
 const BentoShowcase = nextDynamic(() => import('./BentoShowcaseInstrument').then(mod => mod.BentoShowcaseInstrument), { ssr: false });
 const AccordionInstrument = nextDynamic(() => import('./AccordionInstrument').then(mod => mod.AccordionInstrument), { ssr: false });
 
+// Studio Specific Instruments
+const WorkshopCarousel = nextDynamic(() => import('../studio/WorkshopCarousel').then(mod => mod.WorkshopCarousel), { ssr: false });
+const WorkshopCalendar = nextDynamic(() => import('../studio/WorkshopCalendar').then(mod => mod.WorkshopCalendar), { ssr: false });
+const WorkshopQuiz = nextDynamic(() => import('../studio/WorkshopQuiz').then(mod => mod.WorkshopQuiz), { ssr: false });
+const WorkshopInterestForm = nextDynamic(() => import('../studio/WorkshopInterestForm').then(mod => mod.WorkshopInterestForm), { ssr: false });
+
 // Fallback voor onbekende instrumenten
 const UnknownInstrument = ({ type }: { type: string }) => (
   <ContainerInstrument className="py-20 bg-red-50 border border-red-100 rounded-2xl text-center">
@@ -93,6 +99,38 @@ export const InstrumentRenderer = ({ blocks, extraData = {} }: InstrumentRendere
             return (
               <Suspense key={block.id} fallback={<div className="h-64 bg-va-black/5 animate-pulse" />}>
                 <AccordionInstrument {...settings.data} />
+              </Suspense>
+            );
+
+          case 'workshop_carousel':
+          case 'WorkshopCarousel':
+            return (
+              <Suspense key={block.id} fallback={<div className="h-96 bg-va-black/5 animate-pulse" />}>
+                <WorkshopCarousel workshops={extraData.workshops || []} {...settings.data} />
+              </Suspense>
+            );
+
+          case 'workshop_calendar':
+          case 'WorkshopCalendar':
+            return (
+              <Suspense key={block.id} fallback={<div className="h-96 bg-va-black/5 animate-pulse" />}>
+                <WorkshopCalendar workshops={extraData.workshops || []} {...settings.data} />
+              </Suspense>
+            );
+
+          case 'workshop_quiz':
+          case 'WorkshopQuiz':
+            return (
+              <Suspense key={block.id} fallback={<div className="h-96 bg-va-black/5 animate-pulse" />}>
+                <WorkshopQuiz {...settings.data} />
+              </Suspense>
+            );
+
+          case 'interest_form':
+          case 'WorkshopInterestForm':
+            return (
+              <Suspense key={block.id} fallback={<div className="h-96 bg-va-black/5 animate-pulse" />}>
+                <WorkshopInterestForm {...settings.data} />
               </Suspense>
             );
 
