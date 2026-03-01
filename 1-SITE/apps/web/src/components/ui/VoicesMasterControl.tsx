@@ -384,11 +384,20 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
       return result;
     };
 
+    // 🛡️ CHRIS-PROTOCOL: Filter languages that actually have actors (v2.16.115)
+    const languagesWithActors = new Set<number>();
+    (actors || []).forEach(a => {
+      if (a.native_lang_id) languagesWithActors.add(a.native_lang_id);
+    });
+
     // 🛡️ CHRIS-PROTOCOL: Deduplicate Languages by Label (v2.14.765)
     // We prefer ISO-specific codes (e.g. nl-be, nl-nl) over general codes (e.g. nl).
     const uniqueLangsMap = new Map<string, any>();
     
     (filteredLanguagesData || []).forEach(l => {
+      // 🛡️ CHRIS-PROTOCOL: Only include languages that have actors (v2.16.115)
+      if (!languagesWithActors.has(l.id)) return;
+
       const cleanLabel = l.label.replace(/\s*\(algemeen\)\s*/i, '').trim();
       const existing = uniqueLangsMap.get(cleanLabel);
       
