@@ -22,26 +22,28 @@ import { VoiceglotText } from './VoiceglotText';
 import { useAuth } from '@/contexts/AuthContext';
 
 interface Language {
+  id: number;
   code: string;
   label: string;
   native: string;
   flag: string;
 }
 
-const LANGUAGE_MAP: Record<string, Language> = {
-  nl: { code: 'nl', label: 'Dutch', native: MarketManager.getLanguageLabel('nl-nl'), flag: '🇧🇪' },
-  fr: { code: 'fr', label: 'French', native: MarketManager.getLanguageLabel('fr-fr'), flag: '🇫🇷' },
-  en: { code: 'en', label: 'English', native: MarketManager.getLanguageLabel('en-gb'), flag: '🇬🇧' },
-  de: { code: 'de', label: 'German', native: MarketManager.getLanguageLabel('de-de'), flag: '🇩🇪' },
-  es: { code: 'es', label: 'Spanish', native: MarketManager.getLanguageLabel('es-es'), flag: '🇪🇸' },
-  pt: { code: 'pt', label: 'Portuguese', native: MarketManager.getLanguageLabel('pt-pt'), flag: '🇵🇹' },
+const LANGUAGE_MAP: Record<number, Language> = {
+  1: { id: 1, code: 'nl-be', label: 'Dutch', native: 'Vlaams', flag: '🇧🇪' },
+  2: { id: 2, code: 'nl-nl', label: 'Dutch', native: 'Nederlands', flag: '🇳🇱' },
+  4: { id: 4, code: 'fr-fr', label: 'French', native: 'Français', flag: '🇫🇷' },
+  5: { id: 5, code: 'en-gb', label: 'English', native: 'English', flag: '🇬🇧' },
+  7: { id: 7, code: 'de-de', label: 'German', native: 'Deutsch', flag: '🇩🇪' },
+  8: { id: 8, code: 'es-es', label: 'Spanish', native: 'Español', flag: '🇪🇸' },
+  12: { id: 12, code: 'pt-pt', label: 'Portuguese', native: 'Português', flag: '🇵🇹' },
 };
 
 export function LanguageSwitcher({ className }: { className?: string }) {
   const [isOpen, setIsOpen] = useState(false);
   const host = typeof window !== 'undefined' ? window.location.host : (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || MarketManager.getMarketDomains()['BE'].replace('https://', ''));
   const market = MarketManager.getCurrentMarket(host);
-  const [currentLang, setCurrentLang] = useState<string>(market.language || 'nl');
+  const [currentLangId, setCurrentLangId] = useState<number>(market.primary_language_id || 1);
   const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
@@ -56,25 +58,29 @@ export function LanguageSwitcher({ className }: { className?: string }) {
   }, []);
 
   const languages = React.useMemo(() => {
+    // 🛡️ CHRIS-PROTOCOL: Handshake Registry is leading
+    const registry = MarketManager.languages;
+    const supportedIds = market.supported_languages?.map(l => {
+      const match = registry.find(r => r.code.toLowerCase() === l.toLowerCase());
+      return match?.id;
+    }).filter(Boolean) as number[] || [1, 2, 4, 5];
+
     const allLangs = Object.values(LANGUAGE_MAP);
-    
-    // CHRIS-PROTOCOL: Filter en sorteer op basis van markt-instellingen
-    const supportedCodes = market.supported_languages?.map(l => MarketManager.getLanguageCode(l).split('-')[0]) || [];
-    
-    let filtered = allLangs;
-    if (supportedCodes.length > 0) {
-      filtered = allLangs.filter(l => supportedCodes.includes(l.code));
-    }
+    let filtered = allLangs.filter(l => supportedIds.includes(l.id));
 
     return filtered.sort((a, b) => {
       // 1. Huidige markt-taal bovenaan
-      if (a.code === market.language) return -1;
-      if (b.code === market.language) return 1;
+      if (a.id === market.primary_language_id) return -1;
+      if (b.id === market.primary_language_id) return 1;
       
       // 2. Populaire talen voor deze markt
-      const popularCodes = market.popular_languages?.map(l => MarketManager.getLanguageCode(l).split('-')[0]) || [];
-      const aIsPopular = popularCodes.includes(a.code);
-      const bIsPopular = popularCodes.includes(b.code);
+      const popularIds = market.popular_languages?.map(l => {
+        const match = registry.find(r => r.code.toLowerCase() === l.toLowerCase());
+        return match?.id;
+      }).filter(Boolean) as number[] || [];
+
+      const aIsPopular = popularIds.includes(a.id);
+      const bIsPopular = popularIds.includes(b.id);
       
       if (aIsPopular && !bIsPopular) return -1;
       if (!aIsPopular && bIsPopular) return 1;
@@ -85,11 +91,15 @@ export function LanguageSwitcher({ className }: { className?: string }) {
 
   useEffect(() => {
     const langMatch = pathname.match(/^\/(nl|fr|en|de|es|pt)(\/|$)/);
+    const registry = MarketManager.languages;
+    
     if (langMatch) {
-      setCurrentLang(langMatch[1]);
+      const slug = langMatch[1];
+      // Map slug back to ID via registry
+      const match = registry.find(r => r.code.startsWith(slug));
+      if (match) setCurrentLangId(match.id);
     } else {
-      // CHRIS-PROTOCOL: Gebruik de taal van de huidige markt als default
-      setCurrentLang(market.language || 'nl');
+      setCurrentLangId(market.primary_language_id || 1);
     }
   }, [pathname, market]);
 
@@ -103,8 +113,8 @@ export function LanguageSwitcher({ className }: { className?: string }) {
     timeoutRef.current = setTimeout(() => setIsOpen(false), 300);
   };
 
-  const switchLanguage = (langCode: string) => {
-    if (langCode === currentLang) {
+  const switchLanguage = (lang: Language) => {
+    if (lang.id === currentLangId) {
       setIsOpen(false);
       return;
     }
@@ -114,25 +124,28 @@ export function LanguageSwitcher({ className }: { className?: string }) {
     if (!newPath.startsWith('/')) newPath = '/' + newPath;
     
     // CHRIS-PROTOCOL: De default taal van de markt heeft geen prefix in de URL
-    const defaultLang = market.language || 'nl';
+    const defaultLangId = market.primary_language_id || 1;
+    const langSlug = lang.code.split('-')[0];
     
-    if (langCode !== defaultLang) {
-      newPath = `/${langCode}${newPath === '/' ? '' : newPath}`;
+    if (lang.id !== defaultLangId) {
+      newPath = `/${langSlug}${newPath === '/' ? '' : newPath}`;
     }
-    document.cookie = `voices_lang=${langCode}; path=/; max-age=31536000; SameSite=Lax`;
+    document.cookie = `voices_lang=${langSlug}; path=/; max-age=31536000; SameSite=Lax`;
     
     // Intelligent Stickiness: Sync preference to DB if logged in
     if (isAuthenticated) {
       fetch('/api/account/preferences', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ preferences: { preferred_language: langCode } })
+        body: JSON.stringify({ preferences: { preferred_language_id: lang.id, preferred_language: langSlug } })
       }).catch(err => console.error('Failed to sync language preference:', err));
     }
 
     router.push(newPath);
     setIsOpen(false);
   };
+
+  const currentLang = LANGUAGE_MAP[currentLangId] || LANGUAGE_MAP[1];
 
   if (!mounted) {
     return (
@@ -148,7 +161,7 @@ export function LanguageSwitcher({ className }: { className?: string }) {
           as="span"
           className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-primary text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-lg border-2 border-white leading-none z-10"
         >
-          {currentLang}
+          {currentLang.code.split('-')[0]}
         </TextInstrument>
       </ButtonInstrument>
     );
@@ -186,7 +199,7 @@ export function LanguageSwitcher({ className }: { className?: string }) {
           animate={{ scale: 1 }}
           className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-primary text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-lg border-2 border-white leading-none z-10"
         >
-          {currentLang}
+          {currentLang.code.split('-')[0]}
         </TextInstrument>
       </ButtonInstrument>
 
@@ -208,11 +221,11 @@ export function LanguageSwitcher({ className }: { className?: string }) {
                 </TextInstrument>
               </ContainerInstrument>
               {languages.map((lang) => {
-                const isActive = lang.code === currentLang;
+                const isActive = lang.id === currentLangId;
                 return (
                   <ButtonInstrument
-                    key={lang.code}
-                    onClick={() => switchLanguage(lang.code)}
+                    key={lang.id}
+                    onClick={() => switchLanguage(lang)}
                     variant="plain"
                     size="none"
                     className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-left transition-all duration-500 group mb-1 last:mb-0 ${
@@ -225,7 +238,7 @@ export function LanguageSwitcher({ className }: { className?: string }) {
                       <TextInstrument as="span" className="text-base leading-none">{lang.flag}</TextInstrument>
                       <div className="flex flex-col">
                         <TextInstrument as="span" className={`text-[15px] font-medium tracking-tight ${isActive ? 'text-white' : 'text-va-black'}`}>
-                          <VoiceglotText translationKey={`nav.lang_label.${lang.code}`} defaultText={lang.label} />
+                          <VoiceglotText translationKey={`nav.lang_label.${lang.code.split('-')[0]}`} defaultText={lang.native} />
                         </TextInstrument>
                         <TextInstrument as="span" className={`text-[12px] mt-0.5 font-light ${isActive ? 'text-white/60' : 'text-va-black/40'}`}>{lang.native}</TextInstrument>
                       </div>

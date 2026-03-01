@@ -72,10 +72,10 @@ export const VoiceglotText: React.FC<VoiceglotTextProps> = ({
     // 🛡️ BRAND PROTECTION: 'Ademing' is een brand die niet vertaald mag worden
     const isAdemingBrand = ((defaultText || '')).toLowerCase() === 'ademing' || ((defaultText || '')).toLowerCase() === 'ademing.be';
     
-    // 🛡️ CHRIS-PROTOCOL: 'nl-BE' is the Source of Truth. Default is Truth.
-    // We forceer de defaultText voor nl-BE tenzij er een handmatige wijziging is.
-    // We gebruiken case-insensitive check om lekken te voorkomen.
-    const isSourceOfTruth = language?.toLowerCase() === 'nl-be';
+    // 🛡️ CHRIS-PROTOCOL: 'nl-be' (ID 1) is the Source of Truth. Default is Truth.
+    // We forceer de defaultText voor nl-be tenzij er een handmatige wijziging is.
+    // We gebruiken ID-handshake en case-insensitive check om lekken te voorkomen.
+    const isSourceOfTruth = language?.toLowerCase() === 'nl-be' || (typeof window !== 'undefined' && (window as any).handshakeLanguages?.find((l: any) => l.id === 1)?.code === language?.toLowerCase());
 
     if (noTranslate || isAdemingBrand) {
       setContent(defaultText);

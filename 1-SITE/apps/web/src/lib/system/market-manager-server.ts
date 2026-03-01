@@ -94,32 +94,29 @@ export class MarketManagerServer {
   public static get mediaTypes() { return this.mediaTypesRegistry; }
 
   /**
-   * 🌳 ANCESTRY RESOLVER (v2.16.095)
+   * 🌳 ANCESTRY RESOLVER (v2.16.132)
    * Haalt de World ID op basis van de market code of host.
    */
   public static getWorldId(marketCode?: string): number | null {
     const code = marketCode?.toLowerCase() || this.getCurrentMarket().market_code.toLowerCase();
     
-    // 🛡️ CHRIS-PROTOCOL: Handshake Truth (v2.16.095)
+    // 🛡️ CHRIS-PROTOCOL: Handshake Truth (v2.16.132)
     // We prioritize the registry which is populated from the database.
-    // This allows adding new Worlds without code changes.
     const registry = this.worldsRegistry.length > 0 ? this.worldsRegistry : 
                     (typeof global !== 'undefined' && (global as any).handshakeWorlds ? (global as any).handshakeWorlds : []);
 
     if (registry.length > 0) {
-      // Direct match by code
       const world = registry.find((w: any) => w.code.toLowerCase() === code);
       if (world) return world.id;
 
-      // Special case: Agency markets (BE, NL, etc) map to 'agency' world
+      // Special case: Agency markets map to 'agency' world (ID 1)
       if (['be', 'nlnl', 'fr', 'es', 'pt', 'eu'].includes(code)) {
         const agency = registry.find((w: any) => w.code === 'agency');
         if (agency) return agency.id;
       }
     }
 
-    // 🛡️ CHRIS-PROTOCOL: Static Fallback (v2.16.117)
-    // Only used if registry is empty or no match found.
+    // 🛡️ CHRIS-PROTOCOL: Static ID-First Fallback (v2.16.132)
     const staticMap: Record<string, number> = {
       'agency': 1, 'be': 1, 'nlnl': 1, 'fr': 1, 'es': 1, 'pt': 1, 'eu': 1,
       'telephony': 1, 'video': 1, 'commercial': 1,
@@ -140,10 +137,10 @@ export class MarketManagerServer {
     'voices.be': {
       market_code: 'BE',
       language: 'nl',
-      primary_language: 'nl-BE',
+      primary_language: 'nl-be',
       primary_language_id: 1, // 🛡️ Handshake Truth: Vlaams
-      supported_languages: ['nl-BE', 'nl-NL', 'fr-BE', 'en-GB', 'fr-FR', 'de-DE'],
-      popular_languages: ['nl-BE', 'nl-NL', 'fr-BE', 'en-GB', 'fr-FR', 'de-DE'],
+      supported_languages: ['nl-be', 'nl-nl', 'fr-be', 'en-gb', 'fr-fr', 'de-de'],
+      popular_languages: ['nl-be', 'nl-nl', 'fr-be', 'en-gb', 'fr-fr', 'de-de'],
       name: 'Voices',
       email: 'johfrah@voices.be',
       logo_url: VOICES_CONFIG.assets.logos.be,
@@ -153,10 +150,10 @@ export class MarketManagerServer {
     'voices.nl': {
       market_code: 'NLNL',
       language: 'nl',
-      primary_language: 'nl-BE',
-      primary_language_id: 1, // 🛡️ Handshake Truth: Vlaams (Unificatie)
-      supported_languages: ['nl-NL', 'nl-BE', 'en-GB', 'de-DE', 'fr-FR'],
-      popular_languages: ['nl-NL', 'nl-BE', 'en-GB', 'de-DE', 'fr-FR'],
+      primary_language: 'nl-be',
+      primary_language_id: 1, // 🛡️ Unificatie: Vlaams is de bron
+      supported_languages: ['nl-nl', 'nl-be', 'en-gb', 'de-de', 'fr-fr'],
+      popular_languages: ['nl-nl', 'nl-be', 'en-gb', 'de-de', 'fr-fr'],
       name: 'Nederland',
       logo_url: VOICES_CONFIG.assets.logos.nl,
       theme: 'voices',
@@ -165,10 +162,10 @@ export class MarketManagerServer {
     'voices.fr': {
       market_code: 'FR',
       language: 'fr',
-      primary_language: 'fr-FR',
+      primary_language: 'fr-fr',
       primary_language_id: 4, // 🛡️ Handshake Truth: Frans
-      supported_languages: ['fr-FR', 'fr-BE', 'en-GB', 'nl-NL', 'nl-BE', 'de-DE'],
-      popular_languages: ['fr-FR', 'fr-BE', 'en-GB', 'nl-NL', 'nl-BE', 'de-DE'],
+      supported_languages: ['fr-fr', 'fr-be', 'en-gb', 'nl-nl', 'nl-be', 'de-de'],
+      popular_languages: ['fr-fr', 'fr-be', 'en-gb', 'nl-nl', 'nl-be', 'de-de'],
       name: 'France',
       logo_url: VOICES_CONFIG.assets.logos.fr,
       theme: 'voices',
@@ -177,10 +174,10 @@ export class MarketManagerServer {
     'voices.es': {
       market_code: 'ES',
       language: 'es',
-      primary_language: 'es-ES',
+      primary_language: 'es-es',
       primary_language_id: 8, // 🛡️ Handshake Truth: Spaans
-      supported_languages: ['es-ES', 'en-GB', 'fr-FR', 'pt-PT', 'it-IT'],
-      popular_languages: ['es-ES', 'en-GB', 'pt-PT'],
+      supported_languages: ['es-es', 'en-gb', 'fr-fr', 'pt-pt', 'it-it'],
+      popular_languages: ['es-es', 'en-gb', 'pt-pt'],
       name: 'España',
       logo_url: VOICES_CONFIG.assets.logos.es,
       theme: 'voices',
@@ -189,10 +186,10 @@ export class MarketManagerServer {
     'voices.pt': {
       market_code: 'PT',
       language: 'pt',
-      primary_language: 'pt-PT',
+      primary_language: 'pt-pt',
       primary_language_id: 12, // 🛡️ Handshake Truth: Portugees
-      supported_languages: ['pt-PT', 'en-GB', 'es-ES', 'fr-FR'],
-      popular_languages: ['pt-PT', 'en-GB', 'es-ES'],
+      supported_languages: ['pt-pt', 'en-gb', 'es-es', 'fr-fr'],
+      popular_languages: ['pt-pt', 'en-gb', 'es-es'],
       name: 'Portugal',
       logo_url: VOICES_CONFIG.assets.logos.pt,
       theme: 'voices',
@@ -201,10 +198,10 @@ export class MarketManagerServer {
     'voices.eu': {
       market_code: 'EU',
       language: 'en',
-      primary_language: 'en-GB',
+      primary_language: 'en-gb',
       primary_language_id: 5, // 🛡️ Handshake Truth: Engels
-      supported_languages: ['en-GB', 'de-DE', 'nl-BE', 'nl-NL', 'fr-BE', 'fr-FR'],
-      popular_languages: ['en-GB', 'de-DE', 'fr-BE', 'fr-FR', 'nl-NL', 'nl-BE'],
+      supported_languages: ['en-gb', 'de-de', 'nl-be', 'nl-nl', 'fr-be', 'fr-fr'],
+      popular_languages: ['en-gb', 'de-de', 'fr-be', 'fr-fr', 'nl-nl', 'nl-be'],
       name: 'Europe',
       logo_url: VOICES_CONFIG.assets.logos.eu,
       theme: 'voices',
@@ -231,9 +228,10 @@ export class MarketManagerServer {
     'voices.be/academy': {
       market_code: 'ACADEMY',
       language: 'nl',
-      primary_language: 'nl-BE',
-      supported_languages: ['nl-BE', 'en-GB'],
-      popular_languages: ['nl-BE', 'en-GB'],
+      primary_language: 'nl-be',
+      primary_language_id: 1,
+      supported_languages: ['nl-be', 'en-gb'],
+      popular_languages: ['nl-be', 'en-gb'],
       name: 'Voices Academy',
       logo_url: VOICES_CONFIG.assets.logos.be,
       theme: 'voices',
@@ -249,9 +247,10 @@ export class MarketManagerServer {
     'voices.be/studio': {
       market_code: 'STUDIO',
       language: 'nl',
-      primary_language: 'nl-BE',
-      supported_languages: ['nl-BE', 'en-GB'],
-      popular_languages: ['nl-BE', 'en-GB'],
+      primary_language: 'nl-be',
+      primary_language_id: 1,
+      supported_languages: ['nl-be', 'en-gb'],
+      popular_languages: ['nl-be', 'en-gb'],
       name: 'Voices Studio',
       logo_url: VOICES_CONFIG.assets.logos.be,
       theme: 'voices',
@@ -267,9 +266,10 @@ export class MarketManagerServer {
     'johfrah.be': {
       market_code: 'FREELANCE',
       language: 'nl',
-      primary_language: 'nl-BE',
-      supported_languages: ['nl-BE', 'en-GB'],
-      popular_languages: ['nl-BE', 'en-GB'],
+      primary_language: 'nl-be',
+      primary_language_id: 1,
+      supported_languages: ['nl-be', 'en-gb'],
+      popular_languages: ['nl-be', 'en-gb'],
       name: 'Johfrah Lefebvre',
       logo_url: VOICES_CONFIG.assets.logos.johfrah,
       theme: 'johfrah',
@@ -286,9 +286,10 @@ export class MarketManagerServer {
     'christina.be': {
       market_code: 'PORTFOLIO',
       language: 'nl',
-      primary_language: 'nl-BE',
-      supported_languages: ['nl-BE', 'en-GB'],
-      popular_languages: ['nl-BE', 'en-GB'],
+      primary_language: 'nl-be',
+      primary_language_id: 1,
+      supported_languages: ['nl-be', 'en-gb'],
+      popular_languages: ['nl-be', 'en-gb'],
       name: 'Christina Portfolio',
       logo_url: VOICES_CONFIG.assets.logos.be,
       theme: 'voices',
@@ -303,9 +304,10 @@ export class MarketManagerServer {
     'youssefzaki.eu': {
       market_code: 'ARTIST',
       language: 'en',
-      primary_language: 'en-US',
-      supported_languages: ['en-GB', 'nl-BE', 'fr-FR', 'de-DE'],
-      popular_languages: ['en-GB', 'nl-BE', 'fr-FR', 'de-DE'],
+      primary_language: 'en-gb',
+      primary_language_id: 5,
+      supported_languages: ['en-gb', 'nl-be', 'fr-fr', 'de-de'],
+      popular_languages: ['en-gb', 'nl-be', 'fr-fr', 'de-de'],
       name: 'Youssef Zaki',
       logo_url: VOICES_CONFIG.assets.logos.be,
       theme: 'youssef',
@@ -321,9 +323,10 @@ export class MarketManagerServer {
     'ademing.be': {
       market_code: 'ADEMING',
       language: 'nl',
-      primary_language: 'nl-BE',
-      supported_languages: ['nl-BE'],
-      popular_languages: ['nl-BE'],
+      primary_language: 'nl-be',
+      primary_language_id: 1,
+      supported_languages: ['nl-be'],
+      popular_languages: ['nl-be'],
       name: 'Ademing',
       logo_url: VOICES_CONFIG.assets.logos.ademing,
       theme: 'ademing',
@@ -335,9 +338,10 @@ export class MarketManagerServer {
     'johfrai.be': {
       market_code: 'JOHFRAI',
       language: 'nl',
-      primary_language: 'nl-BE',
-      supported_languages: ['nl-BE', 'en-GB'],
-      popular_languages: ['nl-BE', 'en-GB'],
+      primary_language: 'nl-be',
+      primary_language_id: 1,
+      supported_languages: ['nl-be', 'en-gb'],
+      popular_languages: ['nl-be', 'en-gb'],
       name: 'Johfrai',
       logo_url: VOICES_CONFIG.assets.logos.be,
       theme: 'johfrai'
@@ -508,17 +512,22 @@ export class MarketManagerServer {
       }
     }
 
-    // Emergency fallbacks for early boot/SSR only
+    // Emergency fallbacks for early boot/SSR only (v2.16.132: ISO-5 codes only)
     const emergencyMap: Record<string, string> = {
       '1': 'Vlaams',
       '2': 'Nederlands',
       '4': 'Frans',
       '5': 'Engels',
+      '7': 'Duits',
+      '8': 'Spaans',
+      '12': 'Portugees',
       'nl-be': 'Vlaams',
       'nl-nl': 'Nederlands',
       'fr-fr': 'Frans',
       'en-gb': 'Engels',
-      'de-de': 'Duits'
+      'de-de': 'Duits',
+      'es-es': 'Spaans',
+      'pt-pt': 'Portugees'
     };
     
     if (emergencyMap[lowInput]) return emergencyMap[lowInput];
