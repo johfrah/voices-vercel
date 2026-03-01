@@ -18,49 +18,50 @@ export interface WorkshopApiResponse {
 export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
   if (!db) throw new Error('Database not available');
 
-  // 1. Fetch Workshops with all junction data in one go (Nuclear Handshake)
-  const workshopsRaw = await db.execute(sql`
-    WITH workshop_data AS (
+  try {
+    // 1. Fetch Workshops with all junction data in one go (Nuclear Handshake)
+    const workshopsRaw = await db.execute(sql`
+      WITH workshop_data AS (
+        SELECT
+          w.id, w.title, w.slug, w.description, w.price, w.status, w.media_id, w.meta, w.is_public,
+          m.file_path AS media_file_path, m.alt_text AS media_alt_text,
+          (SELECT label_nl FROM workshop_categories wc JOIN workshop_taxonomy_mappings wtm ON wc.id = wtm.category_id WHERE wtm.workshop_id = w.id LIMIT 1) as category_label,
+          (SELECT label_nl FROM workshop_types wt JOIN workshop_taxonomy_mappings wtm ON wt.id = wtm.type_id WHERE wtm.workshop_id = w.id LIMIT 1) as type_label,
+          (SELECT label FROM experience_levels el JOIN workshop_level_mappings wlm ON el.id = wlm.level_id WHERE wlm.workshop_id = w.id LIMIT 1) as level_label
+        FROM workshops w
+        LEFT JOIN media m ON m.id = w.media_id
+        WHERE w.status IN ('publish', 'live') AND w.world_id = 2
+      )
+      SELECT * FROM workshop_data
+      ORDER BY title
+    `);
+
+    const workshopsList = Array.isArray(workshopsRaw) ? workshopsRaw : (workshopsRaw as any).rows ?? [];
+    const workshopIds = (workshopsList as any[]).map((r) => r.id).filter(Boolean);
+    
+    if (workshopIds.length === 0) {
+      return { workshops: [], instructors: [], faqs: [], _meta: { count: 0, fetched_at: new Date().toISOString() } };
+    }
+
+    // 2. Fetch Editions (The Planning)
+    const editionsRows = await db.execute(sql`
       SELECT
-        w.id, w.title, w.slug, w.description, w.price, w.status, w.media_id, w.meta, w.is_public,
-        m.file_path AS media_file_path, m.alt_text AS media_alt_text,
-        (SELECT label_nl FROM workshop_categories wc JOIN workshop_taxonomy_mappings wtm ON wc.id = wtm.category_id WHERE wtm.workshop_id = w.id LIMIT 1) as category_label,
-        (SELECT label_nl FROM workshop_types wt JOIN workshop_taxonomy_mappings wtm ON wt.id = wtm.type_id WHERE wtm.workshop_id = w.id LIMIT 1) as type_label,
-        (SELECT label FROM experience_levels el JOIN workshop_level_mappings wlm ON el.id = wlm.level_id WHERE wlm.workshop_id = w.id LIMIT 1) as level_label
-      FROM workshops w
-      LEFT JOIN media m ON m.id = w.media_id
-      WHERE w.status IN ('publish', 'live')
-    )
-    SELECT * FROM workshop_data
-    ORDER BY title
-  `);
+        we.id, we.workshop_id, we.date, we.capacity, we.status, we.meta as edition_meta,
+        l.id as location_id, l.name AS location_name, l.city AS location_city, l.address AS location_address, l.map_url, l.access_instructions,
+        i.id as instructor_id, i.name as instructor_name, i.tagline as instructor_tagline, i.bio as instructor_bio,
+        im.file_path as instructor_photo
+      FROM workshop_editions we
+      LEFT JOIN locations l ON l.id = we.location_id
+      LEFT JOIN instructors i ON i.id = we.instructor_id
+      LEFT JOIN media im ON im.id = i.photo_id
+      WHERE we.workshop_id IN (${sql.join(workshopIds.map((id) => sql`${id}`), sql`, `)})
+        AND we.date >= NOW()
+        AND we.status != 'cancelled'
+      ORDER BY we.date ASC
+    `);
 
-  const workshopsList = Array.isArray(workshopsRaw) ? workshopsRaw : (workshopsRaw as any).rows ?? [];
-  const workshopIds = (workshopsList as any[]).map((r) => r.id).filter(Boolean);
-  
-  if (workshopIds.length === 0) {
-    return { workshops: [], instructors: [], faqs: [], _meta: { count: 0, fetched_at: new Date().toISOString() } };
-  }
-
-  // 2. Fetch Editions (The Planning)
-  const editionsRows = await db.execute(sql`
-    SELECT
-      we.id, we.workshop_id, we.date, we.capacity, we.status, we.meta as edition_meta,
-      l.id as location_id, l.name AS location_name, l.city AS location_city, l.address AS location_address, l.map_url, l.access_instructions,
-      i.id as instructor_id, i.name as instructor_name, i.tagline as instructor_tagline, i.bio as instructor_bio,
-      im.file_path as instructor_photo
-    FROM workshop_editions we
-    LEFT JOIN locations l ON l.id = we.location_id
-    LEFT JOIN instructors i ON i.id = we.instructor_id
-    LEFT JOIN media im ON im.id = i.photo_id
-    WHERE we.workshop_id IN (${sql.join(workshopIds.map((id) => sql`${id}`), sql`, `)})
-      AND we.date >= NOW()
-      AND we.status != 'cancelled'
-    ORDER BY we.date ASC
-  `);
-
-  // 3. Fetch Reviews (Hard Handshake via junction table)
-  const reviewsRows = await db.execute(sql`
+    // 3. Fetch Reviews (Hard Handshake via junction table)
+    const reviewsRows = await db.execute(sql`
     SELECT wr.workshop_id, r.id, r.author_name, r.rating, r.text_nl, r.text_en, r.provider
     FROM workshop_reviews wr
     JOIN reviews r ON r.id = wr.review_id
@@ -161,10 +162,14 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
 
   const globalFaqs = (faqsRows as any[]).filter(f => !f.workshop_id).map(f => ({ id: f.id, question: f.question, answer: f.answer }));
 
-  return {
-    workshops,
-    instructors,
-    faqs: globalFaqs,
-    _meta: { count: workshops.length, fetched_at: new Date().toISOString() },
-  };
+    return {
+      workshops,
+      instructors,
+      faqs: globalFaqs,
+      _meta: { count: workshops.length, fetched_at: new Date().toISOString() },
+    };
+  } catch (error: any) {
+    console.error('[getStudioWorkshopsData] Database Error:', error);
+    throw new Error(`Database query failed: ${error.message || 'Unknown error'}`);
+  }
 }
