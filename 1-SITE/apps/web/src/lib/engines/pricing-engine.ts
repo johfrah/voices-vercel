@@ -313,13 +313,18 @@ export class SlimmeKassa {
       baseCents = hasNationalCampaign ? BSF_Cents : 0;
 
       if (input.liveSession) {
-          const country = input.country || 'BE';
-          const countryRates = (input.actorRates as any)?.[country] || {};
-          let feeCents = 0;
-          if (countryRates['live_regie'] > 0) feeCents = this.toCents(countryRates['live_regie']);
-          else if (input.actorRates?.price_live_regie > 0) feeCents = this.toCents(input.actorRates?.price_live_regie);
-          liveSessionSurchargeCents = feeCents; // No global fallback for live session
-      }
+      const country = input.country || 'BE';
+      const rates = input.actorRates?.rates?.rates || input.actorRates?.rates || input.actorRates || {};
+      const countryRates = rates[country] || {};
+      const globalRates = rates['GLOBAL'] || rates['global'] || {};
+      
+      let feeCents = 0;
+      if (countryRates['live_regie'] > 0) feeCents = this.toCents(countryRates['live_regie']);
+      else if (globalRates['live_regie'] > 0) feeCents = this.toCents(globalRates['live_regie']);
+      else if (input.actorRates?.price_live_regie > 0) feeCents = this.toCents(input.actorRates?.price_live_regie);
+      
+      liveSessionSurchargeCents = feeCents; 
+    }
 
       const subtotalCents = baseCents + wordSurchargeCents + mediaSurchargeCents + musicSurchargeCents + radioReadySurchargeCents + liveSessionSurchargeCents;
       const currentVatRate = input.isVatExempt ? 0 : activeConfig.vatRate;
@@ -420,11 +425,16 @@ export class SlimmeKassa {
 
     if (input.liveSession) {
       const country = input.country || 'BE';
-      const countryRates = (input.actorRates as any)?.[country] || {};
+      const rates = input.actorRates?.rates?.rates || input.actorRates?.rates || input.actorRates || {};
+      const countryRates = rates[country] || {};
+      const globalRates = rates['GLOBAL'] || rates['global'] || {};
+      
       let feeCents = 0;
       if (countryRates['live_regie'] > 0) feeCents = this.toCents(countryRates['live_regie']);
+      else if (globalRates['live_regie'] > 0) feeCents = this.toCents(globalRates['live_regie']);
       else if (input.actorRates?.price_live_regie > 0) feeCents = this.toCents(input.actorRates?.price_live_regie);
-      liveSessionSurchargeCents = feeCents; // No global fallback for live session
+      
+      liveSessionSurchargeCents = feeCents; 
     }
 
     if (input.music?.asBackground || input.music?.asHoldMusic) {
