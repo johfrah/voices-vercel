@@ -28,7 +28,10 @@ export async function GET(request: NextRequest) {
   }
 
   const { searchParams } = new URL(request.url);
-  const lang = searchParams.get('lang') || 'nl';
+  let lang = searchParams.get('lang') || 'nl-be';
+
+  // 💀 TERMINATION: 'nl' variant is eliminated. Force 'nl-be'.
+  if (lang === 'nl') lang = 'nl-be';
 
   try {
     // 🛡️ CHRIS-PROTOCOL: Use SDK for stability (v2.14.273)

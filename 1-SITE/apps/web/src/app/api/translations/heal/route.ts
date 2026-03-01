@@ -40,7 +40,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
     }
 
-    const { key, originalText, currentLang = 'nl' } = body;
+    let { key, originalText, currentLang = 'nl-be' } = body;
+    if (currentLang === 'nl') currentLang = 'nl-be';
 
     if (!key || !originalText) {
       return NextResponse.json({ error: 'Key and originalText required' }, { status: 400 });
