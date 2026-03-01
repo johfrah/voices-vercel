@@ -952,10 +952,10 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
     // This prevents the SmartRouter from "hijacking" unknown paths or system routes.
     const isKnownEntryPoint = MarketManager.isAgencyEntryPoint(segments[0]) || ['voice', 'artist', 'portfolio'].includes(segments[0]);
     
-    // 🛡️ CHRIS-PROTOCOL: Category/Native Route Protection (v2.16.102)
-    const isCategoryNative = segments[0] === 'category' || segments[0] === 'native';
+    // 🛡️ CHRIS-PROTOCOL: Category/Native/Language Route Protection (v2.16.103)
+    const isCategoryNative = segments[0] === 'category' || segments[0] === 'native' || segments[0] === 'language';
     if (isCategoryNative && !resolved) {
-      console.error(` [SmartRouter] NUCLEAR BLOCK: Category/Native path "${lookupSlug}" not in registry. Blocking.`);
+      console.error(` [SmartRouter] NUCLEAR BLOCK: Category/Native/Language path "${lookupSlug}" not in registry. Blocking.`);
       return notFound();
     }
 

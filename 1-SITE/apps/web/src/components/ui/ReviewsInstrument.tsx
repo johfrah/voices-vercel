@@ -218,9 +218,6 @@ export const ReviewsInstrument: React.FC<{
 
   // Meest voorkomende woorden (Keyword Cloud)
   const keywords = useMemo(() => {
-    // #region agent log
-    fetch('http://127.0.0.1:7691/ingest/0b1da146-0703-4910-bde4-4876f6bb4146',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'81e7e6'},body:JSON.stringify({sessionId:'81e7e6',runId:'run1',hypothesisId:'H2',location:'ReviewsInstrument.tsx:220',message:'keywords useMemo',data:{hasReviews: !!reviews, reviewsType: typeof reviews},timestamp:Date.now()})}).catch(()=>{});
-    // #endregion
     const commonWords = ['de', 'het', 'een', 'en', 'is', 'dat', 'met', 'voor', 'van', 'in', 'op', 'te', 'om', 'als', 'die', 'ook', 'met', 'aan', 'bij', 'om', 'door', 'zeer', 'goed', 'fijn', 'vlot', 'top', 'super', 'erg', 'heel', 'echt', 'altijd', 'weer', 'nu', 'al', 'nog', 'dan', 'zo', 'wat', 'hoe', 'waar', 'waarom', 'wanneer', 'wie', 'wel', 'niet', 'geen', 'heb', 'heeft', 'hebben', 'had', 'hadden', 'ben', 'bent', 'is', 'zijn', 'was', 'waren', 'word', 'wordt', 'worden', 'werd', 'werden', 'kun', 'kunt', 'kan', 'kunnen', 'kon', 'konden', 'wil', 'wilt', 'willen', 'wou', 'wouden', 'moet', 'moeten', 'mag', 'mogen', 'zal', 'zullen', 'zou', 'zouden', 'tot', 'naar', 'uit', 'over', 'bij', 'voor', 'tegen', 'onder', 'boven', 'tussen', 'na', 'tijdens', 'sinds', 'door', 'langs', 'via', 'om', 'rond', 'omheen', 'doorheen', 'langs', 'naast', 'achter', 'voor', 'links', 'rechts', 'onder', 'boven', 'tussen', 'na', 'tijdens', 'sinds', 'door', 'langs', 'via', 'om', 'rond', 'omheen', 'doorheen', 'langs', 'naast', 'achter', 'voor', 'links', 'rechts'];
     const wordCounts: Record<string, number> = {};
     
@@ -312,9 +309,6 @@ export const ReviewsInstrument: React.FC<{
     }))
   };
 
-  // #region agent log
-  fetch('http://127.0.0.1:7691/ingest/0b1da146-0703-4910-bde4-4876f6bb4146',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'81e7e6'},body:JSON.stringify({sessionId:'81e7e6',location:'ReviewsInstrument.tsx:312',message:'ReviewsInstrument check',data:{hasReviews: !!reviews, reviewsType: typeof reviews, reviewsLength: reviews?.length},timestamp:Date.now()})}).catch(()=>{});
-  // #endregion
   if (reviews.length === 0) return null;
 
   if (variant === "wall") {

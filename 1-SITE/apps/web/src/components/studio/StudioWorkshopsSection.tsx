@@ -84,7 +84,7 @@ export const StudioWorkshopsSection: React.FC<StudioWorkshopsSectionProps> = ({ 
   
   // Filter workshops into categories (Bob-methode: Vaste vs. Gast)
   const vasteWorkshops = carouselWorkshops.filter(w => 
-    w.taxonomy.type === 'Vaste Workshop' || w.taxonomy.type === 'Anker (Maandelijks)'
+    !w.taxonomy.type || w.taxonomy.type === 'Vaste Workshop' || w.taxonomy.type === 'Anker (Maandelijks)'
   );
   const gastWorkshops = carouselWorkshops.filter(w => 
     w.taxonomy.type === 'Gastworkshop' || w.taxonomy.type === 'Gastworkshop (Expert)'

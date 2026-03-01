@@ -4,17 +4,20 @@ import postgres from 'postgres';
 import { sql } from 'drizzle-orm';
 
 async function checkLiveStatus() {
-  const client = postgres(process.env.DATABASE_URL!, { max: 1 });
+  const client = postgres(process.env.DATABASE_URL!, { 
+    max: 1,
+    ssl: { rejectUnauthorized: false }
+  });
   const db = drizzle(client);
 
   console.log('🔍 Checking live status...\n');
 
   // Check recent errors
   const events = await db.execute(sql`
-    SELECT created_at, event_type, severity, message, details
+    SELECT created_at, source, level, message, details
     FROM system_events
     WHERE created_at > NOW() - INTERVAL '2 hours'
-    AND severity IN ('error', 'critical')
+    AND level IN ('error', 'critical')
     ORDER BY created_at DESC
     LIMIT 10
   `);
@@ -24,7 +27,7 @@ async function checkLiveStatus() {
   if (events.length > 0) {
     console.log('\n⚠️  ERRORS FOUND:\n');
     events.forEach((e: any) => {
-      console.log(`[${e.severity.toUpperCase()}] ${e.event_type}`);
+      console.log(`[${e.level.toUpperCase()}] ${e.source}`);
       console.log(`  Message: ${e.message}`);
       console.log(`  Time: ${e.created_at}`);
       if (e.details) {

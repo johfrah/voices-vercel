@@ -67,9 +67,6 @@ class AgentOrchestrator {
       
       await Promise.all([
         this.runAgentCycle('CHRIS', async () => {
-          // #region agent log
-          fetch('http://127.0.0.1:7691/ingest/0b1da146-0703-4910-bde4-4876f6bb4146',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'81e7e6'},body:JSON.stringify({sessionId:'81e7e6',location:'orchestrator.ts:71',message:'Chris start audit',data:{step:'forensic'},timestamp:Date.now()})}).catch(()=>{});
-          // #endregion
           this.log('CHRIS', 'INFO', 'Start Forensische Audit & Watchdog...');
           execSync('npx tsx 3-WETTEN/scripts/forensic-audit.ts', { stdio: 'inherit' });
           execSync('npx ts-node 3-WETTEN/scripts/watchdog.ts audit 1-SITE/apps/web/src', { stdio: 'inherit' });
@@ -106,9 +103,6 @@ class AgentOrchestrator {
       this.updateStatus('SECTION_2', 'Anna valideert de harmonie...');
       
       await this.runAgentCycle('ANNA', async () => {
-        // #region agent log
-        fetch('http://127.0.0.1:7691/ingest/0b1da146-0703-4910-bde4-4876f6bb4146',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'81e7e6'},body:JSON.stringify({sessionId:'81e7e6',location:'orchestrator.ts:104',message:'Anna start audit',data:{step:'playwright'},timestamp:Date.now()})}).catch(()=>{});
-        // #endregion
         this.log('ANNA', 'INFO', 'Start stabiliteitscontrole (Lint, Types & E2E)...');
         execSync('npm run lint', { cwd: '1-SITE/apps/web', stdio: 'inherit' });
         this.log('ANNA', 'INFO', 'Draaien van Playwright E2E testen...');
