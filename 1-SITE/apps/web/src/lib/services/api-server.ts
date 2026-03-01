@@ -979,15 +979,13 @@ export async function getWorkshops(params: { limit?: number, worldId?: number, j
     `)
     .eq('status', 'live');
 
-  // 🛡️ CHRIS-PROTOCOL: world_id/journey_id filters removed because columns don't exist in 'workshops' table (v2.16.102)
-  /*
+  // 🛡️ CHRIS-PROTOCOL: Use world_id/journey_id filters (v2.16.117)
   if (worldId) {
     query = query.eq('world_id', worldId);
   }
   if (journeyId) {
     query = query.eq('journey_id', journeyId);
   }
-  */
 
   const { data: workshopsData, error } = await query
     .order('id', { ascending: true })
