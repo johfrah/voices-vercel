@@ -32,10 +32,16 @@ export const VoicesLink = ({
 }: VoicesLinkProps) => {
   const { language } = useTranslation();
 
-  // 1. Bepaal de finale URL
+    // 1. Bepaal de finale URL
   const getLocalizedHref = () => {
     const rawHref = href?.toString() || '/';
     
+    // 🛡️ CHRIS-PROTOCOL: Handle undefined or empty href (v2.16.134)
+    if (!href || rawHref === 'undefined' || rawHref === '') {
+      console.warn(`[VoicesLink] Undefined or empty href detected, falling back to anchor: #`);
+      return '#';
+    }
+
     // Uitzonderingen: externe links, anchors, of mailto/tel
     if (rawHref.startsWith('http') || rawHref.startsWith('#') || rawHref.startsWith('mailto:') || rawHref.startsWith('tel:')) {
       return rawHref;

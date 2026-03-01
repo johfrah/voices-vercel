@@ -230,19 +230,12 @@ export default async function RootLayout({
     })()
   ]);
   
-  // 🛡️ CHRIS-PROTOCOL: Journey Detection for Provider Injection
-  const segments = params.slug || pathname.split('/').filter(Boolean);
-  const journeySegment = segments[1]?.toLowerCase();
-  const journeyMap: Record<string, any> = {
-    'telefoon': 'telephony',
-    'telefooncentrale': 'telephony',
-    'telephony': 'telephony',
-    'video': 'video',
-    'commercial': 'commercial',
-    'reclame': 'commercial'
-  };
-  const initialJourney = journeySegment ? journeyMap[journeySegment] : undefined;
-  const initialUsage = initialJourney ? (initialJourney === 'telephony' ? 'telefonie' : (initialJourney === 'commercial' ? 'commercial' : 'unpaid')) : undefined;
+  // 🛡️ CHRIS-PROTOCOL: World Detection for Provider Injection (v2.16.134)
+  const isStudioPage = pathname.startsWith('/studio/') || pathname === '/studio' || pathname === '/workshops';
+  const isAcademyPage = pathname.startsWith('/academy/') || pathname === '/academy';
+  
+  const initialJourney = isStudioPage ? 'studio' : (isAcademyPage ? 'academy' : undefined);
+  const initialUsage = isStudioPage || isAcademyPage ? 'subscription' : undefined;
 
   // 🛡️ CHRIS-PROTOCOL: Server-side Nav Config Fetching (v2.14.611)
   const getJourneyKey = (marketCode: string) => {

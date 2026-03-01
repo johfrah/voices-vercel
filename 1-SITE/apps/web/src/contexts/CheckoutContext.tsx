@@ -213,6 +213,24 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           const parsed = JSON.parse(saved);
           console.log(`[CheckoutContext] Restoring state from localStorage: ${parsed.items?.length || 0} items`);
           
+          // 🛡️ CHRIS-PROTOCOL: World Isolation (v2.16.134)
+          // If the saved journey doesn't match the current world context, we reset it.
+          // This prevents Agency logic from leaking into Studio/Academy pages.
+          const currentPath = window.location.pathname;
+          const isStudioPath = currentPath.startsWith('/studio');
+          const isAcademyPath = currentPath.startsWith('/academy');
+          
+          if (isStudioPath && parsed.journey !== 'studio') {
+            console.log(`[CheckoutContext] Resetting journey to studio (was ${parsed.journey})`);
+            parsed.journey = 'studio';
+          } else if (isAcademyPath && parsed.journey !== 'academy') {
+            console.log(`[CheckoutContext] Resetting journey to academy (was ${parsed.journey})`);
+            parsed.journey = 'academy';
+          } else if (!isStudioPath && !isAcademyPath && (parsed.journey === 'studio' || parsed.journey === 'academy')) {
+            console.log(`[CheckoutContext] Resetting journey to agency (was ${parsed.journey})`);
+            parsed.journey = 'agency';
+          }
+
           //  KELLY-MANDATE: Clean up items during hydration (remove 0 prices and duplicates)
           const cleanItems = (parsed.items || []).filter((item: any, index: number, self: any[]) => {
             const price = item.pricing?.total ?? item.pricing?.subtotal ?? 0;

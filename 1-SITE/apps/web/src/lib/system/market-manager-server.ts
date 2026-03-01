@@ -252,7 +252,7 @@ export class MarketManagerServer {
       supported_languages: ['nl-be', 'en-gb'],
       popular_languages: ['nl-be', 'en-gb'],
       name: 'Voices Studio',
-      logo_url: VOICES_CONFIG.assets.logos.be,
+      logo_url: VOICES_CONFIG.assets.logos.studio || VOICES_CONFIG.assets.logos.be,
       theme: 'voices',
       social_links: {
         instagram: 'https://www.instagram.com/voices.be_studio/',

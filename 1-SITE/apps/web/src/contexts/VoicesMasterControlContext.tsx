@@ -79,7 +79,7 @@ export const VoicesMasterControlProvider: React.FC<{
 
   const [state, setState] = useState<MasterControlState>({
     journey: initialJourney || 'video',
-    usage: initialUsage || 'unpaid',
+    usage: initialUsage || (initialJourney === 'studio' || initialJourney === 'academy' ? 'subscription' : 'unpaid'),
     isMuted: false,
     filters: {
       language: null,

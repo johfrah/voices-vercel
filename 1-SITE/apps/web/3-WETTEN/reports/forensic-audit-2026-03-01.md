@@ -1,9 +1,9 @@
-# 🛡️ Forensic Audit Report (3/1/2026, 7:32:12 PM)
+# 🛡️ Forensic Audit Report (3/1/2026, 9:09:10 PM)
 
 ## Summary
 - **Status**: ✅ PASSED
 - **Errors**: 0
-- **Warnings**: 3739
+- **Warnings**: 3736
 
 ## Detailed Issues
 - **WARNING** `src/app/[...slug]/page.tsx:682`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -6086,18 +6086,12 @@
   > `<span className="text-[15px] font-black tracking-widest">`
 - **WARNING** `src/components/ui/JourneySelector.tsx:51`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse ml-1" />`
-- **WARNING** `src/components/ui/LanguageSwitcher.tsx:204`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `src/components/ui/LanguageSwitcher.tsx:217`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="p-1">`
-- **WARNING** `src/components/ui/LanguageSwitcher.tsx:224`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `src/components/ui/LanguageSwitcher.tsx:237`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex items-center gap-2.5">`
-- **WARNING** `src/components/ui/LanguageSwitcher.tsx:226`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `src/components/ui/LanguageSwitcher.tsx:239`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex flex-col">`
-- **WARNING** `src/components/ui/LanguageSwitcher.tsx:44`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
-  > `const [currentLang, setCurrentLang] = useState<string>(market.language || 'nl');`
-- **WARNING** `src/components/ui/LanguageSwitcher.tsx:92`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
-  > `setCurrentLang(market.language || 'nl');`
-- **WARNING** `src/components/ui/LanguageSwitcher.tsx:117`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
-  > `const defaultLang = market.language || 'nl';`
 - **WARNING** `src/components/ui/LayoutInstrumentsServer.tsx:10`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `lang = 'nl',`
 - **WARNING** `src/components/ui/LiquidBackground.tsx:12`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.

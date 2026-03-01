@@ -31,6 +31,7 @@ export const VOICES_CONFIG = {
       pt: '/assets/common/branding/Voices_LOGO_PT.svg',
       ademing: '/assets/common/branding/Voices-LOGO-Animated.svg',
       johfrah: '/assets/common/branding/johfrah.be_LOGO.svg',
+      studio: '/assets/common/branding/Voices_LOGO_STUDIO.svg',
     },
     placeholders: {
       voice: '/assets/common/placeholders/placeholder-voice.jpg',
