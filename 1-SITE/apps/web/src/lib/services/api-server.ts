@@ -316,10 +316,18 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
       .select('*')
       .eq('business_slug', market === 'STUDIO' || market === 'ACADEMY' ? 'voices-studio' : 'voices-be')
       .limit(20);
-    const mediaRes = photoIds.length > 0 ? await supabase.from('media').select('*').in('id', photoIds) : { data: [] };
     const demosRes = await supabase.from('actor_demos').select('*').in('actor_id', actorIds).eq('is_public', true);
-    const videosRes = await supabase.from('actor_videos').select('*').in('actor_id', actorIds).eq('is_public', true);
+    const demosData = demosRes.data || [];
+    const demoMediaIds = Array.from(new Set(demosData.map((d: any) => d.media_id).filter(Boolean).map(id => Number(id))));
     
+    const videosRes = await supabase.from('actor_videos').select('*').in('actor_id', actorIds).eq('is_public', true);
+    const videosData = videosRes.data || [];
+    
+    // 🛡️ CHRIS-PROTOCOL: Fetch ALL required media in one go (v2.16.112)
+    const allMediaIds = Array.from(new Set([...photoIds, ...demoMediaIds]));
+    const mediaRes = allMediaIds.length > 0 ? await supabase.from('media').select('*').in('id', allMediaIds) : { data: [] };
+    const mediaResults = mediaRes.data || [];
+
     // 🛡️ CHRIS-PROTOCOL: Fetch actor_languages relationships (v2.14.107)
     // We NEED the IDs to match strictly in the frontend.
     const actorLangsRes = await supabase.from('actor_languages').select('*').in('actor_id', actorIds);
@@ -380,9 +388,6 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
       .eq('business_slug', market === 'STUDIO' || market === 'ACADEMY' ? 'voices-studio' : 'voices-be');
     
     const dbReviewsRaw = reviewsRes.data || [];
-    const mediaResults = mediaRes.data || [];
-    const demosData = demosRes.data || [];
-    const videosData = videosRes.data || [];
     const statsRaw = statsRes.data || [];
 
     // 🛡️ CHRIS-PROTOCOL: Nuclear Review Media Resolution (v2.14.547)
@@ -458,7 +463,16 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
 
       const actorDemosList = demosData.filter((d: any) => d.actor_id === actor.id);
       const proxiedDemos = actorDemosList.map((d: any) => {
-        const audioUrl = d.url?.startsWith('http') ? d.url : `/api/proxy/?path=${encodeURIComponent(d.url)}`;
+        // 🛡️ CHRIS-PROTOCOL: Resolve audio URL via media_id if url is empty (v2.16.112)
+        let finalUrl = d.url;
+        if (!finalUrl && d.media_id) {
+          const mediaItem = mediaResults.find((m: any) => m.id === d.media_id);
+          if (mediaItem) {
+            finalUrl = mediaItem.file_path || mediaItem.filePath;
+          }
+        }
+
+        const audioUrl = finalUrl?.startsWith('http') ? finalUrl : `/api/proxy/?path=${encodeURIComponent(finalUrl || '')}`;
         return {
           id: d.id,
           title: d.name,
