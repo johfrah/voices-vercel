@@ -73,15 +73,15 @@ export const VoiceglotText: React.FC<VoiceglotTextProps> = ({
     const isAdemingBrand = ((defaultText || '')).toLowerCase() === 'ademing' || ((defaultText || '')).toLowerCase() === 'ademing.be';
     
     // 🛡️ CHRIS-PROTOCOL: 'nl-be' (ID 1) is the Source of Truth. Default is Truth.
-    // We forceer de defaultText voor alle NL varianten tenzij er een handmatige wijziging is in Edit Mode.
+    // We forceer de defaultText voor nl-be tenzij er een handmatige wijziging is in Edit Mode.
     // We gebruiken ID-handshake en case-insensitive check om lekken te voorkomen.
-    const isSourceOfTruth = language?.toLowerCase().startsWith('nl') || (typeof window !== 'undefined' && (window as any).handshakeLanguages?.find((l: any) => l.id === 1)?.code === language?.toLowerCase());
+    const isSourceOfTruth = language?.toLowerCase() === 'nl-be' || (typeof window !== 'undefined' && (window as any).handshakeLanguages?.find((l: any) => l.id === 1)?.code === language?.toLowerCase());
 
     if (noTranslate || isAdemingBrand) {
       setContent(defaultText);
     } else if (isSourceOfTruth && !isEditMode) {
-      // In NL mode, we negeren de database vertalingen tenzij we in Edit Mode zijn
-      // Dit voorkomt dat AI-slop of 'polijstwerk' de site vervuilt.
+      // In nl-BE mode, we negeren de database vertalingen tenzij we in Edit Mode zijn
+      // Dit voorkomt dat AI-slop de site vervuilt.
       setContent(defaultText);
     } else {
       const currentT = t(translationKey, defaultText, values, !!components);
