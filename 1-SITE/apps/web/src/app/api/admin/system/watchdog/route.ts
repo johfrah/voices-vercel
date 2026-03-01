@@ -4,6 +4,7 @@ import { VoicesMailEngine } from '@/lib/services/voices-mail-engine';
 import { TelegramService } from '@/lib/services/telegram-service';
 import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
 import { desc, gte, and, eq, sql } from 'drizzle-orm';
+import { createClient } from '@supabase/supabase-js';
 
 /**
  *  API: SYSTEM WATCHDOG (SELF-HEALING 2026)
@@ -47,8 +48,13 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // 1. Log het event in de database - EXTRA SAFE
+    // 2. Log het event in de database - EXTRA SAFE
     let eventId = 0;
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
+
     try {
       if (db && systemEvents) {
         const [event] = await db.insert(systemEvents).values({
@@ -68,7 +74,29 @@ export async function POST(request: NextRequest) {
         console.log(`[Watchdog] Event logged to DB: #${eventId}`);
       }
     } catch (dbErr: any) {
-      console.error('[Watchdog] Database logging failed (continuing to mail):', dbErr.message);
+      console.warn('[Watchdog] Drizzle failed, falling back to Supabase SDK:', dbErr.message);
+      try {
+        const { data: sdkEvent, error: sdkErr } = await supabase.from('system_events').insert({
+          level,
+          source: component || 'Watchdog',
+          message: error,
+          details: {
+            ...details,
+            stack,
+            url,
+            userAgent: request.headers.get('user-agent'),
+            timestamp: new Date()
+          },
+          created_at: new Date()
+        }).select().single();
+        
+        if (!sdkErr && sdkEvent) {
+          eventId = sdkEvent.id;
+          console.log(`[Watchdog] Event logged via SDK: #${eventId}`);
+        }
+      } catch (e) {
+        console.error('[Watchdog] SDK fallback also failed:', e);
+      }
     }
 
     // 2. Classificeer de fout: Is dit een "Safe Auto-Heal" kandidaat?
@@ -154,7 +182,17 @@ export async function POST(request: NextRequest) {
           createdAt: new Date()
         });
       } catch (e) {
-        console.error('[Watchdog] Failed to log mail event:', e);
+        console.warn('[Watchdog] Failed to log mail event via Drizzle, trying SDK...');
+        try {
+          await supabase.from('system_events').insert({
+            level: 'info',
+            source: 'WatchdogMail',
+            message: `Watchdog summary mail sent: ${error.substring(0, 50)}`,
+            created_at: new Date()
+          });
+        } catch (sdkE) {
+          console.error('[Watchdog] SDK mail log failed:', sdkE);
+        }
       }
 
       if (isSafeAutoHeal) {

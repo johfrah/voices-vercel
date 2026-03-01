@@ -4,6 +4,7 @@ import { db } from '@/lib/system/voices-config';
 import { chatConversations, chatMessages, faq, workshopEditions, workshops } from '@/lib/system/voices-config';
 import { desc, eq, ilike, or, and, sql } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
+import { createClient } from '@supabase/supabase-js';
 
 /**
  *  CHAT & VOICY API (2026) - CORE EDITION
@@ -469,6 +470,11 @@ ${workshopEditionsData.filter((ed: any) => ed.status === 'upcoming').map((ed: an
 
     // 4. Sla op in DB indien mogelijk
     let saveResult: any = null;
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
+
     try {
       console.log('[Voicy API] Attempting to save to DB...');
       
@@ -488,15 +494,71 @@ ${workshopEditionsData.filter((ed: any) => ed.status === 'upcoming').map((ed: an
         } catch (e) {}
       }
 
-      saveResult = await db.transaction(async (tx: any) => {
+      try {
+        saveResult = await db.transaction(async (tx: any) => {
+          let convId = conversationId;
+          if (!convId) {
+            const [newConv] = await tx.insert(chatConversations).values({
+              user_id: senderType === 'user' ? senderId : null,
+              guestName: leadName,
+              guestEmail: leadEmail,
+              status: 'open',
+              iapContext: params.iapContext || {},
+              metadata: { 
+                initial_intent: intent,
+                journey: journey,
+                lifecycle_stage: stage,
+                market: context?.market_code,
+                vibe: context?.customer360?.intelligence?.leadVibe,
+                visitor_hash: context?.visitorHash
+              },
+              createdAt: new Date(),
+              updatedAt: new Date()
+            }).returning({ id: chatConversations.id });
+            convId = newConv.id;
+          } else if (leadEmail || leadName) {
+            // Update bestaande conversatie met lead info
+            await tx.update(chatConversations)
+              .set({ 
+                guestEmail: leadEmail || undefined,
+                guestName: leadName || undefined,
+                updatedAt: new Date() 
+              })
+              .where(eq(chatConversations.id, convId));
+          }
+
+          const [newMessage] = await tx.insert(chatMessages).values({
+            conversationId: convId,
+            senderId: senderId,
+            senderType: senderType,
+            message: message,
+            metadata: {
+              ai_persona: persona,
+              ai_mode: mode,
+              has_actions: actions.length > 0,
+              interaction_type: context?.interaction_type || 'text',
+              current_page: context?.currentPage
+            },
+            createdAt: new Date()
+          }).returning();
+
+          await tx.update(chatConversations)
+            .set({ updatedAt: new Date() })
+            .where(eq(chatConversations.id, convId));
+
+          return { messageId: newMessage.id, conversationId: convId };
+        });
+      } catch (dbError) {
+        console.warn('[Voicy API] Drizzle failed, falling back to Supabase SDK:', dbError);
+        
         let convId = conversationId;
         if (!convId) {
-          const [newConv] = await tx.insert(chatConversations).values({
+          const { data: newConv, error: convErr } = await supabase.from('chat_conversations').insert({
             user_id: senderType === 'user' ? senderId : null,
-            guestName: leadName,
-            guestEmail: leadEmail,
+            guest_name: leadName,
+            guest_email: leadEmail,
             status: 'open',
-            iapContext: params.iapContext || {},
+            iap_context: params.iapContext || {},
             metadata: { 
               initial_intent: intent,
               journey: journey,
@@ -504,50 +566,53 @@ ${workshopEditionsData.filter((ed: any) => ed.status === 'upcoming').map((ed: an
               market: context?.market_code,
               vibe: context?.customer360?.intelligence?.leadVibe,
               visitor_hash: context?.visitorHash
-            }
-          }).returning({ id: chatConversations.id });
-          convId = newConv.id;
+            },
+            created_at: new Date(),
+            updated_at: new Date()
+          }).select().single();
+          
+          if (!convErr && newConv) convId = newConv.id;
         } else if (leadEmail || leadName) {
-          // Update bestaande conversatie met lead info
-          await tx.update(chatConversations)
-            .set({ 
-              guestEmail: leadEmail || undefined,
-              guestName: leadName || undefined,
-              updatedAt: new Date() 
+          await supabase.from('chat_conversations')
+            .update({ 
+              guest_email: leadEmail || undefined,
+              guest_name: leadName || undefined,
+              updated_at: new Date() 
             })
-            .where(eq(chatConversations.id, convId));
+            .eq('id', convId);
         }
 
-        const [newMessage] = await tx.insert(chatMessages).values({
-          conversationId: convId,
-          senderId: senderId,
-          senderType: senderType,
-          message: message,
-          metadata: {
-            ai_persona: persona,
-            ai_mode: mode,
-            has_actions: actions.length > 0,
-            interaction_type: context?.interaction_type || 'text',
-            current_page: context?.currentPage
-          },
-          createdAt: new Date()
-        }).returning();
+        if (convId) {
+          const { data: newMessage, error: msgErr } = await supabase.from('chat_messages').insert({
+            conversation_id: convId,
+            sender_id: senderId,
+            sender_type: senderType,
+            message: message,
+            metadata: {
+              ai_persona: persona,
+              ai_mode: mode,
+              has_actions: actions.length > 0,
+              interaction_type: context?.interaction_type || 'text',
+              current_page: context?.currentPage
+            },
+            created_at: new Date()
+          }).select().single();
 
-        await tx.update(chatConversations)
-          .set({ updatedAt: new Date() })
-          .where(eq(chatConversations.id, convId));
-
-        if (!conversationId || message.toLowerCase().includes("prijs") || message.toLowerCase().includes("offerte")) {
-          try {
-            const { SelfHealingService } = await import('@/lib/system/self-healing-service');
-            await SelfHealingService.reportDataAnomaly('chat_activity', convId, `Klant interactie gedetecteerd: "${message.substring(0, 50)}..."`);
-          } catch (e) {
-            console.error("Notification failed", e);
+          if (!msgErr && newMessage) {
+            saveResult = { messageId: newMessage.id, conversationId: convId, _source: 'supabase_sdk' };
           }
         }
+      }
 
-        return { messageId: newMessage.id, conversationId: convId };
-      });
+      if (saveResult && (!conversationId || message.toLowerCase().includes("prijs") || message.toLowerCase().includes("offerte"))) {
+        try {
+          const { SelfHealingService } = await import('@/lib/system/self-healing-service');
+          await SelfHealingService.reportDataAnomaly('chat_activity', saveResult.conversationId, `Klant interactie gedetecteerd: "${message.substring(0, 50)}..."`);
+        } catch (e) {
+          console.error("Notification failed", e);
+        }
+      }
+
       console.log('[Voicy API] DB save successful.');
     } catch (dbError: any) {
       console.error('[Voicy API DB Error]:', dbError);
