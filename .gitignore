@@ -89,12 +89,11 @@ assets_backup/
 # 8. Chrome/Playwright (Heavy)
 chrome/
 1-SITE/apps/web/chrome/
-docs/
-3-WETTEN/docs/
-4-KELDER/
-5-DUBBELS/
-*.dic
-*.dylib
-*.so
+**/chrome/
 *.wav
 *.mp3
+*.mp4
+*.zip
+*.tar.gz
+*.dmg
+*.pkg
