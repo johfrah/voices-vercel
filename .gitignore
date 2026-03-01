@@ -86,18 +86,9 @@ assets_backup/
 # WordPress CLI slop
 .wp-cli/
 
-# 7. Lean Launch: Exclude all docs and heavy specs
-docs/
-3-WETTEN/docs/
-4-KELDER/
-5-DUBBELS/
-*.dic
-*.dylib
-*.so
-*.wav
-*.mp3
-
-# 7. Lean Launch: Exclude all docs and heavy specs
+# 8. Chrome/Playwright (Heavy)
+chrome/
+1-SITE/apps/web/chrome/
 docs/
 3-WETTEN/docs/
 4-KELDER/
