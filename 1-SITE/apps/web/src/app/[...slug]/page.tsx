@@ -772,10 +772,10 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
                           Voices Academy
                         </ContainerInstrument>
                         <HeadingInstrument level={1} className="text-7xl md:text-9xl font-light tracking-tighter leading-none text-va-black">
-                          Meester de <span className="text-primary italic">Microfoon</span>
+                          <VoiceglotText translationKey="academy.hero.title" defaultText="De Stem van de Pro" />
                         </HeadingInstrument>
                         <TextInstrument className="text-xl md:text-2xl text-va-black/40 font-light max-w-2xl mx-auto leading-relaxed">
-                          Leer het vak van de pro's. Van stemtechniek tot home-studio management.
+                          <VoiceglotText translationKey="academy.hero.subtitle" defaultText="Vakmanschap doorgeven. Van techniek tot business." />
                         </TextInstrument>
                       </header>
                       
@@ -795,8 +795,12 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
                             <TextInstrument className="text-va-black/40 group-hover:text-white/40 text-[15px] mb-8 font-light leading-relaxed">{lesson.description}</TextInstrument>
                             <Link href={`/academy/lesson/${lesson.display_order || lesson.id}`} className="mt-auto flex justify-between items-end">
                               <ContainerInstrument>
-                                <TextInstrument className="text-[11px] text-va-black/40 group-hover:text-white/40 font-bold tracking-[0.2em] uppercase mb-1 transition-colors ">Start nu</TextInstrument>
-                                <TextInstrument as="span" className="text-2xl font-light tracking-tighter text-va-black group-hover:text-white transition-colors">Bekijk les</TextInstrument>
+                                <TextInstrument className="text-[11px] text-va-black/40 group-hover:text-white/40 font-bold tracking-[0.2em] uppercase mb-1 transition-colors ">
+                                  <VoiceglotText translationKey="action.start_now" defaultText="Start nu" />
+                                </TextInstrument>
+                                <TextInstrument as="span" className="text-2xl font-light tracking-tighter text-va-black group-hover:text-white transition-colors">
+                                  <VoiceglotText translationKey="action.view_lesson" defaultText="Bekijk les" />
+                                </TextInstrument>
                               </ContainerInstrument>
                               <ButtonInstrument className="!bg-va-black group-hover:!bg-white group-hover:!text-va-black !rounded-[10px] !px-6 transition-all">
                                 <Play strokeWidth={1.5} size={16} fill="currentColor" />
@@ -948,9 +952,12 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
     // This prevents the SmartRouter from "hijacking" unknown paths or system routes.
     const isKnownEntryPoint = MarketManager.isAgencyEntryPoint(segments[0]) || ['voice', 'artist', 'portfolio'].includes(segments[0]);
     
-    // #region agent log
-    // fetch('http://127.0.0.1:7691/ingest/0b1da146-0703-4910-bde4-4876f6bb4146',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'81e7e6'},body:JSON.stringify({sessionId:'81e7e6',runId:'run1',hypothesisId:'H4',location:'[...slug]/page.tsx:779',message:'SmartRouteContent check',data:{segments, resolvedType: resolved?.routing_type, resolvedId: resolved?.entity_id, isKnownEntryPoint},timestamp:Date.now()})}).catch(()=>{});
-    // #endregion
+    // 🛡️ CHRIS-PROTOCOL: Category/Native Route Protection (v2.16.102)
+    const isCategoryNative = segments[0] === 'category' || segments[0] === 'native';
+    if (isCategoryNative && !resolved) {
+      console.error(` [SmartRouter] NUCLEAR BLOCK: Category/Native path "${lookupSlug}" not in registry. Blocking.`);
+      return notFound();
+    }
 
     if (!resolved && !isKnownEntryPoint && segments.length > 1) {
       console.error(` [SmartRouter] NUCLEAR BLOCK: Path "${lookupSlug}" not in registry and not a known entry point. Blocking.`);

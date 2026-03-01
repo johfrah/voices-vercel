@@ -16,6 +16,7 @@ import { VercelToolbar } from "@vercel/toolbar/next";
 import type { Metadata, Viewport } from "next";
 import { Inter, Raleway, Cormorant_Garamond } from "next/font/google";
 import { headers } from "next/headers";
+import Link from "next/link";
 import { Suspense } from "react";
 import dynamic from "next/dynamic";
 import { Toaster } from 'react-hot-toast';

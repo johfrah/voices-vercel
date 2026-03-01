@@ -1,7 +1,7 @@
 "use client";
 
 import { Star, Check, ChevronLeft, ChevronRight, Quote, Search as SearchIcon, X, Eye, EyeOff, Anchor, Pin, Trash2, Tag } from "lucide-react";
-import React, { useState, useRef, useEffect, useMemo } from 'react';
+import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { BentoCard } from "./BentoGrid";
 import { ContainerInstrument, HeadingInstrument, TextInstrument, ButtonInstrument } from "./LayoutInstruments";
 import { VoiceglotImage } from "./VoiceglotImage";
