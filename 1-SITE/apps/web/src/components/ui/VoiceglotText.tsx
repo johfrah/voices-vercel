@@ -72,7 +72,15 @@ export const VoiceglotText: React.FC<VoiceglotTextProps> = ({
     // 🛡️ BRAND PROTECTION: 'Ademing' is een brand die niet vertaald mag worden
     const isAdemingBrand = ((defaultText || '')).toLowerCase() === 'ademing' || ((defaultText || '')).toLowerCase() === 'ademing.be';
     
+    // 🛡️ CHRIS-PROTOCOL: 'nl-BE' is the Source of Truth. Default is Truth.
+    // We forceer de defaultText voor nl-BE tenzij er een handmatige wijziging is.
+    const isSourceOfTruth = language === 'nl-BE';
+
     if (noTranslate || isAdemingBrand) {
+      setContent(defaultText);
+    } else if (isSourceOfTruth && !isEditMode) {
+      // In nl-BE mode, we negeren de database vertalingen tenzij we in Edit Mode zijn
+      // Dit voorkomt dat AI-slop de site vervuilt.
       setContent(defaultText);
     } else {
       const currentT = t(translationKey, defaultText, values, !!components);

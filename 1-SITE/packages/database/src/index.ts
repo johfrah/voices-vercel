@@ -29,13 +29,11 @@ const getDb = () => {
         return null;
       }
       
-      // CHRIS-PROTOCOL: Direct DB Host for Stability (v2.17)
-      // The Supabase Pooler (6543) is currently unstable. We bypass it and use the direct host.
-      if (connectionString.includes('pooler.supabase.com')) {
-        connectionString = connectionString.replace('aws-1-eu-west-1.pooler.supabase.com', 'vcbxyyjsxuquytcsskpj.supabase.co');
-        connectionString = connectionString.replace(':6543', ':5432');
-        connectionString = connectionString.replace('postgres.vcbxyyjsxuquytcsskpj', 'postgres');
-        connectionString = connectionString.split('?')[0]; 
+      // 🛡️ BASSIE-PROTOCOL: Use Pooler for Stability (v2.16.118)
+      // The direct host (5432) gives CONNECT_TIMEOUT. We MUST use the Pooler (6543).
+      // Keep the connection string as-is if it already uses the Pooler.
+      if (!connectionString.includes('pooler.supabase.com')) {
+        console.warn('⚠️  DATABASE_URL does not use Pooler. Consider updating .env.local to use port 6543.');
       }
 
       // LEX-MANDATE: IPv6 is unstable on some build machines. Force IPv4 if direct host.
