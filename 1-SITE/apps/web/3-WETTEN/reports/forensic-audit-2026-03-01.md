@@ -1,4 +1,4 @@
-# 🛡️ Forensic Audit Report (3/1/2026, 9:09:10 PM)
+# 🛡️ Forensic Audit Report (3/1/2026, 9:54:58 PM)
 
 ## Summary
 - **Status**: ✅ PASSED
@@ -2784,19 +2784,19 @@
   > `const TopBar = dynamic(() => import("@/components/ui/TopBar").then(mod => mod.TopBar), { ssr: false, loading: () => <div className="h-[80px] bg-va-off-white/50 backdrop-blur-md" /> });`
 - **WARNING** `src/app/layout.tsx:37`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `const GlobalNav = dynamic(() => import("@/components/ui/GlobalNav"), { ssr: false, loading: () => <div className="h-[60px] bg-va-off-white/50 backdrop-blur-md" /> });`
-- **WARNING** `src/app/layout.tsx:394`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `src/app/layout.tsx:384`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `JOHFRAH<span className="text-primary">.</span>`
-- **WARNING** `src/app/layout.tsx:396`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `src/app/layout.tsx:386`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex gap-8 items-center text-[13px] font-bold tracking-[0.2em] uppercase text-va-black/40">`
-- **WARNING** `src/app/layout.tsx:414`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `src/app/layout.tsx:404`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<SafeErrorGuard name="Footer" fallback={<div className="py-12 bg-va-off-white border-t border-black/5 text-center text-[11px] text-va-black/20 uppercase tracking-widest">Voices Footer Safe-Mode</div>}>`
-- **WARNING** `src/app/layout.tsx:421`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `src/app/layout.tsx:411`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="text-3xl font-light tracking-tighter">`
-- **WARNING** `src/app/layout.tsx:422`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `src/app/layout.tsx:412`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `JOHFRAH<span className="text-primary">.</span>`
-- **WARNING** `src/app/layout.tsx:424`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `src/app/layout.tsx:414`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex gap-12 text-[11px] font-bold tracking-[0.3em] uppercase text-white/40">`
-- **WARNING** `src/app/layout.tsx:429`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `src/app/layout.tsx:419`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="text-[11px] font-bold tracking-[0.3em] uppercase text-white/20">`
 - **WARNING** `src/app/layout.tsx:114`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `const translationPromise = getTranslationsServer(langHeader || 'nl');`
@@ -6960,121 +6960,121 @@
   > `<span className="text-[9px] font-bold text-va-black/30 uppercase tracking-[0.2em]">`
 - **WARNING** `src/components/ui/VoicesDropdown.tsx:679`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex flex-wrap gap-2">`
-- **WARNING** `src/components/ui/VoicesLink.tsx:48`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `src/components/ui/VoicesLink.tsx:54`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `if (language.startsWith('nl')) {`
-- **WARNING** `src/components/ui/VoicesLink.tsx:95`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `src/components/ui/VoicesLink.tsx:101`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `const prefix = shortLang === 'nl' ? '' : `/${shortLang}`;`
-- **WARNING** `src/components/ui/VoicesLink.tsx:110`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `src/components/ui/VoicesLink.tsx:116`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `const prefix = shortLang === 'nl' ? '' : `/${shortLang}`;`
-- **WARNING** `src/components/ui/VoicesMasterControl.tsx:539`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `src/components/ui/VoicesMasterControl.tsx:519`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex items-center gap-1.5 min-w-full md:min-w-0">`
-- **WARNING** `src/components/ui/VoicesMasterControl.tsx:570`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `src/components/ui/VoicesMasterControl.tsx:550`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex flex-col">`
-- **WARNING** `src/components/ui/VoicesMasterControl.tsx:571`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `src/components/ui/VoicesMasterControl.tsx:551`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span className="text-[12px] md:text-[14px] font-bold tracking-widest leading-none mb-1 whitespace-nowrap">`
-- **WARNING** `src/components/ui/VoicesMasterControl.tsx:574`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `src/components/ui/VoicesMasterControl.tsx:554`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span className={cn(`
-- **WARNING** `src/components/ui/VoicesMasterControl.tsx:581`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `src/components/ui/VoicesMasterControl.tsx:561`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `{isActive && <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse ml-auto hidden md:block" />}`
-- **WARNING** `src/components/ui/VoicesMasterControl.tsx:600`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `src/components/ui/VoicesMasterControl.tsx:580`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="md:hidden p-1.5">`
-- **WARNING** `src/components/ui/VoicesMasterControl.tsx:605`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `src/components/ui/VoicesMasterControl.tsx:585`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0">`
-- **WARNING** `src/components/ui/VoicesMasterControl.tsx:608`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `src/components/ui/VoicesMasterControl.tsx:588`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex flex-col items-start min-w-0">`
-- **WARNING** `src/components/ui/VoicesMasterControl.tsx:609`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `src/components/ui/VoicesMasterControl.tsx:589`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span className="text-[13px] font-bold tracking-widest text-va-black uppercase">`
-- **WARNING** `src/components/ui/VoicesMasterControl.tsx:612`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `src/components/ui/VoicesMasterControl.tsx:592`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span className="text-[11px] text-va-black/40 truncate w-full text-left">`
-- **WARNING** `src/components/ui/VoicesMasterControl.tsx:621`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `src/components/ui/VoicesMasterControl.tsx:601`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex flex-col">`
-- **WARNING** `src/components/ui/VoicesMasterControl.tsx:626`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `src/components/ui/VoicesMasterControl.tsx:606`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex-1 h-full flex flex-col justify-center relative group/lang">`
-- **WARNING** `src/components/ui/VoicesMasterControl.tsx:724`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `src/components/ui/VoicesMasterControl.tsx:704`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex-1 h-full flex flex-col justify-center relative group/gender">`
-- **WARNING** `src/components/ui/VoicesMasterControl.tsx:777`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `src/components/ui/VoicesMasterControl.tsx:757`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex-1 h-full flex flex-col justify-center relative group/media">`
-- **WARNING** `src/components/ui/VoicesMasterControl.tsx:900`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `src/components/ui/VoicesMasterControl.tsx:880`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex-1 h-full flex flex-col justify-center relative group/country">`
-- **WARNING** `src/components/ui/VoicesMasterControl.tsx:728`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `src/components/ui/VoicesMasterControl.tsx:708`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `{ label: t('gender.everyone', language === 'fr' ? 'Tout le monde' : language === 'en' ? 'Everyone' : 'Iedereen'), value: '', icon: Users },`
-- **WARNING** `src/components/ui/VoicesMasterControl.tsx:728`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `src/components/ui/VoicesMasterControl.tsx:708`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `{ label: t('gender.everyone', language === 'fr' ? 'Tout le monde' : language === 'en' ? 'Everyone' : 'Iedereen'), value: '', icon: Users },`
-- **WARNING** `src/components/ui/VoicesMasterControl.tsx:753`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `src/components/ui/VoicesMasterControl.tsx:733`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `placeholder={t('gender.everyone', language === 'fr' ? 'Tout le monde' : language === 'en' ? 'Everyone' : 'Iedereen')}`
-- **WARNING** `src/components/ui/VoicesMasterControl.tsx:753`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `src/components/ui/VoicesMasterControl.tsx:733`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `placeholder={t('gender.everyone', language === 'fr' ? 'Tout le monde' : language === 'en' ? 'Everyone' : 'Iedereen')}`
-- **WARNING** `src/components/ui/VoicesMasterControl.tsx:754`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `src/components/ui/VoicesMasterControl.tsx:734`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `label={t('filter.who', language === 'fr' ? 'Qui?' : language === 'en' ? 'Who?' : 'Wie?')}`
-- **WARNING** `src/components/ui/VoicesMasterControl.tsx:754`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `src/components/ui/VoicesMasterControl.tsx:734`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `label={t('filter.who', language === 'fr' ? 'Qui?' : language === 'en' ? 'Who?' : 'Wie?')}`
-- **WARNING** `src/components/ui/VoicesMasterControl.tsx:911`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `src/components/ui/VoicesMasterControl.tsx:891`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `{ label: t('country.be', language === 'fr' ? 'Belgique' : language === 'en' ? 'Belgium' : 'België'), value: 'BE', code: 'BE' },`
-- **WARNING** `src/components/ui/VoicesMasterControl.tsx:911`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `src/components/ui/VoicesMasterControl.tsx:891`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `{ label: t('country.be', language === 'fr' ? 'Belgique' : language === 'en' ? 'Belgium' : 'België'), value: 'BE', code: 'BE' },`
-- **WARNING** `src/components/ui/VoicesMasterControl.tsx:912`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `src/components/ui/VoicesMasterControl.tsx:892`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `{ label: t('country.nl', language === 'fr' ? 'Pays-Bas' : language === 'en' ? 'Netherlands' : 'Nederland'), value: 'NL', code: 'NL' },`
-- **WARNING** `src/components/ui/VoicesMasterControl.tsx:912`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `src/components/ui/VoicesMasterControl.tsx:892`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `{ label: t('country.nl', language === 'fr' ? 'Pays-Bas' : language === 'en' ? 'Netherlands' : 'Nederland'), value: 'NL', code: 'NL' },`
-- **WARNING** `src/components/ui/VoicesMasterControl.tsx:913`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `src/components/ui/VoicesMasterControl.tsx:893`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `{ label: t('country.fr', language === 'fr' ? 'France' : language === 'en' ? 'France' : 'Frankrijk'), value: 'FR', code: 'FR' },`
-- **WARNING** `src/components/ui/VoicesMasterControl.tsx:913`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `src/components/ui/VoicesMasterControl.tsx:893`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `{ label: t('country.fr', language === 'fr' ? 'France' : language === 'en' ? 'France' : 'Frankrijk'), value: 'FR', code: 'FR' },`
-- **WARNING** `src/components/ui/VoicesMasterControl.tsx:914`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `src/components/ui/VoicesMasterControl.tsx:894`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `{ label: t('country.de', language === 'fr' ? 'Allemagne' : language === 'en' ? 'Germany' : 'Duitsland'), value: 'DE', code: 'DE' },`
-- **WARNING** `src/components/ui/VoicesMasterControl.tsx:914`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `src/components/ui/VoicesMasterControl.tsx:894`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `{ label: t('country.de', language === 'fr' ? 'Allemagne' : language === 'en' ? 'Germany' : 'Duitsland'), value: 'DE', code: 'DE' },`
-- **WARNING** `src/components/ui/VoicesMasterControl.tsx:915`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `src/components/ui/VoicesMasterControl.tsx:895`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `{ label: t('country.uk', language === 'fr' ? 'Royaume-Uni' : language === 'en' ? 'United Kingdom' : 'Verenigd Koninkrijk'), value: 'UK', code: 'UK' },`
-- **WARNING** `src/components/ui/VoicesMasterControl.tsx:915`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `src/components/ui/VoicesMasterControl.tsx:895`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `{ label: t('country.uk', language === 'fr' ? 'Royaume-Uni' : language === 'en' ? 'United Kingdom' : 'Verenigd Koninkrijk'), value: 'UK', code: 'UK' },`
-- **WARNING** `src/components/ui/VoicesMasterControl.tsx:916`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `src/components/ui/VoicesMasterControl.tsx:896`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `{ label: t('country.us', language === 'fr' ? 'États-Unis' : language === 'en' ? 'United States' : 'Verenigde Staten'), value: 'US', code: 'US' },`
-- **WARNING** `src/components/ui/VoicesMasterControl.tsx:916`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `src/components/ui/VoicesMasterControl.tsx:896`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `{ label: t('country.us', language === 'fr' ? 'États-Unis' : language === 'en' ? 'United States' : 'Verenigde Staten'), value: 'US', code: 'US' },`
-- **WARNING** `src/components/ui/VoicesMasterControl.tsx:917`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `src/components/ui/VoicesMasterControl.tsx:897`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `{ label: t('country.es', language === 'fr' ? 'Espagne' : language === 'en' ? 'Spain' : 'Spanje'), value: 'ES', code: 'ES' },`
-- **WARNING** `src/components/ui/VoicesMasterControl.tsx:917`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `src/components/ui/VoicesMasterControl.tsx:897`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `{ label: t('country.es', language === 'fr' ? 'Espagne' : language === 'en' ? 'Spain' : 'Spanje'), value: 'ES', code: 'ES' },`
-- **WARNING** `src/components/ui/VoicesMasterControl.tsx:918`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `src/components/ui/VoicesMasterControl.tsx:898`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `{ label: t('country.pt', language === 'fr' ? 'Portugal' : language === 'en' ? 'Portugal' : 'Portugal'), value: 'PT', code: 'PT' },`
-- **WARNING** `src/components/ui/VoicesMasterControl.tsx:918`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `src/components/ui/VoicesMasterControl.tsx:898`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `{ label: t('country.pt', language === 'fr' ? 'Portugal' : language === 'en' ? 'Portugal' : 'Portugal'), value: 'PT', code: 'PT' },`
-- **WARNING** `src/components/ui/VoicesMasterControl.tsx:919`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `src/components/ui/VoicesMasterControl.tsx:899`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `{ label: t('country.it', language === 'fr' ? 'Italie' : language === 'en' ? 'Italy' : 'Italië'), value: 'IT', code: 'IT' },`
-- **WARNING** `src/components/ui/VoicesMasterControl.tsx:919`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `src/components/ui/VoicesMasterControl.tsx:899`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `{ label: t('country.it', language === 'fr' ? 'Italie' : language === 'en' ? 'Italy' : 'Italië'), value: 'IT', code: 'IT' },`
-- **WARNING** `src/components/ui/VoicesMasterControl.tsx:952`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `src/components/ui/VoicesMasterControl.tsx:932`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `placeholder={t('filter.select_countries', language === 'fr' ? 'Choisir pays' : language === 'en' ? 'Select countries' : 'Kies land(en)')}`
-- **WARNING** `src/components/ui/VoicesMasterControl.tsx:952`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `src/components/ui/VoicesMasterControl.tsx:932`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `placeholder={t('filter.select_countries', language === 'fr' ? 'Choisir pays' : language === 'en' ? 'Select countries' : 'Kies land(en)')}`
-- **WARNING** `src/components/ui/VoicesMasterControl.tsx:953`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `src/components/ui/VoicesMasterControl.tsx:933`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `label={t('filter.broadcast_area', language === 'fr' ? 'Zone de diffusion?' : language === 'en' ? 'Broadcast area?' : 'Uitzendgebied?')}`
-- **WARNING** `src/components/ui/VoicesMasterControl.tsx:953`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `src/components/ui/VoicesMasterControl.tsx:933`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `label={t('filter.broadcast_area', language === 'fr' ? 'Zone de diffusion?' : language === 'en' ? 'Broadcast area?' : 'Uitzendgebied?')}`
-- **WARNING** `src/components/ui/VoicesMasterControl.tsx:965`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `src/components/ui/VoicesMasterControl.tsx:945`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `{ label: t('sort.popularity', language === 'fr' ? 'Popularité' : language === 'en' ? 'Popularity' : 'Populariteit'), value: 'popularity', icon: Star },`
-- **WARNING** `src/components/ui/VoicesMasterControl.tsx:965`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `src/components/ui/VoicesMasterControl.tsx:945`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `{ label: t('sort.popularity', language === 'fr' ? 'Popularité' : language === 'en' ? 'Popularity' : 'Populariteit'), value: 'popularity', icon: Star },`
-- **WARNING** `src/components/ui/VoicesMasterControl.tsx:966`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `src/components/ui/VoicesMasterControl.tsx:946`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `{ label: t('sort.delivery', language === 'fr' ? 'Délai de livraison' : language === 'en' ? 'Delivery time' : 'Levertijd'), value: 'delivery', icon: Clock },`
-- **WARNING** `src/components/ui/VoicesMasterControl.tsx:966`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `src/components/ui/VoicesMasterControl.tsx:946`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `{ label: t('sort.delivery', language === 'fr' ? 'Délai de livraison' : language === 'en' ? 'Delivery time' : 'Levertijd'), value: 'delivery', icon: Clock },`
-- **WARNING** `src/components/ui/VoicesMasterControl.tsx:967`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `src/components/ui/VoicesMasterControl.tsx:947`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `{ label: t('sort.alphabetical_az', language === 'fr' ? 'Nom (A-Z)' : language === 'en' ? 'Name (A-Z)' : 'Naam (A-Z)'), value: 'alphabetical_az', icon: Type },`
-- **WARNING** `src/components/ui/VoicesMasterControl.tsx:967`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `src/components/ui/VoicesMasterControl.tsx:947`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `{ label: t('sort.alphabetical_az', language === 'fr' ? 'Nom (A-Z)' : language === 'en' ? 'Name (A-Z)' : 'Naam (A-Z)'), value: 'alphabetical_az', icon: Type },`
-- **WARNING** `src/components/ui/VoicesMasterControl.tsx:968`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `src/components/ui/VoicesMasterControl.tsx:948`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `{ label: t('sort.alphabetical_za', language === 'fr' ? 'Nom (Z-A)' : language === 'en' ? 'Name (Z-A)' : 'Naam (Z-A)'), value: 'alphabetical_za', icon: Type },`
-- **WARNING** `src/components/ui/VoicesMasterControl.tsx:968`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `src/components/ui/VoicesMasterControl.tsx:948`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `{ label: t('sort.alphabetical_za', language === 'fr' ? 'Nom (Z-A)' : language === 'en' ? 'Name (Z-A)' : 'Naam (Z-A)'), value: 'alphabetical_za', icon: Type },`
-- **WARNING** `src/components/ui/VoicesMasterControl.tsx:972`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `src/components/ui/VoicesMasterControl.tsx:952`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `placeholder={t('sort.placeholder', language === 'fr' ? 'Trier par' : language === 'en' ? 'Sort by' : 'Sorteer op')}`
-- **WARNING** `src/components/ui/VoicesMasterControl.tsx:972`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `src/components/ui/VoicesMasterControl.tsx:952`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `placeholder={t('sort.placeholder', language === 'fr' ? 'Trier par' : language === 'en' ? 'Sort by' : 'Sorteer op')}`
-- **WARNING** `src/components/ui/VoicesMasterControl.tsx:973`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `src/components/ui/VoicesMasterControl.tsx:953`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `label={t('filter.sort', language === 'fr' ? 'Trier?' : language === 'en' ? 'Sort?' : 'Sorteer?')}`
-- **WARNING** `src/components/ui/VoicesMasterControl.tsx:973`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `src/components/ui/VoicesMasterControl.tsx:953`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `label={t('filter.sort', language === 'fr' ? 'Trier?' : language === 'en' ? 'Sort?' : 'Sorteer?')}`
 - **WARNING** `src/components/ui/VoicyChat.tsx:1158`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="space-y-4">`

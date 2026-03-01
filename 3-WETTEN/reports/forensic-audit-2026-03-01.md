@@ -1,4 +1,4 @@
-# 🛡️ Forensic Audit Report (3/1/2026, 9:07:45 PM)
+# 🛡️ Forensic Audit Report (3/1/2026, 9:30:41 PM)
 
 ## Summary
 - **Status**: ✅ PASSED
@@ -2784,19 +2784,19 @@
   > `const TopBar = dynamic(() => import("@/components/ui/TopBar").then(mod => mod.TopBar), { ssr: false, loading: () => <div className="h-[80px] bg-va-off-white/50 backdrop-blur-md" /> });`
 - **WARNING** `1-SITE/apps/web/src/app/layout.tsx:37`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `const GlobalNav = dynamic(() => import("@/components/ui/GlobalNav"), { ssr: false, loading: () => <div className="h-[60px] bg-va-off-white/50 backdrop-blur-md" /> });`
-- **WARNING** `1-SITE/apps/web/src/app/layout.tsx:394`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/app/layout.tsx:387`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `JOHFRAH<span className="text-primary">.</span>`
-- **WARNING** `1-SITE/apps/web/src/app/layout.tsx:396`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/app/layout.tsx:389`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex gap-8 items-center text-[13px] font-bold tracking-[0.2em] uppercase text-va-black/40">`
-- **WARNING** `1-SITE/apps/web/src/app/layout.tsx:414`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/app/layout.tsx:407`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<SafeErrorGuard name="Footer" fallback={<div className="py-12 bg-va-off-white border-t border-black/5 text-center text-[11px] text-va-black/20 uppercase tracking-widest">Voices Footer Safe-Mode</div>}>`
-- **WARNING** `1-SITE/apps/web/src/app/layout.tsx:421`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/app/layout.tsx:414`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="text-3xl font-light tracking-tighter">`
-- **WARNING** `1-SITE/apps/web/src/app/layout.tsx:422`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/app/layout.tsx:415`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `JOHFRAH<span className="text-primary">.</span>`
-- **WARNING** `1-SITE/apps/web/src/app/layout.tsx:424`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/app/layout.tsx:417`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex gap-12 text-[11px] font-bold tracking-[0.3em] uppercase text-white/40">`
-- **WARNING** `1-SITE/apps/web/src/app/layout.tsx:429`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/app/layout.tsx:422`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="text-[11px] font-bold tracking-[0.3em] uppercase text-white/20">`
 - **WARNING** `1-SITE/apps/web/src/app/layout.tsx:114`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `const translationPromise = getTranslationsServer(langHeader || 'nl');`
@@ -6960,11 +6960,11 @@
   > `<span className="text-[9px] font-bold text-va-black/30 uppercase tracking-[0.2em]">`
 - **WARNING** `1-SITE/apps/web/src/components/ui/VoicesDropdown.tsx:679`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex flex-wrap gap-2">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicesLink.tsx:48`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicesLink.tsx:54`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `if (language.startsWith('nl')) {`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicesLink.tsx:95`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicesLink.tsx:101`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `const prefix = shortLang === 'nl' ? '' : `/${shortLang}`;`
-- **WARNING** `1-SITE/apps/web/src/components/ui/VoicesLink.tsx:110`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicesLink.tsx:116`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `const prefix = shortLang === 'nl' ? '' : `/${shortLang}`;`
 - **WARNING** `1-SITE/apps/web/src/components/ui/VoicesMasterControl.tsx:539`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex items-center gap-1.5 min-w-full md:min-w-0">`
