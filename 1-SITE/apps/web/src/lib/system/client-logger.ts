@@ -118,6 +118,15 @@ export class ClientLogger {
         method = (args[1]?.method || (args[0] as any)?.method || 'GET').toUpperCase();
       } catch (e) {}
       
+      // 🛡️ CHRIS-PROTOCOL: Nuclear Guard (v2.16.106)
+      // Blokkeer alle calls naar localhost/127.0.0.1 op productie om 7691 errors te voorkomen.
+      const isLocalhost = typeof url === 'string' && (url.includes('127.0.0.1') || url.includes('localhost')) && !url.includes(':3000');
+      const isProduction = process.env.NODE_ENV === 'production';
+      
+      if (isLocalhost && isProduction) {
+        return new Response(JSON.stringify({ error: 'Blocked by Nuclear Guard' }), { status: 403 });
+      }
+
       // 🛡️ CHRIS-PROTOCOL: Safe includes check
       const isSystemApi = typeof url === 'string' && url.includes('/api/admin/system/');
       
