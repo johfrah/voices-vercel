@@ -118,10 +118,11 @@ export class MarketManagerServer {
       }
     }
 
-    // 🛡️ CHRIS-PROTOCOL: Static Fallback (v2.16.095)
+    // 🛡️ CHRIS-PROTOCOL: Static Fallback (v2.16.117)
     // Only used if registry is empty or no match found.
     const staticMap: Record<string, number> = {
       'agency': 1, 'be': 1, 'nlnl': 1, 'fr': 1, 'es': 1, 'pt': 1, 'eu': 1,
+      'telephony': 1, 'video': 1, 'commercial': 1,
       'studio': 2,
       'academy': 3,
       'ademing': 6,
