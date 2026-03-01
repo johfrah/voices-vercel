@@ -393,6 +393,7 @@ export async function middleware(request: NextRequest) {
     const urlLangShort = langMatch[1].toLowerCase()
     
     // 🛡️ CHRIS-PROTOCOL: Internal mapping of Short to ISO-5
+    // 💀 TERMINATION: 'nl' variant is eliminated. Everything is 'nl-be'.
     const internalMap: Record<string, string> = {
       'nl': 'nl-be',
       'fr': 'fr-fr',
