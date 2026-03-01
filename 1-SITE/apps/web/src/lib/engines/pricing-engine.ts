@@ -10,6 +10,8 @@
  * @author Kelly (Transaction Guardian)
  */
 
+import { MarketManager } from '../system/market-manager-server';
+
 export type UsageType = 'unpaid' | 'telefonie' | 'subscription' | 'commercial' | 'non-commercial';
 export type PlanType = 'basic' | 'pro' | 'studio';
 export type CommercialMediaType = 'online' | 'tv_national' | 'radio_national' | 'podcast' | 'tv_regional' | 'tv_local' | 'radio_regional' | 'radio_local';
@@ -339,7 +341,7 @@ export class SlimmeKassa {
     // 2. Word/Prompt Surcharge (Telephony & Unpaid)
     if (input.usage === 'telefonie') {
       const words = input.words || 0;
-      const telephonyBaseCents = getServicePrice('ivr') || activeConfig.telephonyBasePrice || 8900;
+      const telephonyBaseCents = getServicePrice('ivr', selectedMarkets[0]) || activeConfig.telephonyBasePrice || 8900;
       
       const setupFeeCents = activeConfig.telephonySetupFee || 1995;
       const wordPriceCents = activeConfig.telephonyWordPrice || 100;
@@ -357,7 +359,7 @@ export class SlimmeKassa {
         const subtotalForFeeCents = telephonyBaseCents + wordSurchargeValCents;
         
         const hasExtraWords = words > threshold;
-        const processingFeeCents = hasExtraWords ? Math.round(subtotalForFeeCents * (activeConfig.processing_fee || 0.10)) : 0;
+        const processingFeeCents = hasExtraWords ? Math.round(subtotalForFeeCents * 0.10) : 0;
         const effectiveSetupFeeCents = hasExtraWords ? setupFeeCents : 0;
         
         const totalWithoutMusicCents = subtotalForFeeCents + effectiveSetupFeeCents + processingFeeCents;
@@ -366,7 +368,7 @@ export class SlimmeKassa {
       }
     } else if (input.usage === 'unpaid') {
       // 🛡️ CHRIS-PROTOCOL: ID-First Handshake for Video (Service ID 3)
-      baseCents = getServicePrice('unpaid') || activeConfig.videoBasePrice || 24900;
+      baseCents = getServicePrice('unpaid', selectedMarkets[0]) || activeConfig.videoBasePrice || 24900;
       
       if (input.words && input.words > (activeConfig.videoWordThreshold || 200)) {
         wordSurchargeCents = (input.words - (activeConfig.videoWordThreshold || 200)) * (activeConfig.videoWordRate || activeConfig.wordRate || 20);
@@ -374,7 +376,7 @@ export class SlimmeKassa {
     }
 
     if (input.liveSession) {
-      liveSessionSurchargeCents = getServicePrice('live_regie') || activeConfig.liveSessionSurcharge;
+      liveSessionSurchargeCents = getServicePrice('live_regie', selectedMarkets[0]) || activeConfig.liveSessionSurcharge;
     }
 
     if (input.music?.asBackground || input.music?.asHoldMusic) {
