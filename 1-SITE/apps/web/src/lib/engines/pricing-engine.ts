@@ -116,6 +116,24 @@ export interface SlimmeKassaResult {
 }
 
 export class SlimmeKassa {
+  /**
+   * 🛡️ CHRIS-PROTOCOL: Journey to Usage Mapping (v2.16.134)
+   * Centralizes the handshake between Journey IDs and Pricing Usage.
+   */
+  static getUsageFromJourneyId(journeyId: number | string): UsageType {
+    const id = typeof journeyId === 'string' ? parseInt(journeyId) : journeyId;
+    
+    const map: Record<number, UsageType> = {
+      26: 'telefonie',
+      27: 'unpaid',
+      28: 'commercial',
+      1: 'subscription', // Studio
+      30: 'subscription' // Academy
+    };
+
+    return map[id] || 'unpaid';
+  }
+
   static getDefaultConfig(): SlimmeKassaConfig {
     return DEFAULT_KASSA_CONFIG;
   }

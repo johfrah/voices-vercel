@@ -260,84 +260,64 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
     //  CHRIS-PROTOCOL: Sync both contexts
     updateJourney(id);
 
-    // Map journey to usage for CheckoutContext
-    const usageMap: Record<string, string> = {
-      'telephony': 'telefonie',
-      'video': 'unpaid',
-      'commercial': 'commercial'
-    };
-    if (usageMap[id]) updateUsage(usageMap[id] as any);
+    // Map journey to usage for CheckoutContext (v2.16.134: ID-First Handshake)
+    const usage = SlimmeKassa.getUsageFromJourneyId(id);
+    updateUsage(usage);
   };
 
   const journeys = useMemo(() => {
-    //  CHRIS-PROTOCOL: Handshake Truth Mapping (v2.14.732)
-    // We map database codes (agency_vo, agency_ivr, agency_commercial) to frontend IDs.
-    const mapping: Record<string, string> = {
-      'agency_ivr': 'telephony',
-      'agency_vo': 'video',
-      'agency_commercial': 'commercial',
-      'telephony': 'telephony',
-      'video': 'video',
-      'commercial': 'commercial'
-    };
-
-    const allowedCodes = ['agency_ivr', 'agency_vo', 'agency_commercial', 'telephony', 'video', 'commercial'];
+    //  CHRIS-PROTOCOL: Handshake Truth Mapping (v2.16.134)
+    // We strictly use database IDs for the 3 core Agency journeys.
+    const coreJourneyIds = [26, 27, 28]; // Telefoon, Voice-over, Commercial
     
     // 🛡️ CHRIS-PROTOCOL: Emergency Fallback (v2.14.733)
-    // If database data is not yet available, we show the 3 main Agency journeys.
     if (!journeysData || journeysData.length === 0) {
       return [
-        { id: 'telephony', icon: (props: any) => <IconInstrument name="phone" {...props} />, label: 'Telefoon', subLabel: 'Voicemail & IVR', key: 'journey.telephony', color: 'text-primary' },
-        { id: 'video', icon: (props: any) => <IconInstrument name="video" {...props} />, label: 'Voice-over', subLabel: 'Corporate & Website', key: 'journey.video', color: 'text-primary' },
-        { id: 'commercial', icon: (props: any) => <IconInstrument name="megaphone" {...props} />, label: 'Commercial', subLabel: 'Radio, TV & Online Ads', key: 'journey.commercial', color: 'text-primary' },
+        { id: 26, icon: (props: any) => <IconInstrument name="phone" {...props} />, label: 'Telefoon', subLabel: 'Voicemail & IVR', key: 'journey.telephony', color: 'text-primary' },
+        { id: 27, icon: (props: any) => <IconInstrument name="video" {...props} />, label: 'Voice-over', subLabel: 'Corporate & Website', key: 'journey.video', color: 'text-primary' },
+        { id: 28, icon: (props: any) => <IconInstrument name="megaphone" {...props} />, label: 'Commercial', subLabel: 'Radio, TV & Online Ads', key: 'journey.commercial', color: 'text-primary' },
       ];
     }
 
     const filteredJourneys = (journeysData || [])
-      .filter(fj => allowedCodes.includes(fj.code))
+      .filter(fj => coreJourneyIds.includes(fj.id))
       .map(fj => {
-        const frontendId = mapping[fj.code] || fj.code;
-        
-        // 🛡️ CHRIS-PROTOCOL: Source Truth Mapping (v2.16.124)
-        // We forceer de juiste labels voor de hoofd-journeys.
+        // 🛡️ CHRIS-PROTOCOL: Source Truth Mapping (v2.16.134)
         let label = fj.label.replace('Agency: ', '');
-        if (frontendId === 'telephony') label = 'Telefoon';
-        if (frontendId === 'video') label = 'Voice-over';
-        if (frontendId === 'commercial') label = 'Commercial';
+        if (fj.id === 26) label = 'Telefoon';
+        if (fj.id === 27) label = 'Voice-over';
+        if (fj.id === 28) label = 'Commercial';
+
+        const iconName = fj.icon || (fj.id === 26 ? 'phone' : fj.id === 27 ? 'video' : 'megaphone');
 
         return {
-          id: frontendId,
-          icon: (props: any) => <IconInstrument name={fj.icon || (frontendId === 'telephony' ? 'phone' : frontendId === 'video' ? 'video' : 'megaphone')} {...props} />,
+          id: fj.id,
+          icon: (props: any) => <IconInstrument name={iconName} {...props} />,
           label: label,
           subLabel: fj.description || '',
-          key: `journey.${frontendId}`,
+          key: `journey.${fj.id === 26 ? 'telephony' : fj.id === 27 ? 'video' : 'commercial'}`,
           color: fj.color || 'text-primary'
         };
       });
 
-    // 🛡️ CHRIS-PROTOCOL: Final Filter (v2.14.762)
-    // We only allow the 3 core journeys: telephony, video (voice-over), and commercial.
-    const coreIds = ['telephony', 'video', 'commercial'];
-    const finalJourneys = filteredJourneys.filter(j => coreIds.includes(j.id));
-
-    // Ensure we have exactly these 3 and in the right order
-    const orderedJourneys = coreIds.map(id => finalJourneys.find(j => j.id === id)).filter(Boolean) as any[];
-
-    return orderedJourneys;
+    // Ensure correct order
+    return coreJourneyIds.map(id => filteredJourneys.find(j => j.id === id)).filter(Boolean) as any[];
   }, [journeysData]);
 
-  // Use state.journey or checkoutState.usage to determine active journey
+  // Use state.journeyId or checkoutState.usage to determine active journey
   const activeJourneyId = useMemo(() => {
-    if (state.journey) return state.journey;
-    const revMap: Record<string, string> = {
-      'telephony': 'telephony',
-      'video': 'video',
-      'commercial': 'commercial',
-      'telefonie': 'telephony',
-      'unpaid': 'video',
+    if (state.journeyId) return state.journeyId;
+    
+    // Fallback to usage mapping if ID is missing
+    const usageToId: Record<string, number> = {
+      'telephony': 26,
+      'video': 27,
+      'commercial': 28,
+      'telefonie': 26,
+      'unpaid': 27,
     };
-    return revMap[checkoutState.usage] || 'video';
-  }, [state.journey, checkoutState.usage]);
+    return usageToId[checkoutState.usage] || 27;
+  }, [state.journeyId, checkoutState.usage]);
 
   const mappedLanguages = useMemo(() => {
     const host = typeof window !== 'undefined' ? window.location.host : (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || MarketManager.getMarketDomains()['BE'].replace('https://', ''));
@@ -460,7 +440,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
         }
         return <IconInstrument name={langObj.icon || 'globe'} {...props} />;
       },
-      availableExtraLangs: activeJourneyId === 'telephony' ? getExtraLangsFor(langObj.label, langObj.value) : []
+      availableExtraLangs: activeJourneyId === 26 ? getExtraLangsFor(langObj.label, langObj.value) : []
     }));
 
     return mappedConfig;
@@ -534,7 +514,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
         {/* 1. Journey Selector (Top Row) */}
         <ContainerInstrument plain className={cn(
           "flex items-center md:justify-center p-1.5 bg-va-off-white/50 rounded-[32px] overflow-x-auto no-scrollbar snap-x snap-mandatory",
-          ((state.currentStep === 'voice' || state.journey === 'commercial') && !minimalMode) && "mb-3"
+          ((state.currentStep === 'voice' || activeJourneyId === 28) && !minimalMode) && "mb-3"
         )}>
           <div className="flex items-center gap-1.5 min-w-full md:min-w-0">
             {journeys.map((j) => {
@@ -542,7 +522,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
               const Icon = j.icon;
 
               // CHRIS-PROTOCOL: Check if selected actor supports this journey (especially for 'commercial')
-              const isCommercialJourney = j.id === 'commercial';
+              const isCommercialJourney = j.id === 28;
               let isUnsupported = false;
 
               if (state.currentStep !== 'voice' && checkoutState.selectedActor && isCommercialJourney) {
@@ -588,7 +568,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
         {/* 2. Primary Filter Pill (Airbnb Style) */}
         {!minimalMode && (
           <AnimatePresence>
-            {((state.currentStep === 'voice' || state.journey === 'commercial') && !pathname.startsWith('/voice/')) && (
+            {((state.currentStep === 'voice' || activeJourneyId === 28) && !pathname.startsWith('/voice/')) && (
               <motion.div
                 initial={{ height: 0, opacity: 0, marginTop: 0 }}
                 animate={{ height: 'auto', opacity: 1, marginTop: 0 }}
@@ -610,7 +590,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                         <VoiceglotText translationKey="filter.mobile_trigger" defaultText="Filters & Zoeken" />
                       </span>
                       <span className="text-[11px] text-va-black/40 truncate w-full text-left">
-                        {state.filters.language ? t(`common.language.${(state.filters.language || '').toLowerCase()}`, state.filters.language) : t('filter.all_languages', 'Alle talen')} • {state.filters.gender ? t(`common.gender.${(state.filters.gender || '').toLowerCase()}`, state.filters.gender) : t('gender.everyone', 'Iedereen')} • {state.journey === 'commercial' ? ((state.filters.media || []).length || 0) + ' ' + t('common.channels', 'kanalen') : (state.filters.words || 200) + ' ' + t('common.words', 'woorden')}
+                        {state.filters.language ? t(`common.language.${(state.filters.language || '').toLowerCase()}`, state.filters.language) : t('filter.all_languages', 'Alle talen')} • {state.filters.gender ? t(`common.gender.${(state.filters.gender || '').toLowerCase()}`, state.filters.gender) : t('gender.everyone', 'Iedereen')} • {activeJourneyId === 28 ? ((state.filters.media || []).length || 0) + ' ' + t('common.channels', 'kanalen') : (state.filters.words || 200) + ' ' + t('common.words', 'woorden')}
                       </span>
                     </div>
                   </button>
@@ -759,12 +739,12 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                       ) : null}
 
                       {/* Words Segment (Telephony & Video) - CHRIS-PROTOCOL: Hide in script flow */}
-                      {state.currentStep === 'voice' && (state.journey === 'telephony' || state.journey === 'video') ? (
+                      {state.currentStep === 'voice' && (activeJourneyId === 26 || activeJourneyId === 27) ? (
                         <VoicesWordSlider
                           rounding="right"
-                          isTelephony={state.journey === 'telephony'}
-                          isVideo={state.journey === 'video'}
-                          value={state.filters.words && state.filters.words >= 5 ? state.filters.words : (state.journey === 'telephony' ? 25 : 200)}
+                          isTelephony={activeJourneyId === 26}
+                          isVideo={activeJourneyId === 27}
+                          value={state.filters.words && state.filters.words >= 5 ? state.filters.words : (activeJourneyId === 26 ? 25 : 200)}
                           onChange={(val) => updateFilters({ words: val })}
                           disabled={state.currentStep !== 'voice'}
                           label={t('filter.quantity', 'Hoeveelheid?')}
@@ -773,7 +753,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                       ) : null}
 
                       {/* Media Segment (Commercial only) -  AIRBNB STEPPER MODE */}
-                      {state.journey === 'commercial' && (
+                      {activeJourneyId === 28 && (
                         <div className="flex-1 h-full flex flex-col justify-center relative group/media">
                           <VoicesDropdown
                             stepperMode
@@ -896,7 +876,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                       )}
 
                       {/* Country Segment (Commercial only) */}
-                      {state.journey === 'commercial' && (
+                      {activeJourneyId === 28 && (
                         <div className="flex-1 h-full flex flex-col justify-center relative group/country">
                           <VoicesDropdown
                             searchable

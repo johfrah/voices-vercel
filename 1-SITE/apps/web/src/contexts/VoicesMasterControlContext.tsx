@@ -11,6 +11,7 @@ export type JourneyType = 'telephony' | 'video' | 'commercial' | 'agency' | 'gen
 
 interface MasterControlState {
   journey: JourneyType;
+  journeyId?: number | null;
   usage: UsageType;
   isMuted: boolean;
   filters: {
@@ -79,6 +80,7 @@ export const VoicesMasterControlProvider: React.FC<{
 
   const [state, setState] = useState<MasterControlState>({
     journey: initialJourney || 'video',
+    journeyId: initialJourney ? MarketManager.getJourneyId(initialJourney) : 27, // 🛡️ Handshake Truth: Default to Voice-over (ID 27)
     usage: initialUsage || (initialJourney === 'studio' || initialJourney === 'academy' ? 'subscription' : 'unpaid'),
     isMuted: false,
     filters: {
@@ -126,7 +128,8 @@ export const VoicesMasterControlProvider: React.FC<{
       const journey = initialJourney || (searchParams?.get('journey') as JourneyType) || 
                      (voicesState?.current_journey && voicesState.current_journey !== 'general' ? voicesState.current_journey as JourneyType : 'video');
       
-      const targetUsage = JOURNEY_USAGE_MAP[journey] || 'unpaid';
+      const journeyId = searchParams?.get('journeyId') ? parseInt(searchParams.get('journeyId')!) : (savedState.journeyId || MarketManager.getJourneyId(journey));
+      const targetUsage = SlimmeKassa.getUsageFromJourneyId(journeyId || journey);
 
       const initialLanguageParam = searchParams?.get('language');
       const initialLanguageIdParam = searchParams?.get('languageId');
@@ -175,6 +178,7 @@ export const VoicesMasterControlProvider: React.FC<{
 
       const newState: MasterControlState = {
         journey,
+        journeyId,
         usage: targetUsage,
         isMuted: savedState.isMuted ?? false,
         filters: {
@@ -214,7 +218,7 @@ export const VoicesMasterControlProvider: React.FC<{
   useEffect(() => {
     if (!isClient) return;
 
-    const targetUsage = JOURNEY_USAGE_MAP[state.journey];
+    const targetUsage = SlimmeKassa.getUsageFromJourneyId(state.journeyId || state.journey);
     
     // Only sync if there is an actual difference to prevent infinite loops
     if (checkoutState.usage !== targetUsage) {
@@ -327,11 +331,13 @@ export const VoicesMasterControlProvider: React.FC<{
 
         setState(prev => {
           const journey = urlState.journey || (searchParams?.get('journey') as JourneyType) || savedState.journey || prev.journey;
+          const journeyId = searchParams?.get('journeyId') ? parseInt(searchParams.get('journeyId')!) : (savedState.journeyId || MarketManager.getJourneyId(journey));
           
           return {
             ...prev,
             journey,
-            usage: JOURNEY_USAGE_MAP[journey],
+            journeyId,
+            usage: SlimmeKassa.getUsageFromJourneyId(journeyId || journey),
             isMuted: savedState.isMuted ?? prev.isMuted,
             filters: {
               ...prev.filters,
@@ -377,11 +383,14 @@ export const VoicesMasterControlProvider: React.FC<{
   useEffect(() => {
     const urlState = detectStateFromUrl(pathname);
     if (urlState.journey || urlState.step !== state.currentStep) {
+      const journey = urlState.journey || state.journey;
+      const journeyId = MarketManager.getJourneyId(journey);
       setState(prev => ({
         ...prev,
         currentStep: urlState.step,
-        journey: urlState.journey || prev.journey,
-        usage: urlState.journey ? JOURNEY_USAGE_MAP[urlState.journey] : prev.usage,
+        journey,
+        journeyId,
+        usage: SlimmeKassa.getUsageFromJourneyId(journeyId || journey),
         filters: {
           ...prev.filters,
           language: urlState.language || prev.filters.language,
@@ -416,7 +425,7 @@ export const VoicesMasterControlProvider: React.FC<{
   }, [state.filters.language, searchParams]);
 
   useEffect(() => {
-    const targetUsage = JOURNEY_USAGE_MAP[state.journey];
+    const targetUsage = SlimmeKassa.getUsageFromJourneyId(state.journeyId || state.journey);
     
     if (checkoutState.usage !== targetUsage) {
       const timer = setTimeout(() => {
@@ -495,6 +504,8 @@ export const VoicesMasterControlProvider: React.FC<{
       const locale = pathname.match(/^\/(nl|fr|en|de|es|it|pt)/)?.[0] || '';
       targetUrl = locale + '/agency/' + jSlug + '/';
       
+      if (state.journeyId) params.set('journeyId', state.journeyId.toString());
+      
       if (state.journey === 'commercial' && state.filters.media) {
         state.filters.media.forEach(m => {
           const spots = state.filters.spotsDetail?.[m] || 1;
@@ -542,8 +553,23 @@ export const VoicesMasterControlProvider: React.FC<{
     }
   }, [state.journey, state.filters, pathname]);
 
-  const updateJourney = useCallback((journey: JourneyType) => {
-    const usage = JOURNEY_USAGE_MAP[journey];
+  const updateJourney = useCallback((journeyInput: JourneyType | number) => {
+    let journey: JourneyType;
+    let journeyId: number | null;
+
+    if (typeof journeyInput === 'number') {
+      journeyId = journeyInput;
+      const match = MarketManager.journeys.find(j => j.id === journeyId);
+      const code = match?.code.toLowerCase() || '';
+      if (code.includes('ivr') || code.includes('telephony')) journey = 'telephony';
+      else if (code.includes('commercial')) journey = 'commercial';
+      else journey = 'video';
+    } else {
+      journey = journeyInput;
+      journeyId = MarketManager.getJourneyId(journey);
+    }
+
+    const usage = SlimmeKassa.getUsageFromJourneyId(journeyId || journey);
     
     setState(prev => {
       const newFilters = { ...prev.filters };
@@ -555,7 +581,7 @@ export const VoicesMasterControlProvider: React.FC<{
         newFilters.media = ['online'];
       }
       
-      return { ...prev, journey, usage, filters: newFilters };
+      return { ...prev, journey, journeyId, usage, filters: newFilters };
     });
 
     updateVoicesJourney(journey);

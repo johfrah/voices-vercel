@@ -17,16 +17,16 @@ export function JourneySelector() {
   const { playClick } = useSonicDNA();
 
   const journeys = [
-    { id: 'telephony', icon: Phone, label: 'Telefoon', key: 'journey.telephony' },
-    { id: 'video', icon: Video, label: 'Voice-over', key: 'journey.video' },
-    { id: 'commercial', icon: Megaphone, label: 'Commercial', key: 'journey.commercial' },
+    { id: 26, slug: 'telephony', icon: Phone, label: 'Telefoon', key: 'journey.telephony' },
+    { id: 27, slug: 'video', icon: Video, label: 'Voice-over', key: 'journey.video' },
+    { id: 28, slug: 'commercial', icon: Megaphone, label: 'Commercial', key: 'journey.commercial' },
   ] as const;
 
   return (
     <div className="flex justify-center mb-12">
       <div className="bg-white/80 backdrop-blur-2xl border border-black/5 p-2 rounded-[32px] shadow-aura flex gap-2">
         {journeys.map((j) => {
-          const isActive = state.current_journey === j.id;
+          const isActive = state.current_journey_id === j.id || state.current_journey === j.slug;
           const Icon = j.icon;
 
           return (
@@ -34,7 +34,7 @@ export function JourneySelector() {
               key={j.id}
               onClick={() => {
                 playClick('pro');
-                updateJourney(j.id);
+                updateJourney(j.slug as any);
               }}
               className={cn(
                 "flex items-center gap-3 px-6 py-4 rounded-[24px] transition-all duration-500 group",

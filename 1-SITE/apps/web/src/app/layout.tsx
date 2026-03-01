@@ -231,7 +231,7 @@ export default async function RootLayout({
   ]);
   
   // 🛡️ CHRIS-PROTOCOL: World Detection for Provider Injection (v2.16.134)
-  const isStudioPage = pathname.startsWith('/studio/') || pathname === '/studio' || pathname === '/workshops';
+  const isStudioPage = pathname.startsWith('/studio/') || pathname === '/studio' || pathname === '/workshops' || pathname === '/voorwaarden-studio';
   const isAcademyPage = pathname.startsWith('/academy/') || pathname === '/academy';
   
   const initialJourney = isStudioPage ? 'studio' : (isAcademyPage ? 'academy' : undefined);
@@ -251,10 +251,7 @@ export default async function RootLayout({
   const navConfig = await ConfigBridge.getNavConfig(getJourneyKey(market.market_code));
 
   // 🛡️ CHRIS-PROTOCOL: Force Client-Only rendering for Admin routes to prevent hydration mismatch (#419)
-  const isAdminRoute = pathname.startsWith('/admin') || segments[0] === 'admin';
-  
-  // 🛡️ CHRIS-PROTOCOL: Force Client-Only rendering for Studio page to prevent hydration mismatch (#419)
-  const isStudioPage = pathname.startsWith('/studio/') || pathname === '/studio' || pathname === '/workshops' || pathname === '/voorwaarden-studio';
+  const isAdminRoute = pathname.startsWith('/admin') || (pathname.split('/').filter(Boolean)[0] === 'admin');
   
   const isAdeming = market.market_code === 'ADEMING';
   const isOffline = process.env.ADEMING_OFFLINE === 'true';

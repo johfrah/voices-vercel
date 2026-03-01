@@ -421,8 +421,8 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
       }
     });
 
-    // 🛡️ CHRIS-PROTOCOL: Fetch Journey-specific Service Reviews (Fallback)
-    const journeyId = market === 'STUDIO' ? '1' : (market === 'ACADEMY' ? '30' : (params.journey === 'telephony' ? '3' : null));
+    // 🛡️ CHRIS-PROTOCOL: Fetch Journey-specific Service Reviews (ID-First Handshake v2.16.134)
+    const journeyId = market === 'STUDIO' ? 1 : (market === 'ACADEMY' ? 30 : MarketManager.getJourneyId(params.journey));
     let serviceReviews: any[] = [];
     if (journeyId) {
       const { data: serviceData } = await supabase

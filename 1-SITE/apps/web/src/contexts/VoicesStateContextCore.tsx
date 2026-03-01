@@ -9,6 +9,7 @@ export interface VoicesState {
   location: string;
   current_sector: string | null;
   current_journey: 'telephony' | 'video' | 'commercial' | 'general' | 'agency';
+  current_journey_id?: number | null;
   intent: {
     archetype: string | null;
     asset_focus: 'Audio-First' | 'Script-First' | 'Hybrid';

@@ -602,7 +602,7 @@ export class MarketManagerServer {
   }
 
   /**
-   * 🛡️ CHRIS-PROTOCOL: Handshake Usage Lookup (v2.15.040)
+   * 🛡️ CHRIS-PROTOCOL: Handshake Usage Lookup (v2.16.134)
    * Haalt het UI label op voor een usage code of ID.
    */
   static getUsageLabel(input: string | number): string {
@@ -610,8 +610,11 @@ export class MarketManagerServer {
     const lowInput = String(input).toLowerCase().trim();
     const inputId = typeof input === 'number' ? input : (!isNaN(Number(input)) ? Number(input) : null);
 
-    if (typeof window !== 'undefined' && (window as any).handshakeJourneys) {
-      const registry = (window as any).handshakeJourneys;
+    // 🛡️ CHRIS-PROTOCOL: Handshake Truth (Zero-Slop)
+    const registry = this.journeysRegistry.length > 0 ? this.journeysRegistry : 
+                    (typeof window !== 'undefined' && (window as any).handshakeJourneys ? (window as any).handshakeJourneys : []);
+
+    if (registry.length > 0) {
       const match = registry.find((j: any) => 
         (inputId !== null && j.id === inputId) ||
         j.code.toLowerCase() === lowInput || 
@@ -620,14 +623,59 @@ export class MarketManagerServer {
       if (match) return match.label.replace('Agency: ', '');
     }
 
-    // Emergency fallbacks
+    // Emergency fallbacks (v2.16.134: ID-First Handshake)
     const emergencyMap: Record<string, string> = {
+      '26': 'Telefoon / IVR',
+      '27': 'Voice-over',
+      '28': 'Commercial',
+      '1': 'Voices Studio',
+      '30': 'Voices Academy',
       'telephony': 'Telefoon / IVR', 'telefonie': 'Telefoon / IVR', 'agency_ivr': 'Telefoon / IVR',
-      'video': 'Online Video / Corporate', 'unpaid': 'Online Video / Corporate', 'agency_vo': 'Online Video / Corporate',
-      'commercial': 'Commercial / Advertentie', 'agency_commercial': 'Commercial / Advertentie'
+      'video': 'Voice-over', 'unpaid': 'Voice-over', 'agency_vo': 'Voice-over',
+      'commercial': 'Commercial', 'agency_commercial': 'Commercial'
     };
 
     return emergencyMap[lowInput] || lowInput;
+  }
+
+  /**
+   * 🛡️ CHRIS-PROTOCOL: Journey ID Resolver (v2.16.134)
+   * Haalt het database ID op voor een journey code.
+   */
+  static getJourneyId(code: string): number | null {
+    if (!code) return null;
+    const lowCode = code.toLowerCase().trim();
+    
+    // 🛡️ CHRIS-PROTOCOL: Handshake Truth (Zero-Slop)
+    const registry = this.journeysRegistry.length > 0 ? this.journeysRegistry : 
+                    (typeof window !== 'undefined' && (window as any).handshakeJourneys ? (window as any).handshakeJourneys : []);
+
+    if (registry.length > 0) {
+      const match = registry.find((j: any) => j.code.toLowerCase() === lowCode);
+      if (match) return match.id;
+      
+      // Map legacy slugs to database codes
+      const legacyMap: Record<string, string> = {
+        'telephony': 'telephony',
+        'video': 'video',
+        'commercial': 'commercial'
+      };
+      if (legacyMap[lowCode]) {
+        const legacyMatch = registry.find((j: any) => j.code.toLowerCase() === legacyMap[lowCode]);
+        if (legacyMatch) return legacyMatch.id;
+      }
+    }
+
+    // Emergency fallbacks
+    const staticMap: Record<string, number> = {
+      'telephony': 26,
+      'video': 27,
+      'commercial': 28,
+      'studio': 1,
+      'academy': 30
+    };
+
+    return staticMap[lowCode] || null;
   }
 
   /**

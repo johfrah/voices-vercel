@@ -92,7 +92,10 @@ export const VoicesStateProvider: React.FC<{ children: React.ReactNode }> = ({ c
   
   const updateSector = (current_sector: string | null) => setState(prev => ({ ...prev, current_sector }));
   
-  const updateJourney = (current_journey: VoicesState['current_journey']) => setState(prev => ({ ...prev, current_journey }));
+  const updateJourney = (current_journey: VoicesState['current_journey']) => {
+    const current_journey_id = MarketManager.getJourneyId(current_journey);
+    setState(prev => ({ ...prev, current_journey, current_journey_id }));
+  };
 
   const updateIntent = (intent: Partial<VoicesState['intent']>) => 
     setState(prev => ({ ...prev, intent: { ...prev.intent, ...intent } }));
