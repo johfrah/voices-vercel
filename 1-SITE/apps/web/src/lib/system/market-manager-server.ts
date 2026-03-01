@@ -150,6 +150,42 @@ export class MarketManagerServer {
   }
 
   /**
+   * 🛡️ CHRIS-PROTOCOL: Market Hierarchy Resolver (v2.18.0)
+   * Volgt de wet: Market Exception -> GLOBAL Truth -> Legacy Fallback.
+   */
+  static resolveServicePrice(actor: any, serviceCode: string, marketCode: string = 'BE'): { price: number, source: 'market' | 'global' | 'legacy' | 'none' } {
+    const rates = actor.rates?.rates || actor.rates || {};
+    const marketRates = rates[marketCode.toUpperCase()] || {};
+    const globalRates = rates['GLOBAL'] || rates['global'] || {};
+    
+    // 1. Check Market Exception
+    if (marketRates[serviceCode] !== undefined && marketRates[serviceCode] !== null && marketRates[serviceCode] !== '') {
+      return { price: Number(marketRates[serviceCode]), source: 'market' };
+    }
+    
+    // 2. Check Global Truth
+    if (globalRates[serviceCode] !== undefined && globalRates[serviceCode] !== null && globalRates[serviceCode] !== '') {
+      return { price: Number(globalRates[serviceCode]), source: 'global' };
+    }
+    
+    // 3. Legacy Column Fallbacks
+    const legacyMap: Record<string, string> = {
+      'ivr': 'price_ivr',
+      'unpaid': 'price_unpaid',
+      'online': 'price_online',
+      'live_regie': 'price_live_regie',
+      'bsf': 'price_bsf'
+    };
+    
+    const col = legacyMap[serviceCode];
+    if (col && actor[col]) {
+      return { price: Number(actor[col]), source: 'legacy' };
+    }
+    
+    return { price: 0, source: 'none' };
+  }
+
+  /**
    * 🌳 ANCESTRY RESOLVER (v2.16.132)
    * Haalt de World ID op basis van de market code of host.
    */
