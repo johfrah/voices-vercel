@@ -23,7 +23,7 @@ if (!supabaseUrl || !supabaseKey) {
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 async function inject() {
-  console.log('🚀 STARTING MASTERCLASS INSTRUMENT INJECTION (WITH REVIEWS)...');
+  console.log('🚀 STARTING FULL 9-WORLD NUCLEAR INJECTION...');
 
   const pages = [
     {
@@ -85,16 +85,119 @@ async function inject() {
               ]
             }
           }
-        },
+        }
+      ]
+    },
+    {
+      slug: 'johfrai',
+      title: 'Johfrai World',
+      blocks: [
         {
-          type: 'AccordionInstrument',
+          type: 'HeroInstrument',
           settings: {
             data: {
-              title: 'Veelgestelde vragen',
+              title: 'De Toekomst van Stem',
+              highlight: 'Toekomst',
+              subtitle: 'Hybride audio-opnames waar mens en AI samenkomen. Lead door Voicy.',
+              cta: { text: 'Ontdek AI Stemmen', href: '#ai' }
+            }
+          }
+        },
+        {
+          type: 'BentoShowcase',
+          settings: {
+            data: {
+              title: 'Mens x Machine',
               items: [
-                { question: 'Hoe snel wordt er geleverd?', answer: 'Onze standaard levertijd is binnen 24 uur.' },
-                { question: 'Zijn de prijzen inclusief BTW?', answer: 'Nee, alle getoonde prijzen zijn exclusief BTW.' },
-                { question: 'Krijg ik een factuur?', answer: 'Ja, direct na betaling ontvang je een factuur in je mailbox.' }
+                { title: 'AI Cloning', description: 'Je eigen stem, maar dan overal inzetbaar.', icon: 'Cpu' },
+                { title: 'Hybride Regie', description: 'De perfecte mix van emotie en snelheid.', icon: 'Zap' }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      slug: 'partners',
+      title: 'Partner World',
+      blocks: [
+        {
+          type: 'HeroInstrument',
+          settings: {
+            data: {
+              title: 'Groei met Voices',
+              highlight: 'Groei',
+              subtitle: 'Word onderdeel van ons ecosysteem. Voor resellers, agencies en integraties.',
+              cta: { text: 'Partner worden', href: '#join' }
+            }
+          }
+        },
+        {
+          type: 'BentoShowcase',
+          settings: {
+            data: {
+              title: 'Partner Voordelen',
+              items: [
+                { title: 'White-label', description: 'Onze stemmen onder jouw eigen merk.', icon: 'Shield' },
+                { title: 'API Toegang', description: 'Directe integratie in jouw workflow.', icon: 'Code' }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      slug: 'freelance',
+      title: 'Freelance World',
+      blocks: [
+        {
+          type: 'HeroInstrument',
+          settings: {
+            data: {
+              title: 'Het Vakmanschap',
+              highlight: 'Vakmanschap',
+              subtitle: 'Voor de professionele stemacteur. Beheerd door Chris.',
+              cta: { text: 'Meld je aan', href: '/signup-voice' }
+            }
+          }
+        },
+        {
+          type: 'BentoShowcase',
+          settings: {
+            data: {
+              title: 'Onze Standaard',
+              items: [
+                { title: 'Kwaliteit', description: 'Alleen de hoogste technische standaarden.', icon: 'CheckCircle' },
+                { title: 'Community', description: 'Deel kennis met de beste in het vak.', icon: 'Users' }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      slug: 'portfolio',
+      title: 'Portfolio World',
+      blocks: [
+        {
+          type: 'HeroInstrument',
+          settings: {
+            data: {
+              title: 'Showcase van Talent',
+              highlight: 'Talent',
+              subtitle: 'Bekijk onze beste producties en commissies. Lead door Laya.',
+              cta: { text: 'Bekijk cases', href: '#cases' }
+            }
+          }
+        },
+        {
+          type: 'BentoShowcase',
+          settings: {
+            data: {
+              title: 'Uitgelicht Werk',
+              items: [
+                { title: 'High-end Video', description: 'Cinematische voice-over producties.', icon: 'Film' },
+                { title: 'Audio Branding', description: 'De identiteit van grote merken.', icon: 'Music' }
               ]
             }
           }
@@ -134,43 +237,6 @@ async function inject() {
               items: [
                 { title: 'Berny', description: 'Studio & Academy Lead.', icon: 'User' },
                 { title: 'De Studio', description: 'High-end opnamefaciliteiten.', icon: 'Mic2' }
-              ]
-            }
-          }
-        }
-      ]
-    },
-    {
-      slug: 'tarieven',
-      title: 'Tarieven & Pakketten',
-      blocks: [
-        {
-          type: 'HeroInstrument',
-          settings: {
-            data: {
-              title: 'Onze Tarieven',
-              highlight: 'Tarieven',
-              subtitle: 'Eerlijke prijzen voor topkwaliteit voice-overs.'
-            }
-          }
-        },
-        {
-          type: 'PricingInstrument',
-          settings: {
-            data: {
-              title: 'Bereken je project',
-              subtitle: 'Gebruik onze calculator voor een exacte prijs.'
-            }
-          }
-        },
-        {
-          type: 'AccordionInstrument',
-          settings: {
-            data: {
-              title: 'Vragen over tarieven',
-              items: [
-                { question: 'Wat is een buyout?', answer: 'Een buyout is de vergoeding voor het gebruiksrecht van de opname.' },
-                { question: 'Zijn er verborgen kosten?', answer: 'Nee, de prijs die je ziet is de prijs die je betaalt.' }
               ]
             }
           }
@@ -306,6 +372,35 @@ async function inject() {
           }
         }
       ]
+    },
+    {
+      slug: 'contact',
+      title: 'Contact',
+      blocks: [
+        {
+          type: 'HeroInstrument',
+          settings: {
+            data: {
+              title: 'Laten we praten',
+              highlight: 'Contact',
+              subtitle: 'Heb je een vraag? Mat en de andere agents staan voor je klaar.',
+              cta: { text: 'Stuur een bericht', href: 'mailto:info@voices.be' }
+            }
+          }
+        },
+        {
+          type: 'BentoShowcase',
+          settings: {
+            data: {
+              title: 'Contact Opties',
+              items: [
+                { title: 'Email', description: 'info@voices.be', icon: 'Mail' },
+                { title: 'Telefoon', description: '+32 (0) ...', icon: 'Phone' }
+              ]
+            }
+          }
+        }
+      ]
     }
   ];
 
@@ -357,7 +452,7 @@ async function inject() {
     }
   }
 
-  console.log('🏁 MASTERCLASS INJECTION COMPLETED.');
+  console.log('🏁 FULL 9-WORLD INJECTION COMPLETED.');
 }
 
 inject();

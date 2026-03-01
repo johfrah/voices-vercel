@@ -7,6 +7,7 @@ import { MarketConfig } from '@/lib/system/market-manager-server';
 interface TranslationContextType {
   t: (key: string, defaultText: string, values?: Record<string, string | number>, skipPlaceholderReplacement?: boolean) => string;
   language: string;
+  languageId: number; // 🛡️ Handshake ID Truth
   market: MarketConfig;
   loading: boolean;
 }
@@ -20,7 +21,13 @@ export const TranslationProvider: React.FC<{
   initialTranslations?: Record<string, string>;
 }> = ({ children, lang = 'nl-BE', market, initialTranslations = {} }) => {
   const [studioTranslations, setStudioTranslations] = useState<Record<string, string>>(initialTranslations);
-  const [loading, setLoading] = useState(Object.keys(initialTranslations).length === 0 && lang !== 'nl-BE');
+  
+  // 🛡️ CHRIS-PROTOCOL: Handshake ID Truth (v2.19.5)
+  // We resolve the language ID once and use it as the primary anchor.
+  const languageId = market.primary_language_id || 1;
+  const isSourceOfTruth = languageId === 1; // nl-be is ID 1
+
+  const [loading, setLoading] = useState(Object.keys(initialTranslations).length === 0 && !isSourceOfTruth);
   const healingKeys = React.useRef<Set<string>>(new Set());
 
   useEffect(() => {
@@ -30,7 +37,8 @@ export const TranslationProvider: React.FC<{
       // 🛡️ CHRIS-PROTOCOL: Gebruik altijd de korte code voor DB fetches (v2.16.001)
       const dataLang = lang.includes('-') ? lang.split('-')[0] : lang;
 
-      if (dataLang === 'nl') {
+      // 🛡️ CHRIS-PROTOCOL: Source of Truth check via ID
+      if (isSourceOfTruth) {
         setLoading(false);
         return;
       }
@@ -48,12 +56,14 @@ export const TranslationProvider: React.FC<{
     };
 
     fetchTranslations();
-  }, [lang]);
+  }, [lang, isSourceOfTruth]);
 
   const t = (key: string, defaultText: string, values?: Record<string, string | number>, skipPlaceholderReplacement = false): string => {
     let text = defaultText;
     
-    if (lang !== 'nl-BE' && !key.startsWith('admin.') && !key.startsWith('command.')) {
+    // 🛡️ CHRIS-PROTOCOL: Handshake ID Truth (v2.19.5)
+    // We skip database lookups for the Source of Truth (ID 1)
+    if (!isSourceOfTruth && !key.startsWith('admin.') && !key.startsWith('command.')) {
       const translation = studioTranslations[key];
       
       //  STABILITEIT: Gebruik SlopFilter om AI-foutmeldingen te blokkeren
@@ -75,7 +85,7 @@ export const TranslationProvider: React.FC<{
   };
 
   return (
-    <StudioTranslationContext.Provider value={{ t, language: lang, market, loading }}>
+    <StudioTranslationContext.Provider value={{ t, language: lang, languageId, market, loading }}>
       {children}
     </StudioTranslationContext.Provider>
   );

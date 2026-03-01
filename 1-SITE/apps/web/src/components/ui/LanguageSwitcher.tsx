@@ -25,16 +25,6 @@ interface Language {
   flag: string;
 }
 
-const LANGUAGE_MAP: Record<number, Language> = {
-  1: { id: 1, code: 'nl-be', label: 'Dutch', native: 'Vlaams', flag: '🇧🇪' },
-  2: { id: 2, code: 'nl-nl', label: 'Dutch', native: 'Nederlands', flag: '🇳🇱' },
-  4: { id: 4, code: 'fr-fr', label: 'French', native: 'Français', flag: '🇫🇷' },
-  5: { id: 5, code: 'en-gb', label: 'English', native: 'English', flag: '🇬🇧' },
-  7: { id: 7, code: 'de-de', label: 'German', native: 'Deutsch', flag: '🇩🇪' },
-  8: { id: 8, code: 'es-es', label: 'Spanish', native: 'Español', flag: '🇪🇸' },
-  12: { id: 12, code: 'pt-pt', label: 'Portuguese', native: 'Português', flag: '🇵🇹' },
-};
-
 export function LanguageSwitcher({ className }: { className?: string }) {
   const [isOpen, setIsOpen] = useState(false);
   const host = typeof window !== 'undefined' ? window.location.host : (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || MarketManager.getMarketDomains()['BE'].replace('https://', ''));
@@ -54,14 +44,25 @@ export function LanguageSwitcher({ className }: { className?: string }) {
   }, []);
 
   const languages = React.useMemo(() => {
-    // 🛡️ CHRIS-PROTOCOL: Handshake Registry is leading
+    // 🛡️ CHRIS-PROTOCOL: Handshake Registry is leading (v2.19.5)
+    // We fetch ALL languages from the database registry instead of a hardcoded map.
     const registry = MarketManager.languages;
+    
+    // Determine which languages are supported by this market
     const supportedIds = market.supported_languages?.map(l => {
-      const match = registry.find(r => r.code.toLowerCase() === l.toLowerCase());
+      const match = registry.find(r => r.code.toLowerCase() === l.toLowerCase() || r.label.toLowerCase() === l.toLowerCase());
       return match?.id;
     }).filter(Boolean) as number[] || [1, 2, 4, 5];
 
-    const allLangs = Object.values(LANGUAGE_MAP);
+    // Map registry objects to the internal Language interface
+    const allLangs: Language[] = registry.map(l => ({
+      id: l.id,
+      code: l.code,
+      label: l.label,
+      native: MarketManager.getLanguageLabel(l.id),
+      flag: MarketManager.getLanguageIcon(l.id) || '🌐'
+    }));
+
     let filtered = allLangs.filter(l => supportedIds.includes(l.id));
 
     return filtered.sort((a, b) => {
@@ -71,7 +72,7 @@ export function LanguageSwitcher({ className }: { className?: string }) {
       
       // 2. Populaire talen voor deze markt
       const popularIds = market.popular_languages?.map(l => {
-        const match = registry.find(r => r.code.toLowerCase() === l.toLowerCase());
+        const match = registry.find(r => r.code.toLowerCase() === l.toLowerCase() || r.label.toLowerCase() === l.toLowerCase());
         return match?.id;
       }).filter(Boolean) as number[] || [];
 
@@ -98,16 +99,6 @@ export function LanguageSwitcher({ className }: { className?: string }) {
       setCurrentLangId(market.primary_language_id || 1);
     }
   }, [pathname, market]);
-
-  const handleMouseEnter = () => {
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    setIsOpen(true);
-    playSwell();
-  };
-
-  const handleMouseLeave = () => {
-    timeoutRef.current = setTimeout(() => setIsOpen(false), 300);
-  };
 
   const switchLanguage = (lang: Language) => {
     if (lang.id === currentLangId) {
@@ -141,7 +132,8 @@ export function LanguageSwitcher({ className }: { className?: string }) {
     setIsOpen(false);
   };
 
-  const currentLang = LANGUAGE_MAP[currentLangId] || LANGUAGE_MAP[1];
+  // 🛡️ CHRIS-PROTOCOL: Handshake ID Truth (v2.19.5)
+  const currentLang = languages.find(l => l.id === currentLangId) || languages[0] || { id: 1, code: 'nl-be', native: 'Vlaams', flag: '🇧🇪' };
 
   if (!mounted) {
     return (
@@ -253,4 +245,4 @@ export function LanguageSwitcher({ className }: { className?: string }) {
       </AnimatePresence>
     </ContainerInstrument>
   );
-};
+}

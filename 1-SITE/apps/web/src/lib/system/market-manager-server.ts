@@ -677,8 +677,10 @@ export class MarketManagerServer {
     if (!input) return null;
     const lowInput = input.toLowerCase().trim();
 
+    // 🛡️ CHRIS-PROTOCOL: Handshake Truth (Zero-Slop)
     const registry = this.languagesRegistry.length > 0 ? this.languagesRegistry : 
-                    (typeof window !== 'undefined' && (window as any).handshakeLanguages ? (window as any).handshakeLanguages : []);
+                    (typeof global !== 'undefined' && (global as any).handshakeLanguages ? (global as any).handshakeLanguages : 
+                    (typeof window !== 'undefined' && (window as any).handshakeLanguages ? (window as any).handshakeLanguages : []));
 
     if (registry.length > 0) {
       const match = registry.find((l: any) => 
