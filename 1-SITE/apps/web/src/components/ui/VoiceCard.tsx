@@ -30,34 +30,51 @@ interface VoiceCardProps {
   compact?: boolean;
 }
 
-const VoiceFlag = ({ lang, size = 16 }: { lang?: string, size?: number }) => {
-  if (!lang) return <Globe size={size} className="opacity-20" />;
-  const lowLang = lang.toLowerCase();
+const VoiceFlag = ({ lang, langId, size = 16 }: { lang?: string, langId?: number, size?: number }) => {
+  if (!lang && !langId) return <Globe size={size} className="opacity-20" />;
   
-  const Flag = lowLang.includes('be') || lowLang === 'vlaams' || lowLang === 'frans (be)' ? FlagBE :
-               lowLang.includes('nl') || lowLang === 'nederlands' || lowLang === 'dutch' ? FlagNL :
-               lowLang.includes('fr') || lowLang === 'frans' || lowLang === 'frans (fr)' || lowLang === 'french' ? FlagFR :
-               lowLang.includes('de') || lowLang === 'duits' || lowLang === 'german' ? FlagDE :
-               lowLang.includes('gb') || lowLang.includes('uk') || lowLang === 'engels' || lowLang === 'english' ? FlagUK :
-               lowLang.includes('us') ? FlagUS :
-               lowLang.includes('es') || lowLang === 'spaans' || lowLang === 'spanish' ? FlagES :
-               lowLang.includes('it') || lowLang === 'italiaans' || lowLang === 'italian' ? FlagIT :
-               lowLang.includes('pl') || lowLang === 'pools' || lowLang === 'polish' ? FlagPL :
-               lowLang.includes('dk') || lowLang === 'deens' || lowLang === 'danish' ? FlagDK :
-               lowLang.includes('pt') || lowLang === 'portugees' || lowLang === 'portuguese' ? FlagPT :
-               lowLang.includes('se') || lowLang === 'zweeds' || lowLang === 'swedish' ? FlagSE :
-               lowLang.includes('no') || lowLang === 'noors' || lowLang === 'norwegian' ? FlagNO :
-               lowLang.includes('fi') || lowLang === 'fins' || lowLang === 'finnish' ? FlagFI :
-               lowLang.includes('gr') || lowLang === 'grieks' || lowLang === 'greek' ? FlagGR :
-               lowLang.includes('tr') || lowLang === 'turks' || lowLang === 'turkish' ? FlagTR :
-               lowLang.includes('ru') || lowLang === 'russisch' || lowLang === 'russian' ? FlagRU :
-               lowLang.includes('cn') || lowLang.includes('zh') || lowLang === 'chinees' || lowLang === 'chinese' ? FlagCN :
-               lowLang.includes('jp') || lowLang === 'japans' || lowLang === 'japanese' ? FlagJP :
-               lowLang.includes('kr') || lowLang === 'koreaans' || lowLang === 'korean' ? FlagKR :
-               lowLang.includes('ar') || lowLang === 'arabisch' || lowLang === 'arabic' ? FlagAR :
-               lowLang.includes('br') || lowLang === 'braziliaans' || lowLang === 'brazilian' ? FlagBR : null;
+  // 🛡️ CHRIS-PROTOCOL: Prioritize ID-First Handshake (v2.18.4)
+  const effectiveId = langId || (lang ? MarketManager.getLanguageId(lang) : null);
+  
+  const Flag = effectiveId === 1 ? FlagBE : // Vlaams
+               effectiveId === 2 ? FlagNL : // Nederlands
+               effectiveId === 3 ? FlagBE : // Frans (BE)
+               effectiveId === 4 ? FlagFR : // Frans (FR)
+               effectiveId === 5 ? FlagUK : // Engels (UK)
+               effectiveId === 6 ? FlagUS : // Engels (US)
+               effectiveId === 7 ? FlagDE : // Duits
+               effectiveId === 8 ? FlagES : // Spaans
+               effectiveId === 10 ? FlagIT : // Italiaans
+               effectiveId === 12 ? FlagPT : // Portugees
+               effectiveId === 13 ? FlagDK : // Deens
+               effectiveId === 14 ? FlagSE : // Zweeds
+               effectiveId === 15 ? FlagNO : // Noors
+               effectiveId === 16 ? FlagFI : // Fins
+               effectiveId === 17 ? FlagGR : // Grieks
+               effectiveId === 18 ? FlagTR : // Turks
+               effectiveId === 19 ? FlagRU : // Russisch
+               effectiveId === 20 ? FlagCN : // Chinees
+               effectiveId === 21 ? FlagJP : // Japans
+               effectiveId === 22 ? FlagKR : // Koreaans
+               effectiveId === 23 ? FlagAR : // Arabisch
+               effectiveId === 24 ? FlagBR : null; // Braziliaans
 
-  if (!Flag) return <Globe size={size} className="opacity-20" />;
+  if (!Flag) {
+    // Fallback to string matching if ID lookup failed (Legacy Drift)
+    const lowLang = lang?.toLowerCase() || '';
+    const StringFlag = lowLang.includes('be') || lowLang === 'vlaams' ? FlagBE :
+                 lowLang.includes('nl') || lowLang === 'nederlands' ? FlagNL :
+                 lowLang.includes('fr') ? FlagFR :
+                 lowLang.includes('de') ? FlagDE :
+                 lowLang.includes('gb') || lowLang.includes('uk') || lowLang === 'engels' ? FlagUK :
+                 lowLang.includes('us') ? FlagUS :
+                 lowLang.includes('es') ? FlagES :
+                 lowLang.includes('it') ? FlagIT : null;
+    
+    if (StringFlag) return <StringFlag size={size} />;
+    return <Globe size={size} className="opacity-20" />;
+  }
+  
   return <Flag size={size} />;
 };
 
@@ -465,7 +482,23 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
     const currentMedia = eventData?.media || masterControlState.filters?.media || ['online'];
     const spotsMap = masterControlState.journey === 'commercial' && Array.isArray(currentMedia) ? currentMedia.reduce((acc, m) => ({ ...acc, [m]: (currentSpotsDetail && currentSpotsDetail[m]) || masterControlState.filters?.spots || 1 }), {}) : undefined;
     const yearsMap = masterControlState.journey === 'commercial' && Array.isArray(currentMedia) ? currentMedia.reduce((acc, m) => ({ ...acc, [m]: (currentYearsDetail && currentYearsDetail[m]) || masterControlState.filters?.years || 1 }), {}) : undefined;
-    const result = SlimmeKassa.calculate({ usage: masterControlState.journey === 'telephony' ? 'telefonie' : (masterControlState.journey === 'video' ? 'unpaid' : 'commercial'), plan: checkoutState.plan, words: wordCount, prompts: isConfigurator ? promptCount : (checkoutState.prompts || 1), mediaTypes: masterControlState.journey === 'commercial' ? (currentMedia as any) : undefined, countries: masterControlState.filters?.countries || [masterControlState.filters?.country || 'BE'], spots: spotsMap, years: yearsMap, liveSession: masterControlState.filters?.liveSession, actorRates: voice as any, music: checkoutState.music, isVatExempt: false }, checkoutState.pricingConfig || undefined);
+    const result = SlimmeKassa.calculate({ 
+      usage: masterControlState.usage, 
+      usageId: masterControlState.journeyId || undefined,
+      plan: checkoutState.plan, 
+      words: wordCount, 
+      prompts: isConfigurator ? promptCount : (checkoutState.prompts || 1), 
+      mediaTypes: masterControlState.journey === 'commercial' ? (currentMedia as any) : undefined, 
+      mediaIds: masterControlState.filters?.mediaIds,
+      countries: masterControlState.filters?.countries || [masterControlState.filters?.country || 'BE'], 
+      countryId: masterControlState.filters?.countryId || undefined,
+      spots: spotsMap, 
+      years: yearsMap, 
+      liveSession: masterControlState.filters?.liveSession, 
+      actorRates: voice as any, 
+      music: checkoutState.music, 
+      isVatExempt: false 
+    }, checkoutState.pricingConfig || undefined);
     
     if (!result) return null;
 
@@ -654,9 +687,9 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
         <div className="flex items-start justify-between px-4 md:px-6 pt-4 md:pt-6 pb-2 md:pb-3 border-b border-black/[0.02]">
           <div className="flex flex-col gap-1.5 md:gap-2">
             <div className="flex items-center gap-1 bg-va-off-white/50 px-1.5 md:px-2 py-0.5 md:py-1 rounded-full border border-black/[0.05] w-fit relative">
-              <VoiceFlag lang={voice?.native_lang} size={14} />
+              <VoiceFlag lang={voice?.native_lang} langId={voice?.native_language_id} size={14} />
               {/* 🛡️ CHRIS-PROTOCOL: Use alias to prevent ReferenceError: MarketManager is not defined */}
-              <span className="text-[11px] md:text-[13px] font-light text-va-black tracking-tight"><VoiceglotText translationKey={voice?.native_lang_id ? `language.${voice.native_lang_id}` : `common.language.${voice?.native_lang?.toLowerCase()}`} defaultText={voice?.native_lang_label || MarketManager.getLanguageLabel(voice?.native_lang || '') || t('common.unknown_language', 'Onbekende taal')} /></span>
+              <span className="text-[11px] md:text-[13px] font-light text-va-black tracking-tight"><VoiceglotText translationKey={voice?.native_language_id ? `language.${voice.native_language_id}` : `common.language.${voice?.native_lang?.toLowerCase()}`} defaultText={voice?.native_lang_label || MarketManager.getLanguageLabel(voice?.native_language_id || voice?.native_lang || '') || t('common.unknown_language', 'Onbekende taal')} /></span>
               {isEditMode && (
                 <div className="flex items-center gap-1 ml-1">
                   <ButtonInstrument variant="pure" size="none" onClick={(e) => { e.stopPropagation(); setIsLangSelectorOpen(!isLangSelectorOpen); playClick('pro'); }} className="text-primary hover:scale-110 transition-transform" title="Taal wijzigen"><ChevronDown size={14} strokeWidth={3} /></ButtonInstrument>

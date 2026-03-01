@@ -21,7 +21,10 @@ export class SlopFilter {
     'ik kan je niet helpen',
     'als ai-model',
     'sorry',
-    'null'
+    'null',
+    'contenteditable',
+    'focus:ring-primary/30',
+    'outline-none focus:ring-2'
   ];
 
   /**

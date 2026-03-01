@@ -150,14 +150,24 @@ export class MarketManagerServer {
   }
 
   /**
-   * 🛡️ CHRIS-PROTOCOL: Market Hierarchy Resolver (v2.18.0)
+   * 🛡️ CHRIS-PROTOCOL: Market Hierarchy Resolver (v2.18.4)
    * Volgt de wet: Market Exception -> GLOBAL Truth -> Legacy Fallback.
+   * Supports both ID-First and Code-based lookups.
    */
-  static resolveServicePrice(actor: any, serviceCode: string, marketCode: string = 'BE'): { price: number, source: 'market' | 'global' | 'legacy' | 'none' } {
+  static resolveServicePrice(actor: any, serviceCodeOrId: string | number, marketCode: string = 'BE'): { price: number, source: 'market' | 'global' | 'legacy' | 'none' } {
     const rates = actor.rates?.rates || actor.rates || {};
     const marketRates = rates[marketCode.toUpperCase()] || {};
     const globalRates = rates['GLOBAL'] || rates['global'] || {};
     
+    // Resolve code if ID is provided
+    let serviceCode = String(serviceCodeOrId);
+    if (typeof serviceCodeOrId === 'number') {
+      const registry = this.servicesRegistry.length > 0 ? this.servicesRegistry : 
+                      (typeof window !== 'undefined' && (window as any).handshakeServices ? (window as any).handshakeServices : []);
+      const match = registry.find((s: any) => s.id === serviceCodeOrId);
+      if (match) serviceCode = match.code;
+    }
+
     // 1. Check Market Exception
     if (marketRates[serviceCode] !== undefined && marketRates[serviceCode] !== null && marketRates[serviceCode] !== '') {
       return { price: Number(marketRates[serviceCode]), source: 'market' };
@@ -654,6 +664,75 @@ export class MarketManagerServer {
       '5': 'FlagUK', 'en-gb': 'FlagUK', 'engels': 'FlagUK',
       '8': 'FlagES', 'es-es': 'FlagES', 'spaans': 'FlagES',
       '12': 'FlagPT', 'pt-pt': 'FlagPT', 'portugees': 'FlagPT'
+    };
+
+    return emergencyMap[lowInput] || null;
+  }
+
+  /**
+   * 🛡️ CHRIS-PROTOCOL: Handshake Language ID Resolver (v2.18.4)
+   * Haalt het database ID op voor een taalcode of label.
+   */
+  static getLanguageId(input: string): number | null {
+    if (!input) return null;
+    const lowInput = input.toLowerCase().trim();
+
+    const registry = this.languagesRegistry.length > 0 ? this.languagesRegistry : 
+                    (typeof window !== 'undefined' && (window as any).handshakeLanguages ? (window as any).handshakeLanguages : []);
+
+    if (registry.length > 0) {
+      const match = registry.find((l: any) => 
+        l.code.toLowerCase() === lowInput || 
+        l.label.toLowerCase() === lowInput
+      );
+      if (match) return match.id;
+    }
+
+    // Emergency fallbacks
+    const emergencyMap: Record<string, number> = {
+      'nl-be': 1, 'vlaams': 1, 'be': 1,
+      'nl-nl': 2, 'nederlands': 2, 'nl': 2,
+      'fr-be': 3,
+      'fr-fr': 4, 'frans': 4, 'fr': 4,
+      'en-gb': 5, 'engels': 5, 'en': 5,
+      'en-us': 6,
+      'de-de': 7, 'duits': 7, 'de': 7,
+      'es-es': 8, 'spaans': 8, 'es': 8,
+      'it-it': 10, 'italiaans': 10, 'it': 10,
+      'pt-pt': 12, 'portugees': 12, 'pt': 12
+    };
+
+    return emergencyMap[lowInput] || null;
+  }
+
+  /**
+   * 🛡️ CHRIS-PROTOCOL: Handshake Country ID Resolver (v2.18.4)
+   * Haalt het database ID op voor een landcode of label.
+   */
+  static getCountryId(input: string): number | null {
+    if (!input) return null;
+    const lowInput = input.toLowerCase().trim();
+
+    const registry = (typeof window !== 'undefined' && (window as any).handshakeCountries) ? (window as any).handshakeCountries : [];
+
+    if (registry.length > 0) {
+      const match = registry.find((c: any) => 
+        c.code.toLowerCase() === lowInput || 
+        c.label.toLowerCase() === lowInput
+      );
+      if (match) return match.id;
+    }
+
+    // Emergency fallbacks
+    const emergencyMap: Record<string, number> = {
+      'be': 1, 'belgië': 1,
+      'nl': 2, 'nederland': 2,
+      'fr': 4, 'frankrijk': 4,
+      'de': 5, 'duitsland': 5,
+      'es': 6, 'spanje': 6,
+      'it': 7, 'italië': 7,
+      'gb': 8, 'uk': 8, 'verenigd koninkrijk': 8,
+      'us': 9, 'verenigde staten': 9
     };
 
     return emergencyMap[lowInput] || null;

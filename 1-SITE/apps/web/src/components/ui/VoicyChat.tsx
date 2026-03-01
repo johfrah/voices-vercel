@@ -208,8 +208,21 @@ export const VoicyChatV2: React.FC = () => {
             // Anders, als woorden 0 zijn maar er is een script, gebruik dat.
             updateBriefing(" ".repeat(params.words)); 
           }
-          if (params.usage) updateUsage(params.usage);
-          if (params.media) updateMedia(params.media);
+          if (params.usage) {
+            const usageToId: Record<string, number> = {
+              'telephony': 26,
+              'unpaid': 27,
+              'commercial': 28,
+              'paid': 28
+            };
+            updateUsage(params.usage, usageToId[params.usage]);
+          }
+          if (params.media) {
+            // In VoicyChat we don't have easy access to commercialMediaOptions here, 
+            // but updateMedia will still work with just codes, and calculatePricing 
+            // will try to resolve IDs if missing.
+            updateMedia(params.media);
+          }
           
           //  MUZIEK RESTRICTIE: Alleen bij telefonie
           if (params.music !== undefined) {

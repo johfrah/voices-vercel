@@ -284,55 +284,57 @@ export default function AdminSettingsPage() {
                 <VoiceglotText translationKey="admin.settings.opening_hours" defaultText="Openingsuren (Functioneel)" />
               </LabelInstrument>
               
-              <div className="space-y-2">
-                {['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'].map((day) => {
-                  const config = configs.general_settings.opening_hours?.[day] || { active: false, start: '09:00', end: '18:00' };
-                  return (
-                    <div key={day} className="flex items-center gap-3 bg-va-off-white/50 p-2 rounded-xl border border-black/[0.03]">
-                      <button
-                        disabled={!isEditMode}
-                        onClick={() => {
-                          const next = { ...configs.general_settings.opening_hours };
-                          next[day] = { ...config, active: !config.active };
-                          updateConfig('general_settings', 'opening_hours', next);
-                        }}
-                        className={cn(
-                          "w-10 h-10 rounded-lg text-[10px] font-black uppercase transition-all flex items-center justify-center shrink-0",
-                          config.active ? "bg-va-black text-white" : "bg-white text-va-black/20 border border-black/5"
-                        )}
-                      >
-                        {day.substring(0, 2)}
-                      </button>
-                      
-                      <div className={cn("flex items-center gap-2 flex-grow transition-opacity", !config.active && "opacity-30 pointer-events-none")}>
-                        <input 
-                          type="text"
-                          value={config.start}
-                          disabled={!isEditMode}
-                          onChange={(e) => {
-                            const next = { ...configs.general_settings.opening_hours };
-                            next[day] = { ...config, start: e.target.value };
-                            updateConfig('general_settings', 'opening_hours', next);
-                          }}
-                          className="w-16 bg-white border border-black/5 rounded-md py-1 px-2 text-[12px] font-medium text-center"
-                        />
-                        <span className="text-[10px] text-va-black/20 font-bold">-</span>
-                        <input 
-                          type="text"
-                          value={config.end}
-                          disabled={!isEditMode}
-                          onChange={(e) => {
-                            const next = { ...configs.general_settings.opening_hours };
-                            next[day] = { ...config, end: e.target.value };
-                            updateConfig('general_settings', 'opening_hours', next);
-                          }}
-                          className="w-16 bg-white border border-black/5 rounded-md py-1 px-2 text-[12px] font-medium text-center"
-                        />
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
+                      <ContainerInstrument className="space-y-2">
+                        {['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'].map((day) => {
+                          const config = configs.general_settings.opening_hours?.[day] || { active: false, start: '09:00', end: '18:00' };
+                          return (
+                            <ContainerInstrument key={day} className="flex items-center gap-3 bg-va-off-white/50 p-2 rounded-xl border border-black/[0.03]">
+                              <ButtonInstrument
+                                variant="pure"
+                                size="none"
+                                disabled={!isEditMode}
+                                onClick={() => {
+                                  const next = { ...configs.general_settings.opening_hours };
+                                  next[day] = { ...config, active: !config.active };
+                                  updateConfig('general_settings', 'opening_hours', next);
+                                }}
+                                className={cn(
+                                  "w-10 h-10 rounded-lg text-[10px] font-black uppercase transition-all flex items-center justify-center shrink-0",
+                                  config.active ? "bg-va-black text-white" : "bg-white text-va-black/20 border border-black/5"
+                                )}
+                              >
+                                {day.substring(0, 2)}
+                              </ButtonInstrument>
+                              
+                              <ContainerInstrument className={cn("flex items-center gap-2 flex-grow transition-opacity", !config.active && "opacity-30 pointer-events-none")}>
+                                <InputInstrument 
+                                  type="text"
+                                  value={config.start}
+                                  disabled={!isEditMode}
+                                  onChange={(e) => {
+                                    const next = { ...configs.general_settings.opening_hours };
+                                    next[day] = { ...config, start: e.target.value };
+                                    updateConfig('general_settings', 'opening_hours', next);
+                                  }}
+                                  className="w-16 bg-white border border-black/5 rounded-md py-1 px-2 text-[12px] font-medium text-center"
+                                />
+                                <TextInstrument className="text-[10px] text-va-black/20 font-bold">-</TextInstrument>
+                                <InputInstrument 
+                                  type="text"
+                                  value={config.end}
+                                  disabled={!isEditMode}
+                                  onChange={(e) => {
+                                    const next = { ...configs.general_settings.opening_hours };
+                                    next[day] = { ...config, end: e.target.value };
+                                    updateConfig('general_settings', 'opening_hours', next);
+                                  }}
+                                  className="w-16 bg-white border border-black/5 rounded-md py-1 px-2 text-[12px] font-medium text-center"
+                                />
+                              </ContainerInstrument>
+                            </ContainerInstrument>
+                          );
+                        })}
+                      </ContainerInstrument>
             </ContainerInstrument>
             <ContainerInstrument className="space-y-1">
               <LabelInstrument className="text-[11px] font-light tracking-widest text-va-black/30 uppercase"><VoiceglotText  translationKey="auto.page.standaard_levertijd_.6d07f2" defaultText="Standaard Levertijd (Dagen)" /></LabelInstrument>
@@ -396,55 +398,57 @@ export default function AdminSettingsPage() {
                 <VoiceglotText translationKey="admin.settings.phone_hours" defaultText="Telefonische Bereikbaarheid (Functioneel)" />
               </LabelInstrument>
               
-              <div className="space-y-2">
-                {['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'].map((day) => {
-                  const config = configs.general_settings.phone_hours?.[day] || { active: false, start: '09:00', end: '17:00' };
-                  return (
-                    <div key={day} className="flex items-center gap-3 bg-va-off-white/50 p-2 rounded-xl border border-black/[0.03]">
-                      <button
-                        disabled={!isEditMode}
-                        onClick={() => {
-                          const next = { ...configs.general_settings.phone_hours };
-                          next[day] = { ...config, active: !config.active };
-                          updateConfig('general_settings', 'phone_hours', next);
-                        }}
-                        className={cn(
-                          "w-10 h-10 rounded-lg text-[10px] font-black uppercase transition-all flex items-center justify-center shrink-0",
-                          config.active ? "bg-blue-500 text-white" : "bg-white text-va-black/20 border border-black/5"
-                        )}
-                      >
-                        {day.substring(0, 2)}
-                      </button>
-                      
-                      <div className={cn("flex items-center gap-2 flex-grow transition-opacity", !config.active && "opacity-30 pointer-events-none")}>
-                        <input 
-                          type="text"
-                          value={config.start}
-                          disabled={!isEditMode}
-                          onChange={(e) => {
-                            const next = { ...configs.general_settings.phone_hours };
-                            next[day] = { ...config, start: e.target.value };
-                            updateConfig('general_settings', 'phone_hours', next);
-                          }}
-                          className="w-16 bg-white border border-black/5 rounded-md py-1 px-2 text-[12px] font-medium text-center"
-                        />
-                        <span className="text-[10px] text-va-black/20 font-bold">-</span>
-                        <input 
-                          type="text"
-                          value={config.end}
-                          disabled={!isEditMode}
-                          onChange={(e) => {
-                            const next = { ...configs.general_settings.phone_hours };
-                            next[day] = { ...config, end: e.target.value };
-                            updateConfig('general_settings', 'phone_hours', next);
-                          }}
-                          className="w-16 bg-white border border-black/5 rounded-md py-1 px-2 text-[12px] font-medium text-center"
-                        />
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
+                      <ContainerInstrument className="space-y-2">
+                        {['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'].map((day) => {
+                          const config = configs.general_settings.phone_hours?.[day] || { active: false, start: '09:00', end: '17:00' };
+                          return (
+                            <ContainerInstrument key={day} className="flex items-center gap-3 bg-va-off-white/50 p-2 rounded-xl border border-black/[0.03]">
+                              <ButtonInstrument
+                                variant="pure"
+                                size="none"
+                                disabled={!isEditMode}
+                                onClick={() => {
+                                  const next = { ...configs.general_settings.phone_hours };
+                                  next[day] = { ...config, active: !config.active };
+                                  updateConfig('general_settings', 'phone_hours', next);
+                                }}
+                                className={cn(
+                                  "w-10 h-10 rounded-lg text-[10px] font-black uppercase transition-all flex items-center justify-center shrink-0",
+                                  config.active ? "bg-blue-500 text-white" : "bg-white text-va-black/20 border border-black/5"
+                                )}
+                              >
+                                {day.substring(0, 2)}
+                              </ButtonInstrument>
+                              
+                              <ContainerInstrument className={cn("flex items-center gap-2 flex-grow transition-opacity", !config.active && "opacity-30 pointer-events-none")}>
+                                <InputInstrument 
+                                  type="text"
+                                  value={config.start}
+                                  disabled={!isEditMode}
+                                  onChange={(e) => {
+                                    const next = { ...configs.general_settings.phone_hours };
+                                    next[day] = { ...config, start: e.target.value };
+                                    updateConfig('general_settings', 'phone_hours', next);
+                                  }}
+                                  className="w-16 bg-white border border-black/5 rounded-md py-1 px-2 text-[12px] font-medium text-center"
+                                />
+                                <TextInstrument className="text-[10px] text-va-black/20 font-bold">-</TextInstrument>
+                                <InputInstrument 
+                                  type="text"
+                                  value={config.end}
+                                  disabled={!isEditMode}
+                                  onChange={(e) => {
+                                    const next = { ...configs.general_settings.phone_hours };
+                                    next[day] = { ...config, end: e.target.value };
+                                    updateConfig('general_settings', 'phone_hours', next);
+                                  }}
+                                  className="w-16 bg-white border border-black/5 rounded-md py-1 px-2 text-[12px] font-medium text-center"
+                                />
+                              </ContainerInstrument>
+                            </ContainerInstrument>
+                          );
+                        })}
+                      </ContainerInstrument>
             </ContainerInstrument>
           </ContainerInstrument>
         </BentoCard>

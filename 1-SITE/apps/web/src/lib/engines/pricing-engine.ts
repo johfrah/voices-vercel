@@ -81,11 +81,14 @@ export const DEFAULT_KASSA_CONFIG: SlimmeKassaConfig = {
 
 export interface SlimmeKassaInput {
   usage: UsageType;
+  usageId?: number; // 🛡️ Handshake Truth
   words?: number;
   prompts?: number;
   mediaTypes?: CommercialMediaType[];
+  mediaIds?: number[]; // 🛡️ Handshake Truth
   countries?: string[];
   country?: string;
+  countryId?: number; // 🛡️ Handshake Truth
   spots?: Record<string, number>;
   years?: Record<string, number>;
   music?: {
@@ -95,6 +98,7 @@ export interface SlimmeKassaInput {
   radioReady?: boolean;
   liveSession?: boolean;
   secondaryLanguages?: string[];
+  secondaryLanguageIds?: number[]; // 🛡️ Handshake Truth
   plan?: PlanType;
   isVatExempt?: boolean;
   actorRates?: Record<string, any>;
@@ -212,8 +216,9 @@ export class SlimmeKassa {
     const selectedMarkets = input.countries || [input.country || 'BE'];
 
     const getServicePrice = (serviceCode: string, market: string): number => {
-      const { price } = MarketManager.resolveServicePrice(actor, serviceCode, market);
+      // 🛡️ CHRIS-PROTOCOL: Prioritize ID-First Handshake (v2.18.4)
       const serviceId = MarketManager.getServiceId(serviceCode);
+      const { price } = MarketManager.resolveServicePrice(actor, serviceId || serviceCode, market);
       const isBuyoutType = serviceId ? MarketManager.getServiceType(serviceId) === 'buyout' : false;
       
       if (price > 0) {

@@ -26,6 +26,7 @@ interface MasterControlState {
     sortBy: 'popularity' | 'delivery' | 'alphabetical' | 'alphabetical_az' | 'alphabetical_za';
     words?: number;
     media?: string[];
+    mediaIds?: number[]; // 🛡️ Handshake Truth
     countries?: string[];
     country?: string;
     countryId?: number | null;
@@ -81,7 +82,7 @@ export const VoicesMasterControlProvider: React.FC<{
   const [state, setState] = useState<MasterControlState>({
     journey: initialJourney || 'video',
     journeyId: initialJourney ? MarketManager.getJourneyId(initialJourney) : 27, // 🛡️ Handshake Truth: Default to Voice-over (ID 27)
-    usage: initialUsage || (initialJourney === 'studio' || initialJourney === 'academy' ? 'subscription' : 'unpaid'),
+    usage: initialUsage || ((initialJourney as string) === 'studio' || (initialJourney as string) === 'academy' ? 'subscription' : 'unpaid'),
     isMuted: false,
     filters: {
       language: null,
@@ -94,6 +95,7 @@ export const VoicesMasterControlProvider: React.FC<{
       sortBy: 'popularity',
       words: (initialJourney === 'telephony' ? 25 : (initialJourney === 'commercial' ? 100 : 200)),
       media: ['online'],
+      mediaIds: [5], // 🛡️ Handshake Truth: Default to Online (ID 5)
       countries: ['BE'],
       country: 'BE',
       countryId: 1, // 🛡️ Handshake Truth: Default to België (ID 1)
@@ -176,6 +178,8 @@ export const VoicesMasterControlProvider: React.FC<{
         if (mr) initialMediaRegion = JSON.parse(decodeURIComponent(mr));
       } catch (e) {}
 
+      const initialMediaIds = searchParams?.get('mediaIds') ? searchParams?.get('mediaIds')?.split(',').map(Number) : (savedState.filters?.mediaIds || [5]);
+
       const newState: MasterControlState = {
         journey,
         journeyId,
@@ -192,6 +196,7 @@ export const VoicesMasterControlProvider: React.FC<{
           sortBy: (searchParams?.get('sortBy') as any) || savedState.filters?.sortBy || 'popularity',
           words: initialWords,
           media: initialMedia,
+          mediaIds: initialMediaIds,
           countries: savedState.filters?.countries || ['BE'],
           country: searchParams?.get('country') || savedState.filters?.country || 'BE',
           countryId: searchParams?.get('countryId') ? parseInt(searchParams.get('countryId')!) : (savedState.filters?.countryId || null),
@@ -213,22 +218,20 @@ export const VoicesMasterControlProvider: React.FC<{
     return () => clearTimeout(timer);
   }, [searchParams, pathname, voicesState.current_journey, initialJourney]);
 
-  // 🛡️ CHRIS-PROTOCOL: Decouple context sync from hydration (v2.14.629)
-  // This prevents React Error #419 by moving side-effects to a separate tick.
   useEffect(() => {
     if (!isClient) return;
 
     const targetUsage = SlimmeKassa.getUsageFromJourneyId(state.journeyId || state.journey);
     
     // Only sync if there is an actual difference to prevent infinite loops
-    if (checkoutState.usage !== targetUsage) {
-      updateUsage(targetUsage);
+    if (checkoutState.usage !== targetUsage || checkoutState.usageId !== state.journeyId) {
+      updateUsage(targetUsage, state.journeyId || undefined);
     }
     
-    if (state.filters.media && JSON.stringify(checkoutState.media) !== JSON.stringify(state.filters.media)) {
-      updateMedia(state.filters.media);
+    if (state.filters.media && (JSON.stringify(checkoutState.media) !== JSON.stringify(state.filters.media) || JSON.stringify(checkoutState.mediaIds) !== JSON.stringify(state.filters.mediaIds))) {
+      updateMedia(state.filters.media, state.filters.mediaIds);
     }
-  }, [isClient, state.journey, state.filters.media, checkoutState.usage, checkoutState.media, updateUsage, updateMedia]);
+  }, [isClient, state.journey, state.journeyId, state.filters.media, state.filters.mediaIds, checkoutState.usage, checkoutState.usageId, checkoutState.media, checkoutState.mediaIds, updateUsage, updateMedia]);
 
   const detectStateFromUrl = useCallback((url: string) => {
     const segments = url.split('/').filter(Boolean);
@@ -236,9 +239,13 @@ export const VoicesMasterControlProvider: React.FC<{
     
     let step: MasterControlState['currentStep'] = 'voice';
     let journey: JourneyType | undefined = undefined;
+    let journeyId: number | undefined = undefined;
     let language: string | null = null;
+    let languageId: number | null = null;
     let gender: string | null = null;
+    let genderId: number | null = null;
     let media: string[] | undefined = undefined;
+    let mediaIds: number[] | undefined = undefined;
 
     if (url.includes('/checkout')) step = 'checkout';
     
@@ -260,25 +267,34 @@ export const VoicesMasterControlProvider: React.FC<{
       
       if (jSegment && jMap[jSegment]) {
         journey = jMap[jSegment];
+        journeyId = MarketManager.getJourneyId(journey) || undefined;
       }
 
       if (journey === 'commercial') {
         const mediaSegments = segments.slice(2);
         if (mediaSegments.length > 0) {
           const newMedia: string[] = [];
+          const newMediaIds: number[] = [];
           const newSpotsDetail: Record<string, number> = {};
           const newYearsDetail: Record<string, number> = {};
 
           mediaSegments.forEach(seg => {
             const match = seg.match(/^([a-z_]+)(\d+)x(\d+)$/i);
             if (match) {
-              const [_, mId, spots, years] = match;
-              const mediaId = mId.toLowerCase();
-              newMedia.push(mediaId);
-              newSpotsDetail[mediaId] = parseInt(spots);
-              newYearsDetail[mediaId] = parseInt(years);
+              const [_, mCode, spots, years] = match;
+              const mediaCode = mCode.toLowerCase();
+              newMedia.push(mediaCode);
+              
+              const mId = MarketManager.getServiceId(mediaCode);
+              if (mId) newMediaIds.push(mId);
+              
+              newSpotsDetail[mediaCode] = parseInt(spots);
+              newYearsDetail[mediaCode] = parseInt(years);
             } else {
-              newMedia.push(seg.toLowerCase());
+              const mediaCode = seg.toLowerCase();
+              newMedia.push(mediaCode);
+              const mId = MarketManager.getServiceId(mediaCode);
+              if (mId) newMediaIds.push(mId);
             }
           });
 
@@ -286,9 +302,13 @@ export const VoicesMasterControlProvider: React.FC<{
             return { 
               step, 
               journey, 
+              journeyId,
               language, 
+              languageId,
               gender, 
+              genderId,
               media: newMedia,
+              mediaIds: newMediaIds,
               spotsDetail: Object.keys(newSpotsDetail).length > 0 ? newSpotsDetail : undefined,
               yearsDetail: Object.keys(newYearsDetail).length > 0 ? newYearsDetail : undefined
             };
@@ -299,7 +319,7 @@ export const VoicesMasterControlProvider: React.FC<{
         const wordSegment = segments[2];
         if (wordSegment && /^\d+$/.test(wordSegment)) {
           const words = parseInt(wordSegment);
-          return { step, journey, language, gender, words };
+          return { step, journey, journeyId, language, languageId, gender, genderId, words };
         }
       }
     } 
@@ -314,11 +334,12 @@ export const VoicesMasterControlProvider: React.FC<{
       };
       journey = possibleJourneys[segments[1].toLowerCase()];
       if (journey) {
+        journeyId = MarketManager.getJourneyId(journey) || undefined;
         step = 'script';
       }
     }
 
-    return { step, journey, language, gender };
+    return { step, journey, journeyId, language, languageId, gender, genderId };
   }, []);
 
   useEffect(() => {
@@ -585,17 +606,29 @@ export const VoicesMasterControlProvider: React.FC<{
     });
 
     updateVoicesJourney(journey);
-    updateUsage(usage);
+    updateUsage(usage, journeyId || undefined);
   }, [updateVoicesJourney, updateUsage]);
 
   const updateFilters = useCallback((newFilters: Partial<MasterControlState['filters']>) => {
     setState(prev => {
       const updatedFilters = { ...prev.filters, ...newFilters };
 
-      // 🛡️ CHRIS-PROTOCOL: Auto-sync IDs for Handshake Truth (v2.14.734)
+      // 🛡️ CHRIS-PROTOCOL: Auto-sync IDs for Handshake Truth (v2.18.4)
       if (newFilters.language && !newFilters.languageId) {
-        // We can't easily resolve ID here without the full list, 
-        // so we still rely on the component's useEffect for the heavy lifting.
+        const langId = MarketManager.getLanguageId(newFilters.language);
+        if (langId) updatedFilters.languageId = langId;
+      }
+
+      if (newFilters.gender && !newFilters.genderId) {
+        // Gender IDs are usually 1 (Male), 2 (Female), 3 (Neutral)
+        const gMap: Record<string, number> = { 'male': 1, 'man': 1, 'female': 2, 'vrouw': 2, 'neutral': 3, 'neutraal': 3 };
+        const gId = gMap[newFilters.gender.toLowerCase()];
+        if (gId) updatedFilters.genderId = gId;
+      }
+
+      if (newFilters.country && !newFilters.countryId) {
+        const cId = MarketManager.getCountryId(newFilters.country);
+        if (cId) updatedFilters.countryId = cId;
       }
 
       if (updatedFilters.words !== undefined && updatedFilters.words < 5) {
@@ -605,9 +638,10 @@ export const VoicesMasterControlProvider: React.FC<{
       if (newFilters.media) {
         if (prev.journey === 'commercial' && newFilters.media.length === 0) {
           updatedFilters.media = ['online'];
+          updatedFilters.mediaIds = [5];
           updatedFilters.spotsDetail = { online: 1 };
         }
-        updateMedia(updatedFilters.media || []);
+        updateMedia(updatedFilters.media || [], updatedFilters.mediaIds);
       }
       if (newFilters.spots) updateSpots(newFilters.spots);
       if (newFilters.years) updateYears(newFilters.years);
@@ -651,13 +685,25 @@ export const VoicesMasterControlProvider: React.FC<{
     const host = typeof window !== 'undefined' ? window.location.host : (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || MarketManager.getMarketDomains()['BE'].replace('https://', ''));
     const market = MarketManager.getCurrentMarket(host);
     const defaultLang = MarketManager.getLanguageCode(market.primary_language);
+    const defaultLangId = market.primary_language_id;
     
     const defaultFilters: Partial<MasterControlState['filters']> = {
       language: defaultLang,
+      languageId: defaultLangId,
+      languages: [defaultLang.toLowerCase()],
+      languageIds: [defaultLangId],
       gender: null,
+      genderId: null,
       style: null,
       sortBy: 'popularity',
       words: state.journey === 'telephony' ? 25 : (state.journey === 'video' ? 200 : 100),
+      media: ['online'],
+      mediaIds: [5],
+      country: 'BE',
+      countryId: 1,
+      spots: 1,
+      years: 1,
+      liveSession: false,
     };
     setState(prev => ({ ...prev, filters: { ...prev.filters, ...defaultFilters } as MasterControlState['filters'] }));
   }, [state.journey]);

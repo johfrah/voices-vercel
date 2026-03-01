@@ -257,7 +257,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
 
     // Map journey to usage for CheckoutContext (v2.16.134: ID-First Handshake)
     const usage = SlimmeKassa.getUsageFromJourneyId(id);
-    updateUsage(usage);
+    updateUsage(usage, id);
   };
 
   const journeys = useMemo(() => {
@@ -809,6 +809,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                               updateFilters({ 
                                 spotsDetail: newSpotsDetail,
                                 media: mappedMedia,
+                                mediaIds: mediaIds // 🛡️ CHRIS-PROTOCOL: Handshake Truth (v2.18.4)
                               });
                             }}
                             yearsValue={state.filters.yearsDetail || {}}

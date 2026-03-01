@@ -37,6 +37,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Key and sourceText required' }, { status: 400 });
     }
 
+    // 🛡️ CHRIS-PROTOCOL: Slop Filter (v2.16.002)
+    // Voorkom dat HTML-slop (zoals Voiceglot spans) in de registry belandt.
+    if (sourceText.includes('contenteditable') || sourceText.includes('focus:ring-primary/30')) {
+      console.warn('[RegisterAPI] HTML Slop detected in sourceText, skipping registration:', sourceText);
+      return NextResponse.json({ success: true, message: 'Slop detected and ignored' });
+    }
+
     // 1. Registreer in de registry (Source of Truth)
     // We gebruiken een hash of de key als unieke identifier
     try {

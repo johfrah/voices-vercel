@@ -164,7 +164,7 @@ function getGlobalCache() {
 const ACTORS_CACHE_TTL = 1000 * 60 * 5; // 5 minutes
 
 export async function getActors(params: Record<string, string> = {}, lang: string = 'nl-BE'): Promise<SearchResults> {
-  const { language, country, attribute, search, gender, style, market: marketParam, worldId: worldIdParam } = params;
+  const { language, country, attribute, search, gender, style, market: marketParam, worldId: worldIdParam, languageId, genderId, countryId } = params;
   const market = marketParam || 'BE'; // Default to BE if not provided
   const cache = getGlobalCache();
   const cacheKey = JSON.stringify({ params, lang });
@@ -194,46 +194,45 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
           query = query.eq('world_id', parseInt(worldIdParam));
         }
           
-        // 🛡️ NUCLEAR HANDSHAKE: ID-First Filtering (v2.14.740)
-        // We use the database as the source of truth for IDs.
-        // If a specific languageId is provided, we use it.
-        // If only a string 'language' or 'lang' is provided, we resolve it to IDs.
-        const targetLangInput = params.languageId || language || lang;
-
-        if (targetLangInput && targetLangInput !== 'all' && targetLangInput !== 'any') {
-          if (!isNaN(parseInt(targetLangInput))) {
-            query = query.eq('native_language_id', parseInt(targetLangInput));
-          } else {
-            // 🛡️ CHRIS-PROTOCOL: ISO-5 Mandate (v2.18.2)
-            // Resolve string to ID(s)
-            const lowLang = targetLangInput.toLowerCase();
-            const { data: allLangs } = await supabase.from('languages').select('id, code, label');
-            
-            if (allLangs) {
-              // Special case: 'nl' should match both Vlaams (1) and Nederlands (2)
-              if (lowLang === 'nl' || lowLang === 'nl-be') {
-                query = query.in('native_language_id', [1, 2]);
-              } else if (lowLang === 'fr' || lowLang === 'fr-fr') {
-                query = query.in('native_language_id', [3, 4]);
-              } else if (lowLang === 'en' || lowLang === 'en-gb') {
-                query = query.in('native_language_id', [5, 6]);
-              } else {
-                const match = allLangs.find(l => 
-                  l.code.toLowerCase() === lowLang || 
-                  l.label.toLowerCase() === lowLang
-                );
-                if (match) {
-                  query = query.eq('native_language_id', match.id);
+        // 🛡️ NUCLEAR HANDSHAKE: ID-First Filtering (v2.18.4)
+        // We strictly prioritize IDs from the frontend.
+        if (languageId) {
+          query = query.eq('native_language_id', parseInt(languageId));
+        } else {
+          const targetLangInput = language || lang;
+          if (targetLangInput && targetLangInput !== 'all' && targetLangInput !== 'any') {
+            if (!isNaN(parseInt(targetLangInput))) {
+              query = query.eq('native_language_id', parseInt(targetLangInput));
+            } else {
+              // Resolve string to ID(s)
+              const lowLang = targetLangInput.toLowerCase();
+              const { data: allLangs } = await supabase.from('languages').select('id, code, label');
+              
+              if (allLangs) {
+                // 🛡️ CHRIS-PROTOCOL: ISO-5 Mandate (v2.18.2)
+                if (lowLang === 'nl' || lowLang === 'nl-be') {
+                  query = query.in('native_language_id', [1, 2]);
+                } else if (lowLang === 'fr' || lowLang === 'fr-fr') {
+                  query = query.in('native_language_id', [3, 4]);
+                } else if (lowLang === 'en' || lowLang === 'en-gb') {
+                  query = query.in('native_language_id', [5, 6]);
                 } else {
-                  // Last resort fallback to legacy column if ID not found
-                  // query = query.eq('native_lang', lowLang);
+                  const match = allLangs.find(l => 
+                    l.code.toLowerCase() === lowLang || 
+                    l.label.toLowerCase() === lowLang
+                  );
+                  if (match) {
+                    query = query.eq('native_language_id', match.id);
+                  }
                 }
               }
             }
           }
         }
 
-        if (gender) {
+        if (genderId) {
+          query = query.eq('gender_id', parseInt(genderId));
+        } else if (gender) {
           if (!isNaN(parseInt(gender))) {
             query = query.eq('gender_id', parseInt(gender));
           } else {
@@ -243,10 +242,16 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
               const match = allGenders.find(g => g.code.toLowerCase() === gender.toLowerCase());
               if (match) {
                 query = query.eq('gender_id', match.id);
-              } else {
-                // query = query.eq('gender', gender);
               }
             }
+          }
+        }
+
+        if (countryId) {
+          query = query.eq('country_id', parseInt(countryId));
+        } else if (country) {
+          if (!isNaN(parseInt(country))) {
+            query = query.eq('country_id', parseInt(country));
           }
         }
         

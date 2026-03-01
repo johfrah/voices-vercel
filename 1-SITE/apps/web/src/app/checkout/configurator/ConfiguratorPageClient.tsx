@@ -493,7 +493,7 @@ export default function ConfiguratorPageClient({
 
       if (data.success && data.script) {
         handleBriefingChange(data.script);
-        if (playClick) playClick('deep');
+        if (playClick) playClick('pro');
       }
     } catch (err) {
       console.error('Drop extraction failed:', err);
@@ -697,20 +697,26 @@ export default function ConfiguratorPageClient({
     });
   };
 
-  const handleUsageSwitch = (usageId: any) => {
+  const handleUsageSwitch = (usage: any) => {
     const projectTypeMap: Record<string, any> = {
       'telefonie': 'telephony',
       'unpaid': 'video',
       'commercial': 'commercial'
     };
 
-    if (projectTypeMap[usageId]) {
-      updateJourney(projectTypeMap[usageId]);
+    const usageToId: Record<string, number> = {
+      'telefonie': 26,
+      'unpaid': 27,
+      'commercial': 28
+    };
+
+    if (projectTypeMap[usage]) {
+      updateJourney(projectTypeMap[usage]);
     } else {
-      updateUsage(usageId);
+      updateUsage(usage, usageToId[usage]);
     }
 
-    if (usageId !== 'commercial') {
+    if (usage !== 'commercial') {
       updateSpots(1);
       updateYears(1);
     }
@@ -753,7 +759,8 @@ export default function ConfiguratorPageClient({
       newMedia = [...currentMedia, targetCode];
     }
     
-    updateMedia(newMedia);
+    const newMediaIds = newMedia.map(m => commercialMediaOptions.find(o => o.code === m)?.id).filter(Boolean) as number[];
+    updateMedia(newMedia, newMediaIds);
     setTimeout(() => {
       if (calculatePricing) calculatePricing();
     }, 100);
@@ -1229,7 +1236,7 @@ export default function ConfiguratorPageClient({
                               key={c.id}
                               type="button"
                               onClick={() => {
-                                updateCountry(c.code, c.id);
+                                updateCountry(c.id, parseInt(c.id));
                                 setTimeout(() => calculatePricing?.(), 50);
                               }}
                               className={cn(
@@ -1309,7 +1316,8 @@ export default function ConfiguratorPageClient({
                                           const rId = r.id.toLowerCase();
                                           const newId = `${baseId}_${rId}`;
                                           const newMedia = state.media.map(m => m === mediaId ? newId : m);
-                                          updateMedia(newMedia);
+                                          const newMediaIds = newMedia.map(m => commercialMediaOptions.find(o => o.code === m)?.id).filter(Boolean) as number[];
+                                          updateMedia(newMedia, newMediaIds);
                                           setTimeout(() => calculatePricing?.(), 50);
                                         }} className={cn("flex-1 py-2 rounded-lg border text-[11px] font-bold transition-all", mediaId.includes(r.id.toLowerCase()) ? "bg-primary/10 border-primary/20 text-primary" : "bg-va-off-white/50 border-black/[0.03] text-va-black/40 hover:border-black/10")}>
                                           <VoiceglotText translationKey={`common.region.${r.id.toLowerCase()}`} defaultText={r.label} />
@@ -1399,7 +1407,7 @@ export default function ConfiguratorPageClient({
                       onClick={() => {
                         const newState = !showAiAssistant;
                         setShowAiAssistant(newState);
-                        if (playClick) playClick(newState ? 'pro' : 'light');
+                        if (playClick) playClick(newState ? 'pro' : 'soft');
                         
                         // BOB-METHODE: Autoscroll naar de assistent als deze wordt geactiveerd
                         if (newState) {
@@ -1633,7 +1641,7 @@ export default function ConfiguratorPageClient({
                     setLocalBriefing={setLocalBriefing} 
                     onMinimize={() => {
                       setShowAiAssistant(false);
-                      if (playClick) playClick('light');
+                      if (playClick) playClick('soft');
                     }}
                   />
                 </motion.div>
@@ -1645,7 +1653,7 @@ export default function ConfiguratorPageClient({
                 <button 
                   onClick={() => {
                     setShowBriefingSelector(!showBriefingSelector);
-                    if (playClick) playClick(showBriefingSelector ? 'light' : 'pro');
+                    if (playClick) playClick(showBriefingSelector ? 'soft' : 'pro');
                   }} 
                   className={cn(
                     "w-full flex items-center justify-between p-5 rounded-[20px] border transition-all text-left group", 
@@ -1763,8 +1771,9 @@ export default function ConfiguratorPageClient({
 
               {state.usage !== 'telefonie' && state.selectedActor && (
                 (() => {
-                  const hasLiveRegie = state.selectedActor.price_live_regie > 0 || 
-                                     (state.selectedActor.rates_raw && Object.values(state.selectedActor.rates_raw).some((r: any) => r.live_regie > 0));
+                  const actor = state.selectedActor as any;
+                  const hasLiveRegie = actor.price_live_regie > 0 || 
+                                     (actor.rates_raw && Object.values(actor.rates_raw).some((r: any) => r.live_regie > 0));
                   
                   if (!hasLiveRegie) return null;
 
@@ -1773,7 +1782,7 @@ export default function ConfiguratorPageClient({
                       <button 
                         onClick={() => {
                           updateLiveSession(!state.liveSession);
-                          if (playClick) playClick(!state.liveSession ? 'pro' : 'light');
+                          if (playClick) playClick(!state.liveSession ? 'pro' : 'soft');
                         }} 
                         className={cn(
                           "w-full flex items-center justify-between p-5 rounded-[20px] border transition-all text-left group", 
@@ -1867,7 +1876,8 @@ export default function ConfiguratorPageClient({
         isOpen={showMediaModal}
         onClose={() => setShowMediaModal(false)}
         onConfirm={(selectedMedia) => {
-          updateMedia(selectedMedia);
+          const selectedMediaIds = selectedMedia.map(m => commercialMediaOptions.find(o => o.code === m)?.id).filter(Boolean) as number[];
+          updateMedia(selectedMedia, selectedMediaIds);
           setShowMediaModal(false);
           // Wait for state to update and then proceed
           setTimeout(() => {

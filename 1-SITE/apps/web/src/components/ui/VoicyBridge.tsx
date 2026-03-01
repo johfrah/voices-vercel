@@ -37,17 +37,23 @@ export const VoicyBridge: React.FC = () => {
       //  Checkout Controls (AI-Native)
       checkout: {
         setBriefing: (text: string) => {
-          playClick('deep');
+          playClick('pro');
           checkout.updateBriefing(text);
           return `Script bijgewerkt naar ${(text || '').split(' ').length} woorden.`;
         },
         setUsage: (usage: 'telefonie' | 'unpaid' | 'paid') => {
-          playClick('light');
-          checkout.updateUsage(usage);
+          playClick('soft');
+          const usageToId: Record<string, number> = {
+            'telefonie': 26,
+            'unpaid': 27,
+            'paid': 28
+          };
+          const mappedUsage = usage === 'paid' ? 'commercial' : (usage === 'telefonie' ? 'telephony' : 'unpaid');
+          checkout.updateUsage(mappedUsage as any, usageToId[usage]);
           return `Projecttype gewijzigd naar ${usage}.`;
         },
         nextStep: () => {
-          playClick('deep');
+          playClick('pro');
           const steps: any[] = ['briefing', 'voice', 'details', 'payment', 'done'];
           const currentIndex = steps.indexOf(checkout.state.step);
           if (currentIndex < steps.length - 1) {

@@ -178,7 +178,7 @@ export default function VoiceglotMasterPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           id: trans.id,
-          key: trans.translationKey,
+          key: trans.translationKey || trans.key, // Support both formats
           lang: trans.lang,
           text: editingText,
           isManual: true
@@ -186,9 +186,17 @@ export default function VoiceglotMasterPage() {
       });
 
       if (res.ok) {
-        setTranslations(prev => prev.map(item => 
-          item.id === trans.id ? { ...item, translatedText: editingText, isLocked: true, is_manually_edited: true } : item
-        ));
+        setTranslations(prev => prev.map(item => {
+          // Update the specific translation within the grouped item structure
+          if (item.translationKey === (trans.translationKey || trans.key)) {
+            const updatedTranslations = (item.translations || []).map((t: any) => 
+              t.id === trans.id ? { ...t, translatedText: editingText, isLocked: true, is_manually_edited: true } : t
+            );
+            return { ...item, translations: updatedTranslations };
+          }
+          // Fallback for flat structure
+          return item.id === trans.id ? { ...item, translatedText: editingText, isLocked: true, is_manually_edited: true } : item;
+        }));
         toast.success('Vertaling bijgewerkt en vergrendeld');
         setEditingId(null);
         playClick('success');
@@ -209,7 +217,15 @@ export default function VoiceglotMasterPage() {
         body: JSON.stringify({ id, isLocked: !currentLocked })
       });
       if (res.ok) {
-        setTranslations(prev => prev.map(trans => trans.id === id ? { ...trans, isLocked: !currentLocked } : trans));
+        setTranslations(prev => prev.map(item => {
+          // Update lock status in grouped structure
+          const updatedTranslations = (item.translations || []).map((t: any) => 
+            t.id === id ? { ...t, isLocked: !currentLocked } : t
+          );
+          if (item.translations) return { ...item, translations: updatedTranslations };
+          // Fallback for flat structure
+          return item.id === id ? { ...item, isLocked: !currentLocked } : item;
+        }));
         toast.success(!currentLocked ? 'Vertaling vergrendeld' : 'Vertaling ontgrendeld');
       }
     } catch (e) {
@@ -417,7 +433,9 @@ export default function VoiceglotMasterPage() {
           <option value="locked">Vergrendeld (Locked)</option>
           <option value="auto">Automatisch (AI)</option>
         </select>
-        <button 
+        <ButtonInstrument 
+          variant="pure"
+          size="none"
           onClick={() => setHideHideInternal(!hideInternal)}
           className={cn(
             "px-6 py-4 rounded-xl text-[15px] font-medium transition-all",
@@ -425,14 +443,16 @@ export default function VoiceglotMasterPage() {
           )}
         >
           {hideInternal ? 'Internal Verborgen' : 'Toon Internal'}
-        </button>
-        <button 
+        </ButtonInstrument>
+        <ButtonInstrument 
+          variant="pure"
+          size="none"
           onClick={() => fetchTranslations(1, true)}
           className="p-4 bg-va-off-white text-va-black/40 hover:text-primary rounded-xl transition-all"
           title="Ververs data"
         >
           <ArrowRightLeft size={20} className={cn(loading && "animate-spin")} />
-        </button>
+        </ButtonInstrument>
       </ContainerInstrument>
 
       {/* Table */}
@@ -451,26 +471,25 @@ export default function VoiceglotMasterPage() {
           <tbody className="divide-y divide-black/[0.03]">
             {groupedList.map((group: any) => (
               <tr key={group.key} className="group hover:bg-va-off-white/30 transition-colors">
-                {/* ... (td's blijven gelijk) */}
                 <td className="px-8 py-6 align-top">
-                  <div className="flex flex-col gap-2">
-                    <div className="flex items-center gap-2">
-                      <span className="text-[12px] font-mono text-primary font-bold">{group.key}</span>
+                  <ContainerInstrument className="flex flex-col gap-2">
+                    <ContainerInstrument className="flex items-center gap-2">
+                      <TextInstrument as="span" className="text-[12px] font-mono text-primary font-bold">{group.key}</TextInstrument>
                       {group.context && (
-                        <span className="text-[10px] font-bold bg-va-black text-white px-2 py-0.5 rounded-full uppercase tracking-tighter" title="Oorsprong van deze tekst">
+                        <TextInstrument as="span" className="text-[10px] font-bold bg-va-black text-white px-2 py-0.5 rounded-full uppercase tracking-tighter" title="Oorsprong van deze tekst">
                           {group.context}
-                        </span>
+                        </TextInstrument>
                       )}
                       {group.sourceLang && group.sourceLang !== 'nl' && (
-                        <span className="text-[10px] font-bold bg-amber-500 text-white px-2 py-0.5 rounded-full uppercase tracking-tighter animate-pulse" title="Deze tekst lijkt niet in het Nederlands te zijn ingevoerd">
+                        <TextInstrument as="span" className="text-[10px] font-bold bg-amber-500 text-white px-2 py-0.5 rounded-full uppercase tracking-tighter animate-pulse" title="Deze tekst lijkt niet in het Nederlands te zijn ingevoerd">
                           Source: {String(group.sourceLang).toUpperCase()}
-                        </span>
+                        </TextInstrument>
                       )}
-                    </div>
+                    </ContainerInstrument>
                     <TextInstrument className="text-[14px] text-va-black/80 font-medium leading-relaxed">
                       {group.originalText}
                     </TextInstrument>
-                  </div>
+                  </ContainerInstrument>
                 </td>
                 {['en', 'fr', 'de', 'es', 'pt'].map(lang => {
                   const trans = group.langs[lang];
@@ -479,9 +498,9 @@ export default function VoiceglotMasterPage() {
                   return (
                     <td key={lang} className={cn("px-6 py-6 align-top border-l border-black/[0.02]", slopDetected && "bg-red-50/50")}>
                       {trans ? (
-                        <div className="flex flex-col gap-2 group/cell relative">
+                        <ContainerInstrument className="flex flex-col gap-2 group/cell relative">
                           {editingId === trans.id ? (
-                            <div className="flex flex-col gap-2">
+                            <ContainerInstrument className="flex flex-col gap-2">
                               <textarea 
                                 autoFocus
                                 value={editingText}
@@ -492,17 +511,19 @@ export default function VoiceglotMasterPage() {
                                 }}
                                 className="w-full bg-va-off-white border-2 border-primary/20 rounded-lg px-3 py-2 text-[13px] outline-none focus:border-primary transition-all min-h-[80px]"
                               />
-                              <div className="flex justify-end gap-2">
-                                <button onClick={() => setEditingId(null)} className="text-[11px] font-bold text-va-black/40">ANNULEER</button>
-                                <button 
+                              <ContainerInstrument className="flex justify-end gap-2">
+                                <ButtonInstrument variant="pure" size="none" onClick={() => setEditingId(null)} className="text-[11px] font-bold text-va-black/40">ANNULEER</ButtonInstrument>
+                                <ButtonInstrument 
+                                  variant="pure"
+                                  size="none"
                                   onClick={() => handleSaveEdit(trans)}
                                   disabled={isSaving}
                                   className="text-[11px] font-bold text-primary"
                                 >
                                   {isSaving ? 'OPSLAAN...' : 'OPSLAAN'}
-                                </button>
-                              </div>
-                            </div>
+                                </ButtonInstrument>
+                              </ContainerInstrument>
+                            </ContainerInstrument>
                           ) : (
                             <>
                               <TextInstrument 
@@ -515,17 +536,17 @@ export default function VoiceglotMasterPage() {
                               >
                                 {trans.translatedText}
                               </TextInstrument>
-                              <div className="flex items-center justify-between mt-auto pt-2">
-                                <div className="flex items-center gap-1.5">
+                              <ContainerInstrument className="flex items-center justify-between mt-auto pt-2">
+                                <ContainerInstrument className="flex items-center gap-1.5">
                                   {trans.status === 'healing' ? (
                                     <>
                                       <Loader2 size={8} className="animate-spin text-amber-500" />
-                                      <span className="text-[9px] font-black uppercase tracking-tighter text-amber-500">Healing</span>
+                                      <TextInstrument as="span" className="text-[9px] font-black uppercase tracking-tighter text-amber-500">Healing</TextInstrument>
                                     </>
                                   ) : trans.status === 'healing_failed' ? (
                                     <>
                                       <AlertCircle size={8} className="text-red-500" />
-                                      <span className="text-[9px] font-black uppercase tracking-tighter text-red-500">Failed</span>
+                                      <TextInstrument as="span" className="text-[9px] font-black uppercase tracking-tighter text-red-500">Failed</TextInstrument>
                                     </>
                                   ) : (
                                     <>
@@ -534,37 +555,41 @@ export default function VoiceglotMasterPage() {
                                       ) : (
                                         <Sparkles size={8} className={cn(slopDetected ? "text-red-400" : "text-blue-400")} />
                                       )}
-                                      <span className="text-[9px] font-black uppercase tracking-tighter text-va-black/20">
+                                      <TextInstrument as="span" className="text-[9px] font-black uppercase tracking-tighter text-va-black/20">
                                         {trans.isLocked ? 'Locked' : slopDetected ? 'Slop' : 'Auto'}
-                                      </span>
+                                      </TextInstrument>
                                     </>
                                   )}
-                                </div>
-                                <button 
+                                </ContainerInstrument>
+                                <ButtonInstrument 
+                                  variant="pure"
+                                  size="none"
                                   onClick={() => toggleLock(trans.id, trans.isLocked)}
                                   className="opacity-0 group-hover/cell:opacity-100 transition-opacity"
                                 >
                                   {trans.isLocked ? <Lock size={10} className="text-va-black" /> : <Unlock size={10} className="text-va-black/20 hover:text-va-black" />}
-                                </button>
-                              </div>
+                                </ButtonInstrument>
+                              </ContainerInstrument>
                             </>
                           )}
-                        </div>
+                        </ContainerInstrument>
                       ) : (
-                        <div className="flex items-center gap-2 text-va-black/10">
-                          <span className="text-[10px] font-bold uppercase tracking-widest italic">Missing</span>
-                        </div>
+                        <ContainerInstrument className="flex items-center gap-2 text-va-black/10">
+                          <TextInstrument as="span" className="text-[10px] font-bold uppercase tracking-widest italic">Missing</TextInstrument>
+                        </ContainerInstrument>
                       )}
                     </td>
                   );
                 })}
                 <td className="px-8 py-6 text-right align-top">
-                  <button 
+                  <ButtonInstrument 
+                    variant="pure"
+                    size="none"
                     className="p-2 bg-va-off-white text-va-black/40 hover:text-primary rounded-lg transition-all"
                     title="Geschiedenis bekijken"
                   >
                     <History size={16} />
-                  </button>
+                  </ButtonInstrument>
                 </td>
               </tr>
             ))}

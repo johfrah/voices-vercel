@@ -31,7 +31,7 @@ export const BriefingStep: React.FC = () => {
       alert(t('checkout.briefing.alert_empty', 'Vul a.u.b. je tekst in.'));
       return;
     }
-    playClick('deep');
+    playClick('pro');
     setStep('voice');
   };
 
@@ -167,13 +167,13 @@ export const BriefingStep: React.FC = () => {
           </LabelInstrument>
           <ContainerInstrument className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {[
-              { id: 'telefonie', label: 'Telefoon / IVR', key: 'usage.telephony' },
-              { id: 'unpaid', label: 'Voice-over (Non-Paid)', key: 'usage.unpaid' },
-              { id: 'paid', label: 'Commercial (Paid)', key: 'usage.paid' },
+              { id: 'telefonie', usageId: 26, label: 'Telefoon / IVR', key: 'usage.telephony' },
+              { id: 'unpaid', usageId: 27, label: 'Voice-over (Non-Paid)', key: 'usage.unpaid' },
+              { id: 'commercial', usageId: 28, label: 'Commercial (Paid)', key: 'usage.paid' },
             ].map((type) => (
               <ButtonInstrument
                 key={type.id}
-                onClick={() => updateUsage(type.id as any)}
+                onClick={() => updateUsage(type.id as any, type.usageId)}
                 className={cn(
                   "py-5 px-6 rounded-[10px] border-2 font-light tracking-widest text-[15px] transition-all",
                   state.usage === type.id 
@@ -197,7 +197,7 @@ export const BriefingStep: React.FC = () => {
 
       {state.usage === 'telefonie' && (
         <ContainerInstrument className="lg:col-span-1">
-          <TelephonySmartSuggestions strokeWidth={1.5} />
+          <TelephonySmartSuggestions />
         </ContainerInstrument>
       )}
     </ContainerInstrument>

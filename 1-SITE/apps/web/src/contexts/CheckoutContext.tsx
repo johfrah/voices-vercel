@@ -31,8 +31,10 @@ interface CheckoutState {
   briefing: string;
   pronunciation: string;
   usage: UsageType;
+  usageId?: number; // 🛡️ Handshake Truth
   plan: PlanType;
   media: string[];
+  mediaIds: number[]; // 🛡️ Handshake Truth
   country: string | string[]; // Updated to support array
   countryId?: number; // 🛡️ Handshake Truth
   secondaryLanguages: string[]; // Added for telephony multi-language
@@ -45,6 +47,7 @@ interface CheckoutState {
   liveSession: boolean;
   selectedActor: Actor | null;
   isQuoteRequest: boolean;
+  journeyId?: number; // 🛡️ Handshake Truth
   music: {
     trackId: string | null;
     asBackground: boolean;
@@ -102,9 +105,9 @@ interface CheckoutContextType {
   toggleUpsell: (upsell: keyof CheckoutState['upsells']) => void;
   updateBriefing: (briefing: string) => void;
   updatePronunciation: (pronunciation: string) => void;
-  updateUsage: (usage: CheckoutState['usage']) => void;
+  updateUsage: (usage: CheckoutState['usage'], usageId?: number) => void;
   updatePlan: (plan: PlanType) => void;
-  updateMedia: (media: CheckoutState['media']) => void;
+  updateMedia: (media: CheckoutState['media'], mediaIds?: number[]) => void;
   updateCountry: (country: string | string[], countryId?: number) => void;
   updateSecondaryLanguages: (languages: string[], languageIds?: number[]) => void;
   updateSpots: (spots: number) => void;
@@ -138,16 +141,21 @@ interface CheckoutContextType {
 const initialState: CheckoutState = {
   step: 'briefing',
   journey: 'agency',
+  journeyId: 27, // 🛡️ Handshake Truth: Default to Voice-over
   upsells: {
     workshop_home: false,
   },
   briefing: '',
   pronunciation: '',
   usage: 'unpaid',
+  usageId: 3, // 🛡️ Handshake Truth: Default to Organic Video
   plan: 'basic',
   media: ['online'],
+  mediaIds: [5], // 🛡️ Handshake Truth: Default to Online
   country: 'BE',
+  countryId: 1, // 🛡️ Handshake Truth: Default to België
   secondaryLanguages: [],
+  secondaryLanguageIds: [],
   prompts: 1,
   spots: 1,
   years: 1,
@@ -354,14 +362,19 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   const setStep = useCallback((step: CheckoutState['step']) => setState(prev => ({ ...prev, step })), []);
   
-  const setJourney = useCallback((journey: CheckoutState['journey'], courseId?: number) => 
+  const setJourney = useCallback((journey: CheckoutState['journey'], courseId?: number) => {
+    const journeyId = (journey === 'agency') ? 27 : (journey === 'studio' ? 1 : (journey === 'academy' ? 30 : undefined));
     setState(prev => ({ 
       ...prev, 
       journey, 
+      journeyId,
+      usage: SlimmeKassa.getUsageFromJourneyId(journeyId || journey),
+      usageId: journeyId,
       courseId: journey === 'academy' ? courseId : undefined,
       editionId: journey === 'studio' ? courseId : undefined,
       items: (journey === 'studio' && courseId) ? [{ id: courseId, type: 'workshop_edition' }] : prev.items
-    })), []);
+    }));
+  }, []);
 
   const toggleUpsell = useCallback((upsell: keyof CheckoutState['upsells']) =>
     setState(prev =>
@@ -374,19 +387,19 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   
   const updatePronunciation = useCallback((pronunciation: string) => setState(prev => ({ ...prev, pronunciation })), []);
   
-  const updateUsage = useCallback((usage: CheckoutState['usage']) => {
-    console.log(`[CheckoutContext] Updating usage to: ${usage}`);
+  const updateUsage = useCallback((usage: CheckoutState['usage'], usageId?: number) => {
+    console.log(`[CheckoutContext] Updating usage to: ${usage} (ID: ${usageId})`);
     setState(prev => {
-      if (prev.usage === usage) return prev;
-      return { ...prev, usage };
+      if (prev.usage === usage && prev.usageId === usageId) return prev;
+      return { ...prev, usage, usageId };
     });
   }, []);
 
   const updatePlan = useCallback((plan: PlanType) => setState(prev => ({ ...prev, plan })), []);
-  const updateMedia = useCallback((media: CheckoutState['media']) => {
-    console.log(`[CheckoutContext] Updating media to: ${JSON.stringify(media)}`);
+  const updateMedia = useCallback((media: CheckoutState['media'], mediaIds?: number[]) => {
+    console.log(`[CheckoutContext] Updating media to: ${JSON.stringify(media)} (IDs: ${JSON.stringify(mediaIds)})`);
     setState(prev => {
-      const newState = { ...prev, media };
+      const newState = { ...prev, media, mediaIds: mediaIds || prev.mediaIds };
       
       //  MONKEYPROOF CACHE: Save commercial media selection
       if (prev.usage === 'commercial') {
@@ -636,16 +649,20 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
     const result = SlimmeKassa.calculate({
       usage: state.usage,
+      usageId: state.usageId,
       plan: state.plan,
       words: briefingWordCount,
       prompts: promptCount,
       mediaTypes: state.usage === 'commercial' ? (state.media as any) : [],
+      mediaIds: state.mediaIds,
       countries: Array.isArray(state.country) ? state.country : [state.country],
+      countryId: state.countryId,
       spots: spotsMap,
       years: yearsMap,
       liveSession: state.liveSession,
       actorRates: state.selectedActor as any, 
       music: state.music,
+      secondaryLanguageIds: state.secondaryLanguageIds,
       isVatExempt: !!state.customer.vat_number && 
         state.customer.vat_verified === true &&
         (state.customer.vat_number || '').length > 2 && 

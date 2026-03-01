@@ -34,8 +34,8 @@ export function Providers({
   initialUsage?: any;
 }) {
   const pathname = usePathname();
-  // 🛡️ CHRIS-PROTOCOL: Version Sync Mandate (v2.18.0)
-  const currentVersion = '2.18.3';
+  // 🛡️ CHRIS-PROTOCOL: Version Sync Mandate (v2.19.0)
+  const currentVersion = '2.19.0';
 
   // 🛡️ CHRIS-PROTOCOL: Language is now strictly passed from Server (Source of Truth)
   // to prevent Hydration Mismatch errors (#419, #425).
@@ -52,7 +52,7 @@ export function Providers({
       // Set the market in the cache to prevent hydration mismatch (#419)
       const host = window.location.host.replace('www.', '');
       (MarketManagerServer as any).cache[host] = market;
-      
+
       MarketManagerServer.setLanguages(Object.values(initialTranslations || {}).length > 0 ? [] : []); // Placeholder for languages if needed
       g.__marketPrimed = true;
     }
@@ -62,7 +62,7 @@ export function Providers({
   React.useEffect(() => {
     ClientLogger.init();
     console.log(`🚀 [Voices] Nuclear Version: v${currentVersion} (Godmode Zero)`);
-    
+
     // Expose version to window for verification scripts
     if (typeof window !== 'undefined') {
       (window as any).__VOICES_VERSION__ = currentVersion;

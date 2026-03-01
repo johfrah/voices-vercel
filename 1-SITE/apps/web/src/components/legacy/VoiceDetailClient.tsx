@@ -79,8 +79,20 @@ export function VoiceDetailClient({
           if (res.ok) {
             const data = await res.json();
             if (data.briefing) updateBriefing(data.briefing);
-            if (data.usage) updateUsage(data.usage);
-            if (data.media) updateMedia(data.media);
+            if (data.usage) {
+              const usageToId: Record<string, number> = {
+                'telephony': 26,
+                'unpaid': 27,
+                'commercial': 28,
+                'paid': 28
+              };
+              updateUsage(data.usage, usageToId[data.usage]);
+            }
+            if (data.media) {
+              const mediaRegistry = (typeof window !== 'undefined' ? (window as any).handshakeMediaTypes : []) || [];
+              const mediaIds = data.media.map((m: string) => mediaRegistry.find((o: any) => o.code === m)?.id).filter(Boolean);
+              updateMedia(data.media, mediaIds);
+            }
             // Voeg hier meer sync toe indien nodig
             return; // Token heeft prioriteit over segmenten
           }
@@ -107,15 +119,22 @@ export function VoiceDetailClient({
     };
 
     const mappedJourney = initialJourney ? (journeyMap[initialJourney.toLowerCase()] || initialJourney) : 'video';
+    const journeyIdMap: Record<string, number> = {
+      'telephony': 26,
+      'video': 27,
+      'commercial': 28
+    };
     
     // 🛡️ CHRIS-PROTOCOL: Handshake Truth (ID-First)
     // We resolve the journey string to its official database ID if possible.
     const journeyRegistry = (typeof window !== 'undefined' ? (window as any).handshakeJourneys : []) || [];
     const journeyMatch = journeyRegistry.find((j: any) => j.code === mappedJourney || j.label.toLowerCase() === mappedJourney.toLowerCase());
     const finalJourney = journeyMatch ? journeyMatch.code : mappedJourney;
+    const finalJourneyId = journeyMatch ? journeyMatch.id : journeyIdMap[finalJourney];
 
     // BOB-METHODE: Update zowel de MasterControl (voor filters/UI) als de Checkout (voor prijs)
     updateJourney(finalJourney as any);
+    updateUsage(finalJourney === 'commercial' ? 'commercial' : (finalJourney === 'telephony' ? 'telephony' : 'unpaid'), finalJourneyId);
     
     if (finalJourney === 'commercial' && initialMedium) {
       const mediumMap: Record<string, string> = {
@@ -138,13 +157,13 @@ export function VoiceDetailClient({
       const mediaMatch = mediaRegistry.find((m: any) => m.code === mediumType || m.label.toLowerCase() === mediumType.toLowerCase());
       
       if (mediaMatch) {
-        updateMedia([mediaMatch.code]);
+        updateMedia([mediaMatch.code], [mediaMatch.id]);
       } else if (mediumType) {
         updateMedia([mediumType]);
       }
-    } else if (finalJourney !== 'commercial') {
+    } else if (finalJourney === 'commercial') {
       // Reset media for non-commercial journeys to ensure pricing works
-      updateMedia(['online']);
+      updateMedia(['online'], [5]);
     }
 
     };

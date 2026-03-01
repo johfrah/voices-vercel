@@ -41,6 +41,8 @@ export default function AdminMarketsPage() {
   const [saving, setSaving] = useState(false);
   
   const [stats, setStats] = useState<any>(null);
+  const [markets, setMarkets] = useState<any[]>([]);
+  const [activeLangs, setActiveLangs] = useState<string[]>([]);
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -167,41 +169,41 @@ export default function AdminMarketsPage() {
             </ContainerInstrument>
           </ContainerInstrument>
 
-          <div className="space-y-4">
+          <ContainerInstrument className="space-y-4">
             {markets.map((m) => (
-              <div key={m.code} className="flex items-center justify-between p-6 bg-va-off-white/50 rounded-2xl border border-black/[0.03] group hover:border-primary/20 transition-all">
-                <div className="flex items-center gap-6">
-                  <div className="w-12 h-12 bg-white rounded-xl shadow-sm flex items-center justify-center text-lg font-bold">
+              <ContainerInstrument key={m.code} className="flex items-center justify-between p-6 bg-va-off-white/50 rounded-2xl border border-black/[0.03] group hover:border-primary/20 transition-all">
+                <ContainerInstrument className="flex items-center gap-6">
+                  <ContainerInstrument className="w-12 h-12 bg-white rounded-xl shadow-sm flex items-center justify-center text-lg font-bold">
                     {m.code}
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-[17px] font-bold">{m.name}</span>
-                    <span className="text-[13px] text-va-black/40 font-mono">{m.domains.join(', ')}</span>
-                  </div>
-                </div>
+                  </ContainerInstrument>
+                  <ContainerInstrument className="flex flex-col">
+                    <TextInstrument as="span" className="text-[17px] font-bold">{m.name}</TextInstrument>
+                    <TextInstrument as="span" className="text-[13px] text-va-black/40 font-mono">{m.domains.join(', ')}</TextInstrument>
+                  </ContainerInstrument>
+                </ContainerInstrument>
 
-                <div className="flex items-center gap-8">
-                  <div className="flex flex-col items-end">
-                    <span className="text-[10px] font-bold text-va-black/20 uppercase tracking-widest mb-1">Talen</span>
-                    <div className="flex gap-1">
+                <ContainerInstrument className="flex items-center gap-8">
+                  <ContainerInstrument className="flex flex-col items-end">
+                    <TextInstrument as="span" className="text-[10px] font-bold text-va-black/20 uppercase tracking-widest mb-1">Talen</TextInstrument>
+                    <ContainerInstrument className="flex gap-1">
                       {m.langs.map(l => (
-                        <span key={l} className="px-2 py-0.5 bg-white border border-black/5 rounded text-[10px] font-bold uppercase">{l}</span>
+                        <TextInstrument as="span" key={l} className="px-2 py-0.5 bg-white border border-black/5 rounded text-[10px] font-bold uppercase">{l}</TextInstrument>
                       ))}
-                    </div>
-                  </div>
+                    </ContainerInstrument>
+                  </ContainerInstrument>
                   
-                  <div className="flex flex-col items-end">
-                    <span className="text-[10px] font-bold text-va-black/20 uppercase tracking-widest mb-1">Default</span>
-                    <span className="text-[13px] font-bold text-primary uppercase">{m.default}</span>
-                  </div>
+                  <ContainerInstrument className="flex flex-col items-end">
+                    <TextInstrument as="span" className="text-[10px] font-bold text-va-black/20 uppercase tracking-widest mb-1">Default</TextInstrument>
+                    <TextInstrument as="span" className="text-[13px] font-bold text-primary uppercase">{m.default}</TextInstrument>
+                  </ContainerInstrument>
 
                   <ButtonInstrument variant="outline" size="sm" className="opacity-0 group-hover:opacity-100 transition-opacity">
                     Bewerken
                   </ButtonInstrument>
-                </div>
-              </div>
+                </ContainerInstrument>
+              </ContainerInstrument>
             ))}
-          </div>
+          </ContainerInstrument>
         </BentoCard>
 
         {/* TAAL REGISTRY & DNA */}
@@ -216,96 +218,98 @@ export default function AdminMarketsPage() {
             </ContainerInstrument>
           </ContainerInstrument>
 
-          <div className="relative z-10 space-y-4">
+          <ContainerInstrument className="relative z-10 space-y-4">
             {activeLangs.map(lang => (
-              <div key={lang} className="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/5 group hover:bg-white/10 transition-all">
-                <div className="flex items-center gap-3">
-                  <span className="text-lg uppercase font-black text-primary/60">{lang}</span>
-                  <div className="flex flex-col">
-                    <span className="text-[14px] font-medium capitalize">{new Intl.DisplayNames(['nl'], { type: 'language' }).of(lang)}</span>
-                    <div className="flex items-center gap-1">
+              <ContainerInstrument key={lang} className="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/5 group hover:bg-white/10 transition-all">
+                <ContainerInstrument className="flex items-center gap-3">
+                  <TextInstrument as="span" className="text-lg uppercase font-black text-primary/60">{lang}</TextInstrument>
+                  <ContainerInstrument className="flex flex-col">
+                    <TextInstrument as="span" className="text-[14px] font-medium capitalize">{new Intl.DisplayNames(['nl'], { type: 'language' }).of(lang)}</TextInstrument>
+                    <ContainerInstrument className="flex items-center gap-1">
                       <ShieldCheck size={10} className="text-green-500" />
-                      <span className="text-[9px] text-white/30 uppercase tracking-widest font-bold">DNA Actief</span>
-                    </div>
-                  </div>
-                </div>
-                <button 
+                      <TextInstrument as="span" className="text-[9px] text-white/30 uppercase tracking-widest font-bold">DNA Actief</TextInstrument>
+                    </ContainerInstrument>
+                  </ContainerInstrument>
+                </ContainerInstrument>
+                <ButtonInstrument 
+                  variant="pure"
+                  size="none"
                   onClick={() => handleSlimmeVertaling(lang)}
                   className="p-2 hover:text-primary transition-colors"
                   title="Scan deze taal"
                 >
                   <Zap size={16} />
-                </button>
-              </div>
+                </ButtonInstrument>
+              </ContainerInstrument>
             ))}
-          </div>
+          </ContainerInstrument>
 
           <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-primary/10 rounded-full blur-[80px]" />
         </BentoCard>
 
         {/* VOICES QUALITY WATCHDOG */}
         <BentoCard span="full" className="bg-va-off-white border border-black/5 p-10 rounded-[20px]">
-          <div className="flex items-center justify-between mb-8">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-green-500/10 text-green-600 rounded-[10px] flex items-center justify-center">
+          <ContainerInstrument className="flex items-center justify-between mb-8">
+            <ContainerInstrument className="flex items-center gap-4">
+              <ContainerInstrument className="w-12 h-12 bg-green-500/10 text-green-600 rounded-[10px] flex items-center justify-center">
                 <Zap strokeWidth={1.5} size={24} />
-              </div>
+              </ContainerInstrument>
               <ContainerInstrument>
                 <HeadingInstrument level={2} className="text-xl font-light tracking-tight">Kwaliteit Monitor</HeadingInstrument>
                 <TextInstrument className="text-[15px] text-va-black/40 font-light">Status van de Slimme vertaling motor.</TextInstrument>
               </ContainerInstrument>
-            </div>
+            </ContainerInstrument>
             
-          <div className="flex gap-8">
+          <ContainerInstrument className="flex gap-8">
             <Link href="/admin/voiceglot" className="flex flex-col items-end group">
-              <span className="text-[10px] font-bold text-va-black/20 uppercase tracking-widest group-hover:text-primary transition-colors">Registry</span>
-              <span className="text-2xl font-light tracking-tighter flex items-center gap-2">
+              <TextInstrument as="span" className="text-[10px] font-bold text-va-black/20 uppercase tracking-widest group-hover:text-primary transition-colors">Registry</TextInstrument>
+              <TextInstrument as="span" className="text-2xl font-light tracking-tighter flex items-center gap-2">
                 Beheer <ArrowLeft className="rotate-180" size={16} />
-              </span>
+              </TextInstrument>
             </Link>
-            <div className="flex flex-col items-end">
-              <span className="text-[10px] font-bold text-va-black/20 uppercase tracking-widest">Gescand</span>
-              <span className="text-2xl font-light tracking-tighter">{stats?.totalStrings || 0} strings</span>
-            </div>
-              <div className="flex flex-col items-end">
-                <span className="text-[10px] font-bold text-va-black/20 uppercase tracking-widest">Native Score</span>
-                <span className="text-2xl font-light tracking-tighter text-green-600">
+            <ContainerInstrument className="flex flex-col items-end">
+              <TextInstrument as="span" className="text-[10px] font-bold text-va-black/20 uppercase tracking-widest">Gescand</TextInstrument>
+              <TextInstrument as="span" className="text-2xl font-light tracking-tighter">{stats?.totalStrings || 0} strings</TextInstrument>
+            </ContainerInstrument>
+              <ContainerInstrument className="flex flex-col items-end">
+                <TextInstrument as="span" className="text-[10px] font-bold text-va-black/20 uppercase tracking-widest">Native Score</TextInstrument>
+                <TextInstrument as="span" className="text-2xl font-light tracking-tighter text-green-600">
                   {stats?.coverage?.find((c: any) => c.lang === 'en')?.percentage || 98}%
-                </span>
-              </div>
-            </div>
-          </div>
+                </TextInstrument>
+              </ContainerInstrument>
+            </ContainerInstrument>
+          </ContainerInstrument>
 
-          <div className="grid grid-cols-4 gap-6">
-            <div className="p-6 bg-white rounded-2xl border border-black/5 shadow-sm">
+          <ContainerInstrument className="grid grid-cols-4 gap-6">
+            <ContainerInstrument className="p-6 bg-white rounded-2xl border border-black/5 shadow-sm">
               <TextInstrument className="text-[11px] font-bold text-va-black/30 uppercase tracking-widest mb-4">Inclusiviteit</TextInstrument>
-              <div className="h-2 w-full bg-va-off-white rounded-full overflow-hidden">
-                <div className="h-full bg-primary w-[100%]" />
-              </div>
+              <ContainerInstrument className="h-2 w-full bg-va-off-white rounded-full overflow-hidden">
+                <ContainerInstrument className="h-full bg-primary w-[100%]" />
+              </ContainerInstrument>
               <TextInstrument className="mt-2 text-[13px] font-medium text-va-black/60">100% Voices Standard</TextInstrument>
-            </div>
-            <div className="p-6 bg-white rounded-2xl border border-black/5 shadow-sm">
+            </ContainerInstrument>
+            <ContainerInstrument className="p-6 bg-white rounded-2xl border border-black/5 shadow-sm">
               <TextInstrument className="text-[11px] font-bold text-va-black/30 uppercase tracking-widest mb-4">Vaktaal (Glossary)</TextInstrument>
-              <div className="h-2 w-full bg-va-off-white rounded-full overflow-hidden">
-                <div className="h-full bg-blue-500 w-[95%]" />
-              </div>
+              <ContainerInstrument className="h-2 w-full bg-va-off-white rounded-full overflow-hidden">
+                <ContainerInstrument className="h-full bg-blue-500 w-[95%]" />
+              </ContainerInstrument>
               <TextInstrument className="mt-2 text-[13px] font-medium text-va-black/60">Glossary V1.2 actief</TextInstrument>
-            </div>
-            <div className="p-6 bg-white rounded-2xl border border-black/5 shadow-sm">
+            </ContainerInstrument>
+            <ContainerInstrument className="p-6 bg-white rounded-2xl border border-black/5 shadow-sm">
               <TextInstrument className="text-[11px] font-bold text-va-black/30 uppercase tracking-widest mb-4">SEO Metadata</TextInstrument>
-              <div className="h-2 w-full bg-va-off-white rounded-full overflow-hidden">
-                <div className="h-full bg-orange-500 w-[88%]" />
-              </div>
+              <ContainerInstrument className="h-2 w-full bg-va-off-white rounded-full overflow-hidden">
+                <ContainerInstrument className="h-full bg-orange-500 w-[88%]" />
+              </ContainerInstrument>
               <TextInstrument className="mt-2 text-[13px] font-medium text-va-black/60">Rescan nodig voor DE</TextInstrument>
-            </div>
-            <div className="p-6 bg-white rounded-2xl border border-black/5 shadow-sm">
+            </ContainerInstrument>
+            <ContainerInstrument className="p-6 bg-white rounded-2xl border border-black/5 shadow-sm">
               <TextInstrument className="text-[11px] font-bold text-va-black/30 uppercase tracking-widest mb-4">Spatial Awareness</TextInstrument>
-              <div className="h-2 w-full bg-va-off-white rounded-full overflow-hidden">
-                <div className="h-full bg-va-black w-[92%]" />
-              </div>
+              <ContainerInstrument className="h-2 w-full bg-va-off-white rounded-full overflow-hidden">
+                <ContainerInstrument className="h-full bg-va-black w-[92%]" />
+              </ContainerInstrument>
               <TextInstrument className="mt-2 text-[13px] font-medium text-va-black/60">MaxChars handhaving actief</TextInstrument>
-            </div>
-          </div>
+            </ContainerInstrument>
+          </ContainerInstrument>
         </BentoCard>
       </BentoGrid>
 
