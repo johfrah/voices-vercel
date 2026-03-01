@@ -52,6 +52,7 @@ export class MarketManagerServer {
   private static journeysRegistry: Array<{ id: number, code: string, label: string }> = [];
   private static worldsRegistry: Array<{ id: number, code: string, label: string, description?: string }> = [];
   private static mediaTypesRegistry: Array<{ id: number, code: string, label: string }> = [];
+  private static servicesRegistry: Array<{ id: number, code: string, label: string, category?: string }> = [];
 
   /**
    * 🛡️ CHRIS-PROTOCOL: Handshake Truth Registry (v2.14.667)
@@ -87,11 +88,54 @@ export class MarketManagerServer {
     if (typeof window !== 'undefined') (window as any).handshakeMediaTypes = mediaTypes;
   }
 
+  public static setServices(services: any[]) {
+    this.servicesRegistry = services;
+    if (typeof global !== 'undefined') (global as any).handshakeServices = services;
+    if (typeof window !== 'undefined') (window as any).handshakeServices = services;
+  }
+
   public static get languages() { return this.languagesRegistry; }
   public static get countries() { return this.countriesRegistry; }
   public static get journeys() { return this.journeysRegistry; }
   public static get worlds() { return this.worldsRegistry; }
   public static get mediaTypes() { return this.mediaTypesRegistry; }
+  public static get services() { return this.servicesRegistry; }
+
+  /**
+   * 🛡️ CHRIS-PROTOCOL: Service ID Resolver (v2.16.137)
+   * Haalt het database ID op voor een service code.
+   */
+  static getServiceId(code: string): number | null {
+    if (!code) return null;
+    const lowCode = code.toLowerCase().trim();
+    
+    // 🛡️ CHRIS-PROTOCOL: Handshake Truth (Zero-Slop)
+    const registry = this.servicesRegistry.length > 0 ? this.servicesRegistry : 
+                    (typeof window !== 'undefined' && (window as any).handshakeServices ? (window as any).handshakeServices : []);
+
+    if (registry.length > 0) {
+      const match = registry.find((s: any) => s.code.toLowerCase() === lowCode);
+      if (match) return match.id;
+    }
+
+    // Emergency fallbacks (v2.16.137: Hard Service IDs)
+    const staticMap: Record<string, number> = {
+      'live_regie': 1,
+      'ivr': 2,
+      'unpaid': 3,
+      'bsf': 4,
+      'online': 5,
+      'radio_national': 6,
+      'radio_regional': 7,
+      'radio_local': 8,
+      'tv_national': 9,
+      'tv_regional': 10,
+      'tv_local': 11,
+      'podcast': 12
+    };
+
+    return staticMap[lowCode] || null;
+  }
 
   /**
    * 🌳 ANCESTRY RESOLVER (v2.16.132)

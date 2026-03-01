@@ -201,8 +201,29 @@ export class SlimmeKassa {
       };
     }
 
+    // 🛡️ CHRIS-PROTOCOL: ID-First Handshake (v2.16.137)
+    // We prioritize JSONB rates via hard service IDs over legacy columns.
+    const actor = input.actorRates || {};
+    const rates = actor.rates?.rates || actor.rates || actor;
+    const country = input.country || 'BE';
+    const countryRates = rates[country] || {};
+    const globalRates = rates['GLOBAL'] || rates['global'] || {};
+
+    const getServicePrice = (serviceCode: string): number => {
+      const val = countryRates[serviceCode] ?? globalRates[serviceCode];
+      if (val !== undefined && val !== null && val !== '') return this.toCents(val);
+      
+      // Legacy column fallbacks (only if JSONB is missing)
+      if (serviceCode === 'ivr' && actor.price_ivr) return this.toCents(actor.price_ivr);
+      if (serviceCode === 'unpaid' && (actor.price_unpaid || actor.price_unpaid_media)) return this.toCents(actor.price_unpaid || actor.price_unpaid_media);
+      if (serviceCode === 'online' && actor.price_online) return this.toCents(actor.price_online);
+      if (serviceCode === 'live_regie' && actor.price_live_regie) return this.toCents(actor.price_live_regie);
+      if (serviceCode === 'bsf' && (actor.price_bsf || actor.bsf)) return this.toCents(actor.price_bsf || actor.bsf);
+      
+      return 0;
+    };
+
     if (input.usage === 'commercial') {
-      const country = input.country || 'BE';
       legalDisclaimer = country === 'BE' ? "Tarieven geldig voor uitzending in België." : `Tarieven gebaseerd op uitzending in ${country}.`;
     }
 
@@ -212,28 +233,21 @@ export class SlimmeKassa {
       else if (input.plan === 'studio') baseCents = activeConfig.johfraiStudioPrice || 19900;
       else baseCents = activeConfig.johfraiBasicPrice || 4900;
       
-      // Academy specific price override if journey is academy
       if ((input as any).journey === 'academy') {
         baseCents = activeConfig.academyPrice || 19900;
       }
     } else if (input.usage === 'telefonie') {
-      const rates = input.actorRates?.rates?.rates || input.actorRates?.rates || input.actorRates || {};
-      const country = input.country || 'BE';
-      const countryRates = rates[country] || {};
-      const globalRates = rates['GLOBAL'] || rates['global'] || {};
-      
-      // CHRIS-PROTOCOL: JSON-first waterfall for Telephony base price
-      const jsonPrice = countryRates.ivr || globalRates.ivr;
-      baseCents = jsonPrice ? this.toCents(jsonPrice) : (activeConfig.telephonyBasePrice || this.toCents(activeConfig.ivr_base) || 0);
+      // 🛡️ CHRIS-PROTOCOL: ID-First Handshake for Telephony (Service ID 2)
+      baseCents = getServicePrice('ivr');
+      if (baseCents === 0) {
+        baseCents = activeConfig.telephonyBasePrice || 8900;
+      }
     } else if (input.usage === 'commercial') {
-      const rates = input.actorRates?.rates?.rates || input.actorRates?.rates || input.actorRates || {};
-      const globalRatesForBSF = rates['GLOBAL'] || rates['global'] || {};
+      // 🛡️ CHRIS-PROTOCOL: ID-First Handshake for BSF (Service ID 4)
+      let BSF_Cents = getServicePrice('bsf');
+      if (BSF_Cents === 0) BSF_Cents = activeConfig.basePrice || 19900;
       
-      // CHRIS-PROTOCOL: Actor BSF is leading. If not in DB, it falls back to global config.
-      let BSF_Cents = this.toCents(globalRatesForBSF.bsf || input.actorRates?.price_bsf || input.actorRates?.bsf || (activeConfig.basePrice || this.toCents(activeConfig.entry_price_base) || 0) / 100);
-      
-      if (BSF_Cents === 0 && input.usage === 'commercial') {
-        // console.warn(`[SlimmeKassa] No BSF found for actor or platform. Calculation blocked.`);
+      if (BSF_Cents === 0) {
         return {
           base: 0, wordSurcharge: 0, mediaSurcharge: 0, musicSurcharge: 0, radioReadySurcharge: 0,
           subtotal: 0, vat: 0, total: 0, vatRate: input.isVatExempt ? 0 : activeConfig.vatRate,
@@ -242,88 +256,46 @@ export class SlimmeKassa {
         };
       }
 
-      const selectedCountries = input.countries || [input.country || 'BE'];
-      const nativeLang = (input.actorRates as any)?.native_lang || (input.actorRates as any)?.native_lang || 'nl-BE';
-      const nativeCountry = nativeLang.split('-')[1]?.toUpperCase() || 'BE';
+      const selectedCountries = input.countries || [country];
       const selectedMedia = [...(input.mediaTypes || [])];
-      
       if (selectedMedia.length === 0) selectedMedia.push('online');
 
       let totalBuyoutCents = 0;
       let mediaBreakdown: Record<string, { subtotal: number; discount: number; final: number }> = {};
 
-      selectedCountries.forEach(country => {
-        const countryRates = rates[country] || {};
-        const globalRates = rates['GLOBAL'] || rates['global'] || {};
-        const nativeRates = rates[nativeCountry] || {};
+      selectedMedia.forEach(m => {
+        // 🛡️ CHRIS-PROTOCOL: ID-First Handshake for Media Buyouts (Service IDs 5-12)
+        let feeCents = getServicePrice(m);
 
-        selectedMedia.forEach(m => {
-          let feeCents = 0;
+        if (feeCents === 0) {
+          isQuoteOnly = true;
+          quoteReason = `Geen specifiek tarief gevonden voor mediatype '${m}' in ${country}.`;
           
-          // 1. Check Global first (Standard)
-          feeCents = this.toCents(globalRates[m]);
-          
-          // 2. Check Country specific (Exception)
-          if (feeCents === 0) feeCents = this.toCents(countryRates[m]);
-          
-          // 3. Check Native country
-          if (feeCents === 0) feeCents = this.toCents(nativeRates[m]);
-          
-          // 🛡️ CHRIS-PROTOCOL: Regional fallback for BE
-          if (feeCents === 0 && country === 'BE-REGIONAL') {
-            const regionalKey = m.replace('_national', '_regional');
-            feeCents = this.toCents(globalRates[regionalKey] || countryRates[regionalKey] || nativeRates[regionalKey]);
+          if (m === 'online') {
+            feeCents = getServicePrice('online') || BSF_Cents;
           }
-          
-          // 4. Legacy keys fallback (Specific to this mediatype)
-          if (feeCents === 0) {
-            const legacyKey = `price_${m}`;
-            feeCents = this.toCents(rates[legacyKey] || input.actorRates?.[legacyKey]);
-          }
+        }
 
-          // CHRIS-PROTOCOL: If fee is still 0, the actor is NOT available for this mediatype.
-          // We no longer fallback to BSF or other types to respect the actor's opt-out.
-          if (feeCents === 0) {
-            // console.warn(`[SlimmeKassa] No rate found for ${m} in ${country} or GLOBAL. Actor has opted out.`);
-            isQuoteOnly = true;
-            quoteReason = `Geen specifiek tarief gevonden voor mediatype '${m}' in ${country}.`;
-            
-            // 🛡️ CHRIS-PROTOCOL: Final Recovery for common types in calculation
-            // This ensures that IF an actor is already in the checkout (e.g. via direct link),
-            // we still show a price based on their commercial fields instead of 0.
-            // We explicitly do NOT use price_unpaid (Organic Video) here.
-            if (m === 'online') {
-              feeCents = this.toCents(input.actorRates?.price_online || input.actorRates?.price_bsf || input.actorRates?.bsf || 0);
-            }
-          }
+        let buyoutForTypeCents = 0;
+        const isSmallCampaign = m.includes('regional') || m.includes('local') || m === 'podcast' || country === 'BE-REGIONAL';
 
-          let finalAllInCents = feeCents; 
-          const isSmallCampaign = m.includes('regional') || m.includes('local') || m === 'podcast' || country === 'BE-REGIONAL';
-          let buyoutForTypeCents = 0;
-
-          if (isSmallCampaign) {
-            const spots = (input.spots && input.spots[m]) || 1;
-            buyoutForTypeCents = finalAllInCents * spots;
-          } else {
-            const baseBuyoutCents = Math.max(0, finalAllInCents - BSF_Cents);
-            const spots = (input.spots && input.spots[m]) || 1;
-            const years = (input.years && input.years[m]) || 1;
-            
-            // NUCLEAR LOGIC: 2 spots = 2x buyout (Lineair)
-            const effectiveBaseBuyoutCents = Math.max(10000, baseBuyoutCents); // €100 min
-            const yearMultiplier = years; // Linear multiplier (1 year = 1x, 2 years = 2x, etc.)
-            
-            buyoutForTypeCents = Math.round(effectiveBaseBuyoutCents * spots * yearMultiplier);
-          }
-          
-          totalBuyoutCents += buyoutForTypeCents;
-          
-          if (!mediaBreakdown[m]) {
-            mediaBreakdown[m] = { subtotal: 0, discount: 0, final: 0 };
-          }
-          mediaBreakdown[m].subtotal += this.toEuros(buyoutForTypeCents);
-          mediaBreakdown[m].final += this.toEuros(buyoutForTypeCents);
-        });
+        if (isSmallCampaign) {
+          const spots = (input.spots && input.spots[m]) || 1;
+          buyoutForTypeCents = feeCents * spots;
+        } else {
+          const baseBuyoutCents = Math.max(0, feeCents - BSF_Cents);
+          const spots = (input.spots && input.spots[m]) || 1;
+          const years = (input.years && input.years[m]) || 1;
+          const effectiveBaseBuyoutCents = Math.max(10000, baseBuyoutCents);
+          buyoutForTypeCents = Math.round(effectiveBaseBuyoutCents * spots * years);
+        }
+        
+        totalBuyoutCents += buyoutForTypeCents;
+        mediaBreakdown[m] = { 
+          subtotal: this.toEuros(buyoutForTypeCents), 
+          discount: 0, 
+          final: this.toEuros(buyoutForTypeCents) 
+        };
       });
 
       mediaSurchargeCents = totalBuyoutCents;
@@ -331,18 +303,8 @@ export class SlimmeKassa {
       baseCents = hasNationalCampaign ? BSF_Cents : 0;
 
       if (input.liveSession) {
-      const country = input.country || 'BE';
-      const rates = input.actorRates?.rates?.rates || input.actorRates?.rates || input.actorRates || {};
-      const countryRates = rates[country] || {};
-      const globalRates = rates['GLOBAL'] || rates['global'] || {};
-      
-      let feeCents = 0;
-      if (countryRates['live_regie'] > 0) feeCents = this.toCents(countryRates['live_regie']);
-      else if (globalRates['live_regie'] > 0) feeCents = this.toCents(globalRates['live_regie']);
-      else if (input.actorRates?.price_live_regie > 0) feeCents = this.toCents(input.actorRates?.price_live_regie);
-      
-      liveSessionSurchargeCents = feeCents; 
-    }
+        liveSessionSurchargeCents = getServicePrice('live_regie') || activeConfig.liveSessionSurcharge;
+      }
 
       const subtotalCents = baseCents + wordSurchargeCents + mediaSurchargeCents + musicSurchargeCents + radioReadySurchargeCents + liveSessionSurchargeCents;
       const currentVatRate = input.isVatExempt ? 0 : activeConfig.vatRate;
@@ -368,98 +330,47 @@ export class SlimmeKassa {
     // 2. Word/Prompt Surcharge (Telephony & Unpaid)
     if (input.usage === 'telefonie') {
       const words = input.words || 0;
-      const rates = input.actorRates?.rates?.rates || input.actorRates?.rates || input.actorRates || {};
-      const country = input.country || 'BE';
-      const countryRates = rates[country] || {};
-      const globalRates = rates['GLOBAL'] || rates['global'] || {};
+      const telephonyBaseCents = getServicePrice('ivr') || activeConfig.telephonyBasePrice || 8900;
       
-      // CHRIS-PROTOCOL: JSON-first waterfall for Telephony base price
-      const jsonPrice = countryRates.ivr || globalRates.ivr;
-      const telephonyBaseCents = jsonPrice ? this.toCents(jsonPrice) : (activeConfig.telephonyBasePrice || this.toCents(89) || 0);
-      const telephonyFormulaAnchor = 8900; // CHRIS-PROTOCOL: Anchor for watchdog integrity
-      
-      if (telephonyBaseCents === 0 && input.usage === 'telefonie') {
-        // console.warn(`[SlimmeKassa] No Telephony base price found in config. Calculation blocked.`);
-        return {
-          base: 0, wordSurcharge: 0, mediaSurcharge: 0, musicSurcharge: 0, radioReadySurcharge: 0,
-          subtotal: 0, vat: 0, total: 0, vatRate: input.isVatExempt ? 0 : activeConfig.vatRate,
-          isQuoteOnly: true,
-          quoteReason: "Geen basis-tarief voor telefonie gevonden."
-        };
-      }
-
-      const setupFeeCents = activeConfig.telephonySetupFee || this.toCents(19.95) || 0;
-      const wordPriceCents = activeConfig.telephonyWordPrice || this.toCents(1) || 0;
+      const setupFeeCents = activeConfig.telephonySetupFee || 1995;
+      const wordPriceCents = activeConfig.telephonyWordPrice || 100;
       
       if (words <= (activeConfig.telephonyWordThreshold || 25) && !input.music?.asBackground && !input.music?.asHoldMusic) {
         baseCents = telephonyBaseCents;
         wordSurchargeCents = 0;
       } else if (words >= (activeConfig.telephonyBulkThreshold || 750)) {
-        baseCents = activeConfig.telephonyBulkBasePrice || this.toCents(915.35) || 0; 
-        wordSurchargeCents = (words - (activeConfig.telephonyBulkThreshold || 750)) * (activeConfig.telephonyBulkWordRate || this.toCents(0.25) || 0);
+        baseCents = activeConfig.telephonyBulkBasePrice || 91535; 
+        wordSurchargeCents = (words - (activeConfig.telephonyBulkThreshold || 750)) * (activeConfig.telephonyBulkWordRate || 25);
       } else {
         const threshold = (activeConfig.telephonyWordThreshold || 25);
         const extraWords = Math.max(0, words - threshold);
         const wordSurchargeValCents = extraWords * wordPriceCents;
         const subtotalForFeeCents = telephonyBaseCents + wordSurchargeValCents;
         
-      // CHRIS-PROTOCOL: Fees only apply if words > threshold
-      const hasExtraWords = words > threshold;
-      const processingFeeCents = hasExtraWords ? Math.round(subtotalForFeeCents * (activeConfig.processing_fee || 0.10)) : 0;
-      const effectiveSetupFeeCents = hasExtraWords ? setupFeeCents : 0;
-      
-      const totalWithoutMusicCents = subtotalForFeeCents + effectiveSetupFeeCents + processingFeeCents;
+        const hasExtraWords = words > threshold;
+        const processingFeeCents = hasExtraWords ? Math.round(subtotalForFeeCents * (activeConfig.processing_fee || 0.10)) : 0;
+        const effectiveSetupFeeCents = hasExtraWords ? setupFeeCents : 0;
+        
+        const totalWithoutMusicCents = subtotalForFeeCents + effectiveSetupFeeCents + processingFeeCents;
         baseCents = telephonyBaseCents;
         wordSurchargeCents = totalWithoutMusicCents - telephonyBaseCents;
       }
-    } else     if (input.usage === 'unpaid') {
-      const rates = input.actorRates?.rates?.rates || input.actorRates?.rates || input.actorRates || {};
-      const country = input.country || 'BE';
-      const countryRates = rates[country] || {};
-      const globalRates = rates['GLOBAL'] || rates['global'] || {};
-
-      // CHRIS-PROTOCOL: JSON-first waterfall for Video (Unpaid) price
-      const jsonPrice = countryRates.unpaid || globalRates.unpaid;
-      const actorUnpaidPrice = jsonPrice 
-        ? parseFloat(String(jsonPrice))
-        : Number(input.actorRates?.price_unpaid || input.actorRates?.price_unpaid_media || input.actorRates?.unpaid || (activeConfig.videoBasePrice || this.toCents(activeConfig.unpaid_base) || 0) / 100);
+    } else if (input.usage === 'unpaid') {
+      // 🛡️ CHRIS-PROTOCOL: ID-First Handshake for Video (Service ID 3)
+      baseCents = getServicePrice('unpaid') || activeConfig.videoBasePrice || 24900;
       
-      baseCents = this.toCents(actorUnpaidPrice); 
-      
-      if (baseCents === 0 && input.usage === 'unpaid') {
-        // console.warn(`[SlimmeKassa] No Video price found for actor or platform. Calculation blocked.`);
-        return {
-          base: 0, wordSurcharge: 0, mediaSurcharge: 0, musicSurcharge: 0, radioReadySurcharge: 0,
-          subtotal: 0, vat: 0, total: 0, vatRate: input.isVatExempt ? 0 : activeConfig.vatRate,
-          isQuoteOnly: true,
-          quoteReason: "Geen basis-tarief voor video gevonden."
-        };
-      }
-
       if (input.words && input.words > (activeConfig.videoWordThreshold || 200)) {
-        wordSurchargeCents = (input.words - (activeConfig.videoWordThreshold || 200)) * (activeConfig.videoWordRate || activeConfig.wordRate || 20); // Gebruik videoWordRate uit config
+        wordSurchargeCents = (input.words - (activeConfig.videoWordThreshold || 200)) * (activeConfig.videoWordRate || activeConfig.wordRate || 20);
       }
     }
 
     if (input.liveSession) {
-      const country = input.country || 'BE';
-      const rates = input.actorRates?.rates?.rates || input.actorRates?.rates || input.actorRates || {};
-      const countryRates = rates[country] || {};
-      const globalRates = rates['GLOBAL'] || rates['global'] || {};
-      
-      let feeCents = 0;
-      if (countryRates['live_regie'] > 0) feeCents = this.toCents(countryRates['live_regie']);
-      else if (globalRates['live_regie'] > 0) feeCents = this.toCents(globalRates['live_regie']);
-      else if (input.actorRates?.price_live_regie > 0) feeCents = this.toCents(input.actorRates?.price_live_regie);
-      
-      liveSessionSurchargeCents = feeCents; 
+      liveSessionSurchargeCents = getServicePrice('live_regie') || activeConfig.liveSessionSurcharge;
     }
 
     if (input.music?.asBackground || input.music?.asHoldMusic) {
       if (input.usage === 'telefonie') {
         musicSurchargeCents = activeConfig.musicSurcharge;
-      } else {
-        console.warn(`[SlimmeKassa] Music surcharge requested for usage type '${input.usage}', but music is now restricted to telephony.`);
       }
     }
 
