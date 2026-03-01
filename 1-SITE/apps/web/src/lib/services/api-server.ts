@@ -937,7 +937,15 @@ export async function getWorkshops(params: { limit?: number, worldId?: number, j
       media:media_id(*),
       editions:workshop_editions(
         *,
-        instructor:instructors(id, name, first_name, last_name, bio, photo_id),
+        instructor:instructors(
+          id, 
+          name, 
+          first_name, 
+          last_name, 
+          bio, 
+          photo_id,
+          photo:photo_id(*)
+        ),
         location:locations(id, name, address, city, zip, country)
       )
     `)
@@ -977,11 +985,9 @@ export async function getWorkshops(params: { limit?: number, worldId?: number, j
     const upcomingEditions = (w.editions || [])
       .filter((e: any) => e.date >= now && e.status !== 'cancelled')
       .map((e: any) => {
-        // Map instructor photo if possible
-        let instructorPhotoUrl = null;
-        if (e.instructor?.photo_id) {
-          // Note: In this SDK query, we don't have the media join for instructors yet.
-          // For now, we'll just ensure the object is clean.
+        // Map instructor photo URL from joined media
+        if (e.instructor?.photo && e.instructor.photo.file_path) {
+          e.instructor.photo_url = `${SUPABASE_STORAGE_URL}/${e.instructor.photo.file_path}`;
         }
         return e;
       })
