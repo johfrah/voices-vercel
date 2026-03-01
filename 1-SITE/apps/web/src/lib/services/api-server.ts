@@ -1027,9 +1027,11 @@ export async function getWorkshops(params: { limit?: number, worldId?: number, j
 }
 
 export async function getTranslationsServer(lang: string): Promise<Record<string, string>> {
-  if (lang === 'nl') return {};
+  // 💀 TERMINATION: 'nl' variant is eliminated. Force 'nl-be'.
+  const targetLang = lang === 'nl' ? 'nl-be' : lang;
+  
   const cache = getGlobalCache();
-  const cached = cache.translationCache[lang];
+  const cached = cache.translationCache[targetLang];
   if (cached && (Date.now() - cached.timestamp) < 3600000) return cached.data;
   
   try {
@@ -1037,8 +1039,8 @@ export async function getTranslationsServer(lang: string): Promise<Record<string
     const { data, error } = await supabase
       .from('translations')
       .select('translation_key, translated_text, original_text')
-      .eq('lang', lang)
-      .limit(500);
+      .eq('lang', targetLang)
+      .limit(1000); // 🛡️ Increased limit for full registry coverage
 
     if (error) throw error;
 
@@ -1050,12 +1052,12 @@ export async function getTranslationsServer(lang: string): Promise<Record<string
       }
     });
     
-    cache.translationCache[lang] = { data: translationMap, timestamp: Date.now() };
+    cache.translationCache[targetLang] = { data: translationMap, timestamp: Date.now() };
     return translationMap;
   } catch (e) { 
     const { ServerWatchdog } = await import('./server-watchdog');
     ServerWatchdog.report({
-      error: `Failed to fetch translations for lang: ${lang}`,
+      error: `Failed to fetch translations for lang: ${targetLang}`,
       stack: e instanceof Error ? e.stack : String(e),
       component: 'api-server:getTranslationsServer',
       level: 'error'

@@ -74,7 +74,8 @@ export const VoiceglotText: React.FC<VoiceglotTextProps> = ({
     
     // 🛡️ CHRIS-PROTOCOL: 'nl-BE' is the Source of Truth. Default is Truth.
     // We forceer de defaultText voor nl-BE tenzij er een handmatige wijziging is.
-    const isSourceOfTruth = language === 'nl-BE';
+    // We gebruiken case-insensitive check om lekken te voorkomen.
+    const isSourceOfTruth = language?.toLowerCase() === 'nl-be';
 
     if (noTranslate || isAdemingBrand) {
       setContent(defaultText);

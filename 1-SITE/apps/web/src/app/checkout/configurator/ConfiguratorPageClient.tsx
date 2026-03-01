@@ -761,7 +761,7 @@ export default function ConfiguratorPageClient({
 
   const usageTypes = [
     { id: 'telefonie', label: 'Telefoon', icon: Phone, key: 'journey.telephony', description: 'IVR, Wachtmuziek' },
-    { id: 'unpaid', label: 'Video', icon: Video, key: 'journey.video', description: 'Online, Corporate' },
+    { id: 'unpaid', label: 'Voice-over', icon: Video, key: 'journey.video', description: 'Online, Corporate' },
     { id: 'commercial', label: 'Commercial', icon: Megaphone, key: 'journey.commercial', description: 'Radio, TV, Ads' },
   ];
 
@@ -1184,7 +1184,7 @@ export default function ConfiguratorPageClient({
                 <div onClick={() => router.push('/agency')} className="bg-white rounded-[20px] shadow-aura p-12 text-center border border-black/[0.03] cursor-pointer hover:scale-[1.02] transition-all group">
                   <Mic size={48} strokeWidth={1} className="mx-auto text-va-black/10 group-hover:text-primary/20 transition-colors mb-4" />
                   <TextInstrument className="text-[15px] font-light text-va-black/40">
-                    <VoiceglotText translationKey="configurator.select_voice_first" defaultText="Kies eerst een stemacteur" />
+                    <VoiceglotText translationKey="configurator.select_voice_first" defaultText="Kies eerst een voice-over" />
                   </TextInstrument>
                 </div>
               )}

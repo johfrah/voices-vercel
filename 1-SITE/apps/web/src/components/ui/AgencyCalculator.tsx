@@ -236,9 +236,9 @@ export const AgencyCalculator = ({
           <div className="flex justify-center">
             <ContainerInstrument plain className="flex p-1 bg-white rounded-2xl border border-black/5 shadow-sm">
               {[
-                { id: 'telefonie', label: t('common.telephony', 'Telefonie'), sub: t('common.telephony.sub', 'Voicemail & IVR'), icon: Phone },
-                { id: 'unpaid', label: t('common.video', 'Video'), sub: t('common.video.sub', 'Corporate & Web'), icon: Video },
-                { id: 'paid', label: t('common.commercial', 'Advertentie'), sub: t('common.commercial.sub', 'Radio, TV & Ads'), icon: Megaphone }
+                { id: 'telefonie', label: t('common.telephony', 'Telefoon'), sub: t('common.telephony.sub', 'Voicemail & IVR'), icon: Phone },
+                { id: 'unpaid', label: t('common.video', 'Voice-over'), sub: t('common.video.sub', 'Corporate & Web'), icon: Video },
+                { id: 'paid', label: t('common.commercial', 'Commercial'), sub: t('common.commercial.sub', 'Radio, TV & Ads'), icon: Megaphone }
               ].map((u) => (
                 <ButtonInstrument 
                   key={u.id}
@@ -527,7 +527,7 @@ export const AgencyCalculator = ({
                     <thead>
                       <tr className="border-b border-black/5 bg-va-off-white/50">
                         <th className="px-6 py-4 text-[10px] font-bold text-va-black/30 uppercase tracking-[0.2em]">
-                          <VoiceglotText translationKey="common.voice_actor" defaultText="Stemacteur" />
+                          <VoiceglotText translationKey="common.voice_actor" defaultText="Voice-over" />
                         </th>
                         {calcUsage === 'paid' ? (
                           <th className="px-6 py-4 text-[10px] font-bold text-va-black/30 uppercase tracking-[0.2em]">

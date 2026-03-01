@@ -17,9 +17,9 @@ export function JourneySelector() {
   const { playClick } = useSonicDNA();
 
   const journeys = [
-    { id: 'telephony', icon: Phone, label: 'Telefonie', key: 'journey.telephony' },
-    { id: 'video', icon: Video, label: 'Video', key: 'journey.video' },
-    { id: 'commercial', icon: Megaphone, label: 'Advertentie', key: 'journey.commercial' },
+    { id: 'telephony', icon: Phone, label: 'Telefoon', key: 'journey.telephony' },
+    { id: 'video', icon: Video, label: 'Voice-over', key: 'journey.video' },
+    { id: 'commercial', icon: Megaphone, label: 'Commercial', key: 'journey.commercial' },
   ] as const;
 
   return (

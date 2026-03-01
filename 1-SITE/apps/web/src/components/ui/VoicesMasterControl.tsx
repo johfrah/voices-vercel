@@ -287,7 +287,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
     // If database data is not yet available, we show the 3 main Agency journeys.
     if (!journeysData || journeysData.length === 0) {
       return [
-        { id: 'telephony', icon: (props: any) => <IconInstrument name="phone" {...props} />, label: 'Telefonie', subLabel: 'Voicemail & IVR', key: 'journey.telephony', color: 'text-primary' },
+        { id: 'telephony', icon: (props: any) => <IconInstrument name="phone" {...props} />, label: 'Telefoon', subLabel: 'Voicemail & IVR', key: 'journey.telephony', color: 'text-primary' },
         { id: 'video', icon: (props: any) => <IconInstrument name="video" {...props} />, label: 'Voice-over', subLabel: 'Corporate & Website', key: 'journey.video', color: 'text-primary' },
         { id: 'commercial', icon: (props: any) => <IconInstrument name="megaphone" {...props} />, label: 'Commercial', subLabel: 'Radio, TV & Online Ads', key: 'journey.commercial', color: 'text-primary' },
       ];
@@ -297,10 +297,18 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
       .filter(fj => allowedCodes.includes(fj.code))
       .map(fj => {
         const frontendId = mapping[fj.code] || fj.code;
+        
+        // 🛡️ CHRIS-PROTOCOL: Source Truth Mapping (v2.16.124)
+        // We forceer de juiste labels voor de hoofd-journeys.
+        let label = fj.label.replace('Agency: ', '');
+        if (frontendId === 'telephony') label = 'Telefoon';
+        if (frontendId === 'video') label = 'Voice-over';
+        if (frontendId === 'commercial') label = 'Commercial';
+
         return {
           id: frontendId,
           icon: (props: any) => <IconInstrument name={fj.icon || (frontendId === 'telephony' ? 'phone' : frontendId === 'video' ? 'video' : 'megaphone')} {...props} />,
-          label: fj.label.replace('Agency: ', ''), // Clean label for UI
+          label: label,
           subLabel: fj.description || '',
           key: `journey.${frontendId}`,
           color: fj.color || 'text-primary'

@@ -292,7 +292,7 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
         {/*  INFO BLOCK */}
         <div className="flex-1 min-w-0 z-10 py-1">
           <TextInstrument className="text-white font-light text-[18px] tracking-tight truncate leading-tight block">
-            {demo.actor_name || 'Stemacteur'}
+            {demo.actor_name || 'Voice-over'}
           </TextInstrument>
           
           {/*  PLAYLIST / CATEGORIES (SPOTIFY STYLE) */}

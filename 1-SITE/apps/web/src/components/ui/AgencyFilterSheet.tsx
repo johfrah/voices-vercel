@@ -125,7 +125,7 @@ export const AgencyFilterSheet: React.FC<{
                     {[
                       { id: 'telephony', label: 'Telefonie', icon: Phone },
                       { id: 'video', label: 'Video', icon: Video },
-                      { id: 'commercial', label: 'Advertentie', icon: Megaphone }
+                      { id: 'commercial', label: 'Commercial', icon: Megaphone }
                     ].map((j) => (
                       <ButtonInstrument
                         key={j.id}

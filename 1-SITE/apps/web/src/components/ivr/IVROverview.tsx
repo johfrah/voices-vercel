@@ -137,7 +137,7 @@ export const IVROverview: React.FC = () => {
           <div className="flex items-center gap-3 mb-4 text-black/40">
             <Mic2 strokeWidth={1.5} size={18} />
             <span className="text-[15px] font-light tracking-widest">
-              <VoiceglotText  translationKey="ivr.configurator.voice_actor" defaultText="Stemacteur" />
+              <VoiceglotText  translationKey="ivr.configurator.voice_actor" defaultText="Voice-over" />
             </span>
           </div>
           <p className="font-bold text-[15px] mb-4 italic">&quot;Sarah (Vlaams, Zakelijk)&quot;</p>

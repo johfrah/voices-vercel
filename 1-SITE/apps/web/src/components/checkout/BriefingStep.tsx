@@ -168,8 +168,8 @@ export const BriefingStep: React.FC = () => {
           <ContainerInstrument className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {[
               { id: 'telefonie', label: 'Telefoon / IVR', key: 'usage.telephony' },
-              { id: 'unpaid', label: 'Video (Non-Paid)', key: 'usage.unpaid' },
-              { id: 'paid', label: 'Advertentie (Paid)', key: 'usage.paid' },
+              { id: 'unpaid', label: 'Voice-over (Non-Paid)', key: 'usage.unpaid' },
+              { id: 'paid', label: 'Commercial (Paid)', key: 'usage.paid' },
             ].map((type) => (
               <ButtonInstrument
                 key={type.id}
