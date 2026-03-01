@@ -1,4 +1,4 @@
-# 🛡️ Forensic Audit Report (3/1/2026, 7:25:08 PM)
+# 🛡️ Forensic Audit Report (3/1/2026, 7:32:12 PM)
 
 ## Summary
 - **Status**: ✅ PASSED
@@ -2278,23 +2278,23 @@
   > `<div class="loader"></div>`
 - **WARNING** `src/app/api/admin/system/repair/route.ts:107`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<p style="font-size: 12px; margin-top: 20px; color: #999;">`
-- **WARNING** `src/app/api/admin/system/watchdog/route.ts:170`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div style="background: #fff; border-left: 4px solid #22c55e; padding: 20px; margin: 20px 0; border-radius: 8px;">`
-- **WARNING** `src/app/api/admin/system/watchdog/route.ts:171`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<p style="margin: 0 0 10px 0; font-weight: bold; color: #15803d;">GEDETECTEERDE FOUT:</p>`
-- **WARNING** `src/app/api/admin/system/watchdog/route.ts:195`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div style="background: #fdf2f8; border-left: 4px solid #ff007a; padding: 20px; margin: 20px 0; border-radius: 8px;">`
-- **WARNING** `src/app/api/admin/system/watchdog/route.ts:196`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<p style="margin: 0 0 10px 0; font-weight: bold; color: #ff007a;">FOUTMELDING:</p>`
-- **WARNING** `src/app/api/admin/system/watchdog/route.ts:201`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<p style="margin: 15px 0 5px 0; font-weight: bold; color: #ff007a; font-size: 12px;">STACK TRACE:</p>`
-- **WARNING** `src/app/api/admin/system/watchdog/route.ts:202`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<pre style="font-family: monospace; font-size: 11px; color: #666; background: #fff; padding: 10px; border-radius: 4px; overflow-x: auto; white-space: pre-wrap; max-height: 200px;">${stack}</pre>`
-- **WARNING** `src/app/api/admin/system/watchdog/route.ts:206`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div style="background: #f0f9ff; border-left: 4px solid #0ea5e9; padding: 15px; margin: 15px 0; border-radius: 8px; font-size: 13px;">`
-- **WARNING** `src/app/api/admin/system/watchdog/route.ts:207`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<p style="margin: 0 0 5px 0; font-weight: bold; color: #0ea5e9;">FORENSIC DETAILS:</p>`
 - **WARNING** `src/app/api/admin/system/watchdog/route.ts:208`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div style="background: #fff; border-left: 4px solid #22c55e; padding: 20px; margin: 20px 0; border-radius: 8px;">`
+- **WARNING** `src/app/api/admin/system/watchdog/route.ts:209`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<p style="margin: 0 0 10px 0; font-weight: bold; color: #15803d;">GEDETECTEERDE FOUT:</p>`
+- **WARNING** `src/app/api/admin/system/watchdog/route.ts:233`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div style="background: #fdf2f8; border-left: 4px solid #ff007a; padding: 20px; margin: 20px 0; border-radius: 8px;">`
+- **WARNING** `src/app/api/admin/system/watchdog/route.ts:234`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<p style="margin: 0 0 10px 0; font-weight: bold; color: #ff007a;">FOUTMELDING:</p>`
+- **WARNING** `src/app/api/admin/system/watchdog/route.ts:239`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<p style="margin: 15px 0 5px 0; font-weight: bold; color: #ff007a; font-size: 12px;">STACK TRACE:</p>`
+- **WARNING** `src/app/api/admin/system/watchdog/route.ts:240`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<pre style="font-family: monospace; font-size: 11px; color: #666; background: #fff; padding: 10px; border-radius: 4px; overflow-x: auto; white-space: pre-wrap; max-height: 200px;">${stack}</pre>`
+- **WARNING** `src/app/api/admin/system/watchdog/route.ts:244`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<div style="background: #f0f9ff; border-left: 4px solid #0ea5e9; padding: 15px; margin: 15px 0; border-radius: 8px; font-size: 13px;">`
+- **WARNING** `src/app/api/admin/system/watchdog/route.ts:245`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `<p style="margin: 0 0 5px 0; font-weight: bold; color: #0ea5e9;">FORENSIC DETAILS:</p>`
+- **WARNING** `src/app/api/admin/system/watchdog/route.ts:246`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<pre style="font-family: monospace; font-size: 11px; color: #444; margin: 0;">${JSON.stringify(details, null, 2)}</pre>`
 - **WARNING** `src/app/api/admin/voiceglot/audit-tones/route.ts:29`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `not(eq(translations.lang, 'nl'))`
@@ -2390,9 +2390,9 @@
   > `question: lang === 'nl' ? f.questionNl : f.questionEn,`
 - **WARNING** `src/app/api/chat/faq/route.ts:37`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `answer: lang === 'nl' ? f.answerNl : f.answerEn`
-- **WARNING** `src/app/api/chat/route.ts:108`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `src/app/api/chat/route.ts:109`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `language = 'nl',`
-- **WARNING** `src/app/api/chat/route.ts:120`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `src/app/api/chat/route.ts:121`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `const isEnglish = language === 'en' || /hello|hi|price|how|can you/i.test(message);`
 - **WARNING** `src/app/api/checkout/webhook/route.ts:178`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `language: 'nl'`
