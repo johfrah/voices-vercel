@@ -263,8 +263,14 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
           ...a,
           first_name: a.first_name,
           last_name: a.last_name,
-          native_lang_id: a.native_language_id,
+          native_language_id: a.native_language_id, // Keep original for fallback
+          native_lang_id: a.native_language_id,     // Map to standard
+          country_id: a.country_id,
           countryId: a.country_id,
+          gender_id: a.gender_id,
+          genderId: a.gender_id,
+          status_id: a.status_id,
+          experience_level_id: a.experience_level_id,
           wp_product_id: a.wp_product_id,
           photo_id: a.photo_id,
           voice_score: a.voice_score,
@@ -504,8 +510,9 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
       }
 
       return {
-        id: actor.wp_product_id || actor.id,
-        display_name: actor.first_name,
+        id: actor.id, // 🛡️ CHRIS-PROTOCOL: Always use primary ID for Handshake (v2.16.109)
+        wp_product_id: actor.wp_product_id,
+        display_name: actor.display_name || actor.first_name,
         first_name: actor.first_name,
         last_name: actor.last_name || '',
         slug: actor.slug || actor.first_name?.toLowerCase(),

@@ -94,13 +94,13 @@ export class MarketManagerServer {
   public static get mediaTypes() { return this.mediaTypesRegistry; }
 
   /**
-   * 🌳 ANCESTRY RESOLVER (v2.16.013)
+   * 🌳 ANCESTRY RESOLVER (v2.16.095)
    * Haalt de World ID op basis van de market code of host.
    */
   public static getWorldId(marketCode?: string): number | null {
     const code = marketCode?.toLowerCase() || this.getCurrentMarket().market_code.toLowerCase();
     
-    // 🛡️ CHRIS-PROTOCOL: Handshake Truth (v2.16.096)
+    // 🛡️ CHRIS-PROTOCOL: Handshake Truth (v2.16.095)
     // We prioritize the registry which is populated from the database.
     // This allows adding new Worlds without code changes.
     const registry = this.worldsRegistry.length > 0 ? this.worldsRegistry : 
@@ -118,7 +118,21 @@ export class MarketManagerServer {
       }
     }
 
-    return null;
+    // 🛡️ CHRIS-PROTOCOL: Static Fallback (v2.16.095)
+    // Only used if registry is empty or no match found.
+    const staticMap: Record<string, number> = {
+      'agency': 1, 'be': 1, 'nlnl': 1, 'fr': 1, 'es': 1, 'pt': 1, 'eu': 1,
+      'studio': 2,
+      'academy': 3,
+      'ademing': 6,
+      'portfolio': 5,
+      'freelance': 7,
+      'partner': 8,
+      'johfrai': 10,
+      'artist': 25
+    };
+
+    return staticMap[code] || null;
   }
 
   public static MARKETS_STATIC: Record<string, Partial<MarketConfig>> = {
@@ -384,8 +398,13 @@ export class MarketManagerServer {
     // 🛡️ CHRIS-PROTOCOL: Sub-journey detection for static resolution (e.g. voices.be/studio)
     if (cleanHost === 'voices.be' || cleanHost === 'localhost:3000') {
       const checkPath = activePath || '';
+      // 🛡️ CHRIS-PROTOCOL: World-First Detection (v2.16.095)
+      // We still need these for initial static config lookup, but they are now
+      // secondary to the dynamic world_id handshake.
       if (checkPath.startsWith('/studio')) cleanHost = 'voices.be/studio';
       else if (checkPath.startsWith('/academy')) cleanHost = 'voices.be/academy';
+      else if (checkPath.startsWith('/ademing')) cleanHost = 'ademing.be';
+      else if (checkPath.startsWith('/johfrai')) cleanHost = 'johfrai.be';
     }
 
     // Check cache first

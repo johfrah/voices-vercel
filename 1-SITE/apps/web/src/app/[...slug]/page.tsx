@@ -736,13 +736,13 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
       if (resolved.routing_type === 'blog' || resolved.routing_type === 'article') {
         const article = await getArticle(lookupSlug, lang);
         if (article) {
-          // 🛡️ CHRIS-PROTOCOL: Dynamic Extra Data based on Journey/World (v2.16.096)
+      // 🛡️ CHRIS-PROTOCOL: Dynamic Extra Data based on Journey/World (v2.16.095)
           let extraData: any = {};
-          const currentJourney = resolved.journey || article.iapContext?.journey;
+          const currentWorldId = resolved.world_id || MarketManager.getWorldId(resolved.journey);
           
-          if (currentJourney === 'studio') {
+          if (currentWorldId === 2 || resolved.journey === 'studio') {
             try {
-              const workshops = await getWorkshops({ worldId: resolved.world_id || 2 }); // 2 = Studio
+              const workshops = await getWorkshops({ worldId: 2 }); // 2 = Studio
               workshops.sort((a, b) => {
                 const nextA = a.editions && a.editions.length > 0 ? a.editions[0].date : null;
                 const nextB = b.editions && b.editions.length > 0 ? b.editions[0].date : null;
@@ -755,7 +755,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
             } catch (err) {
               console.error("[SmartRouter] Failed to fetch workshops for studio page:", err);
             }
-          } else if (currentJourney === 'academy') {
+          } else if (currentWorldId === 3 || resolved.journey === 'academy') {
             try {
               const { data: lessons } = await supabase.from('lessons').select('*').order('display_order');
               extraData.lessons = lessons || [];
@@ -1261,11 +1261,11 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
 
           console.log(` [SmartRouter] Successfully loaded CMS page (Legacy Fallback): ${cmsSlug} with ${blocks?.length || 0} blocks.`);
           
-          // 🛡️ CHRIS-PROTOCOL: Dynamic Extra Data based on Journey (v2.16.093)
+          // 🛡️ CHRIS-PROTOCOL: Dynamic Extra Data based on Journey (v2.16.095)
           let extraData: any = {};
-          const currentJourney = page.iapContext?.journey || (cmsSlug === 'studio' ? 'studio' : (cmsSlug === 'academy' ? 'academy' : (cmsSlug === 'ademing' ? 'ademing' : 'agency')));
+          const currentWorldId = MarketManager.getWorldId(page.iapContext?.journey || (cmsSlug === 'studio' ? 'studio' : (cmsSlug === 'academy' ? 'academy' : (cmsSlug === 'ademing' ? 'ademing' : 'agency'))));
           
-          if (currentJourney === 'studio') {
+          if (currentWorldId === 2) {
             try {
               const workshops = await getWorkshops({ worldId: 2 }); // 2 = Studio
               workshops.sort((a, b) => {
@@ -1280,7 +1280,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
             } catch (err) {
               console.error("[SmartRouter] Failed to fetch workshops for studio page:", err);
             }
-          } else if (currentJourney === 'academy') {
+          } else if (currentWorldId === 3) {
             try {
               const { data: lessons } = await supabase.from('lessons').select('*').order('display_order');
               extraData.lessons = lessons || [];
@@ -1788,7 +1788,13 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
           <ContainerInstrument className="w-48 h-1 bg-black/5 rounded-full" />
         </header>
         <ContainerInstrument className="space-y-24">
-          {page.blocks.map((block: any, index: number) => renderBlock(block, index))}
+          {page.blocks && page.blocks.length > 0 ? (
+            page.blocks.map((block: any, index: number) => renderBlock(block, index))
+          ) : (
+            <TextInstrument className="text-va-black/40 text-center py-32">
+              Content wordt binnenkort toegevoegd.
+            </TextInstrument>
+          )}
         </ContainerInstrument>
         <footer className="mt-80 text-center">
           {journey !== 'portfolio' && (
