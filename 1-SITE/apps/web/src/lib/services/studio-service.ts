@@ -8,18 +8,31 @@ export interface WorkshopApiResponse {
   _meta: { count: number; fetched_at: string };
 }
 
+/**
+ * ☢️ NUCLEAR STUDIO SERVICE (v2.16.103)
+ * 
+ * Absolute Source of Truth voor de Studio World.
+ * Connects the dots tussen workshops, junction tables (taxonomy, reviews, faq) 
+ * en de frontend instruments.
+ */
 export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
   if (!db) throw new Error('Database not available');
 
-  // 1. Fetch Workshops
+  // 1. Fetch Workshops with all junction data in one go (Nuclear Handshake)
   const workshopsRaw = await db.execute(sql`
-    SELECT
-      w.id, w.title, w.slug, w.description, w.price, w.status, w.media_id, w.meta,
-      m.file_path AS media_file_path, m.alt_text AS media_alt_text
-    FROM workshops w
-    LEFT JOIN media m ON m.id = w.media_id
-    WHERE w.status IN ('publish', 'live') OR w.is_public = true
-    ORDER BY w.title
+    WITH workshop_data AS (
+      SELECT
+        w.id, w.title, w.slug, w.description, w.price, w.status, w.media_id, w.meta, w.is_public,
+        m.file_path AS media_file_path, m.alt_text AS media_alt_text,
+        (SELECT label_nl FROM workshop_categories wc JOIN workshop_taxonomy_mappings wtm ON wc.id = wtm.category_id WHERE wtm.workshop_id = w.id LIMIT 1) as category_label,
+        (SELECT label_nl FROM workshop_types wt JOIN workshop_taxonomy_mappings wtm ON wt.id = wtm.type_id WHERE wtm.workshop_id = w.id LIMIT 1) as type_label,
+        (SELECT label FROM experience_levels el JOIN workshop_level_mappings wlm ON el.id = wlm.level_id WHERE wlm.workshop_id = w.id LIMIT 1) as level_label
+      FROM workshops w
+      LEFT JOIN media m ON m.id = w.media_id
+      WHERE w.status IN ('publish', 'live')
+    )
+    SELECT * FROM workshop_data
+    ORDER BY title
   `);
 
   const workshopsList = Array.isArray(workshopsRaw) ? workshopsRaw : (workshopsRaw as any).rows ?? [];
@@ -29,7 +42,7 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
     return { workshops: [], instructors: [], faqs: [], _meta: { count: 0, fetched_at: new Date().toISOString() } };
   }
 
-  // 2. Fetch Editions with Locations and Instructors
+  // 2. Fetch Editions (The Planning)
   const editionsRows = await db.execute(sql`
     SELECT
       we.id, we.workshop_id, we.date, we.capacity, we.status, we.meta as edition_meta,
@@ -46,22 +59,13 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
     ORDER BY we.date ASC
   `);
 
-  // 3. Fetch Reviews & Feedback
+  // 3. Fetch Reviews (Hard Handshake via junction table)
   const reviewsRows = await db.execute(sql`
-    SELECT r.id, r.author_name, r.rating, r.text_nl, r.text_en, r.provider, r.iap_context
-    FROM reviews r
-    WHERE r.business_slug = 'voices-studio' OR r.iap_context->>'workshopId' IS NOT NULL
-    ORDER BY COALESCE(r.sentiment_velocity, 0) DESC, r.created_at DESC
-    LIMIT 50
-  `);
-
-  const feedbackRows = await db.execute(sql`
-    SELECT wf.workshop_id, wf.public_snippet as text, wf.public_rating as rating, we.date as edition_date, w.title as workshop_title
-    FROM workshop_feedback wf
-    JOIN workshops w ON w.id = wf.workshop_id
-    LEFT JOIN workshop_editions we ON we.id = wf.edition_id
-    WHERE wf.public_snippet IS NOT NULL
-    ORDER BY wf.submitted_at DESC
+    SELECT wr.workshop_id, r.id, r.author_name, r.rating, r.text_nl, r.text_en, r.provider
+    FROM workshop_reviews wr
+    JOIN reviews r ON r.id = wr.review_id
+    WHERE wr.workshop_id IN (${sql.join(workshopIds.map((id) => sql`${id}`), sql`, `)})
+    ORDER BY r.rating DESC, r.created_at DESC
   `);
 
   // 4. Fetch Global Instructors & FAQs
@@ -74,17 +78,17 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
   `);
 
   const faqsRows = await db.execute(sql`
-    SELECT f.id, f.question_nl as question, f.answer_nl as answer, f.category
+    SELECT f.id, f.question_nl as question, f.answer_nl as answer, f.category, fm.workshop_id
     FROM faq f
-    WHERE f.category = 'studio'
+    LEFT JOIN faq_mappings fm ON f.id = fm.faq_id
+    WHERE f.category = 'studio' OR fm.workshop_id IS NOT NULL
     ORDER BY f.display_order ASC NULLS LAST
   `);
 
   // 5. Processing & Mapping
   const editionsByWorkshop = (editionsRows as any[]).reduce((acc, e) => {
-    const wid = Number(e.workshop_id);
+    const wid = String(e.workshop_id);
     if (!acc[wid]) acc[wid] = [];
-    const eMeta = (e.edition_meta as any) || {};
     acc[wid].push({
       id: e.id,
       date: e.date,
@@ -97,76 +101,70 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
         bio: e.instructor_bio, photo_url: e.instructor_photo ? `https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices/${e.instructor_photo}` : null
       } : null,
       capacity: e.capacity ?? 8,
-      status: e.status,
-      day_schedule_override: eMeta.day_schedule || null
+      status: e.status
     });
     return acc;
-  }, {} as Record<number, any[]>);
+  }, {} as Record<string, any[]>);
 
   const reviewsByWorkshop = (reviewsRows as any[]).reduce((acc, r) => {
-    const iap = typeof r.iap_context === 'string' ? JSON.parse(r.iap_context || '{}') : r.iap_context || {};
-    const wid = iap.workshopId ? Number(iap.workshopId) : null;
-    const text = r.text_nl || r.text_en || null;
-    const snippet = text ? (text.length > 150 ? text.slice(0, 150) + '...' : text) : null;
-    const item = { id: r.id, author_name: r.author_name, text: snippet, rating: r.rating, provider: r.provider, is_google: r.provider === 'google_places' };
-    if (wid) { if (!acc[wid]) acc[wid] = []; acc[wid].push(item); }
-    if (!acc._studio) acc._studio = []; acc._studio.push({ ...item, workshop_id: wid });
+    const wid = String(r.workshop_id);
+    if (!acc[wid]) acc[wid] = [];
+    acc[wid].push({
+      id: r.id,
+      author_name: r.author_name,
+      text: r.text_nl || r.text_en,
+      rating: r.rating,
+      provider: r.provider
+    });
     return acc;
-  }, {} as Record<string | number, any[]>);
+  }, {} as Record<string, any[]>);
 
-  (feedbackRows as any[]).forEach((f) => {
-    const wid = Number(f.workshop_id);
-    const dateStr = f.edition_date ? new Date(f.edition_date).toLocaleDateString('nl-BE', { day: 'numeric', month: 'long', year: 'numeric' }) : 'onlangs';
-    const item = { id: Math.random(), author_name: `Deelnemer ${f.workshop_title}`, text: f.text, rating: f.rating, provider: 'internal', is_google: false, metadata: `Workshop op ${dateStr}` };
-    if (!reviewsByWorkshop[wid]) reviewsByWorkshop[wid] = []; reviewsByWorkshop[wid].push(item);
-    if (!reviewsByWorkshop._studio) reviewsByWorkshop._studio = []; reviewsByWorkshop._studio.push(item);
-  });
+  const faqsByWorkshop = (faqsRows as any[]).reduce((acc, f) => {
+    if (f.workshop_id) {
+      const wid = String(f.workshop_id);
+      if (!acc[wid]) acc[wid] = [];
+      acc[wid].push({ id: f.id, question: f.question, answer: f.answer });
+    }
+    return acc;
+  }, {} as Record<string, any[]>);
 
   const workshops = (workshopsList as any[]).map((w) => {
-    const meta = (w.meta as Record<string, unknown>) || {};
-    const taxonomy = {
-      category: (meta.category as string) ?? (meta.taxonomy as Record<string, string>)?.category ?? null,
-      type: (meta.type as string) ?? (meta.taxonomy as Record<string, string>)?.type ?? null,
-    };
-    const wid = Number(w.id);
-    const editions = editionsByWorkshop[wid] || [];
-    const linkedReviews = reviewsByWorkshop[wid] || [];
-    const studioReviews = (reviewsByWorkshop._studio || []).filter((r: any) => !r.workshop_id || r.workshop_id === wid).slice(0, 3);
-    const reviews = [...linkedReviews, ...studioReviews].slice(0, 10);
-
+    const meta = (w.meta as Record<string, any>) || {};
+    const wid = String(w.id);
+    
     return {
-      id: wid,
+      id: w.id,
       title: w.title,
       slug: w.slug,
       description: w.description,
       price: w.price,
       status: w.status,
-      journey: w.journey ?? 'studio',
-      taxonomy,
-      skill_dna: (meta.skill_dna as Record<string, number>) || {},
-      level: (meta.level as string) || 'Starter',
+      is_public: w.is_public,
+      taxonomy: {
+        category: w.category_label || meta.category || 'Voice-over',
+        type: w.type_label || meta.type || 'Gastworkshop'
+      },
+      level: w.level_label || 'Starter',
+      skill_dna: meta.skill_dna || {},
+      expert_note: w.expert_note || meta.expert_note,
       featured_image: w.media_file_path ? { file_path: w.media_file_path, alt_text: w.media_alt_text } : null,
-      expert_note: (meta.expert_note as string) ?? null,
-      preparation_template: (meta.preparation_template as string) ?? null,
-      day_schedule: meta.day_schedule || null,
-      reviews: reviews.map((r: any) => ({
-        id: r.id, author_name: r.author_name, text: r.text, rating: r.rating, 
-        provider: r.provider, is_google: r.is_google, metadata: r.metadata
-      })),
-      upcoming_editions: editions,
+      upcoming_editions: editionsByWorkshop[wid] || [],
+      reviews: reviewsByWorkshop[wid] || [],
+      faqs: faqsByWorkshop[wid] || []
     };
   });
 
   const instructors = (instructorsRows as any[]).map(i => ({
     id: i.id, name: i.name, tagline: i.tagline, bio: i.bio, 
-    preparation_text_template: i.preparation_text_template,
     photo_url: i.photo_url ? `https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices/${i.photo_url}` : null
   }));
 
-  const faqs = (faqsRows as any[]).map(f => ({ id: f.id, question: f.question, answer: f.answer, category: f.category }));
+  const globalFaqs = (faqsRows as any[]).filter(f => !f.workshop_id).map(f => ({ id: f.id, question: f.question, answer: f.answer }));
 
   return {
-    workshops, instructors, faqs,
+    workshops,
+    instructors,
+    faqs: globalFaqs,
     _meta: { count: workshops.length, fetched_at: new Date().toISOString() },
   };
 }

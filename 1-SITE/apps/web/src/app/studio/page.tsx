@@ -6,7 +6,7 @@
  * - ReviewGrid (next/dynamic ssr: false)
  *
  * @protocol BOB-METHODE: Islands, Nuclear Loading
- * @protocol CHRIS-PROTOCOL: Direct DB access via StudioService (v2.16.102)
+ * @protocol CHRIS-PROTOCOL: Direct DB access via StudioService (v2.16.103)
  */
 
 import { ContainerInstrument, HeadingInstrument, PageWrapperInstrument, TextInstrument } from "@/components/ui/LayoutInstruments";
@@ -40,17 +40,17 @@ export const metadata: Metadata = {
 };
 
 export default async function StudioPage() {
-  // 🛡️ CHRIS-PROTOCOL: Direct Service Call (No internal fetch)
+  // 🛡️ CHRIS-PROTOCOL: Nuclear Handshake (Direct DB access)
   const { workshops, instructors, faqs } = await getStudioWorkshopsData();
 
   return (
-    <PageWrapperInstrument className="bg-va-off-white min-h-screen">
+    <PageWrapperInstrument className="bg-va-off-white min-h-screen" data-world="studio">
       <Suspense fallback={null}>
         <LiquidBackground />
       </Suspense>
 
       {/* HERO SECTION: Video (Left) + Content (Right) */}
-      <section className="relative z-10 pt-32 pb-24 overflow-hidden">
+      <section className="relative z-10 pt-32 pb-24 overflow-hidden" data-block-type="hero">
         <ContainerInstrument className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             
@@ -58,8 +58,8 @@ export default async function StudioPage() {
             <div className="relative group animate-in fade-in slide-in-from-left-8 duration-1000">
               <div className="absolute -inset-4 bg-primary/5 rounded-[30px] blur-2xl group-hover:bg-primary/10 transition-all duration-700" />
               <VideoPlayer 
-                src="https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices/assets/common/branding/johfrah/portfolio/video-canvas.mp4"
-                poster="/assets/common/branding/johfrah/johfrah-hero.jpg"
+                src="https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices/studio/workshops/videos/workshop_studio_teaser.mp4"
+                poster="https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices/assets/visuals/branding/branding-branding-photo-horizontal-1.webp"
                 className="w-full aspect-video rounded-[20px] shadow-aura-lg border border-white/20 relative z-10"
                 autoPlay={false}
                 muted={false}

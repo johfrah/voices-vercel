@@ -5,7 +5,7 @@ import Image from "next/image";
 import { WorkshopCarousel } from "./WorkshopCarousel";
 import { ReviewGrid, type ReviewItem } from "./ReviewGrid";
 import { ContainerInstrument, HeadingInstrument, TextInstrument } from "@/components/ui/LayoutInstruments";
-import { ChevronDown, ArrowRight } from "lucide-react";
+import { ChevronDown, ArrowRight, Calendar, MapPin, User, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
 
@@ -25,6 +25,7 @@ export interface WorkshopApiItem {
     id: number;
     date: string;
     location: { id?: number; name: string; city: string | null; address: string | null } | null;
+    instructor: { id?: number; name: string; photo_url: string | null } | null;
     capacity: number;
     status: string | null;
   }>;
@@ -76,22 +77,18 @@ function mapToCarouselFormat(workshop: WorkshopApiItem) {
 }
 
 /**
- * Studio Workshops Section: WorkshopCarousel + ReviewGrid.
+ * Studio Workshops Section: WorkshopCarousel + ReviewGrid + Planning.
  * NUCLEAR LOADING: Rendered client-side (ssr: false) for 100ms LCP.
  */
 export const StudioWorkshopsSection: React.FC<StudioWorkshopsSectionProps> = ({ workshops, instructors, faqs }) => {
   const carouselWorkshops = workshops.map(mapToCarouselFormat);
   
   // Filter workshops into categories (Bob-methode: Vaste vs. Gast)
-  // 🛡️ CHRIS-PROTOCOL: Inclusive filtering to ensure all Supabase workshops are visible (v2.16.102)
   const vasteWorkshops = carouselWorkshops.filter(w => 
-    !w.taxonomy.type || 
-    w.taxonomy.type === 'Vaste Workshop' || 
-    w.taxonomy.type === 'Anker (Maandelijks)' ||
-    (!w.taxonomy.type.includes('Gastworkshop') && !w.taxonomy.type.includes('Specialisatie'))
+    w.taxonomy.type === 'Vaste Workshop' || w.taxonomy.type === 'Anker (Maandelijks)'
   );
   const gastWorkshops = carouselWorkshops.filter(w => 
-    w.taxonomy.type && (w.taxonomy.type.includes('Gastworkshop') || w.taxonomy.type.includes('Specialisatie'))
+    w.taxonomy.type === 'Gastworkshop' || w.taxonomy.type === 'Gastworkshop (Expert)' || w.taxonomy.type === 'Specialisatie'
   );
 
   const allReviews = workshops.flatMap((w) => w.reviews);
@@ -99,15 +96,16 @@ export const StudioWorkshopsSection: React.FC<StudioWorkshopsSectionProps> = ({ 
     new Map(allReviews.map((r) => [r.id, r])).values()
   ).slice(0, 9);
 
-  // Flatten all upcoming editions for the calendar
-  const allUpcomingEditions = carouselWorkshops
-    .flatMap(w => w.editions.map(e => ({ ...e, workshopTitle: w.title, workshopSlug: w.slug, workshopId: w.id })))
+  // Flatten all upcoming editions for the calendar (Luxe Sectie)
+  const allUpcomingEditions = workshops
+    .flatMap(w => w.upcoming_editions.map(e => ({ ...e, workshopTitle: w.title, workshopSlug: w.slug, workshopId: w.id })))
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
     .slice(0, 8);
 
   return (
     <>
-      <section id="workshops" className="py-24 bg-white border-y border-black/[0.03]">
+      {/* VASTE WAARDEN */}
+      <section id="workshops" className="py-24 bg-white border-y border-black/[0.03]" data-block-type="workshops-vaste">
         <ContainerInstrument className="max-w-7xl mx-auto px-6 mb-16">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
             <div className="max-w-2xl">
@@ -125,8 +123,9 @@ export const StudioWorkshopsSection: React.FC<StudioWorkshopsSectionProps> = ({ 
         </ContainerInstrument>
         <WorkshopCarousel workshops={vasteWorkshops} />
 
+        {/* GASTWORKSHOPS / SPECIALISATIES */}
         {gastWorkshops.length > 0 && (
-          <div className="mt-32">
+          <div className="mt-32" data-block-type="workshops-gast">
             <ContainerInstrument className="max-w-7xl mx-auto px-6 mb-16">
               <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
                 <div className="max-w-2xl">
@@ -146,10 +145,79 @@ export const StudioWorkshopsSection: React.FC<StudioWorkshopsSectionProps> = ({ 
           </div>
         )}
       </section>
+
+      {/* REVIEWS */}
       <ReviewGrid reviews={uniqueReviews} maxItems={9} />
 
-      {/* Instructors Section */}
-      <section className="py-32 bg-white">
+      {/* PLANNING (Luxe Sectie) */}
+      <section className="py-32 bg-va-off-white" data-block-type="planning">
+        <ContainerInstrument className="max-w-7xl mx-auto px-6">
+          <div className="mb-16">
+            <TextInstrument className="text-[11px] font-bold tracking-[0.3em] uppercase text-primary mb-4">
+              <VoiceglotText translationKey="studio.section.planning.title" defaultText="De Studio Planning" />
+            </TextInstrument>
+            <HeadingInstrument level={2} className="text-4xl md:text-6xl font-light tracking-tighter text-va-black">
+              <VoiceglotText translationKey="studio.section.planning.subtitle" defaultText="Hier zie je een handig overzicht van onze volgende workshops." />
+            </HeadingInstrument>
+          </div>
+
+          <div className="space-y-4">
+            {allUpcomingEditions.map((edition) => (
+              <Link 
+                key={edition.id} 
+                href={`/studio/${edition.workshopSlug}`}
+                className="group block bg-white hover:bg-va-black p-6 md:p-8 rounded-[24px] border border-black/[0.03] shadow-aura hover:shadow-aura-lg transition-all duration-500"
+              >
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-8">
+                  <div className="flex items-center gap-8">
+                    {/* Date Chip */}
+                    <div className="w-20 h-20 bg-va-off-white group-hover:bg-white/10 rounded-[18px] flex flex-col items-center justify-center transition-colors">
+                      <span className="text-2xl font-light tracking-tighter text-va-black group-hover:text-white leading-none">
+                        {new Date(edition.date).getDate()}
+                      </span>
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-va-black/30 group-hover:text-white/30 mt-1">
+                        {new Date(edition.date).toLocaleString('nl-BE', { month: 'short' })}
+                      </span>
+                    </div>
+
+                    <div>
+                      <HeadingInstrument level={3} className="text-2xl md:text-3xl font-light tracking-tighter text-va-black group-hover:text-white transition-colors">
+                        {edition.workshopTitle}
+                      </HeadingInstrument>
+                      <div className="flex items-center gap-6 mt-2">
+                        <div className="flex items-center gap-2 text-va-black/40 group-hover:text-white/40 text-sm transition-colors">
+                          <MapPin size={14} strokeWidth={1.5} />
+                          <span>{edition.location?.city || 'Locatie n.t.b.'}</span>
+                        </div>
+                        {edition.instructor && (
+                          <div className="flex items-center gap-2 text-va-black/40 group-hover:text-white/40 text-sm transition-colors">
+                            <User size={14} strokeWidth={1.5} />
+                            <span>{edition.instructor.name}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-6">
+                    <div className="px-4 py-2 bg-primary/5 group-hover:bg-white/10 rounded-full transition-colors">
+                      <span className="text-[11px] font-bold tracking-widest uppercase text-primary group-hover:text-white">
+                        <VoiceglotText translationKey="studio.status.open" defaultText="Inschrijvingen Open" />
+                      </span>
+                    </div>
+                    <div className="w-12 h-12 rounded-full border border-black/5 group-hover:border-white/20 flex items-center justify-center text-va-black/20 group-hover:text-white transition-all">
+                      <ChevronRight size={20} strokeWidth={1.5} />
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </ContainerInstrument>
+      </section>
+
+      {/* INSTRUCTORS */}
+      <section className="py-32 bg-white" data-block-type="instructors">
         <ContainerInstrument className="max-w-7xl mx-auto px-6">
           <div className="flex flex-col items-center text-center mb-20">
             <TextInstrument className="text-[11px] font-bold tracking-[0.3em] uppercase text-primary mb-4">
@@ -194,105 +262,24 @@ export const StudioWorkshopsSection: React.FC<StudioWorkshopsSectionProps> = ({ 
         </ContainerInstrument>
       </section>
 
-      {/* Calendar Section */}
-      <section className="py-32 bg-va-black text-white overflow-hidden relative">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[1000px] bg-primary/5 rounded-full blur-[120px] -translate-y-1/2" />
-        
-        <ContainerInstrument className="max-w-7xl mx-auto px-6 relative z-10">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-20">
-            <div className="max-w-2xl">
-              <TextInstrument className="text-[11px] font-bold tracking-[0.3em] uppercase text-primary mb-4">
-                <VoiceglotText translationKey="studio.section.planning.title" defaultText="Planning" />
-              </TextInstrument>
-              <HeadingInstrument level={2} className="text-4xl md:text-6xl font-light tracking-tighter text-white">
-                <VoiceglotText translationKey="studio.section.kalender.title" defaultText="De Studio Kalender" />
-              </HeadingInstrument>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 gap-4">
-            {allUpcomingEditions.map((edition) => (
-              <Link 
-                key={edition.id}
-                href={`/studio/${edition.workshopSlug}`}
-                className="group flex flex-col md:flex-row md:items-center justify-between p-8 bg-white/5 hover:bg-white/10 border border-white/5 rounded-[20px] transition-all duration-500"
-              >
-                <div className="flex items-center gap-8 mb-4 md:mb-0">
-                  <div className="flex flex-col items-center justify-center w-20 h-20 rounded-2xl bg-primary text-va-black">
-                    <span className="text-[11px] font-bold uppercase tracking-widest">
-                      {new Date(edition.date).toLocaleDateString('nl-BE', { month: 'short' })}
-                    </span>
-                    <span className="text-3xl font-light tracking-tighter">
-                      {new Date(edition.date).toLocaleDateString('nl-BE', { day: 'numeric' })}
-                    </span>
-                  </div>
-                  <div>
-                    <HeadingInstrument level={4} className="text-2xl font-light tracking-tight mb-1 group-hover:text-primary transition-colors">
-                      <VoiceglotText translationKey={`studio.workshop.${edition.workshopId}.title`} defaultText={edition.workshopTitle} />
-                    </HeadingInstrument>
-                    <TextInstrument className="text-[13px] text-white/40 font-light tracking-widest uppercase flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-primary/40" />
-                      {edition.location?.name ? (
-                        <VoiceglotText translationKey={`location.${edition.location.id}.name`} defaultText={edition.location.name} />
-                      ) : (
-                        <VoiceglotText translationKey="studio.location.unknown" defaultText="Locatie nog onbekend" />
-                      )}
-                    </TextInstrument>
-                  </div>
-                </div>
-                
-                <div className="flex items-center gap-8">
-                  <div className="hidden lg:flex flex-col items-end">
-                    <TextInstrument className="text-[11px] text-white/20 font-bold uppercase tracking-[0.2em] mb-1">
-                      <VoiceglotText translationKey="common.status" defaultText="Status" />
-                    </TextInstrument>
-                    <TextInstrument className="text-[13px] text-primary font-medium tracking-widest uppercase">
-                      {edition.status === 'live' ? (
-                        <VoiceglotText translationKey="studio.status.open" defaultText="Inschrijvingen Open" />
-                      ) : (
-                        <VoiceglotText translationKey={`studio.status.${edition.status}`} defaultText={edition.status || ''} />
-                      )}
-                    </TextInstrument>
-                  </div>
-                  <div className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center group-hover:bg-primary group-hover:border-primary group-hover:text-va-black transition-all duration-500">
-                    <ArrowRight size={20} strokeWidth={1.5} />
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </ContainerInstrument>
-      </section>
-
-      {/* FAQ Section */}
-      <section className="py-32 bg-va-off-white border-t border-black/[0.03]">
+      {/* FAQ */}
+      <section className="py-32 bg-va-off-white" data-block-type="faq">
         <ContainerInstrument className="max-w-4xl mx-auto px-6">
-          <div className="flex flex-col items-center text-center mb-20">
+          <div className="text-center mb-20">
             <TextInstrument className="text-[11px] font-bold tracking-[0.3em] uppercase text-primary mb-4">
-              <VoiceglotText translationKey="studio.section.ondersteuning.title" defaultText="Ondersteuning" />
+              <VoiceglotText translationKey="studio.section.faq.title" defaultText="Veelgestelde Vragen" />
             </TextInstrument>
-            <HeadingInstrument level={2} className="text-4xl md:text-6xl font-light tracking-tighter text-va-black">
-              <VoiceglotText translationKey="studio.section.faq.title" defaultText="Veelgestelde vragen" />
+            <HeadingInstrument level={2} className="text-4xl md:text-5xl font-light tracking-tighter text-va-black">
+              <VoiceglotText translationKey="studio.section.faq.subtitle" defaultText="Alles wat je moet weten over onze workshops" />
             </HeadingInstrument>
           </div>
-
+          
           <div className="space-y-4">
             {faqs.map((faq) => (
-              <details key={faq.id} className="group bg-white rounded-[20px] shadow-aura border border-black/[0.02] overflow-hidden transition-all duration-500">
-                <summary className="flex items-center justify-between p-8 cursor-pointer list-none">
-                  <HeadingInstrument level={4} className="text-xl font-light tracking-tight text-va-black">
-                    <VoiceglotText translationKey={`faq.${faq.id}.question`} defaultText={faq.question} />
-                  </HeadingInstrument>
-                  <div className="w-8 h-8 rounded-full bg-va-off-white flex items-center justify-center group-open:rotate-180 transition-transform duration-500">
-                    <ChevronDown size={16} className="text-va-black/40" />
-                  </div>
-                </summary>
-                <div className="px-8 pb-8 animate-in fade-in slide-in-from-top-2 duration-500">
-                  <TextInstrument className="text-[15px] text-va-black/50 font-light leading-relaxed">
-                    <VoiceglotText translationKey={`faq.${faq.id}.answer`} defaultText={faq.answer} />
-                  </TextInstrument>
-                </div>
-              </details>
+              <div key={faq.id} className="bg-white rounded-[20px] p-8 border border-black/[0.03] shadow-aura">
+                <HeadingInstrument level={4} className="text-xl font-light text-va-black mb-4">{faq.question}</HeadingInstrument>
+                <TextInstrument className="text-va-black/60 font-light leading-relaxed">{faq.answer}</TextInstrument>
+              </div>
             ))}
           </div>
         </ContainerInstrument>
