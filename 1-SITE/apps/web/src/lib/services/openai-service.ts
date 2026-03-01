@@ -1,20 +1,13 @@
-import OpenAI from "openai";
+import { GeminiService } from "./gemini-service";
 
 /**
  *  OPENAI INTELLIGENCE SERVICE (2026)
  * 
- * Doel: Betrouwbare vertalingen en analyses via GPT-4o.
- * Wordt ingezet als Gemini rate-limits raakt of voor complexere taken.
+ * 🛡️ CHRIS-PROTOCOL: Deze service is nu een PROXY naar GeminiService (v2.16.104).
+ * Dit stelt ons in staat om het OpenAI abonnement op te zeggen zonder alle imports te breken.
  */
 export class OpenAIService {
-  private openai: OpenAI;
   private static instance: OpenAIService;
-
-  constructor() {
-    this.openai = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY || '',
-    });
-  }
 
   public static getInstance(): OpenAIService {
     if (!OpenAIService.instance) {
@@ -24,20 +17,14 @@ export class OpenAIService {
   }
 
   /**
-   * Genereert platte tekst via OpenAI (GPT-4o mini voor snelheid/kosten).
+   * Genereert platte tekst via Gemini (voorheen OpenAI).
    */
-  async generateText(prompt: string): Promise<string> {
+  async generateText(prompt: string, model?: string, lang?: string): Promise<string> {
     try {
-      const response = await this.openai.chat.completions.create({
-        model: "gpt-4o-mini",
-        messages: [{ role: "user", content: prompt }],
-        max_tokens: 100,
-        temperature: 0.3,
-      });
-
-      return response.choices[0]?.message?.content || '';
+      // We negeren het 'model' argument en gebruiken altijd Gemini
+      return await GeminiService.generateText(prompt, { lang });
     } catch (error: any) {
-      console.error(' OpenAI Text Generation Error:', error);
+      console.error(' Gemini Proxy Error:', error);
       throw error;
     }
   }
@@ -45,7 +32,7 @@ export class OpenAIService {
   /**
    * Static shortcut voor generateText.
    */
-  static async generateText(prompt: string): Promise<string> {
-    return OpenAIService.getInstance().generateText(prompt);
+  static async generateText(prompt: string, model?: string, lang?: string): Promise<string> {
+    return OpenAIService.getInstance().generateText(prompt, model, lang);
   }
 }

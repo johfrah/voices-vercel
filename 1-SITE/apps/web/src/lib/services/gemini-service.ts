@@ -148,6 +148,45 @@ ${prompt}
   }
 
   /**
+   * Genereert semantische embeddings voor een tekst via Gemini.
+   * Gebruikt text-embedding-004 (768 dims).
+   */
+  async generateEmbedding(text: string): Promise<number[]> {
+    try {
+      const model = this.genAI.getGenerativeModel({ model: "text-embedding-004" });
+      const result = await model.embedContent(text.substring(0, 8000));
+      return result.embedding.values;
+    } catch (error) {
+      console.error(' Gemini Embedding Error:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Transcribeert audio via Gemini 1.5 Flash.
+   * Kan direct audio buffers verwerken.
+   */
+  async transcribeAudio(audioBuffer: Buffer, mimeType: string, lang: string = 'nl'): Promise<string> {
+    try {
+      const model = this.getModel();
+      const prompt = `Transcribeer de volgende audio in het ${lang}. Geef uitsluitend de tekst terug, geen extra commentaar.`;
+      
+      const audioPart = {
+        inlineData: {
+          data: audioBuffer.toString("base64"),
+          mimeType
+        },
+      };
+
+      const result = await model.generateContent([prompt, audioPart]);
+      return result.response.text().trim();
+    } catch (error) {
+      console.error(' Gemini Transcription Error:', error);
+      throw error;
+    }
+  }
+
+  /**
    * Analyseert een afbeelding en geeft een vision beschrijving terug.
    * Nu met extra context (metadata, bestandsnaam, etc.) voor diepere intelligentie.
    */
