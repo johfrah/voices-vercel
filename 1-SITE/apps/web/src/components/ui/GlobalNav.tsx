@@ -335,7 +335,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
       try {
         const journeyKey = getJourneyKey();
         console.log(`[GlobalNav] Fetching nav for journey: ${journeyKey}`);
-        const res = await fetch(`/api/admin/config?type=navigation&journey=${journeyKey}`);
+        const res = await fetch(`/api/admin/config?type=navigation&journey=${journeyKey}&lang=${language}`);
         if (!res.ok) {
           throw new Error(`Nav fetch failed with status: ${res.status}`);
         }

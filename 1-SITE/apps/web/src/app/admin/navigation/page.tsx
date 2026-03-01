@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/LayoutInstruments';
 import { BentoGrid, BentoCard } from '@/components/ui/BentoGrid';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
-import { Save, Plus, Trash2, Globe, ShoppingBag, Bell, User, Menu, Heart, Loader2, ArrowLeft, Image as ImageIcon } from 'lucide-react';
+import { Save, Plus, Trash2, Globe, ShoppingBag, Bell, User, Menu, Heart, Loader2, ArrowLeft, Image as ImageIcon, Search, Check, X } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import toast from 'react-hot-toast';
@@ -23,6 +23,14 @@ const JOURNEYS = [
   { id: 'academy', label: 'Academy (LMS)' },
   { id: 'johfrah', label: 'Johfrah Portfolio' },
   { id: 'ademing', label: 'Ademing' }
+];
+
+const ROUTING_TYPES = [
+  { id: 'article', label: 'Pagina (CMS)' },
+  { id: 'actor', label: 'Stemacteur' },
+  { id: 'workshop', label: 'Workshop' },
+  { id: 'artist', label: 'Artiest' },
+  { id: 'blog', label: 'Blogpost' }
 ];
 
 export default function NavigationAdminPage() {
@@ -42,10 +50,16 @@ export default function NavigationAdminPage() {
     }
   });
 
+  // DNA-PICKER STATE
+  const [isPickerOpen, setIsPickerOpen] = useState<number | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [searching, setSearching] = useState(false);
+
   const fetchConfig = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch(`/api/admin/navigation/${selectedJourney}`);
+      const res = await fetch(`/api/admin/config?type=navigation&journey=${selectedJourney}`);
       const data = await res.json();
       if (data.links) {
         setConfig(data);
@@ -68,13 +82,57 @@ export default function NavigationAdminPage() {
     fetchConfig();
   }, [selectedJourney, fetchConfig]);
 
+  // DNA-SEARCH LOGIC
+  useEffect(() => {
+    if (searchQuery.length < 2) {
+      setSearchResults([]);
+      return;
+    }
+
+    const searchDNA = async () => {
+      setSearching(true);
+      try {
+        // We zoeken in de slug_registry voor matches
+        const res = await fetch(`/api/admin/slugs?q=${encodeURIComponent(searchQuery)}`);
+        const data = await res.json();
+        setSearchResults(data.results || []);
+      } catch (err) {
+        console.error('DNA Search failed', err);
+      } finally {
+        setSearching(false);
+      }
+    };
+
+    const timer = setTimeout(searchDNA, 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  const selectDNA = (index: number, item: any) => {
+    const newLinks = [...config.links];
+    newLinks[index] = { 
+      ...newLinks[index], 
+      entityId: item.entityId, 
+      routingType: item.routingType,
+      href: item.slug, // Fallback
+      name: link.name || item.title || item.slug // Houd bestaande naam of gebruik slug
+    };
+    setConfig({ ...config, links: newLinks });
+    setIsPickerOpen(null);
+    setSearchQuery('');
+    toast.success(`Gekoppeld aan ${item.routingType}: ${item.slug}`);
+  };
+
   const handleSave = async () => {
     setSaving(true);
     try {
-      const res = await fetch(`/api/admin/navigation/${selectedJourney}`, {
+      // Gebruik de ConfigBridge via de API route
+      const res = await fetch(`/api/admin/config`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(config)
+        body: JSON.stringify({
+          key: `nav_${selectedJourney}`,
+          value: config
+        })
       });
       if (res.ok) {
         toast.success('Navigatie succesvol opgeslagen!');
@@ -89,13 +147,13 @@ export default function NavigationAdminPage() {
   };
 
   const addLink = () => {
-    if (config.links.length >= 5) {
-      toast.error('Maximaal 5 links toegestaan in de hoofdnavigatie.');
+    if (config.links.length >= 6) {
+      toast.error('Maximaal 6 links toegestaan in de hoofdnavigatie.');
       return;
     }
     setConfig({
       ...config,
-      links: [...config.links, { name: '', href: '', key: '' }]
+      links: [...config.links, { name: '', href: '', key: '', entityId: null, routingType: null }]
     });
   };
 
@@ -105,9 +163,14 @@ export default function NavigationAdminPage() {
     setConfig({ ...config, links: newLinks });
   };
 
-  const updateLink = (index: number, field: string, value: string) => {
+  const updateLink = (index: number, field: string, value: any) => {
     const newLinks = [...config.links];
     newLinks[index] = { ...newLinks[index], [field]: value };
+    // Als we handmatig de href aanpassen, wissen we de DNA koppeling
+    if (field === 'href') {
+      newLinks[index].entityId = null;
+      newLinks[index].routingType = null;
+    }
     setConfig({ ...config, links: newLinks });
   };
 
@@ -198,7 +261,7 @@ export default function NavigationAdminPage() {
             <div className="flex items-center justify-between mb-8">
               <div className="flex items-center gap-3">
                 <Menu strokeWidth={1.5} size={24} className="text-primary" />
-                <TextInstrument className="text-[15px] font-black tracking-widest uppercase text-black/40">Hoofdmenu Links (Max 5)</TextInstrument>
+                <TextInstrument className="text-[15px] font-black tracking-widest uppercase text-black/40">Hoofdmenu Links (Max 6)</TextInstrument>
               </div>
               <ButtonInstrument onClick={addLink} className="p-2 bg-primary/10 text-primary rounded-lg hover:bg-primary hover:text-white transition-all">
                 <Plus size={20} strokeWidth={2.5} />
@@ -207,29 +270,107 @@ export default function NavigationAdminPage() {
 
             <div className="space-y-4">
               {config.links.map((link: any, idx: number) => (
-                <div key={idx} className="flex items-center gap-4 p-4 bg-va-off-white rounded-2xl border border-black/5 group">
-                  <div className="w-8 h-8 rounded-full bg-va-black text-white flex items-center justify-center text-[13px] font-black shrink-0">{idx + 1}</div>
-                  <InputInstrument 
-                    placeholder="Naam (bijv. Workshops)"
-                    value={link.name}
-                    onChange={(e) => updateLink(idx, 'name', e.target.value)}
-                    className="flex-1 p-3 bg-white border border-black/5 rounded-xl text-[15px] font-light"
-                  />
-                  <InputInstrument 
-                    placeholder="URL (bijv. /studio)"
-                    value={link.href}
-                    onChange={(e) => updateLink(idx, 'href', e.target.value)}
-                    className="flex-1 p-3 bg-white border border-black/5 rounded-xl text-[15px] font-light"
-                  />
-                  <InputInstrument 
-                    placeholder="Voiceglot Key"
-                    value={link.key}
-                    onChange={(e) => updateLink(idx, 'key', e.target.value)}
-                    className="w-40 p-3 bg-white border border-black/5 rounded-xl text-[13px] font-light italic"
-                  />
-                  <button onClick={() => removeLink(idx)} className="p-2 text-black/10 hover:text-red-500 transition-colors">
-                    <Trash2 size={18} strokeWidth={1.5} />
-                  </button>
+                <div key={idx} className="flex flex-col gap-3 p-6 bg-va-off-white rounded-2xl border border-black/5 group relative">
+                  <div className="flex items-center gap-4">
+                    <div className="w-8 h-8 rounded-full bg-va-black text-white flex items-center justify-center text-[13px] font-black shrink-0">{idx + 1}</div>
+                    <InputInstrument 
+                      placeholder="Naam (bijv. Workshops)"
+                      value={link.name}
+                      onChange={(e) => updateLink(idx, 'name', e.target.value)}
+                      className="flex-1 p-3 bg-white border border-black/5 rounded-xl text-[15px] font-light"
+                    />
+                    <InputInstrument 
+                      placeholder="Voiceglot Key"
+                      value={link.key}
+                      onChange={(e) => updateLink(idx, 'key', e.target.value)}
+                      className="w-40 p-3 bg-white border border-black/5 rounded-xl text-[13px] font-light italic"
+                    />
+                    <button onClick={() => removeLink(idx)} className="p-2 text-black/10 hover:text-red-500 transition-colors">
+                      <Trash2 size={18} strokeWidth={1.5} />
+                    </button>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <div className="flex-1 relative">
+                      <InputInstrument 
+                        placeholder="URL (bijv. /studio) of koppel via DNA"
+                        value={link.entityId ? `[DNA] ${link.routingType}:${link.entityId} (${link.href})` : link.href}
+                        readOnly={!!link.entityId}
+                        onChange={(e) => updateLink(idx, 'href', e.target.value)}
+                        className={cn(
+                          "w-full p-3 bg-white border border-black/5 rounded-xl text-[14px] font-light pl-10",
+                          link.entityId && "bg-primary/5 border-primary/20 text-primary font-medium"
+                        )}
+                      />
+                      <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-black/20" />
+                      {link.entityId && (
+                        <button 
+                          onClick={() => updateLink(idx, 'href', link.href)} 
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-primary hover:text-red-500"
+                        >
+                          <X size={14} />
+                        </button>
+                      )}
+                    </div>
+                    
+                    <ButtonInstrument 
+                      onClick={() => setIsPickerOpen(idx)}
+                      variant="plain"
+                      size="none"
+                      className="px-4 py-3 bg-va-black text-white rounded-xl text-[12px] font-black tracking-widest uppercase hover:bg-primary transition-all flex items-center gap-2"
+                    >
+                      DNA KOPPELEN
+                    </ButtonInstrument>
+                  </div>
+
+                  {/* DNA PICKER POPOVER */}
+                  {isPickerOpen === idx && (
+                    <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-2xl border border-black/10 p-6 z-[100] animate-in fade-in slide-in-from-top-2">
+                      <div className="flex items-center justify-between mb-4">
+                        <TextInstrument className="text-[13px] font-black tracking-widest uppercase text-black/40">DNA Picker: Zoek Pagina of Entiteit</TextInstrument>
+                        <button onClick={() => setIsPickerOpen(null)}><X size={20} className="text-black/20 hover:text-black" /></button>
+                      </div>
+                      
+                      <div className="relative mb-6">
+                        <InputInstrument 
+                          autoFocus
+                          placeholder="Typ naam van acteur, workshop of pagina..."
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          className="w-full p-4 pl-12 bg-va-off-white border border-black/5 rounded-xl text-[15px]"
+                        />
+                        <Search size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-black/20" />
+                        {searching && <Loader2 size={20} className="absolute right-4 top-1/2 -translate-y-1/2 animate-spin text-primary" />}
+                      </div>
+
+                      <div className="max-h-[300px] overflow-y-auto space-y-2 no-scrollbar">
+                        {searchResults.map((result: any, rIdx: number) => (
+                          <button
+                            key={rIdx}
+                            onClick={() => selectDNA(idx, result)}
+                            className="w-full flex items-center justify-between p-4 hover:bg-va-off-white rounded-xl transition-all group border border-transparent hover:border-black/5"
+                          >
+                            <div className="flex items-center gap-4">
+                              <div className="px-2 py-1 bg-va-black text-white text-[10px] font-black rounded uppercase tracking-widest">
+                                {result.routingType}
+                              </div>
+                              <div className="text-left">
+                                <div className="text-[15px] font-medium text-va-black">{result.title || result.slug}</div>
+                                <div className="text-[12px] text-va-black/40 font-light">{result.slug}</div>
+                              </div>
+                            </div>
+                            <Plus size={18} className="text-black/10 group-hover:text-primary transition-colors" />
+                          </button>
+                        ))}
+                        {searchQuery.length >= 2 && searchResults.length === 0 && !searching && (
+                          <div className="py-8 text-center text-black/20 italic">Geen resultaten gevonden voor "{searchQuery}"</div>
+                        )}
+                        {searchQuery.length < 2 && (
+                          <div className="py-8 text-center text-black/20 italic">Typ minimaal 2 tekens om te zoeken...</div>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
               ))}
               {config.links.length === 0 && (

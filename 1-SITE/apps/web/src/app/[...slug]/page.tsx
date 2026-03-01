@@ -18,6 +18,7 @@ import { VoiceDetailClient } from "@/components/legacy/VoiceDetailClient";
 import { ArtistDetailClient } from "@/components/legacy/ArtistDetailClient";
 import { AgencyContent } from "@/components/legacy/AgencyContent";
 import { AgencyHeroInstrument } from "@/components/ui/AgencyHeroInstrument";
+import { InstrumentRenderer } from "@/components/ui/InstrumentRenderer";
 import nextDynamic from "next/dynamic";
 import { JourneyType } from '@/contexts/VoicesMasterControlContext';
 import { normalizeSlug, stripLanguagePrefix } from '@/lib/system/slug';
@@ -1787,9 +1788,13 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
           </HeadingInstrument>
           <ContainerInstrument className="w-48 h-1 bg-black/5 rounded-full" />
         </header>
+        
+        {/* 🛡️ DNA-ROUTING: Render instruments from database if settings exist */}
+        <InstrumentRenderer blocks={page.blocks} extraData={extraData} />
+
         <ContainerInstrument className="space-y-24">
           {page.blocks && page.blocks.length > 0 ? (
-            page.blocks.map((block: any, index: number) => renderBlock(block, index))
+            page.blocks.filter((b: any) => !b.settings).map((block: any, index: number) => renderBlock(block, index))
           ) : (
             <TextInstrument className="text-va-black/40 text-center py-32">
               Content wordt binnenkort toegevoegd.

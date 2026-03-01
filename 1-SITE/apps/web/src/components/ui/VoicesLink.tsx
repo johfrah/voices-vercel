@@ -22,22 +22,43 @@ interface VoicesLinkProps extends LinkProps {
   rel?: string;
   onClick?: (e: React.MouseEvent<HTMLAnchorElement>) => void;
   title?: string;
+  entityId?: number;
+  routingType?: string;
 }
 
 export const VoicesLink = ({ 
   href, 
   children, 
   className, 
+  entityId,
+  routingType,
   ...props 
 }: VoicesLinkProps) => {
   const { language } = useTranslation();
+  const [resolvedHref, setResolvedHref] = React.useState<string | null>(null);
+
+  // 🛡️ DNA-ROUTING: Resolve entityId to slug on the fly if needed
+  React.useEffect(() => {
+    if (entityId && routingType) {
+      const fetchSlug = async () => {
+        try {
+          const response = await fetch(`/api/admin/config?type=resolve-dna&entityId=${entityId}&routingType=${routingType}`);
+          const data = await response.json();
+          if (data.slug) setResolvedHref(data.slug);
+        } catch (err) {
+          console.error(`[VoicesLink] DNA Resolve failed`, err);
+        }
+      };
+      fetchSlug();
+    }
+  }, [entityId, routingType]);
 
     // 1. Bepaal de finale URL
   const getLocalizedHref = () => {
-    const rawHref = href?.toString() || '/';
+    const rawHref = resolvedHref || href?.toString() || '/';
     
     // 🛡️ CHRIS-PROTOCOL: Handle undefined or empty href (v2.16.134)
-    if (!href || rawHref === 'undefined' || rawHref === '') {
+    if ((!href && !resolvedHref) || rawHref === 'undefined' || rawHref === '') {
       console.warn(`[VoicesLink] Undefined or empty href detected, falling back to anchor: #`);
       return '#';
     }

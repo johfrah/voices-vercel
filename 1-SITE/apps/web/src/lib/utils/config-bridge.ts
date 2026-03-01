@@ -25,14 +25,18 @@ export interface NavConfig {
   };
   links: Array<{
     name: string;
-    href: string;
+    href?: string;
+    entityId?: number;
+    routingType?: string;
     key?: string;
   }>;
   sections?: Array<{
     title: string;
     links: Array<{
       name: string;
-      href: string;
+      href?: string;
+      entityId?: number;
+      routingType?: string;
       key?: string;
     }>;
   }>;
@@ -53,31 +57,76 @@ export class ConfigBridge {
 
   /**
    * Haalt de navigatie-configuratie op voor een specifieke journey
+   * 🛡️ DNA-ROUTING: Resolves entityIds to slugs automatically
    */
-  static async getNavConfig(key: string): Promise<NavConfig | null> {
+  static async getNavConfig(key: string, language: string = 'nl'): Promise<NavConfig | null> {
     // 1. Check Cache (0ms response)
-    const cached = this.navCache.get(key);
+    const cacheKey = `${key}_${language}`;
+    const cached = this.navCache.get(cacheKey);
     const now = Date.now();
     
     if (cached && (now - cached.timestamp < this.CACHE_TTL)) {
-      // Background revalidation if cache is getting old
-      if (now - cached.timestamp > this.CACHE_TTL / 2) {
-        this.revalidateCache(key).catch(() => {});
-      }
       return cached.data;
     }
 
     try {
-      // 2. Fetch from DB with SDK fallback
-      const data = await this.fetchFromSource(key);
-      if (data) {
-        this.navCache.set(key, { data, timestamp: now });
-      }
-      return data;
+      // 2. Fetch from DB
+      const rawData = await this.fetchFromSource(key);
+      if (!rawData) return null;
+
+      // 3. DNA-ROUTING: Resolve all entityIds to slugs
+      const resolvedData = await this.resolveDNA(rawData, language);
+      
+      this.navCache.set(cacheKey, { data: resolvedData, timestamp: now });
+      return resolvedData;
     } catch (error) {
       console.error(`[ConfigBridge] Error fetching nav config for ${key}:`, error);
-      // Return stale data if available on error
       return cached?.data || null;
+    }
+  }
+
+  /**
+   * 🧠 DNA-RESOLVER
+   * Vertaalt entityIds naar actuele slugs via de slug_registry
+   */
+  private static async resolveDNA(config: NavConfig, language: string): Promise<NavConfig> {
+    const resolvedLinks = await Promise.all(config.links.map(async (link) => {
+      if (link.entityId && link.routingType) {
+        const slug = await this.resolveSlug(link.entityId, link.routingType, language);
+        return { ...link, href: slug || link.href || '#' };
+      }
+      return link;
+    }));
+
+    const resolvedSections = config.sections ? await Promise.all(config.sections.map(async (section) => {
+      const links = await Promise.all(section.links.map(async (link) => {
+        if (link.entityId && link.routingType) {
+          const slug = await this.resolveSlug(link.entityId, link.routingType, language);
+          return { ...link, href: slug || link.href || '#' };
+        }
+        return link;
+      }));
+      return { ...section, links };
+    })) : undefined;
+
+    return { ...config, links: resolvedLinks, sections: resolvedSections };
+  }
+
+  private static async resolveSlug(entityId: number, routingType: string, language: string): Promise<string | null> {
+    try {
+      const { data, error } = await sdkClient
+        .from('slug_registry')
+        .select('slug')
+        .eq('entity_id', entityId)
+        .eq('routing_type', routingType)
+        .eq('is_active', true)
+        .maybeSingle();
+
+      if (error || !data) return null;
+      return data.slug;
+    } catch (err) {
+      console.error(`[ConfigBridge] DNA Resolve failed for ${routingType}:${entityId}`, err);
+      return null;
     }
   }
 

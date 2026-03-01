@@ -34,13 +34,35 @@ export async function GET(request: NextRequest) {
   const type = searchParams.get('type');
 
   // appConfigs en overige types: admin only
-  const publicTypes = ['actor', 'actors', 'music', 'navigation', 'telephony', 'general', 'languages', 'genders', 'journeys', 'worlds', 'media_types', 'countries', 'sectors', 'blueprints', 'demos_enriched', 'telephony_subtypes', 'experience_levels', 'actor_statuses', 'voice_tones'];
+  const publicTypes = ['actor', 'actors', 'music', 'navigation', 'telephony', 'general', 'languages', 'genders', 'journeys', 'worlds', 'media_types', 'countries', 'sectors', 'blueprints', 'demos_enriched', 'telephony_subtypes', 'experience_levels', 'actor_statuses', 'voice_tones', 'resolve-dna'];
   if (!type || !publicTypes.includes(type)) {
     const auth = await requireAdmin();
     if (auth instanceof NextResponse) return auth;
   }
 
   try {
+    // 🛡️ DNA-ROUTING: Resolve entityId to slug (v2.17.0)
+    if (type === 'resolve-dna') {
+      const entityId = searchParams.get('entityId');
+      const routingType = searchParams.get('routingType');
+      const lang = searchParams.get('lang') || 'nl';
+
+      if (!entityId || !routingType) {
+        return NextResponse.json({ error: 'entityId and routingType are required' }, { status: 400 });
+      }
+
+      const { data, error } = await supabase
+        .from('slug_registry')
+        .select('slug')
+        .eq('entity_id', parseInt(entityId))
+        .eq('routing_type', routingType)
+        .eq('is_active', true)
+        .maybeSingle();
+
+      if (error) throw error;
+      return NextResponse.json({ slug: data?.slug || null });
+    }
+
     // 🛡️ CHRIS-PROTOCOL: SDK-First for Public Config (v2.14.750)
     // Drizzle can be unstable in some serverless environments. We use SDK for critical public data.
     if (type === 'worlds') {
@@ -161,13 +183,13 @@ export async function GET(request: NextRequest) {
         const config = await dbWithTimeout(db.select().from(appConfigs).where(eq(appConfigs.key, 'general_settings')).limit(1)) as any[];
         return NextResponse.json({
           general_settings: config[0]?.value || {},
-          _version: '2.16.138'
+          _version: '2.17.0'
         });
       } catch (err: any) {
         console.warn(`[Admin Config] General settings fetch failed, returning empty: ${err.message}`);
         return NextResponse.json({
           general_settings: {},
-          _version: '2.16.138'
+          _version: '2.17.0'
         });
       }
     }
@@ -198,8 +220,9 @@ export async function GET(request: NextRequest) {
 
     if (type === 'navigation') {
       const journey = searchParams.get('journey') || 'agency';
+      const lang = searchParams.get('lang') || 'nl';
       try {
-        const config = await ConfigBridge.getNavConfig(journey);
+        const config = await ConfigBridge.getNavConfig(journey, lang);
         return NextResponse.json(config || { links: [], icons: {} });
       } catch (navErr) {
         console.error(`[Admin Config GET] Navigation fetch failed for ${journey}:`, navErr);
