@@ -929,7 +929,7 @@ export async function getFaqs(category: string, limit: number = 5, worldId?: num
 
 export async function getWorkshops(params: { limit?: number, worldId?: number, journeyId?: number } = {}): Promise<any[]> {
   const { limit = 50, worldId, journeyId } = params;
-  // 🛡️ CHRIS-PROTOCOL: Use SDK for stability (v2.14.273)
+  // 🛡️ CHRIS-PROTOCOL: Use SDK for stability with explicit relationship hint (v2.16.108)
   let query = supabase
     .from('workshops')
     .select(`
@@ -937,7 +937,7 @@ export async function getWorkshops(params: { limit?: number, worldId?: number, j
       media:media_id(*),
       editions:workshop_editions(
         *,
-        instructor:instructors(
+        instructor:instructors!workshop_editions_instructor_id_instructors_id_fk(
           id, 
           name, 
           first_name, 
