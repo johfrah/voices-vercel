@@ -108,13 +108,16 @@ export const VoiceglotText: React.FC<VoiceglotTextProps> = ({
         // 🛡️ ANNA-PROTOCOL: Small delay to batch registration requests
         await new Promise(resolve => setTimeout(resolve, Math.random() * 5000));
         
+        const market = MarketManager.getCurrentMarket();
+        
         await fetch('/api/admin/voiceglot/register', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ 
             key: translationKey, 
             sourceText: defaultText,
-            context: context || 'auto-registered' //  Pass context to registry
+            context: context || 'auto-registered', //  Pass context to registry
+            sourceLangId: market.primary_language_id || 1 // 🛡️ CHRIS-PROTOCOL: Handshake ID Truth
           })
         });
       } catch (e) {

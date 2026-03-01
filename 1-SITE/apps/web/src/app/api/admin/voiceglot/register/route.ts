@@ -5,6 +5,12 @@ import { eq, and } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
 import { GeminiService } from '@/lib/services/gemini-service';
 import { requireAdmin } from '@/lib/auth/api-auth';
+import { createClient } from '@supabase/supabase-js';
+
+// 🛡️ CHRIS-PROTOCOL: SDK fallback for stability (v2.14.750)
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 /**
  *  API: VOICEGLOT REGISTER (NUCLEAR 2026)
@@ -31,7 +37,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
     }
     
-    const { key, sourceText, context } = body;
+    const { key, sourceText, context, sourceLangId } = body;
 
     if (!key || !sourceText) {
       return NextResponse.json({ error: 'Key and sourceText required' }, { status: 400 });
@@ -49,7 +55,7 @@ export async function POST(request: NextRequest) {
     try {
       //  CHRIS-PROTOCOL: Forensische Database Check
       // We loggen de payload voor we inserten om de root cause van de 'Failed query' te vinden.
-      console.log('[RegisterAPI] Attempting registry insert:', { key, sourceText, context });
+      console.log('[RegisterAPI] Attempting registry insert:', { key, sourceText, context, sourceLangId });
 
       if (key && sourceText) {
         // 🛡️ CHRIS-PROTOCOL: 2s internal timeout for registry insert
@@ -57,13 +63,15 @@ export async function POST(request: NextRequest) {
           stringHash: key, 
           originalText: sourceText,
           lastSeen: new Date(),
-          context: context || 'auto-registered'
+          context: context || 'auto-registered',
+          sourceLangId: sourceLangId || 1 // 🛡️ CHRIS-PROTOCOL: Handshake ID Truth
         }).onConflictDoUpdate({
           target: [translationRegistry.stringHash],
           set: { 
             originalText: sourceText,
             lastSeen: new Date(),
-            context: context || 'auto-registered'
+            context: context || 'auto-registered',
+            sourceLangId: sourceLangId || 1
           }
         });
 
@@ -83,79 +91,96 @@ export async function POST(request: NextRequest) {
 
     // 2. NUCLEAR HEALING: Trigger vertalingen voor alle talen ASYNC
     // We wachten hier niet op, de client krijgt direct antwoord.
-    const targetLanguages = ['en', 'fr', 'de', 'es', 'pt', 'it', 'nl-be', 'nl-nl'];
     
     // We doen de healing in de achtergrond
     (async () => {
-      for (const lang of targetLanguages) {
-        try {
-          // 🛡️ CHRIS-PROTOCOL: Skip healing for Dutch (v2.18.7)
-          // We don't want AI to "polish" or "translate" Dutch to Dutch.
-          if (lang.startsWith('nl')) continue;
+      try {
+        // 🛡️ CHRIS-PROTOCOL: Handshake Truth (v2.19.2)
+        // We halen de actieve talen uit de database in plaats van een hardcoded lijst.
+        const { data: activeLanguages, error: langError } = await supabase
+          .from('languages')
+          .select('id, code')
+          .eq('status', 'active');
 
-          // Check of deze vertaling al bestaat
-          const [existing] = await db
-            .select()
-            .from(translations)
-            .where(
-              and(
-                eq(translations.translationKey, key),
-                eq(translations.lang, lang)
-              )
-            )
-            .limit(1)
-            .catch(() => []);
-
-          if (!existing || !existing.translatedText || existing.translatedText === sourceText) {
-            const prompt = `
-              Vertaal de volgende tekst van het Nederlands naar het ${lang}.
-              Context: ${context || 'Algemene website tekst'}
-              Houd je strikt aan de Voices Tone of Voice: warm, gelijkwaardig, vakmanschap.
-              Geen AI-bingo woorden, geen em-dashes, max 15 woorden.
-              
-              Tekst: "${sourceText}"
-              Vertaling:
-            `;
-
-            const translatedText = await GeminiService.generateText(prompt, { lang: lang });
-            let cleanTranslation = translatedText.trim().replace(/^"|"$/g, '');
-
-            //  CHRIS-PROTOCOL: Slop Filter
-            // Als de AI een foutmelding of conversatie teruggeeft, negeren we deze.
-            const isSlop = (
-              cleanTranslation.includes('Het lijkt erop dat') ||
-              cleanTranslation.includes('Zou je de tekst') ||
-              cleanTranslation.includes('niet compleet is') ||
-              cleanTranslation.includes('context biedt') ||
-              cleanTranslation.includes('meer informatie') ||
-              cleanTranslation.includes('langere tekst') ||
-              cleanTranslation.length > 200 // Vertalingen van labels zijn zelden zo lang
-            );
-
-            if (cleanTranslation && !isSlop) {
-              // 🛡️ CHRIS-PROTOCOL: Kleine pauze om database pooler te ontlasten (v2.16.001)
-              await new Promise(resolve => setTimeout(resolve, 200));
-
-              await db.insert(translations).values({
-                translationKey: key,
-                lang: lang,
-                originalText: sourceText,
-                translatedText: cleanTranslation,
-                status: 'active',
-                is_manually_edited: false,
-                updatedAt: new Date()
-              }).onConflictDoUpdate({
-                target: [translations.translationKey, translations.lang],
-                set: {
-                  translatedText: cleanTranslation,
-                  updatedAt: new Date()
-                }
-              });
-            }
-          }
-        } catch (err) {
-          console.error(`[Background Heal] Failed for ${lang}:`, err);
+        if (langError || !activeLanguages) {
+          console.error('[RegisterAPI] Failed to fetch active languages for healing:', langError);
+          return;
         }
+
+        for (const langObj of activeLanguages) {
+          const lang = langObj.code.toLowerCase();
+          try {
+            // 🛡️ CHRIS-PROTOCOL: Skip healing for Dutch (v2.18.7)
+            // We don't want AI to "polish" or "translate" Dutch to Dutch.
+            // In the future, we could check if langObj.id === source_lang_id
+            if (lang.startsWith('nl')) continue;
+
+            // Check of deze vertaling al bestaat
+            const [existing] = await db
+              .select()
+              .from(translations)
+              .where(
+                and(
+                  eq(translations.translationKey, key),
+                  eq(translations.lang, lang)
+                )
+              )
+              .limit(1)
+              .catch(() => []);
+
+            if (!existing || !existing.translatedText || existing.translatedText === sourceText) {
+              const prompt = `
+                Vertaal de volgende tekst van het Nederlands naar het ${lang}.
+                Context: ${context || 'Algemene website tekst'}
+                Houd je strikt aan de Voices Tone of Voice: warm, gelijkwaardig, vakmanschap.
+                Geen AI-bingo woorden, geen em-dashes, max 15 woorden.
+                
+                Tekst: "${sourceText}"
+                Vertaling:
+              `;
+
+              const translatedText = await GeminiService.generateText(prompt, { lang: lang });
+              let cleanTranslation = translatedText.trim().replace(/^"|"$/g, '');
+
+              //  CHRIS-PROTOCOL: Slop Filter
+              // Als de AI een foutmelding of conversatie teruggeeft, negeren we deze.
+              const isSlop = (
+                cleanTranslation.includes('Het lijkt erop dat') ||
+                cleanTranslation.includes('Zou je de tekst') ||
+                cleanTranslation.includes('niet compleet is') ||
+                cleanTranslation.includes('context biedt') ||
+                cleanTranslation.includes('meer informatie') ||
+                cleanTranslation.includes('langere tekst') ||
+                cleanTranslation.length > 200 // Vertalingen van labels zijn zelden zo lang
+              );
+
+              if (cleanTranslation && !isSlop) {
+                // 🛡️ CHRIS-PROTOCOL: Kleine pauze om database pooler te ontlasten (v2.16.001)
+                await new Promise(resolve => setTimeout(resolve, 200));
+
+                await db.insert(translations).values({
+                  translationKey: key,
+                  lang: lang,
+                  originalText: sourceText,
+                  translatedText: cleanTranslation,
+                  status: 'active',
+                  is_manually_edited: false,
+                  updatedAt: new Date()
+                }).onConflictDoUpdate({
+                  target: [translations.translationKey, translations.lang],
+                  set: {
+                    translatedText: cleanTranslation,
+                    updatedAt: new Date()
+                  }
+                });
+              }
+            }
+          } catch (err) {
+            console.error(`[Background Heal] Failed for ${lang}:`, err);
+          }
+        }
+      } catch (outerErr) {
+        console.error('[RegisterAPI] Background healing process failed:', outerErr);
       }
     })();
 
