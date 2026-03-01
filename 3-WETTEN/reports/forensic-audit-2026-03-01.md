@@ -1,9 +1,9 @@
-# 🛡️ Forensic Audit Report (3/1/2026, 10:10:10 AM)
+# 🛡️ Forensic Audit Report (3/1/2026, 10:13:12 AM)
 
 ## Summary
 - **Status**: ✅ PASSED
 - **Errors**: 0
-- **Warnings**: 3742
+- **Warnings**: 3740
 
 ## Detailed Issues
 - **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:682`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -2418,10 +2418,6 @@
   > `* /voicy <prompt>   Route to Voicy (one-shot)`
 - **WARNING** `1-SITE/apps/web/src/app/api/telegram/webhook/route.ts:99`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `// /voicy <prompt>  one-shot Voicy; /voicy  (nothing)  toggle`
-- **WARNING** `1-SITE/apps/web/src/app/api/translations/heal/route.ts:43`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
-  > `const { key, originalText, currentLang = 'nl' } = body;`
-- **WARNING** `1-SITE/apps/web/src/app/api/translations/route.ts:31`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
-  > `const lang = searchParams.get('lang') || 'nl';`
 - **WARNING** `1-SITE/apps/web/src/app/cart/CartPageClient.tsx:96`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="p-8 bg-primary/5 rounded-[32px] border border-primary/10 flex items-start gap-6">`
 - **WARNING** `1-SITE/apps/web/src/app/cart/CartPageClient.tsx:97`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.

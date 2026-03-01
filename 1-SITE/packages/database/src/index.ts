@@ -71,8 +71,8 @@ o/bKiIz+Fq8=
         (globalThis as any).postgresClient = postgres(connectionString, { 
           prepare: false, 
           ssl: { ca: supabaseRootCA, rejectUnauthorized: false },
-          connect_timeout: 10,
-          idle_timeout: 10,
+          connect_timeout: 30,
+          idle_timeout: 20,
           max: poolSize,
         });
       }

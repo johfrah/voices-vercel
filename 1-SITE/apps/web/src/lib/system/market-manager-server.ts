@@ -142,8 +142,8 @@ export class MarketManagerServer {
       language: 'nl',
       primary_language: 'nl-BE',
       primary_language_id: 1, // 🛡️ Handshake Truth: Vlaams
-      supported_languages: ['nl-BE', 'fr-BE', 'en-GB', 'fr-FR', 'de-DE'],
-      popular_languages: ['nl-BE', 'fr-BE', 'en-GB', 'fr-FR', 'de-DE'],
+      supported_languages: ['nl-BE', 'nl-NL', 'fr-BE', 'en-GB', 'fr-FR', 'de-DE'],
+      popular_languages: ['nl-BE', 'nl-NL', 'fr-BE', 'en-GB', 'fr-FR', 'de-DE'],
       name: 'Voices',
       email: 'johfrah@voices.be',
       logo_url: VOICES_CONFIG.assets.logos.be,
@@ -155,8 +155,8 @@ export class MarketManagerServer {
       language: 'nl',
       primary_language: 'nl-BE',
       primary_language_id: 1, // 🛡️ Handshake Truth: Vlaams (Unificatie)
-      supported_languages: ['nl-BE', 'en-GB', 'de-DE', 'fr-FR'],
-      popular_languages: ['nl-BE', 'en-GB', 'de-DE', 'fr-FR'],
+      supported_languages: ['nl-NL', 'nl-BE', 'en-GB', 'de-DE', 'fr-FR'],
+      popular_languages: ['nl-NL', 'nl-BE', 'en-GB', 'de-DE', 'fr-FR'],
       name: 'Nederland',
       logo_url: VOICES_CONFIG.assets.logos.nl,
       theme: 'voices',
@@ -678,11 +678,11 @@ export class MarketManagerServer {
    */
   static getLanguageOrder(lang: string = 'nl'): string[] {
     const orders: Record<string, string[]> = {
-      'nl': ['nl-be', 'en-gb', 'fr-fr', 'de-de'],
-      'fr': ['fr-fr', 'en-gb', 'nl-be', 'de-de'],
-      'es': ['es-es', 'en-gb', 'fr-fr', 'nl-be'],
+      'nl': ['nl-be', 'nl-nl', 'en-gb', 'fr-fr', 'de-de'],
+      'fr': ['fr-fr', 'en-gb', 'nl-nl', 'nl-be', 'de-de'],
+      'es': ['es-es', 'en-gb', 'fr-fr', 'nl-nl'],
       'pt': ['pt-pt', 'en-gb', 'fr-fr', 'es-es'],
-      'de': ['de-de', 'en-gb', 'fr-fr', 'nl-be']
+      'de': ['de-de', 'en-gb', 'fr-fr', 'nl-nl']
     };
     return orders[lang] || orders['nl'];
   }

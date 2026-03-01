@@ -1,49 +1,48 @@
 #!/usr/bin/env tsx
-import { createClient } from '@supabase/supabase-js';
-import * as dotenv from 'dotenv';
-import * as path from 'path';
+/**
+ * Check Live Errors - Direct Database Inspection
+ */
 
-dotenv.config({ path: path.join(process.cwd(), '1-SITE/apps/web/.env.local') });
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+import { db } from '../../1-SITE/packages/database/src/index.js';
+import { sql } from 'drizzle-orm';
 
 async function checkLiveErrors() {
-  console.log('🔍 Checking live system_events for errors...\n');
+  console.log('\n🔍 LIVE ERROR CHECK\n');
+  console.log('='.repeat(80));
 
-  const { data, error } = await supabase
-    .from('system_events')
-    .select('*')
-    .eq('level', 'error')
-    .order('created_at', { ascending: false })
-    .limit(20);
+  try {
+    const result = await db.execute(sql`
+      SELECT event_type, message, metadata, created_at
+      FROM system_events
+      WHERE created_at > NOW() - INTERVAL '10 minutes'
+        AND event_type IN ('error', 'critical')
+      ORDER BY created_at DESC
+      LIMIT 20
+    `);
 
-  if (error) {
-    console.error('❌ Error fetching system_events:', error);
-    return;
-  }
-
-  if (!data || data.length === 0) {
-    console.log('✅ No errors found in system_events');
-    return;
-  }
-
-  console.log(`⚠️  Found ${data.length} recent errors:\n`);
-  
-  for (const event of data) {
-    console.log(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
-    console.log(`🕐 ${event.created_at}`);
-    console.log(`📍 Source: ${event.source || 'Unknown'}`);
-    console.log(`📝 Message: ${event.message}`);
+    const events = result.rows || [];
     
-    if (event.details) {
-      console.log(`📦 Details:`, JSON.stringify(event.details, null, 2));
+    if (events.length === 0) {
+      console.log('\n✅ No errors in the last 10 minutes');
+    } else {
+      console.log(`\n⚠️  Found ${events.length} errors:\n`);
+      events.forEach((row: any) => {
+        console.log(`[${row.created_at}] ${row.event_type}: ${row.message}`);
+        if (row.metadata) {
+          console.log(`   Metadata: ${JSON.stringify(row.metadata, null, 2)}`);
+        }
+        console.log('');
+      });
     }
-    
-    console.log('');
+
+    console.log('='.repeat(80) + '\n');
+
+  } catch (error: any) {
+    console.error('\n❌ Database Error:', error.message);
+    process.exit(1);
   }
+
+  process.exit(0);
 }
 
-checkLiveErrors().catch(console.error);
+checkLiveErrors();

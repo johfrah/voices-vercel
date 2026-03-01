@@ -1,29 +1,35 @@
-import { db } from '../1-SITE/packages/database/src/index';
-import { actors } from '../1-SITE/packages/database/schema';
-import { sql } from 'drizzle-orm';
-import * as dotenv from 'dotenv';
-import path from 'path';
+#!/usr/bin/env tsx
+/**
+ * Test Database Connection - Simple Ping
+ */
 
-// Load environment variables from .env.local
-dotenv.config({ path: path.resolve(process.cwd(), '1-SITE/apps/web/.env.local') });
+import { db } from '../../1-SITE/packages/database/src/index.js';
+import { sql } from 'drizzle-orm';
 
 async function testConnection() {
-  console.log('🚀 Testing database connection...');
-  console.log('DATABASE_URL:', process.env.DATABASE_URL ? 'PRESENT' : 'MISSING');
-  
+  console.log('\n🔌 TESTING DATABASE CONNECTION\n');
+  console.log('='.repeat(80));
+
   try {
-    const result = await db.select({ count: sql<number>`count(*)` }).from(actors);
-    console.log('✅ Connection successful!');
-    console.log('Total actors in database:', result[0].count);
+    console.log('Attempting simple SELECT 1 query...');
+    const result = await db.execute(sql`SELECT 1 as ping`);
+    console.log('✅ Database connection successful!');
+    console.log(`   Result: ${JSON.stringify(result.rows)}`);
+
+    console.log('\nAttempting to count workshops...');
+    const workshopCount = await db.execute(sql`SELECT COUNT(*) as count FROM workshops`);
+    console.log(`✅ Workshops table accessible!`);
+    console.log(`   Count: ${JSON.stringify(workshopCount.rows)}`);
+
+    console.log('\n' + '='.repeat(80) + '\n');
+
   } catch (error: any) {
-    console.error('❌ Connection failed!');
-    console.error('Error message:', error.message);
-    if (error.stack) {
-      console.error('Stack trace:', error.stack);
-    }
-  } finally {
-    process.exit();
+    console.error('\n❌ Connection Error:', error.message);
+    console.error('   Stack:', error.stack);
+    process.exit(1);
   }
+
+  process.exit(0);
 }
 
 testConnection();
