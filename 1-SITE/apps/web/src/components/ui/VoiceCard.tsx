@@ -538,7 +538,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
                         variant="pure"
                         size="none"
                         onClick={(e) => { e.stopPropagation(); setActiveVideo(null); setIsPlaying(false); }}
-                        className="absolute top-2 md:top-4 right-2 md:right-4 z-20 w-8 h-8 rounded-full bg-black/40 backdrop-blur-md text-white flex items-center justify-center hover:bg-black/60 transition-all"
+                        className="absolute top-2 md:top-4 right-2 md:right-4 z-20 w-8 h-8 !rounded-full bg-black/40 backdrop-blur-md text-white flex items-center justify-center hover:bg-black/60 transition-all"
                       >
                         <Plus className="rotate-45" size={16} />
                       </ButtonInstrument>
@@ -613,7 +613,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
                   }, actorPlaylist); 
                 }
               }}
-              className="w-12 h-12 md:w-20 md:h-20 rounded-full bg-white/20 backdrop-blur-xl border border-white/30 flex items-center justify-center text-white hover:scale-110 hover:bg-white/30 transition-all duration-500 shadow-2xl group/play"
+              className="w-12 h-12 md:w-20 md:h-20 !rounded-full bg-white/20 backdrop-blur-xl border border-white/30 flex items-center justify-center text-white hover:scale-110 hover:bg-white/30 transition-all duration-500 shadow-2xl group/play"
             >
               {isCurrentlyPlaying ? <Pause size={24} className="md:w-8 md:h-8" fill="currentColor" /> : <Play size={24} className="md:w-8 md:h-8 ml-1 group-hover/play:scale-110 transition-transform" />}
             </ButtonInstrument>
@@ -631,7 +631,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
               variant="pure"
               size="none"
               onClick={handleStudioToggle} 
-              className={cn("h-8 md:h-10 rounded-full backdrop-blur-md flex items-center transition-all duration-500 shadow-lg border border-white/10 group/studio overflow-hidden", isSelected ? "bg-primary text-white border-primary px-2 md:px-3 gap-1 md:gap-2" : "bg-va-black/40 hover:bg-va-black/60 text-white px-2 md:px-3 gap-0 group-hover:gap-1 md:group-hover:gap-2 backdrop-blur-md")}
+              className={cn("h-8 md:h-10 !rounded-full backdrop-blur-md flex items-center transition-all duration-500 shadow-lg border border-white/10 group/studio overflow-hidden", isSelected ? "bg-primary text-white border-primary px-2 md:px-3 gap-1 md:gap-2" : "bg-va-black/40 hover:bg-va-black/60 text-white px-2 md:px-3 gap-0 group-hover:gap-1 md:group-hover:gap-2 backdrop-blur-md")}
             >
               {isSelected ? <Check size={14} className="md:w-4.5 md:h-4.5" strokeWidth={3} /> : <><Plus size={14} className="md:w-4.5 md:h-4.5 shrink-0 transition-transform group-hover/studio:rotate-90 duration-500" /><span className="max-w-0 group-hover:max-w-[180px] opacity-0 group-hover:opacity-100 transition-all duration-500 text-[8px] md:text-[10px] font-black tracking-widest uppercase whitespace-nowrap"><VoiceglotText translationKey="common.free_demo_cta" defaultText="Gratis proefopname" /></span></>}
             </ButtonInstrument>
@@ -643,7 +643,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
             variant="pure"
             size="none"
             onClick={handleAdminClick} 
-            className="absolute top-4 left-4 z-40 w-10 h-10 rounded-full bg-va-black/40 backdrop-blur-md text-white flex items-center justify-center hover:bg-primary transition-all duration-300 shadow-lg border border-white/10 group/admin"
+            className="absolute top-4 left-4 z-40 w-10 h-10 !rounded-full bg-va-black/40 backdrop-blur-md text-white flex items-center justify-center hover:bg-primary transition-all duration-300 shadow-lg border border-white/10 group/admin"
           >
             <Edit3 size={18} className="group-hover/admin:rotate-12 transition-transform" />
           </ButtonInstrument>
@@ -746,8 +746,8 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
                 ))}
                 {isEditMode && (
                   <div className="flex items-center gap-1">
-                    <ButtonInstrument variant="pure" size="none" onClick={(e) => { e.stopPropagation(); setIsToneSelectorOpen(!isToneSelectorOpen); playClick('pro'); }} className="w-5 h-5 rounded-full bg-primary text-white flex items-center justify-center hover:scale-110 transition-all shadow-sm" title="Relational Tones"><Zap size={10} strokeWidth={3} /></ButtonInstrument>
-                    <ButtonInstrument variant="pure" size="none" onClick={(e) => { e.stopPropagation(); setIsTagSelectorOpen(!isTagSelectorOpen); playClick('pro'); }} className="w-5 h-5 rounded-full bg-va-black/20 text-white flex items-center justify-center hover:scale-110 transition-all shadow-sm" title="Legacy Tags"><Plus size={10} strokeWidth={3} /></ButtonInstrument>
+                    <ButtonInstrument variant="pure" size="none" onClick={(e) => { e.stopPropagation(); setIsToneSelectorOpen(!isToneSelectorOpen); playClick('pro'); }} className="w-5 h-5 !rounded-full bg-primary text-white flex items-center justify-center hover:scale-110 transition-all shadow-sm" title="Relational Tones"><Zap size={10} strokeWidth={3} /></ButtonInstrument>
+                    <ButtonInstrument variant="pure" size="none" onClick={(e) => { e.stopPropagation(); setIsTagSelectorOpen(!isTagSelectorOpen); playClick('pro'); }} className="w-5 h-5 !rounded-full bg-va-black/20 text-white flex items-center justify-center hover:scale-110 transition-all shadow-sm" title="Legacy Tags"><Plus size={10} strokeWidth={3} /></ButtonInstrument>
                   </div>
                 )}
                 <AnimatePresence>
