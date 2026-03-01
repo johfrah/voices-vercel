@@ -17,7 +17,7 @@ import { ActorReorderModal } from './ActorReorderModal';
 import { AgencyFilterSheet } from './AgencyFilterSheet';
 import { FlagAR, FlagBE, FlagBR, FlagCN, FlagDE, FlagDK, FlagES, FlagFI, FlagFR, FlagGR, FlagIT, FlagJP, FlagKR, FlagNL, FlagPL, FlagPT, FlagRU, FlagSE, FlagTR, FlagUK, FlagUS } from './LayoutInstruments';
 import { ContainerInstrument, TextInstrument, ButtonInstrument } from './LayoutInstruments';
-import { ContainerInstrument as ContainerInstrumentServer, TextInstrument as TextInstrumentServer } from './LayoutInstrumentsServer';
+import { ContainerInstrumentServer, TextInstrumentServer } from './LayoutInstrumentsServer';
 import { OrderStepsInstrument } from './OrderStepsInstrument';
 import { VoiceglotImage } from './VoiceglotImage';
 import { VoiceglotText } from './VoiceglotText';

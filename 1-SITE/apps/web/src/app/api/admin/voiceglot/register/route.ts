@@ -89,6 +89,10 @@ export async function POST(request: NextRequest) {
     (async () => {
       for (const lang of targetLanguages) {
         try {
+          // 🛡️ CHRIS-PROTOCOL: Skip healing for Dutch (v2.18.7)
+          // We don't want AI to "polish" or "translate" Dutch to Dutch.
+          if (lang.startsWith('nl')) continue;
+
           // Check of deze vertaling al bestaat
           const [existing] = await db
             .select()

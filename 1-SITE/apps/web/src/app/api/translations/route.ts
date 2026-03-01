@@ -45,7 +45,13 @@ export async function GET(request: NextRequest) {
     const translationMap: Record<string, string> = {};
     results?.forEach(row => {
       const key = row.translation_key || row.translationKey;
-      const text = row.translated_text || row.translatedText || row.original_text || row.originalText || '';
+      let text = row.translated_text || row.translatedText || row.original_text || row.originalText || '';
+      
+      // 🛡️ CHRIS-PROTOCOL: Force Original Text for Dutch (v2.18.7)
+      // Dutch variants should never deviate from the source truth in the code.
+      if (lang.startsWith('nl') && row.original_text) {
+        text = row.original_text;
+      }
       
       // 🛡️ CHRIS-PROTOCOL: Filter out 'NULL' strings from database (v2.14.780)
       if (key && text && text.toUpperCase() !== 'NULL') {
