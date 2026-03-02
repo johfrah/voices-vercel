@@ -16,7 +16,7 @@ Deze skill zorgt dat Dropbox (lokaal) en Supabase (online) synchroon lopen.
 ## 🚀 Execution
 Run via terminal:
 ```bash
-npx tsx 3-WETTEN/scripts/asset-watchdog.ts
+npx tsx scripts/asset-watchdog.ts
 ```
 
 ## 📜 Verplichte Richtlijnen

@@ -15,7 +15,7 @@ Transforms raw visitor data into actionable intelligence.
 ## 🚀 Execution
 Run via terminal:
 ```bash
-npx tsx 3-WETTEN/scripts/guest-intelligence.ts
+npx tsx scripts/guest-intelligence.ts
 ```
 
 ## 📜 Verplichte Richtlijnen

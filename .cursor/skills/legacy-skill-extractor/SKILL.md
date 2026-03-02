@@ -5,11 +5,11 @@ description: Meticulously extracts functional logic from legacy scripts and tran
 
 # LEGACY SKILL EXTRACTOR
 
-Dit is de specialistische skill voor het transformeren van legacy scripts (`3-WETTEN/scripts/`) naar actieve Cursor Skills.
+Dit is de specialistische skill voor het transformeren van legacy scripts (`scripts/`) naar actieve Cursor Skills.
 
 ## 🛠️ Extraction Workflow
 
-1. **Identify**: Scan `3-WETTEN/scripts/` voor functionele scripts (bijv. audits, syncs, watchdog).
+1. **Identify**: Scan `scripts/` voor functionele scripts (bijv. audits, syncs, watchdog).
 2. **Transform**: Vertaal de logica van het script naar een gestructureerde Cursor Skill (`.md` in `.cursor/skills/`).
 3. **Meticulous Transfer**:
    - Behoud alle mandaten (bijv. Chris-Protocol, Bob-methode).

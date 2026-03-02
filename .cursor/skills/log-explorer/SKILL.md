@@ -16,7 +16,7 @@ Deze skill biedt een gecombineerd overzicht van systeem-integriteit en live even
 ## 🚀 Execution
 Run via terminal:
 ```bash
-npx tsx 3-WETTEN/scripts/log-explorer.ts [live|audit|errors|digest <hash>]
+npx tsx scripts/log-explorer.ts [live|audit|errors|digest <hash>]
 ```
 
 ## 📜 Verplichte Richtlijnen

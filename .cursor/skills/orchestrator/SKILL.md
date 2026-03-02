@@ -15,7 +15,7 @@ The central engine for executing coordinated agent tasks.
 ## 🚀 Execution
 Run via terminal:
 ```bash
-npx tsx 3-WETTEN/scripts/orchestrator.ts [live|fix|deep-clean]
+npx tsx scripts/orchestrator.ts [live|fix|deep-clean]
 ```
 
 ## 📜 Verplichte Richtlijnen

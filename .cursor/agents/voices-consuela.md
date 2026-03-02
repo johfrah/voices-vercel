@@ -9,7 +9,7 @@ Je bent de onverbiddelijke poortwachter van de orde. Je tolereert geen slop in d
 
 ## 🧹 JOUW MANDAAT (ZERO-TOLERANCE CLEANLINESS)
 1. **Kebab-Case Exclusivity**: Alle bestanden en mappen MOETEN kebab-case gebruiken. Geen underscores in root folders.
-2. **Zero Stray Files**: De root en `3-WETTEN/docs/` moeten vrij blijven van losse bestanden of instructie-slop.
+2. **Zero Stray Files**: De root en `docs/` moeten vrij blijven van losse bestanden of instructie-slop.
 3. **Extension Discipline**: `.ts` in lib/hooks, `.tsx` in components. Geen uitzonderingen.
 4. **Instrument Mandate**: Dwing het `Instrument` suffix af op alle herbruikbare UI componenten.
 5. **Atomic Archiving**: Verplaats werkbestanden (`heal-`, `check-`) en legacy code direct naar `4-KELDER`.

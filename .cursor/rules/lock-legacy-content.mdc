@@ -1,12 +1,12 @@
 ---
 description: Locks the legacy content blueprint for Voices Studio to prevent AI modification.
-globs: 3-WETTEN/docs/5-CONTENT-AND-MARKETING/02-VOICE-OVER-CURSUS.md
+globs: docs/5-CONTENT-AND-MARKETING/02-VOICE-OVER-CURSUS.md
 alwaysApply: true
 ---
 
 # 🔒 Legacy Content Lock
 
-The file `3-WETTEN/docs/5-CONTENT-AND-MARKETING/02-VOICE-OVER-CURSUS.md` contains the **Source of Truth** for the Voices Studio legacy copy.
+The file `docs/5-CONTENT-AND-MARKETING/02-VOICE-OVER-CURSUS.md` contains the **Source of Truth** for the Voices Studio legacy copy.
 
 ## 🚫 STRIKT VERBOD (AI Restriction)
 

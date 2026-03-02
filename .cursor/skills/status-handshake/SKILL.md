@@ -15,7 +15,7 @@ Ensures all entities (actors, workshops, etc.) have a consistent status across t
 ## 🚀 Execution
 Run via terminal:
 ```bash
-npx tsx 3-WETTEN/scripts/status-handshake.ts
+npx tsx scripts/status-handshake.ts
 ```
 
 ## 📜 Verplichte Richtlijnen

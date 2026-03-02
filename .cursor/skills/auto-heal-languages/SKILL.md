@@ -16,7 +16,7 @@ This skill migrates legacy language strings to structured relations in the datab
 ## 🚀 Execution
 Run via terminal:
 ```bash
-npx tsx 3-WETTEN/scripts/auto-heal-languages.ts
+npx tsx scripts/auto-heal-languages.ts
 ```
 
 ## 📜 Verplichte Richtlijnen

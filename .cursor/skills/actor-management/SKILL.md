@@ -11,25 +11,25 @@ Deze skill orkestreert het volledige beheer van stemacteurs binnen de Agency Wor
 
 ### 1. Rate & Data Audit
 Controleer of alle acteurs de juiste prijzen en metadata hebben:
-- **Audit Rates**: `npx tsx 3-WETTEN/scripts/maintenance/check-actor-rates.ts`
-- **JSON Rates**: `npx tsx 3-WETTEN/scripts/maintenance/check-json-rates.ts`
+- **Audit Rates**: `npx tsx scripts/maintenance/check-actor-rates.ts`
+- **JSON Rates**: `npx tsx scripts/maintenance/check-json-rates.ts`
 
 ### 2. Visual & Photo Matching
 Zorg dat elke acteur de juiste (geoptimaliseerde) foto heeft:
-- **Audit Photos**: `npx tsx 3-WETTEN/scripts/maintenance/audit-active-photos.ts`
-- **Fuzzy Finder**: `npx tsx 3-WETTEN/scripts/maintenance/fuzzy-photo-finder.ts`
-- **Optimize**: `npx tsx 3-WETTEN/scripts/maintenance/optimize-active-photos.ts`
-- **Forensic Fix**: `npx tsx 3-WETTEN/scripts/forensic-photo-fix.ts`
+- **Audit Photos**: `npx tsx scripts/maintenance/audit-active-photos.ts`
+- **Fuzzy Finder**: `npx tsx scripts/maintenance/fuzzy-photo-finder.ts`
+- **Optimize**: `npx tsx scripts/maintenance/optimize-active-photos.ts`
+- **Forensic Fix**: `npx tsx scripts/forensic-photo-fix.ts`
 
 ### 3. Demo & Review Sync
 Synchroniseer audio demo's en reviews:
-- **Demo Sync**: `npx tsx 3-WETTEN/scripts/maintenance/atomic-demo-sync.ts`
-- **Review Scan**: `npx tsx 3-WETTEN/scripts/atomic-review-scan.ts`
-- **Actor Review**: `npx tsx 3-WETTEN/scripts/atomic-review-actor-scan.ts`
+- **Demo Sync**: `npx tsx scripts/maintenance/atomic-demo-sync.ts`
+- **Review Scan**: `npx tsx scripts/atomic-review-scan.ts`
+- **Actor Review**: `npx tsx scripts/atomic-review-actor-scan.ts`
 
 ### 4. Profile Beautification
 Maak de profielen klaar voor de etalage:
-- **Beautify MD**: `npx tsx 3-WETTEN/scripts/beautify-actor-md.ts`
+- **Beautify MD**: `npx tsx scripts/beautify-actor-md.ts`
 
 ## 📜 Verplichte Richtlijnen
 - **Actor Visibility**: Toon uitsluitend acteurs met `status = 'live'` EN `is_public = true`.

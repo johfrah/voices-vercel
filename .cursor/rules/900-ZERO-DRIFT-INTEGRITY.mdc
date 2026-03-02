@@ -9,7 +9,7 @@ Dit protocol dwingt absolute integriteit af tussen Database, Server en Client. H
 
 ## 2. Handshake-First (Contract Wet)
 - **Mandaat**: Geen nieuwe features zonder integriteits-script.
-- **Implementatie**: Elke nieuwe 'World', 'Journey' of 'Service' moet eerst als test-case worden toegevoegd aan `3-WETTEN/scripts/integrity-handshake.ts`.
+- **Implementatie**: Elke nieuwe 'World', 'Journey' of 'Service' moet eerst als test-case worden toegevoegd aan `scripts/integrity-handshake.ts`.
 - **Blokkade**: De `pre-vercel-check` faalt als de handshake tussen de code en de database-definities (zoals `world_id`) niet klopt.
 
 ## 3. Automated Post-Mortem (Zelfhelende Wet)
@@ -19,7 +19,7 @@ Dit protocol dwingt absolute integriteit af tussen Database, Server en Client. H
 
 ## 4. Nuclear Pre-Flight Mandate
 Het is STRIKT VERBODEN om code te pushen zonder een succesvolle run van:
-1. `npx tsx 3-WETTEN/scripts/integrity-handshake.ts`
+1. `npx tsx scripts/integrity-handshake.ts`
 2. `npm run check:pre-vercel`
 
 ## 5. Turbo-Fabriek Optimalisatie (Snelheid & Precisie)
