@@ -31,7 +31,10 @@ export const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onUpdate }
   }, []);
 
   const nextEdition = workshop.editions?.length > 0 ? workshop.editions[0] : null;
-  const videoPath = workshop.media?.filePath || workshop.media?.file_path;
+  const mediaPath = workshop.media?.filePath || workshop.media?.file_path;
+  const isVideo = mediaPath && /\.(mp4|webm|mov)$/i.test(mediaPath);
+  const videoPath = isVideo ? mediaPath : null;
+  const imagePath = !isVideo && mediaPath ? mediaPath : null;
 
   //  SMART AVAILABILITY LOGIC
   const getAvailabilityStatus = (edition: any) => {
@@ -169,68 +172,74 @@ export const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onUpdate }
         </button>
       )}
 
-      {/* VIDEO PREVIEW / AFTERMOVIE */}
-      {videoPath && (
+      {/* MEDIA PREVIEW: Image or Video */}
+      {(videoPath || imagePath) && (
         <ContainerInstrument plain className="relative aspect-square w-full bg-va-black overflow-hidden">
-          {/*  SMART AVAILABILITY CHIP */}
           {availability && (
             <div className={`absolute top-6 left-6 z-30 px-3 py-1.5 rounded-full text-[10px] font-black tracking-[0.2em] uppercase shadow-lg ${availability.color}`}>
               {availability.label}
             </div>
           )}
 
-          {shouldLoadVideo ? (
-            <video 
-              ref={videoRef}
-              src={`/assets/${videoPath}`}
-              className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-700"
-              muted
-              loop
-              playsInline
-              autoPlay
-              crossOrigin="anonymous"
-              preload="metadata"
-            >
-              {/* MARK'S SUBTITLES INTEGRATION */}
-              <track 
-                label="Nederlands"
-                kind="subtitles"
-                srcLang="nl-BE"
-                src={`/assets/studio/workshops/subtitles/${videoPath.split('/').pop().replace(/\.[^/.]+$/, "")}-nl.vtt`}
-                default
-              />
-            </video>
-          ) : (
-            <div className="w-full h-full bg-va-black/20 animate-pulse" />
-          )}
-
-          {/* PLAY BUTTON OVERLAY */}
-          <ContainerInstrument 
-            plain 
-            onClick={togglePlay}
-            className="absolute inset-0 flex items-center justify-center bg-black/10 transition-opacity duration-500 z-10"
-          >
-          <ContainerInstrument 
-            plain 
-            className={`w-16 h-16 !rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center hover:scale-110 transition-all duration-300 ${isPlaying ? 'opacity-0 hover:opacity-100' : 'opacity-100'}`}
-          >
-            {isPlaying ? (
-              <Pause size={24} className="text-white fill-white" />
-            ) : (
-              <Play size={24} className="text-white fill-white ml-1" />
-            )}
-          </ContainerInstrument>
-          </ContainerInstrument>
+          {videoPath ? (
+            <>
+              {shouldLoadVideo ? (
+                <video 
+                  ref={videoRef}
+                  src={`/assets/${videoPath}`}
+                  className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-700"
+                  muted
+                  loop
+                  playsInline
+                  autoPlay
+                  crossOrigin="anonymous"
+                  preload="metadata"
+                >
+                  <track 
+                    label="Nederlands"
+                    kind="subtitles"
+                    srcLang="nl-BE"
+                    src={`/assets/studio/workshops/subtitles/${videoPath.split('/').pop()?.replace(/\.[^/.]+$/, "")}-nl.vtt`}
+                    default
+                  />
+                </video>
+              ) : (
+                <div className="w-full h-full bg-va-black/20 animate-pulse" />
+              )}
+              <ContainerInstrument 
+                plain 
+                onClick={togglePlay}
+                className="absolute inset-0 flex items-center justify-center bg-black/10 transition-opacity duration-500 z-10"
+              >
+                <ContainerInstrument 
+                  plain 
+                  className={`w-16 h-16 !rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center hover:scale-110 transition-all duration-300 ${isPlaying ? 'opacity-0 hover:opacity-100' : 'opacity-100'}`}
+                >
+                  {isPlaying ? (
+                    <Pause size={24} className="text-white fill-white" />
+                  ) : (
+                    <Play size={24} className="text-white fill-white ml-1" />
+                  )}
+                </ContainerInstrument>
+              </ContainerInstrument>
+              {activeSubtitle && (
+                <div className="absolute bottom-8 left-1/2 -translate-x-1/2 w-[85%] z-20 pointer-events-none text-center">
+                  <span className="inline-block px-4 py-2 bg-va-black/80 backdrop-blur-md rounded-[12px] text-white text-[14px] font-light leading-relaxed shadow-aura-lg border border-white/5 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                    {activeSubtitle}
+                  </span>
+                </div>
+              )}
+            </>
+          ) : imagePath ? (
+            <Image
+              src={imagePath.startsWith('http') ? imagePath : `https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices/${imagePath}`}
+              alt={workshop.title || 'Workshop'}
+              fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-700"
+            />
+          ) : null}
           <ContainerInstrument plain className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent pointer-events-none" />
-          
-          {/*  CUSTOM SUBTITLES (VOICES MIX) */}
-          {activeSubtitle && (
-            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 w-[85%] z-20 pointer-events-none text-center">
-              <span className="inline-block px-4 py-2 bg-va-black/80 backdrop-blur-md rounded-[12px] text-white text-[14px] font-light leading-relaxed shadow-aura-lg border border-white/5 animate-in fade-in slide-in-from-bottom-2 duration-300">
-                {activeSubtitle}
-              </span>
-            </div>
-          )}
         </ContainerInstrument>
       )}
 
@@ -311,14 +320,22 @@ export const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onUpdate }
           <div className="flex-grow" />
 
           <ContainerInstrument plain className="flex justify-between items-end pt-6 border-t border-black/[0.03] mt-auto">
-            <ContainerInstrument plain>
-              <TextInstrument className="text-[15px] text-va-black/30 font-light tracking-widest mb-1">
-                <VoiceglotText translationKey="studio.investment" defaultText="Investering" />
-              </TextInstrument>
-              <TextInstrument className="text-3xl font-light tracking-tighter text-va-black">
-                 {nextEdition?.price ? parseFloat(nextEdition.price.toString()).toFixed(2) : parseFloat(workshop.price?.toString() || '0').toFixed(2)}
-              </TextInstrument>
-            </ContainerInstrument>
+            {nextEdition ? (
+              <ContainerInstrument plain>
+                <TextInstrument className="text-[15px] text-va-black/30 font-light tracking-widest mb-1">
+                  <VoiceglotText translationKey="studio.investment" defaultText="Investering" />
+                </TextInstrument>
+                <TextInstrument className="text-3xl font-light tracking-tighter text-va-black">
+                   {nextEdition?.price ? parseFloat(nextEdition.price.toString()).toFixed(2) : parseFloat(workshop.price?.toString() || '0').toFixed(2)}
+                </TextInstrument>
+              </ContainerInstrument>
+            ) : (
+              <ContainerInstrument plain>
+                <TextInstrument className="text-[15px] text-va-black/30 font-light tracking-widest">
+                  <VoiceglotText translationKey="studio.no_dates" defaultText="Binnenkort nieuwe data" />
+                </TextInstrument>
+              </ContainerInstrument>
+            )}
             
             <Link 
               href={nextEdition ? `/studio/${workshop.slug}` : `/studio/doe-je-mee?workshop=${workshop.slug}`}
