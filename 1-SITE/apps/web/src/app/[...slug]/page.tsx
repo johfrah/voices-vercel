@@ -12,7 +12,7 @@ import { notFound, redirect } from 'next/navigation';
 import { Suspense } from "react";
 import { getActor, getArtist, getActors, getWorkshops, getArticle } from "@/lib/services/api-server";
 import { WorkshopApiResponse } from "@/app/api/studio/workshops/route";
-import { MarketManagerServer as MarketManager } from "@/lib/system/market-manager-server";
+import { MarketManager } from "@/lib/system/core/market-manager";
 import { headers } from "next/headers";
 import { VoiceDetailClient } from "@/components/legacy/VoiceDetailClient";
 import { ArtistDetailClient } from "@/components/legacy/ArtistDetailClient";
@@ -614,12 +614,22 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
         return redirect(`/${resolved.canonical_slug}`);
       }
 
-    // 🛡️ CHRIS-PROTOCOL: World-Aware Handshake (v2.24.3)
+    // 🛡️ CHRIS-PROTOCOL: World-Aware Handshake (v2.24.4)
     // We use the world_id from the registry as the absolute truth for the theme/context.
     // If no world_id is in registry, we force Studio world for /studio prefix.
     let worldId = resolved?.world_id;
     if (!worldId && lookupSlug.startsWith('studio')) worldId = 2;
-    if (!worldId) worldId = MarketManager.getWorldId(resolved?.journey || (lookupSlug.startsWith('studio') ? 'studio' : 'agency'));
+    
+    // 🛡️ NUCLEAR SAFETY: Always provide a fallback for worldId to prevent ReferenceError
+    const safeJourney = resolved?.journey || (lookupSlug.startsWith('studio') ? 'studio' : (lookupSlug.startsWith('academy') ? 'academy' : 'agency'));
+    if (!worldId) {
+      try {
+        worldId = MarketManager.getWorldId(safeJourney);
+      } catch (e) {
+        console.error(` [SmartRouter] getWorldId failed for "${safeJourney}":`, e);
+        worldId = 1; // Emergency fallback: Agency
+      }
+    }
     
     console.error(` [SmartRouter] Handshake SUCCESS: ${resolved?.routing_type || 'fallback'} (ID: ${resolved?.entity_id}, World: ${worldId})`);
       
@@ -746,7 +756,14 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
         if (article) {
       // 🛡️ CHRIS-PROTOCOL: Dynamic Extra Data based on Journey/World (v2.16.095)
           let extraData: any = {};
-          const currentWorldId = resolved.world_id || MarketManager.getWorldId(resolved.journey);
+          
+          // 🛡️ NUCLEAR SAFETY: Always provide a fallback for worldId to prevent ReferenceError
+          let currentWorldId = 1;
+          try {
+            currentWorldId = resolved.world_id || MarketManager.getWorldId(resolved.journey || (lookupSlug.startsWith('studio') ? 'studio' : (lookupSlug.startsWith('academy') ? 'academy' : 'agency')));
+          } catch (e) {
+            console.error(` [SmartRouter] getWorldId failed for extraData:`, e);
+          }
           
           if (currentWorldId === 2 || resolved.journey === 'studio') {
             try {
@@ -1271,7 +1288,14 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
           
           // 🛡️ CHRIS-PROTOCOL: Dynamic Extra Data based on Journey (v2.16.095)
           let extraData: any = {};
-          const currentWorldId = MarketManager.getWorldId(page.iapContext?.journey || (cmsSlug === 'studio' ? 'studio' : (cmsSlug === 'academy' ? 'academy' : (cmsSlug === 'ademing' ? 'ademing' : 'agency'))));
+          
+          // 🛡️ NUCLEAR SAFETY: Always provide a fallback for worldId to prevent ReferenceError
+          let currentWorldId = 1;
+          try {
+            currentWorldId = MarketManager.getWorldId(page.iapContext?.journey || (cmsSlug === 'studio' ? 'studio' : (cmsSlug === 'academy' ? 'academy' : (cmsSlug === 'ademing' ? 'ademing' : 'agency'))));
+          } catch (e) {
+            console.error(` [SmartRouter] getWorldId failed for legacy CMS extraData:`, e);
+          }
           
           if (currentWorldId === 2) {
             try {

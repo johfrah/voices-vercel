@@ -1,50 +1,52 @@
-# 🚀 NUCLEAR WORKFLOW: NATIVE ENGINE (2026)
-
-**Document:** `.cursor/rules/400-workflow-protocol.mdc`
-**Status:** ACTIVE
-**Mandaat:** ZERO WORDPRESS, NUCLEAR AUTONOMY
-
+---
+description: Nuclear CRUD Workflow & ID-First Handshake for Project Atomic (2026)
+globs: **/*.{ts,tsx}
+alwaysApply: true
 ---
 
-## 1. DE ARCHITECTUUR (SSoT)
-Wij werken in een volledig ontkoppeld model waarbij de Voices-database de enige waarheid is.
+# 🚀 NUCLEAR WORKFLOW: ID-FIRST ENGINE (2026)
 
-- **Frontend:** Next.js (App Router) in `apps/web/`.
-- **Backend:** Supabase (PostgreSQL + Auth + Storage).
-- **Database:** Drizzle ORM in `packages/database/`.
-- **Content:** Pure Markdown in `apps/web/src/content/`.
+**Mandaat:** ZERO DRIFT, ID-FIRST INTEGRITY
 
----
+## 1. DE ARCHITECTUUR (Source of Truth)
+Wij werken in een volledig ontkoppeld model waarbij de Supabase-database de enige waarheid is.
 
-## 2. DAGELIJKSE WORKFLOW
+- **Frontend:** Next.js (App Router) in `1-SITE/apps/web/`.
+- **Database:** Drizzle ORM in `1-SITE/packages/database/`.
+- **Media:** Supabase Storage gesynchroniseerd met `1-SITE/apps/web/public/assets/`.
+- **Routing:** `slug_registry` tabel in Supabase (Handshake ID).
 
-### A. Ontwikkelen (Native-First)
-1.  **Linter-First:** Draai ALTIJD `npm run lint` voor elke commit. Fouten in de beheer-omgeving zijn fataal.
-2.  **Type-Safety:** Geen `any` types. Gebruik de types uit `apps/web/src/types/`.
-3.  **Atomic Edits:** Gebruik de `Write` tool voor volledige bestandsreconstructie om dataverlies te voorkomen.
+## 2. ID-FIRST HANDSHAKE (De Grondwet)
+Het gebruik van slugs of namen voor interne logica is STRIKT VERBODEN.
 
-### B. Database Wijzigingen (CRUD)
-1.  Pas het schema aan in `packages/database/src/schema/`.
-2.  Run `npm run db:push` om de wijzigingen naar Supabase te duwen.
-3.  Implementeer **Atomic CRUD**: Data-aanpassingen gebeuren direct in de UI via de API.
+1.  **Resolve First**: Elke inkomende request (URL slug) moet DIRECT worden geresolveerd naar een `entity_id` (UUID) via de `slug_registry`.
+2.  **Internal Logic**: Gebruik UITSLUITEND `entity_id`, `world_id`, `market_id` en `journey_id` voor database queries, props en state management.
+3.  **Cross-Market Summation**: Prijzen en configuraties worden berekend op basis van de `market_id`. Gebruik de `MarketManager` voor "Global-First, Exception by Market" logica.
 
-### C. Deployment (Nuclear Strike)
-Deployment is een bewuste actie via Git.
-1.  Verifieer alles lokaal via `npm run dev`.
-2.  Commit met een duidelijke "Nuclear" boodschap.
-3.  Push naar `main` voor automatische build & deploy op Combell.
+## 3. DAGELIJKSE WORKFLOW
 
----
+### A. Ontwikkelen (ID-Only)
+1.  **Linter-First**: Draai ALTIJD `npm run lint` of `npm run type-check` voor elke commit.
+2.  **Type-Safety**: Geen `any`. Gebruik de types uit `@/types/` of genereer ze via Drizzle.
+3.  **LayoutInstruments**: Gebruik UITSLUITEND instrumenten uit de catalogus (`310-LAYOUT-INSTRUMENTS.mdc`).
 
-## 3. VEILIGHEIDSREGELS
-1.  **Zero WordPress Policy:** Gebruik NOOIT WordPress functies of cookies.
-2.  **Asset Integrity:** Verwijder nooit bronbestanden in `assets/` zonder verificatie van de `media` tabel.
-3.  **Intelligence Layer:** Elke nieuwe pagina MOET IAP-context bevatten voor Voicy.
+### B. Database Wijzigingen (Drizzle)
+1.  Pas het schema aan in `1-SITE/packages/database/src/schema/`.
+2.  Genereer migraties en push naar Supabase via de CLI.
+3.  **Atomic CRUD**: Data-aanpassingen gebeuren via Server Actions of API routes, ALTIJD met ID-validatie.
 
----
+### C. Deployment (Vercel)
+1.  Verhoog de versie in `package.json`, `Providers.tsx` en `api/admin/config/route.ts`.
+2.  Voer `npm run check:pre-vercel` uit.
+3.  Commit met `vX.Y.Z: [Bericht]` en push naar GitHub.
+4.  Valideer live via `npx tsx 3-WETTEN/scripts/forensic-audit.ts`.
 
-## 4. NUCLEAR LOCKS
-Gebruik `is_manually_edited: true` voor data die niet door automatische scripts of AI overschreven mag worden. Dit beschermt het vakmanschap van de founder.
+## 4. ISO-FIRST MANDATE
+Gebruik ALTIJD officiële ISO-codes voor talen en markten.
+- **Talen**: `nl-BE`, `nl-NL`, `fr-BE`, `en-GB`, etc.
+- **Markten**: Gebruik `market_code` (bijv. `BE`, `NL`) voor configuratie-mapping.
 
----
-**ULTIEME WET:** De machine ademt. De vrijheid is een feit.
+## 5. NUCLEAR LOCKS
+Gebruik `is_manually_edited: true` in de database voor records die NOOIT door AI of scripts overschreven mogen worden.
+
+"Data is vloeibaar, maar de ID is een anker." - Chris/Autist

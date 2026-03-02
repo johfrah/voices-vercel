@@ -6,7 +6,7 @@ import { useTranslation } from '@/contexts/TranslationContext';
 import { useMasterControl } from '@/contexts/VoicesMasterControlContext';
 import { CommercialMediaType, SlimmeKassa } from '@/lib/engines/pricing-engine';
 import { useSonicDNA } from '@/lib/engines/sonic-dna';
-import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
+import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
 import { cn } from '@/lib/utils';
 import { Actor } from '@/types';
 import { AnimatePresence, motion } from 'framer-motion';

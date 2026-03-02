@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { GeminiService } from '@/lib/services/gemini-service';
-import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
+import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
 import { requireAdmin } from '@/lib/auth/api-auth';
 import { SlopFilter } from '@/lib/engines/slop-filter';
 import { createClient } from "@supabase/supabase-js";

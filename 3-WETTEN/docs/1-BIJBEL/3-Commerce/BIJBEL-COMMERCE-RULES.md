@@ -33,7 +33,8 @@ tags: [pricing, buy-outs, finance, sensitivity]
 ### B. Hoe de prijs is opgebouwd
 - **Studio Fee**: Voor de opname en de techniek.
 - **Usage Fee (Buy-out)**: Voor het gebruik van de stem.
-- **Totaalprijs**: Alles in één keer duidelijk voor de klant.
+- **Totaalprijs**: Alles in één keer duidelijk voor de klant via de **SlimmeKassa**.
+- **ID-First**: Prijzen worden berekend op basis van `usage_id` en `media_id` relaties.
 
 ---
 

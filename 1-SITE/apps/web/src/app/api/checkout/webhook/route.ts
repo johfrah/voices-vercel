@@ -3,7 +3,7 @@ import { db, orders, orderNotes, users, orderItems, actors } from '@/lib/system/
 import { eq, sql, inArray } from 'drizzle-orm';
 import { MollieService } from '@/lib/payments/mollie';
 import { UCIService } from '@/lib/intelligence/uci-service';
-import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
+import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
 import { MusicDeliveryService } from '@/lib/services/music-delivery-service';
 import { YukiService } from '@/lib/services/yuki-service';
 import { VumeEngine } from '@/lib/mail/VumeEngine';

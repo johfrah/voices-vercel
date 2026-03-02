@@ -7,7 +7,7 @@ import { useVoicesState } from '@/contexts/VoicesStateContext';
 import { useCheckout } from '@/contexts/CheckoutContext';
 import { useNotifications } from '@/contexts/NotificationContext';
 import { useSonicDNA } from '@/lib/engines/sonic-dna';
-import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
+import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
 import { AnimatePresence, motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { 

@@ -12,6 +12,7 @@ We bouwen geen pagina's meer in PHP; we instrueren Voices via een headless data-
 - **Native Journey Architectuur:** Elke journey (Agency, Studio, Academy, etc.) is een native onderdeel van het ecosysteem.
 - **TypeScript-First:** Elke regel frontend code MOET in TypeScript zijn voor 100% data-integriteit.
 - **Tone of Voice Fysica:** Elke interface MOET voldoen aan de `documentation/beautyinspiration.md` (Spatial Growth, Liquid Gradients, Sonic DNA).
+- **ID-First Handshake:** Gebruik UITSLUITEND database-IDs (`uuid`) voor interne logica en data-identificatie.
 
 ---
 

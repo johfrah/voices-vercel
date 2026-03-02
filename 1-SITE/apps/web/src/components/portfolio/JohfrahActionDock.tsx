@@ -5,7 +5,7 @@ import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { Phone, Mail, Zap } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useSonicDNA } from "@/lib/engines/sonic-dna";
-import { MarketManagerServer as MarketManager } from "@/lib/system/market-manager-server";
+import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
 
 export function JohfrahActionDock() {
   const pathname = usePathname();

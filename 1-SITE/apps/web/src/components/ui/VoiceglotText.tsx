@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils';
 import { Lock, Sparkles } from 'lucide-react';
 import React, { useEffect, useRef, useState, useContext } from 'react';
 import { SlopFilter } from '@/lib/engines/slop-filter';
-import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
+import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
 
 interface VoiceglotTextProps {
   translationKey: string;

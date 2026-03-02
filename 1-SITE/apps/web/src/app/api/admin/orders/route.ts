@@ -3,7 +3,7 @@ import { orders, users, notifications, orderItems, systemEvents, ordersV2, order
 import { desc, eq, sql, count } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth/api-auth';
-import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
+import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
 import { createClient } from '@/utils/supabase/server';
 
 export const dynamic = 'force-dynamic';

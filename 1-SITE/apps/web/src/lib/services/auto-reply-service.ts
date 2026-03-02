@@ -1,7 +1,7 @@
 import { DirectMailService } from './direct-mail-service';
 import { db, approvalQueue } from '@/lib/system/voices-config';
 import { InvoiceReceivedTemplate } from '@legacy/php-codebase/backend-services/email-service/src/templates/invoice-received';
-import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
+import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
 
 /**
  *  AUTO-REPLY SERVICE v2.3 (2026)

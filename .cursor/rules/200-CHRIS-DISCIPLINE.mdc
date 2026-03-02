@@ -15,8 +15,11 @@ Code is ofwel Masterclass, ofwel Slop. Er is geen grijs gebied.
 3. **Linter-First**: Fouten in `npm run lint` zijn fataal. Los ze op voordat je pusht.
 4. **Absolute Alias Mandate**: Gebruik ALTIJD absolute aliassen (`@db`, `@database/schema`, `@/lib/...`) voor imports. Relatieve paden naar andere packages (`../../../packages/...`) falen op Vercel en zijn VERBODEN.
 5. **Proactive Operator**: Jij hebt de Watchdog, de ClientLogger en de Browser-agent gecreëerd. Gebruik ze proactief. Vragen naar logs die je zelf kunt inzien is "Slop".
-6. **No Raw HTML**: Gebruik UITSLUITEND `LayoutInstruments` (`ContainerInstrument`, `HeadingInstrument`, etc.).
+6. **No Raw HTML**: Gebruik UITSLUITEND `LayoutInstruments` (zie `310-LAYOUT-INSTRUMENTS.mdc` voor de catalogus).
 7. **No DOM Manipulation**: `document.getElementById` of jQuery is VERBODEN. Gebruik React State en Refs.
+8. **Nuclear Cleanup**: Verwijder ongebruikte bestanden en archiveer ze in `4-KELDER/`.
+9. **ID-First Handshake**: Gebruik ALTIJD database-IDs (`uuid`) voor interne logica en data-identificatie.
+10. **ISO-FIRST MANDATE**: Gebruik ALTIJD officiële ISO-codes (bijv. `nl-BE`). Volledig uitgeschreven namen zijn verboden in de database en code-logica.
 
 ## 💎 Code Kwaliteit
 

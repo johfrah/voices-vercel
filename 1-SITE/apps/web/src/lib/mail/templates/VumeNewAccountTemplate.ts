@@ -6,7 +6,7 @@ import { BaseTemplate } from './VumeMasterWrapper';
  * Doel: Welkomstbericht voor nieuwe klanten na hun eerste bestelling of aanvraag.
  */
 
-import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
+import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
 
 interface NewAccountProps {
   name: string;

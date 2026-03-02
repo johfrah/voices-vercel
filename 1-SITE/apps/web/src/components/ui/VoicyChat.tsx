@@ -37,7 +37,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { isOfficeOpen, getNextOpeningTime } from '@/lib/utils/delivery-logic';
 import { ButtonInstrument, ContainerInstrument, FormInstrument, HeadingInstrument, InputInstrument, LabelInstrument, TextInstrument } from './LayoutInstruments';
 import { VoiceglotText } from './VoiceglotText';
-import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
+import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
 
 export const VoicyChatV2: React.FC = () => {
   // 🛡️ CHRIS-PROTOCOL: All State at the top to prevent TDZ errors

@@ -3,7 +3,7 @@
 import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
-import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
+import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
 import React from 'react';
 import Image from 'next/image';
 

@@ -6,7 +6,7 @@ import { BreadcrumbsInstrument } from './BreadcrumbsInstrument';
 import { Star, Check, Phone, Mail, Facebook, Instagram, Linkedin, Plus, Trash2, Link as LinkIcon, Search as SearchIcon, X, Quote, ChevronDown, Youtube, Music } from 'lucide-react';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { useSonicDNA } from '@/lib/engines/sonic-dna';
-import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
+import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
 import { isOfficeOpen, formatOpeningHours, getNextOpeningTime } from '@/lib/utils/delivery-logic';
 import Image from 'next/image';
 import { VoicesLink } from './VoicesLink';

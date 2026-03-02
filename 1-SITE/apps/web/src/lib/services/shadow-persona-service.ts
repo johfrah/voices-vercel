@@ -1,5 +1,5 @@
 import { GeminiService } from './gemini-service';
-import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
+import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
 
 /**
  *  SHADOW PERSONA SERVICE (2026)

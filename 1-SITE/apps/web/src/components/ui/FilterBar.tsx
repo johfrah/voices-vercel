@@ -7,7 +7,7 @@ import { Phone, Video, Megaphone, Search as SearchIcon, ChevronDown, Filter, Arr
 import { useTranslation } from '@/contexts/TranslationContext';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
+import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
 import { ContainerInstrument, OptionInstrument, SelectInstrument, InputInstrument, ButtonInstrument, TextInstrument } from './LayoutInstruments';
 import { VoiceglotText } from './VoiceglotText';
 import { VoiceglotImage } from './VoiceglotImage';

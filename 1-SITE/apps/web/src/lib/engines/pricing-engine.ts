@@ -10,7 +10,7 @@
  * @author Kelly (Transaction Guardian)
  */
 
-import { MarketManagerServer } from '../system/market-manager-server';
+import { MarketManagerServer } from "../core/market-manager";
 import { formatCurrency } from '../utils/format-utils';
 
 const MarketManager = MarketManagerServer;

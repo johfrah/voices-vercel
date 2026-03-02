@@ -1,7 +1,7 @@
 "use client";
 
 import { ContainerInstrument, HeadingInstrument, TextInstrument } from "@/components/ui/LayoutInstruments";
-import { MarketManagerServer as MarketManager } from "@/lib/system/market-manager-server";
+import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
 import { Suspense } from "react";
 import { motion } from "framer-motion";
 import nextDynamic from "next/dynamic";

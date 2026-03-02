@@ -1,5 +1,5 @@
 import { OpenAIService } from '@/lib/services/openai-service';
-import { MarketManagerServer } from '@/lib/system/market-manager-server';
+import { MarketManagerServer } from "@/lib/system/core/market-manager";
 import { MarketDatabaseService } from '@/lib/system/market-manager-db';
 import { db } from '@/lib/system/voices-config';
 import { getTable } from '@/lib/system/voices-config';

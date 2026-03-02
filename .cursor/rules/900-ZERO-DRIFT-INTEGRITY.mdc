@@ -1,0 +1,25 @@
+# 🛡️ Zero-Drift Integrity (v1.0)
+
+Dit protocol dwingt absolute integriteit af tussen Database, Server en Client. Het is de ultieme blokkade tegen runtime crashes en omgevings-drift.
+
+## 1. Zero-Drift Policy (Isomorfe Wet)
+- **Mandaat**: Systeem-kritieke logica (Markets, Worlds, Journeys, Talen) mag **NOOIT** gedupliceerd worden.
+- **Implementatie**: Alle gedeelde logica moet in `lib/system/core` of een isomorfe klasse staan. 
+- **Blokkade**: De `integrity-handshake.ts` scant op methodes die wel op de client maar niet op de server bestaan.
+
+## 2. Handshake-First (Contract Wet)
+- **Mandaat**: Geen nieuwe features zonder integriteits-script.
+- **Implementatie**: Elke nieuwe 'World', 'Journey' of 'Service' moet eerst als test-case worden toegevoegd aan `3-WETTEN/scripts/integrity-handshake.ts`.
+- **Blokkade**: De `pre-vercel-check` faalt als de handshake tussen de code en de database-definities (zoals `world_id`) niet klopt.
+
+## 3. Automated Post-Mortem (Zelfhelende Wet)
+- **Mandaat**: Een fout mag NOOIT twee keer voorkomen.
+- **Implementatie**: Na elke crash op Vercel moet de "Smoking Gun" uit de `system_events` direct worden omgezet in een permanente blokkade in de pre-flight scripts.
+- **Blokkade**: De `pre-vercel-check` blokkeert elke push die een bekend foutpatroon (bijv. `TypeError: ... is not a function`) bevat.
+
+## 4. Nuclear Pre-Flight Mandate
+Het is STRIKT VERBODEN om code te pushen zonder een succesvolle run van:
+1. `npx tsx 3-WETTEN/scripts/integrity-handshake.ts`
+2. `npm run check:pre-vercel`
+
+"Integriteit is geen optie, het is de fundering van de fabriek." - Chris/Autist

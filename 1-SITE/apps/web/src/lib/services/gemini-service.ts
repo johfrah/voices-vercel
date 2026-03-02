@@ -2,7 +2,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { db, getTable } from '@/lib/system/voices-config';
 const systemKnowledge = getTable('systemKnowledge');
 import { eq, or } from "drizzle-orm";
-import { MarketManagerServer as MarketManager } from "@/lib/system/market-manager-server";
+import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
 
 /**
  *  GEMINI INTELLIGENCE SERVICE (2026)

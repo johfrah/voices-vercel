@@ -16,7 +16,7 @@ import { useMasterControl } from "@/contexts/VoicesMasterControlContext";
 import { SlimmeKassa } from '@/lib/engines/pricing-engine';
 import { VoiceFilterEngine } from "@/lib/engines/voice-filter-engine";
 import { Actor } from "@/types";
-import { MarketManagerServer as MarketManager } from "@/lib/system/market-manager-server";
+import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
 import { Suspense, useEffect, useMemo, useState } from 'react';
 import nextDynamic from "next/dynamic";
 

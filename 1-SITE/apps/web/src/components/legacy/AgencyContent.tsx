@@ -16,7 +16,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronRight } from 'lucide-react';
 import { Suspense, useEffect, useMemo, useState } from 'react';
 import { SlimmeKassa } from '@/lib/engines/pricing-engine';
-import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
+import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
 import { useRouter } from 'next/navigation';
 import { calculateDeliveryDate } from '@/lib/utils/delivery-logic';
 import { VoiceFilterEngine } from '@/lib/engines/voice-filter-engine';

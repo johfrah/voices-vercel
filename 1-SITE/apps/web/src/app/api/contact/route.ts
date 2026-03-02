@@ -1,5 +1,5 @@
 import { DirectMailService } from '@/lib/services/direct-mail-service';
-import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
+import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
 import { NextResponse } from 'next/server';
 
 /**

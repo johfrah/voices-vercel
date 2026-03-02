@@ -2,7 +2,7 @@
 
 import { ContainerInstrument, HeadingInstrument, SectionInstrument, TextInstrument } from "@/components/ui/LayoutInstruments";
 import { VoiceglotImage } from "@/components/ui/VoiceglotImage";
-import { MarketManagerServer as MarketManager } from "@/lib/system/market-manager-server";
+import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
 import { Suspense, useEffect, useMemo, useState } from 'react';
 import nextDynamic from "next/dynamic";
 import { Globe, Mail, Play, Pause } from "lucide-react";

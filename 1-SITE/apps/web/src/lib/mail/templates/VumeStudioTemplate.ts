@@ -1,4 +1,4 @@
-import { MarketManager } from '@/lib/system/market-manager-server';
+import { MarketManager } from "@/lib/system/core/market-manager";
 import { VumeMasterWrapper } from './VumeMasterWrapper';
 
 /**

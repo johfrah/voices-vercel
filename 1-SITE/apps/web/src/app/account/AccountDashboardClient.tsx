@@ -43,7 +43,7 @@ import {
 import { VoicesLink as Link } from '@/components/ui/VoicesLink';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { SlimmeKassa } from '@/lib/engines/pricing-engine';
-import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
+import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
 
 export default function AccountDashboardClient() {
   const { user, isAdmin, isLoading, isAuthenticated, logout } = useAuth();

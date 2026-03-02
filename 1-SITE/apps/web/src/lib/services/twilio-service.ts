@@ -1,5 +1,5 @@
 import { Twilio } from 'twilio';
-import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
+import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
 
 export class TwilioService {
   private static instance: TwilioService;

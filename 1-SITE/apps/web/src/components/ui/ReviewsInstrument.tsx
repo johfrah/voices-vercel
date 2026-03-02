@@ -12,7 +12,7 @@ import { useSonicDNA } from "@/lib/engines/sonic-dna";
 import toast from "react-hot-toast";
 
 import { useTranslation } from "@/contexts/TranslationContext";
-import { MarketManagerServer as MarketManager } from "@/lib/system/market-manager-server";
+import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
 
 /**
  * REVIEWS SKELETON (MOBY-STANDARD 2026)

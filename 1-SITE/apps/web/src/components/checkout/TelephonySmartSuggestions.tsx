@@ -3,7 +3,7 @@
 import { useCheckout } from '@/contexts/CheckoutContext';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { cn } from '@/lib/utils';
-import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
+import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
 import { Check, Mail, MapPin, Clock, Sparkles, Wand2, Type, MessageSquare, Plus, ChevronUp, X, Phone } from 'lucide-react';
 import React, { useMemo, useState } from 'react';
 import { VoiceglotText } from '../ui/VoiceglotText';

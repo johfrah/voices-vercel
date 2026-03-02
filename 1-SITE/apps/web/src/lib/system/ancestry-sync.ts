@@ -1,6 +1,6 @@
 import { db } from '@/lib/database';
 import { worlds } from '@/schema';
-import { MarketManagerServer } from './market-manager-server';
+import { MarketManagerServer } from "./core/market-manager";
 
 /**
  * 🌳 ANCESTRY SYNC (2026)

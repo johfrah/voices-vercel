@@ -26,14 +26,6 @@ async function runCheck() {
     console.log(chalk.yellow('\n📦 Stap 1: Volledige Next.js Build (Chunk & Type Check)...'));
     // Voer build uit in de web app directory
     try {
-      // 🛡️ CHRIS-PROTOCOL: We draaien eerst een expliciete type-check
-      // console.log(chalk.blue('🔍 Running type-check...'));
-      // execSync('npm run type-check', {
-      //   cwd: webAppDir,
-      //   stdio: 'inherit',
-      //   shell: true
-      // });
-
       execSync('npm run build', {
         cwd: webAppDir,
         stdio: 'inherit',
@@ -42,6 +34,20 @@ async function runCheck() {
       console.log(chalk.green('✅ Build & Type-check succesvol.'));
     } catch (e) {
       console.log(chalk.red('❌ Build of Type-check gefaald.'));
+      hasErrors = true;
+    }
+
+    // 1.5 INTEGRITY HANDSHAKE CHECK
+    console.log(chalk.yellow('\n🤝 Stap 1.5: Nuclear Handshake Integrity Check...'));
+    try {
+      execSync('npx tsx 3-WETTEN/scripts/integrity-handshake.ts', {
+        cwd: rootDir,
+        stdio: 'inherit',
+        shell: true
+      });
+      console.log(chalk.green('✅ Handshake Integrity gerespecteerd.'));
+    } catch (e) {
+      console.log(chalk.red('❌ Handshake Integrity gefaald.'));
       hasErrors = true;
     }
 

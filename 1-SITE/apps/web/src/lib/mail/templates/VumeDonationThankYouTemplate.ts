@@ -1,5 +1,5 @@
 import { VumeMasterWrapper } from './VumeMasterWrapper';
-import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
+import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
 
 /**
  *  VUME DONATION THANK YOU TEMPLATE (2026)

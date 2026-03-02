@@ -68,11 +68,11 @@ Wanneer de Founder op vakantie is, wordt de **Vacation Mode** geactiveerd.
 - **Stijl**: Veel informatie, toch overzichtelijk. Hoog contrast.
 - **Beweging**: Alles reageert direct.
 
-### 8. PRODUCTIE WORKFLOW (OFFLINE-HYBRID)
+### 8. PRODUCTIE WORKFLOW (NUCLEAR-NATIVE)
 1. **Order Check**: Storemanager ziet nieuwe opname in Cockpit.
 2. **Reaper Edit**: Download ruwe audio, edit lokaal met Reaper.
-3. **Dropbox Sync**: Render naar de juiste Dropbox-map met strikte naamgeving.
-4. **Completion**: Klik "Afronden" in Cockpit. Systeem verstuurt link en factuur.
+3. **Supabase Sync**: Upload de gefinaliseerde asset via de Backoffice Media Library.
+4. **Completion**: Klik "Afronden" in Cockpit. Systeem verstuurt link en factuur via de Native Engine.
 
 ---
 

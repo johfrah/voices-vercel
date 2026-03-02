@@ -1,5 +1,5 @@
 import { db, users } from '@/lib/system/voices-config';
-import { MarketManager } from '@/lib/system/market-manager-server';
+import { MarketManager } from "@/lib/system/core/market-manager";
 import { eq, sql } from 'drizzle-orm';
 import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';

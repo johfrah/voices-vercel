@@ -16,17 +16,17 @@
 
 ---
 
-## 1. DE ARCHITECTUUR (The Dual Engine)
+## 1. DE ARCHITECTUUR (The Unified Engine)
 
-### A. Data Engine (PHP / WordPress)
-- **Rol**: Headless CMS en Data-bron.
-- **Verantwoordelijkheid**: Beheer van content, orders, gebruikers en assets.
-- **API**: Pure JSON output via `Nuclear Gold` endpoints. Geen HTML rendering.
+### A. Data Engine (Supabase / PostgreSQL)
+- **Rol**: De enige Source of Truth (SSoT).
+- **Verantwoordelijkheid**: Beheer van content, orders, gebruikers, assets en logica via Drizzle ORM.
+- **API**: Server-side fetching en Server Actions. Geen legacy PHP/MySQL afhankelijkheden.
 
 ### B. Experience Layer (Next.js / TypeScript)
 - **Rol**: De frontend die de gebruiker aanraakt.
 - **Verantwoordelijkheid**: UI/UX, State management, Spatial Transitions en Sonic DNA.
-- **Techniek**: App Router, Server Components, Tailwind CSS.
+- **Techniek**: App Router, Server Components, Tailwind CSS, LayoutInstruments.
 
 ---
 

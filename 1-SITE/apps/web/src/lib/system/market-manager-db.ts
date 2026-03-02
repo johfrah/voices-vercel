@@ -5,7 +5,7 @@
  * Dit bestand mag NOOIT in de client bundle terechtkomen.
  */
 
-import { MarketManagerServer as MarketManager, MarketConfig } from './market-manager-server';
+import { MarketManager, MarketConfig } from './core/market-manager';
 import { VOICES_CONFIG } from '@/lib/system/voices-config';
 
 export class MarketDatabaseService {

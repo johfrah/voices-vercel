@@ -33,7 +33,7 @@ import {
 } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '../ui/VoiceglotText';
 import { cn } from '@/lib/utils';
-import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
+import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
 
 interface MediaItem {
   id: number;

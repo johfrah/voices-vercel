@@ -22,7 +22,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState, useMemo } from 'react';
 import { AdminService } from '@/lib/services/admin-service';
-import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
+import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
 
 type MailboxTab = 'inbox' | 'insights' | 'faq';
 

@@ -18,7 +18,7 @@ import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import { VoicesLink, useVoicesRouter } from '@/components/ui/VoicesLink';
-import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
+import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
 import { useAuth } from '@/contexts/AuthContext';
 import toast from 'react-hot-toast';
 

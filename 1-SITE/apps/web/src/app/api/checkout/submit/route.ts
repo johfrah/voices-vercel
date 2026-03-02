@@ -5,7 +5,7 @@ import { eq, inArray } from 'drizzle-orm';
 import { sign } from 'jsonwebtoken';
 import { headers } from 'next/headers';
 import { NextResponse } from 'next/server';
-import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
+import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
 import { MollieService } from '@/lib/payments/mollie';
 import { SlimmeKassa } from '@/lib/engines/pricing-engine';
 import { generateCartHash } from '@/lib/utils/cart-utils';

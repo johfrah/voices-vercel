@@ -5,7 +5,7 @@ import { VoicesLink as Link } from '@/components/ui/VoicesLink';
 import { ChevronRight, Home } from 'lucide-react';
 import { ContainerInstrument, TextInstrument } from './LayoutInstruments';
 import { VoiceglotText } from './VoiceglotText';
-import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
+import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
 
 export const BreadcrumbsInstrument = () => {
   const pathname = usePathname();

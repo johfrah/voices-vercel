@@ -12,7 +12,7 @@ import { Testimonials } from './Testimonials';
 import { Moon, Zap, Clock, ArrowRight, Compass, Users, Instagram, Globe } from 'lucide-react';
 import { VoicesDropdown } from '../VoicesDropdown';
 import { ElementIcon } from './ElementIcon';
-import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
+import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
 import { ContainerInstrument, HeadingInstrument, TextInstrument, SectionInstrument } from '../LayoutInstruments';
 
 interface AdemingBentoProps {

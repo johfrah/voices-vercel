@@ -9,7 +9,7 @@ import { eq, sql } from "drizzle-orm";
 import { VoiceglotBridge } from "../bridges/voiceglot-bridge";
 import md5 from "md5";
 
-import { MarketManagerServer as MarketManager } from "@/lib/system/market-manager-server";
+import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
 
 /**
  *  NUCLEAR CONTENT ENGINE (2026)

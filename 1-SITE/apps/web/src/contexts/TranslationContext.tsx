@@ -2,7 +2,7 @@
 
 import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { SlopFilter } from '@/lib/engines/slop-filter';
-import { MarketConfig } from '@/lib/system/market-manager-server';
+import { MarketConfig } from "@/lib/system/core/market-manager";
 
 interface TranslationContextType {
   t: (key: string, defaultText: string, values?: Record<string, string | number>, skipPlaceholderReplacement?: boolean) => string;

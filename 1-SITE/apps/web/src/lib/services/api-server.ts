@@ -1,4 +1,4 @@
-import { MarketManagerServer as MarketManager } from "@/lib/system/market-manager-server";
+import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
 import { MarketDatabaseService } from "@/lib/system/market-manager-db";
 import { createClient } from "@supabase/supabase-js";
 import { and, asc, desc, eq, ilike, or, sql } from "drizzle-orm";

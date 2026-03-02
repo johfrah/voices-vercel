@@ -14,6 +14,7 @@ Grondstoffen transformeren naar meesterwerken zonder hardcoding.
 2. **MarketManager First**: Gebruik altijd de `MarketManager` om markt-specifieke data op te halen.
 3. **No Hardcoded Config**: Social links, contactgegevens en SEO data mogen NOOIT hardcoded in componenten staan.
 4. **JSONB Power**: Gebruik PostgreSQL JSONB velden voor flexibele configuraties (zoals `social_links`).
+5. **ID-First Handshake**: Gebruik UITSLUITEND database-IDs (`uuid`) voor interne logica en data-identificatie.
 
 ## 🔄 Sync & Seeding
 

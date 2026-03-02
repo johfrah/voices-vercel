@@ -19,7 +19,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle2, Loader2, Trash2, Edit2, X, ChevronRight, Info, Star, CreditCard, FileText, Tag, Eye, Lock, AlertCircle, Send, ArrowRight, Check } from 'lucide-react';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
-import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
+import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
 import { EmailPreviewModal } from './EmailPreviewModal';
 import { TermsModal } from './TermsModal';
 

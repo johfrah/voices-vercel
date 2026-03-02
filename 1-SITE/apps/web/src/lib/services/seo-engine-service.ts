@@ -5,7 +5,7 @@ const actors = getTable('actors');
 const workshops = getTable('workshops');
 const contentArticles = getTable('contentArticles');
 import { eq, and } from 'drizzle-orm';
-import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
+import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
 
 /**
  *  SEO ENGINE SERVICE (2026)

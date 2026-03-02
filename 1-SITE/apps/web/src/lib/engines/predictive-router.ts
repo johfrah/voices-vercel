@@ -13,7 +13,7 @@ export interface IntentContext {
   greeting?: string;
 }
 
-import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
+import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
 
 export class PredictiveRouter {
   private static CAMPAIGN_MAP: Record<string, string> = {

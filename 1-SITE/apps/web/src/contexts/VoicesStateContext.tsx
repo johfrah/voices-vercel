@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Actor } from '@/types';
 import { VoicesState, VoicesStateContext, VoicesStateContextType, initialState } from './VoicesStateContextCore';
-import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
+import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
 
 export function useVoicesState() {
   const context = useContext(VoicesStateContext);

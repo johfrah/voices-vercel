@@ -23,7 +23,7 @@ import { useEffect, useRef, useState } from 'react';
 import 'rrweb-player/dist/style.css';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 
-import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
+import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
 
 /**
  *  LIVE VIEW PLAYER (2026)

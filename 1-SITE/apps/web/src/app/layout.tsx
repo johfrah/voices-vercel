@@ -7,7 +7,7 @@ import { LoadingScreenInstrument, PageWrapperInstrument, ContainerInstrument, He
 import { CookieBanner } from "@/components/ui/Legal/CookieBanner";
 import { GlobalModalManager } from "@/components/ui/GlobalModalManager";
 import { LiquidTransitionOverlay } from "@/components/ui/LiquidTransitionOverlay";
-import { MarketManagerServer } from "@/lib/system/market-manager-server";
+import { MarketManagerServer } from "@/lib/system/core/market-manager";
 import { MarketDatabaseService } from "@/lib/system/market-manager-db";
 import { createClient } from "@supabase/supabase-js";
 import { Analytics } from "@vercel/analytics/react";

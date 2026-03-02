@@ -19,10 +19,10 @@
 ## 1. DE STACK (Voices OS Core)
 
 ### A. Backend (The Brain)
-- **Runtime**: Node.js / Fastify of NestJS.
-- **Database**: PostgreSQL (Primary) + Redis (Caching).
+- **Runtime**: Node.js / Next.js API Routes.
+- **Database**: PostgreSQL (Supabase).
 - **ORM**: Drizzle ORM (TypeScript-First).
-- **Auth**: NextAuth.js of Clerk.
+- **Auth**: Supabase Auth.
 
 ### B. Experience Layer (The Heart)
 - **Framework**: Next.js (App Router).

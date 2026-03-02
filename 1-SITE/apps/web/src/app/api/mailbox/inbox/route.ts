@@ -1,6 +1,6 @@
 import { DirectMailService } from '@/lib/services/direct-mail-service';
 import { NextRequest, NextResponse } from 'next/server';
-import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
+import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
 import { requireAdmin } from '@/lib/auth/api-auth';
 import { createClient } from "@supabase/supabase-js";
 

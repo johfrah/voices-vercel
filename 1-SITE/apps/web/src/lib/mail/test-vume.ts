@@ -1,7 +1,7 @@
 import { db, users, workshops, orders, workshopEditions, instructors } from '@/lib/system/voices-config';
 import { eq, desc } from 'drizzle-orm';
 import { VumeEngine } from '@/lib/mail/VumeEngine';
-import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
+import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
 
 /**
  *  VUME TEST SCRIPT (2026)

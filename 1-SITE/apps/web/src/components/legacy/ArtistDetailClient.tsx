@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/LayoutInstruments";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { useTranslation } from "@/contexts/TranslationContext";
-import { MarketManagerServer as MarketManager } from "@/lib/system/market-manager-server";
+import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
 import { Heart, Instagram, Music, Play, Youtube, ShieldCheck, Loader2, Clock, Lock } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";

@@ -15,7 +15,7 @@ import { usePathname } from 'next/navigation';
 import React, { ReactNode } from 'react';
 
 import { VersionGuard } from '@/components/system/VersionGuard';
-import { MarketConfig, MarketManagerServer } from '@/lib/system/market-manager-server';
+import { MarketConfig, MarketManager } from '@/lib/system/core/market-manager';
 import { Toaster } from 'react-hot-toast';
 
 export function Providers({
@@ -81,19 +81,19 @@ export function Providers({
     if (!g.__marketPrimed) {
       // Set the market in the cache to prevent hydration mismatch (#419)
       const host = window.location.host.replace('www.', '');
-      (MarketManagerServer as any).cache[host] = market;
+      (MarketManager as any).cache[host] = market;
 
       // 🛡️ CHRIS-PROTOCOL: Prime Handshake Context
       if (handshakeContext) {
         g.handshakeContext = handshakeContext;
-        (MarketManagerServer as any).worldConfigsCache[`${handshakeContext.worldId}-${handshakeContext.languageId}`] = handshakeContext.worldConfig;
+        (MarketManager as any).worldConfigsCache[`${handshakeContext.worldId}-${handshakeContext.languageId}`] = handshakeContext.worldConfig;
       }
 
-      MarketManagerServer.setLanguages(Object.values(initialTranslations || {}).length > 0 ? [] : []); // Placeholder for languages if needed
+      MarketManager.setLanguages(Object.values(initialTranslations || {}).length > 0 ? [] : []); // Placeholder for languages if needed
       
       // 🛡️ CHRIS-PROTOCOL: Prime World Languages on Client
       if (g.handshakeWorldLanguages) {
-        MarketManagerServer.setWorldLanguages(g.handshakeWorldLanguages);
+        MarketManager.setWorldLanguages(g.handshakeWorldLanguages);
       }
       
       g.__marketPrimed = true;
@@ -175,8 +175,8 @@ function DebugLogger({
       const g = window as any;
       const host = window.location.host.replace('www.', '');
       const handshake = g.handshakeContext;
-      const currentMarket = MarketManagerServer.getCurrentMarket(host, pathname);
-      const contextResolved = MarketManagerServer.resolveContext(host, pathname);
+      const currentMarket = MarketManager.getCurrentMarket(host, pathname);
+      const contextResolved = MarketManager.resolveContext(host, pathname);
       const worldId = handshake?.worldId || contextResolved.worldId;
       const languageId = handshake?.languageId || contextResolved.languageId;
       

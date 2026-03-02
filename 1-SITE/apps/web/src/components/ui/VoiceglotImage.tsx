@@ -3,7 +3,7 @@
 import { useEditMode } from '@/contexts/EditModeContext';
 import { VoicesMasterControlContext } from '@/contexts/VoicesMasterControlContext';
 import { useSonicDNA } from '@/lib/engines/sonic-dna';
-import { MarketManagerServer } from '@/lib/system/market-manager-server';
+import { MarketManagerServer } from "@/lib/system/core/market-manager";
 import { cn } from '@/lib/utils';
 import { ContainerInstrument, TextInstrument } from '@/components/ui/LayoutInstruments';
 import { Image as ImageIcon, Loader2, Upload } from 'lucide-react';

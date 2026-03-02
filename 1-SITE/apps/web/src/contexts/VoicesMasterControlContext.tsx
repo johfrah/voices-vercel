@@ -1,7 +1,7 @@
 "use client";
 
 import { UsageType, SlimmeKassa } from '@/lib/engines/pricing-engine';
-import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
+import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { useCheckout } from './CheckoutContext';

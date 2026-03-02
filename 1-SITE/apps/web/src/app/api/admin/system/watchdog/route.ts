@@ -2,7 +2,7 @@ import { db, systemEvents } from '@/lib/system/voices-config';
 import { NextRequest, NextResponse } from 'next/server';
 import { VoicesMailEngine } from '@/lib/services/voices-mail-engine';
 import { TelegramService } from '@/lib/services/telegram-service';
-import { MarketManagerServer as MarketManager } from '@/lib/system/market-manager-server';
+import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
 import { desc, gte, and, eq, sql } from 'drizzle-orm';
 import { createClient } from '@supabase/supabase-js';
 
