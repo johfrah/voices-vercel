@@ -43,6 +43,22 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Key and sourceText required' }, { status: 400 });
     }
 
+    // 🛡️ CHRIS-PROTOCOL: Privacy & Internal Data Guard (v2.19.11)
+    // Voorkom dat interne rapporten, technische lijsten of PII in de registry belanden.
+    const isInternalData = 
+      key.startsWith('knowledge.') || 
+      key.startsWith('block.') ||
+      sourceText.includes('| # | Naam |') || // Markdown tables with names
+      sourceText.includes('DATA INTEGRITY REPORT') ||
+      sourceText.includes('SUPERPROMPT') ||
+      sourceText.includes('ATOMIC VOICES LIST') ||
+      (sourceText.length > 1000 && (sourceText.includes('ID') || sourceText.includes('Status')));
+
+    if (isInternalData) {
+      console.warn('[RegisterAPI] Internal or sensitive data detected, skipping registration:', { key });
+      return NextResponse.json({ success: true, message: 'Internal data ignored' });
+    }
+
     // 🛡️ CHRIS-PROTOCOL: Slop Filter (v2.16.002)
     // Voorkom dat HTML-slop (zoals Voiceglot spans) in de registry belandt.
     if (sourceText.includes('contenteditable') || sourceText.includes('focus:ring-primary/30')) {

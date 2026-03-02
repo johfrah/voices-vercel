@@ -14,10 +14,16 @@ import Image from 'next/image';
 
 export const WorkshopCalendar: React.FC<{ workshops: any[] }> = ({ workshops }) => {
   const { playClick } = useSonicDNA();
+  const [mounted, setMounted] = React.useState(false);
   const days = ['Ma', 'Di', 'Wo', 'Do', 'Vr', 'Za', 'Zo'];
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
   
   //  CHRIS-PROTOCOL: Extract workshop dates dynamically
   const workshopDates = React.useMemo(() => {
+    if (!mounted) return [];
     const dates = new Set<number>();
     workshops.forEach(workshop => {
       workshop.editions?.forEach((edition: any) => {
@@ -28,7 +34,7 @@ export const WorkshopCalendar: React.FC<{ workshops: any[] }> = ({ workshops }) 
       });
     });
     return Array.from(dates);
-  }, [workshops]);
+  }, [workshops, mounted]);
   
   const handleDayClick = (day: number) => {
     playClick('soft');
@@ -76,7 +82,7 @@ export const WorkshopCalendar: React.FC<{ workshops: any[] }> = ({ workshops }) 
         ))}
         {[...Array(28)].map((_, i) => {
           const day = i + 1;
-          const hasWorkshop = workshopDates.includes(day);
+          const hasWorkshop = mounted && workshopDates.includes(day);
           return (
             <ButtonInstrument 
               key={i} 
