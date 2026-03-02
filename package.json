@@ -19,7 +19,7 @@
     "db:generate": "npx drizzle-kit generate --config packages/database/drizzle.config.ts",
     "db:migrate": "npx drizzle-kit migrate --config packages/database/drizzle.config.ts",
     "db:studio": "npx drizzle-kit studio --config packages/database/drizzle.config.ts",
-    "prepare": "husky"
+    "prepare": "husky || true"
   },
   "keywords": [],
   "author": "",
