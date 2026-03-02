@@ -685,29 +685,29 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
             const InstructorLocationIsland = nextDynamic(() => import("@/components/studio/InstructorLocationIsland").then(mod => mod.InstructorLocationIsland), { ssr: false });
             const ReviewGrid = nextDynamic(() => import("@/components/studio/ReviewGrid").then(mod => mod.ReviewGrid), { ssr: false });
 
-            return (
-              <PageWrapperInstrument className="bg-va-off-white min-h-screen pb-32">
-                <Suspense fallback={<div className="h-[600px] bg-va-black animate-pulse" />}>
-                  <WorkshopHeroIsland workshop={workshop} />
-                </Suspense>
-                <ContainerInstrument className="max-w-7xl mx-auto px-6 mt-24 space-y-32">
-                  <Suspense fallback={<div className="h-96 bg-white rounded-[30px] animate-pulse" />}>
-                    <SkillDNAIsland workshop={workshop} />
-                  </Suspense>
-                  <Suspense fallback={<div className="h-96 bg-white rounded-[30px] animate-pulse" />}>
-                    <DayScheduleIsland workshop={workshop} />
-                  </Suspense>
-                  <Suspense fallback={<div className="h-96 bg-white rounded-[30px] animate-pulse" />}>
-                    <InstructorLocationIsland workshop={workshop} />
-                  </Suspense>
-                </ContainerInstrument>
-                <div className="mt-32">
-                  <Suspense fallback={<div className="h-96 bg-va-off-white animate-pulse" />}>
-                    <ReviewGrid reviews={workshop.reviews} title={`Wat deelnemers zeggen over ${workshop.title}`} maxItems={6} />
-                  </Suspense>
-                </div>
-              </PageWrapperInstrument>
-            );
+  return (
+    <PageWrapperInstrument className="bg-va-off-white min-h-screen pb-32">
+      <Suspense fallback={<ContainerInstrument className="h-[600px] bg-va-black animate-pulse" />}>
+        <WorkshopHeroIsland workshop={workshop} />
+      </Suspense>
+      <ContainerInstrument className="max-w-7xl mx-auto px-6 mt-24 space-y-32">
+        <Suspense fallback={<ContainerInstrument className="h-96 bg-white rounded-[30px] animate-pulse" />}>
+          <SkillDNAIsland workshop={workshop} />
+        </Suspense>
+        <Suspense fallback={<ContainerInstrument className="h-96 bg-white rounded-[30px] animate-pulse" />}>
+          <DayScheduleIsland workshop={workshop} />
+        </Suspense>
+        <Suspense fallback={<ContainerInstrument className="h-96 bg-white rounded-[30px] animate-pulse" />}>
+          <InstructorLocationIsland workshop={workshop} />
+        </Suspense>
+      </ContainerInstrument>
+      <ContainerInstrument className="mt-32">
+        <Suspense fallback={<ContainerInstrument className="h-96 bg-va-off-white animate-pulse" />}>
+          <ReviewGrid reviews={workshop.reviews} title={`Wat deelnemers zeggen over ${workshop.title}`} maxItems={6} />
+        </Suspense>
+      </ContainerInstrument>
+    </PageWrapperInstrument>
+  );
           }
         }
       }
@@ -1116,8 +1116,8 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
               <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {sortedItems.map((item: any, i: number) => (
                   <ContainerInstrument key={i} className="bg-white p-8 rounded-[20px] shadow-aura border border-black/5 flex flex-col gap-6">
-                    <div className="flex items-center gap-4">
-                      <div className="w-16 h-16 bg-va-off-white rounded-full flex items-center justify-center text-2xl font-light text-va-black/20 overflow-hidden relative">
+                    <ContainerInstrument className="flex items-center gap-4">
+                      <ContainerInstrument className="w-16 h-16 bg-va-off-white rounded-full flex items-center justify-center text-2xl font-light text-va-black/20 overflow-hidden relative">
                         {item.actor.photo_id ? (
                           <Image 
                             src={`/api/proxy/?path=${encodeURIComponent(item.actor.dropbox_url || '')}`} 
@@ -1126,10 +1126,10 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
                             className="object-cover"
                           />
                         ) : (item.actor.first_name || item.actor.first_name)[0]}
-                      </div>
-                      <div>
+                      </ContainerInstrument>
+                      <ContainerInstrument>
                         <HeadingInstrument level={3} className="text-2xl font-light">{item.actor.first_name || item.actor.first_name}</HeadingInstrument>
-                        <div className="flex items-center justify-between mt-1">
+                        <ContainerInstrument className="flex items-center justify-between mt-1">
                           <TextInstrument className="text-[15px] text-va-black/40">
                             <VoiceglotText 
                               translationKey={`common.language.${(item.actor.native_lang || item.actor.native_lang)?.toLowerCase() || 'nl'}`} 
@@ -1141,17 +1141,17 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
                               €{parseFloat(item.actor.price_unpaid || item.actor.price_unpaid || '0').toFixed(2)}
                             </TextInstrument>
                           )}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="h-12 bg-va-off-white rounded-[10px] flex items-center px-4 gap-2">
-                      <div className="w-8 h-8 bg-va-black rounded-full flex items-center justify-center text-white">
+                        </ContainerInstrument>
+                      </ContainerInstrument>
+                    </ContainerInstrument>
+                    <ContainerInstrument className="h-12 bg-va-off-white rounded-[10px] flex items-center px-4 gap-2">
+                      <ContainerInstrument className="w-8 h-8 bg-va-black rounded-full flex items-center justify-center text-white">
                         <ArrowRight size={14} />
-                      </div>
+                      </ContainerInstrument>
                       <TextInstrument className="text-[13px] font-medium tracking-widest text-va-black/40 uppercase">
                         <VoiceglotText translationKey="action.view_profile" defaultText="Bekijk Profiel" />
                       </TextInstrument>
-                    </div>
+                    </ContainerInstrument>
                     <VoicesLink 
                       href={`/${item.actor.slug}`}
                       className="w-full bg-va-black text-white py-4 rounded-[10px] font-medium tracking-widest text-[13px] uppercase hover:bg-primary transition-all text-center"
@@ -1475,7 +1475,7 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
 
       case 'lesson_grid':
         return (
-          <section key={block.id} className="py-24 bg-white">
+          <SectionInstrument key={block.id} className="py-24 bg-white">
             <ContainerInstrument className="max-w-7xl mx-auto px-6">
               {title && <HeadingInstrument level={2} className="text-5xl font-light tracking-tighter mb-16 text-va-black text-center">{title}</HeadingInstrument>}
               <BentoGrid columns={3}>
@@ -1504,12 +1504,12 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
                 ))}
               </BentoGrid>
             </ContainerInstrument>
-          </section>
+          </SectionInstrument>
         );
 
       case 'track_grid':
         return (
-          <section key={block.id} className="py-24 bg-va-off-white">
+          <SectionInstrument key={block.id} className="py-24 bg-va-off-white">
             <ContainerInstrument className="max-w-7xl mx-auto px-6">
               {title && <HeadingInstrument level={2} className="text-5xl font-light tracking-tighter mb-16 text-va-black text-center">{title}</HeadingInstrument>}
               <BentoGrid columns={3}>
@@ -1533,7 +1533,7 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
                 ))}
               </BentoGrid>
             </ContainerInstrument>
-          </section>
+          </SectionInstrument>
         );
 
       case 'academy_pricing':
@@ -1541,32 +1541,32 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
         const features = body.replace(/price:\s*[^\n]+/, '').split('\n').filter(f => f.trim().startsWith('-')).map(f => f.replace('-', '').trim());
         
         return (
-          <section key={block.id} id="inschrijven" className="py-48 bg-va-off-white">
+          <SectionInstrument key={block.id} id="inschrijven" className="py-48 bg-va-off-white">
             <ContainerInstrument className="max-w-4xl mx-auto px-6">
               <BentoCard span="full" className="bg-white p-20 rounded-[40px] shadow-aura border border-black/[0.02] text-center space-y-12">
-                <div className="space-y-6">
+                <ContainerInstrument className="space-y-6">
                   {title && <HeadingInstrument level={2} className="text-5xl md:text-7xl font-light tracking-tighter leading-none text-va-black">{title}</HeadingInstrument>}
-                </div>
-                <div className="flex flex-col items-center gap-4">
+                </ContainerInstrument>
+                <ContainerInstrument className="flex flex-col items-center gap-4">
                   <TextInstrument className="text-8xl font-extralight tracking-tighter text-va-black leading-none">{price}</TextInstrument>
                   <TextInstrument className="text-[11px] font-bold text-va-black/30 uppercase tracking-[0.2em]">Eenmalige investering (excl. BTW)</TextInstrument>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-12 border-t border-black/[0.03]">
+                </ContainerInstrument>
+                <ContainerInstrument className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-12 border-t border-black/[0.03]">
                   {features.map((feature, i) => (
-                    <div key={i} className="flex flex-col items-center gap-4">
-                      <div className="w-12 h-12 rounded-full bg-primary/5 flex items-center justify-center text-primary">
+                    <ContainerInstrument key={i} className="flex flex-col items-center gap-4">
+                      <ContainerInstrument className="w-12 h-12 rounded-full bg-primary/5 flex items-center justify-center text-primary">
                         <Zap size={20} strokeWidth={1.5} />
-                      </div>
+                      </ContainerInstrument>
                       <TextInstrument className="text-[15px] font-light text-va-black/60">{feature}</TextInstrument>
-                    </div>
+                    </ContainerInstrument>
                   ))}
-                </div>
-                <div className="pt-12">
+                </ContainerInstrument>
+                <ContainerInstrument className="pt-12">
                   <ButtonInstrument as={Link} href="/checkout?journey=academy" className="va-btn-pro !rounded-[10px] px-20 py-8 text-xl shadow-aura-lg hover:scale-105 transition-transform duration-500 uppercase">Nu inschrijven</ButtonInstrument>
-                </div>
+                </ContainerInstrument>
               </BentoCard>
             </ContainerInstrument>
-          </section>
+          </SectionInstrument>
         );
 
       case 'academy_faq':
@@ -1576,27 +1576,27 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
         });
 
         return (
-          <section key={block.id} className="py-48 bg-white">
+          <SectionInstrument key={block.id} className="py-48 bg-white">
             <ContainerInstrument className="max-w-6xl mx-auto px-6">
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-24">
-                <div className="lg:col-span-4 space-y-6">
+              <ContainerInstrument className="grid grid-cols-1 lg:grid-cols-12 gap-24">
+                <ContainerInstrument className="lg:col-span-4 space-y-6">
                   <ContainerInstrument className="inline-flex items-center gap-3 px-4 py-1.5 bg-va-black/5 rounded-full">
                     <Info strokeWidth={1.5} size={16} className="text-va-black/40" />
                     <TextInstrument className="text-[11px] font-bold tracking-[0.2em] text-va-black/40 uppercase">Support</TextInstrument>
                   </ContainerInstrument>
                   {title && <HeadingInstrument level={2} className="text-5xl font-light tracking-tighter leading-none text-va-black">{title}</HeadingInstrument>}
-                </div>
-                <div className="lg:col-span-8 space-y-12">
+                </ContainerInstrument>
+                <ContainerInstrument className="lg:col-span-8 space-y-12">
                   {faqs.map((faq, i) => (
-                    <div key={i} className="space-y-4 pb-12 border-b border-black/[0.03] last:border-none last:pb-0">
+                    <ContainerInstrument key={i} className="space-y-4 pb-12 border-b border-black/[0.03] last:border-none last:pb-0">
                       <HeadingInstrument level={3} className="text-2xl font-light tracking-tight text-primary">{faq.q}</HeadingInstrument>
                       <TextInstrument className="text-lg text-va-black/60 font-light leading-relaxed">{faq.a}</TextInstrument>
-                    </div>
+                    </ContainerInstrument>
                   ))}
-                </div>
-              </div>
+                </ContainerInstrument>
+              </ContainerInstrument>
             </ContainerInstrument>
-          </section>
+          </SectionInstrument>
         );
 
       case 'founder':

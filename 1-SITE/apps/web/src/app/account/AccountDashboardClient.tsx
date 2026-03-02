@@ -128,20 +128,20 @@ export default function AccountDashboardClient() {
             
             {/*  WELKOM EILAND VOOR NIEUWE KLANTEN */}
             {isNewCustomer && (
-              <div className="mb-12 animate-in fade-in slide-in-from-top-4 duration-1000">
+              <ContainerInstrument className="mb-12 animate-in fade-in slide-in-from-top-4 duration-1000">
                 <BentoCard span="full" className="bg-primary/5 border border-primary/10 p-10 rounded-[40px] relative overflow-hidden group">
-                  <div className="relative z-10 flex flex-col md:flex-row items-center gap-10">
-                    <div className="flex-1 space-y-6">
-                      <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary text-white text-[10px] font-bold tracking-widest uppercase rounded-full">
+                  <ContainerInstrument className="relative z-10 flex flex-col md:flex-row items-center gap-10">
+                    <ContainerInstrument className="flex-1 space-y-6">
+                      <ContainerInstrument className="inline-flex items-center gap-2 px-3 py-1 bg-primary text-white text-[10px] font-bold tracking-widest uppercase rounded-full">
                         <Sparkles size={12} /> <VoiceglotText translationKey="account.welcome.new_badge" defaultText="Welkom bij Voices" />
-                      </div>
+                      </ContainerInstrument>
                       <HeadingInstrument level={2} className="text-4xl md:text-5xl font-light tracking-tighter leading-tight">
                         <VoiceglotText translationKey="account.welcome.title" defaultText="Klaar om je eerste project te starten?" />
                       </HeadingInstrument>
                       <TextInstrument className="text-va-black/60 text-lg font-light max-w-xl">
                         <VoiceglotText translationKey="account.welcome.subtitle" defaultText="Je account is nu actief. Als klant kun je direct stemmen zoeken, favorieten opslaan en gratis proefopnames aanvragen." />
                       </TextInstrument>
-                      <div className="flex flex-wrap gap-4 pt-2">
+                      <ContainerInstrument className="flex flex-wrap gap-4 pt-2">
                         <ButtonInstrument as={Link} href="/agency/" className="va-btn-pro !rounded-xl">
                           <VoiceglotText translationKey="account.welcome.cta_find" defaultText="Vind de perfecte stem" />
                           <ArrowRight size={16} className="ml-2" />
@@ -149,9 +149,9 @@ export default function AccountDashboardClient() {
                         <ButtonInstrument as={Link} href="/agency/zo-werkt-het/" variant="outline" className="!rounded-xl border-black/10">
                           <VoiceglotText translationKey="account.welcome.cta_how" defaultText="Hoe werkt het?" />
                         </ButtonInstrument>
-                      </div>
-                    </div>
-                    <div className="w-full md:w-64 aspect-square bg-white rounded-[32px] shadow-aura flex items-center justify-center relative overflow-hidden group-hover:scale-105 transition-transform duration-700">
+                      </ContainerInstrument>
+                    </ContainerInstrument>
+                    <ContainerInstrument className="w-full md:w-64 aspect-square bg-white rounded-[32px] shadow-aura flex items-center justify-center relative overflow-hidden group-hover:scale-105 transition-transform duration-700">
                       <Image 
                         src="/assets/common/branding/Voices-Artists-LOGO.png" 
                         alt="Voices" 
@@ -160,46 +160,46 @@ export default function AccountDashboardClient() {
                         sizes="120px"
                         className="opacity-10 grayscale group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent" />
-                    </div>
-                  </div>
-                  <div className="absolute -bottom-20 -right-20 w-80 h-80 bg-primary/5 rounded-full blur-[80px]" />
+                      <ContainerInstrument className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent" />
+                    </ContainerInstrument>
+                  </ContainerInstrument>
+                  <ContainerInstrument className="absolute -bottom-20 -right-20 w-80 h-80 bg-primary/5 rounded-full blur-[80px]" />
                 </BentoCard>
-              </div>
+              </ContainerInstrument>
             )}
 
             {/*  Winkelier Overzicht Header (Alleen voor Partners/Stemacteurs) */}
             {isPartner && performanceStats.length > 0 && (
-              <div className="mb-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="px-3 py-1 bg-primary/10 rounded-full text-primary text-[11px] font-bold tracking-widest uppercase border border-primary/10">
+              <ContainerInstrument className="mb-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                <ContainerInstrument className="flex items-center gap-3 mb-4">
+                  <ContainerInstrument className="px-3 py-1 bg-primary/10 rounded-full text-primary text-[11px] font-bold tracking-widest uppercase border border-primary/10">
                     <VoiceglotText translationKey="account.dashboard.shop_overview" defaultText="Mijn Winkel Overzicht" />
-                  </div>
-                  <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                  <span className="text-[11px] font-medium text-va-black/40 tracking-widest uppercase"><VoiceglotText translationKey="account.dashboard.live_status" defaultText="Live Status" /></span>
-                </div>
+                  </ContainerInstrument>
+                  <ContainerInstrument className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                  <TextInstrument as="span" className="text-[11px] font-medium text-va-black/40 tracking-widest uppercase"><VoiceglotText translationKey="account.dashboard.live_status" defaultText="Live Status" /></TextInstrument>
+                </ContainerInstrument>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                   {performanceStats.map((stat, i) => (
-                    <div key={i} className="bg-white border border-black/[0.03] p-6 rounded-[24px] shadow-aura-sm hover:shadow-aura transition-all group">
-                      <div className="flex justify-between items-start mb-4">
-                        <div className="w-10 h-10 bg-va-off-white rounded-xl flex items-center justify-center text-va-black/20 group-hover:text-primary transition-colors">
+                    <ContainerInstrument key={i} className="bg-white border border-black/[0.03] p-6 rounded-[24px] shadow-aura-sm hover:shadow-aura transition-all group">
+                      <ContainerInstrument className="flex justify-between items-start mb-4">
+                        <ContainerInstrument className="w-10 h-10 bg-va-off-white rounded-xl flex items-center justify-center text-va-black/20 group-hover:text-primary transition-colors">
                           {stat.icon}
-                        </div>
-                        <span className={`text-[12px] font-bold px-2 py-1 rounded-lg ${stat.label === 'Interesse' ? 'bg-primary text-white' : 'bg-green-500/10 text-green-600'}`}>
+                        </ContainerInstrument>
+                        <TextInstrument as="span" className={`text-[12px] font-bold px-2 py-1 rounded-lg ${stat.label === 'Interesse' ? 'bg-primary text-white' : 'bg-green-500/10 text-green-600'}`}>
                           {stat.trend}
-                        </span>
-                      </div>
-                      <div className="space-y-1">
-                        <div className="text-[13px] font-medium text-va-black/30 tracking-tight">
+                        </TextInstrument>
+                      </ContainerInstrument>
+                      <ContainerInstrument className="space-y-1">
+                        <TextInstrument className="text-[13px] font-medium text-va-black/30 tracking-tight">
                           {stat.label}
-                        </div>
-                        <div className="text-2xl font-light tracking-tighter">{stat.value}</div>
-                      </div>
-                    </div>
+                        </TextInstrument>
+                        <TextInstrument className="text-2xl font-light tracking-tighter">{stat.value}</TextInstrument>
+                      </ContainerInstrument>
+                    </ContainerInstrument>
                   ))}
-                </div>
-              </div>
+                </ContainerInstrument>
+              </ContainerInstrument>
             )}
 
             <BentoGrid columns={4}>
@@ -211,19 +211,19 @@ export default function AccountDashboardClient() {
                   className="bg-va-black text-white p-10 rounded-[32px] relative overflow-hidden group va-interactive"
                   onClick={() => window.open(`https://${typeof window !== 'undefined' ? window.location.host : MarketManager.getCurrentMarket().market_code.toLowerCase() + '.be'}/portfolio/johfrah`, '_blank')}
                 >
-                  <div className="relative z-10 h-full flex flex-col justify-between">
-                    <div>
-                      <div className="w-12 h-12 bg-primary rounded-2xl flex items-center justify-center text-white mb-6 shadow-lg shadow-primary/20">
+                  <ContainerInstrument className="relative z-10 h-full flex flex-col justify-between">
+                    <ContainerInstrument>
+                      <ContainerInstrument className="w-12 h-12 bg-primary rounded-2xl flex items-center justify-center text-white mb-6 shadow-lg shadow-primary/20">
                         <Layout strokeWidth={1.5} size={24} />
-                      </div>
+                      </ContainerInstrument>
                       <HeadingInstrument level={2} className="text-4xl font-light tracking-tighter mb-4">
                         <VoiceglotText translationKey="account.dashboard.my_shop" defaultText="Mijn Winkel" />
                       </HeadingInstrument>
                       <TextInstrument className="text-white/40 text-[15px] font-light leading-relaxed max-w-md">
                         <VoiceglotText translationKey="account.dashboard.my_shop_desc" defaultText="Beheer je eigen etalage. Pas teksten aan, voeg nieuwe demo's toe en bekijk hoe je winkel eruit ziet voor klanten." />
                       </TextInstrument>
-                    </div>
-                    <div className="flex items-center gap-4 mt-8">
+                    </ContainerInstrument>
+                    <ContainerInstrument className="flex items-center gap-4 mt-8">
                       <ButtonInstrument className="va-btn-pro !bg-white !text-va-black !rounded-xl text-[13px]">
                         <VoiceglotText translationKey="account.dashboard.open_shop" defaultText="Winkel Openen" />
                       </ButtonInstrument>
@@ -232,9 +232,9 @@ export default function AccountDashboardClient() {
                           <VoiceglotText translationKey="account.dashboard.manage_rates" defaultText="Tarieven Beheren" />
                         </ButtonInstrument>
                       </Link>
-                    </div>
-                  </div>
-                  <div className="absolute -bottom-20 -right-20 w-80 h-80 bg-primary/10 rounded-full blur-[80px] group-hover:bg-primary/20 transition-all duration-1000" />
+                    </ContainerInstrument>
+                  </ContainerInstrument>
+                  <ContainerInstrument className="absolute -bottom-20 -right-20 w-80 h-80 bg-primary/10 rounded-full blur-[80px] group-hover:bg-primary/20 transition-all duration-1000" />
                 </BentoCard>
               )}
 
@@ -244,43 +244,43 @@ export default function AccountDashboardClient() {
                   span="lg" 
                   className="bg-white p-10 rounded-[32px] border border-black/[0.03] shadow-aura-sm flex flex-col"
                 >
-                  <div className="flex items-center justify-between mb-8">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-va-off-white rounded-xl flex items-center justify-center text-va-black">
+                  <ContainerInstrument className="flex items-center justify-between mb-8">
+                    <ContainerInstrument className="flex items-center gap-3">
+                      <ContainerInstrument className="w-10 h-10 bg-va-off-white rounded-xl flex items-center justify-center text-va-black">
                         <Bell strokeWidth={1.5} size={20} />
-                      </div>
+                      </ContainerInstrument>
                       <HeadingInstrument level={3} className="text-2xl font-light tracking-tight">
                         <VoiceglotText translationKey="account.dashboard.notifications" defaultText="Meldingen" />
                       </HeadingInstrument>
-                    </div>
+                    </ContainerInstrument>
                     {activeNotifications.some(n => n.unread) && (
-                      <span className="px-2 py-1 bg-primary text-white text-[10px] font-bold rounded-full animate-pulse">
+                      <TextInstrument as="span" className="px-2 py-1 bg-primary text-white text-[10px] font-bold rounded-full animate-pulse">
                         {t('common.new', "NIEUW")}
-                      </span>
+                      </TextInstrument>
                     )}
-                  </div>
+                  </ContainerInstrument>
                   
-                  <div className="flex-1 space-y-4 overflow-y-auto max-h-[200px] pr-2 custom-scrollbar">
+                  <ContainerInstrument className="flex-1 space-y-4 overflow-y-auto max-h-[200px] pr-2 custom-scrollbar">
                     {activeNotifications.map((notification) => (
-                      <div key={notification.id} className={`p-4 rounded-2xl border transition-all ${notification.unread ? 'bg-primary/5 border-primary/10' : 'bg-va-off-white/50 border-black/5'}`}>
-                        <div className="flex justify-between items-start mb-1">
+                      <ContainerInstrument key={notification.id} className={`p-4 rounded-2xl border transition-all ${notification.unread ? 'bg-primary/5 border-primary/10' : 'bg-va-off-white/50 border-black/5'}`}>
+                        <ContainerInstrument className="flex justify-between items-start mb-1">
                           <TextInstrument className="text-[14px] font-medium">
                             <VoiceglotText translationKey={`account.notification.${notification.id}.title`} defaultText={notification.title} noTranslate={true} />
                           </TextInstrument>
                           <TextInstrument className="text-[11px] opacity-30">{notification.time}</TextInstrument>
-                        </div>
+                        </ContainerInstrument>
                         <TextInstrument className="text-[13px] text-va-black/60 leading-relaxed">
                           <VoiceglotText translationKey={`account.notification.${notification.id}.message`} defaultText={notification.message} noTranslate={true} />
                         </TextInstrument>
-                      </div>
+                      </ContainerInstrument>
                     ))}
-                  </div>
+                  </ContainerInstrument>
                   
-                  <div className="mt-6 pt-6 border-t border-black/5 flex justify-center">
+                  <ContainerInstrument className="mt-6 pt-6 border-t border-black/5 flex justify-center">
                     <ButtonInstrument variant="plain" className="text-[13px] font-bold tracking-widest text-va-black/20 hover:text-primary transition-all uppercase">
                       <VoiceglotText translationKey="account.dashboard.view_all_notifications" defaultText="Alle Meldingen Bekijken" />
                     </ButtonInstrument>
-                  </div>
+                  </ContainerInstrument>
                 </BentoCard>
               )}
 

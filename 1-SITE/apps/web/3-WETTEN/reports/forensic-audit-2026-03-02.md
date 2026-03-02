@@ -1,23 +1,13 @@
-# 🛡️ Forensic Audit Report (3/2/2026, 9:01:31 AM)
+# 🛡️ Forensic Audit Report (3/2/2026, 9:57:50 AM)
 
 ## Summary
-- **Status**: ✅ PASSED
-- **Errors**: 0
-- **Warnings**: 3531
+- **Status**: ❌ FAILED
+- **Errors**: 2
+- **Warnings**: 3477
 
 ## Detailed Issues
-- **WARNING** `src/app/[...slug]/page.tsx:690`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<Suspense fallback={<div className="h-[600px] bg-va-black animate-pulse" />}>`
-- **WARNING** `src/app/[...slug]/page.tsx:694`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<Suspense fallback={<div className="h-96 bg-white rounded-[30px] animate-pulse" />}>`
-- **WARNING** `src/app/[...slug]/page.tsx:697`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<Suspense fallback={<div className="h-96 bg-white rounded-[30px] animate-pulse" />}>`
-- **WARNING** `src/app/[...slug]/page.tsx:700`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<Suspense fallback={<div className="h-96 bg-white rounded-[30px] animate-pulse" />}>`
-- **WARNING** `src/app/[...slug]/page.tsx:704`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="mt-32">`
-- **WARNING** `src/app/[...slug]/page.tsx:705`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<Suspense fallback={<div className="h-96 bg-va-off-white animate-pulse" />}>`
+- **WARNING** `src/app/Providers.tsx:49`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+  > `language: 'nl',`
 - **WARNING** `src/app/[...slug]/page.tsx:737`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="!pt-0 -mt-24 relative z-40">`
 - **WARNING** `src/app/[...slug]/page.tsx:910`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -56,26 +46,6 @@
   > `<Suspense fallback={<div className="h-64 w-full bg-va-black/5 animate-pulse rounded-[20px]" />}>`
 - **WARNING** `src/app/[...slug]/page.tsx:1469`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<Suspense fallback={<div className="h-48 w-full bg-va-black/5 animate-pulse rounded-[20px]" />}>`
-- **WARNING** `src/app/[...slug]/page.tsx:1547`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="space-y-6">`
-- **WARNING** `src/app/[...slug]/page.tsx:1550`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="flex flex-col items-center gap-4">`
-- **WARNING** `src/app/[...slug]/page.tsx:1554`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-12 border-t border-black/[0.03]">`
-- **WARNING** `src/app/[...slug]/page.tsx:1556`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div key={i} className="flex flex-col items-center gap-4">`
-- **WARNING** `src/app/[...slug]/page.tsx:1557`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="w-12 h-12 rounded-full bg-primary/5 flex items-center justify-center text-primary">`
-- **WARNING** `src/app/[...slug]/page.tsx:1564`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="pt-12">`
-- **WARNING** `src/app/[...slug]/page.tsx:1581`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="grid grid-cols-1 lg:grid-cols-12 gap-24">`
-- **WARNING** `src/app/[...slug]/page.tsx:1582`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="lg:col-span-4 space-y-6">`
-- **WARNING** `src/app/[...slug]/page.tsx:1589`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="lg:col-span-8 space-y-12">`
-- **WARNING** `src/app/[...slug]/page.tsx:1591`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div key={i} className="space-y-4 pb-12 border-b border-black/[0.03] last:border-none last:pb-0">`
 - **WARNING** `src/app/[...slug]/page.tsx:1663`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<Suspense fallback={<div className="aspect-video w-full bg-va-black/20 animate-pulse" />}>`
 - **WARNING** `src/app/[...slug]/page.tsx:1741`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -88,74 +58,6 @@
   > `const currentLang = (page.iapContext as { lang?: string } | null)?.lang || 'nl';`
 - **WARNING** `src/app/account/AccountDashboardClient.tsx:119`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="va-home-container">`
-- **WARNING** `src/app/account/AccountDashboardClient.tsx:131`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="mb-12 animate-in fade-in slide-in-from-top-4 duration-1000">`
-- **WARNING** `src/app/account/AccountDashboardClient.tsx:133`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="relative z-10 flex flex-col md:flex-row items-center gap-10">`
-- **WARNING** `src/app/account/AccountDashboardClient.tsx:134`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="flex-1 space-y-6">`
-- **WARNING** `src/app/account/AccountDashboardClient.tsx:135`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="inline-flex items-center gap-2 px-3 py-1 bg-primary text-white text-[10px] font-bold tracking-widest uppercase rounded-full">`
-- **WARNING** `src/app/account/AccountDashboardClient.tsx:144`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="flex flex-wrap gap-4 pt-2">`
-- **WARNING** `src/app/account/AccountDashboardClient.tsx:154`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="w-full md:w-64 aspect-square bg-white rounded-[32px] shadow-aura flex items-center justify-center relative overflow-hidden group-hover:scale-105 transition-transform duration-700">`
-- **WARNING** `src/app/account/AccountDashboardClient.tsx:163`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent" />`
-- **WARNING** `src/app/account/AccountDashboardClient.tsx:166`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="absolute -bottom-20 -right-20 w-80 h-80 bg-primary/5 rounded-full blur-[80px]" />`
-- **WARNING** `src/app/account/AccountDashboardClient.tsx:173`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="mb-12 animate-in fade-in slide-in-from-bottom-4 duration-700">`
-- **WARNING** `src/app/account/AccountDashboardClient.tsx:174`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="flex items-center gap-3 mb-4">`
-- **WARNING** `src/app/account/AccountDashboardClient.tsx:175`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="px-3 py-1 bg-primary/10 rounded-full text-primary text-[11px] font-bold tracking-widest uppercase border border-primary/10">`
-- **WARNING** `src/app/account/AccountDashboardClient.tsx:178`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />`
-- **WARNING** `src/app/account/AccountDashboardClient.tsx:179`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<span className="text-[11px] font-medium text-va-black/40 tracking-widest uppercase"><VoiceglotText translationKey="account.dashboard.live_status" defaultText="Live Status" /></span>`
-- **WARNING** `src/app/account/AccountDashboardClient.tsx:182`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">`
-- **WARNING** `src/app/account/AccountDashboardClient.tsx:184`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div key={i} className="bg-white border border-black/[0.03] p-6 rounded-[24px] shadow-aura-sm hover:shadow-aura transition-all group">`
-- **WARNING** `src/app/account/AccountDashboardClient.tsx:185`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="flex justify-between items-start mb-4">`
-- **WARNING** `src/app/account/AccountDashboardClient.tsx:186`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="w-10 h-10 bg-va-off-white rounded-xl flex items-center justify-center text-va-black/20 group-hover:text-primary transition-colors">`
-- **WARNING** `src/app/account/AccountDashboardClient.tsx:189`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<span className={`text-[12px] font-bold px-2 py-1 rounded-lg ${stat.label === 'Interesse' ? 'bg-primary text-white' : 'bg-green-500/10 text-green-600'}`}>`
-- **WARNING** `src/app/account/AccountDashboardClient.tsx:193`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="space-y-1">`
-- **WARNING** `src/app/account/AccountDashboardClient.tsx:194`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="text-[13px] font-medium text-va-black/30 tracking-tight">`
-- **WARNING** `src/app/account/AccountDashboardClient.tsx:197`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="text-2xl font-light tracking-tighter">{stat.value}</div>`
-- **WARNING** `src/app/account/AccountDashboardClient.tsx:214`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="relative z-10 h-full flex flex-col justify-between">`
-- **WARNING** `src/app/account/AccountDashboardClient.tsx:215`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div>`
-- **WARNING** `src/app/account/AccountDashboardClient.tsx:216`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="w-12 h-12 bg-primary rounded-2xl flex items-center justify-center text-white mb-6 shadow-lg shadow-primary/20">`
-- **WARNING** `src/app/account/AccountDashboardClient.tsx:226`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="flex items-center gap-4 mt-8">`
-- **WARNING** `src/app/account/AccountDashboardClient.tsx:237`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="absolute -bottom-20 -right-20 w-80 h-80 bg-primary/10 rounded-full blur-[80px] group-hover:bg-primary/20 transition-all duration-1000" />`
-- **WARNING** `src/app/account/AccountDashboardClient.tsx:247`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="flex items-center justify-between mb-8">`
-- **WARNING** `src/app/account/AccountDashboardClient.tsx:248`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="flex items-center gap-3">`
-- **WARNING** `src/app/account/AccountDashboardClient.tsx:249`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="w-10 h-10 bg-va-off-white rounded-xl flex items-center justify-center text-va-black">`
-- **WARNING** `src/app/account/AccountDashboardClient.tsx:257`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<span className="px-2 py-1 bg-primary text-white text-[10px] font-bold rounded-full animate-pulse">`
-- **WARNING** `src/app/account/AccountDashboardClient.tsx:263`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="flex-1 space-y-4 overflow-y-auto max-h-[200px] pr-2 custom-scrollbar">`
-- **WARNING** `src/app/account/AccountDashboardClient.tsx:265`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div key={notification.id} className={`p-4 rounded-2xl border transition-all ${notification.unread ? 'bg-primary/5 border-primary/10' : 'bg-va-off-white/50 border-black/5'}`}>`
-- **WARNING** `src/app/account/AccountDashboardClient.tsx:266`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="flex justify-between items-start mb-1">`
-- **WARNING** `src/app/account/AccountDashboardClient.tsx:279`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `<div className="mt-6 pt-6 border-t border-black/5 flex justify-center">`
 - **WARNING** `src/app/account/AccountDashboardClient.tsx:293`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div>`
 - **WARNING** `src/app/account/AccountDashboardClient.tsx:294`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -2084,17 +1986,7 @@
   > `<pre style="font-family: monospace; font-size: 11px; color: #444; margin: 0;">${JSON.stringify(details, null, 2)}</pre>`
 - **WARNING** `src/app/api/admin/voiceglot/audit-tones/route.ts:29`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `not(eq(translations.lang, 'nl'))`
-- **WARNING** `src/app/api/admin/voiceglot/heal-all/route.ts:24`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
-  > `const targetLanguages = ['en', 'fr', 'de', 'es', 'pt'];`
-- **WARNING** `src/app/api/admin/voiceglot/heal-all/route.ts:24`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
-  > `const targetLanguages = ['en', 'fr', 'de', 'es', 'pt'];`
-- **WARNING** `src/app/api/admin/voiceglot/heal-all/route.ts:24`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
-  > `const targetLanguages = ['en', 'fr', 'de', 'es', 'pt'];`
-- **WARNING** `src/app/api/admin/voiceglot/heal-all/route.ts:24`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
-  > `const targetLanguages = ['en', 'fr', 'de', 'es', 'pt'];`
-- **WARNING** `src/app/api/admin/voiceglot/heal-all/route.ts:24`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
-  > `const targetLanguages = ['en', 'fr', 'de', 'es', 'pt'];`
-- **WARNING** `src/app/api/admin/voiceglot/heal-all/route.ts:99`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `src/app/api/admin/voiceglot/heal-all/route.ts:111`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `if (!detection.is_dutch && detection.detected_lang !== 'nl') {`
 - **WARNING** `src/app/api/admin/voiceglot/list/route.ts:98`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `let detectedLang = 'nl';`
@@ -2544,29 +2436,33 @@
   > `<html lang="nl">`
 - **WARNING** `src/app/global-error.tsx:33`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `<TranslationProvider lang="nl">`
-- **WARNING** `src/app/layout.tsx:34`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
-  > `const TopBar = dynamic(() => import("@/components/ui/TopBar").then(mod => mod.TopBar), { ssr: false, loading: () => <div className="h-[80px] bg-va-off-white/50 backdrop-blur-md" /> });`
+- **ERROR** `src/app/layout.tsx:60`: Hardcoded contactgegevens gedetecteerd. Gebruik MarketManager.
+  > `return MarketManagerServer.getCurrentMarket(process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be');`
+- **ERROR** `src/app/layout.tsx:66`: Hardcoded contactgegevens gedetecteerd. Gebruik MarketManager.
+  > `const fallbackHost = process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be';`
 - **WARNING** `src/app/layout.tsx:35`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+  > `const TopBar = dynamic(() => import("@/components/ui/TopBar").then(mod => mod.TopBar), { ssr: false, loading: () => <div className="h-[80px] bg-va-off-white/50 backdrop-blur-md" /> });`
+- **WARNING** `src/app/layout.tsx:36`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `const GlobalNav = dynamic(() => import("@/components/ui/GlobalNav"), { ssr: false, loading: () => <div className="h-[60px] bg-va-off-white/50 backdrop-blur-md" /> });`
-- **WARNING** `src/app/layout.tsx:413`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `src/app/layout.tsx:444`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `JOHFRAH<span className="text-primary">.</span>`
-- **WARNING** `src/app/layout.tsx:415`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `src/app/layout.tsx:446`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex gap-8 items-center text-[13px] font-bold tracking-[0.2em] uppercase text-va-black/40">`
-- **WARNING** `src/app/layout.tsx:433`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `src/app/layout.tsx:464`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<SafeErrorGuard name="Footer" fallback={<div className="py-12 bg-va-off-white border-t border-black/5 text-center text-[11px] text-va-black/20 uppercase tracking-widest">Voices Footer Safe-Mode</div>}>`
-- **WARNING** `src/app/layout.tsx:440`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `src/app/layout.tsx:471`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="text-3xl font-light tracking-tighter">`
-- **WARNING** `src/app/layout.tsx:441`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `src/app/layout.tsx:472`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `JOHFRAH<span className="text-primary">.</span>`
-- **WARNING** `src/app/layout.tsx:443`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `src/app/layout.tsx:474`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex gap-12 text-[11px] font-bold tracking-[0.3em] uppercase text-white/40">`
-- **WARNING** `src/app/layout.tsx:448`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `src/app/layout.tsx:479`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="text-[11px] font-bold tracking-[0.3em] uppercase text-white/20">`
-- **WARNING** `src/app/layout.tsx:111`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `src/app/layout.tsx:126`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `const translationPromise = getTranslationsServer(langHeader || 'nl');`
-- **WARNING** `src/app/layout.tsx:218`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `src/app/layout.tsx:244`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `const translationPromise = getTranslationsServer(langHeader || 'nl');`
-- **WARNING** `src/app/layout.tsx:247`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `src/app/layout.tsx:278`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `const navConfig = await ConfigBridge.getNavConfig(journeyKey, langHeader || 'nl');`
 - **WARNING** `src/app/light/page.tsx:16`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `loading: () => <div className="fixed inset-0 z-0 bg-va-off-white" />`
