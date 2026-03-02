@@ -1146,6 +1146,27 @@ export const orderItems = pgTable("order_items", {
 	}).onDelete("cascade"),
 ]);
 
+export const worldLanguages = pgTable("world_languages", {
+	id: serial().primaryKey().notNull(),
+	worldId: integer("world_id").notNull(),
+	languageId: integer("language_id").notNull(),
+	isPrimary: boolean("is_primary").default(false),
+	isPopular: boolean("is_popular").default(false),
+	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow(),
+}, (table) => [
+	foreignKey({
+		columns: [table.worldId],
+		foreignColumns: [worlds.id],
+		name: "world_languages_world_id_fkey"
+	}),
+	foreignKey({
+		columns: [table.languageId],
+		foreignColumns: [languages.id],
+		name: "world_languages_language_id_fkey"
+	}),
+	unique("world_languages_world_id_language_id_key").on(table.worldId, table.languageId),
+]);
+
 export const navMenus = pgTable("nav_menus", {
 	id: serial().primaryKey().notNull(),
 	key: text().notNull(),

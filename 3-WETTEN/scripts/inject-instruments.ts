@@ -494,6 +494,125 @@ async function inject() {
       ]
     },
     {
+      slug: 'ademing/contact',
+      title: 'Contact | Ademing',
+      blocks: [
+        {
+          type: 'HeroInstrument',
+          settings: {
+            data: {
+              title: 'Contacteer Ademing',
+              highlight: 'Ademing',
+              subtitle: 'Een vraag over een sessie of track? Mat staat voor je klaar.',
+              cta: { text: 'Stuur een bericht', href: '#form' }
+            }
+          }
+        },
+        {
+          type: 'WorkshopInterestForm',
+          settings: {
+            data: {
+              title: 'Stuur ons een bericht',
+              subtitle: 'Rust begint bij een goed gesprek.'
+            }
+          }
+        }
+      ]
+    },
+    {
+      slug: 'ademing/faq',
+      title: 'Veelgestelde Vragen | Ademing',
+      blocks: [
+        {
+          type: 'HeroInstrument',
+          settings: {
+            data: {
+              title: 'Ademing FAQ',
+              highlight: 'FAQ',
+              subtitle: 'Alles over meditaties, tracks en gebruik van het platform.'
+            }
+          }
+        },
+        {
+          type: 'AccordionInstrument',
+          settings: {
+            data: {
+              title: 'Vragen over Ademing',
+              category: 'ademing'
+            }
+          }
+        }
+      ]
+    },
+    {
+      slug: 'johfrai/contact',
+      title: 'Contact | Johfrai AI World',
+      blocks: [
+        {
+          type: 'HeroInstrument',
+          settings: {
+            data: {
+              title: 'Contacteer Johfrai',
+              highlight: 'Johfrai',
+              subtitle: 'Vragen over AI cloning of hybride audio? Voicy helpt je verder.',
+              cta: { text: 'Stuur een bericht', href: '#form' }
+            }
+          }
+        },
+        {
+          type: 'WorkshopInterestForm',
+          settings: {
+            data: {
+              title: 'Stuur Voicy een bericht',
+              subtitle: 'De toekomst van stem is hier.'
+            }
+          }
+        }
+      ]
+    },
+    {
+      slug: 'johfrai/faq',
+      title: 'Veelgestelde Vragen | Johfrai AI World',
+      blocks: [
+        {
+          type: 'HeroInstrument',
+          settings: {
+            data: {
+              title: 'Johfrai FAQ',
+              highlight: 'FAQ',
+              subtitle: 'Alles wat je moet weten over AI stemmen en technologie.'
+            }
+          }
+        },
+        {
+          type: 'AccordionInstrument',
+          settings: {
+            data: {
+              title: 'Vragen over Johfrai AI',
+              category: 'johfrai'
+            }
+          }
+        }
+      ]
+    },
+    {
+      slug: 'artist/youssef/contact',
+      title: 'Contact | Youssef Zaki',
+      blocks: [
+        {
+          type: 'HeroInstrument',
+          settings: {
+            data: {
+              title: 'Contacteer Youssef',
+              highlight: 'Youssef',
+              subtitle: 'Voor boekingen, samenwerkingen of support.',
+              cta: { text: 'Stuur een bericht', href: 'mailto:info@voices.be' }
+            }
+          }
+        }
+      ]
+    },
+    {
       slug: 'contact',
       title: 'Contact',
       blocks: [

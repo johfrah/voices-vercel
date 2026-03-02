@@ -32,7 +32,12 @@ const WORLD_BIBLE: Record<string, { world_id: number, routing_type: string, jour
   'studio/contact': { world_id: 2, routing_type: 'article', journey: 'studio' },
   'studio/faq': { world_id: 2, routing_type: 'article', journey: 'studio' },
   'academy/contact': { world_id: 3, routing_type: 'article', journey: 'academy' },
-  'academy/faq': { world_id: 3, routing_type: 'article', journey: 'academy' }
+  'academy/faq': { world_id: 3, routing_type: 'article', journey: 'academy' },
+  'ademing/contact': { world_id: 6, routing_type: 'article', journey: 'ademing' },
+  'ademing/faq': { world_id: 6, routing_type: 'article', journey: 'ademing' },
+  'johfrai/contact': { world_id: 10, routing_type: 'article', journey: 'johfrai' },
+  'johfrai/faq': { world_id: 10, routing_type: 'article', journey: 'johfrai' },
+  'artist/youssef/contact': { world_id: 25, routing_type: 'article', journey: 'artist' }
 };
 
 async function healRegistry() {
