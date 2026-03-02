@@ -9,6 +9,7 @@
  */
 
 import { ContainerInstrument, HeadingInstrument, PageWrapperInstrument, TextInstrument } from "@/components/ui/LayoutInstruments";
+import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { InstrumentRenderer } from "@/components/ui/InstrumentRenderer";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -136,10 +137,10 @@ export default async function WorkshopDetailPage({ params }: { params: { slug: s
         <ContainerInstrument className="max-w-4xl mx-auto px-6 py-32">
           <ContainerInstrument plain className="text-center mb-20">
             <TextInstrument className="text-[11px] font-bold tracking-[0.3em] uppercase text-primary mb-4">
-              Veelgestelde Vragen
+              <VoiceglotText translationKey="studio.faq.label" defaultText="Veelgestelde Vragen" />
             </TextInstrument>
             <HeadingInstrument level={1} className="text-4xl md:text-5xl font-light tracking-tighter text-va-black">
-              Alles wat je moet weten over onze workshops
+              <VoiceglotText translationKey="studio.faq.title" defaultText="Alles wat je moet weten over onze workshops" />
             </HeadingInstrument>
           </ContainerInstrument>
           <ContainerInstrument plain className="space-y-4">
@@ -162,25 +163,25 @@ export default async function WorkshopDetailPage({ params }: { params: { slug: s
         <ContainerInstrument className="max-w-4xl mx-auto px-6 py-32">
           <ContainerInstrument plain className="text-center mb-20">
             <TextInstrument className="text-[11px] font-bold tracking-[0.3em] uppercase text-primary mb-4">
-              Contact
+              <VoiceglotText translationKey="studio.contact.label" defaultText="Contact" />
             </TextInstrument>
             <HeadingInstrument level={1} className="text-4xl md:text-5xl font-light tracking-tighter text-va-black mb-4">
-              Voices Studio
+              <VoiceglotText translationKey="studio.contact.title" defaultText="Voices Studio" />
             </HeadingInstrument>
             <TextInstrument className="text-va-black/40 font-light text-lg">
-              Heb je vragen over onze workshops of wil je meer weten? Neem gerust contact op.
+              <VoiceglotText translationKey="studio.contact.subtitle" defaultText="Heb je vragen over onze workshops of wil je meer weten? Neem gerust contact op." />
             </TextInstrument>
           </ContainerInstrument>
           <ContainerInstrument plain className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <ContainerInstrument className="bg-white rounded-[20px] p-8 border border-black/[0.03] shadow-aura space-y-4">
-              <HeadingInstrument level={3} className="text-xl font-light text-va-black">Bereikbaarheid</HeadingInstrument>
-              <TextInstrument className="text-va-black/60 font-light">E-mail: studio@voices.be</TextInstrument>
-              <TextInstrument className="text-va-black/60 font-light">Telefoon: +32 (0)2 793 19 91</TextInstrument>
+              <HeadingInstrument level={3} className="text-xl font-light text-va-black"><VoiceglotText translationKey="studio.contact.reach" defaultText="Bereikbaarheid" /></HeadingInstrument>
+              <TextInstrument className="text-va-black/60 font-light"><VoiceglotText translationKey="studio.contact.email" defaultText="E-mail: studio@voices.be" noTranslate /></TextInstrument>
+              <TextInstrument className="text-va-black/60 font-light"><VoiceglotText translationKey="studio.contact.phone" defaultText="Telefoon: +32 (0)2 793 19 91" noTranslate /></TextInstrument>
             </ContainerInstrument>
             <ContainerInstrument className="bg-va-black text-white rounded-[20px] p-8 shadow-aura-lg space-y-4">
-              <HeadingInstrument level={3} className="text-xl font-light text-white">De Studio</HeadingInstrument>
-              <TextInstrument className="text-white/60 font-light">Jules Delhaizestraat 42</TextInstrument>
-              <TextInstrument className="text-white/60 font-light">1080 Brussel (Molenbeek)</TextInstrument>
+              <HeadingInstrument level={3} className="text-xl font-light text-white"><VoiceglotText translationKey="studio.contact.studio_title" defaultText="De Studio" /></HeadingInstrument>
+              <TextInstrument className="text-white/60 font-light"><VoiceglotText translationKey="studio.contact.address" defaultText="Jules Delhaizestraat 42" noTranslate /></TextInstrument>
+              <TextInstrument className="text-white/60 font-light"><VoiceglotText translationKey="studio.contact.city" defaultText="1080 Brussel (Molenbeek)" noTranslate /></TextInstrument>
             </ContainerInstrument>
           </ContainerInstrument>
         </ContainerInstrument>
