@@ -57,12 +57,21 @@ export const VoiceglotText: React.FC<VoiceglotTextProps> = ({
   const failedHeals = useRef<Set<string>>(new Set());
   const textRef = useRef<HTMLSpanElement>(null);
 
+  // 🛡️ CHRIS-PROTOCOL: Anti-Key-Leak Guard
+  // A translation key should NEVER be displayed as content.
+  // If content equals the translationKey, fall back to defaultText.
+  const safeContent = (text: string | undefined | null): string => {
+    if (!text) return defaultText || '';
+    if (text === translationKey) return defaultText || '';
+    return text;
+  };
+
   //  CHRIS-PROTOCOL: Hydration Safety
   useEffect(() => {
     setMounted(true);
     // Na hydration halen we de echte vertaling op
-    const translated = noTranslate ? defaultText : t(translationKey, defaultText, values, !!components);
-    setContent(translated);
+    const translated = noTranslate ? defaultText : t(translationKey, defaultText || '', values, !!components);
+    setContent(safeContent(translated));
   }, [noTranslate, defaultText, t, translationKey, values, components]);
 
   //  CHRIS-PROTOCOL: Force content update when translation or edit mode changes
@@ -80,18 +89,16 @@ export const VoiceglotText: React.FC<VoiceglotTextProps> = ({
     const isSourceOfTruth = language?.toLowerCase() === 'nl-be' || (typeof window !== 'undefined' && (window as any).handshakeLanguages?.find((l: any) => l.id === 1)?.code === language?.toLowerCase());
 
     if (noTranslate || isAdemingBrand) {
-      setContent(defaultText);
+      setContent(safeContent(defaultText));
     } else if (isSourceOfTruth && !isEditMode) {
-      // In nl-BE mode, we negeren de database vertalingen tenzij we in Edit Mode zijn
-      // Dit voorkomt dat AI-slop de site vervuilt.
-      setContent(defaultText);
+      setContent(safeContent(defaultText));
     } else {
-      const currentT = t(translationKey, defaultText, values, !!components);
+      const currentT = t(translationKey, defaultText || '', values, !!components);
       //  STABILITEIT: Gebruik SlopFilter om AI-foutmeldingen te blokkeren
       if (SlopFilter.isSlop(currentT || '', language, defaultText || '')) {
-        setContent(defaultText);
+        setContent(safeContent(defaultText));
       } else {
-        setContent(currentT);
+        setContent(safeContent(currentT));
       }
     }
   }, [translationKey, defaultText, t, noTranslate, isEditMode, values, language, components, mounted]);

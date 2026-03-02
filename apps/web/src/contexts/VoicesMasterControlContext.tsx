@@ -127,8 +127,13 @@ export const VoicesMasterControlProvider: React.FC<{
         if (saved) savedState = JSON.parse(saved);
       } catch (e) {}
 
-      const journey = initialJourney || (searchParams?.get('journey') as JourneyType) || 
-                     (voicesState?.current_journey && voicesState.current_journey !== 'general' ? voicesState.current_journey as JourneyType : 'video');
+      // 🛡️ CHRIS-PROTOCOL: Journey Resolution Priority (v2.28.1)
+      // When user has explicitly switched journey (current_journey !== 'general'),
+      // prefer that over initialJourney to prevent tab state reset.
+      const userSelectedJourney = voicesState?.current_journey && voicesState.current_journey !== 'general' && voicesState.current_journey !== 'agency'
+        ? voicesState.current_journey as JourneyType
+        : null;
+      const journey = (searchParams?.get('journey') as JourneyType) || userSelectedJourney || initialJourney || 'video';
       
       const journeyId = searchParams?.get('journeyId') ? parseInt(searchParams.get('journeyId')!) : (savedState.journeyId || MarketManager.getJourneyId(journey));
       const targetUsage = SlimmeKassa.getUsageFromJourneyId(journeyId || journey);
