@@ -38,12 +38,11 @@ const getDb = () => {
         return null;
       }
       
-      // CHRIS-PROTOCOL: Direct DB Host for Stability (v2.17)
-      // The Supabase Pooler (6543) is currently unstable. We bypass it and use the direct host.
+      // CHRIS-PROTOCOL: Pooler-First for Stability (v2.29)
+      // The direct host (5432) gives ECONNRESET. We MUST use the Pooler (6543).
+      // Keep the connection string as-is when it already uses the Pooler.
       if (connectionString.includes('pooler.supabase.com')) {
-        connectionString = connectionString.replace('aws-1-eu-west-1.pooler.supabase.com', 'vcbxyyjsxuquytcsskpj.supabase.co');
-        connectionString = connectionString.replace(':6543', ':5432');
-        connectionString = connectionString.replace('postgres.vcbxyyjsxuquytcsskpj', 'postgres');
+        // Strip pgbouncer param that can cause issues with prepared statements
         connectionString = connectionString.split('?')[0]; 
       }
 
