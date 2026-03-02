@@ -1,0 +1,33 @@
+#!/bin/sh
+
+# === VOICES PRE-COMMIT GUARD ===
+
+# 1. Kill .DS_Store / .DS-Store before they enter git
+git rm --cached -r --quiet "*.DS_Store" "*.DS-Store" 2>/dev/null || true
+find . -name ".DS_Store" -o -name ".DS-Store" | while read f; do
+  git rm --cached --quiet "$f" 2>/dev/null || true
+done
+
+# 2. Block Dropbox conflict files
+CONFLICTS=$(git diff --cached --name-only | grep -i "Exemplaar met conflict\|conflicted copy" || true)
+if [ -n "$CONFLICTS" ]; then
+  echo "BLOCKED: Dropbox conflict files detected in staging:"
+  echo "$CONFLICTS"
+  exit 1
+fi
+
+# 3. Block 'any' type in staged .ts/.tsx files
+ANY_HITS=$(git diff --cached --diff-filter=ACM --name-only -- '*.ts' '*.tsx' | xargs grep -l ': any' 2>/dev/null || true)
+if [ -n "$ANY_HITS" ]; then
+  echo "WARNING: 'any' type detected in:"
+  echo "$ANY_HITS"
+  echo "(commit proceeds, but fix these)"
+fi
+
+# 4. Block console.log in staged .ts/.tsx files
+LOG_HITS=$(git diff --cached --diff-filter=ACM --name-only -- '*.ts' '*.tsx' | xargs grep -l 'console\.log' 2>/dev/null || true)
+if [ -n "$LOG_HITS" ]; then
+  echo "WARNING: console.log detected in:"
+  echo "$LOG_HITS"
+  echo "(commit proceeds, but remove for production)"
+fi

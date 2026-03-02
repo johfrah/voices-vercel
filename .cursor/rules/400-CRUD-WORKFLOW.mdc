@@ -11,9 +11,9 @@ alwaysApply: true
 ## 1. DE ARCHITECTUUR (Source of Truth)
 Wij werken in een volledig ontkoppeld model waarbij de Supabase-database de enige waarheid is.
 
-- **Frontend:** Next.js (App Router) in `1-SITE/apps/web/`.
-- **Database:** Drizzle ORM in `1-SITE/packages/database/`.
-- **Media:** Supabase Storage gesynchroniseerd met `1-SITE/apps/web/public/assets/`.
+- **Frontend:** Next.js (App Router) in `apps/web/`.
+- **Database:** Drizzle ORM in `packages/database/`.
+- **Media:** Supabase Storage gesynchroniseerd met `apps/web/public/assets/`.
 - **Routing:** `slug_registry` tabel in Supabase (Handshake ID).
 
 ## 2. ID-FIRST HANDSHAKE (De Grondwet)
@@ -31,7 +31,7 @@ Het gebruik van slugs of namen voor interne logica is STRIKT VERBODEN.
 3.  **LayoutInstruments**: Gebruik UITSLUITEND instrumenten uit de catalogus (`310-LAYOUT-INSTRUMENTS.mdc`).
 
 ### B. Database Wijzigingen (Drizzle)
-1.  Pas het schema aan in `1-SITE/packages/database/src/schema/`.
+1.  Pas het schema aan in `packages/database/src/schema/`.
 2.  Genereer migraties en push naar Supabase via de CLI.
 3.  **Atomic CRUD**: Data-aanpassingen gebeuren via Server Actions of API routes, ALTIJD met ID-validatie.
 
@@ -39,7 +39,7 @@ Het gebruik van slugs of namen voor interne logica is STRIKT VERBODEN.
 1.  Verhoog de versie in `package.json`, `Providers.tsx` en `api/admin/config/route.ts`.
 2.  Voer `npm run check:pre-vercel` uit.
 3.  Commit met `vX.Y.Z: [Bericht]` en push naar GitHub.
-4.  Valideer live via `npx tsx 3-WETTEN/scripts/forensic-audit.ts`.
+4.  Valideer live via `npx tsx docs/scripts/forensic-audit.ts`.
 
 ## 4. ISO-FIRST MANDATE
 Gebruik ALTIJD officiële ISO-codes voor talen en markten.

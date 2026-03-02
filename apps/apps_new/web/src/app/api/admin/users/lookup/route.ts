@@ -1,0 +1,89 @@
+import { db, users } from '@/lib/system/voices-config';
+import { eq } from 'drizzle-orm';
+import { NextResponse } from 'next/server';
+import { createClient } from '@/utils/supabase/server';
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
+/**
+ *  ADMIN USER LOOKUP (GOD MODE 2026)
+ * 
+ * Doel: Snel ophalen van klantgegevens op basis van e-mail.
+ * Alleen toegankelijk voor ingelogde gebruikers om de checkout te versnellen.
+ */
+export async function GET(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const email = searchParams.get('email');
+
+    if (!email) {
+      return NextResponse.json({ error: 'Email is required' }, { status: 400 });
+    }
+
+    // 1. Security Check (Authenticated Only)
+    const supabase = createClient();
+    if (!supabase) {
+      return NextResponse.json({ error: 'Auth system unavailable' }, { status: 500 });
+    }
+
+    const { data: { user: authUser } } = await supabase.auth.getUser();
+    
+    // CHRIS-PROTOCOL: Alleen data teruggeven als de gebruiker is ingelogd
+    // OF als het een admin is die een lookup doet voor een klant.
+    if (!authUser) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // 2. Fetch User from DB
+    let user = null;
+    try {
+      const results = await db.select().from(users).where(eq(users.email, email)).limit(1).catch(async (err: any) => {
+        console.warn(' ADMIN LOOKUP Drizzle failed, falling back to SDK:', err.message);
+        const { createClient } = await import('@supabase/supabase-js');
+        const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!);
+        const { data } = await supabase.from('users').select('*').eq('email', email).single();
+        if (data) {
+          return [{
+            first_name: data.first_name,
+            last_name: data.last_name,
+            phone: data.phone,
+            companyName: data.company_name,
+            vatNumber: data.vat_number,
+            addressStreet: data.address_street,
+            addressZip: data.address_zip,
+            addressCity: data.address_city,
+            addressCountry: data.address_country
+          }];
+        }
+        return [];
+      });
+      user = results[0];
+    } catch (dbError) {
+      console.error(' ADMIN LOOKUP DB ERROR:', dbError);
+    }
+
+    if (!user) {
+      return NextResponse.json({ user: null });
+    }
+
+    // 3. Return sanitized user data
+    return NextResponse.json({
+      user: {
+        first_name: user.first_name,
+        last_name: user.last_name,
+        phone: user.phone,
+        companyName: user.companyName,
+        vatNumber: user.vatNumber,
+        addressStreet: user.addressStreet,
+        addressZip: user.addressZip,
+        addressCity: user.addressCity,
+        addressCountry: user.addressCountry || 'BE',
+      }
+    });
+
+  } catch (error: any) {
+    console.error(' ADMIN LOOKUP ERROR:', error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}

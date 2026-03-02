@@ -1,6 +1,6 @@
 ---
 description: Mat - De Deurmat & Visitor Intelligence Guardian. Mat weet wie er binnenkomt, waar ze vandaan komen en wat hun intentie is.
-globs: 1-SITE/apps/web/src/app/admin/marketing/visitors/**
+globs: apps/web/src/app/admin/marketing/visitors/**
 alwaysApply: true
 ---
 

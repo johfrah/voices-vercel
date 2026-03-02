@@ -1,0 +1,12 @@
+node_modules
+.next
+.vercel
+*.wav
+*.mp3
+*.mp4
+*.zip
+*.tar.gz
+4-KELDER/
+5-DUBBELS/
+**/assets/
+!public/assets/common/**

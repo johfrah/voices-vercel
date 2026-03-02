@@ -34,61 +34,56 @@ next-env.d.ts
 
 # --- VOICES SPECIFIC ---
 
-# 1. De Kelder (Backups & Legacy) - Nooit naar GitHub/Vercel
+# Archief (extern op Desktop)
 4-KELDER/
 
-# 2. Assets (Media) - Staan al in Supabase Storage
-1-SITE/assets/
+# Assets (Media) - Staan al in Supabase Storage
 **/assets/
-!1-SITE/apps/web/public/assets/common/**
+!apps/web/public/assets/common/**
 
-# 3. Tijdelijke Scripts & Logs
+# Tijdelijke Scripts & Logs
 *.js
 *.ts
-!1-SITE/**/*.ts
-!1-SITE/**/*.tsx
-!3-WETTEN/**/*.ts
-!3-WETTEN/**/*.tsx
+!apps/**/*.ts
+!apps/**/*.tsx
+!packages/**/*.ts
+!packages/**/*.tsx
 *.json
 !package.json
 !package-lock.json
 !tsconfig.json
-!1-SITE/**/package.json
-!1-SITE/**/tsconfig.json
-!3-WETTEN/**/package.json
-!3-WETTEN/**/tsconfig.json
+!apps/**/package.json
+!apps/**/tsconfig.json
+!packages/**/package.json
+!packages/**/tsconfig.json
 *.txt
 *.log
 
-# 4. Git Lock
+# Git Lock
 .git/index.lock
 
-# 5. Private Voice Engine & AI Models
-3-WETTEN/docs/3-TECHNICAL-SPECS/private-voice-engine/
+# Private Voice Engine & AI Models
 **/johfrah-voice-env/
 **/training_data/
 *.dic
 *.dylib
 *.so
 
-# 6. Backups & Dubbels
+# Backups & Dubbels
 5-DUBBELS/
 assets_backup/
 
-# Webhosting rommel
+# Webhosting
 .webhosting/
 
-# Grondstoffen voor de Fabriek
-4-KELDER/0-GRONDSTOFFEN-FABRIEK/
+# Grondstoffen
 **/nuclear-content/
 **/nuclear-content-relevant/
 
 # WordPress CLI slop
 .wp-cli/
 
-# 8. Chrome/Playwright (Heavy)
-chrome/
-1-SITE/apps/web/chrome/
+# Chrome/Playwright (Heavy)
 **/chrome/
 *.wav
 *.mp3

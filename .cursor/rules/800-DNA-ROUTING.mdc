@@ -1,6 +1,6 @@
 ---
 description: Codifies the ID-First DNA Routing and World-Aware Architecture (Bob-methode & Chris-Protocol)
-globs: ["1-SITE/apps/web/src/app/[...slug]/page.tsx", "1-SITE/apps/web/src/lib/system/market-manager-server.ts", "1-SITE/apps/web/src/components/ui/InstrumentRenderer.tsx"]
+globs: ["apps/web/src/app/[...slug]/page.tsx", "apps/web/src/lib/system/market-manager-server.ts", "apps/web/src/components/ui/InstrumentRenderer.tsx"]
 alwaysApply: true
 ---
 
