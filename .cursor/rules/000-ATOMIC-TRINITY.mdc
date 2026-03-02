@@ -1,7 +1,7 @@
 ---
 description: ⚛️ The Master Architectural Trinity (The Golden Six) - The "Constitution" of Voices defining Worlds, Markets, Journeys, DNA Routing, and VoiceGlot.
 globs: **/*
-alwaysApply: true
+alwaysApply: false
 ---
 
 # ⚛️ ATOMIC ARCHITECTURAL TRINITY (THE GOLDEN SIX)

@@ -1,7 +1,7 @@
 ---
 description: Catalog of available LayoutInstruments for UI development in Project Atomic
 globs: **/*.tsx
-alwaysApply: true
+alwaysApply: false
 ---
 
 # 🛠️ LayoutInstruments Catalog

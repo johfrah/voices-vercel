@@ -1,6 +1,7 @@
 ---
 description: Standard procedure for pushing code and validating the deployment via forensic logs.
-alwaysApply: true
+globs: 
+alwaysApply: false
 ---
 
 # 🚀 Push & Validate Standard Procedure (Nuclear Mode)
