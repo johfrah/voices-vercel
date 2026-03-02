@@ -1,7 +1,7 @@
 ---
 description: Codifies the ID-First DNA Routing and World-Aware Architecture (Bob-methode & Chris-Protocol)
 globs: ["apps/web/src/app/[...slug]/page.tsx", "apps/web/src/lib/system/**/*", "apps/web/src/components/ui/InstrumentRenderer.tsx"]
-alwaysApply: false
+alwaysApply: true
 ---
 
 # 🧬 DNA Routing & World Architecture (v2.23)

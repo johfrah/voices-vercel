@@ -1,5 +1,67 @@
 # Voices Headless - Agent Instructions
 
+## ARCHITECTURE FUNDAMENTALS (MANDATORY READING)
+
+This platform follows the **Bob-method** (architecture) and **Chris-Protocol** (discipline). Every agent MUST understand these core principles before writing any code.
+
+### The 9 Worlds (Business Verticals)
+The platform serves 9 autonomous "Worlds" from a single Next.js app:
+
+| ID | World | Lead | Domain/Path |
+|:---|:---|:---|:---|
+| 0 | Foyer | Mat | `/contact`, `/terms` (Global) |
+| 1 | Agency | Voicy | `voices.be`, `/agency` |
+| 2 | Studio | Berny | `voices.be/studio` |
+| 3 | Academy | Berny | `voices.academy`, `/academy` |
+| 5 | Portfolio | Laya | `johfrah.be` |
+| 6 | Ademing | Mat | `ademing.be`, `/ademing` |
+| 7 | Freelance | Chris | `/freelance` |
+| 8 | Partner | Sally | `/partners` |
+| 10 | Johfrai | Voicy | `johfrai.be`, `/johfrai` |
+| 25 | Artist | Laya | `youssefzaki.eu`, `/artist/youssef` |
+
+### ID-First Handshake (NON-NEGOTIABLE)
+- Every route resolves through the `slug_registry` table to an `entity_id` (UUID).
+- NEVER use hardcoded slugs for internal logic. Always resolve to entity_id first.
+- The SmartRouter (`apps/web/src/app/[...slug]/page.tsx`) is the single entry point for all dynamic pages.
+- Use `world_id` (integer) for World logic, NEVER string comparisons.
+
+### MarketManager (Source of Truth)
+- `MarketManager` (`apps/web/src/lib/system/core/market-manager.ts`) maps domains to markets to worlds.
+- Hardcoded hostnames in components are FORBIDDEN. Use `market.market_code`.
+- `localhost:3000` maps to Market 1 (voices.be) / World 1 (Agency) by default.
+- Path-based World detection: `/studio` → World 2, `/academy` → World 3, `/ademing` → World 6, `/johfrai` → World 10.
+
+### HTML Zero (LayoutInstruments)
+No raw HTML tags (`<div>`, `<h1>`, `<p>`, `<section>`, `<main>`) in new components. Use ONLY LayoutInstruments from `@/components/ui/LayoutInstruments`:
+- `ContainerInstrument` (replaces `<div>`)
+- `HeadingInstrument level={1-6}` (replaces `<h1>`-`<h6>`)
+- `TextInstrument` (replaces `<p>`, `<span>`)
+- `SectionInstrument` (replaces `<section>`)
+- `ButtonInstrument` (replaces `<button>`)
+- `PageWrapperInstrument` (replaces `<main>`)
+
+### Database Conventions
+- ALL database columns, properties, and API payloads use `snake_case` exclusively.
+- Supabase Pooler on port **6543**, NEVER port 5432 (causes ECONNRESET).
+- Drizzle ORM schemas in `packages/database/src/schema/`.
+- Raw SQL (`db.execute(sql...)`) for critical data fetches; no ORM abstraction guessing.
+
+### Deployment Protocol
+- Bump version in THREE places simultaneously: `apps/web/package.json`, `apps/web/src/app/Providers.tsx`, `apps/web/src/app/api/admin/config/route.ts`.
+- ALWAYS run `npm run check:pre-vercel` before pushing.
+- Commit format: `vX.Y.Z: [Message]`.
+- Push to `main` triggers Vercel auto-deploy.
+
+### Key Rules Files
+For detailed rules, read these files in `.cursor/rules/`:
+- `000-ATOMIC-TRINITY.mdc` — The Constitution (World/Market/Journey/Entity/Page/Instrument)
+- `800-DNA-ROUTING.mdc` — Smart routing, World architecture, Sub-Foyer strategy
+- `310-LAYOUT-INSTRUMENTS.mdc` — Full UI component catalog (HTML Zero)
+- `200-CODE-INTEGRITY.mdc` — Code discipline, ID-First Handshake, stateless architecture
+- `700-PUSH-AND-VALIDATE.mdc` — Push, build validation, forensic audit procedure
+- `300-TONE-OF-VOICE.mdc` — Anti-AI-slop, Natural Capitalization, human copy
+
 ## Cursor Cloud specific instructions
 
 ### Architecture Overview
