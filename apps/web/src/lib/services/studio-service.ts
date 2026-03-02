@@ -153,6 +153,7 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
         type: w.type_label || meta.type || 'Gastworkshop'
       },
       level: w.level_label || 'Starter',
+      lucide_icon: meta.lucide_icon || null,
       skill_dna: meta.skill_dna || {},
       day_schedule: (meta.day_schedule?.items || []).map((item: any) => ({
         time: item.time,

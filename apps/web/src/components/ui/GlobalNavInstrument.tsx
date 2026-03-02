@@ -37,6 +37,7 @@ import {
   Users 
 } from 'lucide-react';
 import { VoicesLinkInstrument, useVoicesRouter } from './VoicesLinkInstrument';
+import { StudioWorkshopsMenu } from '@/components/studio/StudioWorkshopsMenu';
 import { 
   ButtonInstrument, 
   ContainerInstrument,
@@ -691,16 +692,22 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
 
             {hasSubmenu && (
               <ContainerInstrument plain className="absolute top-full left-1/2 -translate-x-1/2 pt-4 opacity-0 translate-y-2 pointer-events-none group-hover/link:opacity-100 group-hover/link:translate-y-0 group-hover/link:pointer-events-auto transition-all duration-500 z-[250]">
-                <ContainerInstrument plain className="bg-white rounded-[20px] shadow-aura border border-black/5 p-2 w-64 overflow-hidden">
-                  {link.submenu.map((sub: any, subIdx: number) => (
-                    <DropdownItem 
-                      key={subIdx}
-                      icon={ChevronRight}
-                      label={<VoiceglotText translationKey={sub.key} defaultText={sub.name} />}
-                      href={sub.href}
-                    />
-                  ))}
-                </ContainerInstrument>
+                {(pathname.startsWith('/studio') && idx === 0) ? (
+                  <ContainerInstrument plain className="bg-white rounded-[20px] shadow-aura border border-black/5 w-[480px] overflow-hidden">
+                    <StudioWorkshopsMenu />
+                  </ContainerInstrument>
+                ) : (
+                  <ContainerInstrument plain className="bg-white rounded-[20px] shadow-aura border border-black/5 p-2 w-64 overflow-hidden">
+                    {link.submenu.map((sub: any, subIdx: number) => (
+                      <DropdownItem 
+                        key={subIdx}
+                        icon={ChevronRight}
+                        label={<VoiceglotText translationKey={sub.key} defaultText={sub.name} />}
+                        href={sub.href}
+                      />
+                    ))}
+                  </ContainerInstrument>
+                )}
               </ContainerInstrument>
             )}
 
