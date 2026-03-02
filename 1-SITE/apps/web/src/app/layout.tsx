@@ -52,10 +52,19 @@ async function getMarketSafe(host: string) {
     const timeoutPromise = new Promise((_, reject) => 
       setTimeout(() => reject(new Error('Market Resolution Timeout')), 3000)
     );
-    return await Promise.race([marketPromise, timeoutPromise]) as any;
+    const market = await Promise.race([marketPromise, timeoutPromise]) as any;
+    
+    // 🛡️ CHRIS-PROTOCOL: Null-Safety Guard (v2.27.7)
+    if (!market || !market.market_code) {
+      console.error(' getMarketSafe: Market resolution returned invalid data, using fallback');
+      return MarketManagerServer.getCurrentMarket(process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be');
+    }
+    
+    return market;
   } catch (err) {
     console.error(' getMarketSafe: Failed or timed out:', err);
-    return MarketManagerServer.getCurrentMarket(process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || MarketManagerServer.getMarketDomains()['BE'].replace('https://', ''));
+    const fallbackHost = process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be';
+    return MarketManagerServer.getCurrentMarket(fallbackHost);
   }
 }
 const raleway = Raleway({ subsets: ["latin"], variable: '--font-raleway' });

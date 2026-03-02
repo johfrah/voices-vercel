@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
   if (auth instanceof NextResponse) return auth;
 
   try {
-    const targetLanguages = ['en', 'fr', 'de', 'es', 'pt'];
+    const targetLanguages = ['en-gb', 'fr-be', 'de-de', 'es-es', 'pt-pt', 'it-it'];
     let totalHealed = 0;
 
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
     // 2. Fetch Existing Translations via SDK
     const { data: existingTranslations, error: transErr } = await supabase
       .from('translations')
-      .select('translation_key, lang, translated_text, status')
+      .select('translation_key, lang, translated_text, status, lang_id')
       .in('lang', targetLanguages);
 
     if (transErr) throw transErr;
@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
     for (const item of registryItems) {
       for (const lang of targetLanguages) {
         const existing = transMap.get(`${item.string_hash}:${lang}`);
-        if (!existing || !existing.translated_text || existing.translated_text === 'Initial Load' || existing.status === 'healing_failed') {
+        if (!existing || !existing.translated_text || existing.translated_text === '...' || existing.status === 'healing_failed') {
           itemsToHeal.push({ item, lang });
         }
       }
@@ -76,12 +76,24 @@ export async function POST(request: NextRequest) {
       dnaCache[lang] = await gemini.getMarketDNA(lang);
     }
 
+    // Language ID Map for Handshake Truth
+    const langIdMap: Record<string, number> = {
+      'en-gb': 5,
+      'fr-be': 3,
+      'de-de': 7,
+      'es-es': 8,
+      'pt-pt': 12,
+      'it-it': 9
+    };
+
     for (const { item, lang } of itemsToProcess) {
       try {
+        const langId = langIdMap[lang];
         // Mark as healing via SDK
         await supabase.from('translations').upsert({
           translation_key: item.string_hash,
           lang: lang,
+          lang_id: langId,
           original_text: item.original_text,
           translated_text: '...',
           status: 'healing',
@@ -136,6 +148,7 @@ export async function POST(request: NextRequest) {
         await supabase.from('translations').upsert({
           translation_key: item.string_hash,
           lang: lang,
+          lang_id: langId,
           original_text: sourceText,
           translated_text: cleanTranslation,
           status: 'active',
