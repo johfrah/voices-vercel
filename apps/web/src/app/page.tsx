@@ -129,6 +129,47 @@ function HomeContent({
     setActors(initialActors);
   }, [initialActors]);
 
+  // 🛡️ CHRIS-PROTOCOL: Re-fetch actors when language filter changes (v2.28.1)
+  // SSR only loads Flemish (nl-be, ID 1) actors. When user switches to another
+  // language, we fetch the matching actors from the API.
+  // Note: VoicesMasterControl updates languageIds (plural array), not languageId.
+  const currentLangIds = masterControlState?.filters?.languageIds;
+  const currentLangId = masterControlState?.filters?.languageId;
+  const primaryLangId = currentLangIds?.[0] || currentLangId || 1;
+  const langKey = currentLangIds?.slice().sort().join(',') || String(primaryLangId);
+  const [lastFetchedLangKey, setLastFetchedLangKey] = useState<string>('1');
+  const [isRefetchingLang, setIsRefetchingLang] = useState(false);
+  useEffect(() => {
+    if (langKey === lastFetchedLangKey) return;
+    const isDefault = primaryLangId === 1 && (!currentLangIds || currentLangIds.length <= 1);
+    
+    if (isDefault) {
+      setActors(initialActors);
+      setLastFetchedLangKey('1');
+      return;
+    }
+    
+    setIsRefetchingLang(true);
+    const fetchForLanguage = async () => {
+      try {
+        const res = await fetch(`/api/actors?languageId=${primaryLangId}`);
+        if (res.ok) {
+          const data = await res.json();
+          const results = data.results || [];
+          if (results.length > 0) {
+            setActors(results);
+          }
+          setLastFetchedLangKey(langKey);
+        }
+      } catch (err) {
+        console.error('[Home] Language re-fetch failed:', err);
+      } finally {
+        setIsRefetchingLang(false);
+      }
+    };
+    fetchForLanguage();
+  }, [langKey, primaryLangId]);
+
   useEffect(() => {
     if (isAuthenticated && user?.email) {
       const fetchDNA = async () => {
@@ -458,7 +499,7 @@ function HomeContent({
                       className="w-full"
                     >
                       {/* CHRIS-PROTOCOL: Deterministic Skeletons (Moby-methode) */}
-                      {(!filteredActors || filteredActors.length === 0) ? (
+                      {(!filteredActors || filteredActors.length === 0 || isRefetchingLang) ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 items-stretch">
                           {[...Array(8)].map((_, i) => (
                             <VoiceCardSkeleton key={`skeleton-${i}`} />
