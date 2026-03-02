@@ -49,9 +49,9 @@ export function StudioFooter({ market, activeSocials, activePhone, activeEmail }
         <HeadingInstrument level={4} className="text-[13px] font-medium tracking-[0.2em] text-va-black/40 uppercase">
           <VoiceglotText translationKey="footer.section.studio.workshops" defaultText="Onze Workshops" />
         </HeadingInstrument>
-        <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 w-full">
+        <ContainerInstrument plain className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 w-full">
           {workshops.map((workshop, i) => (
-            <li key={i}>
+            <ContainerInstrument plain key={i}>
               <VoicesLinkInstrument href={workshop.href} className="flex flex-col gap-0.5 group">
                 <TextInstrument className="text-[14px] font-medium text-va-black/70 group-hover:text-primary transition-colors">
                   {workshop.name}
@@ -60,9 +60,9 @@ export function StudioFooter({ market, activeSocials, activePhone, activeEmail }
                   {workshop.description}
                 </TextInstrument>
               </VoicesLinkInstrument>
-            </li>
+            </ContainerInstrument>
           ))}
-        </ul>
+        </ContainerInstrument>
         <ContainerInstrument className="pt-4 border-t border-black/5 w-full">
           <VoicesLinkInstrument href="/studio/workshops" className="flex items-center gap-2 text-[13px] font-bold text-primary hover:opacity-70 transition-opacity">
             <Calendar size={14} />
@@ -88,14 +88,14 @@ export function StudioFooter({ market, activeSocials, activePhone, activeEmail }
           </ContainerInstrument>
           
           <ContainerInstrument className="pt-4 border-t border-black/5 space-y-3">
-            <a href={`mailto:${activeEmail}`} className="flex items-center gap-2 text-[14px] font-light text-va-black/60 hover:text-primary transition-colors">
+            <VoicesLinkInstrument href={`mailto:${activeEmail}`} className="flex items-center gap-2 text-[14px] font-light text-va-black/60 hover:text-primary transition-colors">
               <Mail size={14} strokeWidth={1.5} />
               <TextInstrument as="span">{activeEmail}</TextInstrument>
-            </a>
-            <a href={`tel:${activePhone.replace(/\s+/g, '')}`} className="flex items-center gap-2 text-[14px] font-light text-va-black/60 hover:text-primary transition-colors">
+            </VoicesLinkInstrument>
+            <VoicesLinkInstrument href={`tel:${activePhone?.replace(/\s+/g, '') || ''}`} className="flex items-center gap-2 text-[14px] font-light text-va-black/60 hover:text-primary transition-colors">
               <Phone size={14} strokeWidth={1.5} />
               <TextInstrument as="span">{activePhone}</TextInstrument>
-            </a>
+            </VoicesLinkInstrument>
           </ContainerInstrument>
         </ContainerInstrument>
         
