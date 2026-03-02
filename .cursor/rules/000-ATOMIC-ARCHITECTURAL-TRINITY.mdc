@@ -1,0 +1,76 @@
+---
+description: The Master Architectural Rule defining the 6 core elements of the Voices ecosystem (Bob-methode & Chris-Protocol)
+alwaysApply: true
+---
+
+# ⚛️ Atomic Architectural Trinity (The Golden Six)
+
+Dit is de "Grondwet" van de Voices-architectuur. Elke AI-agent MOET deze 6 elementen begrijpen en respecteren voordat er één regel code wordt geschreven.
+
+## 🏛️ De Trinity (De Context)
+
+1.  **World (De Ziel/Context)**:
+    *   **Definitie**: Het hoogste hiërarchische niveau. Bepaalt de Lead Agent, sfeer en inhoud.
+    *   **Source of Truth**: `world_id` in de `slug_registry`.
+    *   **World IDs**:
+        *   **0**: Foyer (Global) - Mat
+        *   **1**: Agency (Human Voices) - Voicy
+        *   **2**: Studio (Workshops/Recording) - Berny
+        *   **3**: Academy (Learning) - Berny
+        *   **5**: Portfolio (Personal Branding) - Laya
+        *   **6**: Ademing (Meditation) - Mat
+        *   **7**: Freelance (Craftsmanship) - Chris
+        *   **8**: Partner (Resellers) - Sally
+        *   **10**: Johfrai (AI Voices) - Voicy
+        *   **25**: Artist (Music Label) - Laya
+
+2.  **Market (De Lokale Etalage & Domein Huls)**:
+    *   **Definitie**: De fysieke container (domein). Bepaalt lokale communicatie (e-mail), BTW-tarieven en taal-nuance.
+    *   **Market IDs (Domain DNA)**:
+        *   **1**: `voices.be` (Primary BE)
+        *   **2**: `voices.nl` (Primary NL)
+        *   **3**: `voices.fr` (Primary FR)
+        *   **4**: `voices.es` (Primary ES)
+        *   **5**: `voices.pt` (Primary PT)
+        *   **6**: `voices.eu` (Primary EU)
+        *   **7**: `ademing.be` (Ademing World Container)
+        *   **8**: `johfrah.be` (Portfolio World Container)
+        *   **9**: `youssefzaki.eu` (Artist World Container)
+        *   **10**: `voices.academy` (Academy World Container)
+        *   **11**: `johfrai.be` (Johfrai World Container)
+    *   **Localhost Mapping**: `localhost:3000` mapt standaard naar **Market 1** en **World 1**, tenzij het pad anders aangeeft.
+
+3.  **Journey (De Flow/Conversie)**:
+    *   **Definitie**: De functionele route binnen een World/Market.
+    *   **Journey IDs**:
+        *   **1**: Studio (General)
+        *   **26**: Telefoon / IVR
+        *   **27**: Voice-over (Default Agency)
+        *   **28**: Commercial
+        *   **30**: Academy (General)
+
+## 🧬 Het DNA (De Bouwstenen)
+
+4.  **Entity (De Identiteit/ID-First Handshake)**:
+    *   **Mandaat**: De **ID-First Handshake** is STRIKT VERPLICHT. Resolve ALTIJD eerst de slug naar een `entity_id` via de `slug_registry`.
+    *   **AI-Actie**: Gebruik ID's voor logica, slugs alleen voor decor (URL).
+
+5.  **Instrument (De Vertoning/UI-UX)**:
+    *   **Definitie**: World-aware UI-bouwstenen.
+    *   **Workshop Categorieën**: `workshop` (Berny), `service` (Chris), `portfolio` (Laya).
+
+6.  **VoiceGlot (De Taal/Lokalisatie)**:
+    *   **Language IDs**: **1**: nl-BE, **2**: nl-NL, **3**: fr-BE, **4**: fr-FR, **5**: en-GB, **7**: de-DE, **8**: es-ES, **9**: it-IT, **12**: pt-PT.
+    *   **AI-Actie**: Hardcoding van tekst is VERBODEN. Gebruik `t()` via VoiceGlot.
+
+## 🧪 Core Filter IDs (Zero-Slop)
+- **Genders**: 1: Male, 2: Female, 3: Non-binary, 4: Boy, 5: Girl.
+- **Experience**: 1: Junior, 2: Pro, 3: Senior, 4: Legend.
+- **Service IDs**: 1: Live Regie, 2: IVR, 3: Unpaid, 5: Online, 6: Radio Nat, 9: TV Nat, 13: Social Media.
+
+## ⚡ Atomic Speed Mandate
+- **Hierarchy**: **World > Market > Journey**.
+- **No Grep**: Gebruik ID's direct in SQL.
+- **No Guessing**: Check `MarketManager` voor context.
+
+"Wij bouwen geen websites, wij regisseren een theater van stemmen." - Chris/Autist

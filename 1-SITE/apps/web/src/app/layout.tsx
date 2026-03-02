@@ -126,6 +126,10 @@ export async function generateMetadata(): Promise<Metadata> {
     })()
   ]);
 
+  if (!market) {
+    throw new Error('Market configuration could not be resolved.');
+  }
+
   const baseUrl = `https://${market.market_code === 'BE' ? MarketManagerServer.getMarketDomains()['BE'].replace('https://', '') : (market.market_code === 'NLNL' ? (MarketManagerServer.getMarketDomains()['NLNL']?.replace('https://', '') || 'www.voices.nl') : cleanHost)}`;
 
   const isAdeming = market.market_code === 'ADEMING';
@@ -249,6 +253,10 @@ export default async function RootLayout({
     })(),
     ConfigBridge.getWorldConfig(worldId, languageId)
   ]);
+
+  if (!market) {
+    throw new Error('Market configuration could not be resolved.');
+  }
   
   // 🛡️ CHRIS-PROTOCOL: Prime MarketManager with World Languages
   MarketManagerServer.setWorldLanguages(worldLanguages);
