@@ -163,16 +163,16 @@ export class PontoBridge {
     if (pendingOrders.length === 0) return [];
 
     // Haal de IBANs van de acteurs op
-    const userIds = pendingOrders.map(o => o.user_id).filter(Boolean) as number[];
+    const userIds = pendingOrders.map((o: any) => o.user_id).filter(Boolean) as number[];
     const actors = await db.select().from(users).where(inArray(users.id, userIds));
 
-    return pendingOrders.map(order => {
-      const actor = actors.find(a => a.id === order.user_id);
+    return pendingOrders.map((order: any) => {
+      const actor = actors.find((a: any) => a.id === order.user_id);
       return {
         orderId: order.orderId,
         amount: parseFloat(order.total || '0'),
         name: `${actor?.first_name} ${actor?.last_name}`,
-        iban: actor?.iban || '',
+        iban: (actor as any)?.iban || '',
         reference: `VOICES-PAYOUT-${order.orderId}`
       };
     });

@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 
-import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
+import { MarketManager } from "@/lib/system/core/market-manager";
 
 /**
  *  VUME ADMIN PREVIEW (2026)
@@ -20,6 +20,7 @@ import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-m
 const TEMPLATES = [
   {
     id: 'magic-link',
+    worldId: 0,
     name: 'Magic Link',
     journey: 'auth',
     icon: <ShieldCheck strokeWidth={1.5} size={20} />,
@@ -29,6 +30,7 @@ const TEMPLATES = [
   },
   {
     id: 'studio-experience',
+    worldId: 2,
     name: 'Studio Experience',
     journey: 'studio',
     icon: <Sparkles strokeWidth={1.5} size={20} />,
@@ -44,6 +46,7 @@ const TEMPLATES = [
   },
   {
     id: 'invoice-reply',
+    worldId: 1,
     name: 'Invoice Reply',
     journey: 'agency',
     icon: <ShoppingCart strokeWidth={1.5} size={20} />,
@@ -87,12 +90,18 @@ export default function VumeAdminPage() {
     const handleSendTest = async () => {
     setIsSending(true);
     try {
+      const market = MarketManager.getCurrentMarket();
+      const testEmail = market.email || 'johfrah@voices.be';
       const res = await fetch('/api/admin/test-vume', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ templateId: selectedTemplate.id, recipient: 'johfrah@voices.be' })
+        body: JSON.stringify({ 
+          templateId: selectedTemplate.id, 
+          worldId: selectedTemplate.worldId,
+          recipient: testEmail 
+        })
       });
-      if (res.ok) toast.success(`Testmail verzonden naar johfrah@voices.be`);
+      if (res.ok) toast.success(`Testmail verzonden naar ${testEmail}`);
     } catch (e) { toast.error('Fout bij verzenden'); }
     finally { setIsSending(false); }
   };

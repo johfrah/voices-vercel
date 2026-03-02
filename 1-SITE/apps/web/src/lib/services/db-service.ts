@@ -52,7 +52,7 @@ export class DbService {
     userId?: number
   ) {
     if (!db) throw new Error('Database not available');
-    return await db.transaction(async (tx) => {
+    return await db.transaction(async (tx: any) => {
       // 1. Bereid de update voor
       const updateData = {
         ...data,
@@ -81,7 +81,7 @@ export class DbService {
     userId?: number
   ) {
     if (!db) throw new Error('Database not available');
-    return await db.transaction(async (tx) => {
+    return await db.transaction(async (tx: any) => {
       const insertData = {
         ...data,
         is_manually_edited: true,
@@ -104,7 +104,7 @@ export class DbService {
    */
   static async deleteRecord(table: any, id: number) {
     if (!db) throw new Error('Database not available');
-    return await db.transaction(async (tx) => {
+    return await db.transaction(async (tx: any) => {
       return await tx.delete(table).where(eq(table.id, id));
     });
   }

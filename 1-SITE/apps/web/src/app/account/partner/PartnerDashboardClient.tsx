@@ -23,8 +23,8 @@ import {
   ArrowRight,
   Clock
 } from 'lucide-react';
-import { VoicesLink as Link } from '@/components/ui/VoicesLink';
-import { BentoGrid, BentoCard } from '@/components/ui/BentoGrid';
+import { VoicesLinkInstrument as Link } from '@/components/ui/VoicesLinkInstrument';
+import { BentoGrid, BentoCard } from '@/components/ui/BentoGridInstrument';
 
 export default function PartnerDashboardClient() {
   const { user, isLoading } = useAuth();

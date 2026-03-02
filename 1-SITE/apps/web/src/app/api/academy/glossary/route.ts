@@ -11,7 +11,7 @@ export async function GET() {
     const content = lesson.content || '';
     const sections = content.split('### **');
     
-    sections.slice(1).forEach(section => {
+    sections.slice(1).forEach((section: string) => {
       const parts = section.split('**\n');
       if (parts.length >= 2) {
         const term = parts[0].trim();

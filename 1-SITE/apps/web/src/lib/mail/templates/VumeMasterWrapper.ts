@@ -18,6 +18,17 @@ interface WrapperOptions {
   optOutUrl?: string;
 }
 
+export type BaseTemplateProps = {
+  title: string;
+  previewText?: string;
+  journey?: 'agency' | 'artist' | 'portfolio' | 'studio' | 'auth';
+  market?: string;
+  host?: string;
+  children: string;
+  headerImage?: string;
+  optOutUrl?: string;
+};
+
 export function VumeMasterWrapper(content: string, options: WrapperOptions) {
   const { title, previewText, journey = 'agency', host = (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'www.voices.be'), showSignature = true, headerImage, optOutUrl } = options;
   const market = MarketManager.getCurrentMarket(host);
@@ -68,7 +79,7 @@ export function VumeMasterWrapper(content: string, options: WrapperOptions) {
       <tr>
         <td width="100" style="vertical-align: middle; text-align: center;">
           <a href="https://${host}/?utm_source=E-mail&utm_medium=be-mail" style="text-decoration: none;">
-            <img src="https://${host}/api/proxy?path=${encodeURIComponent('/assets/common/branding/founder/johfrah.png')}&v=20260213" alt="Johfrah" width="100" style="display: block; border: 0; margin: auto;" />
+            <img src="https://${host}/api/proxy?path=${encodeURIComponent(market.logo_url)}" alt="Johfrah" width="100" style="display: block; border: 0; margin: auto;" />
           </a>
         </td>
         <td style="vertical-align: middle; padding-left: 31px; font-family: 'Raleway', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 1.5; color: #333333;">
@@ -152,6 +163,7 @@ export function BaseTemplate(props: BaseTemplateProps) {
     previewText: props.previewText,
     journey: props.journey,
     market: props.market,
+    host: props.host,
     headerImage: props.headerImage,
     optOutUrl: props.optOutUrl
   });

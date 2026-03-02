@@ -1,0 +1,43 @@
+---
+description: 🏛️ De Cursor Architectuur van Voices - Definieert de strikte scheiding tussen Rules, Agents, Skills, Commands en Docs.
+globs: **/*
+---
+
+# CURSOR ARCHITECTURE (VOICES OS)
+
+Dit document is de "Grondwet van de Machine". Het definieert de strikte hiërarchie en scheiding van intelligentie binnen Cursor. Elke agent MOET deze architectuur respecteren om overlap en verwarring te voorkomen.
+
+## 1. DE HIËRARCHIE VAN INTELLIGENTIE
+
+| Type | Locatie | Functie | Karakter |
+| :--- | :--- | :--- | :--- |
+| **RULES** | `.cursor/rules/*.mdc` | **De Wetten** | Passief & Altijd Aan. Dwingt technische standaarden af. **Persona-vrij**. |
+| **AGENTS** | `.cursor/agents/*.md` | **De Personages** | Actief & Uitvoerend. Belichaamt de mindset en DNA van een World Lead. |
+| **SKILLS** | `.cursor/skills/` | **De Gereedschappen** | Functioneel & Herbruikbaar. Bevat complexe, multi-step workflows (bijv. `nuclear-deploy`). |
+| **COMMANDS** | `.cursor/commands/` | **De Snelkoppelingen** | Direct & Actiegericht. Voor herhalende taken (bijv. `/clean`, `/aesthetic-audit`). |
+| **DOCS** | `3-WETTEN/docs/` | **De Bron-Data** | Informatief & Statisch. Bevat feitelijke lijsten (acteurs, prijzen) en legacy context. |
+
+## 2. STRIKTE SCHEIDING (ZERO OVERLAP)
+
+1. **Rules vs Agents**:
+   - Een **Rule** zegt *wat* de standaard is (bijv. "Gebruik snake_case").
+   - Een **Agent** zegt *hoe* we een doel bereiken (bijv. "Ik ga deze tabel migreren").
+   - **Mandaat**: Agents mogen NOOIT regels bevatten die al in een `.mdc` staan. Ze moeten naar de rule *verwijzen*.
+
+2. **Skills vs Commands**:
+   - Een **Skill** is de onderliggende logica (bijv. een script dat de database checkt).
+   - Een **Command** is de UI-trigger voor de gebruiker (bijv. `/audit`).
+
+3. **Docs vs Intelligence**:
+   - **Docs** in `3-WETTEN/` zijn uitsluitend voor **feitelijke data** (Source of Truth).
+   - **Intelligentie** (hoe we met die data omgaan) leeft uitsluitend in de `.cursor/` map.
+   - **Mandaat**: Verplaats alle "instructies" uit `.md` files in `3-WETTEN/` naar de juiste Rule of Agent.
+
+## 3. DE "KELDER" FILTER (CONSUELA)
+- Alle documentatie die is omgezet naar een Rule of Agent MOET direct worden verplaatst naar `4-KELDER/0-GRONDSTOFFEN-FABRIEK/`.
+- De root en `3-WETTEN/docs/` moeten vrij blijven van "instructie-slop".
+
+## 4. ID-FIRST HANDSHAKE
+- Elke agent en rule moet de `slug_registry` en `entity_id` als het enige anker voor navigatie en logica gebruiken.
+
+"Wij bouwen geen mappenstructuur, wij regisseren een intelligent ecosysteem."

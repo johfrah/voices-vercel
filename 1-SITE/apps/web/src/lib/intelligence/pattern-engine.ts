@@ -27,7 +27,7 @@ export class VoicyPatternEngine {
     const userOrders = await db.select()
       .from(orders)
       .where(and(
-        eq(orders.user_id, userId),
+        eq(orders.user_id, user_id),
         sql`${orders.status} IN ('completed', 'processing')`
       ))
       .orderBy(desc(orders.createdAt));
@@ -37,7 +37,7 @@ export class VoicyPatternEngine {
     }
 
     // 2. Haal alle items op voor deze orders om categorien te mappen
-    const orderIds = userOrders.map(o => o.id);
+    const orderIds = userOrders.map((o: any) => o.id);
     const items = await db.select()
       .from(orderItems)
       .where(sql`${orderItems.orderId} IN ${orderIds}`);
@@ -46,8 +46,8 @@ export class VoicyPatternEngine {
 
     // Map timestamps per journey/categorie
     for (const order of userOrders) {
-      const timestamp = order.createdAt?.getTime() || 0;
-      const journey = order.journey;
+      const timestamp = (order as any).createdAt?.getTime() || 0;
+      const journey = (order as any).journey;
 
       if (!categoryIntervals[journey]) {
         categoryIntervals[journey] = [];

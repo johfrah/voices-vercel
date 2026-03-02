@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { BentoCard, BentoGrid } from "./BentoGrid";
+import { BentoCard, BentoGrid } from "./BentoGridInstrument";
 import { ContainerInstrument, HeadingInstrument, TextInstrument } from "./LayoutInstruments";
 import { VoiceglotText } from "./VoiceglotText";
 import { Zap, ArrowRight, Mic, Clock, Star } from "lucide-react";

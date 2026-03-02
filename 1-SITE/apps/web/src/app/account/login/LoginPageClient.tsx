@@ -1,6 +1,6 @@
 "use client";
 
-import { BentoCard } from '@/components/ui/BentoGrid';
+import { BentoCard } from '@/components/ui/BentoGridInstrument';
 import { ButtonInstrument, ContainerInstrument, FormInstrument, HeadingInstrument, InputInstrument, TextInstrument, LabelInstrument } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useAuth } from '@/contexts/AuthContext';

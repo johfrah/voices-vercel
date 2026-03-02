@@ -1,6 +1,6 @@
 {
   "name": "voices-experience-layer",
-  "version": "2.28.0",
+  "version": "2.30.0",
   "private": true,
   "scripts": {
     "dev": "PORT=3000 next dev",
@@ -14,11 +14,11 @@
     "watch": "npm run dev & tsc --noEmit --watch",
     "bob-fix": "tsx ../../../3-WETTEN/scripts/watchdog.ts",
     "mollie:fix": "tsx src/scripts/fix-mollie-icons.ts",
-    "check:pre-vercel": "tsx ../../../3-WETTEN/scripts/pre-vercel-check.ts",
+    "check:pre-vercel": "tsx ../../../4-KELDER/3-LEGACY-CODE/scripts/extracted/pre-vercel-check.ts",
     "check:build": "next build",
     "logs:live": "vercel logs voices-vercel-gazw8trp5-johfrahs-projects.vercel.app -f",
-    "logs:nuclear": "tsx ../../../3-WETTEN/scripts/live-watchdog.ts",
-    "audit:forensic": "tsx ../../../3-WETTEN/scripts/forensic-audit.ts",
+    "logs:nuclear": "tsx ../../../4-KELDER/3-LEGACY-CODE/scripts/extracted/live-watchdog.ts",
+    "audit:forensic": "tsx ../../../4-KELDER/3-LEGACY-CODE/scripts/extracted/forensic-audit.ts",
     "test:nuclear": "NUCLEAR_TEST_MODE=true npm run test:e2e",
     "test:unit": "vitest run",
     "test:e2e": "playwright test",

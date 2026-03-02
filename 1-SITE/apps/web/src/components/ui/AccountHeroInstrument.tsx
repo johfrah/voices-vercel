@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Image from 'next/image';
-import { LogOut } from 'lucide-react';
+import { LogOut, User } from 'lucide-react';
 import { VoiceglotText } from './VoiceglotText';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -36,14 +36,7 @@ export const AccountHeroInstrument: React.FC<AccountHeroInstrumentProps> = ({
     <div className="va-account-hero">
       <div className="va-account-hero-content">
         <div className="va-account-badge">
-          <Image  
-            src="/assets/common/branding/icons/ACCOUNT.svg" 
-            alt={t('common.user', "User")} 
-            width={12} 
-            height={12} 
-            className="w-3 h-3"
-            style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }}
-          /> 
+          <User size={12} strokeWidth={1.5} className="w-3 h-3 text-primary" />
           <VoiceglotText  
             translationKey="account.hero.welcome" 
             defaultText={`${t('common.welcome_back', "Welkom terug")}, ${userName}`} 

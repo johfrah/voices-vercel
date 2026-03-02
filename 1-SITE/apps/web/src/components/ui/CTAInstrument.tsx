@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import React from 'react';
-import { BentoCard } from "./BentoGrid";
+import { BentoCard } from "./BentoGridInstrument";
 import { ContainerInstrument, HeadingInstrument, TextInstrument } from "./LayoutInstruments";
 import { VoiceglotText } from "./VoiceglotText";
 

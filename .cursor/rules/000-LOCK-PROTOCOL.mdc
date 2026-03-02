@@ -17,13 +17,13 @@ Een bestand wordt als LOCKED beschouwd als:
 
 ## 📋 Lijst van Locked Bestanden
 
-De volgende bestanden zijn momenteel bevroren onder het Chris-Protocol:
+De volgende bestanden zijn momenteel bevroren onder het Code Integrity Protocol:
 
-### 💳 Financiële Kern (Kelly)
+### 💳 Financiële Kern
 - `1-SITE/apps/web/src/lib/pricing-engine.ts` - De onbetwistbare rekenmotor.
 - `1-SITE/apps/web/src/app/api/checkout/mollie/route.ts` - De betalingsvalidatie.
 
-### 🏗️ Architectuur & Regels (Bob & Chris)
+### 🏗️ Architectuur & Regels
 - `.cursorrules` - De grondwet van het project.
 - `.cursor/rules/*` - Alle actieve agent-instructies en wetten.
 - `1-SITE/packages/database/schema.ts` - De ruggengraat van de data.
@@ -31,9 +31,9 @@ De volgende bestanden zijn momenteel bevroren onder het Chris-Protocol:
 - `1-SITE/apps/web/src/lib/api-server.ts` - De Server-Only API.
 - `1-SITE/apps/web/src/middleware.ts` - De Nuclear Middleware.
 
-### 🎨 Esthetiek & Vertaling (Laya & Voiceglot)
+### 🎨 Esthetiek & Vertaling
 - `1-SITE/apps/web/src/components/ui/LayoutInstruments.tsx` - De visuele bouwstenen.
 - `1-SITE/apps/web/src/lib/voiceglot-bridge.ts` - De vertalingslogica.
 
 ## 🛡️ Handhaving
-Chris (de Technisch Directeur) voert een **Pre-flight Check** uit vóór elke schrijfactie. Elke poging om een gelockt bestand te wijzigen zonder "UNLOCK" mandaat resulteert in een onmiddellijke ABORT van de taak.
+Het systeem voert een **Pre-flight Check** uit vóór elke schrijfactie. Elke poging om een gelockt bestand te wijzigen zonder "UNLOCK" mandaat resulteert in een onmiddellijke ABORT van de taak.

@@ -1,7 +1,7 @@
 "use client";
 
-import { DonationModal } from "@/components/artist/DonationModal";
-import { BentoCard, BentoGrid } from "@/components/ui/BentoGrid";
+import { DonationModal } from "@/worlds/25-artist/components/DonationModal";
+import { BentoCard, BentoGrid } from "@/components/ui/BentoGridInstrument";
 import {
     ButtonInstrument,
     ContainerInstrument,
@@ -22,11 +22,11 @@ import dynamic from "next/dynamic";
 import React from "react";
 
 //  NUCLEAR LOADING MANDATE
-const LiquidBackground = dynamic(() => import("@/components/ui/LiquidBackground").then(mod => mod.LiquidBackground), { 
+const LiquidBackground = dynamic(() => import("@/components/ui/LiquidBackgroundInstrument").then(mod => mod.LiquidBackground), { 
   ssr: false,
   loading: () => <div className="fixed inset-0 z-0 bg-va-black" />
 });
-const VideoPlayer = dynamic(() => import("@/components/ui/VideoPlayer").then(mod => mod.VideoPlayer), { 
+const VideoPlayer = dynamic(() => import("@/components/ui/VideoPlayerInstrument").then(mod => ({ default: mod.VideoPlayer })), { 
   ssr: false,
   loading: () => <div className="w-full h-full bg-va-black flex items-center justify-center"><Loader2 className="animate-spin text-white/20" /></div>
 });

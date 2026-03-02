@@ -1,55 +1,35 @@
 ---
-description: Catalog of available LayoutInstruments for UI development in Project Atomic
-globs: **/*.tsx
-alwaysApply: true
+description: 🛠️ LayoutInstruments Catalog - De officiële catalogus van UI-instrumenten. Gebruik deze in plaats van rauwe HTML.
+globs: src/components/**/*.{tsx,ts}
 ---
 
-# 🛠️ LayoutInstruments Catalog
+# LAYOUT-INSTRUMENTS
 
-Dit is de officiële catalogus van UI-instrumenten. Gebruik deze instrumenten in plaats van rauwe HTML-tags om te voldoen aan het Chris-Protocol (HTML Zero).
+Gebruik deze instrumenten in plaats van rauwe HTML-tags om te voldoen aan de HTML Zero wet.
 
-## 🏗️ Structurele Instrumenten
-Gebruik deze voor de opbouw van pagina's en secties.
+## 🏗️ STRUCTURELE INSTRUMENTEN
+- `<PageWrapperInstrument>`: De hoofdcontainer (`<main>`).
+- `<SectionInstrument>`: Een logische sectie (`<section>`).
+- `<ContainerInstrument>`: De standaard bouwsteen (`<div>`).
+- `<FixedActionDockInstrument>`: Zwevende balk onderaan.
 
-| Instrument | HTML Equivalent | Gebruik |
-| :--- | :--- | :--- |
-| `<PageWrapperInstrument>` | `<main>` | De hoofdcontainer van een pagina. |
-| `<SectionInstrument>` | `<section>` | Een logische sectie binnen een pagina (bijv. Hero, Features). |
-| `<ContainerInstrument>` | `<div>` | De standaard bouwsteen voor layout en grouping. |
-| `<FixedActionDockInstrument>` | `<div>` (fixed) | Een zwevende balk onderaan voor acties (bijv. Save/Cancel). |
+## 📝 TYPOGRAFIE INSTRUMENTEN
+- `<HeadingInstrument>`: `level={1-6}`. Gebruik uitsluitend Raleway font.
+- `<TextInstrument>`: `as="p"` of `as="span"`. Voor alle lopende tekst.
 
-## 📝 Typografie Instrumenten
-Gebruik deze voor alle tekstuele content.
+## 🔘 INTERACTIE INSTRUMENTEN
+- `<ButtonInstrument>`: `variant="pure"`, `variant="outline"`, etc.
+- `<InputInstrument>`: Gestyled volgens de Voices 2026 standaard.
+- `<SelectInstrument>` / `<OptionInstrument>`: Voor dropdowns.
+- `<FormInstrument>` / `<LabelInstrument>`: Voor formulieren.
 
-| Instrument | HTML Equivalent | Belangrijke Props |
-| :--- | :--- | :--- |
-| `<HeadingInstrument>` | `<h1>` - `<h6>` | `level={1-6}`. Gebruik uitsluitend Raleway font (automatisch). |
-| `<TextInstrument>` | `<p>`, `<span>` | `as="p"` of `as="span"`. Voor alle lopende tekst. |
+## 🌍 VISUELE INSTRUMENTEN
+- `<LoadingScreenInstrument>`: Full-screen loader met "Voices Wave".
+- `<FlagBE>`, `<FlagNL>`, etc.: CSS-gebaseerde vlaggen.
 
-## 🔘 Interactie Instrumenten
-Gebruik deze voor formulieren en knoppen.
+## 📏 REGELS VOOR GEBRUIK
+1. **HTML ZERO**: Gebruik van `<div>`, `<span>`, `p`, `h1-h6`, `section`, `main` is STRIKT VERBODEN.
+2. **Import Mandate**: Importeer ALTIJD vanuit `@/components/ui/LayoutInstruments`.
+3. **Voiceglot**: Combineer tekst-instrumenten ALTIJD met `<VoiceglotText />`.
 
-| Instrument | HTML Equivalent | Kenmerken |
-| :--- | :--- | :--- |
-| `<ButtonInstrument>` | `<button>`, `<a>` | Gebruik `variant="pure"`, `variant="outline"`, etc. |
-| `<InputInstrument>` | `<input>` | Gestyled volgens de Voices 2026 standaard. |
-| `<SelectInstrument>` | `<select>` | Voor dropdown menu's. |
-| `<OptionInstrument>` | `<option>` | Gebruik binnen `<SelectInstrument>`. |
-| `<FormInstrument>` | `<form>` | Voor alle formulier-afhandeling. |
-| `<LabelInstrument>` | `<label>` | Voor formulier-labels. |
-
-## 🌍 Visuele Instrumenten
-Specifieke elementen voor branding en feedback.
-
-| Instrument | Beschrijving |
-| :--- | :--- |
-| `<LoadingScreenInstrument>` | Full-screen loader met "Voices Wave" animatie. |
-| `<FlagBE>`, `<FlagNL>`, etc. | Circulaire, CSS-gebaseerde vlaggen voor lokalisatie. |
-
-## 📏 Regels voor Gebruik
-1. **HTML ZERO**: Het gebruik van `<div>`, `<span>`, `p`, `h1-h6`, `section`, `main` is STRIKT VERBODEN in nieuwe componenten.
-2. **Import Mandate**: Importeer instrumenten ALTIJD vanuit `@/components/ui/LayoutInstruments`.
-3. **Styling**: Gebruik Tailwind classes uitsluitend via de `className` prop van de instrumenten.
-4. **Voiceglot**: Combineer tekst-instrumenten ALTIJD met `<VoiceglotText />` voor meertaligheid.
-
-"Een instrument is meer dan een tag; het is een belofte van kwaliteit." - Chris/Autist
+"Een instrument is meer dan een tag; het is een belofte van kwaliteit."

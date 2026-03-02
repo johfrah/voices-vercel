@@ -16,7 +16,7 @@ import { PlanType, SlimmeKassa, UsageType } from '@/lib/engines/pricing-engine';
 import { generateCartHash } from '@/lib/utils/cart-utils';
 import { Actor } from '@/types';
 import { cn } from '@/lib/utils';
-import { CheckCircle2 } from 'lucide-react';
+import { CheckCircle2, FileText } from 'lucide-react';
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { ContainerInstrument } from '@/components/ui/LayoutInstruments';
 
@@ -181,11 +181,7 @@ const initialState: CheckoutState = {
     country: 'BE',
   },
   paymentMethod: 'bancontact',
-  paymentMethods: [
-    { id: 'bancontact', description: 'Bancontact', image: { size2x: '/assets/common/branding/payment/bancontact.svg' } },
-    { id: 'ideal', description: 'iDEAL', image: { size2x: '/assets/common/branding/payment/ideal.svg' } },
-    { id: 'banktransfer', description: 'Betalen op factuur (Offerte)', isInvoice: true, image: { size2x: '/assets/common/branding/icons/ACCOUNT.svg' } }
-  ],
+  paymentMethods: [],
   taxRate: 0.21,
   agreedToTerms: true,
   isSubmitting: false,
@@ -304,36 +300,9 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             m.id !== 'paybybank' && m.id !== 'banktransfer'
           );
           
-          const allMethods = [
-            ...filtered.map((m: any) => {
-              // 🛡️ CHRIS-PROTOCOL: Force local assets for stability (v2.14.272)
-              // API URLs (Mollie) are sometimes unstable or blocked.
-              let localPath = m.image?.size2x || m.image?.size1x;
-              
-              if (m.id === 'bancontact') localPath = '/assets/common/branding/payment/bancontact.svg';
-              if (m.id === 'ideal') localPath = '/assets/common/branding/payment/ideal.svg';
-              if (m.id === 'creditcard') localPath = '/assets/common/branding/payment/visa.svg';
-              if (m.id === 'mastercard') localPath = '/assets/common/branding/payment/mastercard.svg';
-              
-              return {
-                ...m,
-                image: {
-                  ...m.image,
-                  size2x: localPath
-                }
-              };
-            }),
-            { 
-              id: 'banktransfer', 
-              description: 'Betalen op factuur (Offerte)', 
-              isInvoice: true,
-              image: { size2x: '/assets/common/branding/icons/ACCOUNT.svg' }
-            }
-          ];
-          
           setState(prev => ({
             ...prev,
-            paymentMethods: allMethods,
+            paymentMethods: filtered,
             taxRate: data.taxRate || 0.21,
             pricingConfig: pricingData
           }));

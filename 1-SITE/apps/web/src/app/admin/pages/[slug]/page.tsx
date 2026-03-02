@@ -10,7 +10,7 @@ import {
   ButtonInstrument,
   InputInstrument
 } from '@/components/ui/LayoutInstruments';
-import { BentoGrid, BentoCard } from '@/components/ui/BentoGrid';
+import { BentoGrid, BentoCard } from '@/components/ui/BentoGridInstrument';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { 
   Save, 

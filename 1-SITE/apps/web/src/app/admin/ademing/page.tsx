@@ -15,8 +15,8 @@ import { Plus, Search, Edit, Trash2, Eye, EyeOff, Sparkles, Music, Clock, User, 
 import Image from "next/image";
 import { createClient } from "@supabase/supabase-js";
 import toast from "react-hot-toast";
-import { AdemingSmartUpload } from "@/components/ui/ademing/admin/AdemingSmartUpload";
-import { AdemingTrackEdit } from "@/components/ui/ademing/admin/AdemingTrackEdit";
+import { AdemingSmartUpload } from "@worlds/6-ademing/components/admin/AdemingSmartUpload";
+import { AdemingTrackEdit } from "@worlds/6-ademing/components/admin/AdemingTrackEdit";
 
 // CHRIS-PROTOCOL: SDK for stability
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;

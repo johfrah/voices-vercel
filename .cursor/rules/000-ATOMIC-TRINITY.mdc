@@ -1,0 +1,48 @@
+---
+description: ⚛️ The Master Architectural Trinity (The Golden Six) - The "Constitution" of Voices defining Worlds, Markets, Journeys, DNA Routing, and VoiceGlot.
+globs: **/*
+alwaysApply: true
+---
+
+# ⚛️ ATOMIC ARCHITECTURAL TRINITY (THE GOLDEN SIX)
+
+Dit is de "Grondwet" van de Voices-architectuur. Elke actie MOET deze 6 elementen respecteren.
+
+## 🏛️ 1. WORLD (DE ZIEL)
+Het hoogste niveau. Bepaalt de Lead Agent en sfeer.
+*   **Source of Truth**: `world_id` in de `slug_registry`.
+*   **IDs**: 1: Agency, 2: Studio, 3: Academy, 5: Portfolio, 6: Ademing, 7: Freelance, 8: Partner, 10: Johfrai, 25: Artist, 0: Foyer.
+*   **Sub-Foyer Strategie**: Elke World heeft zijn eigen contextuele foyer (bijv. `/studio/contact`). Stuur bezoekers NOOIT naar de globale contactpagina vanuit een specifieke World.
+
+## 🌍 2. MARKET (DE ETALAGE)
+De fysieke domein-container. Bepaalt lokale communicatie, BTW en taal.
+*   **IDs**: 1: voices.be, 2: voices.nl, 3: voices.fr, 6: voices.eu, 7: ademing.be, 8: johfrah.be, 11: johfrai.be.
+*   **Mandaat**: Gebruik UITSLUITEND `market.market_code` voor logica. Geen `host.includes()`.
+
+## 🎢 3. JOURNEY (DE FLOW)
+De functionele route binnen een World/Market.
+*   **IDs**: 27: Voice-over, 28: Commercial, 26: Telefoon, 1: Studio, 30: Academy, 61: Ademing.
+
+## 🧬 4. ENTITY & DNA ROUTING
+*   **ID-First Handshake**: Gebruik uitsluitend UUIDs (`entity_id`) voor interne logica. Slugs zijn voor de URL.
+*   **Registry-First**: ELKE publieke route moet in de `slug_registry` staan.
+*   **Smart Router**: `[...slug]/page.tsx` resolveert slugs naar `entity_id` en `world_id`.
+
+## 📄 5. PAGE (DE COMPOSITIE)
+*   **Soft Entities**: Flexibele pagina's via `InstrumentRenderer` (`content_articles`).
+*   **Hard Entities**: Vaste code-blueprints (bijv. `/stem/[slug]`).
+
+## 🎹 6. INSTRUMENT (DE VERTONING)
+*   **Definitie**: Intelligente UI-bouwstenen uit de catalogus (`310-LAYOUT-INSTRUMENTS.mdc`).
+*   **World-Awareness**: Instrumenten veranderen van gedrag op basis van `world_id`.
+
+## 🗣️ VOICEGLOT (DE TAAL)
+*   **ISO-First**: Gebruik uitsluitend ISO-5 codes (`nl-BE`, `fr-FR`). Geen labels ("Vlaams") in code.
+*   **Text Zero**: Hardcoded strings zijn verboden. Gebruik ALTIJD `<VoiceglotText />` of `t()`.
+
+## 🎭 UX GRONDWET
+*   **100ms Feedback**: Elke interactie geeft binnen 100ms visuele response (`va-bezier`).
+*   **Moby's Thumb-Zone**: Primaire actie-knoppen in de onderste 30% van het scherm.
+*   **Nuclear Loading**: Gebruik `next/dynamic` met `ssr: false` voor zware instrumenten.
+
+"Wij bouwen geen websites, wij regisseren een theater van stemmen."

@@ -15,7 +15,7 @@ import {
 import { VoiceglotText } from '../ui/VoiceglotText';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
-import { Zap, Play, Pause, Loader2 } from 'lucide-react';
+import { Zap, Play, Pause, Loader2, Info } from 'lucide-react';
 
 export const BriefingStep: React.FC = () => {
   const { state, updateBriefing, updatePronunciation, updateUsage, setStep } = useCheckout();
@@ -129,7 +129,7 @@ export const BriefingStep: React.FC = () => {
           </ContainerInstrument>
 
           <ContainerInstrument className="flex items-center gap-2 text-[15px] font-light tracking-widest text-va-black/20 ">
-            <Image  src="/assets/common/branding/icons/INFO.svg" width={14} height={14} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.2 }} />
+            <Info size={14} strokeWidth={1.5} className="text-primary/40" />
             {state.usage === 'telefonie' ? (
               <TextInstrument>
                 <VoiceglotText  

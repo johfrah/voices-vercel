@@ -53,7 +53,7 @@ export class DocumentProcessor {
       .where(inArray(orders.id, orderIds));
 
     const matchedIds = foundOrders.map(o => o.id);
-    const totalAmount = foundOrders.reduce((acc, o) => acc + parseFloat(o.total || '0'), 0);
+    const totalAmount = foundOrders.reduce((acc: number, o: any) => acc + parseFloat(o.total || '0'), 0);
 
     // 2. Validatie logica
     const discrepancies: string[] = [];

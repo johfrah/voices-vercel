@@ -6,7 +6,7 @@ import { AdminHeader } from '@/components/admin/AdminHeader';
 import { LoadingScreenInstrument } from '@/components/ui/LayoutInstruments';
 
 //  NUCLEAR LOADING MANDATE
-const LiquidBackground = nextDynamic(() => import('@/components/ui/LiquidBackground').then(mod => mod.LiquidBackground), { ssr: false });
+const LiquidBackground = nextDynamic(() => import('@/components/ui/LiquidBackgroundInstrument').then(mod => mod.LiquidBackground), { ssr: false });
 
 export const metadata: Metadata = {
   title: 'Voices Admin | Admin',

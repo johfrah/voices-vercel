@@ -14,11 +14,11 @@ import nextDynamic from "next/dynamic";
 import { getStudioWorkshopsData } from "@/lib/services/studio-service";
 
 // NUCLEAR ISLANDS (ssr: false)
-const WorkshopHeroIsland = nextDynamic(() => import("@/components/studio/WorkshopHeroIsland").then(mod => mod.WorkshopHeroIsland), { ssr: false });
-const SkillDNAIsland = nextDynamic(() => import("@/components/studio/SkillDNAIsland").then(mod => mod.SkillDNAIsland), { ssr: false });
-const DayScheduleIsland = nextDynamic(() => import("@/components/studio/DayScheduleIsland").then(mod => mod.DayScheduleIsland), { ssr: false });
-const InstructorLocationIsland = nextDynamic(() => import("@/components/studio/InstructorLocationIsland").then(mod => mod.InstructorLocationIsland), { ssr: false });
-const ReviewGrid = nextDynamic(() => import("@/components/studio/ReviewGrid").then(mod => mod.ReviewGrid), { ssr: false });
+const WorkshopHeroIsland = nextDynamic(() => import("@worlds/2-studio/components/WorkshopHeroIsland").then(mod => mod.WorkshopHeroIsland), { ssr: false });
+const SkillDNAIsland = nextDynamic(() => import("@worlds/2-studio/components/SkillDNAIsland").then(mod => mod.SkillDNAIsland), { ssr: false });
+const DayScheduleIsland = nextDynamic(() => import("@worlds/2-studio/components/DayScheduleIsland").then(mod => mod.DayScheduleIsland), { ssr: false });
+const InstructorLocationIsland = nextDynamic(() => import("@worlds/2-studio/components/InstructorLocationIsland").then(mod => mod.InstructorLocationIsland), { ssr: false });
+const ReviewGrid = nextDynamic(() => import("@worlds/2-studio/components/ReviewGrid").then(mod => mod.ReviewGrid), { ssr: false });
 
 async function getWorkshopData(slugOrId: string) {
   try {

@@ -23,6 +23,7 @@ export const worlds = pgTable('worlds', {
   code: text('code').unique().notNull(), // agency, studio, academy, artist, portfolio, ademing, freelance
   label: text('label').notNull(),
   description: text('description'),
+  logoId: integer('logo_id').references(() => media.id), // 🖼️ V2: Koppeling naar Media Engine (Logo)
   isPublic: boolean('is_public').default(true),
   createdAt: timestamp('created_at').defaultNow(),
 });
@@ -34,7 +35,8 @@ export const journeys = pgTable('journeys', {
   code: text('code').unique().notNull(), // bijv. 'studio', 'agency_vo', 'agency_ivr'
   label: text('label').notNull(), // bijv. 'Voices Studio', 'Agency: Voice-over'
   description: text('description'),
-  icon: text('icon'),
+  icon: text('icon'), // Legacy string
+  iconId: integer('icon_id').references(() => media.id), // 🖼️ V2: Koppeling naar Media Engine (Icoon)
   color: text('color'),
   createdAt: timestamp('created_at').defaultNow(),
 });
@@ -65,6 +67,7 @@ export const paymentMethods = pgTable('payment_methods', {
   code: text('code').unique().notNull(), // bijv. 'mollie_bancontact', 'manual_invoice'
   label: text('label').notNull(),
   isOnline: boolean('is_online').default(true),
+  mediaId: integer('media_id').references(() => media.id), // 🖼️ V2: Koppeling naar Media Engine (Icoon)
   createdAt: timestamp('created_at').defaultNow(),
 });
 
@@ -639,8 +642,10 @@ export const ademingMakers = pgTable('ademing_makers', {
   id: serial('id').primaryKey(),
   short_name: text('short_name').unique().notNull(), // "Julie" | "Johfrah"
   full_name: text('full_name').notNull(),
-  avatar_url: text('avatar_url'),
-  hero_image_url: text('hero_image_url'),
+  avatarUrl: text('avatar_url'), // Legacy string
+  avatarId: integer('avatar_id').references(() => media.id), // 🖼️ V2: Koppeling naar Media Engine (Avatar)
+  heroImageUrl: text('hero_image_url'), // Legacy string
+  heroImageId: integer('hero_image_id').references(() => media.id), // 🖼️ V2: Koppeling naar Media Engine (Hero)
   bio: text('bio'),
   website: text('website'),
   instagram: text('instagram'),
@@ -653,10 +658,10 @@ export const ademingTracks = pgTable('ademing_tracks', {
   wpId: bigint('wp_id', { mode: 'number' }).unique(),
   worldId: integer('world_id').references(() => worlds.id), // 🌍 V2: Koppeling naar World
   journeyId: integer('journey_id').references(() => journeys.id), // 🛤️ V2: Koppeling naar Journey
-  mediaId: integer('media_id').references(() => media.id), // 🔗 Link naar Media Engine
+  mediaId: integer('media_id').references(() => media.id), // 🔗 Link naar Media Engine (Audio)
   title: text('title').notNull(),
   slug: text('slug').unique().notNull(),
-  url: text('url').notNull(), // audio_url
+  url: text('url').notNull(), // audio_url (Legacy)
   duration: integer('duration'),
   vibe: text('vibe'),
   theme: text('theme'), // "rust" | "energie" | "ritme"
@@ -666,8 +671,10 @@ export const ademingTracks = pgTable('ademing_tracks', {
   seriesOrder: integer('series_order'),
   short_description: text('short_description'),
   long_description: text('long_description'),
-  cover_image_url: text('cover_image_url'),
-  video_background_url: text('video_background_url'),
+  coverImageUrl: text('cover_image_url'), // Legacy string
+  coverImageId: integer('cover_image_id').references(() => media.id), // 🖼️ V2: Koppeling naar Media Engine (Cover)
+  videoBackgroundUrl: text('video_background_url'), // Legacy string
+  videoBackgroundId: integer('video_background_id').references(() => media.id), // 🖼️ V2: Koppeling naar Media Engine (Video BG)
   subtitle_data: jsonb('subtitle_data'),
   transcript: text('transcript'),
   is_public: boolean('is_public').default(true),
@@ -680,7 +687,8 @@ export const ademingSeries = pgTable('ademing_series', {
   title: text('title').notNull(),
   slug: text('slug').unique().notNull(),
   description: text('description'),
-  cover_image_url: text('cover_image_url'),
+  coverImageUrl: text('cover_image_url'), // Legacy string
+  coverImageId: integer('cover_image_id').references(() => media.id), // 🖼️ V2: Koppeling naar Media Engine (Cover)
   theme: text('theme').default('rust'),
   is_public: boolean('is_public').default(true),
   createdAt: timestamp('created_at').defaultNow(),
@@ -1007,6 +1015,7 @@ export const contentBlocks = pgTable('content_blocks', {
   articleId: integer('article_id').references(() => contentArticles.id),
   type: text('type'), // heading, text, image, video, cta
   content: text('content'),
+  mediaId: integer('media_id').references(() => media.id), // 🖼️ V2: Koppeling naar Media Engine (voor afbeeldingen/video's)
   settings: jsonb('settings'), // layout info
   displayOrder: integer('display_order').default(0),
   is_manually_edited: boolean('is_manually_edited').default(false),
@@ -1272,6 +1281,7 @@ export const marketConfigs = pgTable('market_configs', {
   socialLinks: jsonb('social_links'), // { instagram: '', linkedin: '', facebook: '', youtube: '' }
   legal: jsonb('legal'), // { terms_url: '', privacy_url: '', disclaimer: '' }
   localization: jsonb('localization'), // { default_lang: 'nl', currency: 'EUR', locale: 'nl-BE' }
+  logoId: integer('logo_id').references(() => media.id), // 🖼️ V2: Koppeling naar Media Engine (Logo)
   is_manually_edited: boolean('is_manually_edited').default(false),
   updatedAt: timestamp('updated_at').defaultNow(),
 });
@@ -1280,6 +1290,7 @@ export const siteSettings = pgTable('site_settings', {
   id: serial('id').primaryKey(),
   key: text('key').unique().notNull(), // site_title, site_description, copyright, logo_url
   value: text('value').notNull(),
+  mediaId: integer('media_id').references(() => media.id), // 🖼️ V2: Koppeling naar Media Engine (voor logo's etc)
   context: text('context'), // SEO, Footer, Branding, etc.
   is_manually_edited: boolean('is_manually_edited').default(false),
   updatedAt: timestamp('updated_at').defaultNow(),

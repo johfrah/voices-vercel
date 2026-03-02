@@ -38,11 +38,11 @@ async function getAssignments() {
       with: { user: true }
     } as any);
 
-    const actorsMap = new Map(actorsData.map(a => [a.id, a]));
-    const actorsByWpProductIdMap = new Map(actorsData.map(a => [a.wp_product_id, a]));
+    const actorsMap = new Map(actorsData.map((a: any) => [a.id, a]));
+    const actorsByWpProductIdMap = new Map(actorsData.map((a: any) => [a.wp_product_id, a]));
 
-    return assignmentsData.map(({ item, order, customer }) => {
-      const hasInvoice = invoices.some(inv => inv.actorId === item.actorId && inv.aiMetadata && (inv.aiMetadata as any).mailSubject?.includes(item.orderId?.toString()));
+    return assignmentsData.map(({ item, order, customer }: any) => {
+      const hasInvoice = invoices.some((inv: any) => inv.actorId === item.actorId && inv.aiMetadata && (inv.aiMetadata as any).mailSubject?.includes(item.orderId?.toString()));
       
       let actor = item.actorId ? actorsMap.get(item.actorId) : null;
       
@@ -93,7 +93,7 @@ export default async function ActorAssignmentDashboard() {
         </SectionInstrument>
 
         <ContainerInstrument className="grid grid-cols-1 gap-4">
-          {assignments.map((item) => (
+          {assignments.map((item: any) => (
             <ContainerInstrument key={item.id} className="bg-white rounded-[20px] p-6 border border-black/[0.03] shadow-sm flex items-center justify-between group hover:shadow-md transition-all duration-300">
               <ContainerInstrument className="flex items-center gap-6 flex-1">
                 <ContainerInstrument className="w-12 h-12 rounded-full bg-va-off-white flex items-center justify-center text-va-black/20 group-hover:bg-va-primary/10 group-hover:text-va-primary transition-colors">
@@ -107,7 +107,7 @@ export default async function ActorAssignmentDashboard() {
                     {item.customerCompany && ` (${item.customerCompany})`}
                   </TextInstrument>
                   <TextInstrument className="text-[15px] text-va-primary font-light mt-1">
-                    <VoiceglotText  translationKey="common.budget" defaultText="Budget" />:  {item.budget}
+                    <VoiceglotText  translationKey="common.budget" defaultText="Budget" />:  {item.budget as any}
                   </TextInstrument>
                 </ContainerInstrument>
 

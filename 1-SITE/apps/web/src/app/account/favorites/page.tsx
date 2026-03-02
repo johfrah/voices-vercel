@@ -11,14 +11,14 @@ import {
   LoadingScreenInstrument
 } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
-import { VoiceCard } from '@/components/ui/VoiceCard';
+import { VoiceCard } from '@/components/ui/VoiceCardInstrument';
 import { ArrowLeft, Heart } from 'lucide-react';
-import { VoicesLink as Link } from '@/components/ui/VoicesLink';
+import { VoicesLinkInstrument as Link } from '@/components/ui/VoicesLinkInstrument';
 import { useEffect, useState, Suspense } from 'react';
 import dynamic from "next/dynamic";
 
 //  NUCLEAR LOADING MANDATE
-const LiquidBackground = dynamic(() => import("@/components/ui/LiquidBackground").then(mod => mod.LiquidBackground), { 
+const LiquidBackground = dynamic(() => import("@/components/ui/LiquidBackgroundInstrument").then(mod => mod.LiquidBackground), { 
   ssr: false,
   loading: () => <div className="fixed inset-0 z-0 bg-va-off-white" />
 });

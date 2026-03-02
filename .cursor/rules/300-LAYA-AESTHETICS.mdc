@@ -1,26 +1,32 @@
 ---
-description: Laya's Aesthetics rules for Design & UX in Project Atomic
-globs: **/*.tsx
-alwaysApply: false
+description: 🎨 Aesthetics & Liquid DNA - De visuele ziel, Island filosofie en Tailwind discipline voor alle UI componenten.
+globs: src/components/**/*.{tsx,ts}, src/app/**/*.{tsx,ts}
 ---
 
-# 🎨 Laya's Aesthetics: Design & UX
+# 🎨 AESTHETICS & LIQUID DNA
 
-Elke pixel moet ademen volgens de Voices-Mix.
+Dit document bewaakt de visuele ziel en de esthetische engineering van Voices.
 
-## 📐 Layout & Vormgeving
+## 1. LIQUID DNA & ISLAND FILOSOFIE
+- **Island Architecture**: Elk component is een eiland van perfectie in een zee van rust.
+- **Natural Capitalization**: Gebruik uitsluitend natuurlijke kapitalisatie in teksten.
+- **Va-Bezier Flow**: Gebruik vloeiende, organische animaties en overgangen.
 
-1. **Raleway Mandate**: Koppen zijn UITSLUITEND `font-light` (300) of `font-extralight` (200) Raleway.
-2. **Natural Capitalization**: Geen UPPERCASE geschreeuw in koppen of knoppen.
-3. **Gematigde Afronding**: Containers/Kaarten zijn `rounded-[20px]`, knoppen `rounded-[10px]`.
-4. **Eilanden van Focus**: Gebruik royale witruimte (`py-32` tot `py-64`) tussen secties.
-5. **Liquid DNA**: De `LiquidBackground` is verplicht op elke pagina voor een organische beleving.
+## 2. HTML ZERO (LayoutInstruments)
+- **Mandaat**: Het gebruik van `<div>`, `<span>`, `p`, `h1-h6`, `section`, `main` is STRIKT VERBODEN.
+- **Catalogus**: Gebruik uitsluitend de instrumenten uit `310-LAYOUT-INSTRUMENTS.mdc`.
+- **Suffix**: Alle herbruikbare componenten in `src/components/ui/` MOETEN het suffix `Instrument` hebben.
 
-## 💄 Kleur & Sfeer
+## 3. TAILWIND DISCIPLINE
+- **Geen Raw CSS**: Gebruik UITSLUITEND Tailwind CSS via de `className` prop.
+- **Design Tokens**: Gebruik de officiële Voices design tokens voor kleuren, spacing en schaduwen.
 
-1. **Base Color**: Gebruik `bg-va-off-white` als rustgevende basis. Nooit hard wit.
-2. **Aura Shadows**: Gebruik `.shadow-aura` voor diepte zonder harde kaders.
-3. **No Grayscale**: Laat foto's stralen in hun natuurlijke kleuren (vooral op Johfrah portfolio).
-4. **Lucide Icons**: Gebruik icons met `strokeWidth={1.5}` en lage opacity (`text-primary/40`).
+## 4. VOICEGLOT INTEGRATION
+- **No Hardcoding**: Hardcoding van tekst is VERBODEN. Combineer tekst-instrumenten ALTIJD met `<VoiceglotText />`.
+- **Media**: Gebruik `<VoiceglotImage />` voor alle beelden die marktafhankelijk zijn.
 
-"Design is niet wat het lijkt, maar hoe het voelt." - Laya/Artistiek Leider
+## 5. NUCLEAR LOADING LAW
+- **100ms LCP**: Garandeer een razendsnelle laadtijd door de main bundle minimaal te houden.
+- **Dynamic**: Gebruik `next/dynamic` met `ssr: false` voor zware interactieve instrumenten.
+
+"Elke pixel ademt Voices. Een instrument is meer dan een tag; het is een belofte van kwaliteit."

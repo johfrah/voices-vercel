@@ -69,9 +69,9 @@ export async function GET(request: Request) {
     }
 
     const result = {
-      ...data,
+      ...(data as any),
       _v: 'v2.14.538 (Nuclear Handshake)',
-      _debug_fr_be_search: data.results?.filter((a: any) => a.display_name.match(/Marilyn|Veronique|Alicia|James|Delphine|Beatrice|Bernard/i)).map((a: any) => ({ 
+      _debug_fr_be_search: (data as any).results?.filter((a: any) => a.display_name.match(/Marilyn|Veronique|Alicia|James|Delphine|Beatrice|Bernard/i)).map((a: any) => ({ 
         name: a.display_name, 
         native: a.native_lang, 
         extra: a.extra_langs, 

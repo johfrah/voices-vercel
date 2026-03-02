@@ -61,7 +61,7 @@ export class PushService {
       const notificationPayload = JSON.stringify(payload);
 
       const results = await Promise.allSettled(
-        subscriptions.map(sub => 
+        subscriptions.map((sub: any) => 
           webpush.sendNotification(
             {
               endpoint: sub.endpoint,

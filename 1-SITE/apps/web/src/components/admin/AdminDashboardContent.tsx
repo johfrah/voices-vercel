@@ -1,6 +1,6 @@
 "use client";
 
-import { BentoCard, BentoGrid } from "@/components/ui/BentoGrid";
+import { BentoCard, BentoGrid } from "@/components/ui/BentoGridInstrument";
 import {
     ButtonInstrument,
     ContainerInstrument,

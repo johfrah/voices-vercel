@@ -9,7 +9,7 @@ import {
     TextInstrument,
     FixedActionDockInstrument
 } from '@/components/ui/LayoutInstruments';
-import { BentoGrid, BentoCard } from '@/components/ui/BentoGrid';
+import { BentoGrid, BentoCard } from '@/components/ui/BentoGridInstrument';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useAdminTracking } from '@/hooks/useAdminTracking';
 import { ArrowLeft, CheckCircle2, Fingerprint, History, Loader2, Lock, ShieldAlert, ShieldCheck, Smartphone, Zap, RefreshCw } from 'lucide-react';

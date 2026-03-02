@@ -1,7 +1,7 @@
 "use client";
 
 import { AccountHeroInstrument } from '@/components/ui/AccountHeroInstrument';
-import { BentoCard, BentoGrid } from '@/components/ui/BentoGrid';
+import { BentoCard, BentoGrid } from '@/components/ui/BentoGridInstrument';
 import {
     ContainerInstrument,
     HeadingInstrument,
@@ -20,7 +20,7 @@ import Image from 'next/image';
 import { toast } from 'react-hot-toast';
 import nextDynamic from 'next/dynamic';
 
-const LiquidBackground = nextDynamic(() => import('@/components/ui/LiquidBackground').then(mod => mod.LiquidBackground), { ssr: false });
+const LiquidBackground = nextDynamic(() => import('@/components/ui/LiquidBackgroundInstrument').then(mod => mod.LiquidBackground), { ssr: false });
 
 import { 
   Zap, 
@@ -40,7 +40,7 @@ import {
   CheckCircle2,
   Sparkles
 } from 'lucide-react';
-import { VoicesLink as Link } from '@/components/ui/VoicesLink';
+import { VoicesLinkInstrument as Link } from '@/components/ui/VoicesLinkInstrument';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { SlimmeKassa } from '@/lib/engines/pricing-engine';
 import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
@@ -152,14 +152,9 @@ export default function AccountDashboardClient() {
                       </ContainerInstrument>
                     </ContainerInstrument>
                     <ContainerInstrument className="w-full md:w-64 aspect-square bg-white rounded-[32px] shadow-aura flex items-center justify-center relative overflow-hidden group-hover:scale-105 transition-transform duration-700">
-                      <Image 
-                        src="/assets/common/branding/Voices-Artists-LOGO.png" 
-                        alt="Voices" 
-                        width={120} 
-                        height={120} 
-                        sizes="120px"
-                        className="opacity-10 grayscale group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700"
-                      />
+                      <div className="w-32 h-32 rounded-2xl bg-va-black/5 flex items-center justify-center border border-va-black/10 opacity-20 grayscale group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700">
+                        <Sparkles size={48} className="text-primary" />
+                      </div>
                       <ContainerInstrument className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent" />
                     </ContainerInstrument>
                   </ContainerInstrument>
@@ -227,7 +222,7 @@ export default function AccountDashboardClient() {
                       <ButtonInstrument className="va-btn-pro !bg-white !text-va-black !rounded-xl text-[13px]">
                         <VoiceglotText translationKey="account.dashboard.open_shop" defaultText="Winkel Openen" />
                       </ButtonInstrument>
-                      <Link href="/account/settings" onClick={(e) => e.stopPropagation()}>
+                      <Link href="/account/settings" onClick={(e: any) => e.stopPropagation()}>
                         <ButtonInstrument variant="outline" className="border-white/10 text-white hover:bg-white/5 !rounded-xl text-[13px]">
                           <VoiceglotText translationKey="account.dashboard.manage_rates" defaultText="Tarieven Beheren" />
                         </ButtonInstrument>

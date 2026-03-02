@@ -13,14 +13,14 @@ import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useCheckout } from '@/contexts/CheckoutContext';
 import { useTranslation } from '@/contexts/TranslationContext';
 import Image from 'next/image';
-import { VoicesLink as Link } from '@/components/ui/VoicesLink';
+import { VoicesLinkInstrument as Link } from '@/components/ui/VoicesLinkInstrument';
 import { ShoppingCart, ArrowRight, Star, Trash2, Edit2, Eye, Info, ArrowLeft } from 'lucide-react';
 import { PricingSummary } from '@/components/checkout/PricingSummary';
 import { OrderStepsInstrument } from '@/components/ui/OrderStepsInstrument';
 import nextDynamic from "next/dynamic";
 import { cn } from '@/lib/utils';
 
-const LiquidBackground = nextDynamic(() => import('@/components/ui/LiquidBackground').then(mod => mod.LiquidBackground), { ssr: false });
+const LiquidBackground = nextDynamic(() => import('@/components/ui/LiquidBackgroundInstrument').then(mod => mod.LiquidBackground), { ssr: false });
 
 /**
  *  CART PAGE (NUCLEAR 2026)

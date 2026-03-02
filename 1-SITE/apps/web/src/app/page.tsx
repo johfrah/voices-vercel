@@ -1,15 +1,15 @@
 "use client";
 
 import { ContainerInstrument, HeadingInstrument, LoadingScreenInstrument, SectionInstrument, TextInstrument } from "@/components/ui/LayoutInstruments";
-import { VoiceCardSkeleton } from "@/components/ui/VoiceCardSkeleton";
-import { VoiceGrid } from "@/components/ui/VoiceGrid";
+import { VoiceCardSkeleton } from "@/components/ui/VoiceCardSkeletonInstrument";
+import { VoiceGrid } from "@/components/ui/VoiceGridInstrument";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
-import { VoicesMasterControl } from "@/components/ui/VoicesMasterControl";
+import { VoicesMasterControlContext } from "@/components/ui/VoicesMasterControlInstrument";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCheckout } from "@/contexts/CheckoutContext";
 import { useEditMode } from "@/contexts/EditModeContext";
 import { useSonicDNA } from "@/lib/engines/sonic-dna";
-import { useVoicesRouter } from "@/components/ui/VoicesLink";
+import { useVoicesRouter } from "@/components/ui/VoicesLinkInstrument";
 import { AnimatePresence, motion } from "framer-motion";
 import { useTranslation } from "@/contexts/TranslationContext";
 import { useMasterControl } from "@/contexts/VoicesMasterControlContext";
@@ -21,22 +21,22 @@ import { Suspense, useEffect, useMemo, useState } from 'react';
 import nextDynamic from "next/dynamic";
 
 //  NUCLEAR LOADING MANDATE
-const LiquidBackground = nextDynamic(() => import("@/components/ui/LiquidBackground").then(mod => mod.LiquidBackground), { 
+const LiquidBackground = nextDynamic(() => import("@/components/ui/LiquidBackgroundInstrument").then(mod => mod.LiquidBackground), { 
   ssr: false,
-  loading: () => <div className="fixed inset-0 z-0 bg-va-off-white" />
+    loading: () => <ContainerInstrument plain className="fixed inset-0 z-0 bg-va-off-white" />
 });
 const ReviewsInstrument = nextDynamic(() => import("@/components/ui/ReviewsInstrument").then(mod => mod.ReviewsInstrument), { 
   ssr: false,
-  loading: () => <div className="h-[400px] w-full bg-va-black/5 animate-pulse rounded-[40px]" />
+  loading: () => <ContainerInstrument plain className="h-[400px] w-full bg-va-black/5 animate-pulse rounded-[40px]" />
 });
 
 //  NUCLEAR LOADING MANDATE
 const ConfiguratorPageClient = nextDynamic(() => import('@/app/checkout/configurator/ConfiguratorPageClient'), { 
   ssr: false,
-  loading: () => <div className="h-[600px] w-full bg-va-black/5 animate-pulse rounded-[40px]" />
+  loading: () => <ContainerInstrument plain className="h-[600px] w-full bg-va-black/5 animate-pulse rounded-[40px]" />
 });
 
-import { VoiceCard } from "@/components/ui/VoiceCard";
+import { VoiceCard } from "@/components/ui/VoiceCardInstrument";
 import { ArtistDetailClient } from "@/components/legacy/ArtistDetailClient";
 import { NuclearErrorBoundary } from "@/components/ui/NuclearErrorBoundary";
 
@@ -379,9 +379,9 @@ function HomeContent({
           ) : isArtistLoading ? (
             <LoadingScreenInstrument text="Youssef Zaki laden..." />
           ) : (
-            <div className="min-h-screen flex items-center justify-center text-white bg-va-black">
+            <ContainerInstrument plain className="min-h-screen flex items-center justify-center text-white bg-va-black">
               <TextInstrument>Artist data not found.</TextInstrument>
-            </div>
+            </ContainerInstrument>
           )}
         </Suspense>
       ) : (
@@ -433,8 +433,8 @@ function HomeContent({
                 </ContainerInstrument>
               </ContainerInstrument>
 
-              <div className="w-full relative z-50 px-4 md:px-6">
-                <VoicesMasterControl 
+              <ContainerInstrument plain className="w-full relative z-50 px-4 md:px-6">
+                <VoicesMasterControlContext 
                   actors={actors} 
                   filters={filters} 
                   availableExtraLangs={availableExtraLangs} 
@@ -444,9 +444,9 @@ function HomeContent({
                   mediaTypesData={handshakeConfig?.mediaTypes}
                   countriesData={handshakeConfig?.countries}
                 />
-              </div>
+              </ContainerInstrument>
               
-              <div className="mt-20 relative min-h-[600px] w-full px-4 md:px-6">
+              <ContainerInstrument plain className="mt-20 relative min-h-[600px] w-full px-4 md:px-6">
                 <AnimatePresence mode="wait">
                   {masterControlState.currentStep === 'voice' ? (
                     <motion.div
@@ -459,11 +459,11 @@ function HomeContent({
                     >
                       {/* CHRIS-PROTOCOL: Deterministic Skeletons (Moby-methode) */}
                       {(!filteredActors || filteredActors.length === 0) ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 items-stretch">
+                        <ContainerInstrument plain className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 items-stretch">
                           {[...Array(8)].map((_, i) => (
                             <VoiceCardSkeleton key={`skeleton-${i}`} />
                           ))}
-                        </div>
+                        </ContainerInstrument>
                       ) : (
                         <NuclearErrorBoundary name="Home:VoiceGrid">
                           <VoiceGrid 
@@ -506,9 +506,9 @@ function HomeContent({
                       transition={{ duration: 0.6, ease: [0.23, 1, 0.32, 1] }}
                       className="w-full"
                     >
-                      <div className="flex flex-col lg:grid lg:grid-cols-12 gap-8 items-start w-full">
+                      <ContainerInstrument plain className="flex flex-col lg:grid lg:grid-cols-12 gap-8 items-start w-full">
                         {/* Script & Prijs (9 kolommen breed) - EERST op mobiel */}
-                        <div className="order-1 lg:order-2 lg:col-span-9 w-full">
+                        <ContainerInstrument plain className="order-1 lg:order-2 lg:col-span-9 w-full">
                         <NuclearErrorBoundary name="Home:Configurator">
                           <ConfiguratorPageClient 
                             isEmbedded={true} 
@@ -517,10 +517,10 @@ function HomeContent({
                             hidePriceBlock={false}
                           />
                         </NuclearErrorBoundary>
-                        </div>
+                        </ContainerInstrument>
 
                         {/* VoiceCard (3 kolommen breed) - LATER op mobiel, compact */}
-                        <div className="order-2 lg:order-1 lg:col-span-3 w-full">
+                        <ContainerInstrument plain className="order-2 lg:order-1 lg:col-span-3 w-full">
                           <motion.div
                             layoutId={`actor-${checkoutState.selectedActor?.id}`}
                             className="lg:sticky lg:top-10 w-full"
@@ -536,32 +536,32 @@ function HomeContent({
                               />
                             )}
                           </motion.div>
-                        </div>
-                      </div>
+                        </ContainerInstrument>
+                      </ContainerInstrument>
                     </motion.div>
                   )}
                 </AnimatePresence>
-              </div>
+              </ContainerInstrument>
             </ContainerInstrument>
           </SectionInstrument>
 
           <SectionInstrument className="py-48 bg-white/80 backdrop-blur-md relative z-10">
             <ContainerInstrument plain className="max-w-7xl mx-auto px-4 md:px-6">
               <Suspense fallback={
-                <div className="space-y-16">
-                  <div className="flex flex-col md:flex-row justify-between items-end gap-8">
-                    <div className="space-y-4 w-full md:w-auto">
-                      <div className="h-6 w-32 bg-va-black/5 rounded-full animate-pulse" />
-                      <div className="h-24 w-full md:w-[600px] bg-va-black/5 rounded-2xl animate-pulse" />
-                    </div>
-                    <div className="h-20 w-64 bg-va-black/5 rounded-[24px] animate-pulse" />
-                  </div>
-                  <div className="flex gap-8 overflow-hidden">
+                <ContainerInstrument plain className="space-y-16">
+                  <ContainerInstrument plain className="flex flex-col md:flex-row justify-between items-end gap-8">
+                    <ContainerInstrument plain className="space-y-4 w-full md:w-auto">
+                      <ContainerInstrument plain className="h-6 w-32 bg-va-black/5 rounded-full animate-pulse" />
+                      <ContainerInstrument plain className="h-24 w-full md:w-[600px] bg-va-black/5 rounded-2xl animate-pulse" />
+                    </ContainerInstrument>
+                    <ContainerInstrument plain className="h-20 w-64 bg-va-black/5 rounded-[24px] animate-pulse" />
+                  </ContainerInstrument>
+                  <ContainerInstrument plain className="flex gap-8 overflow-hidden">
                     {[1, 2, 3].map(i => (
-                      <div key={i} className="min-w-[400px] h-[450px] bg-va-black/5 rounded-[40px] animate-pulse" />
+                      <ContainerInstrument key={i} plain className="min-w-[400px] h-[450px] bg-va-black/5 rounded-[40px] animate-pulse" />
                     ))}
-                  </div>
-                </div>
+                  </ContainerInstrument>
+                </ContainerInstrument>
               }>
                 <ReviewsInstrument 
                   reviews={reviews} 
@@ -759,15 +759,15 @@ export default function Home() {
     return (
       <SectionInstrument className="!pt-40 pb-32 relative z-50">
         <ContainerInstrument plain className="max-w-[1440px] mx-auto px-0">
-          <div className="mb-20 text-center max-w-4xl mx-auto space-y-8 px-4 md:px-6">
-            <div className="h-20 w-3/4 bg-va-black/5 rounded-2xl mx-auto animate-pulse" />
-            <div className="h-6 w-1/2 bg-va-black/5 rounded-xl mx-auto animate-pulse" />
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 items-stretch px-4 md:px-6">
+          <ContainerInstrument plain className="mb-20 text-center max-w-4xl mx-auto space-y-8 px-4 md:px-6">
+            <ContainerInstrument plain className="h-20 w-3/4 bg-va-black/5 rounded-2xl mx-auto animate-pulse" />
+            <ContainerInstrument plain className="h-6 w-1/2 bg-va-black/5 rounded-xl mx-auto animate-pulse" />
+          </ContainerInstrument>
+          <ContainerInstrument plain className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 items-stretch px-4 md:px-6">
             {[...Array(8)].map((_, i) => (
               <VoiceCardSkeleton key={`skeleton-initial-${i}`} />
             ))}
-          </div>
+          </ContainerInstrument>
         </ContainerInstrument>
       </SectionInstrument>
     );
@@ -777,15 +777,15 @@ export default function Home() {
     <Suspense fallback={
       <SectionInstrument className="!pt-40 pb-32 relative z-50">
         <ContainerInstrument plain className="max-w-[1440px] mx-auto px-0">
-          <div className="mb-20 text-center max-w-4xl mx-auto space-y-8 px-4 md:px-6">
-            <div className="h-20 w-3/4 bg-va-black/5 rounded-2xl mx-auto animate-pulse" />
-            <div className="h-6 w-1/2 bg-va-black/5 rounded-xl mx-auto animate-pulse" />
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 items-stretch px-4 md:px-6">
+          <ContainerInstrument plain className="mb-20 text-center max-w-4xl mx-auto space-y-8 px-4 md:px-6">
+            <ContainerInstrument plain className="h-20 w-3/4 bg-va-black/5 rounded-2xl mx-auto animate-pulse" />
+            <ContainerInstrument plain className="h-6 w-1/2 bg-va-black/5 rounded-xl mx-auto animate-pulse" />
+          </ContainerInstrument>
+          <ContainerInstrument plain className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 items-stretch px-4 md:px-6">
             {[...Array(8)].map((_, i) => (
               <VoiceCardSkeleton key={`skeleton-suspense-${i}`} />
             ))}
-          </div>
+          </ContainerInstrument>
         </ContainerInstrument>
       </SectionInstrument>
     }>
@@ -800,9 +800,9 @@ export default function Home() {
         />
       )}
       {isLoading && data && (
-        <div className="fixed top-0 left-0 w-full h-1 bg-primary/20 z-[9999]">
-          <div className="h-full bg-primary animate-progress-fast" style={{ width: '30%' }} />
-        </div>
+        <ContainerInstrument plain className="fixed top-0 left-0 w-full h-1 bg-primary/20 z-[9999]">
+          <ContainerInstrument plain className="h-full bg-primary animate-progress-fast" style={{ width: '30%' }} />
+        </ContainerInstrument>
       )}
     </Suspense>
   );

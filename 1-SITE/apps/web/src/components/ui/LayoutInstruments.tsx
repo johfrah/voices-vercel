@@ -13,13 +13,13 @@ import React, { ButtonHTMLAttributes, ElementType, FormHTMLAttributes, forwardRe
 
 // Re-export server components
 export { 
-  RootLayoutInstrument, 
-  PageWrapperInstrument, 
-  SectionInstrument, 
-  ContainerInstrument,
-  HeadingInstrument,
-  TextInstrument
-} from './LayoutInstrumentsClient';
+  RootLayoutInstrumentServer as RootLayoutInstrument, 
+  PageWrapperInstrumentServer as PageWrapperInstrument, 
+  SectionInstrumentServer as SectionInstrument, 
+  ContainerInstrumentServer as ContainerInstrument,
+  HeadingInstrumentServer as HeadingInstrument,
+  TextInstrumentServer as TextInstrument
+} from './LayoutInstrumentsServer';
 
 // Import client hooks for client components
 import { ClientButtonInstrument } from './LayoutInstrumentsClient';

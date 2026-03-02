@@ -46,7 +46,7 @@ export function VumeStudioTemplate(options: StudioExperienceOptions) {
     headerImage,
     instructorName = 'Johfrah Lefebvre',
     instructorRole = 'Voice-over en coach',
-    instructorImage = `https://${host}/api/proxy?path=${encodeURIComponent('/assets/common/branding/founder/johfrah.png')}&v=20260213`,
+    instructorImage = `https://${host}/api/proxy?path=${encodeURIComponent(market.logo_url)}`,
     description = 'In deze workshop leer je de basis van voice-overs inspreken: van stemopwarming tot tekstbegrip en intonatie en spreken in de microfoon.',
     learningPoints = 'Tijdens deze praktijkgerichte workshop werk je intensief met tekst en microfoon. Je doet niet alleen nieuwe vaardigheden op, maar gaat ook naar huis met een hoogwaardige opname.',
     schedule = '09u45: Aankomst\n10u00: Kennismaking\n10u15: Workshop deel 1\n13u30: Lunch\n14u15: Workshop deel 2\n17u00: Einde',

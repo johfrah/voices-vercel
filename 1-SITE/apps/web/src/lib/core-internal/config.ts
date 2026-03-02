@@ -22,17 +22,9 @@ export const VOICES_CONFIG = {
   // 🎨 ASSET ARCHITECTURE
   assets: {
     baseUrl: '/assets',
-    logos: {
-      be: '/assets/common/branding/Voices-LOGO-Animated.svg',
-      nl: '/assets/common/branding/Voices_LOGO_NL.svg',
-      fr: '/assets/common/branding/Voices_LOGO_FR.svg',
-      eu: '/assets/common/branding/Voices_LOGO_EU.svg',
-      es: '/assets/common/branding/Voices_LOGO_ES.svg',
-      pt: '/assets/common/branding/Voices_LOGO_PT.svg',
-      ademing: '/assets/common/branding/Voices-LOGO-Animated.svg',
-      johfrah: '/assets/common/branding/johfrah.be_LOGO.svg',
-      studio: '/assets/common/branding/Voices_LOGO_STUDIO.svg',
-    },
+    // 🛡️ CHRIS-PROTOCOL: ID-First Asset Fallbacks (v3.0.0)
+    // Alle branding assets worden nu via de Media Engine (mediaId) in de database geregeld.
+    // Deze placeholders dienen enkel als absolute nood-fallback.
     placeholders: {
       voice: '/assets/common/placeholders/placeholder-voice.jpg',
       voicy: '/assets/common/branding/voicy/voicy-avatar.png',

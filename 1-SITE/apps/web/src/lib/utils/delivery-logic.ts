@@ -288,8 +288,8 @@ export function calculateDeliveryDate(
   
   //  CHRIS-PROTOCOL: Combine availability array with flat holiday fields
   const effectiveAvailability = [...(actor.availability || [])];
-  if (actor.holiday_from && actor.holiday_till) {
-    effectiveAvailability.push({ start: actor.holiday_from, end: actor.holiday_till });
+  if ((actor as any).holiday_from && (actor as any).holiday_till) {
+    effectiveAvailability.push({ start: (actor as any).holiday_from, end: (actor as any).holiday_till });
   }
 
   // NUCLEAR GOD MODE: Gebruik de nieuwe delivery_config indien aanwezig

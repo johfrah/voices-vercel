@@ -86,13 +86,13 @@ export class SEOEngineService {
 
     // Add Workshops
     const activeWorkshops = await db.select().from(workshops).where(eq(workshops.status, 'upcoming'));
-    activeWorkshops.forEach(w => {
+    activeWorkshops.forEach((w: any) => {
       entries.push({ url: `/studio/workshop/${w.slug}`, lastMod: w.date, priority: 0.7 });
     });
 
     // Add Actors
     const liveActors = await db.select().from(actors).where(eq(actors.status, 'live'));
-    liveActors.forEach(a => {
+    liveActors.forEach((a: any) => {
       entries.push({ url: `/voice/${a.first_name.toLowerCase()}`, lastMod: a.updatedAt || new Date(), priority: 0.6 });
     });
 

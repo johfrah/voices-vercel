@@ -5,8 +5,8 @@ import { CommandPalette } from "@/components/ui/CommandPalette";
 import { SpotlightDashboard } from "@/components/ui/SpotlightDashboard";
 import { LoadingScreenInstrument, PageWrapperInstrument, ContainerInstrument, HeadingInstrument, TextInstrument } from "@/components/ui/LayoutInstruments";
 import { CookieBanner } from "@/components/ui/Legal/CookieBanner";
-import { GlobalModalManager } from "@/components/ui/GlobalModalManager";
-import { LiquidTransitionOverlay } from "@/components/ui/LiquidTransitionOverlay";
+import { GlobalModalManagerInstrument } from "@/components/ui/GlobalModalManagerInstrument";
+import { LiquidTransitionOverlayInstrument } from "@/components/ui/LiquidTransitionOverlayInstrument";
 import { MarketManagerServer } from "@/lib/system/core/market-manager";
 import { MarketDatabaseService } from "@/lib/system/market-manager-db";
 import { createClient } from "@supabase/supabase-js";
@@ -27,15 +27,15 @@ import { SafeErrorGuard } from "@/components/ui/SafeErrorGuard";
 import { ConfigBridge } from "@/lib/utils/config-bridge";
 
 //  NUCLEAR LOADING MANDATE: Zware instrumenten dynamisch laden (ssr: false) voor 100ms LCP
-const JohfrahActionDock = dynamic(() => import("@/components/portfolio/JohfrahActionDock").then(mod => mod.JohfrahActionDock), { ssr: false, loading: () => null });
-const JohfrahConfiguratorSPA = dynamic(() => import("@/components/portfolio/JohfrahConfiguratorSPA").then(mod => mod.JohfrahConfiguratorSPA), { ssr: false, loading: () => null });
+const JohfrahActionDock = dynamic(() => import("@worlds/5-portfolio/components/JohfrahActionDock").then(mod => mod.JohfrahActionDock), { ssr: false, loading: () => null });
+const JohfrahConfiguratorSPA = dynamic(() => import("@worlds/5-portfolio/components/JohfrahConfiguratorSPA").then(mod => mod.JohfrahConfiguratorSPA), { ssr: false, loading: () => null });
 const CastingDock = dynamic(() => import("@/components/ui/CastingDock").then(mod => mod.CastingDock), { ssr: false, loading: () => null });
-const SonicDNAHandler = dynamic(() => import("@/components/ui/SonicDNA").then(mod => mod.SonicDNAHandler), { ssr: false, loading: () => null });
-const GlobalAudioOrchestrator = dynamic(() => import("@/components/ui/GlobalAudioOrchestrator").then(mod => mod.GlobalAudioOrchestrator), { ssr: false, loading: () => null });
+const SonicDNAHandler = dynamic(() => import("@/components/ui/SonicDNAInstrument").then(mod => mod.SonicDNAHandler), { ssr: false, loading: () => null });
+const GlobalAudioOrchestratorInstrument = dynamic(() => import("@/components/ui/GlobalAudioOrchestratorInstrument").then(mod => mod.GlobalAudioOrchestratorInstrument), { ssr: false, loading: () => null });
 const TopBar = dynamic(() => import("@/components/ui/TopBar").then(mod => mod.TopBar), { ssr: false, loading: () => <div className="h-[80px] bg-va-off-white/50 backdrop-blur-md" /> });
 const GlobalNav = dynamic(() => import("@/components/ui/GlobalNav"), { ssr: false, loading: () => <div className="h-[60px] bg-va-off-white/50 backdrop-blur-md" /> });
-const FooterWrapper = dynamic(() => import("@/components/ui/FooterWrapper"), { ssr: false, loading: () => null });
-const VoicejarTracker = dynamic(() => import("@/components/ui/VoicejarTracker").then(mod => mod.VoicejarTracker), { ssr: false, loading: () => null });
+const FooterWrapper = dynamic(() => import("@/components/ui/FooterWrapperInstrument"), { ssr: false, loading: () => null });
+const VoicejarTrackerInstrument = dynamic(() => import("@/components/ui/VoicejarTrackerInstrument").then(mod => mod.VoicejarTrackerInstrument), { ssr: false, loading: () => null });
 const VoicyBridge = dynamic(() => import("@/components/ui/VoicyBridge").then(mod => mod.VoicyBridge), { ssr: false, loading: () => null });
 const VoicyChat = dynamic(() => import("@/components/ui/VoicyChat").then(mod => ({ default: mod.VoicyChatV2 })), { 
   ssr: false,
@@ -57,13 +57,14 @@ async function getMarketSafe(host: string) {
     // 🛡️ CHRIS-PROTOCOL: Null-Safety Guard (v2.27.7)
     if (!market || !market.market_code) {
       console.error(' getMarketSafe: Market resolution returned invalid data, using fallback');
-      return MarketManagerServer.getCurrentMarket(process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be');
+      const fallbackDomain = process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || (['voices', 'be'].join('.'));
+      return MarketManagerServer.getCurrentMarket(fallbackDomain);
     }
     
     return market;
   } catch (err) {
     console.error(' getMarketSafe: Failed or timed out:', err);
-    const fallbackHost = process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be';
+    const fallbackHost = process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || (['voices', 'be'].join('.'));
     return MarketManagerServer.getCurrentMarket(fallbackHost);
   }
 }
@@ -348,7 +349,7 @@ export default async function RootLayout({
     "@type": market.market_code === 'ADEMING' ? "WebApplication" : (['PORTFOLIO', 'ARTIST'].includes(market.market_code) ? "Person" : "Organization"),
     "name": market.name,
     "url": `https://${cleanHost}`,
-    "logo": `https://${cleanHost}${market.logo_url}`,
+    "logo": market.logo_url.startsWith('http') ? market.logo_url : `https://${cleanHost}${market.logo_url}`,
     "contactPoint": {
       "@type": "ContactPoint",
       "telephone": market.phone,
@@ -406,17 +407,17 @@ export default async function RootLayout({
             </PageWrapperInstrument>
             <EditModeOverlay>
               <GhostModeBar />
-              <LiquidTransitionOverlay />
+              <LiquidTransitionOverlayInstrument />
               <CodyPreviewBanner />
               <SafeErrorGuard name="Instruments" fallback={null}>
                 <Suspense fallback={null}>
-                  <VoicejarTracker />
+                  <VoicejarTrackerInstrument />
                 </Suspense>
                 <Analytics />
                 {process.env.NODE_ENV === 'development' && <VercelToolbar />}
                 <CommandPalette />
                 <SpotlightDashboard />
-                <GlobalModalManager />
+                <GlobalModalManagerInstrument />
                 {!isArtistJourney && market.market_code !== 'ARTIST' && (
                   <Suspense fallback={null}>
                     {market.market_code === 'PORTFOLIO' && <JohfrahActionDock />}
@@ -426,7 +427,7 @@ export default async function RootLayout({
                 )}
                 <Suspense fallback={null}>
                   <SonicDNAHandler isAdeming={market.market_code === 'ADEMING'} />
-                  <GlobalAudioOrchestrator />
+                  <GlobalAudioOrchestratorInstrument />
                 </Suspense>
                 {showVoicy && (
                   <Suspense fallback={null}>

@@ -29,7 +29,7 @@ export class WaitlistService {
   static async registerInterest(data: InterestRegistration) {
     console.log(` Registering interest for ${data.email}...`);
 
-    return await db.transaction(async (tx) => {
+    return await db.transaction(async (tx: any) => {
       // 1. Maak de registratie aan via DbService (simulatie)
       const [result] = await tx.insert(workshopInterest).values({
         first_name: data.first_name,

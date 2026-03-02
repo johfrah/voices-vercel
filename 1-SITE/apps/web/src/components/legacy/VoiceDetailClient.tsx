@@ -10,8 +10,8 @@ import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { useCheckout } from "@/contexts/CheckoutContext";
 import { useTranslation } from "@/contexts/TranslationContext";
 import { useMasterControl } from "@/contexts/VoicesMasterControlContext";
-import { VoiceCard } from "@/components/ui/VoiceCard";
-import { VoicesMasterControl } from "@/components/ui/VoicesMasterControl";
+import { VoiceCard } from "@/components/ui/VoiceCardInstrument";
+import { VoicesMasterControlContext } from "@/components/ui/VoicesMasterControlInstrument";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, Suspense, useState } from 'react';
@@ -246,7 +246,7 @@ export function VoiceDetailClient({
       <div id="order-engine" className="mb-20">
         {/*  BOB-METHODE: MasterControl integratie op stempagina */}
         <div className="mb-12">
-          <VoicesMasterControl 
+          <VoicesMasterControlContext 
             actors={[actor]} 
             filters={{
               languages: actor.languages?.map((l: any) => l.name) || [],

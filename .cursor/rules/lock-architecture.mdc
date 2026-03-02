@@ -23,4 +23,4 @@ Before making any change, ask:
 2.  Am I using the `VoiceFilterEngine`? (If not, use it).
 3.  Is the URL clean? (If not, fix the router).
 
-**Any attempt to hardcode data or logic will be rejected by the Chris-Protocol.**
+**Any attempt to hardcode data or logic will be rejected by the Code Integrity Protocol.**

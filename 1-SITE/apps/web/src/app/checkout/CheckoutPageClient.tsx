@@ -13,7 +13,7 @@ import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useCheckout } from '@/contexts/CheckoutContext';
 import { useTranslation } from '@/contexts/TranslationContext';
 import Image from 'next/image';
-import { VoicesLink as Link } from '@/components/ui/VoicesLink';
+import { VoicesLinkInstrument as Link } from '@/components/ui/VoicesLinkInstrument';
 
 import { ArrowLeft, Check, ChevronRight, Loader2, Star, Edit2, ShoppingCart } from 'lucide-react';
 import { CheckoutForm } from '@/components/checkout/CheckoutForm';
@@ -21,7 +21,7 @@ import { PricingSummary } from '@/components/checkout/PricingSummary';
 import { OrderStepsInstrument } from '@/components/ui/OrderStepsInstrument';
 import nextDynamic from "next/dynamic";
 
-const LiquidBackground = nextDynamic(() => import('@/components/ui/LiquidBackground').then(mod => mod.LiquidBackground), { ssr: false });
+const LiquidBackground = nextDynamic(() => import('@/components/ui/LiquidBackgroundInstrument').then(mod => mod.LiquidBackground), { ssr: false });
 
 //  NUCLEAR LOADING MANDATE
 const ReviewsInstrument = nextDynamic(() => import("@/components/ui/ReviewsInstrument").then(mod => mod.ReviewsInstrument), { ssr: false });
@@ -163,7 +163,7 @@ export default function CheckoutPageClient() {
                         {[1,2,3].map(avatarIdx => (
                           <div key={avatarIdx} className="w-8 h-8 rounded-full border-2 border-white bg-va-off-white overflow-hidden relative shadow-sm">
                             <Image 
-                              src={`/assets/common/branding/founder/johfrah.png`} 
+                              src={`/assets/common/placeholders/placeholder-voice.jpg`} 
                               fill 
                               sizes="32px"
                               alt="User" 

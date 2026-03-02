@@ -13,7 +13,7 @@ import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { PricingTooltipInstrument } from '@/components/ui/PricingTooltipInstrument';
 import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import { User, Mail, Phone, Briefcase, ArrowRight, CheckCircle2, ShieldCheck } from 'lucide-react';
-import { BentoCard } from '@/components/ui/BentoGrid';
+import { BentoCard } from '@/components/ui/BentoGridInstrument';
 import { useTranslation } from '@/contexts/TranslationContext';
 
 /**

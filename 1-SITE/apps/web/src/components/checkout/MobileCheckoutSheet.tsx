@@ -1,6 +1,6 @@
 "use client";
 
-import { BentoCard } from '@/components/ui/BentoGrid';
+import { BentoCard } from '@/components/ui/BentoGridInstrument';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useCheckout } from '@/contexts/CheckoutContext';
 import { useSonicDNA } from '@/lib/engines/sonic-dna';

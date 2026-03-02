@@ -35,7 +35,7 @@ export class QuizService {
       .where(eq(quizSteps.quizSlug, quizSlug))
       .orderBy(asc(quizSteps.stepOrder));
 
-    return steps.map(step => ({
+    return steps.map((step: any) => ({
       id: step.id,
       quizSlug: step.quizSlug,
       stepOrder: step.stepOrder,

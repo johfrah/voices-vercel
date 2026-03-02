@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { AgencyCalculator as PricingCalculator } from "./AgencyCalculator";
+import { AgencyCalculator as PricingCalculator } from "@/worlds/1-agency/components/AgencyCalculatorInstrument";
 import { VoiceglotText } from "./VoiceglotText";
 import { ContainerInstrument, HeadingInstrument, TextInstrument } from "./LayoutInstruments";
 

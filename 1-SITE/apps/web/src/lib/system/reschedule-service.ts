@@ -67,7 +67,7 @@ export class RescheduleService {
   static async applyReschedule(orderId: number, newDate: Date, note?: string) {
     console.log(` Rescheduling Order #${orderId} to ${newDate.toISOString()}...`);
 
-    return await db.transaction(async (tx) => {
+    return await db.transaction(async (tx: any) => {
       // 1. Update de order met de nieuwe datum
       const [order] = await tx.select().from(orders).where(eq(orders.id, orderId));
       if (!order) throw new Error('Order niet gevonden');

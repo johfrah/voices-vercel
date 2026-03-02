@@ -6,8 +6,8 @@ import { PricingSummary } from '@/components/checkout/PricingSummary';
 import { QuoteDownloadButton } from '@/components/checkout/QuoteDownloadButton';
 import { ContainerInstrument, HeadingInstrument, LoadingScreenInstrument, TextInstrument, ButtonInstrument } from "@/components/ui/LayoutInstruments";
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
-import { VoiceGrid } from "@/components/ui/VoiceGrid";
-import { VoicesMasterControl } from "@/components/ui/VoicesMasterControl";
+import { VoiceGrid } from "@/components/ui/VoiceGridInstrument";
+import { VoicesMasterControlContext } from "@/components/ui/VoicesMasterControlInstrument";
 import { useCheckout } from '@/contexts/CheckoutContext';
 import { useMasterControl } from '@/contexts/VoicesMasterControlContext';
 import { useSonicDNA } from '@/lib/engines/sonic-dna';
@@ -21,7 +21,7 @@ import { useRouter } from 'next/navigation';
 import { calculateDeliveryDate } from '@/lib/utils/delivery-logic';
 import { VoiceFilterEngine } from '@/lib/engines/voice-filter-engine';
 
-import { RecentlyPlayedBar } from "@/components/ui/RecentlyPlayedBar";
+import { RecentlyPlayedBar } from "@/components/ui/RecentlyPlayedBarInstrument";
 
 export function AgencyContent({ mappedActors, filters }: { mappedActors: any[], filters: any }) {
   const { state, updateStep } = useMasterControl();
@@ -199,7 +199,7 @@ export function AgencyContent({ mappedActors, filters }: { mappedActors: any[], 
       {/* Filters persistent bovenaan */}
       {state.currentStep !== 'checkout' && (
         <div className="relative z-50 w-full px-4 md:px-6">
-          <VoicesMasterControl 
+          <VoicesMasterControlContext 
             actors={mappedActors} 
             filters={filters} 
             languagesData={dynamicConfig?.languages}
@@ -341,7 +341,7 @@ export function AgencyContent({ mappedActors, filters }: { mappedActors: any[], 
 }
 
 // Internal wrapper to override default VoiceCard behavior for Agency page
-import { VoiceCard } from "@/components/ui/VoiceCard";
+import { VoiceCard } from "@/components/ui/VoiceCardInstrument";
 function ConfigurableVoiceCard({ voice, onSelect, hideButton, isCornered, compact }: { voice: any, onSelect: () => void, hideButton?: boolean, isCornered?: boolean, compact?: boolean }) {
   return (
     <VoiceCard 

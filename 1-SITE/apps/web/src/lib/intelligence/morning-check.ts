@@ -18,7 +18,7 @@ export async function generateMorningBrief() {
   const dailyOrders = await db.query.orders.findMany({
     where: gte(orders.createdAt, yesterday),
   });
-  const totalRevenue = dailyOrders.reduce((acc, order) => acc + Number(order.total || 0), 0);
+  const totalRevenue = dailyOrders.reduce((acc: number, order: any) => acc + Number(order.total || 0), 0);
 
   // 2. Lead Intelligence
   const newLeads = await db.query.centralLeads.findMany({
@@ -46,11 +46,11 @@ Hier is je Core Intelligence Brief voor vandaag.
 - **Forecast:** De data voorspelt een stabiele week met een verwachte groei van 12% op de Studio-tak.
 
 ##  Hot Leads (Top 3 "Burning")
-${newLeads.slice(0, 3).map(l => `- **${l.first_name || 'Anoniem'}**: ${l.leadVibe} vibe uit ${l.sourceType} (Sector: ${ (l.iapContext as any)?.sector || 'Onbekend' })`).join('\n')}
+${newLeads.slice(0, 3).map((l: any) => `- **${l.first_name || 'Anoniem'}**: ${l.leadVibe} vibe uit ${l.sourceType} (Sector: ${ (l.iapContext as any)?.sector || 'Onbekend' })`).join('\n')}
 
 ##  Watchdog Status
 ${criticalEvents.length > 0 
-  ? ` **Kritieke meldingen:** ${criticalEvents.length}\n${criticalEvents.map(e => `- ${e.message}`).join('\n')}`
+  ? ` **Kritieke meldingen:** ${criticalEvents.length}\n${criticalEvents.map((e: any) => `- ${e.message}`).join('\n')}`
   : ' Alle systemen ademen normaal.'}
 
 ##  Felix Approval Queue

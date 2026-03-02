@@ -1,52 +1,26 @@
 ---
-description: Nuclear CRUD Workflow & ID-First Handshake for Project Atomic (2026)
-globs: **/*.{ts,tsx}
-alwaysApply: true
+description: 🏭 Nuclear CRUD Workflow & Data Integrity - The rules for transforming raw data into masters without hardcoding.
+globs: **/*.{ts,tsx,json}
 ---
 
-# 🚀 NUCLEAR WORKFLOW: ID-FIRST ENGINE (2026)
+# 🏭 NUCLEAR CRUD WORKFLOW: DATA & CONFIG
 
-**Mandaat:** ZERO DRIFT, ID-FIRST INTEGRITY
+Grondstoffen transformeren naar meesterwerken zonder hardcoding.
 
-## 1. DE ARCHITECTUUR (Source of Truth)
-Wij werken in een volledig ontkoppeld model waarbij de Supabase-database de enige waarheid is.
+## 💾 DATA INTEGRITEIT (SOURCE OF TRUTH)
+1.  **Database is Leading**: Tekst en config leven in Supabase, niet in lokale bestanden.
+2.  **MarketManager First**: Gebruik altijd de `MarketManager` voor markt-specifieke data.
+3.  **No Hardcoded Config**: Social links, contactgegevens en SEO data mogen NOOIT hardcoded in componenten staan.
+4.  **Snake Case Exclusivity**: TypeScript property namen in `pgTable` moeten EXACT overeenkomen met de kolomnaam (bijv. `first_name: text("first_name")`).
 
-- **Frontend:** Next.js (App Router) in `1-SITE/apps/web/`.
-- **Database:** Drizzle ORM in `1-SITE/packages/database/`.
-- **Media:** Supabase Storage gesynchroniseerd met `1-SITE/apps/web/public/assets/`.
-- **Routing:** `slug_registry` tabel in Supabase (Handshake ID).
-
-## 2. ID-FIRST HANDSHAKE (De Grondwet)
-Het gebruik van slugs of namen voor interne logica is STRIKT VERBODEN.
-
-1.  **Resolve First**: Elke inkomende request (URL slug) moet DIRECT worden geresolveerd naar een `entity_id` (UUID) via de `slug_registry`.
-2.  **Internal Logic**: Gebruik UITSLUITEND `entity_id`, `world_id`, `market_id` en `journey_id` voor database queries, props en state management.
-3.  **Cross-Market Summation**: Prijzen en configuraties worden berekend op basis van de `market_id`. Gebruik de `MarketManager` voor "Global-First, Exception by Market" logica.
-
-## 3. DAGELIJKSE WORKFLOW
-
-### A. Ontwikkelen (ID-Only)
-1.  **Linter-First**: Draai ALTIJD `npm run lint` of `npm run type-check` voor elke commit.
-2.  **Type-Safety**: Geen `any`. Gebruik de types uit `@/types/` of genereer ze via Drizzle.
-3.  **LayoutInstruments**: Gebruik UITSLUITEND instrumenten uit de catalogus (`310-LAYOUT-INSTRUMENTS.mdc`).
-
-### B. Database Wijzigingen (Drizzle)
-1.  Pas het schema aan in `1-SITE/packages/database/src/schema/`.
-2.  Genereer migraties en push naar Supabase via de CLI.
+## 🔄 SYNC & WORKFLOW
+1.  **Nuclear Lock**: Respecteer het `is_manually_edited` veld. Overschrijf NOOIT handmatige aanpassingen.
+2.  **ID-First Handshake**: Gebruik UITSLUITEND database-IDs (`uuid`) voor interne logica.
 3.  **Atomic CRUD**: Data-aanpassingen gebeuren via Server Actions of API routes, ALTIJD met ID-validatie.
+4.  **Sync Cleanup**: Verplaats getransformeerde Markdown bestanden direct naar `4-KELDER/CONTAINER/` (Dead Zone).
 
-### C. Deployment (Vercel)
-1.  Verhoog de versie in `package.json`, `Providers.tsx` en `api/admin/config/route.ts`.
-2.  Voer `npm run check:pre-vercel` uit.
-3.  Commit met `vX.Y.Z: [Bericht]` en push naar GitHub.
-4.  Valideer live via `npx tsx 3-WETTEN/scripts/forensic-audit.ts`.
+## 🧪 TYPE SAFETY
+*   **No any**: Gebruik de types uit `@/types/` of genereer ze via Drizzle.
+*   **Zod Validation**: Gebruik Zod voor API payload validatie om structurele integriteit te garanderen.
 
-## 4. ISO-FIRST MANDATE
-Gebruik ALTIJD officiële ISO-codes voor talen en markten.
-- **Talen**: `nl-BE`, `nl-NL`, `fr-BE`, `en-GB`, etc.
-- **Markten**: Gebruik `market_code` (bijv. `BE`, `NL`) voor configuratie-mapping.
-
-## 5. NUCLEAR LOCKS
-Gebruik `is_manually_edited: true` in de database voor records die NOOIT door AI of scripts overschreven mogen worden.
-
-"Data is vloeibaar, maar de ID is een anker." - Chris/Autist
+"Code moet dom zijn, data moet slim zijn."

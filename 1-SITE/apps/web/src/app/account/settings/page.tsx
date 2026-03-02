@@ -1,15 +1,15 @@
 import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslation } from '@/contexts/TranslationContext';
-import { BentoGrid, BentoCard } from '@/components/ui/BentoGrid';
+import { BentoGrid, BentoCard } from '@/components/ui/BentoGridInstrument';
 import { ButtonInstrument, ContainerInstrument, HeadingInstrument, InputInstrument, PageWrapperInstrument, SectionInstrument, TextInstrument, LabelInstrument } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { Settings, ArrowLeft, User, Lock, Bell, Shield, BadgeCheck } from 'lucide-react';
-import { VoicesLink as Link } from '@/components/ui/VoicesLink';
+import { VoicesLinkInstrument as Link } from '@/components/ui/VoicesLinkInstrument';
 import { ActorProfileForm } from '@/components/forms/ActorProfileForm';
 import nextDynamic from 'next/dynamic';
 
-const LiquidBackground = nextDynamic(() => import('@/components/ui/LiquidBackground').then(mod => mod.LiquidBackground), { ssr: false });
+const LiquidBackground = nextDynamic(() => import('@/components/ui/LiquidBackgroundInstrument').then(mod => mod.LiquidBackground), { ssr: false });
 
 export const dynamic = 'force-dynamic';
 

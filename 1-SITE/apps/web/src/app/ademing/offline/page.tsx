@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef } from 'react';
-import { Logo } from '@/components/ui/ademing/Logo';
+import { Logo } from '@worlds/6-ademing/components/Logo';
 import { ContainerInstrument, ButtonInstrument } from '@/components/ui/LayoutInstruments';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Play, Pause, Volume2, VolumeX } from 'lucide-react';

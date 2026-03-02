@@ -24,7 +24,8 @@ export async function PATCH(
   try {
     let body: any = {};
     try {
-      body = await request.json();
+      const jsonBody = await request.json();
+      body = jsonBody;
     } catch (e) {
       console.warn(' [AdminActorAPI] Failed to parse request body');
     }
@@ -180,7 +181,7 @@ export async function PATCH(
       error: `Actor update crash: ${error.message}`,
       stack: error.stack,
       url: request.url,
-      payload: { actorId: id, body }
+      payload: { actorId: id }
     });
     return NextResponse.json({ error: 'Failed to update actor', details: error.message }, { status: 500 });
   }

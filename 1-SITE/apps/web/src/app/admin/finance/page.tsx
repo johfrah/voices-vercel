@@ -6,7 +6,7 @@ import {
     ButtonInstrument,
     FixedActionDockInstrument
 } from "@/components/ui/LayoutInstruments";
-import { BentoGrid, BentoCard } from "@/components/ui/BentoGrid";
+import { BentoGrid, BentoCard } from "@/components/ui/BentoGridInstrument";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { StudioDataBridge } from "@/lib/bridges/studio-bridge";
 import { cn } from "@/lib/utils";

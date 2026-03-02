@@ -40,7 +40,7 @@ export async function POST(request: Request) {
     if (uploadError) throw uploadError;
 
     // 2. Register in Database via Atomic Transaction
-    const result = await db.transaction(async (tx) => {
+    const result = await db.transaction(async (tx: any) => {
       const [submission] = await tx.insert(courseSubmissions).values({
         user_id: parseInt(userId),
         lessonId: parseInt(lessonId),

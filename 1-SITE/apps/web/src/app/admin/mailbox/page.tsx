@@ -124,7 +124,7 @@ export default function MailboxPage() {
 
   const fetchCustomerDna = React.useCallback(async (user_id: number) => {
     try {
-      const data = await AdminService.getCustomerDna(userId);
+      const data = await AdminService.getCustomerDna(user_id);
       setCustomerDna(data);
     } catch (e) { console.error(e); }
   }, []);

@@ -9,7 +9,7 @@ import {
   WorkshopStats, 
   Participant,
   Lesson
-} from "../types";
+} from "@/types";
 
 export type { 
   Actor, 

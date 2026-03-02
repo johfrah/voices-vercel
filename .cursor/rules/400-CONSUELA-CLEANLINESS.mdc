@@ -1,0 +1,29 @@
+---
+description: 🧹 Repository Cleanliness & Structural Integrity - Mandate for folder structure, naming conventions, and archiving stray files.
+globs: **/*
+---
+
+# 🧹 REPOSITORY CLEANLINESS
+
+Dit document dwingt de structurele integriteit van de machinekamer af. Slop in de mappenstructuur wordt niet getolereerd.
+
+## 1. ZERO-TOLERANCE MAPPENSTRUCTUUR
+- **GEEN UNDERSCORES**: Het gebruik van underscores (`_`) in hoofdmappen in de root is STRIKT VERBODEN.
+- **3-DATA**: De enige toegestane plek voor database-mirrors en feitelijke snapshots.
+- **ALLOWED_ROOT_DIRS**: `1-SITE`, `3-DATA`, `4-KELDER`, `node-modules`, `.git`, `.cursor`, `.vscode`, `.bin`, `.webhosting`.
+- **GEEN RECURSIE**: Het is STRIKT VERBODEN om kopieën van de root-structuur binnen andere mappen te plaatsen.
+
+## 2. ZERO STRAY FILES
+- **ROOT**: In de root mogen geen losse bestanden staan (behalve `package.json`, `.cursorrules`, etc.).
+- **3-DATA**: In `3-DATA/docs/` mogen geen losse `.md` bestanden staan; alles moet in een genummerde submap.
+- **1-SITE**: In `1-SITE/apps/web/` mogen GEEN "werkbestanden" (`heal-*.ts`, `check-*.ts`) staan. Verplaats deze naar `4-KELDER/3-LEGACY-CODE/scripts/`.
+
+## 3. NOMENCLATUUR DISCIPLINE
+- **Kebab-Case**: Bestandsnamen moeten in `kebab-case` zijn. Vermijd vage namen zoals `test.ts`.
+- **Context-Actie**: Gebruik `[context]-[actie].ts` (bijv. `actor-sync.ts`).
+- **Instrument Suffix**: Dwing het `Instrument` suffix af op alle UI componenten in `src/components/ui/`.
+
+## 4. ARCHIVERING
+- **Directe Correctie**: Elke map met een underscore of elk zwerfbestand moet DIRECT worden verplaatst naar `4-KELDER`.
+
+"Houd de repo 100% Masterclass Clean. Vakmanschap is de afwezigheid van splinters."

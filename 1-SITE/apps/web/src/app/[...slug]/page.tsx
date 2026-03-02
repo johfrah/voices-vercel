@@ -1,6 +1,6 @@
 import { ContainerInstrument, HeadingInstrument, PageWrapperInstrument, TextInstrument, LoadingScreenInstrument, ButtonInstrument, SectionInstrument } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
-import { VoicesLink } from '@/components/ui/VoicesLink';
+import { VoicesLinkInstrument } from '@/components/ui/VoicesLinkInstrument';
 import { db, contentArticles, actors, castingLists, getTable } from '@/lib/system/voices-config';
 
 import { eq, or, ilike, and } from 'drizzle-orm';
@@ -17,12 +17,12 @@ import { headers } from "next/headers";
 import { VoiceDetailClient } from "@/components/legacy/VoiceDetailClient";
 import { ArtistDetailClient } from "@/components/legacy/ArtistDetailClient";
 import { AgencyContent } from "@/components/legacy/AgencyContent";
-import { AgencyHeroInstrument } from "@/components/ui/AgencyHeroInstrument";
+import { AgencyHeroInstrument } from "@worlds/1-agency/components/AgencyHeroInstrument";
 import { InstrumentRenderer } from "@/components/ui/InstrumentRenderer";
 import nextDynamic from "next/dynamic";
 import { JourneyType } from '@/contexts/VoicesMasterControlContext';
 import { normalizeSlug, stripLanguagePrefix } from '@/lib/system/slug';
-import { BentoGrid, BentoCard } from '@/components/ui/BentoGrid';
+import { BentoGrid, BentoCard } from '@/components/ui/BentoGridInstrument';
 import { createClient } from "@supabase/supabase-js";
 
 //  CHRIS-PROTOCOL: SDK fallback for stability (v2.14.273)
@@ -37,27 +37,27 @@ const supabase = createClient(supabaseUrl, supabaseKey, {
 });
 
   //  NUCLEAR LOADING MANDATE
-  const LiquidBackground = nextDynamic(() => import("@/components/ui/LiquidBackground").then(mod => mod.LiquidBackground), { 
+  const LiquidBackground = nextDynamic(() => import("@/components/ui/LiquidBackgroundInstrument").then(mod => mod.LiquidBackground), { 
     ssr: false,
     loading: () => <ContainerInstrument className="fixed inset-0 z-0 bg-va-off-white" />
   });
-  const VideoPlayer = nextDynamic(() => import("@/components/academy/VideoPlayer").then(mod => mod.VideoPlayer), { ssr: false });
+  const VideoPlayer = nextDynamic(() => import("@worlds/3-academy/components/VideoPlayer").then(mod => mod.VideoPlayer), { ssr: false });
 
-const AgencyCalculator = nextDynamic(() => import("@/components/ui/AgencyCalculator").then(mod => mod.AgencyCalculator), { ssr: false });
+const AgencyCalculator = nextDynamic(() => import("@worlds/1-agency/components/AgencyCalculatorInstrument").then(mod => mod.AgencyCalculator), { ssr: false });
 
 // Workshop Components
-const WorkshopCarousel = nextDynamic(() => import("@/components/studio/WorkshopCarousel").then(mod => mod.WorkshopCarousel), { ssr: false });
-const WorkshopCalendar = nextDynamic(() => import("@/components/studio/WorkshopCalendar").then(mod => mod.WorkshopCalendar), { ssr: false });
-const StudioVideoPlayer = nextDynamic(() => import("@/components/ui/StudioVideoPlayer").then(mod => mod.StudioVideoPlayer), { ssr: false });
-const JourneyCta = nextDynamic(() => import("@/components/ui/JourneyCta").then(mod => mod.JourneyCta), { ssr: false });
-const StudioLaunchpad = nextDynamic(() => import("@/components/ui/StudioLaunchpad").then(mod => mod.StudioLaunchpad), { ssr: false });
-const WorkshopQuiz = nextDynamic(() => import("@/components/studio/WorkshopQuiz").then(mod => mod.WorkshopQuiz), { ssr: false });
-const WorkshopInterestForm = nextDynamic(() => import("@/components/studio/WorkshopInterestForm").then(mod => mod.WorkshopInterestForm), { ssr: false });
+const WorkshopCarousel = nextDynamic(() => import("@worlds/2-studio/components/WorkshopCarousel").then(mod => mod.WorkshopCarousel), { ssr: false });
+const WorkshopCalendar = nextDynamic(() => import("@worlds/2-studio/components/WorkshopCalendar").then(mod => mod.WorkshopCalendar), { ssr: false });
+const StudioVideoPlayer = nextDynamic(() => import("@worlds/2-studio/components/StudioVideoPlayerInstrument").then(mod => mod.StudioVideoPlayer), { ssr: false });
+const JourneyCta = nextDynamic(() => import("@/components/ui/JourneyCtaInstrument").then(mod => mod.JourneyCta), { ssr: false });
+const StudioLaunchpad = nextDynamic(() => import("@worlds/2-studio/components/StudioLaunchpadInstrument").then(mod => mod.StudioLaunchpad), { ssr: false });
+const WorkshopQuiz = nextDynamic(() => import("@worlds/2-studio/components/WorkshopQuiz").then(mod => mod.WorkshopQuiz), { ssr: false });
+const WorkshopInterestForm = nextDynamic(() => import("@worlds/2-studio/components/WorkshopInterestForm").then(mod => mod.WorkshopInterestForm), { ssr: false });
 
 // Ademing Components
-const AdemingBento = nextDynamic(() => import("@/components/ui/ademing/AdemingBento").then(mod => mod.AdemingBento), { ssr: false });
-const MeditationPlayerInstrument = nextDynamic(() => import("@/components/ui/ademing/MeditationPlayerInstrument").then(mod => mod.MeditationPlayerInstrument), { ssr: false });
-const BreathingInstrument = nextDynamic(() => import("@/components/ui/ademing/BreathingInstrument").then(mod => mod.BreathingInstrument), { ssr: false });
+const AdemingBento = nextDynamic(() => import("@worlds/6-ademing/components/AdemingBento").then(mod => mod.AdemingBento), { ssr: false });
+const MeditationPlayerInstrument = nextDynamic(() => import("@worlds/6-ademing/components/MeditationPlayerInstrument").then(mod => mod.MeditationPlayerInstrument), { ssr: false });
+const BreathingInstrument = nextDynamic(() => import("@worlds/6-ademing/components/BreathingInstrument").then(mod => mod.BreathingInstrument), { ssr: false });
 
 /**
  *  SUZY-MANDATE: Generate Structured Data (JSON-LD) for Voice Actors
@@ -689,11 +689,11 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
           
           if (workshop) {
             // 🛡️ CHRIS-PROTOCOL: Workshop Detail Handshake (v2.16.097)
-            const WorkshopHeroIsland = nextDynamic(() => import("@/components/studio/WorkshopHeroIsland").then(mod => mod.WorkshopHeroIsland), { ssr: false });
-            const SkillDNAIsland = nextDynamic(() => import("@/components/studio/SkillDNAIsland").then(mod => mod.SkillDNAIsland), { ssr: false });
-            const DayScheduleIsland = nextDynamic(() => import("@/components/studio/DayScheduleIsland").then(mod => mod.DayScheduleIsland), { ssr: false });
-            const InstructorLocationIsland = nextDynamic(() => import("@/components/studio/InstructorLocationIsland").then(mod => mod.InstructorLocationIsland), { ssr: false });
-            const ReviewGrid = nextDynamic(() => import("@/components/studio/ReviewGrid").then(mod => mod.ReviewGrid), { ssr: false });
+            const WorkshopHeroIsland = nextDynamic(() => import("@worlds/2-studio/components/WorkshopHeroIsland").then(mod => mod.WorkshopHeroIsland), { ssr: false });
+            const SkillDNAIsland = nextDynamic(() => import("@worlds/2-studio/components/SkillDNAIsland").then(mod => mod.SkillDNAIsland), { ssr: false });
+            const DayScheduleIsland = nextDynamic(() => import("@worlds/2-studio/components/DayScheduleIsland").then(mod => mod.DayScheduleIsland), { ssr: false });
+            const InstructorLocationIsland = nextDynamic(() => import("@worlds/2-studio/components/InstructorLocationIsland").then(mod => mod.InstructorLocationIsland), { ssr: false });
+            const ReviewGrid = nextDynamic(() => import("@worlds/2-studio/components/ReviewGrid").then(mod => mod.ReviewGrid), { ssr: false });
 
   return (
     <PageWrapperInstrument className="bg-va-off-white min-h-screen pb-32">
@@ -744,9 +744,9 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
           <>
             <Suspense fallback={null}><LiquidBackground /></Suspense>
             <AgencyHeroInstrument filters={searchResults?.filters || { genders: [], languages: [], styles: [] }} market={market.market_code} searchParams={filters} />
-            <div className="!pt-0 -mt-24 relative z-40">
+            <ContainerInstrument plain className="!pt-0 -mt-24 relative z-40">
               <AgencyContent mappedActors={searchResults?.results || []} filters={searchResults?.filters || { genders: [], languages: [], styles: [] }} />
-            </div>
+            </ContainerInstrument>
           </>
         );
       }
@@ -924,9 +924,9 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
           <>
             <Suspense fallback={null}><LiquidBackground /></Suspense>
             <AgencyHeroInstrument filters={searchResults?.filters || { genders: [], languages: [], styles: [] }} market={market.market_code} searchParams={filters} />
-            <div className="!pt-0 -mt-24 relative z-40">
+            <ContainerInstrument plain className="!pt-0 -mt-24 relative z-40">
               <AgencyContent mappedActors={mappedActors} filters={searchResults?.filters || { genders: [], languages: [], styles: [] }} />
-            </div>
+            </ContainerInstrument>
           </>
         );
       }
@@ -940,8 +940,8 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
       {/* 🎭 JOHFRAI WORLD: AI Mixer Entry (v2.16.101) */}
       {lookupSlug === 'johfrai' && (
         (() => {
-          const LiveMixer = nextDynamic(() => import("@/components/johfrai/LiveMixerInstrument").then(mod => mod.LiveMixerInstrument), { ssr: false });
-          const SmartDemoExplorer = nextDynamic(() => import("@/components/johfrai/SmartDemoExplorer").then(mod => mod.SmartDemoExplorer), { ssr: false });
+          const LiveMixer = nextDynamic(() => import("@worlds/10-johfrai/components/LiveMixerInstrument").then(mod => mod.LiveMixerInstrument), { ssr: false });
+          const SmartDemoExplorer = nextDynamic(() => import("@worlds/10-johfrai/components/SmartDemoExplorer").then(mod => mod.SmartDemoExplorer), { ssr: false });
           
           return (
             <PageWrapperInstrument className="bg-va-black min-h-screen text-white">
@@ -955,18 +955,18 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
                   </HeadingInstrument>
                 </header>
                 
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-                  <div className="lg:col-span-8">
-                    <Suspense fallback={<div className="h-[600px] bg-white/5 animate-pulse rounded-[40px]" />}>
+                <ContainerInstrument plain className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+                  <ContainerInstrument plain className="lg:col-span-8">
+                    <Suspense fallback={<ContainerInstrument plain className="h-[600px] bg-white/5 animate-pulse rounded-[40px]" />}>
                       <LiveMixer title="Johfrai AI" voiceUrl="/assets/audio/johfrai-demo.mp3" />
                     </Suspense>
-                  </div>
-                  <div className="lg:col-span-4">
-                    <Suspense fallback={<div className="h-[600px] bg-white/5 animate-pulse rounded-[40px]" />}>
+                  </ContainerInstrument>
+                  <ContainerInstrument plain className="lg:col-span-4">
+                    <Suspense fallback={<ContainerInstrument plain className="h-[600px] bg-white/5 animate-pulse rounded-[40px]" />}>
                       <SmartDemoExplorer onAdoptScript={() => {}} />
                     </Suspense>
-                  </div>
-                </div>
+                  </ContainerInstrument>
+                </ContainerInstrument>
               </ContainerInstrument>
             </PageWrapperInstrument>
           );
@@ -1033,6 +1033,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
         ai_tags: actor.ai_tags || [],
         slug: actor.slug,
         demos: actor.demos || [],
+        author_id: actor.author_id,
         bio: actor.bio,
         price_ivr: actor.price_ivr,
         price_unpaid: actor.price_unpaid,
@@ -1054,9 +1055,9 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
             market={marketCode}
             searchParams={filters}
           />
-          <div className="!pt-0 -mt-24 relative z-40">
+          <ContainerInstrument plain className="!pt-0 -mt-24 relative z-40">
             <AgencyContent mappedActors={mappedActors} filters={searchResults?.filters || { genders: [], languages: [], styles: [] }} />
-          </div>
+          </ContainerInstrument>
         </>
       );
     }
@@ -1171,12 +1172,12 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
                         <VoiceglotText translationKey="action.view_profile" defaultText="Bekijk Profiel" />
                       </TextInstrument>
                     </ContainerInstrument>
-                    <VoicesLink 
+                    <VoicesLinkInstrument 
                       href={`/${item.actor.slug}`}
                       className="w-full bg-va-black text-white py-4 rounded-[10px] font-medium tracking-widest text-[13px] uppercase hover:bg-primary transition-all text-center"
                     >
                       <VoiceglotText translationKey="action.select_voice" defaultText="Selecteer deze stem" />
-                    </VoicesLink>
+                    </VoicesLinkInstrument>
                   </ContainerInstrument>
                 ))}
               </ContainerInstrument>
@@ -1186,9 +1187,9 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
                   <HeadingInstrument level={2} className="text-4xl font-light mb-8">
                     <VoiceglotText translationKey="casting.no_match_title" defaultText="Niet de juiste match?" />
                   </HeadingInstrument>
-                  <VoicesLink href="/agency" className="va-btn-pro inline-flex items-center gap-2">
+                  <VoicesLinkInstrument href="/agency" className="va-btn-pro inline-flex items-center gap-2">
                     <VoiceglotText translationKey="action.view_all_voices" defaultText="Bekijk alle stemmen" /> <ArrowRight size={18} />
-                  </VoicesLink>
+                  </VoicesLinkInstrument>
                 </ContainerInstrument>
               </footer>
             </ContainerInstrument>
@@ -1386,17 +1387,15 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
         const subtitleUrl = body.match(/subtitles:\s*([^\n]+)/)?.[1]?.trim();
         
         return (
-          <section key={block.id} className="voices-hero">
+          <SectionInstrument key={block.id} className="voices-hero">
             <ContainerInstrument plain className="voices-video-hero-grid">
               <ContainerInstrument plain className="voices-hero-right group lg:order-1">
                 <ContainerInstrument plain className="voices-hero-visual-container">
-                  <Suspense fallback={<div className="w-full h-full bg-va-black/5 animate-pulse rounded-[32px]" />}>
+                  <Suspense fallback={<ContainerInstrument plain className="w-full h-full bg-va-black/5 animate-pulse rounded-[32px]" />}>
                     <StudioVideoPlayer 
                       url={videoUrl || "/assets/studio/workshops/videos/workshop_studio_teaser.mp4"} 
                       subtitles={subtitleUrl || "/assets/studio/workshops/subtitles/workshop_studio_teaser-nl.vtt"}
                       poster={posterUrl || "/assets/visuals/branding/branding-branding-photo-horizontal-1.webp"}
-                      aspect="portrait"
-                      className="shadow-aura-lg border-none w-full h-full"
                     />
                   </Suspense>
                 </ContainerInstrument>
@@ -1422,12 +1421,12 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
                 </ContainerInstrument>
               </ContainerInstrument>
             </ContainerInstrument>
-          </section>
+          </SectionInstrument>
         );
 
       case 'workshop_carousel':
         return (
-          <section key={block.id} id="workshops" className="py-40 bg-white border-y border-black/[0.03] -mx-4 px-4 lg:-mx-32 lg:px-32">
+          <SectionInstrument key={block.id} id="workshops" className="py-40 bg-white border-y border-black/[0.03] -mx-4 px-4 lg:-mx-32 lg:px-32">
             <ContainerInstrument plain className="max-w-6xl mx-auto">
               <ContainerInstrument plain className="max-w-3xl mb-24 space-y-8 mx-auto text-center">
                 {title && <HeadingInstrument level={2} className="text-5xl md:text-6xl font-light tracking-tighter leading-none text-va-black">{title}</HeadingInstrument>}
@@ -1435,16 +1434,16 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
                   {body}
                 </TextInstrument>
               </ContainerInstrument>
-              <Suspense fallback={<div className="h-96 w-full bg-va-black/5 animate-pulse rounded-[20px]" />}>
+              <Suspense fallback={<ContainerInstrument plain className="h-96 w-full bg-va-black/5 animate-pulse rounded-[20px]" />}>
                 <WorkshopCarousel workshops={extraData.workshops || []} />
               </Suspense>
             </ContainerInstrument>
-          </section>
+          </SectionInstrument>
         );
 
       case 'workshop_calendar':
         return (
-          <section key={block.id} className="py-40 bg-white">
+          <SectionInstrument key={block.id} className="py-40 bg-white">
             <ContainerInstrument className="max-w-[1140px]">
               <BentoGrid columns={3}>
                 <BentoCard span="lg" className="bg-va-off-white rounded-[20px] shadow-aura border border-black/[0.02] overflow-hidden">
@@ -1462,7 +1461,7 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
                     <TextInstrument className="text-[15px] text-black/40 font-light leading-relaxed mb-12 max-w-md">
                       {body}
                     </TextInstrument>
-                    <Suspense fallback={<div className="h-64 w-full bg-va-black/5 animate-pulse rounded-[20px]" />}>
+                    <Suspense fallback={<ContainerInstrument plain className="h-64 w-full bg-va-black/5 animate-pulse rounded-[20px]" />}>
                       <WorkshopCalendar workshops={extraData.workshops || []} />
                     </Suspense>
                   </ContainerInstrument>
@@ -1485,18 +1484,18 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
                 </BentoCard>
               </BentoGrid>
             </ContainerInstrument>
-          </section>
+          </SectionInstrument>
         );
 
       case 'journey_cta':
         return (
-          <section key={block.id} className="py-20 bg-va-off-white">
+          <SectionInstrument key={block.id} className="py-20 bg-va-off-white">
             <ContainerInstrument className="max-w-[1140px]">
-              <Suspense fallback={<div className="h-48 w-full bg-va-black/5 animate-pulse rounded-[20px]" />}>
+              <Suspense fallback={<ContainerInstrument plain className="h-48 w-full bg-va-black/5 animate-pulse rounded-[20px]" />}>
                 <JourneyCta journey={body.trim() as any || 'studio'} />
               </Suspense>
             </ContainerInstrument>
-          </section>
+          </SectionInstrument>
         );
 
       case 'lesson_grid':
@@ -1519,8 +1518,12 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
                     <TextInstrument className="text-va-black/40 group-hover:text-white/40 text-[15px] mb-8 font-light leading-relaxed">{lesson.description}</TextInstrument>
                     <Link href={`/academy/lesson/${lesson.display_order || lesson.id}`} className="mt-auto flex justify-between items-end">
                       <ContainerInstrument>
-                        <TextInstrument className="text-[11px] text-va-black/40 group-hover:text-white/40 font-bold tracking-[0.2em] uppercase mb-1 transition-colors ">Start nu</TextInstrument>
-                        <TextInstrument as="span" className="text-2xl font-light tracking-tighter text-va-black group-hover:text-white transition-colors">Bekijk les</TextInstrument>
+                        <TextInstrument className="text-[11px] text-va-black/40 group-hover:text-white/40 font-bold tracking-[0.2em] uppercase mb-1 transition-colors ">
+                          <VoiceglotText translationKey="action.start_now" defaultText="Start nu" />
+                        </TextInstrument>
+                        <TextInstrument as="span" className="text-2xl font-light tracking-tighter text-va-black group-hover:text-white transition-colors">
+                          <VoiceglotText translationKey="action.view_lesson" defaultText="Bekijk les" />
+                        </TextInstrument>
                       </ContainerInstrument>
                       <ButtonInstrument className="!bg-va-black group-hover:!bg-white group-hover:!text-va-black !rounded-[10px] !px-6 transition-all">
                         <Play strokeWidth={1.5} size={16} fill="currentColor" />
@@ -1575,7 +1578,9 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
                 </ContainerInstrument>
                 <ContainerInstrument className="flex flex-col items-center gap-4">
                   <TextInstrument className="text-8xl font-extralight tracking-tighter text-va-black leading-none">{price}</TextInstrument>
-                  <TextInstrument className="text-[11px] font-bold text-va-black/30 uppercase tracking-[0.2em]">Eenmalige investering (excl. BTW)</TextInstrument>
+                  <TextInstrument className="text-[11px] font-bold text-va-black/30 uppercase tracking-[0.2em]">
+                    <VoiceglotText translationKey="academy.pricing.one_time" defaultText="Eenmalige investering (excl. BTW)" />
+                  </TextInstrument>
                 </ContainerInstrument>
                 <ContainerInstrument className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-12 border-t border-black/[0.03]">
                   {features.map((feature, i) => (
@@ -1588,7 +1593,9 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
                   ))}
                 </ContainerInstrument>
                 <ContainerInstrument className="pt-12">
-                  <ButtonInstrument as={Link} href="/checkout?journey=academy" className="va-btn-pro !rounded-[10px] px-20 py-8 text-xl shadow-aura-lg hover:scale-105 transition-transform duration-500 uppercase">Nu inschrijven</ButtonInstrument>
+                  <ButtonInstrument as={Link} href="/checkout?journey=academy" className="va-btn-pro !rounded-[10px] px-20 py-8 text-xl shadow-aura-lg hover:scale-105 transition-transform duration-500 uppercase">
+                    <VoiceglotText translationKey="action.enroll_now" defaultText="Nu inschrijven" />
+                  </ButtonInstrument>
                 </ContainerInstrument>
               </BentoCard>
             </ContainerInstrument>
@@ -1608,7 +1615,9 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
                 <ContainerInstrument className="lg:col-span-4 space-y-6">
                   <ContainerInstrument className="inline-flex items-center gap-3 px-4 py-1.5 bg-va-black/5 rounded-full">
                     <Info strokeWidth={1.5} size={16} className="text-va-black/40" />
-                    <TextInstrument className="text-[11px] font-bold tracking-[0.2em] text-va-black/40 uppercase">Support</TextInstrument>
+                    <TextInstrument className="text-[11px] font-bold tracking-[0.2em] text-va-black/40 uppercase">
+                      <VoiceglotText translationKey="label.support" defaultText="Support" />
+                    </TextInstrument>
                   </ContainerInstrument>
                   {title && <HeadingInstrument level={2} className="text-5xl font-light tracking-tighter leading-none text-va-black">{title}</HeadingInstrument>}
                 </ContainerInstrument>
@@ -1627,7 +1636,7 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
 
       case 'founder':
         return (
-          <section key={block.id} className="py-48 grid grid-cols-1 lg:grid-cols-12 gap-24 items-center animate-in fade-in slide-in-from-bottom-12 duration-1000 fill-mode-both">
+          <SectionInstrument key={block.id} className="py-48 grid grid-cols-1 lg:grid-cols-12 gap-24 items-center animate-in fade-in slide-in-from-bottom-12 duration-1000 fill-mode-both">
             <ContainerInstrument className="lg:col-span-7">
               {title && <HeadingInstrument level={2} className="text-7xl font-light mb-12 leading-[1.1] tracking-tight text-va-black">{title}</HeadingInstrument>}
               <ContainerInstrument className="prose prose-2xl text-va-black/50 font-medium leading-relaxed tracking-tight">
@@ -1641,12 +1650,12 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
               </ContainerInstrument>
               <ContainerInstrument className="absolute -bottom-20 -left-20 w-64 h-64 bg-primary/10 rounded-full blur-[100px] animate-pulse" />
             </ContainerInstrument>
-          </section>
+          </SectionInstrument>
         );
 
       case 'carousel':
         return (
-          <section key={block.id} className="py-48 bg-va-off-white border border-black/[0.03] -mx-4 px-4 lg:-mx-32 lg:px-32 rounded-[20px] shadow-aura relative overflow-hidden group animate-in fade-in duration-1000 fill-mode-both">
+          <SectionInstrument key={block.id} className="py-48 bg-va-off-white border border-black/[0.03] -mx-4 px-4 lg:-mx-32 lg:px-32 rounded-[20px] shadow-aura relative overflow-hidden group animate-in fade-in duration-1000 fill-mode-both">
             <ContainerInstrument className="relative z-10">
               <ContainerInstrument className="flex items-center gap-6 mb-20">
                 <Star strokeWidth={1.5} className="text-primary/40 fill-primary/10" size={32} />
@@ -1660,13 +1669,13 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
                 ))}
               </ContainerInstrument>
             </ContainerInstrument>
-          </section>
+          </SectionInstrument>
         );
 
       case 'bento':
         const items = body.split('\n\n').filter(s => s.trim().length > 0);
         return (
-          <section key={block.id} className="py-24 animate-in fade-in slide-in-from-bottom-12 duration-1000 fill-mode-both">
+          <SectionInstrument key={block.id} className="py-24 animate-in fade-in slide-in-from-bottom-12 duration-1000 fill-mode-both">
             <ContainerInstrument className="grid grid-cols-1 md:grid-cols-12 gap-8 auto-rows-[min-content]">
               {items.map((item, i) => {
                 const videoMatch = item.match(/video:\s*([^\n]+)/);
@@ -1686,7 +1695,7 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
                   >
                     {videoUrl && (
                       <ContainerInstrument className="w-full bg-va-black relative">
-                        <Suspense fallback={<div className="aspect-video w-full bg-va-black/20 animate-pulse" />}>
+                        <Suspense fallback={<ContainerInstrument plain className="aspect-video w-full bg-va-black/20 animate-pulse" />}>
                           <VideoPlayer 
                             url={videoUrl} 
                             title={itemTitle}
@@ -1718,12 +1727,12 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
                 );
               })}
             </ContainerInstrument>
-          </section>
+          </SectionInstrument>
         );
 
       case 'lifestyle':
         return (
-          <section key={block.id} className="py-32 relative min-h-[80vh] flex items-center animate-in fade-in duration-1000 fill-mode-both">
+          <SectionInstrument key={block.id} className="py-32 relative min-h-[80vh] flex items-center animate-in fade-in duration-1000 fill-mode-both">
             <ContainerInstrument className="absolute inset-0 bg-va-black rounded-[20px] overflow-hidden shadow-aura-lg grayscale-[0.5] hover:grayscale-0 transition-all duration-1000 group/lifestyle">
               <ContainerInstrument className="absolute inset-0 bg-gradient-to-b from-black/20 to-black/60" />
               <TextInstrument className="absolute inset-0 flex items-center justify-center text-white/5 font-black text-[20vw] rotate-12 tracking-tighter pointer-events-none "><VoiceglotText  translationKey="auto.page.voices.92ff10" defaultText="VOICES" /></TextInstrument>
@@ -1734,14 +1743,14 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
                 {body}
               </ContainerInstrument>
             </ContainerInstrument>
-          </section>
+          </SectionInstrument>
         );
 
       case 'thematic':
         const steps = body.split('\n\n').filter(s => s.trim().length > 0);
         const gridCols = steps.length === 2 ? 'lg:grid-cols-2' : steps.length === 3 ? 'lg:grid-cols-3' : 'lg:grid-cols-4';
         return (
-          <section key={block.id} className="py-24 animate-in fade-in slide-in-from-bottom-8 duration-1000 fill-mode-both">
+          <SectionInstrument key={block.id} className="py-24 animate-in fade-in slide-in-from-bottom-8 duration-1000 fill-mode-both">
             <ContainerInstrument className={`grid grid-cols-1 md:grid-cols-2 ${gridCols} gap-8`}>
               {steps.map((step, i) => {
                 const { title: stepTitle, body: stepBody } = extractTitle(step);
@@ -1758,16 +1767,16 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
                 );
               })}
             </ContainerInstrument>
-          </section>
+          </SectionInstrument>
         );
 
       case 'calculator':
         return (
-          <section key={block.id} className="py-24 animate-in fade-in duration-1000 fill-mode-both">
-            <Suspense fallback={<div className="h-96 w-full bg-va-black/5 animate-pulse rounded-[20px]" />}>
+          <SectionInstrument key={block.id} className="py-24 animate-in fade-in duration-1000 fill-mode-both">
+            <Suspense fallback={<ContainerInstrument plain className="h-96 w-full bg-va-black/5 animate-pulse rounded-[20px]" />}>
               <AgencyCalculator />
             </Suspense>
-          </section>
+          </SectionInstrument>
         );
 
       case 'Kwaliteit':
@@ -1776,7 +1785,7 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
       case 'Juridisch':
       case 'Service':
         return (
-          <section key={block.id} className="grid grid-cols-1 lg:grid-cols-12 gap-24 items-start group py-32 border-b border-black/[0.03] last:border-none animate-in fade-in slide-in-from-bottom-8 duration-1000 fill-mode-both">
+          <SectionInstrument key={block.id} className="grid grid-cols-1 lg:grid-cols-12 gap-24 items-start group py-32 border-b border-black/[0.03] last:border-none animate-in fade-in slide-in-from-bottom-8 duration-1000 fill-mode-both">
             <ContainerInstrument className="lg:col-span-5 sticky top-40">
               <ContainerInstrument className="mb-10 transform group-hover:scale-110 transition-transform duration-1000 ease-va-bezier">{getIcon(block.type)}</ContainerInstrument>
               <HeadingInstrument level={2} className="text-5xl font-light tracking-tight mb-8 text-va-black leading-none">
@@ -1791,17 +1800,17 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
                 {body}
               </ContainerInstrument>
             </ContainerInstrument>
-          </section>
+          </SectionInstrument>
         );
 
       default:
         return (
-          <section key={block.id} className="py-32 max-w-4xl mx-auto animate-in fade-in duration-1000 fill-mode-both">
+          <SectionInstrument key={block.id} className="py-32 max-w-4xl mx-auto animate-in fade-in duration-1000 fill-mode-both">
             {title && <HeadingInstrument level={2} className="text-6xl font-light mb-16 tracking-tight leading-tight text-va-black">{title}</HeadingInstrument>}
             <ContainerInstrument className="prose prose-2xl text-va-black/50 font-medium leading-relaxed tracking-tight">
               {body}
             </ContainerInstrument>
-          </section>
+          </SectionInstrument>
         );
     }
   };
@@ -1838,14 +1847,20 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
           {journey !== 'portfolio' && (
             <ContainerInstrument className="bg-va-black text-white p-32 rounded-[20px] shadow-aura-lg relative overflow-hidden group">
               <ContainerInstrument className="relative z-10">
-                <TextInstrument className="text-[15px] font-medium tracking-[0.4em] text-primary/60 mb-10 block uppercase"><VoiceglotText  translationKey="cta.next_step" defaultText="volgende stap" /></TextInstrument>
-                <HeadingInstrument level={2} className="text-7xl lg:text-8xl font-light tracking-tighter mb-16 leading-[0.9] text-white"><VoiceglotText  translationKey="cta.ready_title" defaultText="Klaar om jouw stem te vinden?" /></HeadingInstrument>
+                <TextInstrument className="text-[15px] font-medium tracking-[0.4em] text-primary/60 mb-10 block uppercase">
+                  <VoiceglotText translationKey="cta.next_step" defaultText="volgende stap" />
+                </TextInstrument>
+                <HeadingInstrument level={2} className="text-7xl lg:text-8xl font-light tracking-tighter mb-16 leading-[0.9] text-white">
+                  <VoiceglotText translationKey="cta.ready_title" defaultText="Klaar om jouw stem te vinden?" />
+                </HeadingInstrument>
                 <ContainerInstrument className="flex flex-col sm:flex-row items-center justify-center gap-10">
-                  <VoicesLink  href="/agency" className="bg-va-off-white text-va-black px-20 py-10 rounded-[10px] font-medium text-base tracking-widest hover:scale-105 transition-all duration-700 shadow-2xl hover:bg-white uppercase"><VoiceglotText  translationKey="cta.find_voice" defaultText="vind jouw stem" /></VoicesLink>
-                  <VoicesLink  href="/contact" className="text-white/30 hover:text-white font-medium text-base tracking-widest flex items-center gap-4 group transition-all duration-700 uppercase">
-                    <VoiceglotText  translationKey="cta.ask_question" defaultText="stel een vraag" />
+                  <VoicesLinkInstrument  href="/agency" className="bg-va-off-white text-va-black px-20 py-10 rounded-[10px] font-medium text-base tracking-widest hover:scale-105 transition-all duration-700 shadow-2xl hover:bg-white uppercase">
+                    <VoiceglotText translationKey="cta.find_voice" defaultText="vind jouw stem" />
+                  </VoicesLinkInstrument>
+                  <VoicesLinkInstrument  href="/contact" className="text-white/30 hover:text-white font-medium text-base tracking-widest flex items-center gap-4 group transition-all duration-700 uppercase">
+                    <VoiceglotText translationKey="cta.ask_question" defaultText="stel een vraag" />
                     <ArrowRight strokeWidth={1.5} size={24} className="group-hover:translate-x-3 transition-transform duration-700" />
-                  </VoicesLink>
+                  </VoicesLinkInstrument>
                 </ContainerInstrument>
               </ContainerInstrument>
             </ContainerInstrument>

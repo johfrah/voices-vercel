@@ -34,13 +34,23 @@ export async function GET(request: NextRequest) {
   const type = searchParams.get('type');
 
   // appConfigs en overige types: admin only
-  const publicTypes = ['actor', 'actors', 'music', 'navigation', 'telephony', 'general', 'languages', 'genders', 'journeys', 'worlds', 'media_types', 'countries', 'sectors', 'blueprints', 'demos_enriched', 'telephony_subtypes', 'experience_levels', 'actor_statuses', 'voice_tones', 'resolve-dna'];
+  const publicTypes = ['actor', 'actors', 'music', 'navigation', 'telephony', 'general', 'languages', 'genders', 'journeys', 'worlds', 'media_types', 'countries', 'sectors', 'blueprints', 'demos_enriched', 'telephony_subtypes', 'experience_levels', 'actor_statuses', 'voice_tones', 'resolve-dna', 'market-config'];
   if (!type || !publicTypes.includes(type)) {
     const auth = await requireAdmin();
     if (auth instanceof NextResponse) return auth;
   }
 
   try {
+    // 🛡️ CHRIS-PROTOCOL: Market Config Resolver (v3.0.0)
+    if (type === 'market-config') {
+      const marketCode = searchParams.get('marketCode');
+      if (!marketCode) return NextResponse.json({ error: 'marketCode is required' }, { status: 400 });
+      
+      const { MarketManager } = require('@/lib/system/core/market-manager');
+      const config = await MarketManager.getMarketConfig(marketCode);
+      return NextResponse.json({ config });
+    }
+
     // 🛡️ DNA-ROUTING: Resolve entityId to slug (v2.17.0)
     if (type === 'resolve-dna') {
       const entityId = searchParams.get('entityId');
@@ -183,13 +193,13 @@ export async function GET(request: NextRequest) {
         const config = await dbWithTimeout(db.select().from(appConfigs).where(eq(appConfigs.key, 'general_settings')).limit(1)) as any[];
         return NextResponse.json({
           general_settings: config[0]?.value || {},
-          _version: '2.28.0'
+          _version: '2.30.0'
         });
       } catch (err: any) {
         console.warn(`[Admin Config] General settings fetch failed, returning empty: ${err.message}`);
         return NextResponse.json({
           general_settings: {},
-          _version: '2.28.0'
+          _version: '2.29.0'
         });
       }
     }
@@ -281,7 +291,7 @@ export async function POST(request: NextRequest) {
         }
       });
 
-    return NextResponse.json({ success: true, _version: '2.28.0' });
+    return NextResponse.json({ success: true, _version: '2.30.0' });
   } catch (error) {
     console.error('[Admin Config POST Error]:', error);
     return NextResponse.json({ error: 'Failed to update config' }, { status: 500 });

@@ -10,7 +10,7 @@ import {
   ButtonInstrument,
   InputInstrument
 } from '@/components/ui/LayoutInstruments';
-import { BentoGrid, BentoCard } from '@/components/ui/BentoGrid';
+import { BentoGrid, BentoCard } from '@/components/ui/BentoGridInstrument';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { Save, Plus, Trash2, Globe, ShoppingBag, Bell, User, Menu, Heart, Loader2, ArrowLeft, Image as ImageIcon, Search, Check, X } from 'lucide-react';
 import Link from 'next/link';

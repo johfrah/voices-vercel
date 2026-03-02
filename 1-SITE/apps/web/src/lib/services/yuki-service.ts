@@ -214,7 +214,7 @@ export class YukiService {
         invoiceId: processResult.ProcessSalesInvoicesResult,
         invoiceNumber: `PENDING-YUKI` // We don't know the number yet, Yuki assigns it
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error syncing with Yuki:', error);
       
       // CHRIS-PROTOCOL: Log failure to system events for forensic recovery
@@ -223,7 +223,7 @@ export class YukiService {
         source: 'YukiService',
         message: `Failed to create invoice for Order-${data.orderId}`,
         details: { error: error instanceof Error ? error.message : String(error), orderId: data.orderId }
-      }).catch(e => console.warn('[YukiService] Failed to log system event:', e));
+      }).catch((e: any) => console.warn('[YukiService] Failed to log system event:', e));
 
       return { success: false, error: error instanceof Error ? error.message : String(error) };
     }

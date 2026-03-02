@@ -18,7 +18,7 @@ import { createClient } from '@/utils/supabase/client';
 import { CheckCircle2, Loader2, Clock, User, CreditCard, FileText, Send, AlertCircle, Lock, Tag, X, Mail, ArrowRight, LogIn } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
-import { VoicesLink as Link } from '@/components/ui/VoicesLink';
+import { VoicesLinkInstrument as Link } from '@/components/ui/VoicesLinkInstrument';
 import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
 import React, { useEffect, useState } from 'react';
 import { AcademyUpsellSection } from './AcademyUpsellSection';

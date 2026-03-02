@@ -55,6 +55,7 @@ export class MarketManager {
   private static servicesRegistry: Array<{ id: number, code: string, label: string, category?: string }> = [];
   private static worldLanguagesRegistry: Array<{ world_id: number, language_id: number, is_primary: boolean, is_popular: boolean }> = [];
   private static worldConfigsCache: Record<string, any> = {};
+  private static marketConfigsCache: Record<string, any> = {};
 
   /**
    * 🛡️ CHRIS-PROTOCOL: Isomorphic World ID Resolver (v2.24.4)
@@ -84,6 +85,280 @@ export class MarketManager {
     const cacheKey = `${worldId}-${languageId}`;
     if (this.worldConfigsCache[cacheKey]) return this.worldConfigsCache[cacheKey];
     return null; 
+  }
+
+  /**
+   * 🛡️ CHRIS-PROTOCOL: ID-First Market Config Resolver (v3.0.0)
+   * Haalt de markt-specifieke configuratie op uit de database (Server-side)
+   * of uit de cache (Client-side).
+   */
+  public static async getMarketConfig(marketCode: string): Promise<MarketConfig | null> {
+    if (this.marketConfigsCache[marketCode]) return this.marketConfigsCache[marketCode];
+
+    if (typeof window === 'undefined') {
+      try {
+        const { db, marketConfigs, media } = require('../voices-config');
+        const { eq } = require('drizzle-orm');
+
+        if (!db || !marketConfigs || !media) return null;
+
+        const config = await db.select({
+          market_code: marketConfigs.market,
+          name: marketConfigs.name,
+          email: marketConfigs.email,
+          phone: marketConfigs.phone,
+          vat_number: marketConfigs.vatNumber,
+          address: marketConfigs.address,
+          social_links: marketConfigs.socialLinks,
+          localization: marketConfigs.localization,
+          logo_path: media.filePath
+        })
+        .from(marketConfigs)
+        .leftJoin(media, eq(marketConfigs.logoId, media.id))
+        .where(eq(marketConfigs.market, marketCode))
+        .limit(1);
+
+        if (config && config[0]) {
+          const c = config[0];
+          const marketConfig: MarketConfig = {
+            market_code: c.market_code,
+            name: c.name,
+            email: c.email,
+            phone: c.phone,
+            vat_number: c.vat_number,
+            address: c.address,
+            social_links: c.social_links,
+            primary_language: c.localization?.default_lang || 'nl',
+            primary_language_id: c.localization?.default_lang_id || 1,
+            language: c.localization?.default_lang || 'nl',
+            supported_languages: c.localization?.supported_languages || [],
+            popular_languages: c.localization?.popular_languages || [],
+            currency: c.localization?.currency || 'EUR',
+            logo_url: c.logo_path ? `/assets/${c.logo_path}` : '',
+            company_name: VOICES_CONFIG.company.name,
+            theme: 'voices'
+          };
+          this.marketConfigsCache[marketCode] = marketConfig;
+          return marketConfig;
+        }
+      } catch (err) {
+        console.error('❌ MarketManager: Error fetching market config:', err);
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * 🛡️ CHRIS-PROTOCOL: ID-First World Resolver (v3.0.0)
+   */
+  public static async getWorld(worldId: number): Promise<any> {
+    if (typeof window === 'undefined') {
+      try {
+        const { db, worlds, media } = require('../voices-config');
+        const { eq } = require('drizzle-orm');
+
+        if (!db || !worlds || !media) return null;
+
+        const result = await db.select({
+          id: worlds.id,
+          code: worlds.code,
+          label: worlds.label,
+          logo_path: media.filePath
+        })
+        .from(worlds)
+        .leftJoin(media, eq(worlds.logoId, media.id))
+        .where(eq(worlds.id, worldId))
+        .limit(1);
+
+        return result[0] || null;
+      } catch (err) {
+        console.error('❌ MarketManager: Error fetching world:', err);
+      }
+    }
+    return null;
+  }
+
+  /**
+   * 🛡️ CHRIS-PROTOCOL: ID-First Journey Resolver (v3.0.0)
+   */
+  public static async getJourney(journeyId: number): Promise<any> {
+    if (typeof window === 'undefined') {
+      try {
+        const { db, journeys, media } = require('../voices-config');
+        const { eq } = require('drizzle-orm');
+
+        if (!db || !journeys || !media) return null;
+
+        const result = await db.select({
+          id: journeys.id,
+          code: journeys.code,
+          label: journeys.label,
+          icon_path: media.filePath
+        })
+        .from(journeys)
+        .leftJoin(media, eq(journeys.iconId, media.id))
+        .where(eq(journeys.id, journeyId))
+        .limit(1);
+
+        return result[0] || null;
+      } catch (err) {
+        console.error('❌ MarketManager: Error fetching journey:', err);
+      }
+    }
+    return null;
+  }
+
+  /**
+   * 🛡️ CHRIS-PROTOCOL: ID-First Site Setting Resolver (v3.0.0)
+   */
+  public static async getSiteSetting(key: string): Promise<string | null> {
+    if (typeof window === 'undefined') {
+      try {
+        const { db, siteSettings, media } = require('../voices-config');
+        const { eq } = require('drizzle-orm');
+
+        if (!db || !siteSettings || !media) return null;
+
+        const result = await db.select({
+          value: siteSettings.value,
+          media_path: media.filePath
+        })
+        .from(siteSettings)
+        .leftJoin(media, eq(siteSettings.mediaId, media.id))
+        .where(eq(siteSettings.key, key))
+        .limit(1);
+
+        if (result[0]) {
+          return result[0].media_path ? `/assets/${result[0].media_path}` : result[0].value;
+        }
+      } catch (err) {
+        console.error('❌ MarketManager: Error fetching site setting:', err);
+      }
+    }
+    return null;
+  }
+
+  /**
+   * 🛡️ CHRIS-PROTOCOL: ID-First Ademing Maker Resolver (v3.0.0)
+   */
+  public static async getAdemingMaker(makerId: number): Promise<any> {
+    if (typeof window === 'undefined') {
+      try {
+        const { db, ademingMakers, media } = require('../voices-config');
+        const { eq } = require('drizzle-orm');
+
+        if (!db || !ademingMakers || !media) return null;
+
+        const result = await db.select({
+          id: ademingMakers.id,
+          full_name: ademingMakers.full_name,
+          avatar_path: media.filePath
+        })
+        .from(ademingMakers)
+        .leftJoin(media, eq(ademingMakers.avatarId, media.id))
+        .where(eq(ademingMakers.id, makerId))
+        .limit(1);
+
+        return result[0] || null;
+      } catch (err) {
+        console.error('❌ MarketManager: Error fetching ademing maker:', err);
+      }
+    }
+    return null;
+  }
+
+  /**
+   * 🛡️ CHRIS-PROTOCOL: ID-First Ademing Track Resolver (v3.0.0)
+   */
+  public static async getAdemingTrack(trackId: number): Promise<any> {
+    if (typeof window === 'undefined') {
+      try {
+        const { db, ademingTracks, media } = require('../voices-config');
+        const { eq, alias } = require('drizzle-orm');
+
+        if (!db || !ademingTracks || !media) return null;
+
+        const audioMedia = alias(media, 'audio_media');
+        const coverMedia = alias(media, 'cover_media');
+
+        const result = await db.select({
+          id: ademingTracks.id,
+          title: ademingTracks.title,
+          audio_path: audioMedia.filePath,
+          cover_path: coverMedia.filePath
+        })
+        .from(ademingTracks)
+        .leftJoin(audioMedia, eq(ademingTracks.mediaId, audioMedia.id))
+        .leftJoin(coverMedia, eq(ademingTracks.coverImageId, coverMedia.id))
+        .where(eq(ademingTracks.id, trackId))
+        .limit(1);
+
+        return result[0] || null;
+      } catch (err) {
+        console.error('❌ MarketManager: Error fetching ademing track:', err);
+      }
+    }
+    return null;
+  }
+
+  /**
+   * 🛡️ CHRIS-PROTOCOL: ID-First Ademing Series Resolver (v3.0.0)
+   */
+  public static async getAdemingSeries(seriesId: number): Promise<any> {
+    if (typeof window === 'undefined') {
+      try {
+        const { db, ademingSeries, media } = require('../voices-config');
+        const { eq } = require('drizzle-orm');
+
+        if (!db || !ademingSeries || !media) return null;
+
+        const result = await db.select({
+          id: ademingSeries.id,
+          title: ademingSeries.title,
+          cover_path: media.filePath
+        })
+        .from(ademingSeries)
+        .leftJoin(media, eq(ademingSeries.coverImageId, media.id))
+        .where(eq(ademingSeries.id, seriesId))
+        .limit(1);
+
+        return result[0] || null;
+      } catch (err) {
+        console.error('❌ MarketManager: Error fetching ademing series:', err);
+      }
+    }
+    return null;
+  }
+
+  /**
+   * 🛡️ CHRIS-PROTOCOL: ID-First Content Block Resolver (v3.0.0)
+   */
+  public static async getContentBlock(blockId: number): Promise<any> {
+    if (typeof window === 'undefined') {
+      try {
+        const { db, contentBlocks, media } = require('../voices-config');
+        const { eq } = require('drizzle-orm');
+
+        if (!db || !contentBlocks || !media) return null;
+
+        const result = await db.select({
+          id: contentBlocks.id,
+          type: contentBlocks.type,
+          content: contentBlocks.content,
+          media_path: media.filePath
+        })
+        .from(contentBlocks)
+        .leftJoin(media, eq(contentBlocks.mediaId, media.id))
+        .where(eq(contentBlocks.id, blockId))
+        .limit(1);
+
+        return result[0] || null;
+      } catch (err) {
+        console.error('❌ MarketManager: Error fetching content block:', err);
+      }
+    }
+    return null;
   }
 
   /**
@@ -246,80 +521,80 @@ export class MarketManager {
       market_code: 'BE', language: 'nl', primary_language: 'nl-be', primary_language_id: 1,
       supported_languages: ['nl-be', 'nl-nl', 'fr-be', 'en-gb', 'fr-fr', 'de-de'],
       popular_languages: ['nl-be', 'nl-nl', 'fr-be', 'en-gb', 'fr-fr', 'de-de'],
-      name: 'Voices', email: 'johfrah@voices.be', logo_url: VOICES_CONFIG.assets.logos.be,
+      name: 'Voices', email: 'johfrah@voices.be', logo_url: '',
       theme: 'voices', has_voicy: true
     },
     'voices.nl': {
       market_code: 'NLNL', language: 'nl', primary_language: 'nl-be', primary_language_id: 1,
       supported_languages: ['nl-nl', 'nl-be', 'en-gb', 'de-de', 'fr-fr'],
       popular_languages: ['nl-nl', 'nl-be', 'en-gb', 'de-de', 'fr-fr'],
-      name: 'Nederland', logo_url: VOICES_CONFIG.assets.logos.nl, theme: 'voices', has_voicy: true
+      name: 'Nederland', logo_url: '', theme: 'voices', has_voicy: true
     },
     'voices.fr': {
       market_code: 'FR', language: 'fr', primary_language: 'fr-fr', primary_language_id: 4,
       supported_languages: ['fr-fr', 'fr-be', 'en-gb', 'nl-nl', 'nl-be', 'de-de'],
       popular_languages: ['fr-fr', 'fr-be', 'en-gb', 'nl-nl', 'nl-be', 'de-de'],
-      name: 'France', logo_url: VOICES_CONFIG.assets.logos.fr, theme: 'voices', has_voicy: true
+      name: 'France', logo_url: '', theme: 'voices', has_voicy: true
     },
     'voices.es': {
       market_code: 'ES', language: 'es', primary_language: 'es-es', primary_language_id: 8,
       supported_languages: ['es-es', 'en-gb', 'fr-fr', 'pt-pt', 'it-it'],
       popular_languages: ['es-es', 'en-gb', 'pt-pt'],
-      name: 'España', logo_url: VOICES_CONFIG.assets.logos.es, theme: 'voices', has_voicy: true
+      name: 'España', logo_url: '', theme: 'voices', has_voicy: true
     },
     'voices.pt': {
       market_code: 'PT', language: 'pt', primary_language: 'pt-pt', primary_language_id: 12,
       supported_languages: ['pt-pt', 'en-gb', 'es-es', 'fr-fr'],
       popular_languages: ['pt-pt', 'en-gb', 'es-es'],
-      name: 'Portugal', logo_url: VOICES_CONFIG.assets.logos.pt, theme: 'voices', has_voicy: true
+      name: 'Portugal', logo_url: '', theme: 'voices', has_voicy: true
     },
     'voices.eu': {
       market_code: 'EU', language: 'en', primary_language: 'en-gb', primary_language_id: 5,
       supported_languages: ['en-gb', 'de-de', 'nl-be', 'nl-nl', 'fr-be', 'fr-fr'],
       popular_languages: ['en-gb', 'de-de', 'fr-be', 'fr-fr', 'nl-nl', 'nl-be'],
-      name: 'Europe', logo_url: VOICES_CONFIG.assets.logos.eu, theme: 'voices', has_voicy: true
+      name: 'Europe', logo_url: '', theme: 'voices', has_voicy: true
     },
     'voices.academy': {
       market_code: 'ACADEMY', language: 'nl', primary_language: 'nl-BE',
       supported_languages: ['nl-BE', 'en-GB'], popular_languages: ['nl-BE', 'en-GB'],
-      name: 'Voices Academy', logo_url: VOICES_CONFIG.assets.logos.be, theme: 'voices'
+      name: 'Voices Academy', logo_url: '', theme: 'voices'
     },
     'voices.be/academy': {
       market_code: 'ACADEMY', language: 'nl', primary_language: 'nl-be', primary_language_id: 1,
       supported_languages: ['nl-be', 'en-gb'], popular_languages: ['nl-be', 'en-gb'],
-      name: 'Voices Academy', logo_url: VOICES_CONFIG.assets.logos.be, theme: 'voices'
+      name: 'Voices Academy', logo_url: '', theme: 'voices'
     },
     'voices.be/studio': {
       market_code: 'STUDIO', language: 'nl', primary_language: 'nl-be', primary_language_id: 1,
       supported_languages: ['nl-be', 'en-gb'], popular_languages: ['nl-be', 'en-gb'],
-      name: 'Voices Studio', logo_url: VOICES_CONFIG.assets.logos.studio || VOICES_CONFIG.assets.logos.be,
+      name: 'Voices Studio', logo_url: '',
       theme: 'voices'
     },
     'johfrah.be': {
       market_code: 'FREELANCE', language: 'nl', primary_language: 'nl-be', primary_language_id: 1,
       supported_languages: ['nl-be', 'en-gb'], popular_languages: ['nl-be', 'en-gb'],
-      name: 'Johfrah Lefebvre', logo_url: VOICES_CONFIG.assets.logos.johfrah, theme: 'johfrah', has_voicy: true
+      name: 'Johfrah Lefebvre', logo_url: '', theme: 'johfrah', has_voicy: true
     },
     'christina.be': {
       market_code: 'PORTFOLIO', language: 'nl', primary_language: 'nl-be', primary_language_id: 1,
       supported_languages: ['nl-be', 'en-gb'], popular_languages: ['nl-be', 'en-gb'],
-      name: 'Christina Portfolio', logo_url: VOICES_CONFIG.assets.logos.be, theme: 'voices'
+      name: 'Christina Portfolio', logo_url: '', theme: 'voices'
     },
     'youssefzaki.eu': {
       market_code: 'ARTIST', language: 'en', primary_language: 'en-gb', primary_language_id: 5,
       supported_languages: ['en-gb', 'nl-be', 'fr-fr', 'de-de'],
       popular_languages: ['en-gb', 'nl-be', 'fr-fr', 'de-de'],
-      name: 'Youssef Zaki', logo_url: VOICES_CONFIG.assets.logos.be, theme: 'youssef'
+      name: 'Youssef Zaki', logo_url: '', theme: 'youssef'
     },
     'ademing.be': {
       market_code: 'ADEMING', language: 'nl', primary_language: 'nl-be', primary_language_id: 1,
       supported_languages: ['nl-be'], popular_languages: ['nl-be'],
-      name: 'Ademing', logo_url: VOICES_CONFIG.assets.logos.ademing, theme: 'ademing'
+      name: 'Ademing', logo_url: '', theme: 'ademing'
     },
     'johfrai.be': {
       market_code: 'JOHFRAI', language: 'nl', primary_language: 'nl-be', primary_language_id: 1,
       supported_languages: ['nl-be', 'en-gb'], popular_languages: ['nl-be', 'en-gb'],
-      name: 'Johfrai', logo_url: VOICES_CONFIG.assets.logos.be, theme: 'johfrai'
+      name: 'Johfrai', logo_url: '', theme: 'johfrai'
     }
   };
 
@@ -369,7 +644,7 @@ export class MarketManager {
       name: config.name || 'Voices',
       phone: config.phone || VOICES_CONFIG.company.phone,
       email: config.email || VOICES_CONFIG.company.email,
-      logo_url: config.logo_url || VOICES_CONFIG.assets.logos.be,
+      logo_url: config.logo_url || '',
       company_name: config.company_name || VOICES_CONFIG.company.name,
       vat_number: config.vat_number || VOICES_CONFIG.company.vat,
       address: config.address || VOICES_CONFIG.company.address,

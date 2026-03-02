@@ -1,4 +1,4 @@
-import { BentoCard, BentoGrid } from "@/components/ui/BentoGrid";
+import { BentoCard, BentoGrid } from "@/components/ui/BentoGridInstrument";
 import {
     ButtonInstrument,
     ContainerInstrument,
@@ -82,9 +82,8 @@ export default async function StudioAdminPage() {
   const upcomingEditions = allEditions.filter(e => e.date >= now && e.status !== 'cancelled');
   const pastEditions = allEditions.filter(e => e.date < now || e.status === 'completed');
 
-
   // 2. Haal financile stats op (Nuclear Logic)
-  let financeStats = {
+  let financeStats: any = {
     totalRevenue: 0,
     pendingRevenue: 0,
     externalCosts: 0,
@@ -104,6 +103,8 @@ export default async function StudioAdminPage() {
   } catch (statsError) {
     console.error('Studio Admin Stats Error:', statsError);
   }
+
+  const stats: any = financeStats;
 
   return (
     <PageWrapperInstrument className="min-h-screen pt-24 pb-32 px-6 md:px-12 max-w-[1600px] mx-auto">
@@ -134,13 +135,12 @@ export default async function StudioAdminPage() {
             <HeadingInstrument level={3} className="text-4xl font-light tracking-tighter mt-2">{pastEditions.length}</HeadingInstrument>
           </ContainerInstrument>
         </BentoCard>
-        {/* FINANCE OVERVIEW (Step 4) */}
         <BentoCard span="sm" className="bg-va-black text-white p-8 flex flex-col justify-between">
           <ContainerInstrument>
             <DollarSign strokeWidth={1.5} className="text-primary mb-6" size={24} />
             <TextInstrument className="text-[15px] font-black tracking-widest text-white/30"><VoiceglotText  translationKey="admin.studio.total_revenue" defaultText="Totale Omzet Studio" /></TextInstrument>
             <HeadingInstrument level={3} className="text-4xl font-light tracking-tighter mt-2">
-              {(financeStats?.totalRevenue || 0).toLocaleString('nl-BE')}
+              {(stats?.totalRevenue || 0).toLocaleString('nl-BE')}
             </HeadingInstrument>
           </ContainerInstrument>
           
@@ -149,20 +149,20 @@ export default async function StudioAdminPage() {
               <TextInstrument className="text-[13px] font-bold text-white/20 tracking-widest uppercase">
                 Externe Kosten
               </TextInstrument>
-              <TextInstrument className="text-[13px] font-black text-white/60">{(financeStats?.externalCosts || 0).toLocaleString('nl-BE')}</TextInstrument>
+              <TextInstrument className="text-[13px] font-black text-white/60">{(stats?.externalCosts || 0).toLocaleString('nl-BE')}</TextInstrument>
             </ContainerInstrument>
             <ContainerInstrument className="flex justify-between items-center">
               <TextInstrument className="text-[13px] font-bold text-white/20 tracking-widest uppercase">
                 Partner Payouts
               </TextInstrument>
-              <TextInstrument className="text-[13px] font-black text-white/60">{(financeStats?.partnerPayouts || 0).toLocaleString('nl-BE')}</TextInstrument>
+              <TextInstrument className="text-[13px] font-black text-white/60">{(stats?.partnerPayouts || 0).toLocaleString('nl-BE')}</TextInstrument>
             </ContainerInstrument>
-            {financeStats?.pendingRevenue > 0 && (
+            {stats?.pendingRevenue > 0 && (
               <ContainerInstrument className="flex justify-between items-center">
                 <TextInstrument className="text-[13px] font-bold text-primary/40 tracking-widest uppercase">
                    Onbetaalde Orders
                 </TextInstrument>
-                <TextInstrument className="text-[13px] font-black text-primary/60">{(financeStats?.pendingRevenue || 0).toLocaleString('nl-BE')}</TextInstrument>
+                <TextInstrument className="text-[13px] font-black text-primary/60">{(stats?.pendingRevenue || 0).toLocaleString('nl-BE')}</TextInstrument>
               </ContainerInstrument>
             )}
             <div className="pt-2 border-t border-white/5">
@@ -170,28 +170,28 @@ export default async function StudioAdminPage() {
                 <TextInstrument className="text-[15px] font-bold text-white/40 tracking-widest">
                   <VoiceglotText  translationKey="common.net_profit" defaultText="De Pot (Winst)" />
                 </TextInstrument>
-                <TextInstrument className="text-[15px] font-black text-primary">{(financeStats?.netProfit || 0).toLocaleString('nl-BE')}</TextInstrument>
+                <TextInstrument className="text-[15px] font-black text-primary">{(stats?.netProfit || 0).toLocaleString('nl-BE')}</TextInstrument>
               </ContainerInstrument>
             </div>
             <ContainerInstrument className="flex justify-between items-center bg-primary/10 p-3 rounded-xl mt-2">
               <TextInstrument className="text-[13px] font-bold text-primary tracking-widest uppercase">
                 Aandeel p.p. (50/50)
               </TextInstrument>
-              <TextInstrument className="text-[15px] font-black text-primary">{(financeStats?.partnerShare || 0).toLocaleString('nl-BE')}</TextInstrument>
+              <TextInstrument className="text-[15px] font-black text-primary">{(stats?.partnerShare || 0).toLocaleString('nl-BE')}</TextInstrument>
             </ContainerInstrument>
-            {financeStats?.forecastProfit && financeStats?.forecastProfit > (financeStats?.netProfit || 0) && (
+            {stats?.forecastProfit && stats?.forecastProfit > (stats?.netProfit || 0) && (
               <ContainerInstrument className="flex justify-between items-center pt-2 border-t border-white/5 mt-2">
                 <TextInstrument className="text-[11px] font-bold text-white/20 tracking-widest uppercase">
                    Prognose (incl. onbetaald)
                 </TextInstrument>
-                <TextInstrument className="text-[11px] font-black text-white/40">{(financeStats?.forecastProfit || 0).toLocaleString('nl-BE')}</TextInstrument>
+                <TextInstrument className="text-[11px] font-black text-white/40">{(stats?.forecastProfit || 0).toLocaleString('nl-BE')}</TextInstrument>
               </ContainerInstrument>
             )}
             <ContainerInstrument className="flex justify-between items-center">
               <TextInstrument className="text-[13px] font-bold text-white/20 tracking-widest">
                 <VoiceglotText  translationKey="common.margin" defaultText="Marge" />
               </TextInstrument>
-              <TextInstrument className="text-[13px] font-black">{(financeStats?.marginPercentage || 0).toFixed(1)}%</TextInstrument>
+              <TextInstrument className="text-[13px] font-black">{(stats?.marginPercentage || 0).toFixed(1)}%</TextInstrument>
             </ContainerInstrument>
           </ContainerInstrument>
         </BentoCard>

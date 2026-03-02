@@ -10,7 +10,7 @@ import nextDynamic from "next/dynamic";
 import { useAuth } from "@/contexts/AuthContext";
 
 // NUCLEAR LOADING MANDATE
-const LiquidBackground = nextDynamic(() => import("@/components/ui/LiquidBackground").then(mod => mod.LiquidBackground), { 
+const LiquidBackground = nextDynamic(() => import("@/components/ui/LiquidBackgroundInstrument").then(mod => mod.LiquidBackground), { 
   ssr: false,
   loading: () => <div className="fixed inset-0 z-0 bg-va-off-white" />
 });

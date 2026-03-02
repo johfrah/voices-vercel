@@ -135,6 +135,7 @@ async function handleSendMessage(params: any, request?: NextRequest) {
     let actions: any[] = [];
 
     //  LIFECYCLE DETECTION (v2.16.029)
+    const isAuthenticated = !!senderId;
     const hasOrders = (context?.customer360?.dna?.totalOrders || 0) > 0;
     const stage = !isAuthenticated ? 'presales' : (hasOrders ? 'aftersales' : 'sales');
     console.log(`[Voicy API] Lifecycle stage detected: ${stage}`);
@@ -161,6 +162,7 @@ async function handleSendMessage(params: any, request?: NextRequest) {
     }
 
     // 1. Check FAQ eerst (snelste)
+    let aiContent = '';
     try {
       console.log('[Voicy API] Checking FAQ...');
       const faqResults = await db.select().from(faq).where(

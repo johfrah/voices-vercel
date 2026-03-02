@@ -1,6 +1,6 @@
 "use client";
 
-import { BentoCard, BentoGrid } from '@/components/ui/BentoGrid';
+import { BentoCard, BentoGrid } from '@/components/ui/BentoGridInstrument';
 import { ButtonInstrument, ContainerInstrument, HeadingInstrument, PageWrapperInstrument, SectionInstrument, TextInstrument, LoadingScreenInstrument, LabelInstrument } from '@/components/ui/LayoutInstruments';
 import { SpatialOrderTrackerInstrument } from '@/components/ui/SpatialOrderTrackerInstrument';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
@@ -8,7 +8,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 import { ArrowLeft, ExternalLink, FileText, Package, ShoppingBag, Zap, Mic, Calendar, Clock, CheckCircle2, ChevronDown, ChevronUp, Download, CreditCard } from 'lucide-react';
-import { VoicesLink as Link } from '@/components/ui/VoicesLink';
+import { VoicesLinkInstrument as Link } from '@/components/ui/VoicesLinkInstrument';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useTranslation } from '@/contexts/TranslationContext';
@@ -16,7 +16,7 @@ import { SlimmeKassa } from '@/lib/engines/pricing-engine';
 import nextDynamic from 'next/dynamic';
 import { AnimatePresence } from 'framer-motion';
 
-const LiquidBackground = nextDynamic(() => import('@/components/ui/LiquidBackground').then(mod => mod.LiquidBackground), { ssr: false });
+const LiquidBackground = nextDynamic(() => import('@/components/ui/LiquidBackgroundInstrument').then(mod => mod.LiquidBackground), { ssr: false });
 
 export const dynamic = 'force-dynamic';
 

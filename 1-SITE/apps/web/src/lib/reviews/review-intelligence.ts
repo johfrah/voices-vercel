@@ -31,11 +31,11 @@ export class ReviewIntelligence {
 
       if (actorReviews.length === 0) return null;
 
-      const totalRating = actorReviews.reduce((acc, r) => acc + r.rating, 0);
+      const totalRating = actorReviews.reduce((acc: number, r: any) => acc + (r.rating || 0), 0);
       const avgRating = totalRating / actorReviews.length;
 
       //  AI Logic: Extract tags from review text (Simulatie van de batch-intelligence)
-      const tags = this.extractTagsFromText(actorReviews.map(r => r.textNl || '').join(' '));
+      const tags = this.extractTagsFromText(actorReviews.map((r: any) => r.textNl || '').join(' '));
 
       return {
         actorId,

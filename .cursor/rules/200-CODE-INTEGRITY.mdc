@@ -1,0 +1,41 @@
+---
+description: 🛡️ Code Integrity & Forensic Audit Mandate - The unshakeable law for code discipline, ID-First Handshake, and stateless architecture.
+globs: **/*.{ts,tsx,js,jsx}
+alwaysApply: true
+---
+
+# 🛡️ CODE INTEGRITY & ATOMIC AUDIT
+
+Dit is de wet voor technische discipline en integriteit binnen het ecosysteem. Geen excuses, geen slop.
+
+## 🔍 DE ATOMIC CHECK (VÓÓR ELKE EDIT)
+
+1.  **Forensic Root-Cause**: Scan naar de bron (DB, API, of State). Gebruik `system_events` of rauwe SQL. Gissen is verboden.
+2.  **Symbol Trace**: Traceer elk symbool (markt, taal, config) terug naar de `MarketManager`.
+3.  **Hardcode Hunt**: Zoek naar verboden strings (`voices.be`, hardcoded emails/telefoons).
+4.  **ISO Verify**: Taal-codes MOETEN strikt ISO-5 zijn (`nl-BE`).
+5.  **Anti-Pleister**: Defensieve guards zijn secundair. De fix MOET structureel zijn (DB herstel of strikt TS Contract).
+
+## 🛠️ DE TECHNISCHE WETTEN
+
+*   **ID-First Handshake**: Gebruik uitsluitend UUIDs voor interne logica. Slugs zijn voor de URL.
+*   **HTML Zero**: Gebruik UITSLUITEND `LayoutInstruments`. Rauwe tags (`div`, `p`, etc.) zijn verboden.
+*   **Snake Case Exclusivity**: Alle DB-objecten en API payloads MOETEN `snake_case` gebruiken.
+*   **Nuclear Speed**: Garandeer 100ms LCP. Gebruik `next/dynamic` met `ssr: false` voor zware instrumenten.
+*   **Anti-Drift**: Gebruik `db.execute(sql...)` bij twijfel over ORM-caching (Pooler 6543).
+
+## 🚀 DE PUSH-PROCEDURE
+
+Je mag pas pushen als:
+1.  `npm run lint` en `npm run type-check` succesvol zijn.
+2.  `npx tsx 3-WETTEN/scripts/forensic-audit.ts` volledig groen is.
+3.  De versie is verhoogd in `package.json` en `Providers.tsx`.
+
+## 🚫 VERBODEN PATRONEN (ZERO TOLERANCE)
+
+*   **GEEN** `any` types.
+*   **GEEN** relatieve imports naar andere packages (`../../packages`). Gebruik `@db`.
+*   **GEEN** hashtags in URLs (`#demos`). Gebruik clean routes.
+*   **GEEN** `console.log` in productie. Gebruik `ServerWatchdog`.
+
+"Code is ofwel Masterclass, ofwel Slop. Er is geen tussenweg."

@@ -217,9 +217,9 @@ export class UCIService {
         customerInsights: insights,
         updatedAt: new Date() 
       })
-      .where(eq(users.id, userId))
-      .catch((err) => {
-        console.error(`[UCI Service] updateInsights failed for ${userId}:`, err);
+      .where(eq(users.id, user_id))
+      .catch((err: any) => {
+        console.error(`[UCI Service] updateInsights failed for ${user_id}:`, err);
       });
   }
 }

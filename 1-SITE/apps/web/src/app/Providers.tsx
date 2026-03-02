@@ -6,7 +6,7 @@ import { EditModeProvider } from '@/contexts/EditModeContext';
 import { GlobalAudioProvider } from '@/contexts/GlobalAudioContext';
 import { NotificationProvider } from '@/contexts/NotificationContext';
 import { TranslationProvider } from '@/contexts/TranslationContext';
-import { VoicesMasterControlProvider } from '@/contexts/VoicesMasterControlContext';
+import { VoicesMasterControlContextProvider } from '@/contexts/VoicesMasterControlContext';
 import { VoicesStateProvider } from '@/contexts/VoicesStateContext';
 import { WatchdogProvider } from '@/contexts/WatchdogContext';
 import { WorldProvider } from '@/contexts/WorldContext';
@@ -63,9 +63,8 @@ export function Providers({
   }
 
   const pathname = usePathname();
-  // 🛡️ CHRIS-PROTOCOL: Version Sync Mandate (v2.27.8)
-  // Major Refactor: ID-First Handshake Architecture
-  const currentVersion = '2.28.0';
+  // 🛡️ CHRIS-PROTOCOL: Version Sync Mandate (v2.30.0)
+  const currentVersion = '2.30.0';
 
   // 🛡️ CHRIS-PROTOCOL: Language is now strictly passed from Server (Source of Truth)
   // to prevent Hydration Mismatch errors (#419, #425).
@@ -112,7 +111,7 @@ export function Providers({
         <AuthProvider>
           <VoicesStateProvider>
             <CheckoutProvider>
-              <VoicesMasterControlProvider initialJourney={initialJourney} initialUsage={initialUsage}>
+              <VoicesMasterControlContextProvider initialJourney={initialJourney} initialUsage={initialUsage}>
                 <TranslationProvider lang={activeLang} market={market} initialTranslations={initialTranslations}>
                   <VersionGuard currentVersion={currentVersion} />
                   <Toaster
@@ -141,7 +140,7 @@ export function Providers({
                     </GlobalAudioProvider>
                   </EditModeProvider>
                 </TranslationProvider>
-              </VoicesMasterControlProvider>
+              </VoicesMasterControlContextProvider>
             </CheckoutProvider>
           </VoicesStateProvider>
         </AuthProvider>

@@ -3,7 +3,7 @@ import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { getServerUser, isAdminUser } from '@/lib/auth/server-auth';
 import { redirect } from 'next/navigation';
 import { StudioDataBridge } from '@/lib/bridges/studio-bridge';
-import { BentoCard, BentoGrid } from '@/components/ui/BentoGrid';
+import { BentoCard, BentoGrid } from '@/components/ui/BentoGridInstrument';
 import { Users, Calendar, Mail, Phone } from 'lucide-react';
 import Image from 'next/image';
 

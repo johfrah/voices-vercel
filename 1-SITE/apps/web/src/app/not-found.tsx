@@ -13,13 +13,13 @@ import {
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { Home, ArrowLeft, Heart, Sparkles, Loader2, Compass } from 'lucide-react';
 import Link from 'next/link';
-import { JourneyCta } from '@/components/ui/JourneyCta';
+import { JourneyCta } from '@/components/ui/JourneyCtaInstrument';
 import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import dynamic from 'next/dynamic';
 import { Suspense } from 'react';
 
 //  NUCLEAR LOADING MANDATE
-const LiquidBackground = dynamic(() => import('@/components/ui/LiquidBackground').then(mod => mod.LiquidBackground), { 
+const LiquidBackground = dynamic(() => import('@/components/ui/LiquidBackgroundInstrument').then(mod => mod.LiquidBackground), { 
   ssr: false,
   loading: () => <div className="fixed inset-0 z-0 bg-va-off-white" />
 });

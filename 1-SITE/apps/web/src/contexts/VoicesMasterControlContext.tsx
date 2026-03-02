@@ -62,12 +62,12 @@ export const VoicesMasterControlContext = createContext<VoicesMasterControlConte
 export const useMasterControl = () => {
   const context = useContext(VoicesMasterControlContext);
   if (context === undefined) {
-    throw new Error('useMasterControl must be used within a VoicesMasterControlProvider');
+    throw new Error('useMasterControl must be used within a VoicesMasterControlContextProvider');
   }
   return context;
 };
 
-export const VoicesMasterControlProvider: React.FC<{ 
+export const VoicesMasterControlContextProvider: React.FC<{ 
   children: React.ReactNode,
   initialJourney?: JourneyType,
   initialUsage?: UsageType

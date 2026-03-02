@@ -19,6 +19,7 @@
     ],
     "paths": {
       "@/*": ["./src/*"],
+      "@worlds/*": ["./src/worlds/*"],
       "@config/*": ["./src/lib/core-internal/*"],
       "@db": ["./src/lib/core-internal/database/index.ts"],
       "@db/*": ["./src/lib/core-internal/database/*"],

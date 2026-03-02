@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db, voicejarEvents, voicejarSessions } from '@/lib/system/voices-config';
 import { eq, asc } from 'drizzle-orm';
+import { requireAdmin } from '@/lib/auth/api-auth';
 
 /**
  *  VISITOR EVENTS API (2026)

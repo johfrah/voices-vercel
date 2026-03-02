@@ -3,15 +3,15 @@
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { Users } from 'lucide-react';
 import React from 'react';
-import { BentoCard } from '../BentoGrid';
+import { BentoCard } from '../BentoGridInstrument';
 import { 
   ContainerInstrument, 
   TextInstrument 
 } from '@/components/ui/LayoutInstruments';
 
 interface CustomerInstrumentProps {
-  first_name: string;
-  last_name: string;
+  firstName: string;
+  lastName: string;
   email: string;
   company?: string;
   totalSpent: string | number;

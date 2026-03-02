@@ -1,11 +1,11 @@
 "use client";
 
 import { TelephonySmartSuggestions } from '@/components/checkout/TelephonySmartSuggestions';
-import { BriefingSelector } from '@/components/studio/BriefingSelector';
-import { MusicSelector } from '@/components/studio/MusicSelector';
+import { BriefingSelector } from '@worlds/2-studio/components/BriefingSelector';
+import { MusicSelector } from '@/components/ui/MusicSelectorInstrument';
 import { AddToCartEmailModal } from '@/components/checkout/AddToCartEmailModal';
 import { CommercialMediaSelectionModal } from '@/components/checkout/CommercialMediaSelectionModal';
-import { VoicesMasterControl } from '@/components/ui/VoicesMasterControl';
+import { VoicesMasterControlContext } from '@/components/ui/VoicesMasterControlInstrument';
 import {
     ButtonInstrument,
     ContainerInstrument,
@@ -15,7 +15,7 @@ import {
     TextInstrument,
 } from '@/components/ui/LayoutInstruments';
 import { OrderStepsInstrument } from '@/components/ui/OrderStepsInstrument';
-import { VoiceCard } from '@/components/ui/VoiceCard';
+import { VoiceCard } from '@/components/ui/VoiceCardInstrument';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useCheckout } from '@/contexts/CheckoutContext';
 import { useTranslation } from '@/contexts/TranslationContext';
@@ -1209,7 +1209,7 @@ export default function ConfiguratorPageClient({
                     <LabelInstrument className="text-[11px] font-bold tracking-[0.2em] text-va-black/20 uppercase px-2">
                       <VoiceglotText translationKey="configurator.step2.label" defaultText="02. Gebruik & Rechten" />
                     </LabelInstrument>
-                    <VoicesMasterControl 
+                    <VoicesMasterControlContext 
                       minimalMode={minimalMode} 
                       actors={state.selectedActor ? [state.selectedActor] : []} 
                       filters={{ languages: [], genders: [], styles: [] }} 

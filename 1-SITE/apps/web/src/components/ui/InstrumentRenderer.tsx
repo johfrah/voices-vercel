@@ -14,10 +14,10 @@ const BentoShowcase = nextDynamic(() => import('./BentoShowcaseInstrument').then
 const AccordionInstrument = nextDynamic(() => import('./AccordionInstrument').then(mod => mod.AccordionInstrument), { ssr: false });
 
 // Studio Specific Instruments
-const WorkshopCarousel = nextDynamic(() => import('../studio/WorkshopCarousel').then(mod => mod.WorkshopCarousel), { ssr: false });
-const WorkshopCalendar = nextDynamic(() => import('../studio/WorkshopCalendar').then(mod => mod.WorkshopCalendar), { ssr: false });
-const WorkshopQuiz = nextDynamic(() => import('../studio/WorkshopQuiz').then(mod => mod.WorkshopQuiz), { ssr: false });
-const WorkshopInterestForm = nextDynamic(() => import('../studio/WorkshopInterestForm').then(mod => mod.WorkshopInterestForm), { ssr: false });
+const WorkshopCarousel = nextDynamic(() => import('@/worlds/2-studio/components/WorkshopCarousel').then(mod => ({ default: mod.WorkshopCarousel })), { ssr: false });
+const WorkshopCalendar = nextDynamic(() => import('@/worlds/2-studio/components/WorkshopCalendar').then(mod => ({ default: mod.WorkshopCalendar })), { ssr: false });
+const WorkshopQuiz = nextDynamic(() => import('@/worlds/2-studio/components/WorkshopQuiz').then(mod => ({ default: mod.WorkshopQuiz })), { ssr: false });
+const WorkshopInterestForm = nextDynamic(() => import('@/worlds/2-studio/components/WorkshopInterestForm').then(mod => ({ default: mod.WorkshopInterestForm })), { ssr: false });
 
 // Fallback voor onbekende instrumenten
 const UnknownInstrument = ({ type }: { type: string }) => (

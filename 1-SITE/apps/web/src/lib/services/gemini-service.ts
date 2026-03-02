@@ -38,7 +38,7 @@ export class GeminiService {
           eq(systemKnowledge.slug, `industry-glossary-${lang.toLowerCase()}`)
         ));
       
-      return dnaRecords.map(r => r.content).join("\n\n");
+      return dnaRecords.map((r: any) => r.content).join("\n\n");
     } catch (e) {
       console.error(`[GeminiService] Failed to fetch DNA for ${lang}:`, e);
       return "";

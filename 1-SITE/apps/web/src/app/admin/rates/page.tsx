@@ -294,7 +294,7 @@ export default function TarievenPage() {
   );
 }
 
-function PriceInput({ label, value, onChange, description, isCents = false, isPercentage = false }: any) {
+function PriceInput({ label, value, onChange, description, isCents = false, isPercentage = false }: { label: string, value: any, onChange: (val: any) => void, description: string, isCents?: boolean, isPercentage?: boolean }) {
   // We werken intern met centen, maar tonen euro's aan de admin
   const displayValue = isCents || isPercentage ? value : value / 100;
 

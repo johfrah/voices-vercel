@@ -1,7 +1,7 @@
 "use client";
 
 import { DnDOrchestrator } from "@/components/admin/DnDOrchestrator";
-import { BentoCard, BentoGrid } from "@/components/ui/BentoGrid";
+import { BentoCard, BentoGrid } from "@/components/ui/BentoGridInstrument";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { 
   PageWrapperInstrument, 

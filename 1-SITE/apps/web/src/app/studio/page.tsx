@@ -18,12 +18,12 @@ import nextDynamic from "next/dynamic";
 import { getStudioWorkshopsData } from "@/lib/services/studio-service";
 
 const LiquidBackground = nextDynamic(
-  () => import("@/components/ui/LiquidBackground").then((mod) => mod.LiquidBackground),
+  () => import("@/components/ui/LiquidBackgroundInstrument").then((mod) => mod.LiquidBackground),
   { ssr: false, loading: () => <div className="fixed inset-0 z-0 bg-va-off-white" /> }
 );
 
 const StudioWorkshopsSection = nextDynamic(
-  () => import("@/components/studio/StudioWorkshopsSection").then((mod) => mod.StudioWorkshopsSection),
+  () => import("@worlds/2-studio/components/StudioWorkshopsSection").then((mod) => mod.StudioWorkshopsSection),
   {
     ssr: false,
     loading: () => (
