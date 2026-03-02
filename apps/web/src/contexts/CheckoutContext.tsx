@@ -379,7 +379,9 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       usageId: journeyId,
       courseId: journey === 'academy' ? courseId : undefined,
       editionId: journey === 'studio' ? courseId : undefined,
-      items: (journey === 'studio' && courseId) ? [{ id: courseId, type: 'workshop_edition' }] : prev.items
+      items: (journey === 'studio' && courseId && !prev.items.some(i => i.type === 'workshop_edition' && (i.pricing?.total ?? 0) > 0)) 
+        ? [{ id: courseId, type: 'workshop_edition' }] 
+        : prev.items
     }));
   }, []);
 
