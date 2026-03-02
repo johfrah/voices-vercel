@@ -120,7 +120,7 @@ export const VoiceglotText: React.FC<VoiceglotTextProps> = ({
             key: translationKey, 
             sourceText: defaultText,
             context: context || 'auto-registered', //  Pass context to registry
-            sourceLangId: market.primary_language_id || 1 // 🛡️ CHRIS-PROTOCOL: Handshake ID Truth
+            sourceLangId: market?.primary_language_id || 1 // 🛡️ CHRIS-PROTOCOL: Handshake ID Truth
           })
         });
       } catch (e) {

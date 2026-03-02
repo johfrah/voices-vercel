@@ -9,6 +9,7 @@ import { GlobalModalManager } from "@/components/ui/GlobalModalManager";
 import { LiquidTransitionOverlay } from "@/components/ui/LiquidTransitionOverlay";
 import { MarketManagerServer } from "@/lib/system/market-manager-server";
 import { MarketDatabaseService } from "@/lib/system/market-manager-db";
+import { createClient } from "@supabase/supabase-js";
 import { Analytics } from "@vercel/analytics/react";
 import { VercelToolbar } from "@vercel/toolbar/next";
 import type { Metadata, Viewport } from "next";
@@ -79,6 +80,11 @@ export async function generateMetadata(): Promise<Metadata> {
   const pathname = headersList.get('x-voices-pathname') || '';
   const host = headersList.get("x-voices-host") || headersList.get("host") || process.env.NEXT_PUBLIC_SITE_URL || MarketManagerServer.getMarketDomains()['BE'].replace('https://', '');
   const cleanHost = host.replace(/^https?:\/\//, '');
+  
+  // 🛡️ CHRIS-PROTOCOL: Pass pathname to market manager for sub-journey detection (e.g. /studio, /academy)
+  let lookupHost = cleanHost;
+  if (pathname.startsWith('/studio')) lookupHost = `${cleanHost}/studio`;
+  else if (pathname.startsWith('/academy')) lookupHost = `${cleanHost}/academy`;
   
   // 🛡️ CHRIS-PROTOCOL: ID-First Context Resolution (v3.0.0)
   const { worldId, languageId, journeyId } = MarketManagerServer.resolveContext(cleanHost, pathname);
@@ -210,8 +216,15 @@ export default async function RootLayout({
   if (pathname.startsWith('/studio')) lookupHost = `${cleanHost}/studio`;
   else if (pathname.startsWith('/academy')) lookupHost = `${cleanHost}/academy`;
 
+  // 🛡️ CHRIS-PROTOCOL: ID-First Context Resolution (v3.0.0)
+  const { worldId, languageId, journeyId } = MarketManagerServer.resolveContext(cleanHost, pathname);
+
   //  CHRIS-PROTOCOL: Parallel Pulse Fetching (v2.14.798)
-  const [market, studioTranslations, worldLanguages] = await Promise.all([
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+  const supabase = createClient(supabaseUrl, supabaseKey);
+
+  const [market, studioTranslations, worldLanguages, worldConfig] = await Promise.all([
     getMarketSafe(lookupHost),
     (async () => {
       try {
@@ -233,7 +246,8 @@ export default async function RootLayout({
         console.error(' RootLayout: Failed to load world languages:', err);
         return [];
       }
-    })()
+    })(),
+    ConfigBridge.getWorldConfig(worldId, languageId)
   ]);
   
   // 🛡️ CHRIS-PROTOCOL: Prime MarketManager with World Languages

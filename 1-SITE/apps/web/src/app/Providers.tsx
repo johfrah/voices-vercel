@@ -41,9 +41,9 @@ export function Providers({
   };
 }) {
   const pathname = usePathname();
-  // 🛡️ CHRIS-PROTOCOL: Version Sync Mandate (v2.27.3)
+  // 🛡️ CHRIS-PROTOCOL: Version Sync Mandate (v2.27.6)
   // Major Refactor: ID-First Handshake Architecture
-  const currentVersion = '2.27.3';
+  const currentVersion = '2.27.6';
 
   // 🛡️ CHRIS-PROTOCOL: Language is now strictly passed from Server (Source of Truth)
   // to prevent Hydration Mismatch errors (#419, #425).
@@ -154,8 +154,9 @@ function DebugLogger({
       const host = window.location.host.replace('www.', '');
       const handshake = g.handshakeContext;
       const currentMarket = MarketManagerServer.getCurrentMarket(host, pathname);
-      const worldId = handshake?.worldId || MarketManagerServer.getWorldId(currentMarket.market_code);
-      const languageId = handshake?.languageId;
+      const contextResolved = MarketManagerServer.resolveContext(host, pathname);
+      const worldId = handshake?.worldId || contextResolved.worldId;
+      const languageId = handshake?.languageId || contextResolved.languageId;
       
       console.log(`🚀 [Voices] Nuclear Version: v${currentVersion} (Godmode Zero)`);
       console.group('🛡️ [Voices] Forensic System Context');

@@ -118,8 +118,8 @@ export const VoicesMasterControlProvider: React.FC<{
     const initializeState = () => {
       const host = typeof window !== 'undefined' ? window.location.host : '';
       const market = MarketManager.getCurrentMarket(host, window.location.pathname);
-      const defaultLang = market.primary_language; // e.g. 'nl-BE'
-      const defaultLangId = market.primary_language_id; // e.g. 1
+      const defaultLang = market?.primary_language || 'nl-be'; // e.g. 'nl-BE'
+      const defaultLangId = market?.primary_language_id || 1; // e.g. 1
       
       const saved = localStorage.getItem('voices_master_control');
       let savedState: any = {};
@@ -684,8 +684,8 @@ export const VoicesMasterControlProvider: React.FC<{
   const resetFilters = useCallback(() => {
     const host = typeof window !== 'undefined' ? window.location.host : (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || MarketManager.getMarketDomains()['BE'].replace('https://', ''));
     const market = MarketManager.getCurrentMarket(host);
-    const defaultLang = MarketManager.getLanguageCode(market.primary_language);
-    const defaultLangId = market.primary_language_id;
+    const defaultLang = MarketManager.getLanguageCode(market?.primary_language || 'nl-be');
+    const defaultLangId = market?.primary_language_id || 1;
     
     const defaultFilters: Partial<MasterControlState['filters']> = {
       language: defaultLang,

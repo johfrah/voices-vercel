@@ -561,6 +561,26 @@ export class MarketManagerServer {
     // Static fallbacks only exist for the very first boot or extreme DB failure.
     const config = this.MARKETS_STATIC[cleanHost] || this.MARKETS_STATIC['voices.be'];
 
+    if (!config) {
+      console.error(`[MarketManager] CRITICAL: No config found for host ${cleanHost}. Falling back to emergency defaults.`);
+      return {
+        market_code: 'BE',
+        language: 'nl',
+        primary_language: 'nl-be',
+        primary_language_id: 1,
+        supported_languages: ['nl-be'],
+        popular_languages: ['nl-be'],
+        currency: 'EUR',
+        name: 'Voices',
+        phone: '',
+        email: '',
+        logo_url: '',
+        company_name: 'Voices',
+        vat_number: '',
+        theme: 'voices'
+      };
+    }
+
     // 🛡️ CHRIS-PROTOCOL: Force ISO-First for all static fallbacks
     const isoSupported = (config.supported_languages || []).map(l => this.getLanguageCode(l));
     const isoPopular = (config.popular_languages || []).map(l => this.getLanguageCode(l));

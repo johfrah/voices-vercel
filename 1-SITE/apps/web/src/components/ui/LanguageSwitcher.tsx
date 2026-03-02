@@ -29,7 +29,7 @@ export function LanguageSwitcher({ className }: { className?: string }) {
   const [isOpen, setIsOpen] = useState(false);
   const host = typeof window !== 'undefined' ? window.location.host : (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || MarketManager.getMarketDomains()['BE'].replace('https://', ''));
   const market = MarketManager.getCurrentMarket(host);
-  const [currentLangId, setCurrentLangId] = useState<number>(market.primary_language_id || 1);
+  const [currentLangId, setCurrentLangId] = useState<number>(market?.primary_language_id || 1);
   const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
