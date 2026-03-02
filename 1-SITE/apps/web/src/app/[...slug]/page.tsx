@@ -614,10 +614,14 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
         return redirect(`/${resolved.canonical_slug}`);
       }
 
-      // 🛡️ CHRIS-PROTOCOL: World-Aware Handshake (v2.23.0)
-      // We use the world_id from the registry as the absolute truth for the theme/context.
-      const worldId = resolved.world_id ?? MarketManager.getWorldId(resolved.journey);
-      console.error(` [SmartRouter] Handshake SUCCESS: ${resolved.routing_type} (ID: ${resolved.entity_id}, World: ${worldId})`);
+    // 🛡️ CHRIS-PROTOCOL: World-Aware Handshake (v2.24.3)
+    // We use the world_id from the registry as the absolute truth for the theme/context.
+    // If no world_id is in registry, we force Studio world for /studio prefix.
+    let worldId = resolved?.world_id;
+    if (!worldId && lookupSlug.startsWith('studio')) worldId = 2;
+    if (!worldId) worldId = MarketManager.getWorldId(resolved?.journey || (lookupSlug.startsWith('studio') ? 'studio' : 'agency'));
+    
+    console.error(` [SmartRouter] Handshake SUCCESS: ${resolved?.routing_type || 'fallback'} (ID: ${resolved?.entity_id}, World: ${worldId})`);
       
       // Shift journey/medium for actor detail logic if it's a voice-like prefix
       // We detect this by checking if the resolved type is actor and there are more segments
