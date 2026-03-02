@@ -128,13 +128,73 @@ export default async function WorkshopDetailPage({ params }: { params: { slug: s
     );
   }
 
+  if (params.slug === 'faq') {
+    const { faqs } = await getStudioWorkshopsData();
+    return (
+      <PageWrapperInstrument className="bg-va-off-white">
+        <Suspense fallback={null}><LiquidBackground /></Suspense>
+        <ContainerInstrument className="max-w-4xl mx-auto px-6 py-32">
+          <div className="text-center mb-20">
+            <TextInstrument className="text-[11px] font-bold tracking-[0.3em] uppercase text-primary mb-4">
+              Veelgestelde Vragen
+            </TextInstrument>
+            <HeadingInstrument level={1} className="text-4xl md:text-5xl font-light tracking-tighter text-va-black">
+              Alles wat je moet weten over onze workshops
+            </HeadingInstrument>
+          </div>
+          <div className="space-y-4">
+            {faqs.map((faq) => (
+              <div key={faq.id} className="bg-white rounded-[20px] p-8 border border-black/[0.03] shadow-aura">
+                <HeadingInstrument level={4} className="text-xl font-light text-va-black mb-4">{faq.question}</HeadingInstrument>
+                <TextInstrument className="text-va-black/60 font-light leading-relaxed">{faq.answer}</TextInstrument>
+              </div>
+            ))}
+          </div>
+        </ContainerInstrument>
+      </PageWrapperInstrument>
+    );
+  }
+
+  if (params.slug === 'contact') {
+    return (
+      <PageWrapperInstrument className="bg-va-off-white">
+        <Suspense fallback={null}><LiquidBackground /></Suspense>
+        <ContainerInstrument className="max-w-4xl mx-auto px-6 py-32">
+          <div className="text-center mb-20">
+            <TextInstrument className="text-[11px] font-bold tracking-[0.3em] uppercase text-primary mb-4">
+              Contact
+            </TextInstrument>
+            <HeadingInstrument level={1} className="text-4xl md:text-5xl font-light tracking-tighter text-va-black mb-4">
+              Voices Studio
+            </HeadingInstrument>
+            <TextInstrument className="text-va-black/40 font-light text-lg">
+              Heb je vragen over onze workshops of wil je meer weten? Neem gerust contact op.
+            </TextInstrument>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="bg-white rounded-[20px] p-8 border border-black/[0.03] shadow-aura space-y-4">
+              <HeadingInstrument level={3} className="text-xl font-light text-va-black">Bereikbaarheid</HeadingInstrument>
+              <TextInstrument className="text-va-black/60 font-light">E-mail: studio@voices.be</TextInstrument>
+              <TextInstrument className="text-va-black/60 font-light">Telefoon: +32 (0)2 793 19 91</TextInstrument>
+            </div>
+            <div className="bg-va-black text-white rounded-[20px] p-8 shadow-aura-lg space-y-4">
+              <HeadingInstrument level={3} className="text-xl font-light text-white">De Studio</HeadingInstrument>
+              <TextInstrument className="text-white/60 font-light">Jules Delhaizestraat 42</TextInstrument>
+              <TextInstrument className="text-white/60 font-light">1080 Brussel (Molenbeek)</TextInstrument>
+            </div>
+          </div>
+        </ContainerInstrument>
+      </PageWrapperInstrument>
+    );
+  }
+
   if (isSubFoyerRoute(params.slug)) {
     const article = await getSubFoyerArticle(params.slug);
-    if (article) {
+    if (article && article.content_blocks?.length > 0) {
       return (
         <PageWrapperInstrument className="bg-va-off-white">
           <Suspense fallback={null}><LiquidBackground /></Suspense>
-          <InstrumentRenderer article={article} worldId={2} />
+          <InstrumentRenderer blocks={article.content_blocks} />
         </PageWrapperInstrument>
       );
     }
