@@ -53,6 +53,7 @@ export class MarketManagerServer {
   private static worldsRegistry: Array<{ id: number, code: string, label: string, description?: string }> = [];
   private static mediaTypesRegistry: Array<{ id: number, code: string, label: string }> = [];
   private static servicesRegistry: Array<{ id: number, code: string, label: string, category?: string }> = [];
+  private static worldLanguagesRegistry: Array<{ world_id: number, language_id: number, is_primary: boolean, is_popular: boolean }> = [];
 
   /**
    * 🛡️ CHRIS-PROTOCOL: Handshake Truth Registry (v2.14.667)
@@ -62,6 +63,12 @@ export class MarketManagerServer {
     this.worldsRegistry = worlds;
     if (typeof global !== 'undefined') (global as any).handshakeWorlds = worlds;
     if (typeof window !== 'undefined') (window as any).handshakeWorlds = worlds;
+  }
+
+  public static setWorldLanguages(worldLangs: any[]) {
+    this.worldLanguagesRegistry = worldLangs;
+    if (typeof global !== 'undefined') (global as any).handshakeWorldLanguages = worldLangs;
+    if (typeof window !== 'undefined') (window as any).handshakeWorldLanguages = worldLangs;
   }
 
   public static setLanguages(langs: any[]) {
@@ -100,6 +107,7 @@ export class MarketManagerServer {
   public static get worlds() { return this.worldsRegistry; }
   public static get mediaTypes() { return this.mediaTypesRegistry; }
   public static get services() { return this.servicesRegistry; }
+  public static get worldLanguages() { return this.worldLanguagesRegistry; }
 
   /**
    * 🛡️ CHRIS-PROTOCOL: Service ID Resolver (v2.16.137)

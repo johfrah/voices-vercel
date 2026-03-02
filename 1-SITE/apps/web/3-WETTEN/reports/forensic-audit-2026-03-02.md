@@ -1,4 +1,4 @@
-# 🛡️ Forensic Audit Report (3/2/2026, 1:02:38 AM)
+# 🛡️ Forensic Audit Report (3/2/2026, 1:35:15 AM)
 
 ## Summary
 - **Status**: ✅ PASSED
@@ -5894,11 +5894,11 @@
   > `<span className="text-[15px] font-black tracking-widest">`
 - **WARNING** `src/components/ui/JourneySelector.tsx:51`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse ml-1" />`
-- **WARNING** `src/components/ui/LanguageSwitcher.tsx:205`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `src/components/ui/LanguageSwitcher.tsx:215`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="p-1">`
-- **WARNING** `src/components/ui/LanguageSwitcher.tsx:225`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `src/components/ui/LanguageSwitcher.tsx:235`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex items-center gap-2.5">`
-- **WARNING** `src/components/ui/LanguageSwitcher.tsx:227`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `src/components/ui/LanguageSwitcher.tsx:237`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex flex-col">`
 - **WARNING** `src/components/ui/LayoutInstrumentsClient.tsx:13`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `lang = 'nl',`
@@ -6674,13 +6674,13 @@
   > `<path class="st4" d="M2926.87,769.02c-3.8,2.6-8.17,4.88-13.12,6.84c-4.95,1.97-10.51,3.54-16.68,4.73c-6.17,1.19-13.12,1.79-20.85,1.79c-13.43,0-26.04-2.63-37.83-7.89c-11.8-5.26-22.1-12.45-30.92-21.57c-8.82-9.12-15.8-19.74-20.95-31.88c-5.15-12.13-7.73-25.14-7.73-39.03c0-13.89,2.57-26.93,7.73-39.14c5.15-12.2,12.13-22.83,20.95-31.88c8.81-9.05,19.12-16.2,30.92-21.46c11.8-5.26,24.41-7.89,37.83-7.89c13.29,0,25.8,2.6,37.53,7.79c11.73,5.19,22.03,12.24,30.92,21.15c8.88,8.91,15.9,19.39,21.05,31.46c5.15,12.07,7.86,24.97,8.14,38.72c0,6.45-2,11.68-6,15.68c-4,4-9.25,6-15.76,6l-132.91,0c17.93,36.97,47.08,55.35,95.21,28.52c9.86-5.5,19.22-2.13,24.36,4.29C2945.46,743.62,2946.5,755.86,2926.87,769.02z M2926.6,663.11c-1.55-6.29-4.01-11.98-7.39-17.04c-3.38-5.07-7.39-9.36-12.04-12.9c-4.65-3.53-9.82-6.22-15.52-8.06c-5.7-1.84-11.79-2.76-18.27-2.76c-6.48,0-12.57,1-18.27,2.99c-5.7,2-10.84,4.76-15.42,8.29c-4.58,3.53-8.48,7.79-11.72,12.78c-3.24,4.99-5.63,10.56-7.18,16.7H2926.6z"/>`
 - **WARNING** `src/components/ui/VoiceglotImage.tsx:294`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className={cn(`
-- **WARNING** `src/components/ui/VoiceglotText.tsx:131`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `src/components/ui/VoiceglotText.tsx:136`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `const sourceLang = market.market_code === 'ARTIST' ? 'en' : 'nl';`
-- **WARNING** `src/components/ui/VoiceglotText.tsx:131`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `src/components/ui/VoiceglotText.tsx:136`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `const sourceLang = market.market_code === 'ARTIST' ? 'en' : 'nl';`
-- **WARNING** `src/components/ui/VoiceglotText.tsx:143`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `src/components/ui/VoiceglotText.tsx:150`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `const sourceLang = market.market_code === 'ARTIST' ? 'en' : 'nl';`
-- **WARNING** `src/components/ui/VoiceglotText.tsx:143`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `src/components/ui/VoiceglotText.tsx:150`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `const sourceLang = market.market_code === 'ARTIST' ? 'en' : 'nl';`
 - **WARNING** `src/components/ui/VoicesDropdown.tsx:312`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span className="text-[10px] font-bold tracking-[0.2em] text-va-black/60 uppercase mb-0.5 block">`

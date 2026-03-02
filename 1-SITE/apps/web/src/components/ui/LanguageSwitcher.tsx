@@ -44,43 +44,49 @@ export function LanguageSwitcher({ className }: { className?: string }) {
   }, []);
 
   const languages = React.useMemo(() => {
-    // 🛡️ CHRIS-PROTOCOL: Handshake Registry is leading (v2.19.5)
-    // We fetch ALL languages from the database registry instead of a hardcoded map.
+    // 🛡️ CHRIS-PROTOCOL: Handshake Registry is leading (v2.24.0)
+    // We fetch ALL languages and world-specific links from the database registry.
     const registry = MarketManager.languages;
+    const worldLangs = MarketManager.worldLanguages;
+    const currentWorldId = MarketManager.getWorldId(market.market_code);
     
-    // Determine which languages are supported by this market
-    const supportedIds = market.supported_languages?.map(l => {
-      const match = registry.find(r => r.code.toLowerCase() === l.toLowerCase() || r.label.toLowerCase() === l.toLowerCase());
-      return match?.id;
-    }).filter(Boolean) as number[] || [1, 2, 4, 5];
+    // 🌍 DNA-ROUTING: Filter languages via the world_languages link table
+    const supportedLangsForWorld = worldLangs.filter(wl => wl.world_id === currentWorldId);
+    const supportedIds = supportedLangsForWorld.map(wl => wl.language_id);
 
     // Map registry objects to the internal Language interface
-    const allLangs: Language[] = registry.map(l => ({
-      id: l.id,
-      code: l.code,
-      label: l.label,
-      native: MarketManager.getLanguageLabel(l.id),
-      flag: MarketManager.getLanguageIcon(l.id) || '🌐'
-    }));
+    const allLangs: Language[] = registry.map(l => {
+      const worldLink = supportedLangsForWorld.find(wl => wl.language_id === l.id);
+      return {
+        id: l.id,
+        code: l.code,
+        label: l.label,
+        native: MarketManager.getLanguageLabel(l.id),
+        flag: MarketManager.getLanguageIcon(l.id) || '🌐',
+        isPrimary: worldLink?.is_primary || false,
+        isPopular: worldLink?.is_popular || false
+      };
+    });
 
     let filtered = allLangs.filter(l => supportedIds.includes(l.id));
 
-    return filtered.sort((a, b) => {
-      // 1. Huidige markt-taal bovenaan
-      if (a.id === market.primary_language_id) return -1;
-      if (b.id === market.primary_language_id) return 1;
-      
-      // 2. Populaire talen voor deze markt
-      const popularIds = market.popular_languages?.map(l => {
+    // Fallback if no links found (safety pulse)
+    if (filtered.length === 0) {
+      const fallbackIds = market.supported_languages?.map(l => {
         const match = registry.find(r => r.code.toLowerCase() === l.toLowerCase() || r.label.toLowerCase() === l.toLowerCase());
         return match?.id;
-      }).filter(Boolean) as number[] || [];
+      }).filter(Boolean) as number[] || [1, 2, 4, 5];
+      filtered = allLangs.filter(l => fallbackIds.includes(l.id));
+    }
 
-      const aIsPopular = popularIds.includes(a.id);
-      const bIsPopular = popularIds.includes(b.id);
+    return filtered.sort((a, b) => {
+      // 1. Huidige markt-taal (Primary) bovenaan
+      if ((a as any).isPrimary) return -1;
+      if ((b as any).isPrimary) return 1;
       
-      if (aIsPopular && !bIsPopular) return -1;
-      if (!aIsPopular && bIsPopular) return 1;
+      // 2. Populaire talen voor deze world
+      if ((a as any).isPopular && !(b as any).isPopular) return -1;
+      if (!(a as any).isPopular && (b as any).isPopular) return 1;
       
       return 0;
     });

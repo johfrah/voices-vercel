@@ -212,7 +212,7 @@ export default async function RootLayout({
   else if (pathname.startsWith('/academy')) lookupHost = `${cleanHost}/academy`;
 
   //  CHRIS-PROTOCOL: Parallel Pulse Fetching (v2.14.798)
-  const [market, studioTranslations] = await Promise.all([
+  const [market, studioTranslations, worldLanguages] = await Promise.all([
     getMarketSafe(lookupHost),
     (async () => {
       try {
@@ -225,8 +225,20 @@ export default async function RootLayout({
         console.error(' RootLayout: Failed to load translations:', err);
         return {};
       }
+    })(),
+    (async () => {
+      try {
+        const { data } = await supabase.from('world_languages').select('*');
+        return data || [];
+      } catch (err) {
+        console.error(' RootLayout: Failed to load world languages:', err);
+        return [];
+      }
     })()
   ]);
+  
+  // 🛡️ CHRIS-PROTOCOL: Prime MarketManager with World Languages
+  MarketManagerServer.setWorldLanguages(worldLanguages);
   
   // 🛡️ CHRIS-PROTOCOL: World Detection for Provider Injection (v2.16.134)
   const isStudioPage = pathname.startsWith('/studio/') || pathname === '/studio' || pathname === '/workshops' || pathname === '/voorwaarden-studio';

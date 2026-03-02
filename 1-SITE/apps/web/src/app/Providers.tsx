@@ -34,8 +34,8 @@ export function Providers({
   initialUsage?: any;
 }) {
   const pathname = usePathname();
-  // 🛡️ CHRIS-PROTOCOL: Version Sync Mandate (v2.23.5)
-  const currentVersion = '2.23.5';
+  // 🛡️ CHRIS-PROTOCOL: Version Sync Mandate (v2.24.0)
+  const currentVersion = '2.24.0';
 
   // 🛡️ CHRIS-PROTOCOL: Language is now strictly passed from Server (Source of Truth)
   // to prevent Hydration Mismatch errors (#419, #425).
@@ -45,7 +45,7 @@ export function Providers({
 
   // 🛡️ CHRIS-PROTOCOL: Prime MarketManager on the client with the server-provided market data
   // This prevents the client from falling back to static defaults during hydration.
-  if (typeof window !== 'undefined' && market) {
+    if (typeof window !== 'undefined' && market) {
     // We use a ref-like pattern to only prime once per mount
     const g = window as any;
     if (!g.__marketPrimed) {
@@ -54,6 +54,12 @@ export function Providers({
       (MarketManagerServer as any).cache[host] = market;
 
       MarketManagerServer.setLanguages(Object.values(initialTranslations || {}).length > 0 ? [] : []); // Placeholder for languages if needed
+      
+      // 🛡️ CHRIS-PROTOCOL: Prime World Languages on Client
+      if (g.handshakeWorldLanguages) {
+        MarketManagerServer.setWorldLanguages(g.handshakeWorldLanguages);
+      }
+      
       g.__marketPrimed = true;
     }
   }
