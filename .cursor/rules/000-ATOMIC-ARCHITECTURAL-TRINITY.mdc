@@ -23,7 +23,6 @@ Dit is de "Grondwet" van de Voices-architectuur. Elke AI-agent MOET deze 6 eleme
         *   **10**: Johfrai (AI Voices) - Voicy
         *   **25**: Artist (Music Label) - Laya
         *   **0**: Foyer (Global) - Mat
-        *   **9**: Partner (Resellers) - Sally (Legacy ID)
 
 2.  **Market (De Lokale Etalage & Domein Huls)**:
     *   **Definitie**: De fysieke container (domein). Bepaalt lokale communicatie (e-mail), BTW-tarieven en taal-nuance.
@@ -55,25 +54,23 @@ Dit is de "Grondwet" van de Voices-architectuur. Elke AI-agent MOET deze 6 eleme
 
 ## 🧬 Het DNA (De Bouwstenen)
 
-4.  **Entity (De Identiteit/ID-First Handshake)**:
+4.  **Entity (De Identiteit - "Wie")**:
+    *   **Definitie**: De unieke database-identiteit van elk object (Stemacteur, Workshop, Artikel).
     *   **Mandaat**: De **ID-First Handshake** is STRIKT VERPLICHT. Resolve ALTIJD eerst de slug naar een `entity_id` via de `slug_registry`.
     *   **AI-Actie**: Gebruik ID's voor logica, slugs alleen voor decor (URL).
 
-5.  **Instrument (De Vertoning/UI-UX)**:
-    *   **Definitie**: World-aware UI-bouwstenen.
+5.  **Page (De Compositie - "Waar")**:
+    *   **Soft Entities**: Flexibele pagina's opgebouwd uit instrumenten (`content_articles`).
+    *   **Hard Entities**: Vaste blueprints (bijv. `/stem/[slug]`) waar de layout in code vastligt maar de data uit de database komt.
+    *   **Smart Routing**: ELKE pagina resolveert via de `SmartRouter` op basis van `routing_type` en `world_id`.
+
+6.  **Instrument (De Vertoning - "Hoe")**:
+    *   **Definitie**: Intelligente UI-bouwstenen (bijv. `ReviewsInstrument`, `CastingDockInstrument`).
+    *   **World-Awareness**: Instrumenten veranderen van gedrag en stijl op basis van de `world_id`.
     *   **Workshop Categorieën**: `workshop` (Berny), `service` (Chris), `portfolio` (Laya).
 
-6.  **VoiceGlot (De Taal/Lokalisatie)**:
-    *   **Language IDs (Handshake Truth)**: 
-        *   **1**: nl-BE (Vlaams)
-        *   **2**: nl-NL (Nederlands)
-        *   **3**: fr-BE (Belgisch Frans)
-        *   **4**: fr-FR (Frans)
-        *   **5**: en-GB (Engels)
-        *   **7**: de-DE (Duits)
-        *   **8**: es-ES (Spaans)
-        *   **9**: it-IT (Italiaans)
-        *   **12**: pt-pt (Portugees)
+7.  **VoiceGlot (De Taal - "Wat")**:
+    *   **Language IDs (Handshake Truth)**: 1: nl-BE, 2: nl-NL, 3: fr-BE, 4: fr-FR, 5: en-GB, 7: de-DE, 8: es-ES, 9: it-IT, 12: pt-pt.
     *   **AI-Actie**: Hardcoding van tekst is VERBODEN. Gebruik `t()` via VoiceGlot.
 
 ## 🏭 Content Delivery (De Nuclear Workflow)

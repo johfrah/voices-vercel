@@ -40,6 +40,28 @@ export function Providers({
     worldConfig: any;
   };
 }) {
+  // 🛡️ CHRIS-PROTOCOL: Critical Null-Safety Guard (v2.27.8)
+  // Prevent catastrophic failure if market is undefined during SSR/hydration
+  if (!market) {
+    console.error('[Providers] CRITICAL: market is undefined! Using emergency fallback.');
+    market = {
+      market_code: 'BE',
+      language: 'nl',
+      primary_language: 'nl-BE',
+      primary_language_id: 1,
+      supported_languages: ['nl-BE'],
+      popular_languages: ['nl-BE'],
+      currency: 'EUR',
+      name: 'Voices',
+      phone: '',
+      email: '',
+      logo_url: '',
+      company_name: 'Voices',
+      vat_number: '',
+      theme: 'voices'
+    };
+  }
+
   const pathname = usePathname();
   // 🛡️ CHRIS-PROTOCOL: Version Sync Mandate (v2.27.8)
   // Major Refactor: ID-First Handshake Architecture

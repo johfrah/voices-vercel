@@ -1,62 +1,79 @@
-#!/usr/bin/env tsx
-/**
- * Check recent system events related to Studio page errors
- */
-
-import 'dotenv/config';
-import { db } from '../../1-SITE/apps/web/src/lib/system/voices-config';
+import { db } from '../../1-SITE/packages/database/src/client.js';
 import { sql } from 'drizzle-orm';
 
 async function checkStudioErrors() {
-  console.log('\n🔍 CHECKING RECENT SYSTEM EVENTS');
-  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
+  try {
+    const result = await db.execute(sql`
+      SELECT 
+        event_id,
+        event_type,
+        severity,
+        message,
+        context,
+        created_at
+      FROM system_events
+      WHERE created_at > NOW() - INTERVAL '2 hours'
+        AND (
+          message ILIKE '%studio%'
+          OR context::text ILIKE '%studio%'
+          OR severity IN ('error', 'critical')
+        )
+      ORDER BY created_at DESC
+      LIMIT 30
+    `);
 
-  const events = await db.execute(sql`
-    SELECT 
-      id,
-      event_type,
-      severity,
-      message,
-      context,
-      created_at
-    FROM system_events
-    WHERE created_at > NOW() - INTERVAL '2 hours'
-    ORDER BY created_at DESC
-    LIMIT 20
-  `);
-
-  if (events.rows.length === 0) {
-    console.log('✅ No recent system events found\n');
-    return;
-  }
-
-  console.log(`Found ${events.rows.length} recent events:\n`);
-  
-  events.rows.forEach((e: any, i: number) => {
-    console.log(`${i+1}. [${e.severity}] ${e.event_type}`);
-    console.log(`   Message: ${e.message}`);
+    console.log('=== RECENT STUDIO-RELATED ERRORS ===\n');
     
-    if (e.context) {
-      try {
-        const ctx = typeof e.context === 'string' ? JSON.parse(e.context) : e.context;
-        if (ctx.error) {
-          console.log(`   Error: ${ctx.error.substring(0, 200)}`);
+    if (result.rows.length === 0) {
+      console.log('No studio-related errors found in the last 2 hours.');
+    } else {
+      result.rows.forEach((row: any) => {
+        console.log(`[${row.created_at}] ${row.severity.toUpperCase()}`);
+        console.log(`Type: ${row.event_type}`);
+        console.log(`Message: ${row.message}`);
+        if (row.context) {
+          console.log(`Context: ${JSON.stringify(row.context, null, 2)}`);
         }
-        if (ctx.stack) {
-          const stackLines = ctx.stack.split('\n').slice(0, 3);
-          console.log(`   Stack: ${stackLines.join('\n          ')}`);
-        }
-        if (ctx.url) {
-          console.log(`   URL: ${ctx.url}`);
-        }
-      } catch (err) {
-        console.log(`   Context: ${JSON.stringify(e.context).substring(0, 100)}`);
-      }
+        console.log('---\n');
+      });
     }
+
+    // Also check all recent critical errors
+    const criticalResult = await db.execute(sql`
+      SELECT 
+        event_id,
+        event_type,
+        severity,
+        message,
+        context,
+        created_at
+      FROM system_events
+      WHERE created_at > NOW() - INTERVAL '30 minutes'
+        AND severity IN ('error', 'critical')
+      ORDER BY created_at DESC
+      LIMIT 10
+    `);
+
+    console.log('\n=== ALL RECENT CRITICAL ERRORS (Last 30 min) ===\n');
     
-    console.log(`   Time: ${e.created_at}`);
-    console.log('');
-  });
+    if (criticalResult.rows.length === 0) {
+      console.log('No critical errors found in the last 30 minutes.');
+    } else {
+      criticalResult.rows.forEach((row: any) => {
+        console.log(`[${row.created_at}] ${row.severity.toUpperCase()}`);
+        console.log(`Type: ${row.event_type}`);
+        console.log(`Message: ${row.message}`);
+        if (row.context) {
+          console.log(`Context: ${JSON.stringify(row.context, null, 2)}`);
+        }
+        console.log('---\n');
+      });
+    }
+
+  } catch (error) {
+    console.error('Error checking system events:', error);
+    process.exit(1);
+  }
 }
 
-checkStudioErrors().catch(console.error);
+checkStudioErrors().then(() => process.exit(0));
