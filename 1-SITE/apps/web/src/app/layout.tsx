@@ -240,25 +240,15 @@ export default async function RootLayout({
   // 🛡️ CHRIS-PROTOCOL: Prime MarketManager with World Languages
   MarketManagerServer.setWorldLanguages(worldLanguages);
   
-  // 🛡️ CHRIS-PROTOCOL: World Detection for Provider Injection (v2.16.134)
-  const isStudioPage = pathname.startsWith('/studio/') || pathname === '/studio' || pathname === '/workshops' || pathname === '/voorwaarden-studio';
-  const isAcademyPage = pathname.startsWith('/academy/') || pathname === '/academy';
+  // 🛡️ CHRIS-PROTOCOL: World Detection for Provider Injection (v2.25.0)
+  const isStudioPage = pathname.startsWith('/studio/') || pathname === '/studio' || pathname === '/workshops' || pathname === '/voorwaarden-studio' || pathname.includes('/studio');
+  const isAcademyPage = pathname.startsWith('/academy/') || pathname === '/academy' || pathname.includes('/academy');
   
+  const journeyKey = isStudioPage ? 'studio' : (isAcademyPage ? 'academy' : (market.market_code === 'ADEMING' ? 'ademing' : (market.market_code === 'PORTFOLIO' ? 'portfolio' : (market.market_code === 'ARTIST' ? 'artist' : 'agency'))));
+  const navConfig = await ConfigBridge.getNavConfig(journeyKey, langHeader || 'nl');
+
   const initialJourney = isStudioPage ? 'studio' : (isAcademyPage ? 'academy' : undefined);
   const initialUsage = isStudioPage || isAcademyPage ? 'subscription' : undefined;
-
-  // 🛡️ CHRIS-PROTOCOL: Server-side Nav Config Fetching (v2.14.611)
-  const getJourneyKey = (marketCode: string) => {
-    switch (marketCode) {
-      case 'ADEMING': return 'ademing';
-      case 'PORTFOLIO': return 'portfolio';
-      case 'ARTIST': return 'artist';
-      case 'STUDIO': return 'studio';
-      case 'ACADEMY': return 'academy';
-      default: return 'agency';
-    }
-  };
-  const navConfig = await ConfigBridge.getNavConfig(getJourneyKey(market.market_code));
 
   // 🛡️ CHRIS-PROTOCOL: Force Client-Only rendering for Admin routes to prevent hydration mismatch (#419)
   const isAdminRoute = pathname.startsWith('/admin') || (pathname.split('/').filter(Boolean)[0] === 'admin');

@@ -319,6 +319,12 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
   const popoverRef = useRef<HTMLDivElement>(null);
 
   const getJourneyKey = useCallback(() => {
+    // 🛡️ CHRIS-PROTOCOL: URL-First Journey Detection (v2.25.0)
+    // Ensures the header matches the current world context even on shared domains.
+    if (pathname.startsWith('/studio') || pathname.includes('/studio')) return 'studio';
+    if (pathname.startsWith('/academy') || pathname.includes('/academy')) return 'academy';
+    if (pathname.startsWith('/ademing')) return 'ademing';
+    
     switch (market.market_code) {
       case 'ADEMING': return 'ademing';
       case 'PORTFOLIO': return 'portfolio';
@@ -327,7 +333,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
       case 'ACADEMY': return 'academy';
       default: return 'agency';
     }
-  }, [market.market_code]);
+  }, [market.market_code, pathname]);
 
   useEffect(() => {
     setMounted(true);
