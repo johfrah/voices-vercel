@@ -31,6 +31,9 @@ export const TranslationProvider: React.FC<{
   const healingKeys = React.useRef<Set<string>>(new Set());
 
   useEffect(() => {
+    // 🛡️ CHRIS-PROTOCOL: Guard against missing market during hydration
+    if (!market) return;
+
     const fetchTranslations = async () => {
       // 🛡️ CHRIS-PROTOCOL: Handshake ID Truth (v2.26.2)
       // We map the incoming lang code to the official ISO codes used in the DB.
