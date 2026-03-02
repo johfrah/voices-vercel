@@ -285,6 +285,10 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
   const auth = useAuth();
   const isAdmin = auth.isAdmin;
   const market = MarketManager.getCurrentMarket(undefined, pathname); 
+  const language = useMemo(() => {
+    return pathname.split('/').filter(Boolean)[0] === 'en' ? 'en' : 'nl';
+  }, [pathname]);
+
   const [mounted, setMounted] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
