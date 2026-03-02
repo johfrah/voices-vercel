@@ -329,18 +329,24 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
 
   const getJourneyKey = useCallback(() => {
     // 🛡️ CHRIS-PROTOCOL: ID-First Journey Detection (v3.0.0)
+    if (worldId === 1) return 'agency';
     if (worldId === 2) return 'studio';
     if (worldId === 3) return 'academy';
     if (worldId === 6) return 'ademing';
     if (worldId === 5) return 'portfolio';
     if (worldId === 25) return 'artist';
     if (worldId === 10) return 'johfrai';
+    if (worldId === 7) return 'freelance';
+    if (worldId === 8) return 'partner';
 
     // 🛡️ CHRIS-PROTOCOL: URL-First Journey Detection (v2.25.0)
     // Ensures the header matches the current world context even on shared domains.
     if (pathname.startsWith('/studio') || pathname.includes('/studio')) return 'studio';
     if (pathname.startsWith('/academy') || pathname.includes('/academy')) return 'academy';
     if (pathname.startsWith('/ademing')) return 'ademing';
+    if (pathname.startsWith('/johfrai')) return 'johfrai';
+    if (pathname.startsWith('/freelance')) return 'freelance';
+    if (pathname.startsWith('/partner')) return 'partner';
     
     switch (market.market_code) {
       case 'ADEMING': return 'ademing';
@@ -348,6 +354,9 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
       case 'ARTIST': return 'artist';
       case 'STUDIO': return 'studio';
       case 'ACADEMY': return 'academy';
+      case 'JOHFRAI': return 'johfrai';
+      case 'FREELANCE': return 'freelance';
+      case 'PARTNER': return 'partner';
       default: return 'agency';
     }
   }, [market.market_code, pathname, worldId]);
