@@ -68,12 +68,27 @@ export function Providers({
   React.useEffect(() => {
     ClientLogger.init();
     console.log(`🚀 [Voices] Nuclear Version: v${currentVersion} (Godmode Zero)`);
-
-    // Expose version to window for verification scripts
+    
+    // 🛡️ DEBUG MANDATE: Detailed System Info for Forensic Analysis
     if (typeof window !== 'undefined') {
+      const host = window.location.host.replace('www.', '');
+      const currentMarket = MarketManagerServer.getCurrentMarket(host, pathname);
+      const worldId = MarketManagerServer.getWorldId(currentMarket.market_code);
+      
+      console.group('🛡️ [Voices] Forensic System Context');
+      console.log('Version:', currentVersion);
+      console.log('Market:', currentMarket.market_code, `(${currentMarket.name})`);
+      console.log('World ID:', worldId);
+      console.log('Language:', activeLang);
+      console.log('Pathname:', pathname);
+      console.log('Host:', host);
+      console.groupEnd();
+
       (window as any).__VOICES_VERSION__ = currentVersion;
+      (window as any).__VOICES_MARKET__ = currentMarket;
+      (window as any).__VOICES_WORLD_ID__ = worldId;
     }
-  }, [currentVersion]);
+  }, [currentVersion, pathname, activeLang]);
 
   return (
     <WatchdogProvider>

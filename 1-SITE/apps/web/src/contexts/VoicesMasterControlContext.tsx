@@ -117,7 +117,7 @@ export const VoicesMasterControlProvider: React.FC<{
     // until AFTER the first render to ensure hydration matches the server.
     const initializeState = () => {
       const host = typeof window !== 'undefined' ? window.location.host : '';
-      const market = MarketManager.getCurrentMarket(host);
+      const market = MarketManager.getCurrentMarket(host, window.location.pathname);
       const defaultLang = market.primary_language; // e.g. 'nl-BE'
       const defaultLangId = market.primary_language_id; // e.g. 1
       
