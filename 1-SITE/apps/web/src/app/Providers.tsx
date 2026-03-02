@@ -34,8 +34,8 @@ export function Providers({
   initialUsage?: any;
 }) {
   const pathname = usePathname();
-  // 🛡️ CHRIS-PROTOCOL: Version Sync Mandate (v2.24.3)
-  const currentVersion = '2.24.3';
+  // 🛡️ CHRIS-PROTOCOL: Version Sync Mandate (v2.24.5)
+  const currentVersion = '2.24.5';
 
   // 🛡️ CHRIS-PROTOCOL: Language is now strictly passed from Server (Source of Truth)
   // to prevent Hydration Mismatch errors (#419, #425).
@@ -83,6 +83,16 @@ export function Providers({
       console.log('Pathname:', pathname);
       console.log('Host:', host);
       console.groupEnd();
+
+      // 🛡️ WATCHDOG MANDATE: Report system context to database for forensic analysis
+      ClientLogger.report('info', `System Context: ${currentMarket.market_code} (World ${worldId})`, {
+        version: currentVersion,
+        market: currentMarket.market_code,
+        worldId,
+        lang: activeLang,
+        pathname,
+        host
+      });
 
       (window as any).__VOICES_VERSION__ = currentVersion;
       (window as any).__VOICES_MARKET__ = currentMarket;
