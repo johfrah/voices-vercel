@@ -1,6 +1,6 @@
 "use client";
 
-import { AuthProvider } from '@/contexts/AuthContext';
+import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { CheckoutProvider } from '@/contexts/CheckoutContext';
 import { EditModeProvider } from '@/contexts/EditModeContext';
 import { GlobalAudioProvider } from '@/contexts/GlobalAudioContext';
@@ -35,7 +35,7 @@ export function Providers({
 }) {
   const pathname = usePathname();
   // 🛡️ CHRIS-PROTOCOL: Version Sync Mandate (v2.24.5)
-  const currentVersion = '2.24.5';
+  const currentVersion = '2.24.6';
 
   // 🛡️ CHRIS-PROTOCOL: Language is now strictly passed from Server (Source of Truth)
   // to prevent Hydration Mismatch errors (#419, #425).
@@ -67,38 +67,8 @@ export function Providers({
   //  CHRIS-PROTOCOL: Initialize Client Logger for real-time error reporting
   React.useEffect(() => {
     ClientLogger.init();
-    console.log(`🚀 [Voices] Nuclear Version: v${currentVersion} (Godmode Zero)`);
-    
-    // 🛡️ DEBUG MANDATE: Detailed System Info for Forensic Analysis
-    if (typeof window !== 'undefined') {
-      const host = window.location.host.replace('www.', '');
-      const currentMarket = MarketManagerServer.getCurrentMarket(host, pathname);
-      const worldId = MarketManagerServer.getWorldId(currentMarket.market_code);
-      
-      console.group('🛡️ [Voices] Forensic System Context');
-      console.log('Version:', currentVersion);
-      console.log('Market:', currentMarket.market_code, `(${currentMarket.name})`);
-      console.log('World ID:', worldId);
-      console.log('Language:', activeLang);
-      console.log('Pathname:', pathname);
-      console.log('Host:', host);
-      console.groupEnd();
-
-      // 🛡️ WATCHDOG MANDATE: Report system context to database for forensic analysis
-      ClientLogger.report('info', `System Context: ${currentMarket.market_code} (World ${worldId})`, {
-        version: currentVersion,
-        market: currentMarket.market_code,
-        worldId,
-        lang: activeLang,
-        pathname,
-        host
-      });
-
-      (window as any).__VOICES_VERSION__ = currentVersion;
-      (window as any).__VOICES_MARKET__ = currentMarket;
-      (window as any).__VOICES_WORLD_ID__ = worldId;
-    }
-  }, [currentVersion, pathname, activeLang]);
+    // ... rest of the hook
+  }, []);
 
   return (
     <WatchdogProvider>
@@ -129,6 +99,7 @@ export function Providers({
                   <EditModeProvider>
                     <GlobalAudioProvider>
                       <NotificationProvider>
+                        <DebugLogger currentVersion={currentVersion} pathname={pathname} activeLang={activeLang} />
                         {children}
                       </NotificationProvider>
                     </GlobalAudioProvider>
@@ -141,4 +112,59 @@ export function Providers({
       </WorldProvider>
     </WatchdogProvider>
   );
+}
+
+/**
+ * 🛡️ CHRIS-PROTOCOL: DebugLogger (v2.24.6)
+ * Only renders debug logs and reports system context for authenticated admins.
+ * This prevents leaking system internals to public visitors.
+ */
+function DebugLogger({ 
+  currentVersion, 
+  pathname, 
+  activeLang 
+}: { 
+  currentVersion: string; 
+  pathname: string; 
+  activeLang: string; 
+}) {
+  const { isAdmin, isAuthenticated, isLoading } = useAuth();
+
+  React.useEffect(() => {
+    if (isLoading) return;
+    if (!isAuthenticated || !isAdmin) return;
+
+    // 🛡️ DEBUG MANDATE: Detailed System Info for Forensic Analysis (Admin Only)
+    if (typeof window !== 'undefined') {
+      const host = window.location.host.replace('www.', '');
+      const currentMarket = MarketManagerServer.getCurrentMarket(host, pathname);
+      const worldId = MarketManagerServer.getWorldId(currentMarket.market_code);
+      
+      console.log(`🚀 [Voices] Nuclear Version: v${currentVersion} (Godmode Zero)`);
+      console.group('🛡️ [Voices] Forensic System Context');
+      console.log('Version:', currentVersion);
+      console.log('Market:', currentMarket.market_code, `(${currentMarket.name})`);
+      console.log('World ID:', worldId);
+      console.log('Language:', activeLang);
+      console.log('Pathname:', pathname);
+      console.log('Host:', host);
+      console.groupEnd();
+
+      // 🛡️ WATCHDOG MANDATE: Report system context to database for forensic analysis
+      ClientLogger.report('info', `System Context: ${currentMarket.market_code} (World ${worldId})`, {
+        version: currentVersion,
+        market: currentMarket.market_code,
+        worldId,
+        lang: activeLang,
+        pathname,
+        host
+      });
+
+      (window as any).__VOICES_VERSION__ = currentVersion;
+      (window as any).__VOICES_MARKET__ = currentMarket;
+      (window as any).__VOICES_WORLD_ID__ = worldId;
+    }
+  }, [currentVersion, pathname, activeLang, isAdmin, isAuthenticated, isLoading]);
+
+  return null;
 }
