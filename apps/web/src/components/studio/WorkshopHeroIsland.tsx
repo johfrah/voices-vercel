@@ -7,6 +7,7 @@ import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { ArrowRight, ShoppingCart } from "lucide-react";
 import { useSonicDNA } from "@/lib/engines/sonic-dna";
 import { useVoicesRouter } from "@/components/ui/VoicesLink";
+import { useCheckout } from "@/contexts/CheckoutContext";
 
 interface WorkshopHeroIslandProps {
   workshop: any;
@@ -24,20 +25,33 @@ interface WorkshopHeroIslandProps {
 export const WorkshopHeroIsland: React.FC<WorkshopHeroIslandProps> = ({ workshop }) => {
   const { playClick } = useSonicDNA();
   const router = useVoicesRouter();
+  const { addItem, setJourney } = useCheckout();
   const videoPath = workshop.featured_image?.file_path;
   const nextEdition = workshop.upcoming_editions?.[0];
-  const price = nextEdition?.price || workshop.price || "0";
+  const price = nextEdition?.price || workshop.price || 0;
+  const priceValue = typeof price === 'string' ? parseFloat(price) : price;
 
   const handleBookClick = () => {
     playClick('pro');
     
-    //  CHRIS-PROTOCOL: Slimme Kassa Handshake (v2.16.053)
-    // We redirect to the checkout with the specific editionId.
-    // The CheckoutContext will handle the product mapping and Mollie initialization.
     if (nextEdition?.id) {
-      router.push(`/checkout?journey=studio&editionId=${nextEdition.id}`);
+      const workshopItem = {
+        id: `workshop-${nextEdition.id}-${Date.now()}`,
+        type: 'workshop_edition' as const,
+        name: workshop.title,
+        price: priceValue,
+        editionId: nextEdition.id,
+        date: nextEdition.date,
+        location: nextEdition.location?.city || null,
+        pricing: {
+          total: priceValue,
+          subtotal: priceValue
+        }
+      };
+      addItem(workshopItem);
+      setJourney('studio', nextEdition.id);
+      router.push('/checkout');
     } else {
-      // Fallback to interest form if no edition is available
       router.push(`/studio/doe-je-mee?workshopId=${workshop.id}`);
     }
   };
