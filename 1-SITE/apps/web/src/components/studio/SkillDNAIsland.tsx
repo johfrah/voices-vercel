@@ -26,8 +26,10 @@ export const SkillDNAIsland: React.FC<SkillDNAIslandProps> = ({ workshop }) => {
     { key: "business", label: "Business" },
   ];
 
-  const dna = workshop.skill_dna || {};
-  const level = workshop.level || "Starter";
+  const dna = workshop?.skill_dna || {};
+  const level = workshop?.level || "Starter";
+
+  if (!workshop) return null;
 
   return (
     <section className="relative">

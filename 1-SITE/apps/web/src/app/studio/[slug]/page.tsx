@@ -11,7 +11,7 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import nextDynamic from "next/dynamic";
-import { WorkshopApiResponse } from "../../api/studio/workshops/route";
+import { getStudioWorkshopsData } from "@/lib/services/studio-service";
 
 // NUCLEAR ISLANDS (ssr: false)
 const WorkshopHeroIsland = nextDynamic(() => import("@/components/studio/WorkshopHeroIsland").then(mod => mod.WorkshopHeroIsland), { ssr: false });
@@ -21,14 +21,16 @@ const InstructorLocationIsland = nextDynamic(() => import("@/components/studio/I
 const ReviewGrid = nextDynamic(() => import("@/components/studio/ReviewGrid").then(mod => mod.ReviewGrid), { ssr: false });
 
 async function getWorkshopData(slugOrId: string) {
-  const base = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
-  const res = await fetch(`${base}/api/studio/workshops`, { cache: "no-store" });
-  if (!res.ok) return null;
-  
-  const data: WorkshopApiResponse = await res.json();
-  const workshop = data.workshops.find(w => w.slug === slugOrId || w.id.toString() === slugOrId);
-  
-  return workshop || null;
+  try {
+    // 🛡️ CHRIS-PROTOCOL: Direct Service Call (v2.24.9)
+    // Eliminates internal HTTP fetch during SSR to prevent timeouts and deadlocks.
+    const data = await getStudioWorkshopsData();
+    const workshop = data.workshops.find(w => w.slug === slugOrId || w.id.toString() === slugOrId);
+    return workshop || null;
+  } catch (err) {
+    console.error(`[Workshop Detail] Failed to fetch workshop data for ${slugOrId}:`, err);
+    return null;
+  }
 }
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {

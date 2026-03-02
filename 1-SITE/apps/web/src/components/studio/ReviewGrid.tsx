@@ -29,7 +29,7 @@ export const ReviewGrid: React.FC<ReviewGridProps> = ({
   title = "Wat deelnemers zeggen",
   maxItems = 6,
 }) => {
-  const displayReviews = reviews.slice(0, maxItems);
+  const displayReviews = Array.isArray(reviews) ? reviews.slice(0, maxItems) : [];
 
   if (displayReviews.length === 0) return null;
 

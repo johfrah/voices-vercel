@@ -45,9 +45,14 @@ export async function POST(request: NextRequest) {
 
     // 🛡️ CHRIS-PROTOCOL: Privacy & Internal Data Guard (v2.19.11)
     // Voorkom dat interne rapporten, technische lijsten of PII in de registry belanden.
-    const isInternalData = 
-      key.startsWith('knowledge.') || 
+    const isInternalData =
+      key.startsWith('knowledge.') ||
       key.startsWith('block.') ||
+      key.startsWith('lesson.') ||
+      key.startsWith('article.') ||
+      sourceText.includes('Rauwe HTML gedetecteerd') ||
+      sourceText.includes('Mogelijke non-ISO taalcode') ||
+      sourceText.includes('Audit Summary:') ||
       sourceText.includes('| # | Naam |') || // Markdown tables with names
       sourceText.includes('DATA INTEGRITY REPORT') ||
       sourceText.includes('SUPERPROMPT') ||
