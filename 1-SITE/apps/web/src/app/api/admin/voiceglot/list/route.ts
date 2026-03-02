@@ -76,10 +76,12 @@ export async function GET(request: Request) {
 
       // 2. Fetch translations for these keys
       const hashes = registryItems.map(i => i.string_hash);
+      const targetLanguages = ['en-gb', 'fr-be', 'de-de', 'es-es', 'pt-pt', 'it-it', 'nl-nl', 'nl-be'];
       const { data: transData, error: transErr } = await supabase
         .from('translations')
         .select('id, translation_key, lang, translated_text, status, is_locked, is_manually_edited, updated_at')
-        .in('translation_key', hashes);
+        .in('translation_key', hashes)
+        .in('lang', targetLanguages);
 
       if (transErr) throw transErr;
 

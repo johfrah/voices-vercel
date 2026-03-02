@@ -284,10 +284,19 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
   const { notifications: customerNotifications, unreadCount: customerUnreadCount, markAsRead: markCustomerAsRead, markAllAsRead: markAllCustomerAsRead } = useNotifications();
   const auth = useAuth();
   const isAdmin = auth.isAdmin;
+  
+  // 🛡️ CHRIS-PROTOCOL: ID-First Context Handshake (v3.0.0)
+  const handshake = typeof window !== 'undefined' ? (window as any).handshakeContext : null;
+  const worldId = handshake?.worldId;
+  const languageId = handshake?.languageId;
+  
   const market = MarketManager.getCurrentMarket(undefined, pathname); 
   const language = useMemo(() => {
+    if (languageId === 5) return 'en';
+    if (languageId === 4) return 'fr';
+    if (languageId === 7) return 'de';
     return pathname.split('/').filter(Boolean)[0] === 'en' ? 'en' : 'nl';
-  }, [pathname]);
+  }, [pathname, languageId]);
 
   const [mounted, setMounted] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -319,6 +328,14 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
   const popoverRef = useRef<HTMLDivElement>(null);
 
   const getJourneyKey = useCallback(() => {
+    // 🛡️ CHRIS-PROTOCOL: ID-First Journey Detection (v3.0.0)
+    if (worldId === 2) return 'studio';
+    if (worldId === 3) return 'academy';
+    if (worldId === 6) return 'ademing';
+    if (worldId === 5) return 'portfolio';
+    if (worldId === 25) return 'artist';
+    if (worldId === 10) return 'johfrai';
+
     // 🛡️ CHRIS-PROTOCOL: URL-First Journey Detection (v2.25.0)
     // Ensures the header matches the current world context even on shared domains.
     if (pathname.startsWith('/studio') || pathname.includes('/studio')) return 'studio';
@@ -333,7 +350,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
       case 'ACADEMY': return 'academy';
       default: return 'agency';
     }
-  }, [market.market_code, pathname]);
+  }, [market.market_code, pathname, worldId]);
 
   useEffect(() => {
     setMounted(true);

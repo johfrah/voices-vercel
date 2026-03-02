@@ -53,7 +53,41 @@ export interface NavConfig {
 export class ConfigBridge {
   //  CHRIS-PROTOCOL: In-memory cache for 0ms navigation loading (2026)
   private static navCache = new Map<string, { data: NavConfig, timestamp: number }>();
+  private static worldConfigCache = new Map<string, { data: any, timestamp: number }>();
   private static CACHE_TTL = 1000 * 60 * 5; // 5 minuten cache
+
+  /**
+   * 🌍 WORLD CONFIG RESOLVER
+   * Haalt de configuratie op uit de nieuwe world_configs tabel
+   */
+  static async getWorldConfig(worldId: number, languageId: number): Promise<any | null> {
+    const cacheKey = `${worldId}_${languageId}`;
+    const cached = this.worldConfigCache.get(cacheKey);
+    const now = Date.now();
+
+    if (cached && (now - cached.timestamp < this.CACHE_TTL)) {
+      return cached.data;
+    }
+
+    try {
+      const { data, error } = await sdkClient
+        .from('world_configs')
+        .select('*')
+        .eq('world_id', worldId)
+        .eq('language_id', languageId)
+        .maybeSingle();
+
+      if (error) throw error;
+      if (data) {
+        this.worldConfigCache.set(cacheKey, { data, timestamp: now });
+        return data;
+      }
+      return null;
+    } catch (err) {
+      console.error(`[ConfigBridge] Error fetching world config for ${worldId}/${languageId}:`, err);
+      return cached?.data || null;
+    }
+  }
 
   /**
    * Haalt de navigatie-configuratie op voor een specifieke journey

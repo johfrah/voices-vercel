@@ -372,7 +372,7 @@ export default function VoiceglotMasterPage() {
               Cached Data ({new Date(stats.updatedAt).toLocaleTimeString()})
             </div>
           )}
-          {['en', 'fr', 'de', 'es', 'pt', 'it'].map((langCode) => {
+          {['en-gb', 'fr-be', 'de-de', 'es-es', 'pt-pt', 'it-it'].map((langCode) => {
             const langStats = stats.coverage.find((s: any) => s.lang === langCode);
             const count = langStats ? langStats.count : 0;
             const percentage = langStats ? langStats.percentage : 0;
@@ -481,7 +481,7 @@ export default function VoiceglotMasterPage() {
           <thead>
             <tr className="bg-va-off-white/50 border-b border-black/5">
               <th className="px-8 py-6 text-[11px] font-bold tracking-[0.2em] text-va-black/30 uppercase w-1/4">Key & Bron (NL)</th>
-              {['en', 'fr', 'de', 'es', 'pt'].map(l => (
+              {['en-gb', 'fr-be', 'de-de', 'es-es', 'pt-pt'].map(l => (
                 <th key={l} className="px-6 py-6 text-[11px] font-bold tracking-[0.2em] text-va-black/30 uppercase">{l}</th>
               ))}
               <th className="px-8 py-6 text-[11px] font-bold tracking-[0.2em] text-va-black/30 uppercase text-right">Acties</th>
@@ -510,7 +510,7 @@ export default function VoiceglotMasterPage() {
                     </TextInstrument>
                   </ContainerInstrument>
                 </td>
-                {['en', 'fr', 'de', 'es', 'pt'].map(lang => {
+                {['en-gb', 'fr-be', 'de-de', 'es-es', 'pt-pt'].map(lang => {
                   const trans = group.langs[lang];
                   const slopDetected = trans ? isSlop(trans.translatedText, lang, group.originalText) : false;
                   

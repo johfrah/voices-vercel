@@ -80,15 +80,14 @@ export async function generateMetadata(): Promise<Metadata> {
   const host = headersList.get("x-voices-host") || headersList.get("host") || process.env.NEXT_PUBLIC_SITE_URL || MarketManagerServer.getMarketDomains()['BE'].replace('https://', '');
   const cleanHost = host.replace(/^https?:\/\//, '');
   
-  // 🛡️ CHRIS-PROTOCOL: Pass pathname to market manager for sub-journey detection (e.g. /studio, /academy)
-  let lookupHost = cleanHost;
-  if (pathname.startsWith('/studio')) lookupHost = `${cleanHost}/studio`;
-  else if (pathname.startsWith('/academy')) lookupHost = `${cleanHost}/academy`;
+  // 🛡️ CHRIS-PROTOCOL: ID-First Context Resolution (v3.0.0)
+  const { worldId, languageId, journeyId } = MarketManagerServer.resolveContext(cleanHost, pathname);
 
   // 🛡️ CHRIS-PROTOCOL: Parallel Pulse Fetching (v2.14.798)
   // We fetch market, locales and translations in parallel to minimize TTFB
-  const [market, alternateLanguages, studioTranslations] = await Promise.all([
+  const [market, worldConfig, alternateLanguages, studioTranslations] = await Promise.all([
     getMarketSafe(lookupHost),
+    ConfigBridge.getWorldConfig(worldId, languageId),
     (async () => {
       try {
         const localesPromise = MarketDatabaseService.getAllLocalesAsync();
@@ -265,11 +264,27 @@ export default async function RootLayout({
   );
   const lang = langHeader || (pathname.includes('/artist/youssef') || market.market_code === 'ARTIST' ? 'en-EU' : (market.primary_language || 'nl-BE'));
 
+  // 🛡️ CHRIS-PROTOCOL: ID-First Handshake (v3.0.0)
+  // We pass worldId and languageId to Providers to anchor the entire client-side context.
+  const handshakeContext = {
+    worldId,
+    languageId,
+    journeyId,
+    worldConfig
+  };
+
   if (isAdminRoute || isStudioPage || (isAdeming && isOffline && !isAdmin)) {
     return (
       <html lang={lang} className={htmlClass} suppressHydrationWarning>
         <body className={bodyClass} suppressHydrationWarning>
-          <Providers lang={lang} market={market} initialTranslations={studioTranslations} initialJourney={initialJourney} initialUsage={initialUsage}>
+          <Providers 
+            lang={lang} 
+            market={market} 
+            initialTranslations={studioTranslations} 
+            initialJourney={initialJourney} 
+            initialUsage={initialUsage}
+            handshakeContext={handshakeContext}
+          >
             <SafeErrorGuard>
               <Suspense fallback={isAdeming && isOffline ? null : <LoadingScreenInstrument text={isAdminRoute ? "Beheer laden..." : "Studio laden..."} />}>
                 {children}
@@ -317,7 +332,14 @@ export default async function RootLayout({
     return (
       <html lang={lang} className={htmlClass} suppressHydrationWarning>
       <body className={bodyClass}>
-        <Providers lang={lang} market={market} initialTranslations={studioTranslations} initialJourney={initialJourney} initialUsage={initialUsage}>
+        <Providers 
+          lang={lang} 
+          market={market} 
+          initialTranslations={studioTranslations} 
+          initialJourney={initialJourney} 
+          initialUsage={initialUsage}
+          handshakeContext={handshakeContext}
+        >
           <Suspense fallback={null}>
             <SonicDNAHandler />
           </Suspense>
@@ -337,7 +359,14 @@ export default async function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-        <Providers lang={lang} market={market} initialTranslations={studioTranslations} initialJourney={initialJourney} initialUsage={initialUsage}>
+        <Providers 
+          lang={lang} 
+          market={market} 
+          initialTranslations={studioTranslations} 
+          initialJourney={initialJourney} 
+          initialUsage={initialUsage}
+          handshakeContext={handshakeContext}
+        >
           <SafeErrorGuard>
             <PageWrapperInstrument>
               <Suspense fallback={<LoadingScreenInstrument text="Voices laden..." />}>

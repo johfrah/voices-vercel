@@ -6,16 +6,16 @@ import { createClient } from "@supabase/supabase-js";
  *  API: VOICEGLOT STATS (GODMODE CACHING 2026)
  * 
  * Gebruikt app_configs als een persistente cache-laag om database timeouts te voorkomen.
+ * NU VOLLEDIG OP BASIS VAN LANG_ID (CHRIS-PROTOCOL)
  */
 
 export const dynamic = 'force-dynamic';
 
 const CACHE_KEY = 'voiceglot_stats_cache';
-const CACHE_TTL = 60 * 1000; // 1 minuut cache voor stats
+const CACHE_TTL = 30 * 1000; // 30 seconden cache voor stats tijdens healing
 
 export async function GET(request: NextRequest) {
   try {
-    //  CHRIS-PROTOCOL: Build Safety
     if (process.env.NEXT_PHASE === 'phase-production-build' || (process.env.NODE_ENV === 'production' && !process.env.VERCEL_URL)) {
       return NextResponse.json({ totalStrings: 0, coverage: [] });
     }
@@ -25,15 +25,10 @@ export async function GET(request: NextRequest) {
 
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
     const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-    
-    if (!supabaseUrl) {
-      throw new Error('NEXT_PUBLIC_SUPABASE_URL is missing');
-    }
-
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     // 1. Check Cache
-    const { data: cachedConfig, error: cacheFetchErr } = await supabase
+    const { data: cachedConfig } = await supabase
       .from('app_configs')
       .select('*')
       .eq('key', CACHE_KEY)
@@ -49,48 +44,43 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // 2. Fetch Fresh Data (Ultra-Light)
-    let totalStrings = 0;
-    let statsByLang: any[] = [];
+    // 2. Fetch Fresh Data (ID-Centric)
+    const { count: totalCount, error: totalErr } = await supabase
+      .from('translation_registry')
+      .select('*', { count: 'exact', head: true });
 
-    try {
-      console.log('[Voiceglot Stats] Fetching total count from registry...');
-      // CHRIS-PROTOCOL: Use Supabase SDK for stats to bypass driver mapping issues
-      const { count: totalCount, error: totalErr } = await supabase
-        .from('translation_registry')
-        .select('*', { count: 'exact', head: true });
+    if (totalErr) throw totalErr;
+    const totalStrings = totalCount || 0;
 
-      if (totalErr) throw totalErr;
-      totalStrings = totalCount || 0;
-      console.log(`[Voiceglot Stats] Total strings found: ${totalStrings}`);
-      
-      if (totalStrings > 0) {
-        console.log('[Voiceglot Stats] Fetching counts per language...');
-        // Direct grouping via SDK is not supported, so we use a raw query fallback or RPC
-        const { data: langData, error: langErr } = await supabase
-          .from('translations')
-          .select('lang');
-        
-        if (langErr) throw langErr;
+    // Haal tellingen per lang_id op
+    const { data: langData, error: langErr } = await supabase
+      .from('translations')
+      .select('lang_id');
+    
+    if (langErr) throw langErr;
 
-        const counts: Record<string, number> = {};
-        (langData || []).forEach((t: any) => {
-          counts[t.lang] = (counts[t.lang] || 0) + 1;
-        });
-        statsByLang = Object.entries(counts).map(([lang, count]) => ({ lang, count }));
-        console.log(`[Voiceglot Stats] Stats by lang result:`, statsByLang);
+    const counts: Record<number, number> = {};
+    (langData || []).forEach((t: any) => {
+      if (t.lang_id) {
+        counts[t.lang_id] = (counts[t.lang_id] || 0) + 1;
       }
-    } catch (dbErr: any) {
-      console.error('[Voiceglot Stats] Supabase SDK query failed:', dbErr.message);
-    }
+    });
 
-    // Bereken percentages
-    const targetLanguages = ['en', 'fr', 'de', 'es', 'pt', 'it'];
-    const coverage = targetLanguages.map(lang => {
-      const found = statsByLang.find((s: any) => s.lang === lang);
-      const count = parseInt(String(found?.count || '0'), 10);
+    // Target Languages Mapping (Handshake ID Truth)
+    const targetLangs = [
+      { id: 5, code: 'en-gb' },
+      { id: 3, code: 'fr-be' },
+      { id: 7, code: 'de-de' },
+      { id: 8, code: 'es-es' },
+      { id: 12, code: 'pt-pt' },
+      { id: 9, code: 'it-it' }
+    ];
+
+    const coverage = targetLangs.map(target => {
+      const count = counts[target.id] || 0;
       return {
-        lang,
+        lang: target.code,
+        lang_id: target.id,
         count,
         percentage: totalStrings > 0 ? Math.min(100, Math.round((count / totalStrings) * 100)) : 0
       };
@@ -104,24 +94,19 @@ export async function GET(request: NextRequest) {
     };
 
     // 3. Update Cache
-    try {
-      await supabase.from('app_configs').upsert({
-        key: CACHE_KEY,
-        value: freshData,
-        updated_at: new Date()
-      });
-    } catch (cacheErr) {
-      console.error('Cache update failed:', cacheErr);
-    }
+    await supabase.from('app_configs').upsert({
+      key: CACHE_KEY,
+      value: freshData,
+      updated_at: new Date()
+    });
 
     return NextResponse.json({ ...freshData, isCached: false });
   } catch (error: any) {
     console.error('[Voiceglot Stats Error]:', error);
-    // CHRIS-PROTOCOL: Altijd een geldig object teruggeven, zelfs bij error
     return NextResponse.json({ 
       totalStrings: 0, 
       coverage: [], 
       error: error.message || 'Failed to fetch stats' 
-    }, { status: 200 }); // We geven 200 terug om frontend crash te voorkomen
+    }, { status: 200 });
   }
 }

@@ -54,6 +54,21 @@ export class MarketManagerServer {
   private static mediaTypesRegistry: Array<{ id: number, code: string, label: string }> = [];
   private static servicesRegistry: Array<{ id: number, code: string, label: string, category?: string }> = [];
   private static worldLanguagesRegistry: Array<{ world_id: number, language_id: number, is_primary: boolean, is_popular: boolean }> = [];
+  private static worldConfigsCache: Record<string, any> = {};
+
+  /**
+   * 🛡️ CHRIS-PROTOCOL: ID-First World Config Resolver (v3.0.0)
+   * Haalt de configuratie op uit de nieuwe world_configs tabel.
+   */
+  public static async getWorldConfig(worldId: number, languageId: number): Promise<any> {
+    const cacheKey = `${worldId}-${languageId}`;
+    if (this.worldConfigsCache[cacheKey]) return this.worldConfigsCache[cacheKey];
+
+    // In a real server environment, this would call the DB.
+    // For now, we'll use a bridge or direct DB access if available.
+    // Since this is a static class, we might need to prime it or use a service.
+    return null; 
+  }
 
   /**
    * 🛡️ CHRIS-PROTOCOL: Handshake Truth Registry (v2.14.667)
@@ -204,44 +219,56 @@ export class MarketManagerServer {
   }
 
   /**
-   * 🌳 ANCESTRY RESOLVER (v2.16.132)
-   * Haalt de World ID op basis van de market code of host.
+   * 🛡️ CHRIS-PROTOCOL: Context Resolver (v3.0.0)
+   * Bepaalt de worldId en languageId op basis van host en path.
    */
-  public static getWorldId(marketCode?: string): number | null {
-    const code = marketCode?.toLowerCase() || this.getCurrentMarket().market_code.toLowerCase();
-    
-    // 🛡️ CHRIS-PROTOCOL: Handshake Truth (v2.16.132)
-    // We prioritize the registry which is populated from the database.
-    const registry = this.worldsRegistry.length > 0 ? this.worldsRegistry : 
-                    (typeof global !== 'undefined' && (global as any).handshakeWorlds ? (global as any).handshakeWorlds : []);
+  public static resolveContext(host: string, path: string): { worldId: number, languageId: number, journeyId: number | null } {
+    let cleanHost = host.replace('www.', '').replace('https://', '').replace('http://', '').split('/')[0];
+    const cleanPath = path || '';
 
-    if (registry.length > 0) {
-      const world = registry.find((w: any) => w.code.toLowerCase() === code);
-      if (world) return world.id;
-
-      // Special case: Agency markets map to 'agency' world (ID 1)
-      if (['be', 'nlnl', 'fr', 'es', 'pt', 'eu'].includes(code)) {
-        const agency = registry.find((w: any) => w.code === 'agency');
-        if (agency) return agency.id;
-      }
+    // 1. Determine World ID
+    let worldId = 1; // Default: Agency (ID 1)
+    if (cleanHost === 'voices.be' || cleanHost === 'localhost:3000' || cleanHost === 'voices-headless.vercel.app') {
+      if (cleanPath.startsWith('/studio')) worldId = 2;
+      else if (cleanPath.startsWith('/academy')) worldId = 3;
+      else if (cleanPath.startsWith('/ademing')) worldId = 6;
+      else if (cleanPath.startsWith('/johfrai')) worldId = 10;
+    } else {
+      // Domain-based worlds
+      if (cleanHost === 'ademing.be') worldId = 6;
+      else if (cleanHost === 'johfrah.be') worldId = 7;
+      else if (cleanHost === 'christina.be') worldId = 5;
+      else if (cleanHost === 'youssefzaki.eu') worldId = 25;
+      else if (cleanHost === 'johfrai.be') worldId = 10;
+      else if (cleanHost === 'voices.academy') worldId = 3;
     }
 
-    // 🛡️ CHRIS-PROTOCOL: Static ID-First Fallback (v2.16.132)
-    const staticMap: Record<string, number> = {
-      'foyer': 0, 'contact': 0, 'terms': 0, 'privacy': 0, 'cookies': 0,
-      'agency': 1, 'be': 1, 'nlnl': 1, 'fr': 1, 'es': 1, 'pt': 1, 'eu': 1,
-      'telephony': 1, 'video': 1, 'commercial': 1,
-      'studio': 2,
-      'academy': 3,
-      'ademing': 6,
-      'portfolio': 5,
-      'freelance': 7,
-      'partner': 8,
-      'johfrai': 10,
-      'artist': 25
-    };
+    // 2. Determine Language ID
+    let languageId = 1; // Default: nl-be (ID 1)
+    if (cleanHost.endsWith('.nl')) languageId = 2; // nl-nl
+    else if (cleanHost.endsWith('.fr')) languageId = 4; // fr-fr
+    else if (cleanHost.endsWith('.es')) languageId = 8; // es-es
+    else if (cleanHost.endsWith('.pt')) languageId = 12; // pt-pt
+    else if (cleanHost.endsWith('.eu') || cleanHost.endsWith('.com')) languageId = 5; // en-gb
 
-    return staticMap[code] || null;
+    // Path-based language overrides (e.g. /en/...)
+    if (cleanPath.startsWith('/en/')) languageId = 5;
+    else if (cleanPath.startsWith('/fr/')) languageId = 4;
+    else if (cleanPath.startsWith('/de/')) languageId = 7;
+
+    // 3. Determine Journey ID (optional)
+    let journeyId: number | null = null;
+    if (worldId === 1) {
+      if (cleanPath.includes('/telephony')) journeyId = 26;
+      else if (cleanPath.includes('/commercial')) journeyId = 28;
+      else journeyId = 27; // Default: Agency Voice-over
+    } else if (worldId === 2) {
+      journeyId = 1; // Studio
+    } else if (worldId === 3) {
+      journeyId = 30; // Academy
+    }
+
+    return { worldId, languageId, journeyId };
   }
 
   public static MARKETS_STATIC: Record<string, Partial<MarketConfig>> = {

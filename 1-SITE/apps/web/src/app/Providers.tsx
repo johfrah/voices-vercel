@@ -24,7 +24,8 @@ export function Providers({
   market,
   initialTranslations = {},
   initialJourney,
-  initialUsage
+  initialUsage,
+  handshakeContext
 }: {
   children: ReactNode;
   lang: string;
@@ -32,10 +33,17 @@ export function Providers({
   initialTranslations?: Record<string, string>;
   initialJourney?: any;
   initialUsage?: any;
+  handshakeContext?: {
+    worldId: number;
+    languageId: number;
+    journeyId: number | null;
+    worldConfig: any;
+  };
 }) {
   const pathname = usePathname();
-  // 🛡️ CHRIS-PROTOCOL: Version Sync Mandate (v2.24.5)
-  const currentVersion = '2.25.1';
+  // 🛡️ CHRIS-PROTOCOL: Version Sync Mandate (v2.26.1)
+  // Major Refactor: ID-First Handshake Architecture
+  const currentVersion = '2.26.1';
 
   // 🛡️ CHRIS-PROTOCOL: Language is now strictly passed from Server (Source of Truth)
   // to prevent Hydration Mismatch errors (#419, #425).
@@ -52,6 +60,12 @@ export function Providers({
       // Set the market in the cache to prevent hydration mismatch (#419)
       const host = window.location.host.replace('www.', '');
       (MarketManagerServer as any).cache[host] = market;
+
+      // 🛡️ CHRIS-PROTOCOL: Prime Handshake Context
+      if (handshakeContext) {
+        g.handshakeContext = handshakeContext;
+        (MarketManagerServer as any).worldConfigsCache[`${handshakeContext.worldId}-${handshakeContext.languageId}`] = handshakeContext.worldConfig;
+      }
 
       MarketManagerServer.setLanguages(Object.values(initialTranslations || {}).length > 0 ? [] : []); // Placeholder for languages if needed
       
@@ -136,25 +150,31 @@ function DebugLogger({
 
     // 🛡️ DEBUG MANDATE: Detailed System Info for Forensic Analysis (Admin Only)
     if (typeof window !== 'undefined') {
+      const g = window as any;
       const host = window.location.host.replace('www.', '');
+      const handshake = g.handshakeContext;
       const currentMarket = MarketManagerServer.getCurrentMarket(host, pathname);
-      const worldId = MarketManagerServer.getWorldId(currentMarket.market_code);
+      const worldId = handshake?.worldId || MarketManagerServer.getWorldId(currentMarket.market_code);
+      const languageId = handshake?.languageId;
       
       console.log(`🚀 [Voices] Nuclear Version: v${currentVersion} (Godmode Zero)`);
       console.group('🛡️ [Voices] Forensic System Context');
       console.log('Version:', currentVersion);
-      console.log('Market:', currentMarket.market_code, `(${currentMarket.name})`);
       console.log('World ID:', worldId);
+      console.log('Language ID:', languageId);
+      console.log('Market:', currentMarket.market_code, `(${currentMarket.name})`);
       console.log('Language:', activeLang);
       console.log('Pathname:', pathname);
       console.log('Host:', host);
+      if (handshake?.worldConfig) console.log('World Config:', handshake.worldConfig);
       console.groupEnd();
 
       // 🛡️ WATCHDOG MANDATE: Report system context to database for forensic analysis
-      ClientLogger.report('info', `System Context: ${currentMarket.market_code} (World ${worldId})`, {
+      ClientLogger.report('info', `System Context: World ${worldId}, Lang ${languageId}`, {
         version: currentVersion,
-        market: currentMarket.market_code,
         worldId,
+        languageId,
+        market: currentMarket.market_code,
         lang: activeLang,
         pathname,
         host
