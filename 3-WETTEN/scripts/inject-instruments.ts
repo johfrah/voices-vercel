@@ -392,6 +392,57 @@ async function inject() {
       ]
     },
     {
+      slug: 'studio/contact',
+      title: 'Contact | Voices Studio',
+      blocks: [
+        {
+          type: 'HeroInstrument',
+          settings: {
+            data: {
+              title: 'Contacteer de Studio',
+              highlight: 'Studio',
+              subtitle: 'Heb je een vraag over een workshop of opname? Berny helpt je verder.',
+              cta: { text: 'Stuur een bericht', href: '#form' }
+            }
+          }
+        },
+        {
+          type: 'WorkshopInterestForm',
+          settings: {
+            data: {
+              title: 'Stuur Berny een bericht',
+              subtitle: 'We reageren doorgaans binnen 2 uur.'
+            }
+          }
+        }
+      ]
+    },
+    {
+      slug: 'studio/faq',
+      title: 'Veelgestelde Vragen | Voices Studio',
+      blocks: [
+        {
+          type: 'HeroInstrument',
+          settings: {
+            data: {
+              title: 'Studio FAQ',
+              highlight: 'FAQ',
+              subtitle: 'Alles wat je moet weten over onze workshops en faciliteiten.'
+            }
+          }
+        },
+        {
+          type: 'AccordionInstrument',
+          settings: {
+            data: {
+              title: 'Vragen over Workshops',
+              category: 'studio'
+            }
+          }
+        }
+      ]
+    },
+    {
       slug: 'contact',
       title: 'Contact',
       blocks: [

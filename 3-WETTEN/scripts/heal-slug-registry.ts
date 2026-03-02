@@ -28,7 +28,9 @@ const WORLD_BIBLE: Record<string, { world_id: number, routing_type: string, jour
   'freelance': { world_id: 7, routing_type: 'article', journey: 'freelance' },
   'partners': { world_id: 8, routing_type: 'article', journey: 'partner' },
   'johfrai': { world_id: 10, routing_type: 'article', journey: 'johfrai' },
-  'artist/youssef': { world_id: 25, routing_type: 'article', journey: 'artist' }
+  'artist/youssef': { world_id: 25, routing_type: 'article', journey: 'artist' },
+  'studio/contact': { world_id: 2, routing_type: 'article', journey: 'studio' },
+  'studio/faq': { world_id: 2, routing_type: 'article', journey: 'studio' }
 };
 
 async function healRegistry() {
@@ -39,16 +41,53 @@ async function healRegistry() {
     console.log('\n--- SYNCING BIBLE WORLDS ---');
     for (const [slug, bible] of Object.entries(WORLD_BIBLE)) {
       console.log(`  📖 Syncing ${slug} -> World ${bible.world_id}`);
-      const { error } = await supabase
-        .from('slug_registry')
-        .update({ 
-          world_id: bible.world_id, 
-          routing_type: bible.routing_type,
-          journey: bible.journey 
-        })
-        .eq('slug', slug);
       
-      if (error) console.error(`   ❌ Failed to sync ${slug}: ${error.message}`);
+      // 🛡️ CHRIS-PROTOCOL: Manual check then update/insert for core bible slugs
+      const { data: article } = await supabase
+        .from('content_articles')
+        .select('id')
+        .eq('slug', slug)
+        .maybeSingle();
+
+      if (article) {
+        const { data: existing } = await supabase
+          .from('slug_registry')
+          .select('id')
+          .eq('slug', slug)
+          .maybeSingle();
+
+        if (existing) {
+          const { error } = await supabase
+            .from('slug_registry')
+            .update({ 
+              entity_id: article.id,
+              world_id: bible.world_id, 
+              routing_type: bible.routing_type,
+              journey: bible.journey,
+              is_active: true,
+              market_code: 'ALL'
+            })
+            .eq('slug', slug);
+          if (error) console.error(`   ❌ Failed to update ${slug}: ${error.message}`);
+          else console.log(`   ✅ Updated ${slug}`);
+        } else {
+          const { error } = await supabase
+            .from('slug_registry')
+            .insert({ 
+              slug: slug,
+              entity_id: article.id,
+              world_id: bible.world_id, 
+              routing_type: bible.routing_type,
+              journey: bible.journey,
+              is_active: true,
+              market_code: 'ALL'
+            });
+          if (error) console.error(`   ❌ Failed to insert ${slug}: ${error.message}`);
+          else console.log(`   ✅ Inserted ${slug}`);
+        }
+      } else {
+        console.warn(`   ⚠️ Article not found for slug: ${slug}. Skipping registry sync.`);
+      }
     }
 
     // 2. Heal Actors

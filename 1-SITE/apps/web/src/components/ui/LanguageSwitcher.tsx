@@ -100,6 +100,16 @@ export function LanguageSwitcher({ className }: { className?: string }) {
     }
   }, [pathname, market]);
 
+  const handleMouseEnter = () => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    setIsOpen(true);
+    playSwell();
+  };
+
+  const handleMouseLeave = () => {
+    timeoutRef.current = setTimeout(() => setIsOpen(false), 300);
+  };
+
   const switchLanguage = (lang: Language) => {
     if (lang.id === currentLangId) {
       setIsOpen(false);
