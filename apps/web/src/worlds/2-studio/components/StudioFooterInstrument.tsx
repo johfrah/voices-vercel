@@ -11,8 +11,8 @@ export function StudioFooter({ market, activeSocials, activePhone, activeEmail }
 
   // 🛡️ CHRIS-PROTOCOL: Exacte sync met Supabase Source of Truth
   const workshops = [
-    { name: 'Perfect spreken in 1 dag', href: '/studio/perfect-spreken-in-1-dag', description: 'Spreken met helderheid, warmte en impact.' },
-    { name: 'Voice-overs voor beginners', href: '/studio/masterclass', description: 'De start van je professionele traject.' },
+    { name: 'Perfect spreken in 1 dag', href: '/studio/perfect-spreken', description: 'Spreken met helderheid, warmte en impact.' },
+    { name: 'Voice-overs voor beginners', href: '/studio/voice-overs-voor-beginners', description: 'De start van je professionele traject.' },
     { name: 'Maak je eigen podcast', href: '/studio/maak-je-eigen-podcast', description: 'Van concept tot professionele opname.' },
     { name: 'Maak je eigen radioshow', href: '/studio/maak-je-eigen-radioshow', description: 'De dynamiek van live radio maken.' },
     { name: 'Perfectie van intonatie', href: '/studio/perfectie-van-intonatie', description: 'De fijne kneepjes van de juiste klemtoon.' },
@@ -22,7 +22,9 @@ export function StudioFooter({ market, activeSocials, activePhone, activeEmail }
     { name: 'Speel een stemmetje in een tekenfilm', href: '/studio/tekenfilm-stemmetjes', description: 'Karakterstemmen en stemacteren.' },
     { name: 'Meditatief spreken', href: '/studio/meditaties-inspreken', description: 'Rust en verbinding in je stem.' },
     { name: 'Verwen je stem!', href: '/studio/verwen-je-stem', description: 'Onderhoud en verzorging van je instrument.' },
-    { name: 'Voice-over voor audio-descriptie', href: '/studio/audio-descriptie', description: 'Beeld vertalen naar stem.' }
+    { name: 'Voice-over voor audio-descriptie', href: '/studio/audiodescriptie', description: 'Beeld vertalen naar stem.' },
+    { name: 'Opname en audio-nabewerking', href: '/studio/opname-en-nabewerking', description: 'De technische kant van professioneel opnemen.' },
+    { name: 'Presenteren in de camera', href: '/studio/presenteren-voor-camera', description: 'Zelfzeker voor de lens staan.' },
   ];
 
   return (
