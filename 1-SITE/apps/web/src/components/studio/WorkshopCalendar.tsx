@@ -23,15 +23,19 @@ export const WorkshopCalendar: React.FC<{ workshops: any[] }> = ({ workshops }) 
   
   //  CHRIS-PROTOCOL: Extract workshop dates dynamically
   const workshopDates = React.useMemo(() => {
-    if (!mounted) return [];
+    if (!mounted || !Array.isArray(workshops)) return [];
     const dates = new Set<number>();
     workshops.forEach(workshop => {
-      workshop.editions?.forEach((edition: any) => {
-        const date = new Date(edition.date);
-        if (date >= new Date()) {
-          dates.add(date.getDate());
-        }
-      });
+      if (workshop && Array.isArray(workshop.editions)) {
+        workshop.editions.forEach((edition: any) => {
+          if (edition && edition.date) {
+            const date = new Date(edition.date);
+            if (!isNaN(date.getTime()) && date >= new Date()) {
+              dates.add(date.getDate());
+            }
+          }
+        });
+      }
     });
     return Array.from(dates);
   }, [workshops, mounted]);
@@ -105,7 +109,7 @@ export const WorkshopCalendar: React.FC<{ workshops: any[] }> = ({ workshops }) 
         <HeadingInstrument level={4} className="text-[15px] font-light tracking-widest text-va-black/40 mb-4 ">
           <VoiceglotText  translationKey="studio.calendar.upcoming" defaultText="Eerstvolgende Sessies" />
         </HeadingInstrument>
-        {workshops.slice(0, 2).map((workshop, i) => (
+        {Array.isArray(workshops) && workshops.slice(0, 2).map((workshop, i) => (
           <ButtonInstrument 
             key={i} 
             onClick={() => playClick('pro')}

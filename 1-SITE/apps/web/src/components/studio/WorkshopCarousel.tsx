@@ -13,7 +13,7 @@ interface WorkshopCarouselProps {
 export const WorkshopCarousel: React.FC<WorkshopCarouselProps> = ({ workshops: initialWorkshops }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const { playClick } = useSonicDNA();
-  const [workshops, setWorkshops] = useState(initialWorkshops);
+  const [workshops, setWorkshops] = useState(Array.isArray(initialWorkshops) ? initialWorkshops : []);
 
   const handleUpdate = (updatedWorkshop: any) => {
     setWorkshops(prev => prev.map(w => w.id === updatedWorkshop.id ? updatedWorkshop : w));
