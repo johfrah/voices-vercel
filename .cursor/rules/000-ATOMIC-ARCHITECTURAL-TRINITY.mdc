@@ -12,8 +12,7 @@ Dit is de "Grondwet" van de Voices-architectuur. Elke AI-agent MOET deze 6 eleme
 1.  **World (De Ziel/Context)**:
     *   **Definitie**: Het hoogste hiërarchische niveau. Bepaalt de Lead Agent, sfeer en inhoud.
     *   **Source of Truth**: `world_id` in de `slug_registry`.
-    *   **World IDs**:
-        *   **0**: Foyer (Global) - Mat
+    *   **World IDs (Handshake Truth)**:
         *   **1**: Agency (Human Voices) - Voicy
         *   **2**: Studio (Workshops/Recording) - Berny
         *   **3**: Academy (Learning) - Berny
@@ -23,31 +22,36 @@ Dit is de "Grondwet" van de Voices-architectuur. Elke AI-agent MOET deze 6 eleme
         *   **8**: Partner (Resellers) - Sally
         *   **10**: Johfrai (AI Voices) - Voicy
         *   **25**: Artist (Music Label) - Laya
+        *   **0**: Foyer (Global) - Mat
+        *   **9**: Partner (Resellers) - Sally (Legacy ID)
 
 2.  **Market (De Lokale Etalage & Domein Huls)**:
     *   **Definitie**: De fysieke container (domein). Bepaalt lokale communicatie (e-mail), BTW-tarieven en taal-nuance.
     *   **Market IDs (Domain DNA)**:
-        *   **1**: `voices.be` (Primary BE)
-        *   **2**: `voices.nl` (Primary NL)
-        *   **3**: `voices.fr` (Primary FR)
-        *   **4**: `voices.es` (Primary ES)
-        *   **5**: `voices.pt` (Primary PT)
-        *   **6**: `voices.eu` (Primary EU)
-        *   **7**: `ademing.be` (Ademing World Container)
-        *   **8**: `johfrah.be` (Portfolio World Container)
-        *   **9**: `youssefzaki.eu` (Artist World Container)
-        *   **10**: `voices.academy` (Academy World Container)
-        *   **11**: `johfrai.be` (Johfrai World Container)
+        *   **1**: `voices.be` (Primary BE) -> **World 1** (Default)
+        *   **2**: `voices.nl` (Primary NL) -> **World 1** (Default)
+        *   **3**: `voices.fr` (Primary FR) -> **World 1** (Default)
+        *   **4**: `voices.es` (Primary ES) -> **World 1** (Default)
+        *   **5**: `voices.pt` (Primary PT) -> **World 1** (Default)
+        *   **6**: `voices.eu` (Primary EU) -> **World 1** (Default)
+        *   **7**: `ademing.be` -> **World 6** (Ademing)
+        *   **8**: `johfrah.be` -> **World 5** (Portfolio)
+        *   **9**: `youssefzaki.eu` -> **World 25** (Artist)
+        *   **10**: `voices.academy` -> **World 3** (Academy)
+        *   **11**: `johfrai.be` -> **World 10** (Johfrai)
     *   **Localhost Mapping**: `localhost:3000` mapt standaard naar **Market 1** en **World 1**, tenzij het pad anders aangeeft.
 
 3.  **Journey (De Flow/Conversie)**:
     *   **Definitie**: De functionele route binnen een World/Market.
-    *   **Journey IDs**:
-        *   **1**: Studio (General)
-        *   **26**: Telefoon / IVR
-        *   **27**: Voice-over (Default Agency)
+    *   **Journey IDs (Handshake Truth)**:
+        *   **27**: Voice-over (Video)
         *   **28**: Commercial
-        *   **30**: Academy (General)
+        *   **26**: Telefoon (IVR)
+        *   **1**: Studio
+        *   **30**: Academy
+        *   **56**: Johfrai (AI)
+        *   **61**: Ademing
+        *   **62**: Artist
 
 ## 🧬 Het DNA (De Bouwstenen)
 
@@ -60,13 +64,29 @@ Dit is de "Grondwet" van de Voices-architectuur. Elke AI-agent MOET deze 6 eleme
     *   **Workshop Categorieën**: `workshop` (Berny), `service` (Chris), `portfolio` (Laya).
 
 6.  **VoiceGlot (De Taal/Lokalisatie)**:
-    *   **Language IDs**: **1**: nl-BE, **2**: nl-NL, **3**: fr-BE, **4**: fr-FR, **5**: en-GB, **7**: de-DE, **8**: es-ES, **9**: it-IT, **12**: pt-PT.
+    *   **Language IDs (Handshake Truth)**: 
+        *   **1**: nl-BE (Vlaams)
+        *   **2**: nl-NL (Nederlands)
+        *   **3**: fr-BE (Belgisch Frans)
+        *   **4**: fr-FR (Frans)
+        *   **5**: en-GB (Engels)
+        *   **7**: de-DE (Duits)
+        *   **8**: es-ES (Spaans)
+        *   **9**: it-IT (Italiaans)
+        *   **12**: pt-pt (Portugees)
     *   **AI-Actie**: Hardcoding van tekst is VERBODEN. Gebruik `t()` via VoiceGlot.
 
-## 🧪 Core Filter IDs (Zero-Slop)
-- **Genders**: 1: Male, 2: Female, 3: Non-binary, 4: Boy, 5: Girl.
-- **Experience**: 1: Junior, 2: Pro, 3: Senior, 4: Legend.
-- **Service IDs**: 1: Live Regie, 2: IVR, 3: Unpaid, 5: Online, 6: Radio Nat, 9: TV Nat, 13: Social Media.
+## 🏭 Content Delivery (De Nuclear Workflow)
+
+Content komt NOOIT direct in de code. De weg van grondstof naar etalage is:
+1.  **Grondstof**: Ruwe Markdown in `4-KELDER/0-GRONDSTOFFEN-FABRIEK/`.
+2.  **Transformatie**: AI/Script zet MD om naar gestructureerde data in Supabase (`content_articles` + `content_blocks`).
+3.  **Registratie**: De route wordt vastgelegd in de `slug_registry` (Handshake ID).
+4.  **Vertoning**: De `InstrumentRenderer` haalt de data op via de `entity_id` en rendert de juiste **Instrumenten**.
+
+## 🧪 Core Filter IDs (Zero-Slop Handshake)
+- **Genders**: 1: Man, 2: Vrouw, 3: Non-binair, 4: Jongen, 5: Meisje.
+- **Service IDs (Pricing)**: 1: Live Regie, 2: IVR, 5: Online, 6: Radio Nat, 9: TV Nat, 13: Social Media.
 
 ## ⚡ Atomic Speed Mandate
 - **Hierarchy**: **World > Market > Journey**.
