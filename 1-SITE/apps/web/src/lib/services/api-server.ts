@@ -1027,6 +1027,7 @@ export async function getWorkshops(params: { limit?: number, worldId?: number, j
     
     return {
       ...w,
+      id: Number(w.id), // 🛡️ CHRIS-PROTOCOL: Force Number for BigInt serialization
       editions: upcomingEditions
     };
   });
