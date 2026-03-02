@@ -87,6 +87,23 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
     ORDER BY f.display_order ASC NULLS LAST
   `);
 
+    // 4b. Fetch Video media paths (from meta.video_id)
+    const videoIds = (workshopsList as any[])
+      .map((w) => ((w.meta as Record<string, any>) || {}).video_id)
+      .filter(Boolean);
+    
+    let videoPathsMap: Record<number, string> = {};
+    if (videoIds.length > 0) {
+      const videoRows = await db.execute(sql`
+        SELECT id, file_path FROM media WHERE id IN (${sql.join(videoIds.map((id: number) => sql`${id}`), sql`, `)})
+      `);
+      const videoData = Array.isArray(videoRows) ? videoRows : (videoRows as any).rows || [];
+      videoPathsMap = (videoData as any[]).reduce((acc, v) => {
+        acc[v.id] = v.file_path;
+        return acc;
+      }, {} as Record<number, string>);
+    }
+
     // 5. Processing & Mapping
     const editionsData = Array.isArray(editionsRows) ? editionsRows : (editionsRows as any).rows || [];
     const reviewsData = Array.isArray(reviewsRows) ? reviewsRows : (reviewsRows as any).rows || [];
@@ -162,6 +179,9 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
         icon: item.icon
       })),
       expert_note: w.expert_note || meta.expert_note,
+      video: meta.video_id && videoPathsMap[meta.video_id] 
+        ? { id: meta.video_id, file_path: videoPathsMap[meta.video_id] } 
+        : null,
       featured_image: w.media_file_path ? { file_path: w.media_file_path, alt_text: w.media_alt_text } : null,
       upcoming_editions: editionsByWorkshop[wid] || [],
       reviews: reviewsByWorkshop[wid] || [],

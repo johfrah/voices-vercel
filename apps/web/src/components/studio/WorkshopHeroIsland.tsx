@@ -37,7 +37,8 @@ export const WorkshopHeroIsland: React.FC<WorkshopHeroIslandProps> = ({ workshop
   const { playClick } = useSonicDNA();
   const router = useVoicesRouter();
   const { addItem, setJourney } = useCheckout();
-  const videoPath = workshop.featured_image?.file_path;
+  const videoPath = workshop.video?.file_path || workshop.featured_image?.file_path;
+  const hasVideo = !!workshop.video?.file_path;
   const nextEdition = workshop.upcoming_editions?.[0];
   const hasEdition = !!nextEdition?.id;
   const price = nextEdition?.price || workshop.price || 0;
@@ -75,16 +76,19 @@ export const WorkshopHeroIsland: React.FC<WorkshopHeroIslandProps> = ({ workshop
       <ContainerInstrument className="max-w-7xl mx-auto px-6 relative z-10">
         <ContainerInstrument plain className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
           
-          <ContainerInstrument plain className="lg:col-span-7 relative group">
+          <ContainerInstrument plain className="lg:col-span-5 relative group flex justify-center">
             <ContainerInstrument plain className="absolute -inset-4 bg-primary/10 rounded-[30px] blur-2xl opacity-0 group-hover:opacity-100 transition-all duration-1000" />
-            <VideoPlayer 
-              src={`https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices/${videoPath}`}
-              className="w-full aspect-video rounded-[24px] shadow-2xl border border-white/10 relative z-10"
-              autoPlay={false}
-            />
+            <ContainerInstrument plain className="relative z-10 w-full max-w-[360px] aspect-[9/16]">
+              <VideoPlayer 
+                src={`https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices/${videoPath}`}
+                className="w-full h-full object-cover rounded-[24px] shadow-2xl border border-white/10"
+                autoPlay={true}
+                muted={true}
+              />
+            </ContainerInstrument>
           </ContainerInstrument>
 
-          <ContainerInstrument plain className="lg:col-span-5 flex flex-col items-start space-y-10">
+          <ContainerInstrument plain className="lg:col-span-7 flex flex-col items-start space-y-10">
             <ContainerInstrument plain className="space-y-4">
               <ContainerInstrument plain className="flex items-center gap-3">
                 <TextInstrument as="span" className="px-3 py-1 bg-primary/20 text-primary text-[10px] font-black tracking-[0.2em] uppercase rounded-full border border-primary/20">
