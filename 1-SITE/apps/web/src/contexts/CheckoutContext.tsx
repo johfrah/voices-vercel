@@ -231,12 +231,18 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           if (isStudioPath && parsed.journey !== 'studio') {
             console.log(`[CheckoutContext] Resetting journey to studio (was ${parsed.journey})`);
             parsed.journey = 'studio';
+            parsed.journeyId = 1; // 🛡️ Handshake Truth: Studio World
+            parsed.usage = 'subscription';
           } else if (isAcademyPath && parsed.journey !== 'academy') {
             console.log(`[CheckoutContext] Resetting journey to academy (was ${parsed.journey})`);
             parsed.journey = 'academy';
+            parsed.journeyId = 30; // 🛡️ Handshake Truth: Academy World
+            parsed.usage = 'subscription';
           } else if (!isStudioPath && !isAcademyPath && (parsed.journey === 'studio' || parsed.journey === 'academy')) {
             console.log(`[CheckoutContext] Resetting journey to agency (was ${parsed.journey})`);
             parsed.journey = 'agency';
+            parsed.journeyId = 27; // 🛡️ Handshake Truth: Agency World
+            parsed.usage = 'unpaid';
           }
 
           //  KELLY-MANDATE: Clean up items during hydration (remove 0 prices and duplicates)

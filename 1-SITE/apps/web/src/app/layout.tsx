@@ -240,15 +240,15 @@ export default async function RootLayout({
   // 🛡️ CHRIS-PROTOCOL: Prime MarketManager with World Languages
   MarketManagerServer.setWorldLanguages(worldLanguages);
   
-  // 🛡️ CHRIS-PROTOCOL: World Detection for Provider Injection (v2.25.0)
+  // 🛡️ CHRIS-PROTOCOL: World Detection for Provider Injection (v2.25.1)
   const isStudioPage = pathname.startsWith('/studio/') || pathname === '/studio' || pathname === '/workshops' || pathname === '/voorwaarden-studio' || pathname.includes('/studio');
   const isAcademyPage = pathname.startsWith('/academy/') || pathname === '/academy' || pathname.includes('/academy');
   
   const journeyKey = isStudioPage ? 'studio' : (isAcademyPage ? 'academy' : (market.market_code === 'ADEMING' ? 'ademing' : (market.market_code === 'PORTFOLIO' ? 'portfolio' : (market.market_code === 'ARTIST' ? 'artist' : 'agency'))));
   const navConfig = await ConfigBridge.getNavConfig(journeyKey, langHeader || 'nl');
 
-  const initialJourney = isStudioPage ? 'studio' : (isAcademyPage ? 'academy' : undefined);
-  const initialUsage = isStudioPage || isAcademyPage ? 'subscription' : undefined;
+  const initialJourney = isStudioPage ? 'studio' : (isAcademyPage ? 'academy' : (market.market_code === 'ADEMING' ? 'ademing' : (market.market_code === 'PORTFOLIO' ? 'portfolio' : (market.market_code === 'ARTIST' ? 'artist' : 'agency'))));
+  const initialUsage = isStudioPage || isAcademyPage ? 'subscription' : (market.market_code === 'ADEMING' ? 'subscription' : 'unpaid');
 
   // 🛡️ CHRIS-PROTOCOL: Force Client-Only rendering for Admin routes to prevent hydration mismatch (#419)
   const isAdminRoute = pathname.startsWith('/admin') || (pathname.split('/').filter(Boolean)[0] === 'admin');
