@@ -11,8 +11,8 @@ export function StudioFooter({ market, activeSocials, activePhone, activeEmail }
 
   // 🛡️ CHRIS-PROTOCOL: Exacte sync met Supabase Source of Truth
   const workshops = [
-    { name: 'Perfect spreken in 1 dag', href: '/studio/perfect-spreken-in-1-dag', description: 'Spreken met helderheid, warmte en impact.' },
-    { name: 'Voice-overs voor beginners', href: '/studio/masterclass', description: 'De start van je professionele traject.' },
+    { name: 'Perfect spreken in 1 dag', href: '/studio/perfect-spreken', description: 'Spreken met helderheid, warmte en impact.' },
+    { name: 'Voice-overs voor beginners', href: '/studio/voice-overs-voor-beginners', description: 'De start van je professionele traject.' },
     { name: 'Maak je eigen podcast', href: '/studio/maak-je-eigen-podcast', description: 'Van concept tot professionele opname.' },
     { name: 'Maak je eigen radioshow', href: '/studio/maak-je-eigen-radioshow', description: 'De dynamiek van live radio maken.' },
     { name: 'Perfectie van intonatie', href: '/studio/perfectie-van-intonatie', description: 'De fijne kneepjes van de juiste klemtoon.' },
@@ -22,7 +22,9 @@ export function StudioFooter({ market, activeSocials, activePhone, activeEmail }
     { name: 'Speel een stemmetje in een tekenfilm', href: '/studio/tekenfilm-stemmetjes', description: 'Karakterstemmen en stemacteren.' },
     { name: 'Meditatief spreken', href: '/studio/meditaties-inspreken', description: 'Rust en verbinding in je stem.' },
     { name: 'Verwen je stem!', href: '/studio/verwen-je-stem', description: 'Onderhoud en verzorging van je instrument.' },
-    { name: 'Voice-over voor audio-descriptie', href: '/studio/audio-descriptie', description: 'Beeld vertalen naar stem.' }
+    { name: 'Voice-over voor audio-descriptie', href: '/studio/audiodescriptie', description: 'Beeld vertalen naar stem.' },
+    { name: 'Opname en audio-nabewerking', href: '/studio/opname-en-nabewerking', description: 'De technische kant van professioneel opnemen.' },
+    { name: 'Presenteren in de camera', href: '/studio/presenteren-voor-camera', description: 'Zelfzeker voor de lens staan.' },
   ];
 
   return (
@@ -47,9 +49,9 @@ export function StudioFooter({ market, activeSocials, activePhone, activeEmail }
         <HeadingInstrument level={4} className="text-[13px] font-medium tracking-[0.2em] text-va-black/40 uppercase">
           <VoiceglotText translationKey="footer.section.studio.workshops" defaultText="Onze Workshops" />
         </HeadingInstrument>
-        <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 w-full">
+        <ContainerInstrument plain className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 w-full">
           {workshops.map((workshop, i) => (
-            <li key={i}>
+            <ContainerInstrument plain key={i}>
               <VoicesLinkInstrument href={workshop.href} className="flex flex-col gap-0.5 group">
                 <TextInstrument className="text-[14px] font-medium text-va-black/70 group-hover:text-primary transition-colors">
                   {workshop.name}
@@ -58,9 +60,9 @@ export function StudioFooter({ market, activeSocials, activePhone, activeEmail }
                   {workshop.description}
                 </TextInstrument>
               </VoicesLinkInstrument>
-            </li>
+            </ContainerInstrument>
           ))}
-        </ul>
+        </ContainerInstrument>
         <ContainerInstrument className="pt-4 border-t border-black/5 w-full">
           <VoicesLinkInstrument href="/studio/workshops" className="flex items-center gap-2 text-[13px] font-bold text-primary hover:opacity-70 transition-opacity">
             <Calendar size={14} />
@@ -86,14 +88,14 @@ export function StudioFooter({ market, activeSocials, activePhone, activeEmail }
           </ContainerInstrument>
           
           <ContainerInstrument className="pt-4 border-t border-black/5 space-y-3">
-            <a href={`mailto:${activeEmail}`} className="flex items-center gap-2 text-[14px] font-light text-va-black/60 hover:text-primary transition-colors">
+            <VoicesLinkInstrument href={`mailto:${activeEmail}`} className="flex items-center gap-2 text-[14px] font-light text-va-black/60 hover:text-primary transition-colors">
               <Mail size={14} strokeWidth={1.5} />
               <TextInstrument as="span">{activeEmail}</TextInstrument>
-            </a>
-            <a href={`tel:${activePhone.replace(/\s+/g, '')}`} className="flex items-center gap-2 text-[14px] font-light text-va-black/60 hover:text-primary transition-colors">
+            </VoicesLinkInstrument>
+            <VoicesLinkInstrument href={`tel:${activePhone?.replace(/\s+/g, '') || ''}`} className="flex items-center gap-2 text-[14px] font-light text-va-black/60 hover:text-primary transition-colors">
               <Phone size={14} strokeWidth={1.5} />
               <TextInstrument as="span">{activePhone}</TextInstrument>
-            </a>
+            </VoicesLinkInstrument>
           </ContainerInstrument>
         </ContainerInstrument>
         

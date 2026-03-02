@@ -238,7 +238,7 @@ export const ClientButtonInstrument = forwardRef<HTMLButtonElement, ButtonInstru
     <Component 
       ref={ref}
       type={Component === 'button' ? type : undefined}
-      href={(Component === 'a' || Component === Link || (Component as any).displayName === 'VoicesLink' || (Component as any).name === 'VoicesLink' || (Component as any).name === 'Link') ? href : undefined}
+      href={(typeof Component === 'string' && Component !== 'a') ? undefined : href}
       target={target}
       download={download}
       className={cn(
