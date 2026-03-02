@@ -416,9 +416,15 @@ ${workshopEditionsData.filter((ed: any) => ed.status === 'upcoming').map((ed: an
           const parsed = JSON.parse(aiContent);
           aiContent = parsed.message;
           if (parsed.suggestedAction) {
-            // Voeg de actie toe aan de bestaande actions array voor de UI
+            // 🛡️ CHRIS-PROTOCOL: Butler actions are internal — use human-friendly labels
+            const butlerLabels: Record<string, string> = {
+              'SHOW_LEAD_FORM': isEnglish ? 'Get a personal quote' : 'Persoonlijke offerte',
+              'SET_CONFIGURATOR': isEnglish ? 'Configure your project' : 'Configureer je project',
+              'BROWSE_VOICES': isEnglish ? 'Browse voices' : 'Stemmen bekijken',
+              'BOOK_SESSION': isEnglish ? 'Book a session' : 'Sessie boeken',
+            };
             actions.push({
-              label: `Butler: ${parsed.suggestedAction.type.replace('_', ' ')}`,
+              label: butlerLabels[parsed.suggestedAction.type] || parsed.suggestedAction.type.replace(/_/g, ' ').toLowerCase(),
               action: parsed.suggestedAction.type,
               params: parsed.suggestedAction.params,
               isButlerAction: true
