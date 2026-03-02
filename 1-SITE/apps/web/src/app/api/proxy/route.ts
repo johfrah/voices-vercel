@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
         const url = new URL(cleanPath);
         // Als het van onze eigen domein komt, haal dan het pad eruit
         // 🛡️ CHRIS-PROTOCOL: Use MarketManager for domain checks
-        const { MarketManagerServer } = require('@/lib/system/market-manager-server');
+        const { MarketManagerServer } = require('@/lib/system/core/market-manager');
         const currentMarket = MarketManagerServer.getCurrentMarket();
         const marketDomains = Object.values(MarketManagerServer.getMarketDomains());
 
@@ -69,7 +69,7 @@ export async function GET(request: NextRequest) {
     //  ASSET MANDATE 2026: Alle assets MOETEN in /assets/ staan.
     // We staan /wp-content/ tijdelijk nog toe voor legacy fallbacks, 
     // maar de proxy logt dit als een waarschuwing.
-    const { MarketManagerServer } = require('@/lib/system/market-manager-server');
+    const { MarketManagerServer } = require('@/lib/system/core/market-manager');
     const marketDomains = Object.values(MarketManagerServer.getMarketDomains());
     
     marketDomains.forEach(d => {
@@ -103,7 +103,7 @@ export async function GET(request: NextRequest) {
     }
 
     // De backend URL (Combell PHP server of Supabase Storage)
-    const { MarketManagerServer: MarketManagerInstance } = require('@/lib/system/market-manager-server');
+    const { MarketManagerServer: MarketManagerInstance } = require('@/lib/system/core/market-manager');
     const requestHost = request.headers.get('host') || MarketManagerInstance.getCurrentMarket().market_code.toLowerCase() + '.be';
     const protocol = request.headers.get('x-forwarded-proto') || 'https';
     let BACKEND_URL = process.env.BACKEND_URL || `${protocol}://${requestHost}`; 

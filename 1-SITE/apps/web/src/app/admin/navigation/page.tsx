@@ -109,12 +109,13 @@ export default function NavigationAdminPage() {
 
   const selectDNA = (index: number, item: any) => {
     const newLinks = [...config.links];
+    const currentLink = newLinks[index];
     newLinks[index] = { 
-      ...newLinks[index], 
+      ...currentLink, 
       entityId: item.entityId, 
       routingType: item.routingType,
       href: item.slug, // Fallback
-      name: link.name || item.title || item.slug // Houd bestaande naam of gebruik slug
+      name: currentLink.name || item.title || item.slug // Houd bestaande naam of gebruik slug
     };
     setConfig({ ...config, links: newLinks });
     setIsPickerOpen(null);

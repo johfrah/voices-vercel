@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/LayoutInstruments';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
+import { Info, ChevronLeft, ChevronRight, Clock, MapPin, Users } from 'lucide-react';
 
 export const WorkshopCalendar: React.FC<{ workshops: any[] }> = ({ workshops }) => {
   const { playClick } = useSonicDNA();
@@ -50,7 +51,7 @@ export const WorkshopCalendar: React.FC<{ workshops: any[] }> = ({ workshops }) 
       <ContainerInstrument plain className="flex items-center justify-between mb-8">
         <ContainerInstrument plain className="flex items-center gap-4">
           <ContainerInstrument plain className="w-12 h-12 rounded-[10px] bg-va-black text-white flex items-center justify-center shadow-lg group-hover/calendar:bg-primary transition-all duration-500">
-            <Image  src="/assets/common/branding/icons/INFO.svg" width={24} height={24} alt="" className="brightness-0 invert" />
+            <Info size={24} strokeWidth={1.5} />
           </ContainerInstrument>
           <ContainerInstrument plain>
             <HeadingInstrument level={3} className="text-2xl font-light tracking-tight text-va-black">
@@ -66,13 +67,13 @@ export const WorkshopCalendar: React.FC<{ workshops: any[] }> = ({ workshops }) 
             onClick={() => playClick('soft')}
             className="w-10 h-10 rounded-[10px] bg-white border border-va-black/5 flex items-center justify-center text-va-black/40 hover:text-primary transition-all shadow-sm active:scale-95"
           >
-            <Image  src="/assets/common/branding/icons/BACK.svg" width={20} height={20} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.4 }} />
+            <ChevronLeft size={20} strokeWidth={1.5} className="opacity-40" />
           </ButtonInstrument>
           <ButtonInstrument 
             onClick={() => playClick('soft')}
             className="w-10 h-10 rounded-[10px] bg-white border border-va-black/5 flex items-center justify-center text-va-black/40 hover:text-primary transition-all shadow-sm active:scale-95"
           >
-            <Image  src="/assets/common/branding/icons/FORWARD.svg" width={20} height={20} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.4 }} />
+            <ChevronRight size={20} strokeWidth={1.5} className="opacity-40" />
           </ButtonInstrument>
         </ContainerInstrument>
       </ContainerInstrument>
@@ -128,17 +129,17 @@ export const WorkshopCalendar: React.FC<{ workshops: any[] }> = ({ workshops }) 
                 </HeadingInstrument>
                 <ContainerInstrument plain className="flex items-center gap-3 mt-1">
                   <ContainerInstrument plain className="flex items-center gap-1 text-[15px] font-light text-va-black/30 tracking-widest ">
-                    <Image  src="/assets/common/branding/icons/INFO.svg" width={10} height={10} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.4 }} /> 10:00 - 17:00
+                    <Clock size={10} strokeWidth={1.5} className="opacity-40" /> 10:00 - 17:00
                   </ContainerInstrument>
                   <ContainerInstrument plain className="flex items-center gap-1 text-[15px] font-light text-va-black/30 tracking-widest ">
-                    <Image  src="/assets/common/branding/icons/INFO.svg" width={10} height={10} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.4 }} /> 
+                    <MapPin size={10} strokeWidth={1.5} className="opacity-40" /> 
                     <VoiceglotText  translationKey="common.location.brussels" defaultText="Studio Brussel" />
                   </ContainerInstrument>
                 </ContainerInstrument>
               </ContainerInstrument>
             </ContainerInstrument>
             <ContainerInstrument plain className="flex items-center gap-2">
-              <Image  src="/assets/common/branding/icons/INFO.svg" width={12} height={12} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.4 }} />
+              <Users size={12} strokeWidth={1.5} className="opacity-40" />
               <TextInstrument className="text-[15px] font-light text-va-black/40 tracking-widest ">6/8</TextInstrument>
             </ContainerInstrument>
           </ButtonInstrument>

@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
     // 3. Haal klant details op
     const [customer] = await db.select().from(users).where(eq(users.id, order.user_id as number)).limit(1);
 
-    const { MarketManagerServer: MarketManager } = require('@/lib/system/market-manager-server');
+    const { MarketManagerServer: MarketManager } = require('@/lib/system/core/market-manager');
     const host = request.headers.get('host') || MarketManager.getMarketDomains()['BE']?.replace('https://', '');
     const market = MarketManager.getCurrentMarket(host);
     const domains = MarketManager.getMarketDomains();

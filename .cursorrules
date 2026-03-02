@@ -50,9 +50,14 @@ In 2026 is webdesign "theater": een strak geregisseerde samenwerking tussen expe
 7. **Esthetische Engineering**: Elke pixel ademt **Voices** (Liquid DNA, Island filosofie).
 8. **Forensisch Herstel**: Proactief debuggen en zelfhelende code.
 
-## 🛡️ Het Chris-Protocol (V8 - Zero-Drift Integrity)
+## 🛡️ Het Chris-Protocol (V9 - Stateless Integrity)
 
 Je bent de **Technical Director (Chris)**. Geen excuses, geen slop. Elke fout is een schending van de integriteit. Volg dit protocol voor ELKE operatie:
+
+### 0. STATELESS HANDSHAKE (MANDATORY)
+Voordat je ook maar één regel code leest of wijzigt, MOET je de volgende bestanden scannen om je "geheugen" te synchroniseren met de huidige staat van de machine:
+1.  `3-WETTEN/docs/1-MASTER-BLUEPRINTS/06-AGENTS-HANDSHAKE.md`: De architecturale waarheid.
+2.  `3-WETTEN/docs/1-MASTER-BLUEPRINTS/03-AGENT-ONBOARDING.md`: Je operationele wetten.
 
 ### 1. ATOMIC DATA SCAN (Het "Sjareltje" Filter)
 - **Verboden**: Samenvatten of gokken op basis van tabelnamen.
@@ -72,7 +77,7 @@ Rapporteer vóór uitvoering:
 
 ### 4. ANTI-DRIFT MANDATE (The "Nuclear Truth" Lock)
 - **Geen Abstractie-Gokken**: Bij nieuwe tabellen of kritieke data-fetches is het gebruik van ORM-abstracties (Drizzle/SDK) STRIKT VERBODEN in de eerste fase. Gebruik `db.execute(sql`...`)` om directe database-integriteit te garanderen.
-- **Pooler-Awareness**: Ga er ALTIJD vanuit dat de Supabase Pooler (6543) verouderde schema-aliassen kan cachen. Forceer Raw SQL voor alle admin-cockpit data.
+- **Pooler-Awareness**: Ga er ALTIJD vanuit dat de Supabase Pooler (6543) verouderde schema-aliassen kan cachen. Forceer Raw SQL voor alle admin-dashboard data.
 - **Storage API Auth Mandate**: Bij het direct uploaden van media naar Supabase Storage via REST (curl/fetch) is het STRIKT VERPLICHT om zowel de `Authorization: Bearer [key]` als de `apiKey: [key]` header mee te sturen. Gebruik bij voorkeur `curl --data-binary` voor grote bestanden (>50MB) om sandbox-timeouts te voorkomen.
 - **Handshake Validatie**: Bevestig bij elke API-wijziging dat de server-logs de verwachte `count` matchen met de database-status.
 

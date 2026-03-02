@@ -41,9 +41,8 @@ Focus op psychologie, Tone of Voice en persona-funnels.
 
 ### II. HET TECHNISCH TESTAMENT (`/2-Techniek`)
 Focus op architectuur, data-mapping en systeem-logica.
-- `BIJBEL-TECHNICAL-STACK.md`: Hoe de machine technisch ademt.
-- `BIJBEL-DATA-GOLD-DNA.md`: De mapping van het geheugen (meta-keys).
-- `BIJBEL-DATAGOLD.md`: De bron van waarheid voor live stats.
+- `BIJBEL-VOICES-OS-ARCHITECTURE.md`: Hoe de machine technisch ademt.
+- `BIJBEL-TECHNICAL-STACK.md`: De mapping van de technologie.
 
 ### III. HET COMMERCIEEL TESTAMENT (`/3-Commerce`)
 Focus op rechten, prijzen en financiële integriteit.

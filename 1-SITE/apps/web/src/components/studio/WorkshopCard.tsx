@@ -5,7 +5,7 @@ import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { WorkshopEditModal } from "@/components/ui/WorkshopEditModal";
 import { useEditMode } from "@/contexts/EditModeContext";
 import { useSonicDNA } from "@/lib/engines/sonic-dna";
-import { Settings } from "lucide-react";
+import { Settings, Play, Pause, Calendar, ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -214,14 +214,11 @@ export const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onUpdate }
             plain 
             className={`w-16 h-16 !rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center hover:scale-110 transition-all duration-300 ${isPlaying ? 'opacity-0 hover:opacity-100' : 'opacity-100'}`}
           >
-            <Image 
-              src={`/assets/common/branding/icons/${isPlaying ? 'INFO' : 'PLAY'}.svg`} 
-              width={24} 
-              height={24} 
-              alt={isPlaying ? "Pause" : "Play"} 
-              className="brightness-0 invert object-contain"
-              style={!isPlaying ? { marginLeft: '4px' } : {}}
-            />
+            {isPlaying ? (
+              <Pause size={24} className="text-white fill-white" />
+            ) : (
+              <Play size={24} className="text-white fill-white ml-1" />
+            )}
           </ContainerInstrument>
           </ContainerInstrument>
           <ContainerInstrument plain className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent pointer-events-none" />
@@ -245,7 +242,7 @@ export const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onUpdate }
                 <ContainerInstrument key={edition.id} plain className="flex flex-wrap gap-x-6 gap-y-2">
                   {/* Datum */}
                   <ContainerInstrument plain className="flex items-center gap-2">
-                    <Image src="/assets/common/branding/icons/INFO.svg" width={14} height={14} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.4 }} /> 
+                    <Calendar size={14} strokeWidth={1.5} className="text-va-black/40" /> 
                     <TextInstrument className={`text-[15px] tracking-widest ${index === 0 ? 'font-medium text-va-black' : 'font-light text-va-black/30'}`} suppressHydrationWarning>
                       {mounted ? (
                         <VoiceglotText 
@@ -336,7 +333,7 @@ export const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onUpdate }
               className="flex items-center gap-3 text-[15px] font-light tracking-widest text-primary group/btn min-h-[44px] px-4 py-2 bg-primary/5 hover:bg-primary/10 rounded-[10px] transition-all"
             >
               <VoiceglotText translationKey={ctaLabel} defaultText={ctaDefaultText} />
-              <Image src="/assets/common/branding/icons/FORWARD.svg" width={16} height={16} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} className="group-hover/btn:translate-x-2 transition-transform" />
+              <ArrowRight size={16} strokeWidth={1.5} className="group-hover/btn:translate-x-1 transition-transform" />
             </Link>
           </ContainerInstrument>
         </ContainerInstrument>

@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Mail, Eye, Send, MessageSquare, Sparkles, Zap, ShieldCheck, ShoppingCart } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 
 import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
 
@@ -83,16 +84,16 @@ export default function VumeAdminPage() {
     if (isAdmin) loadPreview(TEMPLATES[0]);
   }, [isAdmin]);
 
-  const handleSendTest = async () => {
+    const handleSendTest = async () => {
     setIsSending(true);
     try {
       const res = await fetch('/api/admin/test-vume', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ templateId: selectedTemplate.id, recipient: VOICES_CONFIG.company.email })
+        body: JSON.stringify({ templateId: selectedTemplate.id, recipient: 'johfrah@voices.be' })
       });
-      if (res.ok) alert(`Testmail verzonden naar ${VOICES_CONFIG.company.email}`);
-    } catch (e) { alert('Fout bij verzenden'); }
+      if (res.ok) toast.success(`Testmail verzonden naar johfrah@voices.be`);
+    } catch (e) { toast.error('Fout bij verzenden'); }
     finally { setIsSending(false); }
   };
 
@@ -201,7 +202,7 @@ export default function VumeAdminPage() {
               />
               <ButtonInstrument 
                 onClick={() => {
-                  alert('Feedback verzonden!');
+                  toast.success('Feedback verzonden!');
                   setFeedback('');
                 }}
                 className="w-full bg-primary text-white py-4 rounded-[10px] text-[15px] font-light tracking-widest flex items-center justify-center gap-2 hover:scale-[1.02] transition-all"

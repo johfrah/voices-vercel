@@ -34,6 +34,7 @@
     "db:studio": "npx drizzle-kit studio --config 1-SITE/packages/database/drizzle.config.ts",
     "db:security-remediation": "ts-node 4-KELDER/scripts/supabase-security-remediation.ts",
     "lint": "cd 1-SITE/apps/web && npm run lint",
+    "check:pre-vercel": "npx tsx 3-WETTEN/scripts/pre-vercel-check.ts",
     "subtitles": "npx ts-node 3-WETTEN/scripts/subtitle-agent/transcribe-videos.ts",
     "run-agent": "npx ts-node 3-WETTEN/scripts/orchestrator.ts"
   },

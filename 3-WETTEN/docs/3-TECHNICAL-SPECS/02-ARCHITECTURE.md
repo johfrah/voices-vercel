@@ -1,56 +1,62 @@
-# 🏗️ Voices.be Technical Architecture
+# 🏗️ Voices.be Technical Architecture (2026)
 
-> **Document Status:** Living Document
-> **Last Updated:** Feb 2026
-> **Context:** Technical Overview for Developers & Auditors
-> **Gouden Standaard:** Gebaseerd op `VOICES-2-0-ROUTING-BLUEPRINT.md`
+> **Document Status:** Masterclass ✅
+> **Last Updated:** March 2026
+> **Context:** Technical Overview for Developers & AI Agents
+> **Gouden Standaard:** Bob-methode & Chris-Protocol
 
-## 1. High-Level Overview: De Freedom Machine
-Voices.be is geëvolueerd van een monolithische WordPress site naar een **Intelligent Sidecar Ecosysteem**. De kern is een "Intelligence Engine" (WordPress/Database) die een vloot van gespecialiseerde, ontkoppelde frontends (Sidecars) aanstuurt.
+## 1. High-Level Overview: De Unified Engine
+Voices.be is volledig getransformeerd van een WordPress-monoliet naar een **Unified Headless Ecosysteem**. De kern is een intelligente data-laag (Supabase/PostgreSQL) die een Next.js frontend aanstuurt.
 
 **Kernkenmerken:**
-- **Engine:** WordPress + WooCommerce als data- en business logic bron.
-- **Routing:** Master Door (`mu-plugin`) beslist over Sidecar vs. WordPress mode.
+- **Engine:** Next.js (App Router) als de enige applicatie-motor.
+- **Data:** Supabase (PostgreSQL + Auth + Storage) als de enige Source of Truth.
+- **Routing:** Smart Router (`[...slug]/page.tsx`) gekoppeld aan de `slug_registry`.
 - **Context-Aware:** Volledige implementatie van de IAP Vier-Eenheid (Market, Journey, Usage, Intent).
-- **Decoupled:** Sidecars draaien onafhankelijk van het WordPress thema.
-- **AI-Ready:** ARP (AI Readability Protocol) geïntegreerd in elke route.
+- **HTML Zero:** Gebruik van `LayoutInstruments` in plaats van rauwe HTML-tags.
+- **AI-Ready:** ARP (AI Readability Protocol) geïntegreerd via `_llm_context` JSON-LD.
 
 ---
 
-## 2. De Master Door & Routing
-De routing vindt plaats op het allerhoogste niveau via `wp-content/mu-plugins/00-voices-master-door.php`.
+## 2. Routing & Middleware
+De routing vindt plaats op applicatie-niveau via de Next.js Middleware en de Smart Router.
 
-### 2.1. Beslisboom
-1. **Sidecar Match:** Indien het domein of de route in de `VoicesRegistry` staat als sidecar, serveert de Master Door direct de assets/HTML en stopt de executie (`exit;`).
-2. **WordPress Match:** Indien geen sidecar match, wordt de markt-context gezet en laadt WordPress het thema.
+### 2.1. Middleware (`middleware.ts`)
+1. **Market Detection:** Bepaalt de markt (BE, NL, FR, etc.) op basis van de hostname.
+2. **Security:** Valideert sessies en dwingt HTTPS af.
+3. **Context Injection:** Voegt markt-specifieke headers toe aan de request.
 
-### 2.2. De Stofzuiger (ob_clean)
-Bij sidecar-serving wordt `ob_clean()` gebruikt om alle PHP-ruis (notices, banners) te verwijderen, wat 100% zuivere assets garandeert.
+### 2.2. Smart Router (`[...slug]/page.tsx`)
+De Smart Router is het hart van de navigatie:
+1. **Registry Lookup:** Zoekt de slug op in de `slug_registry` tabel.
+2. **Entity Resolution:** Bepaalt de `entity_id`, `world_id` en `routing_type`.
+3. **Instrument Rendering:** Rendert de pagina via de `InstrumentRenderer` (Soft Entities) of specifieke Blueprints (Hard Entities).
 
 ---
 
-## 3. Module Architectuur (Bootstrap Pattern)
-Nieuwe modules volgen strikt het **Bootstrap Pattern** voor isolatie en voorspelbaarheid.
+## 3. Component Architectuur (LayoutInstruments)
+Nieuwe modules volgen strikt het **LayoutInstrument Pattern** voor consistentie en discipline.
 
-- **Explicit Loading:** Een module heeft één `bootstrap.php`.
-- **Autoloader Bypass:** De thema-autoloader stopt bij het vinden van een `bootstrap.php`.
-- **Isolation:** Voorkomt "Magic Loading" conflicten en side-effects.
+- **Import Mandate:** Alle UI bouwstenen komen uit `@/components/ui/LayoutInstruments`.
+- **No Raw HTML:** Gebruik van `div`, `span`, `p`, etc. is verboden.
+- **Styling:** Uitsluitend via Tailwind CSS classes op de instrumenten.
 
 ---
 
 ## 4. IAP & State Management
-De staat van de applicatie wordt beheerd via `VoicesState.js` en `VoicesPreferences`.
+De staat van de applicatie wordt beheerd via React Context en Supabase Real-time.
 
-- **Single Source of Truth:** `voices_preferences` JSON-key in de database.
-- **Sticky Sync:** Automatische synchronisatie tussen `localStorage` (gasten) en User Meta (ingelogd).
-- **Market-Aware API:** De REST API filtert data op basis van de markt-context die door de Master Door is gezet.
+- **VoicesMasterControlContext:** Beheert de globale IAP-context (Market, World, Journey).
+- **CheckoutContext:** Beheert de ID-First configuratie van bestellingen.
+- **AuthContext:** Beheert de gebruikerssessie via Supabase Auth.
 
 ---
 
 ## 5. Security & Hardening
-- **The Gate:** Harde validatie van Host/Origin tegen de Registry.
-- **Capability URLs:** Beveiligde, hash-gebaseerde toegang tot klantprojecten.
-- **CORS:** Strikte scheiding tussen Asset-toegang (*) en API-toegang (allowlist).
+- **ID-First Handshake:** Interne logica gebruikt uitsluitend UUID's, nooit slugs.
+- **Nuclear Locks:** Kritieke database velden zijn gelockt tegen AI-overschrijving via `is_manually_edited`.
+- **CORS & CSP:** Strikte beveiliging van API-endpoints en assets.
 
 ---
-**REFERENTIE:** Raadpleeg ALTIJD `3-CURSOR-ONLY/docs/4-ROADMAPS-AND-LOGS/04-Plans/` voor de volledige technische specificaties en schema's.
+
+**REFERENTIE:** Raadpleeg ALTIJD `.cursor/rules/` voor de actuele wetten en instrumenten.

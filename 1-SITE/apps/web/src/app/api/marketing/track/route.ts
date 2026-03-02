@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
     let utmCampaign = null;
 
     try {
-      const { MarketManagerServer: MarketManager } = await import('@/lib/system/market-manager-server');
+      const { MarketManagerServer: MarketManager } = await import('@/lib/system/core/market-manager');
       const host = request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || MarketManager.getMarketDomains()['BE']?.replace('https://', ''));
       const url = new URL(pathname, `https://${host}`);
       utmSource = url.searchParams.get('utm_source');

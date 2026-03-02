@@ -106,7 +106,7 @@ export async function POST(req: Request) {
     }
 
     // ONZE BETROUWBARE LINK (Forceer https op productie)
-    const { MarketManagerServer: MarketManager } = await import('@/lib/system/market-manager-server');
+    const { MarketManagerServer: MarketManager } = await import('@/lib/system/core/market-manager');
     const host = new URL(req.url).host;
     
     // 🛡️ CHRIS-PROTOCOL: Use MarketManagerServer directly for static config to avoid DB timeout in Auth flow

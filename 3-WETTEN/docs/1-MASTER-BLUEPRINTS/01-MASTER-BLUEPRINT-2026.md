@@ -37,7 +37,7 @@ Naar de buitenwereld (Agency, Artist, Student) presenteren wij ons als een **Pre
 
 ### 1.3 Voices Engine (Intelligence Layer)
 In de **Voices Engine** bouwen we geen pagina's meer; we instrueren de Engine via data en configuratie. De UI is slechts één weergave van de onderliggende intelligentie.
-- **Zero-CSS Mandaat:** Elke regel nieuwe CSS is een architecturale fout. Gebruik uitsluitend Design Tokens en Cockpit componenten.
+- **Zero-CSS Mandaat:** Elke regel nieuwe CSS is een architecturale fout. Gebruik uitsluitend Design Tokens en Dashboard componenten.
 - **Engine-First HTML:** De HTML is primair een data-bron voor de Engine en AI (Voicy), secundair een visuele weergave.
 - **Conversational-First:** Bouw elke feature met de visie dat deze via Voicy Chat bediend moet kunnen worden.
 
@@ -47,25 +47,25 @@ In de **Voices Engine** bouwen we geen pagina's meer; we instrueren de Engine vi
 
 ### 2.1 De Drie Pilaren
 1.  **De Engine Router (De Verkeerstoren):**
-    - **Locatie:** `/www/engine-router.php` (Onafhankelijk van CMS)
+    - **Locatie:** `1-SITE/apps/web/src/middleware.ts` (Onafhankelijk van CMS)
     - **Functie:** Beslist binnen milliseconden welk domein wat krijgt.
     - **Stofzuiger-functie:** Filtert alle ruis/fouten weg voor een zuivere output bij native rendering.
 2.  **De Core Registry (Het Brein):**
-    - **Locatie:** Geïntegreerd in de Engine Router.
-    - **Status:** Single Source of Truth. Bevat de configuratie van álle domeinen.
+    - **Locatie:** `slug_registry` tabel in Supabase.
+    - **Status:** Single Source of Truth. Bevat de configuratie van álle domeinen en routes.
 3.  **De Native Journeys (De Voertuigen):**
-    - **Locatie:** `/apps/`
-    - **Technologie:** Next.js / React / Vite.
+    - **Locatie:** `1-SITE/apps/web/src/app/`
+    - **Technologie:** Next.js (App Router) / TypeScript.
     - **Isolatie:** Volledig ontkoppeld van legacy systemen.
 
 ### 2.2 De 3 Lagen van Routing
-1. **Nginx (Server Level):** Directe afhandeling van statische bestanden. Stuurt de rest naar de Engine Router.
-2. **Engine Router (Pure PHP Router):**
-   - **Prioriteit:** `API/AJAX Exception` > `Journey Match` > `Asset Match` > `Headless Match` > `Market Match`.
-   - **Beslisboom:** Bij een match wordt de native journey direct geserveerd. Er is GEEN fallback naar legacy CMS systemen.
-3. **Headless Engine (Application Level):**
-   - **Locatie:** `apps/web/`
-   - **Taak:** Bepaalt de context (Market, Journey, Usage, Intent) op basis van de IAP Vier-Eenheid.
+1. **Vercel (Edge Level):** Directe afhandeling van statische bestanden en Edge Middleware.
+2. **Middleware (Next.js):**
+   - **Prioriteit:** `API/AJAX Exception` > `Market Match` > `Auth Check`.
+   - **Beslisboom:** Bepaalt de markt-context op basis van de hostname.
+3. **Smart Router (Application Level):**
+   - **Locatie:** `1-SITE/apps/web/src/app/[...slug]/page.tsx`
+   - **Taak:** Bepaalt de context (Market, Journey, Usage, Intent) op basis van de IAP Vier-Eenheid via de `slug_registry`.
 
 ---
 

@@ -1,6 +1,6 @@
 # 📝 Freedom Machine: Fase 2 Strategisch Plan (HITL & Agents)
 
-Dit document bevat het gedetailleerde ontwerp voor de functionele diepgang van de Voices Cockpit, ter nazicht door de Directie.
+Dit document bevat het gedetailleerde ontwerp voor de functionele diepgang van het Voices Dashboard, ter nazicht door de Directie.
 
 ---
 
@@ -34,7 +34,7 @@ Een dashboard om de "hersenen" van de Freedom Machine te beheren zonder code-upd
 - **Sandbox**: Een intern chatvenster om de nieuwe prompt te testen met dummy-data voordat deze live gaat voor klanten.
 
 ## 4. 🛡️ God Mode v3: "The Safe Founder" (HITL Intelligence)
-De volgende stap in de evolutie van de Cockpit, met de focus op **Safe Intelligence**.
+De volgende stap in de evolutie van het Dashboard, met de focus op **Safe Intelligence**.
 
 ### A. De "Morning Brief" (Email Edition)
 Geen video, maar een vlijmscherpe tekst-mail elke ochtend om 07:00.

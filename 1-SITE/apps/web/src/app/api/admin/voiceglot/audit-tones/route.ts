@@ -1,4 +1,4 @@
-import { OpenAIService } from '@/lib/services/openai-service';
+import { GeminiService } from '@/lib/services/gemini-service';
 import { db, getTable } from '@/lib/system/voices-config';
 
 const translations = getTable('translations');
@@ -50,7 +50,7 @@ export async function GET(request: NextRequest) {
         Verbeterde tekst:
       `;
 
-      const improved = await OpenAIService.generateText(prompt, "gpt-4o", row.lang);
+      const improved = await GeminiService.generateText(prompt, { lang: row.lang });
       const cleanImproved = improved.trim().replace(/^"|"$/g, '');
 
       if (cleanImproved && cleanImproved !== row.translatedText && cleanImproved.length < 50) {

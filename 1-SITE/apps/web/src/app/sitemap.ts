@@ -16,7 +16,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     return [];
   }
 
-  const { MarketManagerServer: MarketManager } = await import('@/lib/system/market-manager-server');
+  const { MarketManagerServer: MarketManager } = await import('@/lib/system/core/market-manager');
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || process.env.NEXT_PUBLIC_SITE_URL || MarketManager.getMarketDomains()['BE'];
   const languages = ['', '/en', '/fr', '/de']; // Ondersteunde talen
 

@@ -21,10 +21,9 @@ Volg deze volgorde om het platform in de diepte te leren kennen:
 2.  **`.cursor/rules/100-ROADMAP.mdc`**: De granulaire weg naar 100% God Mode compliance.
 3.  **`3-WETTEN/docs/1-MASTER-BLUEPRINTS/03-ULTIMATE-VOICES-SUPERPROMPT-2026.md`**: De filosofie achter Engine-First en Zero-CSS.
 4.  **`3-WETTEN/docs/3-TECHNICAL-SPECS/03-DATABASE-SCHEMA.md`**: Volledig overzicht van de database-architectuur en meta-keys.
-5.  **`3-WETTEN/docs/3-TECHNICAL-SPECS/06-DEVELOPER-TOOLBOX.md`**: Overzicht van alle gestandaardiseerde tools en helpers.
+5.  **`3-WETTEN/docs/3-TECHNICAL-SPECS/07-TOOLS.md`**: Overzicht van de Headless Master Index en Butler Tools.
 6.  **`3-WETTEN/docs/3-TECHNICAL-SPECS/02-ARCHITECTURE.md`**: De technische opbouw en het Bootstrap Pattern.
-7.  **`3-WETTEN/docs/3-TECHNICAL-SPECS/09-NEW-JOURNEY-BLUEPRINT.md`**: Hoe je een nieuwe pijler (Academy, Agency, etc.) toevoegt.
-8.  **`3-WETTEN/docs/3-TECHNICAL-SPECS/08-ROOT-PROTECTION-SYSTEM.md`**: Waar bestanden mogen staan (Root Protection).
+7.  **`3-WETTEN/docs/3-TECHNICAL-SPECS/08-ROOT-PROTECTION-SYSTEM.md`**: Waar bestanden mogen staan (Root Protection).
 
 ---
 

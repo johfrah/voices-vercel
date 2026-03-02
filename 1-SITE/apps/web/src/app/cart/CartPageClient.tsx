@@ -14,7 +14,7 @@ import { useCheckout } from '@/contexts/CheckoutContext';
 import { useTranslation } from '@/contexts/TranslationContext';
 import Image from 'next/image';
 import { VoicesLink as Link } from '@/components/ui/VoicesLink';
-import { ShoppingCart, ArrowRight, Star, Trash2, Edit2, Eye, Info } from 'lucide-react';
+import { ShoppingCart, ArrowRight, Star, Trash2, Edit2, Eye, Info, ArrowLeft } from 'lucide-react';
 import { PricingSummary } from '@/components/checkout/PricingSummary';
 import { OrderStepsInstrument } from '@/components/ui/OrderStepsInstrument';
 import nextDynamic from "next/dynamic";
@@ -82,7 +82,7 @@ export default function CartPageClient() {
               href="/agency" 
               className="inline-flex items-center gap-2 text-[15px] font-light tracking-widest text-va-black/40 hover:text-primary transition-colors"
             >
-              <Image src="/assets/common/branding/icons/BACK.svg" width={14} height={14} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.4 }} /> 
+              <ArrowLeft size={14} strokeWidth={1.5} className="opacity-40" /> 
               <VoiceglotText translationKey="cart.back_to_agency" defaultText="Verder casten" />
             </Link>
           </ContainerInstrument>

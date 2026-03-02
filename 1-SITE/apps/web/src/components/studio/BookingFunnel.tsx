@@ -15,6 +15,7 @@ import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
+import { CheckCircle2, ArrowRight } from 'lucide-react';
 
 interface WorkshopDate {
   date_raw: string;
@@ -158,8 +159,8 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
   if (isSuccess) {
     return (
       <ContainerInstrument className="space-y-6 py-12 text-center animate-in fade-in zoom-in-95 duration-500">
-        <ContainerInstrument className="w-20 h-20 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
-          <Image src="/assets/common/branding/icons/INFO.svg" width={32} height={32} alt="" style={{ filter: 'invert(58%) sepia(68%) saturate(534%) hue-rotate(113deg) brightness(94%) contrast(91%)' }} />
+        <ContainerInstrument className="w-20 h-20 bg-emerald-500/10 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-6">
+          <CheckCircle2 size={32} strokeWidth={1.5} />
         </ContainerInstrument>
         <HeadingInstrument level={3} className="text-2xl font-light tracking-tight text-va-black">
           {hasDates ? <VoiceglotText translationKey="studio.booking.success.title" defaultText="Bedankt voor je inschrijving!" /> : <VoiceglotText translationKey="studio.booking.notify_me.success.title" defaultText="Je staat op de lijst!" />}
@@ -339,7 +340,7 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
                 translationKey={hasDates ? "studio.booking.cta" : "studio.booking.notify_me.cta_v2"} 
                 defaultText={hasDates ? "Nu inschrijven" : "Op de hoogte blijven"} 
               /> 
-              <Image src="/assets/common/branding/icons/FORWARD.svg" width={18} height={18} alt="" className="brightness-0 invert group-hover:translate-x-2 transition-transform" />
+              <ArrowRight size={18} strokeWidth={1.5} className="group-hover:translate-x-1 transition-transform" />
             </>
           )}
         </ButtonInstrument>

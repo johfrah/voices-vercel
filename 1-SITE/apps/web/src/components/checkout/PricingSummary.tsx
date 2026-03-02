@@ -800,14 +800,14 @@ const CTASection: React.FC<any> = ({ handleSubmit, setIsPreviewOpen, setIsTermsO
           {state.isSubmitting ? (
             <><Loader2 className="animate-spin" size={24} strokeWidth={1.5} /> <VoiceglotText  translationKey="common.processing" defaultText="Verwerken..." /></>
           ) : state.isQuoteRequest ? (
-            <><VoiceglotText  translationKey="checkout.cta.quote" defaultText="Preview offerte e-mail" /> <Image  src="/assets/common/branding/icons/FORWARD.svg" width={20} height={20} alt="" className="brightness-0 invert group-hover:translate-x-1 transition-transform" /></>
+            <><VoiceglotText  translationKey="checkout.cta.quote" defaultText="Preview offerte e-mail" /> <ArrowRight size={20} strokeWidth={1.5} className="group-hover:translate-x-1 transition-transform" /></>
           ) : state.paymentMethod === 'banktransfer' ? (
             <>
               <Lock size={20} strokeWidth={1.5} className="text-white/40" />
               <TextInstrument className="font-bold tracking-widest text-[13px]">
                 <VoiceglotText translationKey="checkout.cta.banktransfer" defaultText="Bestelling plaatsen" />
               </TextInstrument>
-              <Image  src="/assets/common/branding/icons/FORWARD.svg" width={20} height={20} alt="" className="brightness-0 invert group-hover:translate-x-1 transition-transform" />
+              <ArrowRight size={20} strokeWidth={1.5} className="group-hover:translate-x-1 transition-transform" />
             </>
           ) : (
             <>
@@ -815,7 +815,7 @@ const CTASection: React.FC<any> = ({ handleSubmit, setIsPreviewOpen, setIsTermsO
               <TextInstrument className="font-bold tracking-widest text-[13px]">
                 <VoiceglotText translationKey="checkout.cta.place_order" defaultText="Bestelling plaatsen" />
               </TextInstrument>
-              <Image  src="/assets/common/branding/icons/FORWARD.svg" width={20} height={20} alt="" className="brightness-0 invert group-hover:translate-x-1 transition-transform" />
+              <ArrowRight size={20} strokeWidth={1.5} className="group-hover:translate-x-1 transition-transform" />
             </>
           )}
         </ButtonInstrument>

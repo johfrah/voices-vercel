@@ -119,7 +119,7 @@ function getCleanedLang(raw: string, country: string, extra: string): string {
   const c = (country || '').toLowerCase().trim();
   const e = (extra || '').toLowerCase().trim();
   
-  const { MarketManagerServer: MarketManager } = require('@/lib/system/market-manager-server');
+  const { MarketManagerServer: MarketManager } = require('@/lib/system/core/market-manager');
   
   const iso = MarketManager.getLanguageCode(l);
   if (iso && iso !== l) return MarketManager.getLanguageLabel(iso);

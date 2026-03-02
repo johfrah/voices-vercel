@@ -36,7 +36,7 @@ export async function POST(request: Request) {
     }).returning();
 
     // 2. Initialiseer Mollie betaling
-    const { MarketManagerServer: MarketManager } = require('@/lib/system/market-manager-server');
+    const { MarketManagerServer: MarketManager } = require('@/lib/system/core/market-manager');
     const host = request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || MarketManager.getCurrentMarket().market_code.toLowerCase() + '.be');
     const protocol = host.includes('localhost') ? 'http' : 'https';
     

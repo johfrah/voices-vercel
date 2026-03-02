@@ -24,7 +24,7 @@ export async function GET() {
   }
 
   try {
-    const { MarketManagerServer: MarketManager } = await import('@/lib/system/market-manager-server');
+    const { MarketManagerServer: MarketManager } = await import('@/lib/system/core/market-manager');
     const host = process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || MarketManager.getMarketDomains()['BE']?.replace('https://', '');
     const market = MarketManager.getCurrentMarket(host);
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || process.env.NEXT_PUBLIC_SITE_URL || MarketManager.getMarketDomains()['BE'] || `https://${host || (MarketManager.getMarketDomains()['BE']?.replace('https://', '') || 'www.voices.be')}`;

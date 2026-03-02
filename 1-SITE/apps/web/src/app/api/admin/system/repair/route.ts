@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
   const auth = await requireAdmin();
   if (auth instanceof NextResponse) {
     // Als niet ingelogd, redirect naar login met return URL
-    const { MarketManagerServer: MarketManager } = require('@/lib/system/market-manager-server');
+    const { MarketManagerServer: MarketManager } = require('@/lib/system/core/market-manager');
     const host = request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || MarketManager.getMarketDomains()['BE']?.replace('https://', ''));
     const market = MarketManager.getCurrentMarket(host);
     const siteUrl = MarketManager.getMarketDomains()[market.market_code] || `https://${MarketManager.getMarketDomains()['BE']?.replace('https://', '') || 'www.voices.be'}`;

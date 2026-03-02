@@ -13,6 +13,13 @@ import { createClient } from '@supabase/supabase-js';
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
+export interface WorkshopApiResponse {
+  workshops: any[];
+  instructors: any[];
+  faqs: any[];
+  _meta?: any;
+}
+
 export async function GET() {
   try {
     const data = await getStudioWorkshopsData();

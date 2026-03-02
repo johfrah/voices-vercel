@@ -1,4 +1,4 @@
-import { OpenAIService } from '@/lib/services/openai-service';
+import { GeminiService } from '@/lib/services/gemini-service';
 import { MarketManagerServer } from "@/lib/system/core/market-manager";
 import { MarketDatabaseService } from '@/lib/system/market-manager-db';
 import { db } from '@/lib/system/voices-config';

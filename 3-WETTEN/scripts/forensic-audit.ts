@@ -102,6 +102,12 @@ const FORBIDDEN_PATTERNS = [
       // Alleen waarschuwen als er geen duidelijke null-check voorafgaat
       return !match.includes('?.') && !match.includes('if (') && !match.includes('&&');
     }
+  },
+  {
+    regex: /console\.log|console\.error|console\.warn/g,
+    message: 'Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.',
+    type: 'warning' as const,
+    exclude: [/server-watchdog\.ts/, /forensic-audit\.ts/, /middleware\.ts/, /page\.tsx/]
   }
 ];
 

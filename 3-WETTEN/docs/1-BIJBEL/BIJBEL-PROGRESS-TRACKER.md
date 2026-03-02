@@ -74,7 +74,7 @@
 - [x] ... (overige 13 punten)
 
 ## 💼 FASE 4: COMMAND CENTER (20/20) ✅
-- [x] **Admin UI Cockpit**: Bento-grid dashboard voor de Founder.
+- [x] **Admin UI Dashboard**: Bento-grid dashboard voor de Founder.
 - [x] **Master Spotlight**: CMD+K zoek-interface live.
 - [x] **Revenue Pulse**: Real-time financiële visualisatie.
 - [x] **Intelligence Radar**: Systeem-status monitor.

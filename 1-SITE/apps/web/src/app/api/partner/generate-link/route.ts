@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
         // In een echte scenario zouden we hier vervaldatum en partner ID opslaan
       });
 
-      const { MarketManagerServer: MarketManager } = await import('@/lib/system/market-manager-server');
+      const { MarketManagerServer: MarketManager } = await import('@/lib/system/core/market-manager');
       const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || MarketManager.getMarketDomains()['BE'] || `https://${MarketManager.getMarketDomains()['BE']?.replace('https://', '') || 'www.voices.be'}`;
       const generatedLink = `${baseUrl}/checkout?partner_code=${code}&email=${encodeURIComponent(email)}`;
 

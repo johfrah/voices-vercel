@@ -1,6 +1,6 @@
 # 📊 Voices Backend Inventory (2026)
 
-Dit document biedt een overzicht van alle backend-pagina's binnen de **Voices Cockpit**, hun status in het Spotlight Dock (CMD+K), en de ontbrekende schakels voor een volledige live-gang.
+Dit document biedt een overzicht van alle backend-pagina's binnen het **Voices Dashboard**, hun status in het Spotlight Dock (CMD+K), en de ontbrekende schakels voor een volledige live-gang.
 
 ---
 
@@ -10,7 +10,7 @@ Deze pagina's zijn direct bereikbaar via de `SpotlightDashboard` component.
 
 ### 🏛️ Core & Operations
 - **Command Center** (`/admin/dashboard`): Het centrale zenuwcentrum.
-- **Workshop Cockpit** (`/admin/studio/workshops`): Beheer van workshop-edities.
+- **Workshop Dashboard** (`/admin/studio/workshops`): Beheer van workshop-edities.
 - **Datamatch Monitor** (`/admin/datamatch`): Real-time data-integriteit check.
 - **Voicy Chat** (`/admin/chat`): Directe interactie met de AI-assistent.
 - **Analytics Hub** (`/admin/analytics`): Globale platform statistieken.
@@ -35,7 +35,7 @@ Deze pagina's zijn direct bereikbaar via de `SpotlightDashboard` component.
 - **Product Catalogus** (`/admin/catalog`): Overzicht van alle audio-diensten.
 - **Demo Beheer** (`/admin/demos`): Uploaden en taggen van stemdemo's.
 - **Vakanties** (`/admin/vacations`): Globale en individuele afwezigheden.
-- **Artist Cockpit** (`/admin/artists`): Specifieke tools voor artiesten.
+- **Artist Dashboard** (`/admin/artists`): Specifieke tools voor artiesten.
 
 ### 🎨 Studio & Academy
 - **Workshop Manager** (`/admin/workshops`): Algemeen workshop beheer.

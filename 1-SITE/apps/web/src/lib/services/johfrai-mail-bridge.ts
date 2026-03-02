@@ -41,7 +41,7 @@ export async function sendJohfraiAudio(to: string, audioPath: string, text: stri
 
   // Fallback voor bijlage (tot sendVoicesMail attachments ondersteunt)
   const mailService = DirectMailService.getInstance();
-  const { MarketManagerServer: MarketManager } = require('@/lib/system/market-manager-server');
+  const { MarketManagerServer: MarketManager } = require('@/lib/system/core/market-manager');
   const market = MarketManager.getCurrentMarket(host);
 
   // We hergebruiken de wrapper logica maar nu direct via mailService om attachments mee te sturen

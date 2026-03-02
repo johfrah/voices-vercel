@@ -19,7 +19,6 @@ import { FlagAR, FlagBE, FlagBR, FlagCN, FlagDE, FlagDK, FlagES, FlagFI, FlagFR,
 import { ContainerInstrument, TextInstrument, ButtonInstrument } from './LayoutInstruments';
 import { ContainerInstrumentServer, TextInstrumentServer } from './LayoutInstrumentsServer';
 import { OrderStepsInstrument } from './OrderStepsInstrument';
-import { VoiceglotImage } from './VoiceglotImage';
 import { VoiceglotText } from './VoiceglotText';
 import { VoicesDropdown } from './VoicesDropdown';
 import { VoicesWordSlider } from './VoicesWordSlider';
@@ -1006,7 +1005,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
               }}
               className="absolute right-0 text-[11px] font-bold tracking-widest text-primary uppercase hover:opacity-70 transition-opacity flex items-center gap-2 bg-transparent border-none"
             >
-              <VoiceglotImage src="/assets/common/branding/icons/BACK.svg" width={10} height={10} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
+              <ArrowLeft size={10} strokeWidth={2} />
               <VoiceglotText translationKey="action.back_to_casting" defaultText="Terug naar Casting" />
             </ButtonInstrument>
           )}
@@ -1024,7 +1023,7 @@ const Chip = ({ label, onRemove }: { label: string, onRemove: () => void }) => {
         {t(`language.${String(label || '').toLowerCase()}`, String(label || ''))}
       </TextInstrument>
       <ButtonInstrument onClick={onRemove} aria-label={t('action.remove', 'Verwijder')} className="hover:text-primary transition-colors p-0.5 bg-transparent border-none">
-        <VoiceglotImage src="/assets/common/branding/icons/BACK.svg" width={10} height={10} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.4 }} />
+        <X size={10} strokeWidth={2} className="opacity-40" />
       </ButtonInstrument>
     </ContainerInstrument>
   );

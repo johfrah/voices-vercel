@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { useVoicesState } from '@/contexts/VoicesStateContext';
-import { Phone, Video, Megaphone, Search as SearchIcon, ChevronDown, Filter, ArrowRight } from 'lucide-react';
+import { Phone, Video, Megaphone, Search as SearchIcon, ChevronDown, Filter, ArrowRight, X, Globe, User } from 'lucide-react';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { cn } from '@/lib/utils';
@@ -117,14 +117,8 @@ export const FilterBar: React.FC<FilterBarProps> = ({ filters, params: combinedP
 
           {/* Language */}
           <ContainerInstrument plain className="w-full md:w-48 relative group/select">
-            <ContainerInstrument className="absolute left-5 top-1/2 -translate-y-1/2 pointer-events-none z-10">
-              <VoiceglotImage  
-                src="/assets/common/branding/icons/INFO.svg" 
-                alt="" 
-                width={14} 
-                height={14} 
-                style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.4 }}
-              />
+            <ContainerInstrument className="absolute left-5 top-1/2 -translate-y-1/2 pointer-events-none z-10 text-primary/40">
+              <Globe size={14} strokeWidth={1.5} />
             </ContainerInstrument>
             <SelectInstrument 
               className="w-full bg-white border-none rounded-[22px] py-4 pl-12 pr-10 text-[14px] font-light tracking-widest focus:ring-2 focus:ring-primary/10 transition-all cursor-pointer appearance-none shadow-sm"
@@ -141,14 +135,8 @@ export const FilterBar: React.FC<FilterBarProps> = ({ filters, params: combinedP
 
           {/* Gender */}
           <ContainerInstrument plain className="hidden md:block w-40 relative group/select">
-            <ContainerInstrument className="absolute left-5 top-1/2 -translate-y-1/2 pointer-events-none z-10">
-              <VoiceglotImage  
-                src="/assets/common/branding/icons/INFO.svg" 
-                alt="" 
-                width={14} 
-                height={14} 
-                style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.4 }}
-              />
+            <ContainerInstrument className="absolute left-5 top-1/2 -translate-y-1/2 pointer-events-none z-10 text-primary/40">
+              <User size={14} strokeWidth={1.5} />
             </ContainerInstrument>
             <SelectInstrument 
               className="w-full bg-white border-none rounded-[22px] py-4 pl-12 pr-10 text-[14px] font-light tracking-widest focus:ring-2 focus:ring-primary/10 transition-all cursor-pointer appearance-none shadow-sm"
@@ -215,7 +203,7 @@ const Chip = ({ label, onRemove }: { label: string, onRemove: () => void }) => {
     <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-black/5 rounded-[20px] text-[15px] font-light tracking-widest shadow-sm">
       <TextInstrument>{label}</TextInstrument>
       <ButtonInstrument onClick={() => { onRemove(); }} className="hover:text-primary transition-colors">
-        <Image  src="/assets/common/branding/icons/BACK.svg" width={12} height={12} alt={t('action.remove', "Remove")} style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.4 }} />
+        <X size={14} strokeWidth={1.5} className="opacity-40" />
       </ButtonInstrument>
     </ContainerInstrument>
   );

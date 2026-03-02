@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
   try {
     const { path, context, host: requestHost } = await request.json();
     
-    const { MarketManagerServer: MarketManager } = await import('@/lib/system/market-manager-server');
+    const { MarketManagerServer: MarketManager } = await import('@/lib/system/core/market-manager');
     const host = requestHost || request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || MarketManager.getCurrentMarket().market_code.toLowerCase() + '.be');
     await SelfHealingService.reportBrokenAsset(path, context, host);
     

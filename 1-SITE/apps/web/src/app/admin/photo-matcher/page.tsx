@@ -410,7 +410,8 @@ export default function PhotoMatcherPage() {
 
   const scanPage = async () => {
     if (scanning) return;
-    const itemsToScan = paginatedItems.filter(item => !item.analysis);
+    const unprocessedItems = manifest.filter(i => !i.processed);
+    const itemsToScan = unprocessedItems.filter(item => !item.analysis);
     if (itemsToScan.length === 0) return;
     setScanning(true);
     setScanProgress(0);
@@ -422,6 +423,48 @@ export default function PhotoMatcherPage() {
     }
     setScanning(false);
   };
+
+  const handleAction = useCallback(async (action: 'match' | 'ignore' | 'archive', photoPath: string, actorId?: string, category?: string) => {
+    // Voeg toe aan undo stack (max 5)
+    setUndoStack(prev => [...prev.slice(-4), { path: photoPath, action }]);
+
+    // Optimistic UI: Markeer direct als verwerkt
+    setManifest(prev => prev.map(item => item.path === photoPath ? { ...item, processed: true } : item));
+    
+    try {
+      if (action === 'match') {
+        await fetch('/api/admin/photo-matcher/match', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ photoPath, actorId, category })
+        });
+      }
+
+      if (action === 'archive') {
+        await fetch('/api/admin/photo-matcher/archive', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ photoPath })
+        });
+      }
+    } catch (err) {
+      console.error('Background action failed:', err);
+    }
+  }, []);
+
+  const handleUndo = useCallback(() => {
+    if (undoStack.length === 0) return;
+
+    const lastAction = undoStack[undoStack.length - 1];
+    setUndoStack(prev => prev.slice(0, -1));
+
+    // Markeer weer als onverwerkt in de lokale state
+    setManifest(prev => prev.map(item => 
+      item.path === lastAction.path ? { ...item, processed: false } : item
+    ));
+
+    console.log(' Undo performed for:', lastAction.path);
+  }, [undoStack]);
 
   //  Keyboard Speed Workflow
   useEffect(() => {
@@ -452,48 +495,6 @@ export default function PhotoMatcherPage() {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [currentItem, handleAction, handleUndo]);
-
-  const handleUndo = useCallback(() => {
-    if (undoStack.length === 0) return;
-
-    const lastAction = undoStack[undoStack.length - 1];
-    setUndoStack(prev => prev.slice(0, -1));
-
-    // Markeer weer als onverwerkt in de lokale state
-    setManifest(prev => prev.map(item => 
-      item.path === lastAction.path ? { ...item, processed: false } : item
-    ));
-
-    console.log(' Undo performed for:', lastAction.path);
-  }, [undoStack]);
-
-  const handleAction = useCallback(async (action: 'match' | 'ignore' | 'archive', photoPath: string, actorId?: string, category?: string) => {
-    // Voeg toe aan undo stack (max 5)
-    setUndoStack(prev => [...prev.slice(-4), { path: photoPath, action }]);
-
-    // Optimistic UI: Markeer direct als verwerkt
-    setManifest(prev => prev.map(item => item.path === photoPath ? { ...item, processed: true } : item));
-    
-    try {
-      if (action === 'match') {
-        fetch('/api/admin/photo-matcher/match', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ photoPath, actorId, category })
-        });
-      }
-
-      if (action === 'archive') {
-        fetch('/api/admin/photo-matcher/archive', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ photoPath })
-        });
-      }
-    } catch (err) {
-      console.error('Background action failed:', err);
-    }
-  }, []);
 
   if (loading) return (
     <ContainerInstrument className="p-10 text-center">

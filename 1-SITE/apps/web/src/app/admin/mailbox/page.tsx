@@ -6,7 +6,14 @@ import {
   Brain, 
   MessageSquareQuote, 
   X, 
-  Download 
+  Download,
+  ArrowLeft,
+  Plus,
+  ArrowRight,
+  Search,
+  Info,
+  BarChart3,
+  HelpCircle
 } from 'lucide-react';
 import { EmailComposerInstrument } from '@/components/mailbox/EmailComposerInstrument';
 import { EmailListItemInstrument } from '@/components/mailbox/EmailListItemInstrument';
@@ -357,7 +364,7 @@ export default function MailboxPage() {
           <ContainerInstrument className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-4 flex-shrink-0">
           <ContainerInstrument className="space-y-4">
             <ButtonInstrument onClick={() => router.push('/admin/dashboard')} className="flex items-center gap-2 text-[15px] font-light tracking-widest text-va-black/40 hover:text-primary transition-colors">
-              <Image  src="/assets/common/branding/icons/BACK.svg" width={14} height={14} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.4 }} />
+              <ArrowLeft size={14} strokeWidth={1.5} className="opacity-40" />
               <VoiceglotText  translationKey="common.back" defaultText="Terug" />
             </ButtonInstrument>
             <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter text-va-black">
@@ -391,25 +398,25 @@ export default function MailboxPage() {
                 disabled={isSyncing}
                 className="bg-va-black text-white px-6 py-3 rounded-[10px] text-[15px] font-light tracking-widest flex items-center gap-2 transition-all disabled:opacity-50"
               >
-                <Image  src="/assets/common/branding/icons/INFO.svg" width={14} height={14} alt="" className={isSyncing ? 'animate-pulse brightness-0 invert' : 'brightness-0 invert'} />
+                <Brain size={14} strokeWidth={1.5} className={isSyncing ? 'animate-pulse' : ''} />
                 <VoiceglotText  translationKey="mailbox.ai_sync" defaultText={isSyncing ? "Syncing..." : "Start AI brain sync"} />
               </ButtonInstrument>
               <ButtonInstrument onClick={handleCompose} className="bg-white text-va-black border border-black/5 px-6 py-3 rounded-[10px] text-[15px] font-light tracking-widest flex items-center gap-2 transition-all">
-                <Image  src="/assets/common/branding/icons/INFO.svg" width={14} height={14} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
+                <Plus size={14} strokeWidth={1.5} />
                 <VoiceglotText  translationKey="mailbox.compose" defaultText="Nieuw bericht" />
               </ButtonInstrument>
               <ButtonInstrument 
                 onClick={() => setSortByValue(!sortByValue)}
                 className={`p-3 rounded-[10px] border transition-all ${sortByValue ? 'bg-va-black text-white border-va-black' : 'bg-va-off-white border-black/5 text-va-black/40'}`}
-                title="Sorteer op commercile waarde"
+                title="Sorteer op commerciële waarde"
               >
-                <Image  src="/assets/common/branding/icons/INFO.svg" width={16} height={16} alt="" className={sortByValue ? 'brightness-0 invert' : ''} style={!sortByValue ? { filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.4 } : {}} />
+                <TrendingUp size={16} strokeWidth={1.5} />
               </ButtonInstrument>
               <ButtonInstrument onClick={() => {
                 logAction('mailbox_refresh');
                 refreshInbox();
               }} disabled={isRefreshing} className={`p-3 rounded-[10px] bg-va-off-white border border-black/5 transition-all ${isRefreshing ? 'opacity-50 cursor-not-allowed' : ''}`} title="Synchroniseren">
-                <Image  src="/assets/common/branding/icons/INFO.svg" width={16} height={16} alt="" className={isRefreshing ? 'animate-spin' : ''} style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.4 }} />
+                <RefreshCw strokeWidth={1.5} size={16} className={isRefreshing ? 'animate-spin opacity-40' : 'opacity-40'} />
               </ButtonInstrument>
             </ContainerInstrument>
           </ContainerInstrument>
@@ -431,7 +438,7 @@ export default function MailboxPage() {
                 </ContainerInstrument>
 
                 <ContainerInstrument className="relative mb-4">
-                  <Image  src="/assets/common/branding/icons/SEARCH.svg" width={16} height={16} alt="" className="absolute left-4 top-1/2 -translate-y-1/2 opacity-20" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
+                  <Search size={16} strokeWidth={1.5} className="absolute left-4 top-1/2 -translate-y-1/2 opacity-20 text-va-black" />
                   <InputInstrument 
                     type="text" 
                     placeholder="Zoek..." 
@@ -482,8 +489,8 @@ export default function MailboxPage() {
                   </HeadingInstrument>
                 <ContainerInstrument className="space-y-1.5">
                   {[
-                    { name: 'Trends & SWOT', id: 'insights', icon: <Image  src="/assets/common/branding/icons/INFO.svg" width={16} height={16} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.4 }} /> },
-                    { name: 'FAQ proposals', id: 'faq', icon: <Image  src="/assets/common/branding/icons/INFO.svg" width={16} height={16} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.4 }} /> },
+                    { name: 'Trends & SWOT', id: 'insights', icon: <BarChart3 size={16} strokeWidth={1.5} className="opacity-40" /> },
+                    { name: 'FAQ proposals', id: 'faq', icon: <HelpCircle size={16} strokeWidth={1.5} className="opacity-40" /> },
                   ].map((tag) => (
                     <ButtonInstrument key={tag.id} onClick={() => { 
                       if (tag.id === 'insights' || tag.id === 'faq') { 
@@ -708,7 +715,7 @@ export default function MailboxPage() {
       <FixedActionDockInstrument>
         <ContainerInstrument plain className="flex items-center gap-4">
           <ButtonInstrument onClick={handleCompose} className="va-btn-pro !bg-va-black flex items-center gap-2">
-            <Image src="/assets/common/branding/icons/INFO.svg" width={14} height={14} alt="" className="brightness-0 invert" />
+            <Plus size={14} strokeWidth={1.5} />
             <VoiceglotText translationKey="mailbox.compose" defaultText="Nieuw bericht" />
           </ButtonInstrument>
           <ButtonInstrument onClick={() => {

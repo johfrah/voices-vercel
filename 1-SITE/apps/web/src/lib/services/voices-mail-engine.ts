@@ -95,7 +95,7 @@ export class VoicesMailEngine {
     const marketName = options.marketName || 'Voices';
     
     // 🛡️ CHRIS-PROTOCOL: Fetch market config for logo and branding
-    const { MarketManagerServer: MarketManager } = require('../system/market-manager-server');
+    const { MarketManagerServer: MarketManager } = require('../system/core/market-manager');
     const market = MarketManager.getCurrentMarket(options.host);
     const domains = MarketManager.getMarketDomains();
     const canonicalHost = domains[market.market_code]?.replace('https://', '') || 'www.voices.be';
@@ -142,7 +142,7 @@ export class VoicesMailEngine {
    * Specifieke helper voor de Magic Link (meertalig)
    */
   public async sendMagicLink(email: string, link: string, lang: string = 'nl-BE', host?: string) {
-    const { MarketManagerServer: MarketManager } = require('../system/market-manager-server');
+    const { MarketManagerServer: MarketManager } = require('../system/core/market-manager');
     const market = MarketManager.getCurrentMarket(host);
     const marketName = market.name || 'Voices';
 

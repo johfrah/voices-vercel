@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Order not found' }, { status: 404 });
     }
 
-    const { MarketManagerServer: MarketManager } = require('@/lib/system/market-manager-server');
+    const { MarketManagerServer: MarketManager } = require('@/lib/system/core/market-manager');
     const host = request.headers.get('host') || MarketManager.getMarketDomains()['BE']?.replace('https://', '');
     const market = MarketManager.getCurrentMarket(host);
     const domains = MarketManager.getMarketDomains();

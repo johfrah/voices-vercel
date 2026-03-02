@@ -4,7 +4,7 @@ import { useTranslation } from '@/contexts/TranslationContext';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useCheckout } from '@/contexts/CheckoutContext';
 import { SlimmeKassa } from '@/lib/engines/pricing-engine';
-import { Loader2, Trash2, X } from 'lucide-react';
+import { ArrowRight, Loader2, ShoppingCart, Trash2, X } from 'lucide-react';
 import Image from 'next/image';
 import { VoicesLink as Link } from '@/components/ui/VoicesLink';
 import React, { useEffect, useState } from 'react';
@@ -39,13 +39,7 @@ export const CartDrawer: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
           <div className="px-8 py-8 border-b border-black/5 flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="w-10 h-10 bg-va-black rounded-xl flex items-center justify-center text-white">
-                <Image  
-                  src="/assets/common/branding/icons/CART.svg" 
-                  alt={t('common.cart', "Cart")} 
-                  width={20} 
-                  height={20} 
-                  className="brightness-0 invert"
-                />
+                <ShoppingCart size={20} strokeWidth={1.5} />
               </div>
       <h2 className="text-xl font-light tracking-tighter">
                 <VoiceglotText 
@@ -95,14 +89,7 @@ export const CartDrawer: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
               </div>
             ) : (
               <div className="h-full flex flex-col items-center justify-center text-va-black/20 gap-4">
-                <Image  
-                  src="/assets/common/branding/icons/CART.svg" 
-                  alt={t('nav.cart_empty_alt', "Empty Cart")} 
-                  width={48} 
-                  height={48} 
-                  className="opacity-10"
-                  style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }}
-                />
+                <ShoppingCart size={48} strokeWidth={1} className="opacity-10" />
                 <span className="text-[15px] font-black tracking-widest"><VoiceglotText  translationKey="auto.cartdrawer.je_mandje_is_leeg.559931" defaultText="Je mandje is leeg" /></span>
               </div>
             )}
@@ -132,13 +119,7 @@ export const CartDrawer: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
                 className="va-btn-pro w-full flex items-center justify-center gap-3 group !bg-va-black"
               >
                 <VoiceglotText translationKey="nav.cart.checkout" defaultText="Doorgaan naar Kassa" /> 
-                <Image  
-                  src="/assets/common/branding/icons/FORWARD.svg" 
-                  alt={t('common.forward', "Forward")} 
-                  width={18} 
-                  height={18} 
-                  className="brightness-0 invert group-hover:translate-x-1 transition-transform"
-                />
+                <ArrowRight size={18} strokeWidth={1.5} className="group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
           )}

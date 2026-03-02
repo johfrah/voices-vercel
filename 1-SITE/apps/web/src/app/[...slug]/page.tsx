@@ -1,4 +1,4 @@
-import { ContainerInstrument, HeadingInstrument, PageWrapperInstrument, TextInstrument, LoadingScreenInstrument, ButtonInstrument } from '@/components/ui/LayoutInstruments';
+import { ContainerInstrument, HeadingInstrument, PageWrapperInstrument, TextInstrument, LoadingScreenInstrument, ButtonInstrument, SectionInstrument } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { VoicesLink } from '@/components/ui/VoicesLink';
 import { db, contentArticles, actors, castingLists, getTable } from '@/lib/system/voices-config';
@@ -937,39 +937,41 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
         return redirect('/agency');
       }
 
-      // 🎭 JOHFRAI WORLD: AI Mixer Entry (v2.16.101)
-      if (lookupSlug === 'johfrai') {
-        const LiveMixer = nextDynamic(() => import("@/components/johfrai/LiveMixerInstrument").then(mod => mod.LiveMixerInstrument), { ssr: false });
-        const SmartDemoExplorer = nextDynamic(() => import("@/components/johfrai/SmartDemoExplorer").then(mod => mod.SmartDemoExplorer), { ssr: false });
-        
-        return (
-          <PageWrapperInstrument className="bg-va-black min-h-screen text-white">
-            <ContainerInstrument className="max-w-7xl mx-auto px-6 py-32 space-y-32">
-              <header className="text-center space-y-8">
-                <ContainerInstrument className="inline-block bg-primary/20 text-primary text-[13px] font-bold px-4 py-1.5 rounded-full tracking-[0.2em] uppercase border border-primary/20">
-                  Johfrai AI World
-                </ContainerInstrument>
-                <HeadingInstrument level={1} className="text-7xl md:text-9xl font-light tracking-tighter leading-none text-white">
-                  The Future of <span className="text-primary italic">Voice</span>
-                </HeadingInstrument>
-              </header>
-              
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-                <div className="lg:col-span-8">
-                  <Suspense fallback={<div className="h-[600px] bg-white/5 animate-pulse rounded-[40px]" />}>
-                    <LiveMixer />
-                  </Suspense>
+      {/* 🎭 JOHFRAI WORLD: AI Mixer Entry (v2.16.101) */}
+      {lookupSlug === 'johfrai' && (
+        (() => {
+          const LiveMixer = nextDynamic(() => import("@/components/johfrai/LiveMixerInstrument").then(mod => mod.LiveMixerInstrument), { ssr: false });
+          const SmartDemoExplorer = nextDynamic(() => import("@/components/johfrai/SmartDemoExplorer").then(mod => mod.SmartDemoExplorer), { ssr: false });
+          
+          return (
+            <PageWrapperInstrument className="bg-va-black min-h-screen text-white">
+              <ContainerInstrument className="max-w-7xl mx-auto px-6 py-32 space-y-32">
+                <header className="text-center space-y-8">
+                  <ContainerInstrument className="inline-block bg-primary/20 text-primary text-[13px] font-bold px-4 py-1.5 rounded-full tracking-[0.2em] uppercase border border-primary/20">
+                    Johfrai AI World
+                  </ContainerInstrument>
+                  <HeadingInstrument level={1} className="text-7xl md:text-9xl font-light tracking-tighter leading-none text-white">
+                    The Future of <span className="text-primary italic">Voice</span>
+                  </HeadingInstrument>
+                </header>
+                
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+                  <div className="lg:col-span-8">
+                    <Suspense fallback={<div className="h-[600px] bg-white/5 animate-pulse rounded-[40px]" />}>
+                      <LiveMixer title="Johfrai AI" voiceUrl="/assets/audio/johfrai-demo.mp3" />
+                    </Suspense>
+                  </div>
+                  <div className="lg:col-span-4">
+                    <Suspense fallback={<div className="h-[600px] bg-white/5 animate-pulse rounded-[40px]" />}>
+                      <SmartDemoExplorer onAdoptScript={() => {}} />
+                    </Suspense>
+                  </div>
                 </div>
-                <div className="lg:col-span-4">
-                  <Suspense fallback={<div className="h-[600px] bg-white/5 animate-pulse rounded-[40px]" />}>
-                    <SmartDemoExplorer />
-                  </Suspense>
-                </div>
-              </div>
-            </ContainerInstrument>
-          </PageWrapperInstrument>
-        );
-      }
+              </ContainerInstrument>
+            </PageWrapperInstrument>
+          );
+        })()
+      )}
     }
 
     // 🛡️ CHRIS-PROTOCOL: Registry-First Mandate (v2.15.034)
@@ -1448,8 +1450,8 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
                 <BentoCard span="lg" className="bg-va-off-white rounded-[20px] shadow-aura border border-black/[0.02] overflow-hidden">
                   <ContainerInstrument className="p-12">
                     <ContainerInstrument className="flex items-center gap-4 mb-8">
-                      <ContainerInstrument className="w-12 h-12 rounded-[10px] bg-primary/10 flex items-center justify-center">
-                        <Image src="/assets/common/branding/icons/INFO.svg" width={24} height={24} alt="" style={{ opacity: 0.4 }} />
+                      <ContainerInstrument className="w-12 h-12 rounded-[10px] bg-primary/10 flex items-center justify-center text-primary">
+                        <Info size={24} strokeWidth={1.5} />
                       </ContainerInstrument>
                       <ContainerInstrument>
                         <HeadingInstrument level={2} className="text-3xl font-light tracking-tighter leading-none text-va-black">

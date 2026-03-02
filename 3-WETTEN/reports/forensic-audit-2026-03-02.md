@@ -1,48 +1,68 @@
-# 🛡️ Forensic Audit Report (3/2/2026, 9:59:01 AM)
+# 🛡️ Forensic Audit Report (3/2/2026, 10:32:38 AM)
 
 ## Summary
 - **Status**: ❌ FAILED
 - **Errors**: 2
-- **Warnings**: 3471
+- **Warnings**: 4604
 
 ## Detailed Issues
 - **WARNING** `1-SITE/apps/web/src/app/Providers.tsx:49`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `language: 'nl',`
-- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:737`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/app/Providers.tsx:46`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Providers] CRITICAL: market is undefined! Using emergency fallback.');`
+- **WARNING** `1-SITE/apps/web/src/app/Providers.tsx:183`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`🚀 [Voices] Nuclear Version: v${currentVersion} (Godmode Zero)`);`
+- **WARNING** `1-SITE/apps/web/src/app/Providers.tsx:185`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('Version:', currentVersion);`
+- **WARNING** `1-SITE/apps/web/src/app/Providers.tsx:186`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('World ID:', worldId);`
+- **WARNING** `1-SITE/apps/web/src/app/Providers.tsx:187`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('Language ID:', languageId);`
+- **WARNING** `1-SITE/apps/web/src/app/Providers.tsx:188`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('Market:', currentMarket.market_code, `(${currentMarket.name})`);`
+- **WARNING** `1-SITE/apps/web/src/app/Providers.tsx:189`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('Language:', activeLang);`
+- **WARNING** `1-SITE/apps/web/src/app/Providers.tsx:190`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('Pathname:', pathname);`
+- **WARNING** `1-SITE/apps/web/src/app/Providers.tsx:191`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('Host:', host);`
+- **WARNING** `1-SITE/apps/web/src/app/Providers.tsx:192`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `if (handshake?.worldConfig) console.log('World Config:', handshake.worldConfig);`
+- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:747`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="!pt-0 -mt-24 relative z-40">`
-- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:910`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:927`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="!pt-0 -mt-24 relative z-40">`
-- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:936`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:953`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `The Future of <span className="text-primary italic">Voice</span>`
-- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:940`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:957`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="grid grid-cols-1 lg:grid-cols-12 gap-12">`
-- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:941`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:958`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="lg:col-span-8">`
-- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:942`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:959`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<Suspense fallback={<div className="h-[600px] bg-white/5 animate-pulse rounded-[40px]" />}>`
-- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:946`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:963`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="lg:col-span-4">`
-- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:947`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:964`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<Suspense fallback={<div className="h-[600px] bg-white/5 animate-pulse rounded-[40px]" />}>`
-- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1038`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1055`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="!pt-0 -mt-24 relative z-40">`
-- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1367`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1391`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<Suspense fallback={<div className="w-full h-full bg-va-black/5 animate-pulse rounded-[32px]" />}>`
-- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1412`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1436`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<Suspense fallback={<div className="h-96 w-full bg-va-black/5 animate-pulse rounded-[20px]" />}>`
-- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1439`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1463`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<Suspense fallback={<div className="h-64 w-full bg-va-black/5 animate-pulse rounded-[20px]" />}>`
-- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1469`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1493`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<Suspense fallback={<div className="h-48 w-full bg-va-black/5 animate-pulse rounded-[20px]" />}>`
-- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1663`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1687`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<Suspense fallback={<div className="aspect-video w-full bg-va-black/20 animate-pulse" />}>`
-- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1741`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1765`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<Suspense fallback={<div className="h-96 w-full bg-va-black/5 animate-pulse rounded-[20px]" />}>`
-- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1135`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1152`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `translationKey={`common.language.${(item.actor.native_lang || item.actor.native_lang)?.toLowerCase() || 'nl'}`}`
-- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1136`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1153`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `defaultText={MarketManager.getLanguageLabel(item.actor.native_lang || item.actor.native_lang || 'nl')}`
-- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1651`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:1675`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `const currentLang = (page.iapContext as { lang?: string } | null)?.lang || 'nl';`
 - **WARNING** `1-SITE/apps/web/src/app/account/AccountDashboardClient.tsx:119`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="va-home-container">`
@@ -86,6 +106,24 @@
   > `<div>`
 - **WARNING** `1-SITE/apps/web/src/app/account/AccountDashboardClient.tsx:401`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="mt-6 px-3 py-1 bg-white rounded-lg border border-black/5 text-[10px] font-bold tracking-widest text-va-black/20 uppercase w-fit">`
+- **WARNING** `1-SITE/apps/web/src/app/account/AccountDashboardClient.tsx:81`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `.catch(err => console.error('DNA Fetch Error:', err));`
+- **WARNING** `1-SITE/apps/web/src/app/account/AccountDashboardClient.tsx:87`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `.catch(err => console.error('Notifications Fetch Error:', err));`
+- **WARNING** `1-SITE/apps/web/src/app/account/callback/route.ts:19`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Auth] Supabase niet geconfigureerd  kan sessie niet uitwisselen')`
+- **WARNING** `1-SITE/apps/web/src/app/account/callback/route.ts:25`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(' NUCLEAR AUTH: Session established via Magic Link.')`
+- **WARNING** `1-SITE/apps/web/src/app/account/callback/route.ts:39`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' NUCLEAR AUTH ERROR:', error.message)`
+- **WARNING** `1-SITE/apps/web/src/app/account/confirm/route.ts:17`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[Auth Confirm] Processing ${type} for token: ${token?.substring(0, 5)}...`)`
+- **WARNING** `1-SITE/apps/web/src/app/account/confirm/route.ts:22`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Auth Confirm] Supabase niet geconfigureerd')`
+- **WARNING** `1-SITE/apps/web/src/app/account/confirm/route.ts:33`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(' NUCLEAR AUTH: Session confirmed via verifyOtp.')`
+- **WARNING** `1-SITE/apps/web/src/app/account/confirm/route.ts:59`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' NUCLEAR AUTH ERROR:', error.message)`
 - **WARNING** `1-SITE/apps/web/src/app/account/favorites/page.tsx:23`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `loading: () => <div className="fixed inset-0 z-0 bg-va-off-white" />`
 - **WARNING** `1-SITE/apps/web/src/app/account/login/LoginPageClient.tsx:159`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -94,6 +132,12 @@
   > `<span className="text-[11px] font-bold tracking-widest uppercase opacity-40">`
 - **WARNING** `1-SITE/apps/web/src/app/account/login/LoginPageClient.tsx:238`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span className="text-lg font-light tracking-widest uppercase">`
+- **WARNING** `1-SITE/apps/web/src/app/account/login/LoginPageClient.tsx:75`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Magic login failed');`
+- **WARNING** `1-SITE/apps/web/src/app/account/login/LoginPageClient.tsx:116`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[LoginPage] API Error:', result);`
+- **WARNING** `1-SITE/apps/web/src/app/account/login/LoginPageClient.tsx:130`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[LoginPage] Custom auth failed:', err);`
 - **WARNING** `1-SITE/apps/web/src/app/account/orders/page.tsx:70`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="max-w-7xl mx-auto px-6 py-20 relative z-10">`
 - **WARNING** `1-SITE/apps/web/src/app/account/orders/page.tsx:114`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -716,6 +760,8 @@
   > `<div className="bg-va-off-white p-10 rounded-[20px] border border-black/5 flex flex-col justify-center">`
 - **WARNING** `1-SITE/apps/web/src/app/admin/finance/page.tsx:130`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="bg-va-off-white p-10 rounded-[20px] border border-black/5 flex flex-col justify-center">`
+- **WARNING** `1-SITE/apps/web/src/app/admin/finance/sync-button.tsx:23`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(error);`
 - **WARNING** `1-SITE/apps/web/src/app/admin/funnel/page.tsx:79`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="space-y-4">`
 - **WARNING** `1-SITE/apps/web/src/app/admin/funnel/page.tsx:81`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -796,6 +842,12 @@
   > `<div className="w-full h-2 bg-va-off-white rounded-full overflow-hidden">`
 - **WARNING** `1-SITE/apps/web/src/app/admin/insights/page.tsx:162`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div`
+- **WARNING** `1-SITE/apps/web/src/app/admin/johfrai-studio/JohfraiStudioPageContent.tsx:58`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Generatie fout:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/admin/johfrai-studio/JohfraiStudioPageContent.tsx:76`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('Sending audio to:', targetEmail);`
+- **WARNING** `1-SITE/apps/web/src/app/admin/johfrai-studio/JohfraiStudioPageContent.tsx:90`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Mail fout:', error);`
 - **WARNING** `1-SITE/apps/web/src/app/admin/johfrai-studio/page.tsx:5`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `loading: () => <div className="min-h-screen bg-va-off-white flex items-center justify-center">`
 - **WARNING** `1-SITE/apps/web/src/app/admin/johfrai-studio/page.tsx:6`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -1300,6 +1352,8 @@
   > `<div>`
 - **WARNING** `1-SITE/apps/web/src/app/admin/studio/instructors/InstructorFormClient.tsx:97`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div>`
+- **WARNING** `1-SITE/apps/web/src/app/admin/studio/instructors/InstructorFormClient.tsx:43`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error("Save failed", err);`
 - **WARNING** `1-SITE/apps/web/src/app/admin/studio/instructors/page.tsx:38`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div>`
 - **WARNING** `1-SITE/apps/web/src/app/admin/studio/instructors/page.tsx:44`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -1342,6 +1396,8 @@
   > `<div>`
 - **WARNING** `1-SITE/apps/web/src/app/admin/studio/locations/LocationFormClient.tsx:98`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div>`
+- **WARNING** `1-SITE/apps/web/src/app/admin/studio/locations/LocationFormClient.tsx:34`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error("Save failed", err);`
 - **WARNING** `1-SITE/apps/web/src/app/admin/studio/locations/page.tsx:37`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div>`
 - **WARNING** `1-SITE/apps/web/src/app/admin/studio/locations/page.tsx:43`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -1396,6 +1452,8 @@
   > `<div className="flex items-center gap-4 w-full lg:w-auto">`
 - **WARNING** `1-SITE/apps/web/src/app/admin/studio/orphans/OrphanManagerClient.tsx:132`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="text-center py-24 bg-va-off-white rounded-[30px] border-2 border-dashed border-black/5">`
+- **WARNING** `1-SITE/apps/web/src/app/admin/studio/orphans/OrphanManagerClient.tsx:51`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(err);`
 - **WARNING** `1-SITE/apps/web/src/app/admin/studio/orphans/page.tsx:31`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex items-center gap-4 mb-2">`
 - **WARNING** `1-SITE/apps/web/src/app/admin/studio/orphans/page.tsx:32`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -1432,6 +1490,8 @@
   > `<span className="text-[11px] font-black tracking-widest text-black/20 uppercase block">Totaal Kosten</span>`
 - **WARNING** `1-SITE/apps/web/src/app/admin/studio/workshops/[id]/CostsManagerClient.tsx:138`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span className="text-xl font-light">{totalCosts.toFixed(2)}</span>`
+- **WARNING** `1-SITE/apps/web/src/app/admin/studio/workshops/[id]/CostsManagerClient.tsx:54`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error("Save failed", err);`
 - **WARNING** `1-SITE/apps/web/src/app/admin/studio/workshops/[id]/MoveParticipantClient.tsx:43`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="relative">`
 - **WARNING** `1-SITE/apps/web/src/app/admin/studio/workshops/[id]/MoveParticipantClient.tsx:54`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -1448,6 +1508,8 @@
   > `<span className="font-bold">{e.workshop?.title}</span>`
 - **WARNING** `1-SITE/apps/web/src/app/admin/studio/workshops/[id]/MoveParticipantClient.tsx:66`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span className="text-black/40 text-[11px]">{new Date(e.date).toLocaleDateString('nl-BE', { day: 'numeric', month: 'long', year: 'numeric' })}</span>`
+- **WARNING** `1-SITE/apps/web/src/app/admin/studio/workshops/[id]/MoveParticipantClient.tsx:36`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error("Move failed", err);`
 - **WARNING** `1-SITE/apps/web/src/app/admin/studio/workshops/[id]/page.tsx:124`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span className="flex items-center gap-1"><Calendar size={14} className="text-black/20" /> {edition.date ? new Date(edition.date).toLocaleDateString('nl-BE', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Geen datum'}</span>`
 - **WARNING** `1-SITE/apps/web/src/app/admin/studio/workshops/[id]/page.tsx:125`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -1594,6 +1656,8 @@
   > `<div className="space-y-2">`
 - **WARNING** `1-SITE/apps/web/src/app/admin/studio/workshops/new/CreateEditionForm.tsx:69`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="space-y-2">`
+- **WARNING** `1-SITE/apps/web/src/app/admin/studio/workshops/new/CreateEditionForm.tsx:38`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(err);`
 - **WARNING** `1-SITE/apps/web/src/app/admin/studio/workshops/new/page.tsx:18`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<p className="text-black/40 mt-2">Plan een nieuwe workshop sessie in de studio.</p>`
 - **WARNING** `1-SITE/apps/web/src/app/admin/studio/workshops/page.tsx:79`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -1870,18 +1934,162 @@
   > `<span className="text-[11px] font-black uppercase tracking-widest">Wijzigingen Opslaan</span>`
 - **WARNING** `1-SITE/apps/web/src/app/admin/voices/page.tsx:15`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<p className="text-va-black/40 font-light tracking-widest uppercase text-sm">Initializing Voice Manager...</p>`
+- **WARNING** `1-SITE/apps/web/src/app/api/academy/glossary/route.ts:27`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Glossary API Error:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/academy/submit/route.ts:28`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Academy] Supabase URL or SERVICE_ROLE_KEY missing');`
+- **WARNING** `1-SITE/apps/web/src/app/api/academy/submit/route.ts:61`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn(' Academy Submit Drizzle user fetch failed, falling back to SDK');`
+- **WARNING** `1-SITE/apps/web/src/app/api/academy/submit/route.ts:75`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` Academy Submission: ${result.filePath} by user ${userId} (Synced to Dropbox)`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/academy/submit/route.ts:85`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' Core Academy Submission Error:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/account/preferences/route.ts:32`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(`[preferences] DB Select Error for ${user.email}:`, err);`
+- **WARNING** `1-SITE/apps/web/src/app/api/account/preferences/route.ts:47`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(`[preferences] DB Update Error for ${user.email}:`, err);`
+- **WARNING** `1-SITE/apps/web/src/app/api/account/preferences/route.ts:52`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Error updating preferences:', error);`
 - **WARNING** `1-SITE/apps/web/src/app/api/actors/route.ts:23`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `const lang = searchParams.get('lang') || 'nl';`
+- **WARNING** `1-SITE/apps/web/src/app/api/actors/route.ts:56`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn(' [ACTORS API] Timeout or error, using stale cache or fallback:', err.message);`
+- **WARNING** `1-SITE/apps/web/src/app/api/actors/route.ts:92`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' ACTORS API FAILURE:', error.message);`
+- **WARNING** `1-SITE/apps/web/src/app/api/actors/self-service/route.ts:34`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Actor Self-Service Error]:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/ademing/route.ts:67`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Ademing API Error]:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/academy/route.ts:57`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Academy API Error]:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/actor-statuses/route.ts:20`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' ADMIN ACTOR STATUSES FETCH FAILURE:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/actors/[id]/route.ts:29`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn(' [AdminActorAPI] Failed to parse request body');`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/actors/demos/[id]/route.ts:53`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' [SDK-DEMO-PATCH] Update failed:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/actors/demos/[id]/route.ts:63`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' [SDK-DEMO-PATCH] CRASH:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/actors/demos/[id]/route.ts:99`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' [SDK-DEMO-DELETE] Delete failed:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/actors/demos/[id]/route.ts:105`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' [SDK-DEMO-DELETE] CRASH:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/actors/demos/[id]/stream/route.ts:36`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(`[AudioStream] Demo not found: ${demoId}`, demoError);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/actors/demos/[id]/stream/route.ts:84`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[AudioStream Critical Error]:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/actors/reorder/route.ts:30`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` ADMIN: Reordering ${orders.length} actors`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/actors/reorder/route.ts:43`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Admin Actors Reorder Error]:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/actors/repair-photos/route.ts:28`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log("🚀 STARTING PHOTO REPAIR API");`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/actors/repair-photos/route.ts:100`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('PHOTO REPAIR ERROR:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/actors/route.ts:113`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' [Admin Actors API] FATAL:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/actors/tags/route.ts:42`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' ADMIN TAGS FETCH FAILURE:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/actors/upload/route.ts:87`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' [SDK-UPLOAD] CRASH:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/agents/route.ts:18`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Admin Agents GET Error]:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/agents/route.ts:56`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Admin Agents POST Error]:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/agents/route.ts:103`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Admin Agents PATCH Error]:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/agents/run/route.ts:34`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` Triggering Remote Concert for Agent: ${agent}`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/agents/run/route.ts:62`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('GitHub Dispatch Failed:', errorText);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/agents/run/route.ts:86`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` AGENT RUN: ${agent}`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/agents/run/route.ts:87`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`   Command: ${command}`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/agents/run/route.ts:88`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`   CWD: ${cwd}`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/agents/run/route.ts:94`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(` Agent ${agent} failed:`, error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/agents/run/route.ts:103`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` Agent ${agent} finished.`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/approvals/route.ts:19`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Admin Approvals GET Error]:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/approvals/route.ts:46`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Admin Approvals POST Error]:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/artists/inject/route.ts:65`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' ADMIN INJECTION FAILURE:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/casting/quick-link/route.ts:68`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Admin Quick Link Error]:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/cody/thoughts/route.ts:33`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Cody Thoughts Error]:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/config/market/route.ts:70`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Market Config POST Error]:', error);`
 - **WARNING** `1-SITE/apps/web/src/app/api/admin/config/route.ts:48`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `const lang = searchParams.get('lang') || 'nl';`
 - **WARNING** `1-SITE/apps/web/src/app/api/admin/config/route.ts:223`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `const lang = searchParams.get('lang') || 'nl';`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/config/route.ts:176`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn(`[Admin Config] Telephony fetch failed, returning empty: ${err.message}`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/config/route.ts:189`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn(`[Admin Config] General settings fetch failed, returning empty: ${err.message}`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/config/route.ts:228`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(`[Admin Config GET] Navigation fetch failed for ${journey}:`, navErr);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/config/route.ts:242`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Admin Config GET Error]:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/config/route.ts:262`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn('[Admin Config POST] Failed to parse JSON body:', jsonErr);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/config/route.ts:286`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Admin Config POST Error]:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/countries/route.ts:20`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' ADMIN COUNTRIES FETCH FAILURE:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/database/tables/route.ts:45`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Error fetching database tables:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/demos/route.ts:79`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' [Admin Demos API] FATAL:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/experience-levels/route.ts:20`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' ADMIN EXPERIENCE LEVELS FETCH FAILURE:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/funnel/route.ts:24`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn('Funnel events table might be empty or missing:', funnelError.message);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/funnel/route.ts:76`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Funnel API Error]:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/genders/route.ts:20`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' ADMIN GENDERS FETCH FAILURE:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/godmode/heals/route.ts:19`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' God Mode Dashboard Error:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/impersonate/route.ts:44`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[GhostMode] Admin ${adminUser.email} impersonating user ${targetUser.user.email}`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/insights/route.ts:88`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Insights API Error]:', error);`
 - **WARNING** `1-SITE/apps/web/src/app/api/admin/johfrai/mail/route.ts:38`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div style="background: #fcfaf7; padding: 20px; border-radius: 15px; border: 1px solid #eee; margin: 20px 0;">`
 - **WARNING** `1-SITE/apps/web/src/app/api/admin/johfrai/mail/route.ts:39`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; color: #ccc; margin-bottom: 8px;">Ingevoerde tekst</div>`
 - **WARNING** `1-SITE/apps/web/src/app/api/admin/johfrai/mail/route.ts:40`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div style="font-size: 15px; color: #1a1a1a; font-style: italic;">"${text}"</div>`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/johfrai/mail/route.ts:50`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' [Johfrai Mail] Error:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/languages/route.ts:31`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' ADMIN LANGUAGES FETCH FAILURE:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/marketing/live/route.ts:40`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' MAT RADAR API ERROR:', err)`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/marketing/stats/route.ts:37`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn(' Journey column missing or error, falling back:', journeyError.message)`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/marketing/stats/route.ts:48`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' Journey fetch failed:', e)`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/marketing/stats/route.ts:77`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' MAT STATS API ERROR:', err)`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/marketing/utm/route.ts:47`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[UTM API Error]:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/master-sync/route.ts:16`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(' Core Master Sync Triggered via API');`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/media/[id]/route.ts:26`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error("Get media error:", err);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/media/search/route.ts:37`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error("Search media error:", err);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/notify/actor/reminder/route.ts:62`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' [Remind Actor] Error:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/notify/actor/route.ts:68`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' [Notify Actor] Error:', error);`
 - **WARNING** `1-SITE/apps/web/src/app/api/admin/notify/route.ts:54`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div style="display: flex; align-items: center; gap: 20px; margin-bottom: 25px; padding: 20px; background: #fcfaf7; border-radius: 20px; border: 1px solid #eee;">`
 - **WARNING** `1-SITE/apps/web/src/app/api/admin/notify/route.ts:56`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -1940,6 +2148,128 @@
   > `<div style="font-size: 13px; color: #ff4f00; font-weight: bold; margin-bottom: 5px;">${isDonation ? 'INFO' : 'ACTIE VEREIST'}</div>`
 - **WARNING** `1-SITE/apps/web/src/app/api/admin/notify/route.ts:158`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div style="font-size: 14px; color: #666; line-height: 1.5;">`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/notify/route.ts:44`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[Watchdog] Add to cart: ${actorName} by ${email || 'anonymous'}`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/notify/route.ts:84`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[Watchdog] ${type.toUpperCase()}: Order #${orderId} - ${email}`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/notify/route.ts:171`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' [Admin Notify] Error:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/operational/route.ts:48`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Operational API] Media fetch failed:', err);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/operational/route.ts:61`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Operational API] Appointments fetch failed:', err);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/operational/route.ts:80`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Operational API] Actor holidays fetch failed:', err);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/operational/route.ts:93`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Operational API Error]:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/operational/route.ts:127`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Operational API] Consent log failed:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/operational/route.ts:133`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Operational API] Consent log exception:', err);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/operational/route.ts:144`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Operational POST Error]:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/operational-2/route.ts:51`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Operational API 2 Error]:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/orders/[id]/route.ts:186`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Admin Order Detail GET] Critical Error:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/orders/route.ts:194`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Admin Orders GET Critical Error]:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/pages/[slug]/route.ts:35`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(`[Admin Page GET] Error for ${slug}:`, error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/pages/[slug]/route.ts:87`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(`[Admin Page POST] Error for ${slug}:`, error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/pages/route.ts:29`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' Admin Pages API Error:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/pages/update-layout/route.ts:38`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Failed to update page layout:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/photo-matcher/analyze/route.ts:46`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Vision analysis error:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/photo-matcher/archive/route.ts:39`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Archive error:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/photo-matcher/auto-matched/route.ts:35`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Auto-matched fetch error:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/photo-matcher/match/route.ts:66`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn('Metadata strip failed');`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/photo-matcher/match/route.ts:109`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Match error:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/photo-matcher/serve/route.ts:75`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Serve error:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/push/route.ts:63`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[Push] New subscription registered for admin: ${admin.email}`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/push/route.ts:80`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' PUSH API ERROR:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/reviews/route.ts:36`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Admin Reviews GET Error]:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/reviews/update/route.ts:43`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Admin Reviews POST Error]:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/routing/sync/route.ts:10`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('☢️ Starting Nuclear Sync from UI...');`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/routing/sync/route.ts:17`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('❌ Sync Error:', stderr);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/routing/sync/route.ts:21`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('✅ Sync Success:', stdout);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/routing/sync/route.ts:24`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('❌ Fatal Sync Error:', err.message);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/save-crop/route.ts:29`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` Executing sips: ${sipsCmd}`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/save-crop/route.ts:34`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' Error saving crop:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/script/analyze/route.ts:45`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn('[Script Analyze] Actor fetch failed, proceeding without actor context:', dbErr);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/script/analyze/route.ts:97`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn('[Script Analyze] Gemini failed, returning graceful fallback:', aiErr);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/script/analyze/route.ts:104`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Script Analysis Critical Error:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/search/route.ts:122`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Admin Search GET Error]:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/settings/markets/route.ts:26`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[API Markets GET Error]:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/settings/markets/route.ts:69`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[API Markets POST Error]:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/slugs/route.ts:50`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Admin Slugs GET Error]:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/studio/certificates/[id]/route.ts:88`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(" Error generating certificate:", error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/studio/costs/route.ts:26`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(" Error saving cost:", error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/studio/edities/[id]/certificates/route.ts:33`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` Starting certificate generation for edition ${editionId} (${participants.length} participants)`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/studio/edities/[id]/certificates/route.ts:53`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` Mail with certificate ${pdfUrl} would be sent to ${user?.email || 'unknown'}`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/studio/edities/[id]/certificates/route.ts:56`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` Review request scheduled for ${user?.email || 'unknown'}`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/studio/edities/[id]/certificates/route.ts:60`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` Audio link ${p.dropbox_url} sent to ${user?.email || 'unknown'}`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/studio/edities/[id]/certificates/route.ts:72`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(" Error triggering certificates:", error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/studio/editions/[id]/route.ts:45`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Admin Studio Edition PATCH Error]:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/studio/editions/route.ts:52`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error("Get editions error:", err);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/studio/metadata/route.ts:25`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Admin Studio Metadata GET Error]:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/studio/move-participant/route.ts:25`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error("Move participant error:", err);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/studio/update-costs/route.ts:36`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error("Update costs error:", err);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/studio/workshops/catalog/[id]/route.ts:32`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error("Update workshop catalog error:", err);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/studio/workshops/catalog/route.ts:41`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error("Create workshop catalog error:", err);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/studio/workshops/upload/route.ts:33`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` ADMIN: Uploading video to bucket '${BUCKET_NAME}', path: ${filePath}`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/studio/workshops/upload/route.ts:42`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' Supabase Video Upload Error:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/studio/workshops/upload/route.ts:74`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' VIDEO UPLOAD FAILURE:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/system/logs/route.ts:56`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn('[Logs API] Drizzle failed, falling back to Supabase SDK:', dbError);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/system/logs/route.ts:81`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Logs API Error]:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/system/logs/route.ts:133`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn('[Logs Reporting] Drizzle failed, falling back to Supabase SDK:', dbError);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/system/logs/route.ts:163`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Logs Reporting Error]:', error);`
 - **WARNING** `1-SITE/apps/web/src/app/api/admin/system/repair/route.ts:99`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div class="card">`
 - **WARNING** `1-SITE/apps/web/src/app/api/admin/system/repair/route.ts:100`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -1954,6 +2284,8 @@
   > `<div class="loader"></div>`
 - **WARNING** `1-SITE/apps/web/src/app/api/admin/system/repair/route.ts:107`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<p style="font-size: 12px; margin-top: 20px; color: #999;">`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/system/repair/route.ts:116`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Repair Error]:', err);`
 - **WARNING** `1-SITE/apps/web/src/app/api/admin/system/watchdog/route.ts:208`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div style="background: #fff; border-left: 4px solid #22c55e; padding: 20px; margin: 20px 0; border-radius: 8px;">`
 - **WARNING** `1-SITE/apps/web/src/app/api/admin/system/watchdog/route.ts:209`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -1972,20 +2304,148 @@
   > `<p style="margin: 0 0 5px 0; font-weight: bold; color: #0ea5e9;">FORENSIC DETAILS:</p>`
 - **WARNING** `1-SITE/apps/web/src/app/api/admin/system/watchdog/route.ts:246`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<pre style="font-family: monospace; font-size: 11px; color: #444; margin: 0;">${JSON.stringify(details, null, 2)}</pre>`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/system/watchdog/route.ts:19`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('[Watchdog] Incoming error report...');`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/system/watchdog/route.ts:34`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[Watchdog] Error detected: ${error.substring(0, 100)}`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/system/watchdog/route.ts:45`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('[Watchdog] 🚀 Telegram alert sent.');`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/system/watchdog/route.ts:47`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Watchdog] Telegram alert failed:', tgErr.message);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/system/watchdog/route.ts:74`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[Watchdog] Event logged to DB: #${eventId}`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/system/watchdog/route.ts:77`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn('[Watchdog] Drizzle failed, falling back to Supabase SDK:', dbErr.message);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/system/watchdog/route.ts:95`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[Watchdog] Event logged via SDK: #${eventId}`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/system/watchdog/route.ts:98`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Watchdog] SDK fallback also failed:', e);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/system/watchdog/route.ts:119`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Watchdog] Mail engine initialization failed:', mailInitErr.message);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/system/watchdog/route.ts:145`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[Watchdog] 🤫 Noise or Skip detected: "${error.substring(0, 50)}...". Logged to DB but no mail sent.`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/system/watchdog/route.ts:168`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Watchdog] Failed to check recent mails:', e);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/system/watchdog/route.ts:172`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('[Watchdog] 🤫 Identical mail rate-limited. Error logged to DB but no mail sent.');`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/system/watchdog/route.ts:185`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn('[Watchdog] Failed to log mail event via Drizzle, trying SDK...');`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/system/watchdog/route.ts:194`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Watchdog] SDK mail log failed:', sdkE);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/system/watchdog/route.ts:199`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[Watchdog] 🛡️ SAFE AUTO-HEAL TRIGGERED for: ${error}`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/system/watchdog/route.ts:219`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Watchdog] Auto-Heal mail failed:', mailErr.message);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/system/watchdog/route.ts:266`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Watchdog] Critical error mail failed:', mailErr.message);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/system/watchdog/route.ts:274`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Watchdog FATAL]:', err.message);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/users/lookup/route.ts:42`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn(' ADMIN LOOKUP Drizzle failed, falling back to SDK:', err.message);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/users/lookup/route.ts:63`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' ADMIN LOOKUP DB ERROR:', dbError);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/users/lookup/route.ts:86`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' ADMIN LOOKUP ERROR:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/users/route.ts:41`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Admin Users GET Error]:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/vibecode/push/route.ts:38`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` Cloud Push: Triggering Bob Concert (Agent: Bob)...`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/vibecode/push/route.ts:51`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` [NUCLEAR PUSH] Start ${isSuperPush ? 'Super-Push' : 'Git sync'}...`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/vibecode/push/route.ts:55`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(' [NUCLEAR PUSH] Running Lint...');`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/vibecode/push/route.ts:61`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(' [NUCLEAR PUSH] Syncing Database...');`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/vibecode/push/route.ts:88`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' [NUCLEAR PUSH] Error:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/vibecode/save/route.ts:75`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` Cloud Save: Committing to ${fullRepoPath}`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/vibecode/save/route.ts:106`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Vibecode Save Error]:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/vibecode/sync/route.ts:70`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Vibecode Sync Error]:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/visitors/events/[hash]/route.ts:51`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' Visitor Events API Error:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/visitors/live/route.ts:40`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn(' Live Visitors Drizzle failed, falling back to SDK:', err.message);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/visitors/live/route.ts:50`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' Live Visitors SDK fallback failed:', error.message);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/visitors/live/route.ts:88`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' Live Visitors API Error:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/visitors/recent/route.ts:33`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn(' Recent Sessions Drizzle failed, falling back to SDK:', err.message);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/visitors/recent/route.ts:41`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' Recent Sessions SDK fallback failed:', error.message);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/visitors/recent/route.ts:79`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' Recent Sessions API Error:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/voice-tones/route.ts:20`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' ADMIN VOICE TONES FETCH FAILURE:', error);`
 - **WARNING** `1-SITE/apps/web/src/app/api/admin/voiceglot/audit-tones/route.ts:29`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `not(eq(translations.lang, 'nl'))`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/voiceglot/audit-tones/route.ts:32`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` [AUDIT] Found ${toneTranslations.length} tone translations to audit.`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/voiceglot/audit-tones/route.ts:82`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[API Tone Audit Error]:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/voiceglot/clean-slop/route.ts:25`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('🧹 Cleaning translation slop...');`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/voiceglot/clean-slop/route.ts:51`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('❌ Failed to clean slop:', error);`
 - **WARNING** `1-SITE/apps/web/src/app/api/admin/voiceglot/heal-all/route.ts:111`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `if (!detection.is_dutch && detection.detected_lang !== 'nl') {`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/voiceglot/heal-all/route.ts:69`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`🚀 [Heal-All SDK] Processing ${itemsToProcess.length} items via Gemini...`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/voiceglot/heal-all/route.ts:143`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn(`[Heal-All SDK] Slop detected for ${item.string_hash} (${lang})`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/voiceglot/heal-all/route.ts:160`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(`❌ [Heal-All SDK] Failed for ${item.string_hash} (${lang}):`, err);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/voiceglot/heal-all/route.ts:174`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[API Voiceglot Heal-All SDK Error]:', error);`
 - **WARNING** `1-SITE/apps/web/src/app/api/admin/voiceglot/list/route.ts:98`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `let detectedLang = 'nl';`
 - **WARNING** `1-SITE/apps/web/src/app/api/admin/voiceglot/list/route.ts:99`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `if (isFr && !isNl) detectedLang = 'fr';`
 - **WARNING** `1-SITE/apps/web/src/app/api/admin/voiceglot/list/route.ts:100`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `else if (isEn && !isNl) detectedLang = 'en';`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/voiceglot/list/route.ts:126`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('❌ [Voiceglot List API] SDK Fetch failed:', dbErr);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/voiceglot/list/route.ts:130`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' [Voiceglot List API] Fatal Error:', error);`
 - **WARNING** `1-SITE/apps/web/src/app/api/admin/voiceglot/nuclear-audit/route.ts:36`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `not(eq(translations.lang, 'nl')), // Nooit de bron-taal auditen tegen zichzelf`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/voiceglot/nuclear-audit/route.ts:44`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` [SLIMME VERTALING] Starting scan for ${rows.length} keys...`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/voiceglot/nuclear-audit/route.ts:73`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` [SLIMME VERTALING] Skipping locked key: ${row.translationKey}`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/voiceglot/nuclear-audit/route.ts:102`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(` [SLIMME VERTALING] Failed key ${row.translationKey}:`, err);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/voiceglot/nuclear-audit/route.ts:114`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[SLIMME VERTALING ERROR]:', error);`
 - **WARNING** `1-SITE/apps/web/src/app/api/admin/voiceglot/register/route.ts:140`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `if (lang.startsWith('nl')) continue;`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/voiceglot/register/route.ts:36`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn('[RegisterAPI] Failed to parse JSON body:', jsonErr);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/voiceglot/register/route.ts:63`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn('[RegisterAPI] Internal or sensitive data detected, skipping registration:', { key });`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/voiceglot/register/route.ts:70`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn('[RegisterAPI] HTML Slop detected in sourceText, skipping registration:', sourceText);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/voiceglot/register/route.ts:79`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('[RegisterAPI] Attempting registry insert:', { key, sourceText, context, sourceLangId });`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/voiceglot/register/route.ts:104`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('[RegisterAPI] Registry insert success for key:', key);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/voiceglot/register/route.ts:106`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn('[RegisterAPI] Skipping insert: key or sourceText is missing');`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/voiceglot/register/route.ts:109`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[RegisterAPI] Registry insert failed or timed out for key:', key, 'Error:', dbError.message);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/voiceglot/register/route.ts:127`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[RegisterAPI] Failed to fetch active languages for healing:', langError);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/voiceglot/register/route.ts:205`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(`[Background Heal] Failed for ${lang}:`, err);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/voiceglot/register/route.ts:209`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[RegisterAPI] Background healing process failed:', outerErr);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/voiceglot/register/route.ts:216`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[API Voiceglot Register Error]:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/voiceglot/stats/route.ts:110`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Voiceglot Stats Error]:', error);`
 - **WARNING** `1-SITE/apps/web/src/app/api/admin/voiceglot/turbo-heal/route.ts:23`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `const targetLanguages = ['fr', 'en', 'de', 'es', 'pt'];`
 - **WARNING** `1-SITE/apps/web/src/app/api/admin/voiceglot/turbo-heal/route.ts:23`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
@@ -1996,8 +2456,98 @@
   > `const targetLanguages = ['fr', 'en', 'de', 'es', 'pt'];`
 - **WARNING** `1-SITE/apps/web/src/app/api/admin/voiceglot/turbo-heal/route.ts:23`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `const targetLanguages = ['fr', 'en', 'de', 'es', 'pt'];`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/voiceglot/turbo-heal/route.ts:36`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn(' [TurboHeal API] Drizzle failed to fetch registry, falling back to SDK');`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/voiceglot/turbo-heal/route.ts:54`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn(` [TurboHeal API] Drizzle failed to fetch existing translations for ${lang}, falling back to SDK`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/voiceglot/turbo-heal/route.ts:93`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn(` [TurboHeal API] Drizzle failed to insert translation for ${lang}, falling back to SDK`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/voiceglot/turbo-heal/route.ts:105`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(`Failed turbo-heal for item:`, item, e);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/voiceglot/update/route.ts:38`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` SYNCING WORKSHOP ${workshopId} FIELD ${field} TO SUPABASE...`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/voiceglot/update/route.ts:81`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Voiceglot Update Error:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/agency/actors/route.ts:19`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(' Kirsten cleanup triggered via API');`
+- **WARNING** `1-SITE/apps/web/src/app/api/agency/actors/route.ts:25`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('API Error:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/articles/route.ts:65`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[API Articles Error]:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/artist/donate/route.ts:64`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' Donation API Error:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/audio/extract-text/route.ts:13`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn('Optionele document parsing libraries niet geladen');`
+- **WARNING** `1-SITE/apps/web/src/app/api/audio/extract-text/route.ts:94`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' Smart Import Error:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/audio/process/route.ts:39`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Audio API Error:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/audio/qc/route.ts:61`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' QC FAILURE:', error);`
 - **WARNING** `1-SITE/apps/web/src/app/api/audio/transcribe/route.ts:22`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `const transcription = await gemini.transcribeAudio(buffer, file.type, 'nl');`
+- **WARNING** `1-SITE/apps/web/src/app/api/audio/transcribe/route.ts:30`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' Transcription Error:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/auth/admin-key/route.ts:38`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn(`[Admin Key] Invalid key attempt: ${key.substring(0, 5)}...`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/auth/admin-key/route.ts:67`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[Admin Key] Persistent session established for: ${admin.email}`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/auth/admin-key/route.ts:74`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' ADMIN KEY BRIDGE ERROR:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/auth/magic-login/route.ts:72`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Supabase GenerateLink Error:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/auth/magic-login/route.ts:82`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' MAGIC LOGIN ERROR:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/auth/send-magic-link/route.ts:16`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('🚀 [Auth API] Magic Link request started');`
+- **WARNING** `1-SITE/apps/web/src/app/api/auth/send-magic-link/route.ts:19`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`🚀 [Auth API] Request for: ${email}, redirect: ${redirectPath}`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/auth/send-magic-link/route.ts:32`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[Auth API] Processing request for: ${email}`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/auth/send-magic-link/route.ts:53`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[Auth API] User not found or signup needed, creating user: ${email}`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/auth/send-magic-link/route.ts:64`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Auth API] Signup link generation failed:', signupError);`
+- **WARNING** `1-SITE/apps/web/src/app/api/auth/send-magic-link/route.ts:80`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Auth API] Supabase error:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/auth/send-magic-link/route.ts:97`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Auth API] No token found in action link:', data.properties.action_link);`
+- **WARNING** `1-SITE/apps/web/src/app/api/auth/send-magic-link/route.ts:120`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[Auth API] Voices link created: ${voicesLink}`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/auth/send-magic-link/route.ts:133`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn('[Auth API] Watchdog logging failed, continuing with mail:', logErr);`
+- **WARNING** `1-SITE/apps/web/src/app/api/auth/send-magic-link/route.ts:154`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[Auth API] Mail successfully sent to: ${email}`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/auth/send-magic-link/route.ts:157`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn('[Auth API] Primary mail failed or timed out, triggering Nuclear Fallback:', mailErr.message);`
+- **WARNING** `1-SITE/apps/web/src/app/api/auth/send-magic-link/route.ts:163`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[Auth API] Triggering Supabase fallback with redirect: ${fallbackRedirect}`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/auth/send-magic-link/route.ts:174`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Auth API] Fallback Supabase mail also failed:', fallbackError.message, fallbackError.status);`
+- **WARNING** `1-SITE/apps/web/src/app/api/auth/send-magic-link/route.ts:196`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[Auth API] Fallback magic link sent successfully to: ${email}`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/auth/send-magic-link/route.ts:202`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Auth API] Unexpected error:', err);`
+- **WARNING** `1-SITE/apps/web/src/app/api/backoffice/actors/route.ts:45`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Backoffice Actors PATCH Error]:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/backoffice/media/convert-youtube/route.ts:27`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` Start conversie voor acteur ${actorId}: ${youtubeUrl}`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/backoffice/media/convert-youtube/route.ts:91`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('YouTube Conversion Error:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/backoffice/media/route.ts:134`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Media Fetch Error:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/backoffice/media/route.ts:212`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Media API Error:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/backoffice/profit-engine/route.ts:31`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Profit Engine Revenue Error:', err);`
+- **WARNING** `1-SITE/apps/web/src/app/api/backoffice/profit-engine/route.ts:46`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Profit Engine Cost Error:', err);`
+- **WARNING** `1-SITE/apps/web/src/app/api/backoffice/profit-engine/route.ts:70`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Profit Engine Top Performers Error:', perfError);`
+- **WARNING** `1-SITE/apps/web/src/app/api/backoffice/profit-engine/route.ts:84`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Profit Engine Error]:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/blueprints/route.ts:12`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Blueprints API Error:', error);`
 - **WARNING** `1-SITE/apps/web/src/app/api/casting/submit/route.ts:141`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div style="background: #fcfaf7; padding: 30px; border-radius: 20px; margin-bottom: 30px;">`
 - **WARNING** `1-SITE/apps/web/src/app/api/casting/submit/route.ts:142`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -2016,6 +2566,10 @@
   > `<h3 style="font-size: 14px; text-transform: uppercase; letter-spacing: 0.1em; color: #ccc;">Script</h3>`
 - **WARNING** `1-SITE/apps/web/src/app/api/casting/submit/route.ts:167`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div style="font-style: italic; color: #1a1a1a; line-height: 1.6; background: #fff; padding: 20px; border: 1px solid #eee; border-radius: 15px;">`
+- **WARNING** `1-SITE/apps/web/src/app/api/casting/submit/route.ts:126`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' [Casting Submit] List items error:', errors);`
+- **WARNING** `1-SITE/apps/web/src/app/api/casting/submit/route.ts:184`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' [Casting Submit] Error:', error);`
 - **WARNING** `1-SITE/apps/web/src/app/api/certificates/render/route.tsx:36`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div`
 - **WARNING** `1-SITE/apps/web/src/app/api/certificates/render/route.tsx:64`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -2028,28 +2582,204 @@
   > `<div style={{`
 - **WARNING** `1-SITE/apps/web/src/app/api/certificates/render/route.tsx:122`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div style={{`
+- **WARNING** `1-SITE/apps/web/src/app/api/certificates/render/route.tsx:140`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(e.message);`
 - **WARNING** `1-SITE/apps/web/src/app/api/chat/faq/route.ts:12`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `const lang = searchParams.get('lang') || 'nl';`
 - **WARNING** `1-SITE/apps/web/src/app/api/chat/faq/route.ts:36`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `question: lang === 'nl' ? f.questionNl : f.questionEn,`
 - **WARNING** `1-SITE/apps/web/src/app/api/chat/faq/route.ts:37`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `answer: lang === 'nl' ? f.answerNl : f.answerEn`
+- **WARNING** `1-SITE/apps/web/src/app/api/chat/faq/route.ts:41`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Chat FAQ API Error]:', error);`
 - **WARNING** `1-SITE/apps/web/src/app/api/chat/route.ts:109`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `language = 'nl',`
 - **WARNING** `1-SITE/apps/web/src/app/api/chat/route.ts:121`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `const isEnglish = language === 'en' || /hello|hi|price|how|can you/i.test(message);`
+- **WARNING** `1-SITE/apps/web/src/app/api/chat/route.ts:15`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('[Voicy API] Incoming request:', { action: body.action, message: body.message });`
+- **WARNING** `1-SITE/apps/web/src/app/api/chat/route.ts:41`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[Voicy API] Fetched ${results.length} active conversations for userId: ${userId}`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/chat/route.ts:93`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Voicy API Error]:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/chat/route.ts:116`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('[Voicy API] handleSendMessage started:', { conversationId, messageLength: message?.length, mode, persona });`
+- **WARNING** `1-SITE/apps/web/src/app/api/chat/route.ts:132`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[Voicy API] Admin is active on chat #${conversationId}. AI response suppressed.`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/chat/route.ts:140`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[Voicy API] Lifecycle stage detected: ${stage}`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/chat/route.ts:165`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('[Voicy API] Checking FAQ...');`
+- **WARNING** `1-SITE/apps/web/src/app/api/chat/route.ts:175`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('[Voicy API] FAQ Match found:', aiContent.substring(0, 50));`
+- **WARNING** `1-SITE/apps/web/src/app/api/chat/route.ts:177`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('[Voicy API] No FAQ match found or message too long.');`
+- **WARNING** `1-SITE/apps/web/src/app/api/chat/route.ts:180`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn('[Voicy API] FAQ Check failed (DB issue):', e.message);`
+- **WARNING** `1-SITE/apps/web/src/app/api/chat/route.ts:185`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('[Voicy API] Triggering Gemini Brain...', { mode, hasPreviewLogic: !!previewLogic });`
+- **WARNING** `1-SITE/apps/web/src/app/api/chat/route.ts:203`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Voicy API] Failed to fetch history for Gemini context:', e);`
+- **WARNING** `1-SITE/apps/web/src/app/api/chat/route.ts:215`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('[Voicy API] Moderation guard triggered.');`
+- **WARNING** `1-SITE/apps/web/src/app/api/chat/route.ts:221`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('[Voicy API] Injecting knowledge...');`
+- **WARNING** `1-SITE/apps/web/src/app/api/chat/route.ts:236`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('[Voicy API] Requesting Gemini generation...');`
+- **WARNING** `1-SITE/apps/web/src/app/api/chat/route.ts:406`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('[Voicy API] Gemini Response received:', aiContent.substring(0, 50));`
+- **WARNING** `1-SITE/apps/web/src/app/api/chat/route.ts:422`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Voicy API] Butler JSON Parse Error:', e);`
+- **WARNING** `1-SITE/apps/web/src/app/api/chat/route.ts:444`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[Voicy API] Admin command detected: ${command}`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/chat/route.ts:479`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('[Voicy API] Attempting to save to DB...');`
+- **WARNING** `1-SITE/apps/web/src/app/api/chat/route.ts:552`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn('[Voicy API] Drizzle failed, falling back to Supabase SDK:', dbError);`
+- **WARNING** `1-SITE/apps/web/src/app/api/chat/route.ts:612`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error("Notification failed", e);`
+- **WARNING** `1-SITE/apps/web/src/app/api/chat/route.ts:616`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('[Voicy API] DB save successful.');`
+- **WARNING** `1-SITE/apps/web/src/app/api/chat/route.ts:618`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Voicy API DB Error]:', dbError);`
+- **WARNING** `1-SITE/apps/web/src/app/api/chat/route.ts:625`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[Voicy API] 🚀 Triggering fire-and-forget notifications for ${senderType}...`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/chat/route.ts:629`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('[Voicy API] Notification thread started');`
+- **WARNING** `1-SITE/apps/web/src/app/api/chat/route.ts:642`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('[Voicy API] Sending notifications for:', {`
+- **WARNING** `1-SITE/apps/web/src/app/api/chat/route.ts:664`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `}).then(() => console.log('[Push] Mail sent successfully'))`
+- **WARNING** `1-SITE/apps/web/src/app/api/chat/route.ts:665`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `.catch(e => console.error('[Push] Mail failed:', e.message));`
+- **WARNING** `1-SITE/apps/web/src/app/api/chat/route.ts:673`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `}).then(() => console.log('[Push] WebPush trigger finished'))`
+- **WARNING** `1-SITE/apps/web/src/app/api/chat/route.ts:674`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `.catch(e => console.error('[Push] WebPush failed:', e.message));`
+- **WARNING** `1-SITE/apps/web/src/app/api/chat/route.ts:684`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `.then(() => console.log('[Push] Telegram (user) sent successfully'))`
+- **WARNING** `1-SITE/apps/web/src/app/api/chat/route.ts:685`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `.catch(e => console.error('[Push] Telegram (user) failed:', e.message));`
+- **WARNING** `1-SITE/apps/web/src/app/api/chat/route.ts:697`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `.then(() => console.log('[Push] Telegram (ai) sent successfully'))`
+- **WARNING** `1-SITE/apps/web/src/app/api/chat/route.ts:698`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `.catch(e => console.error('[Push] Telegram (ai) failed:', e.message));`
+- **WARNING** `1-SITE/apps/web/src/app/api/chat/route.ts:703`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Voicy API] Critical Notification Engine Error:', notifyErr.message);`
+- **WARNING** `1-SITE/apps/web/src/app/api/chat/route.ts:715`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Core Chat Send Error]:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/chat/route.ts:779`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Chat History Error]:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/chat/sse/route.ts:66`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('SSE Error:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/checkout/config/route.ts:40`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn('[API Checkout Config]: Mollie unavailable, using fallback:', (error as Error).message);`
+- **WARNING** `1-SITE/apps/web/src/app/api/checkout/create-order/route.ts:80`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' NUCLEAR CHECKOUT ERROR:', error);`
 - **WARNING** `1-SITE/apps/web/src/app/api/checkout/webhook/route.ts:178`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `language: 'nl'`
+- **WARNING** `1-SITE/apps/web/src/app/api/checkout/webhook/route.ts:30`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn('[Mollie Webhook] Missing ID in request');`
+- **WARNING** `1-SITE/apps/web/src/app/api/checkout/webhook/route.ts:39`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Mollie Webhook] Failed to fetch payment:', mollieErr.message);`
+- **WARNING** `1-SITE/apps/web/src/app/api/checkout/webhook/route.ts:46`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn('[Mollie Webhook] Invalid or missing Order ID in metadata:', payment.metadata);`
+- **WARNING** `1-SITE/apps/web/src/app/api/checkout/webhook/route.ts:78`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` Order #${orderId} is Music Only. Setting status to 'completed'.`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/checkout/webhook/route.ts:99`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` Donation: Thank you email sent to ${donationContext.donorEmail}`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/checkout/webhook/route.ts:120`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' Failed to process donation post-payment:', err);`
+- **WARNING** `1-SITE/apps/web/src/app/api/checkout/webhook/route.ts:151`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` Sales: total_sales incremented for actors: ${actorIds.join(', ')}`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/checkout/webhook/route.ts:182`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[Automation] Customer confirmation sent to ${user.email}`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/checkout/webhook/route.ts:184`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn(`[Automation] Failed to send customer confirmation:`, customerConfErr);`
+- **WARNING** `1-SITE/apps/web/src/app/api/checkout/webhook/route.ts:191`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' Failed to update actor sales:', salesErr);`
+- **WARNING** `1-SITE/apps/web/src/app/api/checkout/webhook/route.ts:198`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' Failed to deliver music after payment:', musicErr);`
+- **WARNING** `1-SITE/apps/web/src/app/api/checkout/webhook/route.ts:217`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` Intelligence: DNA updated for user ${userId} after successful payment.`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/checkout/webhook/route.ts:225`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[Automation] UCI Cache invalidated for ${payment.metadata.email || order.users?.email}`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/checkout/webhook/route.ts:228`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn('[Automation] Failed to invalidate UCI cache in webhook:', cacheErr);`
+- **WARNING** `1-SITE/apps/web/src/app/api/checkout/webhook/route.ts:253`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' Failed to send payment notification:', mailErr);`
+- **WARNING** `1-SITE/apps/web/src/app/api/checkout/webhook/route.ts:261`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' MOLLIE WEBHOOK ERROR:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/config/nav/[key]/route.ts:17`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Nav API Error (Table might be missing):', error);`
 - **WARNING** `1-SITE/apps/web/src/app/api/contact/route.ts:54`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div style="background: #f9f9f9; padding: 20px; border-radius: 10px; color: #333;">`
+- **WARNING** `1-SITE/apps/web/src/app/api/contact/route.ts:64`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Contact API error:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/cron/finance-sync/route.ts:10`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(' Starting Yuki Finance Sync...');`
+- **WARNING** `1-SITE/apps/web/src/app/api/cron/finance-sync/route.ts:14`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` Fetched ${outstanding.length} outstanding invoices from Yuki`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/cron/finance-sync/route.ts:36`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' Finance Sync Failed:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/cron/follow-up/route.ts:19`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('🚀 Starting New Customer Follow-up Preparation...');`
+- **WARNING** `1-SITE/apps/web/src/app/api/cron/follow-up/route.ts:44`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`🔍 Found ${recentOrders.length} potential orders for follow-up.`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/cron/follow-up/route.ts:76`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('❌ Follow-up Cron Failed:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/faq/route.ts:42`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn(' FAQ Drizzle failed, falling back to SDK');`
+- **WARNING** `1-SITE/apps/web/src/app/api/faq/route.ts:60`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' FAQ API FAILURE:', {`
+- **WARNING** `1-SITE/apps/web/src/app/api/godmode/[collection]/route.ts:63`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(`[Godmode API Error] ${collectionName}:`, error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/godmode/[collection]/route.ts:94`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(`[Godmode POST Error] ${collectionName}:`, error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/godmode/[collection]/route.ts:138`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(`[Godmode PUT Error] ${collectionName}:`, error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/godmode/[collection]/route.ts:180`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(`[Godmode DELETE Error] ${collectionName}:`, error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/home/config/route.ts:55`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn(' [Home Config API] Drizzle failed, falling back to SDK:', (dbErr as any).message);`
+- **WARNING** `1-SITE/apps/web/src/app/api/home/config/route.ts:77`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn(' [Home Config API] DB Timeout reached, using stale cache or empty state');`
+- **WARNING** `1-SITE/apps/web/src/app/api/home/config/route.ts:93`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Failed to fetch home config', e);`
+- **WARNING** `1-SITE/apps/web/src/app/api/iap/partner/route.ts:60`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[System Partner API Error]:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/intelligence/customer-360/route.ts:29`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn(' Customer 360 Drizzle failed, falling back to SDK');`
+- **WARNING** `1-SITE/apps/web/src/app/api/intelligence/customer-360/route.ts:53`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[API Customer 360] Database pre-flight failed:', dbErr);`
+- **WARNING** `1-SITE/apps/web/src/app/api/intelligence/customer-360/route.ts:111`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn(`[API Customer 360] Race failed or timeout: ${raceError.message}`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/intelligence/customer-360/route.ts:144`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[API Customer 360 Error]:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/intelligence/learn/route.ts:32`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn(' Learn API Drizzle failed, falling back to SDK');`
+- **WARNING** `1-SITE/apps/web/src/app/api/intelligence/reviews/route.ts:62`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Review Intelligence Error]:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/intelligence/roi-engine/route.ts:32`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('ROI Engine DB Error:', err);`
+- **WARNING** `1-SITE/apps/web/src/app/api/intelligence/roi-engine/route.ts:41`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[ROI Engine Error]:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/intelligence/zero-laws/route.ts:80`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Zero Laws API Error]:', error);`
 - **WARNING** `1-SITE/apps/web/src/app/api/johfrai/demos/route.ts:10`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `const lang = searchParams.get('lang') || 'nl';`
+- **WARNING** `1-SITE/apps/web/src/app/api/johfrai/demos/route.ts:75`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Error fetching Johfrai demos:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/johfrai/predictive/route.ts:47`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' Predictive API Error:', error);`
 - **WARNING** `1-SITE/apps/web/src/app/api/johfrai/pronunciation/route.ts:33`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `"detectedLanguages": ["nl", "fr", "en"],`
 - **WARNING** `1-SITE/apps/web/src/app/api/johfrai/pronunciation/route.ts:33`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `"detectedLanguages": ["nl", "fr", "en"],`
 - **WARNING** `1-SITE/apps/web/src/app/api/johfrai/pronunciation/route.ts:33`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `"detectedLanguages": ["nl", "fr", "en"],`
+- **WARNING** `1-SITE/apps/web/src/app/api/johfrai/pronunciation/route.ts:47`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' Pronunciation Intelligence API Error:', error);`
 - **WARNING** `1-SITE/apps/web/src/app/api/johfrai/translate/route.ts:12`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `const { text, targetLangs, sourceLang = 'nl' } = await request.json();`
 - **WARNING** `1-SITE/apps/web/src/app/api/johfrai/translate/route.ts:37`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
@@ -2058,10 +2788,214 @@
   > `"en": "...",`
 - **WARNING** `1-SITE/apps/web/src/app/api/johfrai/translate/route.ts:39`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `"de": "..."`
+- **WARNING** `1-SITE/apps/web/src/app/api/johfrai/translate/route.ts:50`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' Translation API Error:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/mailbox/contact/route.ts:70`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn('[Contact API] Drizzle failed, falling back to Supabase SDK:', dbError);`
+- **WARNING** `1-SITE/apps/web/src/app/api/mailbox/contact/route.ts:132`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Contact API Error]:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/mailbox/customer-dna/[userId]/route.ts:116`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' Customer DNA API Error:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/mailbox/customer-dna/search/route.ts:98`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' Customer DNA Search API Error:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/mailbox/faq-engine/route.ts:32`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' FAQ Engine DB Error:', dbError);`
+- **WARNING** `1-SITE/apps/web/src/app/api/mailbox/faq-engine/route.ts:54`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' FAQ Engine Error:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/mailbox/faq-proposals/route.ts:85`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' AI FAQ Proposal Generation Failed:', aiError.message);`
+- **WARNING** `1-SITE/apps/web/src/app/api/mailbox/faq-proposals/route.ts:91`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' FAQ Proposal API Error:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/mailbox/folders/counts/route.ts:39`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' Mailbox Counts API Error:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/mailbox/inbox/route.ts:33`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` 🚀 API Mailbox Inbox (SDK): Fetching folder ${folder} for account ${account}...`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/mailbox/inbox/route.ts:40`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' API Mailbox Inbox: Direct IMAP fetch failed:', directError.message);`
+- **WARNING** `1-SITE/apps/web/src/app/api/mailbox/inbox/route.ts:96`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' Mailbox API Error (SDK):', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/mailbox/insights/route.ts:134`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' AI Insights Generation Failed:', aiError.message);`
+- **WARNING** `1-SITE/apps/web/src/app/api/mailbox/insights/route.ts:148`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' Mailbox Insights API Error:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/mailbox/message/[uid]/route.ts:76`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' Mailbox Message API Error:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/mailbox/project-dna/[projectId]/route.ts:53`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' Project DNA API Error:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/mailbox/semantic-search/route.ts:42`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' Semantic Search API Error:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/mailbox/send/route.ts:47`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Mailbox API] Error sending email:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/mailbox/shadow-draft/route.ts:48`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` Semantic Style Matching: ${relevantSentMails.length} vergelijkbare antwoorden gevonden.`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/mailbox/shadow-draft/route.ts:70`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' Nuclear Shadow Draft Error:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/mailbox/sync/route.ts:18`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` AI Sync: Start sync voor ${folder} (limit: ${limit})...`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/mailbox/sync/route.ts:75`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' AI Sync Error:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/mailbox/time-travel/[userId]/route.ts:46`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' Time-Travel API Error:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/marketing/merchant-feed/route.ts:123`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[MERCHANT FEED ERROR]:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/marketing/track/route.ts:83`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' MAT: Visitor upsert error:', visitorError);`
+- **WARNING** `1-SITE/apps/web/src/app/api/marketing/track/route.ts:104`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' MAT TRACKING ERROR:', {`
+- **WARNING** `1-SITE/apps/web/src/app/api/media/music/route.ts:11`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[API Music] Error:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/nuclear/client-approval/route.ts:21`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` Klant keurt Order Item ${orderItemId} goed...`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/nuclear/client-approval/route.ts:40`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' Client Approval Error:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/nuclear/webhook/route.ts:24`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[System Webhook]: ${event}`, data);`
+- **WARNING** `1-SITE/apps/web/src/app/api/nuclear/webhook/route.ts:31`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[System Webhook Error]:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/partner/dashboard/route.ts:72`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Partner Dashboard Error]:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/partner/generate-link/route.ts:51`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Partner Link Error]:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/ponto/payout/route.ts:58`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Ponto API Error]:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/pricing/config/route.ts:41`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error("Failed to fetch pricing config", e);`
+- **WARNING** `1-SITE/apps/web/src/app/api/proxy/route.ts:16`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[Proxy] Request received for path: ${assetPath}${fallbackPath ? ` (fallback: ${fallbackPath})` : ''}`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/proxy/route.ts:33`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[Proxy Forensic] Stripping nested proxy prefix from: ${cleanPath}`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/proxy/route.ts:169`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[Proxy Fix] Removing duplicate language segment: ${pathSegments[2]}`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/proxy/route.ts:196`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[Proxy Fallback] Optimization failed, fetching raw: ${rawUrl}`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/proxy/route.ts:207`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(`[Proxy Supabase Error] Failed to fetch ${rawUrl}: ${response.status} ${response.statusText}`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/proxy/route.ts:224`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[Proxy] Legacy image detected: ${cleanPath}. Relying on Next.js Image component for WebP conversion.`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/proxy/route.ts:229`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[Proxy Direct] Supabase URL detected: ${cleanPath}`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/proxy/route.ts:240`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(`[Proxy Direct Error] Supabase fetch failed: ${response.status} ${response.statusText}`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/proxy/route.ts:251`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[Proxy] Fetching: ${targetUrl}`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/proxy/route.ts:261`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(`[Proxy Error] Failed to fetch ${targetUrl}: ${response.statusText}`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/proxy/route.ts:276`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[Proxy Fallback] Primary failed, trying fallback: ${fallbackPath}`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/proxy/route.ts:281`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[Proxy 404] Asset not found: ${assetPath}`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/proxy/route.ts:301`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Proxy Critical Error]:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/reviews/route.ts:56`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Public Reviews GET Error]:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/studio/afspraak/cancel/route.ts:46`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` E-mail verzonden naar ${appt.user_id || 'bezoeker'} over annulering van afspraak op ${appt.startTime}`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/studio/afspraak/cancel/route.ts:54`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Appointment Cancel Error]:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/studio/audit/route.ts:56`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error("[Sherlock AI Watchdog] Error during audit:", error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/studio/create/route.ts:44`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Studio Session Creation Error:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/studio/dashboard/route.ts:36`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Studio Dashboard Error]:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/studio/feedback/route.ts:47`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' Feedback submission failed:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/studio/workshop-interest/route.ts:68`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn('[Workshop Interest] Drizzle failed, falling back to Supabase SDK:', dbError);`
+- **WARNING** `1-SITE/apps/web/src/app/api/studio/workshop-interest/route.ts:103`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn('[Workshop Interest] Failed to log event:', e);`
+- **WARNING** `1-SITE/apps/web/src/app/api/studio/workshop-interest/route.ts:111`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Workshop interest API error:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/studio/workshops/route.ts:21`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn('[Studio Workshops API] Drizzle/StudioService failed, falling back to Supabase SDK:', error.message);`
+- **WARNING** `1-SITE/apps/web/src/app/api/studio/workshops/route.ts:93`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Studio Workshops API] SDK Fallback also failed:', fallbackError);`
+- **WARNING** `1-SITE/apps/web/src/app/api/taxonomies/route.ts:14`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('API Error:', error);`
 - **WARNING** `1-SITE/apps/web/src/app/api/telegram/webhook/route.ts:11`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `* /voicy <prompt>   Route to Voicy (one-shot)`
 - **WARNING** `1-SITE/apps/web/src/app/api/telegram/webhook/route.ts:99`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `// /voicy <prompt>  one-shot Voicy; /voicy  (nothing)  toggle`
+- **WARNING** `1-SITE/apps/web/src/app/api/telegram/webhook/route.ts:137`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn(' Telegram webhook: TELEGRAM_BOT_TOKEN not set, skipping reply');`
+- **WARNING** `1-SITE/apps/web/src/app/api/telegram/webhook/route.ts:145`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn(` Telegram: Rejected message from unauthorized user ${senderId}`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/telegram/webhook/route.ts:154`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('[Telegram]', {`
+- **WARNING** `1-SITE/apps/web/src/app/api/telegram/webhook/route.ts:171`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('[Telegram] Mode switch reply to chat', chatId);`
+- **WARNING** `1-SITE/apps/web/src/app/api/telegram/webhook/route.ts:175`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('[Telegram-Bob] Welcome sent to chat', chatId);`
+- **WARNING** `1-SITE/apps/web/src/app/api/telegram/webhook/route.ts:233`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('[Telegram-Voicy] Full Knowledge Response generated for chat', chatId);`
+- **WARNING** `1-SITE/apps/web/src/app/api/telegram/webhook/route.ts:261`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('[Telegram-Bob] Response (Voicy-reasoning) generated for chat', chatId);`
+- **WARNING** `1-SITE/apps/web/src/app/api/telegram/webhook/route.ts:266`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' Telegram AI generation failed:', aiErr);`
+- **WARNING** `1-SITE/apps/web/src/app/api/telegram/webhook/route.ts:281`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' Telegram sendMessage failed:', sendErr);`
+- **WARNING** `1-SITE/apps/web/src/app/api/telegram/webhook/route.ts:287`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' Telegram webhook error:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/telephony/callback/route.ts:46`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[API Telephony] Telegram notification failed:', tgErr);`
+- **WARNING** `1-SITE/apps/web/src/app/api/telephony/callback/route.ts:52`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('[API Telephony] Twilio failed, triggering Telegram fallback...');`
+- **WARNING** `1-SITE/apps/web/src/app/api/telephony/callback/route.ts:76`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[API Telephony] Telegram fallback failed:', tgErr);`
+- **WARNING** `1-SITE/apps/web/src/app/api/telephony/callback/route.ts:86`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[API Telephony] Error:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/translations/heal/route.ts:67`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(`[heal] DB Select Error for ${key}:`, err);`
+- **WARNING** `1-SITE/apps/web/src/app/api/translations/heal/route.ts:93`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` SELF-HEALING (OpenAI): New key detected [${key}] for lang [${currentLang}]`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/translations/heal/route.ts:102`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[API Translation Heal Error]:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/translations/route.ts:85`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[API Translations Error]:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/tts/johfrai/route.ts:27`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Missing ELEVENLABS_API_KEY');`
+- **WARNING** `1-SITE/apps/web/src/app/api/tts/johfrai/route.ts:130`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('FFMPEG Error:', err);`
+- **WARNING** `1-SITE/apps/web/src/app/api/tts/johfrai/route.ts:158`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Johfrai API Error:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/vat-verify/route.ts:37`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' BTW Check Fout:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/vault/browse/route.ts:67`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' Vault Browser API Error:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/vault/draft-offer/route.ts:71`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' Offer Drafting Error:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/vault/promote/route.ts:99`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' Promotion API Error:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/voicejar/record/route.ts:68`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn(' Voicejar Drizzle failed, falling back to SDK');`
+- **WARNING** `1-SITE/apps/web/src/app/api/voicejar/record/route.ts:115`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn(' [VOICEJAR API] Timeout reached, returning success to client to prevent 504');`
+- **WARNING** `1-SITE/apps/web/src/app/api/voicejar/record/route.ts:120`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' VOICEJAR API FAILURE:', {`
+- **WARNING** `1-SITE/apps/web/src/app/api/watchdog/broken-asset/route.ts:20`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' WATCHDOG ERROR:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/watchdog/delivery/route.ts:41`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' Watchdog DB Error:', dbError);`
+- **WARNING** `1-SITE/apps/web/src/app/api/watchdog/delivery/route.ts:44`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` Watchdog: Found ${delayedOrders.length} delayed orders.`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/watchdog/delivery/route.ts:62`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' Watchdog Error:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/watchdog/notify/route.ts:23`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn('[Watchdog Notify] No ADMIN_EMAIL configured');`
+- **WARNING** `1-SITE/apps/web/src/app/api/watchdog/notify/route.ts:27`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(` [WATCHDOG] Error detected at ${url}: ${message}`);`
+- **WARNING** `1-SITE/apps/web/src/app/api/watchdog/notify/route.ts:48`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(' Sending Watchdog Alert to:', recipient);`
+- **WARNING** `1-SITE/apps/web/src/app/api/watchdog/notify/route.ts:66`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' Watchdog: Email service failed to respond correctly');`
+- **WARNING** `1-SITE/apps/web/src/app/api/watchdog/notify/route.ts:69`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' Watchdog: Could not reach email service:', emailError);`
+- **WARNING** `1-SITE/apps/web/src/app/api/watchdog/notify/route.ts:74`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' Watchdog Notify API Error:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/api/yuki/sync/route.ts:49`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(' Sending to Yuki:', yukiPayload);`
+- **WARNING** `1-SITE/apps/web/src/app/api/yuki/sync/route.ts:63`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' Yuki Sync Error:', error);`
 - **WARNING** `1-SITE/apps/web/src/app/cart/CartPageClient.tsx:96`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="p-8 bg-primary/5 rounded-[32px] border border-primary/10 flex items-start gap-6">`
 - **WARNING** `1-SITE/apps/web/src/app/cart/CartPageClient.tsx:97`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -2106,6 +3040,8 @@
   > `<div className="flex -space-x-2">`
 - **WARNING** `1-SITE/apps/web/src/app/checkout/CheckoutPageClient.tsx:164`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div key={avatarIdx} className="w-8 h-8 rounded-full border-2 border-white bg-va-off-white overflow-hidden relative shadow-sm">`
+- **WARNING** `1-SITE/apps/web/src/app/checkout/CheckoutPageClient.tsx:68`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Failed to fetch reviews:', e);`
 - **WARNING** `1-SITE/apps/web/src/app/checkout/configurator/ConfiguratorPageClient.tsx:1141`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span className="ml-3 text-va-black/20 font-light tracking-widest uppercase text-sm">Configurator laden...</span>`
 - **WARNING** `1-SITE/apps/web/src/app/checkout/configurator/ConfiguratorPageClient.tsx:1152`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -2334,6 +3270,22 @@
   > `<span className="text-[10px] font-bold text-va-black/20 uppercase tracking-widest leading-none">`
 - **WARNING** `1-SITE/apps/web/src/app/checkout/configurator/ConfiguratorPageClient.tsx:1844`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span className="text-2xl font-light tracking-tighter text-va-black leading-none">`
+- **WARNING** `1-SITE/apps/web/src/app/checkout/configurator/ConfiguratorPageClient.tsx:170`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error("Share failed:", e);`
+- **WARNING** `1-SITE/apps/web/src/app/checkout/configurator/ConfiguratorPageClient.tsx:355`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Script analysis failed:', e);`
+- **WARNING** `1-SITE/apps/web/src/app/checkout/configurator/ConfiguratorPageClient.tsx:428`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('AI Suggestion Error:', err);`
+- **WARNING** `1-SITE/apps/web/src/app/checkout/configurator/ConfiguratorPageClient.tsx:455`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn('playClick failed:', err);`
+- **WARNING** `1-SITE/apps/web/src/app/checkout/configurator/ConfiguratorPageClient.tsx:499`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Drop extraction failed:', err);`
+- **WARNING** `1-SITE/apps/web/src/app/checkout/configurator/ConfiguratorPageClient.tsx:729`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn('playClick failed:', err);`
+- **WARNING** `1-SITE/apps/web/src/app/checkout/configurator/ConfiguratorPageClient.tsx:880`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Configurator] Price is 0. Cannot add to cart.');`
+- **WARNING** `1-SITE/apps/web/src/app/checkout/configurator/ConfiguratorPageClient.tsx:935`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `}).catch(err => console.warn('[Admin Notify] Failed:', err));`
 - **WARNING** `1-SITE/apps/web/src/app/checkout/success/SuccessPageClient.tsx:143`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="max-w-xl mx-auto pt-8">`
 - **WARNING** `1-SITE/apps/web/src/app/checkout/success/SuccessPageClient.tsx:150`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -2420,10 +3372,18 @@
   > `<div className="w-20 h-20 bg-va-off-white rounded-full flex items-center justify-center mx-auto text-va-black/10">`
 - **WARNING** `1-SITE/apps/web/src/app/demos/page.tsx:279`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<h3 className="text-2xl font-light text-va-black/40">Geen demo&apos;s gevonden voor deze filters.</h3>`
+- **WARNING** `1-SITE/apps/web/src/app/error.tsx:25`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('App error:', error);`
+- **WARNING** `1-SITE/apps/web/src/app/error.tsx:31`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn('[Nuclear] Chunk error detected. Triggering self-healing reload...');`
+- **WARNING** `1-SITE/apps/web/src/app/error.tsx:61`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Watchdog notification failed:', e);`
 - **WARNING** `1-SITE/apps/web/src/app/global-error.tsx:31`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `<html lang="nl">`
 - **WARNING** `1-SITE/apps/web/src/app/global-error.tsx:33`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `<TranslationProvider lang="nl">`
+- **WARNING** `1-SITE/apps/web/src/app/global-error.tsx:27`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Global error (root layout):', error);`
 - **ERROR** `1-SITE/apps/web/src/app/layout.tsx:60`: Hardcoded contactgegevens gedetecteerd. Gebruik MarketManager.
   > `return MarketManagerServer.getCurrentMarket(process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be');`
 - **ERROR** `1-SITE/apps/web/src/app/layout.tsx:66`: Hardcoded contactgegevens gedetecteerd. Gebruik MarketManager.
@@ -2452,6 +3412,18 @@
   > `const translationPromise = getTranslationsServer(langHeader || 'nl');`
 - **WARNING** `1-SITE/apps/web/src/app/layout.tsx:278`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `const navConfig = await ConfigBridge.getNavConfig(journeyKey, langHeader || 'nl');`
+- **WARNING** `1-SITE/apps/web/src/app/layout.tsx:59`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' getMarketSafe: Market resolution returned invalid data, using fallback');`
+- **WARNING** `1-SITE/apps/web/src/app/layout.tsx:65`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' getMarketSafe: Failed or timed out:', err);`
+- **WARNING** `1-SITE/apps/web/src/app/layout.tsx:114`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' generateMetadata: Failed to load locales:', err);`
+- **WARNING** `1-SITE/apps/web/src/app/layout.tsx:132`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' generateMetadata: Failed to load translations:', err);`
+- **WARNING** `1-SITE/apps/web/src/app/layout.tsx:250`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' RootLayout: Failed to load translations:', err);`
+- **WARNING** `1-SITE/apps/web/src/app/layout.tsx:259`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' RootLayout: Failed to load world languages:', err);`
 - **WARNING** `1-SITE/apps/web/src/app/light/page.tsx:16`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `loading: () => <div className="fixed inset-0 z-0 bg-va-off-white" />`
 - **WARNING** `1-SITE/apps/web/src/app/light/page.tsx:67`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -2490,6 +3462,8 @@
   > `<div className="flex flex-col items-center gap-4">`
 - **WARNING** `1-SITE/apps/web/src/app/not-found.tsx:157`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="pt-24 opacity-0 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-500 fill-mode-forwards">`
+- **WARNING** `1-SITE/apps/web/src/app/not-found.tsx:75`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Watchdog failed:', err);`
 - **WARNING** `1-SITE/apps/web/src/app/page.tsx:26`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `loading: () => <div className="fixed inset-0 z-0 bg-va-off-white" />`
 - **WARNING** `1-SITE/apps/web/src/app/page.tsx:30`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -2588,6 +3562,8 @@
   > `t('gender.vrouwelijk', lang === 'fr' ? 'Féminin' : lang === 'en' ? 'Female' : 'Vrouwelijk')`
 - **WARNING** `1-SITE/apps/web/src/app/page.tsx:289`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `t('gender.vrouwelijk', lang === 'fr' ? 'Féminin' : lang === 'en' ? 'Female' : 'Vrouwelijk')`
+- **WARNING** `1-SITE/apps/web/src/app/sitemap.ts:51`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Sitemap generation error (database unreachable):', error);`
 - **WARNING** `1-SITE/apps/web/src/app/studio/[slug]/page.tsx:57`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<Suspense fallback={<div className="h-[600px] bg-va-black animate-pulse" />}>`
 - **WARNING** `1-SITE/apps/web/src/app/studio/[slug]/page.tsx:64`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -2632,6 +3608,10 @@
   > `<div className="absolute -top-20 -right-20 w-96 h-96 bg-primary/5 rounded-full blur-[100px] -z-10" />`
 - **WARNING** `1-SITE/apps/web/src/components/academy/AcademyProtectionWrapper.tsx:12`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div`
+- **WARNING** `1-SITE/apps/web/src/components/academy/AcademyRecorder.tsx:96`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error("Microphone access denied", err);`
+- **WARNING** `1-SITE/apps/web/src/components/academy/AcademyRecorder.tsx:145`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error("Upload failed", err);`
 - **WARNING** `1-SITE/apps/web/src/components/academy/VideoPlayer.tsx:53`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="relative group aspect-video bg-va-black rounded-[32px] overflow-hidden shadow-2xl border border-white/5">`
 - **WARNING** `1-SITE/apps/web/src/components/academy/VideoPlayer.tsx:77`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -2726,6 +3706,8 @@
   > `<div className="p-10 border-t border-black/[0.03] bg-va-off-white/30 flex justify-end gap-4">`
 - **WARNING** `1-SITE/apps/web/src/components/admin/ActorEditDrawer.tsx:310`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span className="text-xs font-black uppercase tracking-widest">Wijzigingen Opslaan</span>`
+- **WARNING** `1-SITE/apps/web/src/components/admin/ActorEditDrawer.tsx:62`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Failed to fetch actor:', error);`
 - **WARNING** `1-SITE/apps/web/src/components/admin/AdminDashboardContent.tsx:197`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="p-20 text-center"><Loader2 className="animate-spin mx-auto text-primary/20" size={40} /></div>`
 - **WARNING** `1-SITE/apps/web/src/components/admin/AdminDashboardContent.tsx:226`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -2734,6 +3716,8 @@
   > `<span>Genereer & Kopieer</span>`
 - **WARNING** `1-SITE/apps/web/src/components/admin/AdminDashboardContent.tsx:315`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex flex-col gap-2">`
+- **WARNING** `1-SITE/apps/web/src/components/admin/AdminDashboardContent.tsx:112`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Failed to fetch dashboard data', err);`
 - **WARNING** `1-SITE/apps/web/src/components/admin/AdminHeader.tsx:20`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="relative w-8 h-8 bg-va-black rounded-[8px] flex items-center justify-center overflow-hidden transition-transform">`
 - **WARNING** `1-SITE/apps/web/src/components/admin/AdminHeader.tsx:31`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -2748,6 +3732,8 @@
   > `<div className="w-px h-4 bg-black/10 mx-2" />`
 - **WARNING** `1-SITE/apps/web/src/components/admin/AdminHeader.tsx:47`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="w-px h-4 bg-black/10 mx-2" />`
+- **WARNING** `1-SITE/apps/web/src/components/admin/AdminHeader.tsx:14`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[AdminHeader] Attempting to load logo: ${market.logo_url} (Market: ${market.market_code})`);`
 - **WARNING** `1-SITE/apps/web/src/components/admin/BentoArchitect.tsx:50`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div`
 - **WARNING** `1-SITE/apps/web/src/components/admin/BentoArchitect.tsx:59`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -2810,6 +3796,8 @@
   > `<div className="text-[15px] font-black text-primary">LIVE</div>`
 - **WARNING** `1-SITE/apps/web/src/components/admin/BentoArchitect.tsx:250`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<p className="text-[15px] text-white/20 font-medium italic">`
+- **WARNING** `1-SITE/apps/web/src/components/admin/BentoArchitect.tsx:99`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Failed to analyze layout:', e);`
 - **WARNING** `1-SITE/apps/web/src/components/admin/CertificateTrigger.tsx:39`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="w-full">`
 - **WARNING** `1-SITE/apps/web/src/components/admin/CodyPreviewBanner.tsx:53`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -2866,6 +3854,12 @@
   > `<div className="col-span-full p-20 text-center border-2 border-dashed border-zinc-800 rounded-3xl">`
 - **WARNING** `1-SITE/apps/web/src/components/admin/EmailApprovalDashboard.tsx:121`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<p className="text-zinc-500 font-bold tracking-widest">Geen wachtende e-mails. Alles is clean. </p>`
+- **WARNING** `1-SITE/apps/web/src/components/admin/EmailApprovalDashboard.tsx:23`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Failed to fetch pending emails:', error);`
+- **WARNING** `1-SITE/apps/web/src/components/admin/EmailApprovalDashboard.tsx:43`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Approval failed:', error);`
+- **WARNING** `1-SITE/apps/web/src/components/admin/FixedCostsInstrument.tsx:40`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error("Fout bij opslaan kosten:", error);`
 - **WARNING** `1-SITE/apps/web/src/components/admin/GhostModeBar.tsx:23`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="max-w-7xl mx-auto flex items-center justify-between">`
 - **WARNING** `1-SITE/apps/web/src/components/admin/GhostModeBar.tsx:24`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -2928,6 +3922,22 @@
   > `<div className="p-4 bg-white border-t border-black/5 flex gap-2 overflow-x-auto no-scrollbar">`
 - **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:540`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="text-center">`
+- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:147`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Push toggle failed', err);`
+- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:168`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error("[LiveChatWatcher] Fetch error:", res.status, errData);`
+- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:171`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error("Failed to fetch conversations", e);`
+- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:201`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error("Failed to fetch messages", e);`
+- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:455`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error("Failed to send reply", err);`
+- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:493`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error("Failed to take over chat", err);`
+- **WARNING** `1-SITE/apps/web/src/components/admin/LiveChatWatcher.tsx:526`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error("Failed to release chat", err);`
+- **WARNING** `1-SITE/apps/web/src/components/admin/PageRenderer.tsx:127`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Failed to sync layout:', error);`
 - **WARNING** `1-SITE/apps/web/src/components/admin/SortableActorRow.tsx:47`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div ref={setNodeRef} style={style} className="touch-none">`
 - **WARNING** `1-SITE/apps/web/src/components/admin/SortableActorRow.tsx:55`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -3010,6 +4020,8 @@
   > `<p className="text-[15px] text-va-black mb-4 italic">&quot;{draft}&quot;</p>`
 - **WARNING** `1-SITE/apps/web/src/components/admin/VoiceCommand.tsx:50`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex gap-2">`
+- **WARNING** `1-SITE/apps/web/src/components/admin/VoiceCommand.tsx:33`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(" Shadow Command Geactiveerd:", draft);`
 - **WARNING** `1-SITE/apps/web/src/components/admin/VoiceManagerContent.tsx:271`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex-1 space-y-2">`
 - **WARNING** `1-SITE/apps/web/src/components/admin/VoiceManagerContent.tsx:272`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -3022,6 +4034,8 @@
   > `<div className="w-32 h-12 bg-va-off-white rounded-[10px]" />`
 - **WARNING** `1-SITE/apps/web/src/components/admin/VoiceManagerContent.tsx:277`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="w-40 h-4 bg-va-off-white rounded-full" />`
+- **WARNING** `1-SITE/apps/web/src/components/admin/VoiceManagerContent.tsx:84`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Failed to fetch actors:', error);`
 - **WARNING** `1-SITE/apps/web/src/components/admin/WorkshopEditionEditor.tsx:72`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="grid grid-cols-1 md:grid-cols-2 gap-8">`
 - **WARNING** `1-SITE/apps/web/src/components/admin/WorkshopEditionEditor.tsx:75`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -3036,6 +4050,10 @@
   > `<div className="flex items-center gap-2 text-black/40">`
 - **WARNING** `1-SITE/apps/web/src/components/admin/WorkshopEditionEditor.tsx:154`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex items-center gap-2 text-black/40">`
+- **WARNING** `1-SITE/apps/web/src/components/admin/WorkshopEditionEditor.tsx:40`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Failed to fetch metadata:', error);`
+- **WARNING** `1-SITE/apps/web/src/components/admin/WorkshopEditionEditor.tsx:63`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Save error:', error);`
 - **WARNING** `1-SITE/apps/web/src/components/admin/WorldSelector.tsx:20`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `if (isLoading) return <div className="w-32 h-8 bg-va-black/5 animate-pulse rounded-full" />;`
 - **WARNING** `1-SITE/apps/web/src/components/admin/WorldSelector.tsx:27`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -3082,6 +4100,8 @@
   > `<p className="text-[15px] font-black text-va-black/20 tracking-widest">Vanaf</p>`
 - **WARNING** `1-SITE/apps/web/src/components/admin/widgets/DynamicActorFeed.tsx:116`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<p className="text-[15px] font-black tracking-tighter">{actor.startingPrice}</p>`
+- **WARNING** `1-SITE/apps/web/src/components/admin/widgets/DynamicActorFeed.tsx:56`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Failed to fetch actors for widget:', error);`
 - **WARNING** `1-SITE/apps/web/src/components/artist/DonationModal.tsx:105`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div>`
 - **WARNING** `1-SITE/apps/web/src/components/artist/DonationModal.tsx:124`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -3090,6 +4110,8 @@
   > `<div className="space-y-4">`
 - **WARNING** `1-SITE/apps/web/src/components/artist/DonationModal.tsx:183`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<p className="text-[9px] text-va-black/20 font-medium text-center uppercase tracking-widest leading-relaxed">`
+- **WARNING** `1-SITE/apps/web/src/components/artist/DonationModal.tsx:73`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(err);`
 - **WARNING** `1-SITE/apps/web/src/components/audio/AudioReviewDashboard.tsx:50`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-6 bg-va-off-white rounded-[32px] border border-gray-100 shadow-sm">`
 - **WARNING** `1-SITE/apps/web/src/components/audio/AudioReviewDashboard.tsx:53`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -3190,8 +4212,24 @@
   > `<span className="block text-[15px] font-bold text-gray-400 tracking-widest">`
 - **WARNING** `1-SITE/apps/web/src/components/audio/AudioReviewDashboard.tsx:204`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span className="text-[15px] font-medium text-gray-700">`
+- **WARNING** `1-SITE/apps/web/src/components/backoffice/MediaLibrary.tsx:90`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Failed to fetch media', e);`
+- **WARNING** `1-SITE/apps/web/src/components/backoffice/MediaLibrary.tsx:112`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Failed to fetch actors', e);`
+- **WARNING** `1-SITE/apps/web/src/components/backoffice/MediaLibrary.tsx:138`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Conversion failed', e);`
+- **WARNING** `1-SITE/apps/web/src/components/backoffice/MediaLibrary.tsx:169`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Upload failed', e);`
+- **WARNING** `1-SITE/apps/web/src/components/backoffice/MediaLibrary.tsx:191`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Visibility update failed', e);`
+- **WARNING** `1-SITE/apps/web/src/components/backoffice/MediaLibrary.tsx:212`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Bulk visibility failed', e);`
+- **WARNING** `1-SITE/apps/web/src/components/backoffice/MediaLibrary.tsx:234`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Bulk delete failed', e);`
 - **WARNING** `1-SITE/apps/web/src/components/backoffice/OrderIntelligence.tsx:61`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="space-y-8 animate-in fade-in duration-700">`
+- **WARNING** `1-SITE/apps/web/src/components/backoffice/ProfitEngineWidget.tsx:35`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error("Failed to fetch profit stats", e);`
 - **WARNING** `1-SITE/apps/web/src/components/checkout/AcademyUpsellSection.tsx:15`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="space-y-6 mt-12 pt-12 border-t border-black/5">`
 - **WARNING** `1-SITE/apps/web/src/components/checkout/AcademyUpsellSection.tsx:16`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -3246,6 +4284,8 @@
   > `<div>`
 - **WARNING** `1-SITE/apps/web/src/components/checkout/BriefingStep.tsx:99`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex items-center gap-3">`
+- **WARNING** `1-SITE/apps/web/src/components/checkout/BriefingStep.tsx:57`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Failed to generate AI draft:', err);`
 - **WARNING** `1-SITE/apps/web/src/components/checkout/CheckoutForm.tsx:460`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span className="text-[10px] font-bold uppercase tracking-widest">`
 - **WARNING** `1-SITE/apps/web/src/components/checkout/CheckoutForm.tsx:535`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -3290,6 +4330,18 @@
   > `<div className="w-20 h-20 bg-green-500/10 text-green-500 rounded-full flex items-center justify-center mx-auto mb-4">`
 - **WARNING** `1-SITE/apps/web/src/components/checkout/CheckoutForm.tsx:984`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="space-y-2">`
+- **WARNING** `1-SITE/apps/web/src/components/checkout/CheckoutForm.tsx:127`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[CheckoutForm] Initiating VAT validation for: ${formData.vat_number}`);`
+- **WARNING** `1-SITE/apps/web/src/components/checkout/CheckoutForm.tsx:131`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[CheckoutForm] VAT API Result:`, data);`
+- **WARNING** `1-SITE/apps/web/src/components/checkout/CheckoutForm.tsx:232`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn('[Admin Lookup] Failed to fetch user data:', e);`
+- **WARNING** `1-SITE/apps/web/src/components/checkout/CheckoutForm.tsx:336`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('[CheckoutForm] 📦 SUBMITTING PAYLOAD:', payload);`
+- **WARNING** `1-SITE/apps/web/src/components/checkout/CheckoutForm.tsx:345`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('[Checkout] API Response:', data);`
+- **WARNING** `1-SITE/apps/web/src/components/checkout/CheckoutForm.tsx:374`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Checkout error:', error);`
 - **WARNING** `1-SITE/apps/web/src/components/checkout/CommercialMediaSelectionModal.tsx:42`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<polyline points="7 2 12 7 17 2" />`
 - **WARNING** `1-SITE/apps/web/src/components/checkout/CommercialMediaSelectionModal.tsx:78`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -3586,6 +4638,14 @@
   > `<path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />`
 - **WARNING** `1-SITE/apps/web/src/components/checkout/PricingSummary.tsx:840`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex items-center gap-2 text-va-black/20">`
+- **WARNING** `1-SITE/apps/web/src/components/checkout/PricingSummary.tsx:56`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn('[PricingSummary] Failed to fetch review stats:', e);`
+- **WARNING** `1-SITE/apps/web/src/components/checkout/PricingSummary.tsx:135`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('[Checkout] 📦 BLACK BOX SNAPSHOT:', payload);`
+- **WARNING** `1-SITE/apps/web/src/components/checkout/PricingSummary.tsx:137`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('[Checkout] Submitting validated payload...', {`
+- **WARNING** `1-SITE/apps/web/src/components/checkout/PricingSummary.tsx:181`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Checkout] Submission failed:', error);`
 - **WARNING** `1-SITE/apps/web/src/components/checkout/QuoteDownloadButton.tsx:102`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="space-y-3">`
 - **WARNING** `1-SITE/apps/web/src/components/checkout/QuoteDownloadButton.tsx:103`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -3598,6 +4658,10 @@
   > `<div className="flex gap-2">`
 - **WARNING** `1-SITE/apps/web/src/components/checkout/QuoteDownloadButton.tsx:162`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="relative flex-1">`
+- **WARNING** `1-SITE/apps/web/src/components/checkout/QuoteDownloadButton.tsx:55`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('PDF Error:', error);`
+- **WARNING** `1-SITE/apps/web/src/components/checkout/QuoteDownloadButton.tsx:93`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Email Error:', error);`
 - **WARNING** `1-SITE/apps/web/src/components/checkout/TelephonySmartSuggestions.tsx:288`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `if (part === '[Bedrijf]') return <span key={i} className="font-bold text-primary">{companyName || '...'}</span>;`
 - **WARNING** `1-SITE/apps/web/src/components/checkout/TelephonySmartSuggestions.tsx:289`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -3724,6 +4788,8 @@
   > `<p className="text-va-black/60 font-light leading-relaxed">`
 - **WARNING** `1-SITE/apps/web/src/components/checkout/TermsModal.tsx:113`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="p-8 bg-va-off-white/50 border-t border-black/5 flex justify-center">`
+- **WARNING** `1-SITE/apps/web/src/components/checkout/VoiceStep.tsx:48`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(e);`
 - **WARNING** `1-SITE/apps/web/src/components/forms/ActorProfileForm.tsx:109`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `if (loading) return <div className="p-20 text-center font-light opacity-40">`
 - **WARNING** `1-SITE/apps/web/src/components/forms/ActorProfileForm.tsx:118`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -3794,6 +4860,8 @@
   > `<div className="space-y-2">`
 - **WARNING** `1-SITE/apps/web/src/components/forms/ActorProfileForm.tsx:437`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="pt-12 flex justify-between">`
+- **WARNING** `1-SITE/apps/web/src/components/forms/ActorProfileForm.tsx:82`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Failed to load taxonomies:', err);`
 - **WARNING** `1-SITE/apps/web/src/components/ivr/IVROverview.tsx:43`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="bg-white rounded-[40px] p-12 border border-black/5 shadow-aura">`
 - **WARNING** `1-SITE/apps/web/src/components/ivr/IVROverview.tsx:44`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -3888,6 +4956,8 @@
   > `<p className="text-[15px] font-medium mt-1">`
 - **WARNING** `1-SITE/apps/web/src/components/johfrai/SmartDemoExplorer.tsx:21`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `{ id: 'it', label: 'IT & Tech', icon: Sparkles, color: 'bg-purple-500' },`
+- **WARNING** `1-SITE/apps/web/src/components/johfrai/SmartDemoExplorer.tsx:58`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Error fetching demos:', error);`
 - **WARNING** `1-SITE/apps/web/src/components/legacy/AgencyContent.tsx:198`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className={cn("max-w-[1440px] mx-auto px-0 transition-all duration-700", state.currentStep === 'checkout' ? "pt-24" : "pt-0")} id="master-control-anchor">`
 - **WARNING** `1-SITE/apps/web/src/components/legacy/AgencyContent.tsx:201`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -3914,6 +4984,16 @@
   > `<div className="lg:col-span-5 sticky top-10 space-y-6">`
 - **WARNING** `1-SITE/apps/web/src/components/legacy/AgencyContent.tsx:328`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="rotate-180">`
+- **WARNING** `1-SITE/apps/web/src/components/legacy/AgencyContent.tsx:87`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[AgencyContent] Input actors: ${mappedActors.length}. Filters:`, filterOptions);`
+- **WARNING** `1-SITE/apps/web/src/components/legacy/AgencyContent.tsx:88`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[AgencyContent] First 10 actors raw:`, mappedActors.slice(0, 10).map(a => ({ id: a.id, name: a.display_name, native_lang_id: a.native_lang_id, status: a.status, is_public: a.is_public, wp_product_id: a.wp_product_id })));`
+- **WARNING** `1-SITE/apps/web/src/components/legacy/AgencyContent.tsx:94`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[AgencyContent] Result actors: ${result.length}`, {`
+- **WARNING** `1-SITE/apps/web/src/components/legacy/AgencyContent.tsx:112`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[AgencyContent] Initializing with actor from homepage: ${actor.display_name}`);`
+- **WARNING** `1-SITE/apps/web/src/components/legacy/AgencyContent.tsx:131`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn("[AgencyContent] Script step active but no actor selected on agency page. Reverting to voice step.");`
 - **WARNING** `1-SITE/apps/web/src/components/legacy/ArtistDetailClient.tsx:27`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `loading: () => <div className="fixed inset-0 z-0 bg-va-black" />`
 - **WARNING** `1-SITE/apps/web/src/components/legacy/ArtistDetailClient.tsx:31`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -4070,6 +5150,12 @@
   > `<div className="order-2 lg:order-1 lg:col-span-3 w-full">`
 - **WARNING** `1-SITE/apps/web/src/components/legacy/VoiceDetailClient.tsx:279`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="lg:sticky lg:top-10">`
+- **WARNING** `1-SITE/apps/web/src/components/legacy/VoiceDetailClient.tsx:100`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error("Token sync failed:", e);`
+- **WARNING** `1-SITE/apps/web/src/components/mailbox/EmailThreadViewInstrument.tsx:93`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' Drafting Error:', error);`
+- **WARNING** `1-SITE/apps/web/src/components/mailbox/PromotionModal.tsx:46`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' Promotion Error:', error);`
 - **WARNING** `1-SITE/apps/web/src/components/portfolio/JohfrahActionDock.tsx:41`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="w-px h-8 bg-black/5" />`
 - **WARNING** `1-SITE/apps/web/src/components/portfolio/JohfrahActionDock.tsx:55`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -4086,6 +5172,8 @@
   > `<div className="max-w-7xl mx-auto py-12 px-6">`
 - **WARNING** `1-SITE/apps/web/src/components/portfolio/JohfrahConfiguratorSPA.tsx:95`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="animate-in fade-in slide-in-from-bottom-4 duration-700">`
+- **WARNING** `1-SITE/apps/web/src/components/portfolio/JohfrahConfiguratorSPA.tsx:29`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error("Failed to auto-select Johfrah", e);`
 - **WARNING** `1-SITE/apps/web/src/components/portfolio/JohfrahPortfolioSkeleton.tsx:14`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="min-h-screen bg-va-off-white">`
 - **WARNING** `1-SITE/apps/web/src/components/portfolio/JohfrahPortfolioSkeleton.tsx:18`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -4162,6 +5250,8 @@
   > `<div className="col-span-full py-12 text-center animate-pulse text-black/20 font-black tracking-widest">`
 - **WARNING** `1-SITE/apps/web/src/components/studio/AppointmentPicker.tsx:90`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="col-span-full py-12 text-center text-black/20 font-black tracking-widest">`
+- **WARNING** `1-SITE/apps/web/src/components/studio/AppointmentPicker.tsx:28`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Failed to fetch slots:', error);`
 - **WARNING** `1-SITE/apps/web/src/components/studio/BookingFunnel.tsx:136`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="h-4 w-32 bg-va-black/5 rounded-full mb-4" />`
 - **WARNING** `1-SITE/apps/web/src/components/studio/BookingFunnel.tsx:137`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -4180,6 +5270,8 @@
   > `<div className="w-full h-[68px] bg-va-black/5 rounded-[10px]" />`
 - **WARNING** `1-SITE/apps/web/src/components/studio/BookingFunnel.tsx:213`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className={cn(`
+- **WARNING** `1-SITE/apps/web/src/components/studio/BookingFunnel.tsx:125`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[BookingFunnel] Error during booking:', error);`
 - **WARNING** `1-SITE/apps/web/src/components/studio/BriefingSelector.tsx:244`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="grid grid-cols-3 gap-3">`
 - **WARNING** `1-SITE/apps/web/src/components/studio/BriefingSelector.tsx:253`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -4236,6 +5328,14 @@
   > `<span className="text-[12px] font-medium truncate text-va-black/60">{file.name}</span>`
 - **WARNING** `1-SITE/apps/web/src/components/studio/BriefingSelector.tsx:459`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex items-center gap-2">`
+- **WARNING** `1-SITE/apps/web/src/components/studio/BriefingSelector.tsx:104`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Failed to start recording:', err);`
+- **WARNING** `1-SITE/apps/web/src/components/studio/BriefingSelector.tsx:181`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Extraction failed:', data.error);`
+- **WARNING** `1-SITE/apps/web/src/components/studio/BriefingSelector.tsx:184`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Error extracting script:', err);`
+- **WARNING** `1-SITE/apps/web/src/components/studio/BriefingSelector.tsx:216`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Transcription failed:', err);`
 - **WARNING** `1-SITE/apps/web/src/components/studio/DayScheduleIsland.tsx:28`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">`
 - **WARNING** `1-SITE/apps/web/src/components/studio/DayScheduleIsland.tsx:31`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -4322,6 +5422,12 @@
   > `<div className="w-5 h-5 rounded-full bg-primary flex items-center justify-center animate-in zoom-in duration-300">`
 - **WARNING** `1-SITE/apps/web/src/components/studio/MusicSelector.tsx:206`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="py-12 text-center bg-va-off-white/50 rounded-2xl border border-dashed border-black/5">`
+- **WARNING** `1-SITE/apps/web/src/components/studio/MusicSelector.tsx:36`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('[MusicSelector] Fetching music library...');`
+- **WARNING** `1-SITE/apps/web/src/components/studio/MusicSelector.tsx:42`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[MusicSelector] Received ${data?.length || 0} tracks`);`
+- **WARNING** `1-SITE/apps/web/src/components/studio/MusicSelector.tsx:45`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Failed to fetch music library:', err);`
 - **WARNING** `1-SITE/apps/web/src/components/studio/ReviewGrid.tsx:42`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">`
 - **WARNING** `1-SITE/apps/web/src/components/studio/ReviewGrid.tsx:49`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -4468,6 +5574,8 @@
   > `<div className="mt-10 h-3 w-full bg-va-black/5 rounded-full overflow-hidden p-[2px]">`
 - **WARNING** `1-SITE/apps/web/src/components/studio/WorkshopFunnel.tsx:108`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div`
+- **WARNING** `1-SITE/apps/web/src/components/studio/WorkshopFunnel.tsx:39`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`Atomic Mapping: Funnel step ${label} clicked, intent: management`);`
 - **WARNING** `1-SITE/apps/web/src/components/studio/WorkshopHeroIsland.tsx:48`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1200px] h-[1200px] bg-primary/5 rounded-full blur-[150px] -translate-y-1/2 pointer-events-none" />`
 - **WARNING** `1-SITE/apps/web/src/components/studio/WorkshopHeroIsland.tsx:51`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -4536,12 +5644,18 @@
   > `<div className="absolute top-6 left-6 right-6 flex gap-1.5 z-40 pr-12">`
 - **WARNING** `1-SITE/apps/web/src/components/studio/WorkshopQuiz.tsx:297`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div`
+- **WARNING** `1-SITE/apps/web/src/components/system/VersionGuard.tsx:79`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn(`🚀 [VersionGuard] New version detected: ${serverVersion} (current: ${currentVersion}). Reloading...`);`
 - **WARNING** `1-SITE/apps/web/src/components/ui/AcademyContent.tsx:65`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `if (glossary.length === 0) return <div dangerouslySetInnerHTML={{ __html: rawContent }} />;`
 - **WARNING** `1-SITE/apps/web/src/components/ui/AcademyContent.tsx:72`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className={cn("academy-content-inner", className)}>`
 - **WARNING** `1-SITE/apps/web/src/components/ui/AcademyContent.tsx:76`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `return <span key={index} dangerouslySetInnerHTML={{ __html: part }} />;`
+- **WARNING** `1-SITE/apps/web/src/components/ui/AcademyContent.tsx:55`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `.catch(err => console.error("Failed to fetch glossary for tooltips", err));`
+- **WARNING** `1-SITE/apps/web/src/components/ui/AcademyPdfButton.tsx:59`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error("PDF Generation failed:", error);`
 - **WARNING** `1-SITE/apps/web/src/components/ui/ActorEditModal.tsx:241`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="mt-2 px-1 animate-in fade-in duration-300">`
 - **WARNING** `1-SITE/apps/web/src/components/ui/ActorEditModal.tsx:242`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -5042,6 +6156,24 @@
   > `<div className="flex items-center gap-2 text-[11px] text-va-black/40 font-medium italic max-w-[250px] leading-tight">`
 - **WARNING** `1-SITE/apps/web/src/components/ui/ActorEditModal.tsx:2575`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex gap-4">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/ActorEditModal.tsx:92`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` CHRIS-PROTOCOL: Resolving native_lang "${formData.native_lang}" to code "${found.code}"`);`
+- **WARNING** `1-SITE/apps/web/src/components/ui/ActorEditModal.tsx:121`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` CHRIS-PROTOCOL: Resolving extra_langs to codes:`, newLangs);`
+- **WARNING** `1-SITE/apps/web/src/components/ui/ActorEditModal.tsx:333`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error("Failed to load data", e);`
+- **WARNING** `1-SITE/apps/web/src/components/ui/ActorEditModal.tsx:378`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` CHRIS-PROTOCOL: Auto-populating GLOBAL rates from ${sourceMarket} for ${actor.display_name}`);`
+- **WARNING** `1-SITE/apps/web/src/components/ui/ActorEditModal.tsx:383`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('Final Initial Rates:', initialRates);`
+- **WARNING** `1-SITE/apps/web/src/components/ui/ActorEditModal.tsx:435`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` ADMIN: Auto-saving profile with new photo...`, { actorId: actor.id, mediaId });`
+- **WARNING** `1-SITE/apps/web/src/components/ui/ActorEditModal.tsx:471`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Auto-save failed:', err);`
+- **WARNING** `1-SITE/apps/web/src/components/ui/ActorEditModal.tsx:506`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Demo upload error:', error);`
+- **WARNING** `1-SITE/apps/web/src/components/ui/ActorEditModal.tsx:568`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('🚀 [ActorEditModal] Forensic Save Trace:', {`
 - **WARNING** `1-SITE/apps/web/src/components/ui/ActorReorderModal.tsx:67`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div`
 - **WARNING** `1-SITE/apps/web/src/components/ui/ActorReorderModal.tsx:75`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -5108,6 +6240,8 @@
   > `<div className="flex gap-3">`
 - **WARNING** `1-SITE/apps/web/src/components/ui/ActorReorderModal.tsx:365`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span className="text-[13px] font-bold tracking-widest uppercase">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/ActorReorderModal.tsx:248`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Save reorder failed:', err);`
 - **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:228`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="bg-white text-va-black rounded-[40px] shadow-aura-lg overflow-hidden border border-black/[0.03]">`
 - **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:229`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -5258,6 +6392,8 @@
   > `const isFr = language.startsWith('fr');`
 - **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:189`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `const isEn = language.startsWith('en');`
+- **WARNING** `1-SITE/apps/web/src/components/ui/AgencyCalculator.tsx:95`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Failed to fetch pricing config', err);`
 - **WARNING** `1-SITE/apps/web/src/components/ui/AgencyFilterSheet.tsx:142`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span className="text-[15px] font-bold tracking-widest">{j.label}</span>`
 - **WARNING** `1-SITE/apps/web/src/components/ui/AgencyFilterSheet.tsx:232`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -5374,6 +6510,8 @@
   > `<h4 className="text-lg font-light tracking-tight leading-none">Kies je stem</h4>`
 - **WARNING** `1-SITE/apps/web/src/components/ui/BlueprintExplorer.tsx:95`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<p className="text-[15px] text-white/60 leading-relaxed"><VoiceglotText  translationKey="auto.blueprintexplorer.onze_top_selectie_va.5b06ac" defaultText="Onze top-selectie van stemacteurs staat klaar om jouw unieke script tot leven te brengen." /></p>`
+- **WARNING** `1-SITE/apps/web/src/components/ui/BlueprintExplorer.tsx:32`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error("Failed to fetch blueprints", e);`
 - **WARNING** `1-SITE/apps/web/src/components/ui/CartDrawer.tsx:33`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="fixed inset-0 z-[10000] overflow-hidden">`
 - **WARNING** `1-SITE/apps/web/src/components/ui/CartDrawer.tsx:34`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -5388,55 +6526,55 @@
   > `<div className="flex items-center gap-4">`
 - **WARNING** `1-SITE/apps/web/src/components/ui/CartDrawer.tsx:41`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="w-10 h-10 bg-va-black rounded-xl flex items-center justify-center text-white">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/CartDrawer.tsx:50`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/CartDrawer.tsx:44`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<h2 className="text-xl font-light tracking-tighter">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/CartDrawer.tsx:55`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/CartDrawer.tsx:49`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `cart: (children) => <span className="text-primary">{children === 'cart' ? t('common.cart_word', 'Mandje') : children}</span>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/CartDrawer.tsx:66`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/CartDrawer.tsx:60`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex-1 overflow-y-auto px-8 py-8">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/CartDrawer.tsx:68`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/CartDrawer.tsx:62`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="h-full flex flex-col items-center justify-center text-va-black/20 gap-4">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/CartDrawer.tsx:70`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/CartDrawer.tsx:64`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span className="text-[15px] font-black tracking-widest"><VoiceglotText  translationKey="auto.cartdrawer.laden___.cb4395" defaultText="Laden..." /></span>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/CartDrawer.tsx:73`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/CartDrawer.tsx:67`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="space-y-6">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/CartDrawer.tsx:75`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/CartDrawer.tsx:69`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div key={item.id} className="flex gap-4 p-4 bg-va-off-white rounded-[24px] group border border-transparent hover:border-black/5 transition-all">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/CartDrawer.tsx:76`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/CartDrawer.tsx:70`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex-1">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/CartDrawer.tsx:77`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/CartDrawer.tsx:71`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<h4 className="text-[15px] font-light tracking-tight mb-1">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/CartDrawer.tsx:80`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/CartDrawer.tsx:74`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex justify-between items-center">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/CartDrawer.tsx:81`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/CartDrawer.tsx:75`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span className="text-[11px] font-bold text-va-black/30 tracking-widest uppercase">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/CartDrawer.tsx:84`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/CartDrawer.tsx:78`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span className="font-black text-va-black">{SlimmeKassa.format(item.pricing?.total ?? item.pricing?.subtotal ?? 0)}</span>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/CartDrawer.tsx:97`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/CartDrawer.tsx:91`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="h-full flex flex-col items-center justify-center text-va-black/20 gap-4">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/CartDrawer.tsx:106`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/CartDrawer.tsx:93`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span className="text-[15px] font-black tracking-widest"><VoiceglotText  translationKey="auto.cartdrawer.je_mandje_is_leeg.559931" defaultText="Je mandje is leeg" /></span>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/CartDrawer.tsx:113`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/CartDrawer.tsx:100`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="px-8 py-8 bg-va-off-white border-t border-black/5 space-y-6">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/CartDrawer.tsx:114`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/CartDrawer.tsx:101`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="space-y-3">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/CartDrawer.tsx:115`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/CartDrawer.tsx:102`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex justify-between text-[15px] font-bold tracking-widest text-va-black/40">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/CartDrawer.tsx:116`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/CartDrawer.tsx:103`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span><VoiceglotText  translationKey="auto.cartdrawer.subtotaal.e48026" defaultText="Subtotaal" /></span>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/CartDrawer.tsx:117`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/CartDrawer.tsx:104`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span className="text-va-black">{SlimmeKassa.format(subtotal)}</span>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/CartDrawer.tsx:119`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/CartDrawer.tsx:106`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex justify-between text-[15px] font-bold tracking-widest text-va-black/40">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/CartDrawer.tsx:120`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/CartDrawer.tsx:107`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span><VoiceglotText translationKey="common.vat" defaultText="BTW" /> {isVatExempt ? `(${t('common.exempt', 'vrijgesteld')})` : '(21%)'}</span>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/CartDrawer.tsx:121`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/CartDrawer.tsx:108`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span className="text-va-black">{SlimmeKassa.format(vat)}</span>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/CartDrawer.tsx:123`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/CartDrawer.tsx:110`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="pt-4 border-t border-black/5 flex justify-between items-center">`
-- **WARNING** `1-SITE/apps/web/src/components/ui/CartDrawer.tsx:124`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/CartDrawer.tsx:111`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span className="text-[15px] font-black tracking-widest"><VoiceglotText  translationKey="auto.cartdrawer.totaal.e28895" defaultText="Totaal" /></span>`
-- **WARNING** `1-SITE/apps/web/src/components/ui/CartDrawer.tsx:125`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/components/ui/CartDrawer.tsx:112`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span className="text-3xl font-black text-primary tracking-tighter">{SlimmeKassa.format(total)}</span>`
 - **WARNING** `1-SITE/apps/web/src/components/ui/CastingDock.tsx:106`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex items-center pl-2 shrink-0 scale-90 md:scale-100">`
@@ -5466,12 +6604,18 @@
   > `<span className="text-[12px] md:text-[14px] font-bold tracking-widest uppercase leading-none">`
 - **WARNING** `1-SITE/apps/web/src/components/ui/CastingDock.tsx:183`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span className="text-[9px] md:text-[10px] font-medium opacity-70 leading-none mt-1 uppercase">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/CastingDock.tsx:84`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Failed to generate quick link:', err);`
 - **WARNING** `1-SITE/apps/web/src/components/ui/CollaborativeStudio.tsx:82`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="space-y-2">`
 - **WARNING** `1-SITE/apps/web/src/components/ui/CollaborativeStudio.tsx:97`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span className="text-[15px] font-light">`
 - **WARNING** `1-SITE/apps/web/src/components/ui/CollaborativeStudio.tsx:104`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/CollaborativeStudio.tsx:71`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('[Studio] Optimistic Upload Triggered', optimisticAudition);`
+- **WARNING** `1-SITE/apps/web/src/components/ui/CollaborativeStudio.tsx:74`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`Uploading audition for actor ${actorId}:`, file.name);`
 - **WARNING** `1-SITE/apps/web/src/components/ui/CommandPalette.tsx:97`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="w-full max-w-2xl bg-white rounded-[20px] shadow-2xl overflow-hidden border border-gray-100 flex flex-col animate-in fade-in zoom-in duration-200">`
 - **WARNING** `1-SITE/apps/web/src/components/ui/CommandPalette.tsx:98`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -5594,6 +6738,8 @@
   > `<div className="ml-auto flex items-center gap-1">`
 - **WARNING** `1-SITE/apps/web/src/components/ui/CommandPalette.tsx:367`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span className="text-[15px] font-black px-1.5 py-0.5 bg-gray-100 text-gray-400 rounded group-aria-selected:bg-white/20 group-aria-selected:text-white transition-colors">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/CommandPalette.tsx:81`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(data.logs);`
 - **WARNING** `1-SITE/apps/web/src/components/ui/FilterBar.tsx:92`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span className="text-[13px] font-bold tracking-widest uppercase">`
 - **WARNING** `1-SITE/apps/web/src/components/ui/GapAnalysisCard.tsx:89`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -5636,10 +6782,14 @@
   > `<div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/5 rounded-full blur-[80px] -ml-32 -mb-32 pointer-events-none" />`
 - **WARNING** `1-SITE/apps/web/src/components/ui/GapAnalysisCard.tsx:28`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `'it': [`
+- **WARNING** `1-SITE/apps/web/src/components/ui/GapAnalysisCard.tsx:70`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Failed to fetch owned assets:', error);`
 - **WARNING** `1-SITE/apps/web/src/components/ui/GlobalFooter.tsx:223`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span className="ml-2 opacity-50">({formatOpeningHours(generalSettings.opening_hours)})</span>`
 - **WARNING** `1-SITE/apps/web/src/components/ui/GlobalFooter.tsx:232`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span className="ml-1 opacity-50">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/GlobalFooter.tsx:152`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn('Footer admin fetch skipped');`
 - **WARNING** `1-SITE/apps/web/src/components/ui/GlobalNav.tsx:925`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex items-center gap-1.5 mt-0.5">`
 - **WARNING** `1-SITE/apps/web/src/components/ui/GlobalNav.tsx:931`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -5696,6 +6846,12 @@
   > `return pathname.split('/').filter(Boolean)[0] === 'en' ? 'en' : 'nl';`
 - **WARNING** `1-SITE/apps/web/src/components/ui/GlobalNav.tsx:298`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `return pathname.split('/').filter(Boolean)[0] === 'en' ? 'en' : 'nl';`
+- **WARNING** `1-SITE/apps/web/src/components/ui/GlobalNav.tsx:373`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[GlobalNav] Fetching nav for journey: ${journeyKey}`);`
+- **WARNING** `1-SITE/apps/web/src/components/ui/GlobalNav.tsx:393`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Failed to fetch nav config:', error);`
+- **WARNING** `1-SITE/apps/web/src/components/ui/GlobalNav.tsx:432`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Failed to save nav config:', e);`
 - **WARNING** `1-SITE/apps/web/src/components/ui/GlossaryCard.tsx:45`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="bg-white rounded-3xl p-6 border border-black/5 shadow-sm my-6 flex items-center justify-center gap-3">`
 - **WARNING** `1-SITE/apps/web/src/components/ui/GlossaryCard.tsx:47`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -5710,6 +6866,10 @@
   > `<h4 className="text-[15px] font-light tracking-widest mb-1">{displayTitle}</h4>`
 - **WARNING** `1-SITE/apps/web/src/components/ui/GlossaryCard.tsx:62`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<p className="text-[15px] text-va-black/60 leading-relaxed mb-3">{displayText}</p>`
+- **WARNING** `1-SITE/apps/web/src/components/ui/GlossaryCard.tsx:34`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Failed to fetch glossary term:', error);`
+- **WARNING** `1-SITE/apps/web/src/components/ui/InstrumentRenderer.tsx:140`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn(`[InstrumentRenderer] Legacy or unknown block type: ${type}`);`
 - **WARNING** `1-SITE/apps/web/src/components/ui/JourneyCta.tsx:80`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className={cn("rounded-[20px] p-8 md:p-12 text-white flex flex-col md:flex-row items-center justify-between gap-8 my-12 relative overflow-hidden shadow-aura-lg", config.color)}>`
 - **WARNING** `1-SITE/apps/web/src/components/ui/JourneyCta.tsx:81`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -5740,6 +6900,8 @@
   > `<div className="px-5 pb-5 animate-in fade-in slide-in-from-top-2 duration-300">`
 - **WARNING** `1-SITE/apps/web/src/components/ui/JourneyFaq.tsx:74`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<p className="text-[15px] text-va-black/40 font-light leading-relaxed whitespace-pre-wrap">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/JourneyFaq.tsx:35`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error("Failed to fetch FAQs", e);`
 - **WARNING** `1-SITE/apps/web/src/components/ui/JourneySelector.tsx:26`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex justify-center mb-12">`
 - **WARNING** `1-SITE/apps/web/src/components/ui/JourneySelector.tsx:27`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -5754,6 +6916,8 @@
   > `<div className="flex items-center gap-2.5">`
 - **WARNING** `1-SITE/apps/web/src/components/ui/LanguageSwitcher.tsx:243`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex flex-col">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/LanguageSwitcher.tsx:144`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `}).catch(err => console.error('Failed to sync language preference:', err));`
 - **WARNING** `1-SITE/apps/web/src/components/ui/LayoutInstrumentsClient.tsx:13`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `lang = 'nl',`
 - **WARNING** `1-SITE/apps/web/src/components/ui/LayoutInstrumentsServer.tsx:15`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
@@ -5852,6 +7016,18 @@
   > `if (lowLang.includes('it') || lowLang === 'italiaans') return <FlagIT size={size} />;`
 - **WARNING** `1-SITE/apps/web/src/components/ui/MediaMaster.tsx:53`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `if (lowLang.includes('pt') || lowLang === 'portugees') return <FlagPT size={size} />;`
+- **WARNING** `1-SITE/apps/web/src/components/ui/MediaMaster.tsx:115`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error("Autoplay failed:", err);`
+- **WARNING** `1-SITE/apps/web/src/components/ui/MediaMaster.tsx:129`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `audioRef.current.play().catch(err => console.error("Sync play failed:", err));`
+- **WARNING** `1-SITE/apps/web/src/components/ui/MediaMaster.tsx:144`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `.catch(err => console.error("Playback failed:", err));`
+- **WARNING** `1-SITE/apps/web/src/components/ui/MediaMaster.tsx:167`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(" MediaMaster: Audio error", {`
+- **WARNING** `1-SITE/apps/web/src/components/ui/MediaMaster.tsx:201`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Failed to rename demo:', err);`
+- **WARNING** `1-SITE/apps/web/src/components/ui/MediaMaster.tsx:230`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Failed to delete demo:', err);`
 - **WARNING** `1-SITE/apps/web/src/components/ui/MobileFloatingDock.tsx:58`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="fixed bottom-8 left-0 right-0 z-[300] px-6 md:hidden pointer-events-none">`
 - **WARNING** `1-SITE/apps/web/src/components/ui/MobileFloatingDock.tsx:59`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -5940,10 +7116,14 @@
   > `<div className="flex items-center gap-2 bg-white/50 p-3 rounded-xl border border-black/5">`
 - **WARNING** `1-SITE/apps/web/src/components/ui/MusicSelector.tsx:176`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<p className="text-[15px] font-medium text-va-black/60">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/MusicSelector.tsx:23`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Failed to load music library:', err);`
 - **WARNING** `1-SITE/apps/web/src/components/ui/NuclearErrorBoundary.tsx:66`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center text-red-600">`
 - **WARNING** `1-SITE/apps/web/src/components/ui/NuclearErrorBoundary.tsx:69`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="space-y-1">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/NuclearErrorBoundary.tsx:40`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(`🚨 [NuclearErrorBoundary:${this.props.name || 'Unknown'}] Error caught:`, error, errorInfo);`
 - **WARNING** `1-SITE/apps/web/src/components/ui/PhotoUploader.tsx:113`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className={cn("space-y-4", compact && "space-y-0 h-full")}>`
 - **WARNING** `1-SITE/apps/web/src/components/ui/PhotoUploader.tsx:121`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -5974,6 +7154,8 @@
   > `<span>{Math.round(zoom * 100)}%</span>`
 - **WARNING** `1-SITE/apps/web/src/components/ui/PhotoUploader.tsx:213`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex gap-4">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/PhotoUploader.tsx:105`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Upload error:', error);`
 - **WARNING** `1-SITE/apps/web/src/components/ui/RateCard.tsx:64`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className={cn("bg-white rounded-[32px] p-8 border border-black/5 shadow-sm hover:shadow-xl transition-all duration-500 group relative overflow-hidden", className)}>`
 - **WARNING** `1-SITE/apps/web/src/components/ui/RateCard.tsx:66`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -6010,6 +7192,8 @@
   > `const commonWords = ['de', 'het', 'een', 'en', 'is', 'dat', 'met', 'voor', 'van', 'in', 'op', 'te', 'om', 'als', 'die', 'ook', 'met', 'aan', 'bij', 'om', 'door', 'zeer', 'goed', 'fijn', 'vlot', 'top', 'super', 'erg', 'heel', 'echt', 'altijd', 'weer', 'nu', 'al', 'nog', 'dan', 'zo', 'wat', 'hoe', 'waar', 'waarom', 'wanneer', 'wie', 'wel', 'niet', 'geen', 'heb', 'heeft', 'hebben', 'had', 'hadden', 'ben', 'bent', 'is', 'zijn', 'was', 'waren', 'word', 'wordt', 'worden', 'werd', 'werden', 'kun', 'kunt', 'kan', 'kunnen', 'kon', 'konden', 'wil', 'wilt', 'willen', 'wou', 'wouden', 'moet', 'moeten', 'mag', 'mogen', 'zal', 'zullen', 'zou', 'zouden', 'tot', 'naar', 'uit', 'over', 'bij', 'voor', 'tegen', 'onder', 'boven', 'tussen', 'na', 'tijdens', 'sinds', 'door', 'langs', 'via', 'om', 'rond', 'omheen', 'doorheen', 'langs', 'naast', 'achter', 'voor', 'links', 'rechts', 'onder', 'boven', 'tussen', 'na', 'tijdens', 'sinds', 'door', 'langs', 'via', 'om', 'rond', 'omheen', 'doorheen', 'langs', 'naast', 'achter', 'voor', 'links', 'rechts'];`
 - **WARNING** `1-SITE/apps/web/src/components/ui/ReviewsInstrument.tsx:304`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `"inLanguage": "nl",`
+- **WARNING** `1-SITE/apps/web/src/components/ui/ReviewsInstrument.tsx:121`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn('[ReviewsInstrument] Failed to fetch journey reviews');`
 - **WARNING** `1-SITE/apps/web/src/components/ui/SafeErrorGuard.tsx:67`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="min-h-screen bg-va-off-white flex items-center justify-center p-6">`
 - **WARNING** `1-SITE/apps/web/src/components/ui/SafeErrorGuard.tsx:69`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -6020,6 +7204,8 @@
   > `<div className="pt-4">`
 - **WARNING** `1-SITE/apps/web/src/components/ui/SafeErrorGuard.tsx:92`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="pt-8 border-t border-black/[0.03]">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/SafeErrorGuard.tsx:36`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(` [Nuclear Guard] ${this.props.name || 'UI'} Crash caught:`, error, errorInfo);`
 - **WARNING** `1-SITE/apps/web/src/components/ui/SectorSelector.tsx:39`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="space-y-6">`
 - **WARNING** `1-SITE/apps/web/src/components/ui/SectorSelector.tsx:40`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -6064,6 +7250,8 @@
   > `<span className="text-[8px] md:text-[9px] font-bold tracking-[0.2em] text-va-black/20 uppercase shrink-0">`
 - **WARNING** `1-SITE/apps/web/src/components/ui/SpotlightDashboard.tsx:422`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/SpotlightDashboard.tsx:171`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Spotlight search error:', e);`
 - **WARNING** `1-SITE/apps/web/src/components/ui/Studio/WorkshopHero.tsx:14`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="inline-block bg-black text-white text-[15px] font-black px-4 py-1.5 rounded-full mb-8 tracking-widest ">`
 - **WARNING** `1-SITE/apps/web/src/components/ui/Studio/WorkshopHero.tsx:17`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -6210,6 +7398,14 @@
   > `<div className="flex flex-col relative z-10 min-w-0">`
 - **WARNING** `1-SITE/apps/web/src/components/ui/StudioLaunchpad.tsx:447`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span className={cn("text-[12px] font-bold tracking-widest leading-none mb-1 uppercase truncate", isActive ? "text-white" : isCompleted ? "text-va-black" : "text-va-black/20")}>`
+- **WARNING** `1-SITE/apps/web/src/components/ui/StudioLaunchpad.tsx:98`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Failed to fetch pricing config', err);`
+- **WARNING** `1-SITE/apps/web/src/components/ui/StudioLaunchpad.tsx:189`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Launch error:', err);`
+- **WARNING** `1-SITE/apps/web/src/components/ui/StudioLaunchpad.tsx:208`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Drop extraction failed:', err);`
+- **WARNING** `1-SITE/apps/web/src/components/ui/StudioLaunchpad.tsx:402`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `<div className="flex items-center justify-between mb-8"><h3 className="text-3xl font-light tracking-tight text-va-black"><VoiceglotText translationKey="launchpad.step3.title" defaultText="Het Script" /></h3><button onClick={() => fileInputRef.current?.click()} className="flex items-center gap-2 text-primary text-[15px] font-light hover:opacity-80 transition-opacity tracking-widest uppercase">{isMatching ? <Loader2 size={16} className="animate-spin" /> : <LucideUpload size={16} strokeWidth={1.5} />}<VoiceglotText translationKey="launchpad.upload" defaultText={isMatching ? "Bezig..." : "Upload bestand"} /></button><input type="file" ref={fileInputRef} className="hidden" onChange={(e) => { const file = e.target.files?.[0]; if (file) console.log('File uploaded:', file.name); }} accept=".pdf,.doc,.docx,.txt" /></div>`
 - **WARNING** `1-SITE/apps/web/src/components/ui/StudioVideoPlayer.tsx:131`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className={cn(`
 - **WARNING** `1-SITE/apps/web/src/components/ui/StudioVideoPlayer.tsx:138`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -6228,6 +7424,16 @@
   > `<div className="h-1 w-full bg-white/20 rounded-full overflow-hidden">`
 - **WARNING** `1-SITE/apps/web/src/components/ui/StudioVideoPlayer.tsx:220`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div`
+- **WARNING** `1-SITE/apps/web/src/components/ui/StudioVideoPlayer.tsx:160`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(" Video data loaded:", url);`
+- **WARNING** `1-SITE/apps/web/src/components/ui/StudioVideoPlayer.tsx:164`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(" Video can play:", url);`
+- **WARNING** `1-SITE/apps/web/src/components/ui/StudioVideoPlayer.tsx:168`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(" Video metadata loaded:", url);`
+- **WARNING** `1-SITE/apps/web/src/components/ui/StudioVideoPlayer.tsx:172`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(" Video failed to load:", url, e);`
+- **WARNING** `1-SITE/apps/web/src/components/ui/TeleprompterRecorderInstrument.tsx:72`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Microfoon toegang geweigerd.');`
 - **WARNING** `1-SITE/apps/web/src/components/ui/TopBar.tsx:56`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex-1">`
 - **WARNING** `1-SITE/apps/web/src/components/ui/TopBar.tsx:75`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -6400,6 +7606,38 @@
   > `lowLang.includes('it') ? FlagIT : null;`
 - **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:525`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `case 'it': return t('sector.demo.it', `U bent verbonden met de support desk van ${companyNameStr}. Al onze consultants zijn momenteel in gesprek.`, { company: companyNameStr });`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:239`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `.catch(err => console.error('Failed to fetch tags:', err));`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:250`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `.catch(err => console.error('Failed to fetch languages:', err));`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:261`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `.catch(err => console.error('Failed to fetch genders:', err));`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:272`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `.catch(err => console.error('Failed to fetch experience levels:', err));`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:283`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `.catch(err => console.error('Failed to fetch statuses:', err));`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:294`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `.catch(err => console.error('Failed to fetch voice tones:', err));`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:305`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `.catch(err => console.error('Failed to fetch countries:', err));`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:338`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `} catch (err) { console.error('Failed to update country:', err); }`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:356`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `} catch (err) { console.error('Failed to update tones:', err); }`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:375`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `} catch (err) { console.error('Failed to update tags:', err); }`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:393`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `} catch (err) { console.error('Failed to update language:', err); }`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:411`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `} catch (err) { console.error('Failed to update gender:', err); }`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:429`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `} catch (err) { console.error('Failed to update experience level:', err); }`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:447`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `} catch (err) { console.error('Failed to update status:', err); }`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:508`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[VoiceCard] Actor ${voice.id} (${voice.display_name}) is unavailable for current filters.`, {`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCard.tsx:595`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `<VoiceglotImage src={voice.photo_url} alt={voice.display_name} fill sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 20vw" journey="agency" category="voicecards" onUpdate={async (newSrc, mediaId) => { try { const res = await fetch(`/api/admin/actors/${voice.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: voice.id, photo_id: mediaId }) }); if (!res.ok) throw new Error('Failed to update actor photo in database'); window.dispatchEvent(new CustomEvent('voices:actor-updated', { detail: { actor: { ...voice, photo_url: newSrc } } })); } catch (err) { console.error('[VoiceCard] Photo update failed:', err); } }} className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity duration-700" />`
 - **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCardSkeleton.tsx:14`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="relative bg-va-black/5 shrink-0 aspect-square w-full" />`
 - **WARNING** `1-SITE/apps/web/src/components/ui/VoiceCardSkeleton.tsx:16`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -6452,6 +7690,8 @@
   > `<div`
 - **WARNING** `1-SITE/apps/web/src/components/ui/VoiceGrid.tsx:57`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `fallback={<div className="w-full h-[400px] bg-va-black/5 rounded-[20px] animate-pulse" />}`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceGrid.tsx:24`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[VoiceGrid] Rendering ${actors?.length || 0} actors.`);`
 - **WARNING** `1-SITE/apps/web/src/components/ui/VoiceGridSkeleton.tsx:18`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="relative z-10 flex flex-col h-full justify-between">`
 - **WARNING** `1-SITE/apps/web/src/components/ui/VoiceGridSkeleton.tsx:19`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -6528,6 +7768,12 @@
   > `<path class="st4" d="M2926.87,769.02c-3.8,2.6-8.17,4.88-13.12,6.84c-4.95,1.97-10.51,3.54-16.68,4.73c-6.17,1.19-13.12,1.79-20.85,1.79c-13.43,0-26.04-2.63-37.83-7.89c-11.8-5.26-22.1-12.45-30.92-21.57c-8.82-9.12-15.8-19.74-20.95-31.88c-5.15-12.13-7.73-25.14-7.73-39.03c0-13.89,2.57-26.93,7.73-39.14c5.15-12.2,12.13-22.83,20.95-31.88c8.81-9.05,19.12-16.2,30.92-21.46c11.8-5.26,24.41-7.89,37.83-7.89c13.29,0,25.8,2.6,37.53,7.79c11.73,5.19,22.03,12.24,30.92,21.15c8.88,8.91,15.9,19.39,21.05,31.46c5.15,12.07,7.86,24.97,8.14,38.72c0,6.45-2,11.68-6,15.68c-4,4-9.25,6-15.76,6l-132.91,0c17.93,36.97,47.08,55.35,95.21,28.52c9.86-5.5,19.22-2.13,24.36,4.29C2945.46,743.62,2946.5,755.86,2926.87,769.02z M2926.6,663.11c-1.55-6.29-4.01-11.98-7.39-17.04c-3.38-5.07-7.39-9.36-12.04-12.9c-4.65-3.53-9.82-6.22-15.52-8.06c-5.7-1.84-11.79-2.76-18.27-2.76c-6.48,0-12.57,1-18.27,2.99c-5.7,2-10.84,4.76-15.42,8.29c-4.58,3.53-8.48,7.79-11.72,12.78c-3.24,4.99-5.63,10.56-7.18,16.7H2926.6z"/>`
 - **WARNING** `1-SITE/apps/web/src/components/ui/VoiceglotImage.tsx:294`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className={cn(`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceglotImage.tsx:77`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn(`[VoiceglotImage] Asset failed to load: ${currentSrc}`);`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceglotImage.tsx:109`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Upload failed');`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceglotImage.tsx:112`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Error uploading image:', error);`
 - **WARNING** `1-SITE/apps/web/src/components/ui/VoiceglotText.tsx:136`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `const sourceLang = market.market_code === 'ARTIST' ? 'en' : 'nl';`
 - **WARNING** `1-SITE/apps/web/src/components/ui/VoiceglotText.tsx:136`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
@@ -6536,6 +7782,18 @@
   > `const sourceLang = market.market_code === 'ARTIST' ? 'en' : 'nl';`
 - **WARNING** `1-SITE/apps/web/src/components/ui/VoiceglotText.tsx:150`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `const sourceLang = market.market_code === 'ARTIST' ? 'en' : 'nl';`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceglotText.tsx:186`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' Self-healing failed:', e);`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoiceglotText.tsx:226`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Failed to save translation:', error);`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicejarTracker.tsx:28`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(' Voicejar: Recording disabled for admin');`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicejarTracker.tsx:44`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(' Voicejar: Recording disabled in development');`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicejarTracker.tsx:51`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(' Voicejar: Recording disabled to prevent system prompts');`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicejarTracker.tsx:112`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' Voicejar Flush Error:', e.message || e);`
 - **WARNING** `1-SITE/apps/web/src/components/ui/VoicesDropdown.tsx:312`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<span className="text-[10px] font-bold tracking-[0.2em] text-va-black/60 uppercase mb-0.5 block">`
 - **WARNING** `1-SITE/apps/web/src/components/ui/VoicesDropdown.tsx:316`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -6628,12 +7886,62 @@
   > `const prefix = shortLang === 'nl' ? '' : `/${shortLang}`;`
 - **WARNING** `1-SITE/apps/web/src/components/ui/VoicesLink.tsx:137`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `const prefix = shortLang === 'nl' ? '' : `/${shortLang}`;`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicesLink.tsx:49`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(`[VoicesLink] DNA Resolve failed`, err);`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicesLink.tsx:62`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn(`[VoicesLink] Undefined or empty href detected, falling back to anchor: #`);`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicesMasterControl.tsx:250`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn('SonicDNA playSwell failed:', e);`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyBridge.tsx:22`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`Voicy Intent Detected: ${intent.intent} (${intent.reason})`);`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyBridge.tsx:29`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`Voicy navigating to: ${path}`);`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyBridge.tsx:33`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`Voicy searching for: ${query}`);`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyBridge.tsx:70`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`Voicy calculating price for ${usage} with ${words} words`);`
 - **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:541`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `const language = typeof window !== 'undefined' ? (document.cookie.split('; ').find(row => row.startsWith('voices_lang='))?.split('=')[1] || 'nl') : 'nl';`
 - **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:541`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `const language = typeof window !== 'undefined' ? (document.cookie.split('; ').find(row => row.startsWith('voices_lang='))?.split('=')[1] || 'nl') : 'nl';`
 - **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:830`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `if (language !== 'nl' && aiResponse.content) {`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:126`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `.catch(err => console.error('Failed to fetch telephony config', err));`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:151`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn("[Voicy Sensor] Failed to sync", e);`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:200`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[Voicy Butler] Executing action: ${lastMessage.action}`, lastMessage.params);`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:231`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log("[Voicy Butler] Setting music:", params.music);`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:233`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn("[Voicy Butler] Music requested for non-telephony journey. Ignoring.");`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:389`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error("Butler Order Error:", err);`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:516`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `.catch(err => console.error('Failed to fetch system config', err));`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:534`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error("Failed to load history", e);`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:598`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error("UCI Fetch failed", e);`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:648`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error("SSE Parse Error:", e);`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:653`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error("SSE Connection Error:", err);`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:770`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn(" Voicy: Chat request timed out after 30s");`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:774`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log("[Voicy] Sending message to API...", { message: userMessage.content });`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:846`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error("Voicy translation failed", e);`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:853`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error("Chat API error:", error);`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:921`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error("Lead submission error:", error);`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyChat.tsx:957`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error("Mail submission error:", error);`
+- **WARNING** `1-SITE/apps/web/src/components/ui/VoicyProactiveIntelligence.tsx:65`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Failed to fetch Voicy Intelligence:', error);`
 - **WARNING** `1-SITE/apps/web/src/components/ui/WorkshopEditModal.tsx:308`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 md:p-10">`
 - **WARNING** `1-SITE/apps/web/src/components/ui/WorkshopEditModal.tsx:324`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -6644,12 +7952,102 @@
   > `Bewerk <span className="text-primary italic">{workshop.title}</span>`
 - **WARNING** `1-SITE/apps/web/src/components/ui/WorkshopEditModal.tsx:390`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex-1 overflow-y-auto p-8 space-y-8 custom-scrollbar">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/WorkshopEditModal.tsx:100`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `.catch(err => console.error("Failed to load instructors", err));`
+- **WARNING** `1-SITE/apps/web/src/components/ui/WorkshopEditModal.tsx:106`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `.catch(err => console.error("Failed to load locations", err));`
+- **WARNING** `1-SITE/apps/web/src/components/ui/WorkshopEditModal.tsx:117`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error("Failed to load editions", err);`
+- **WARNING** `1-SITE/apps/web/src/components/ui/WorkshopEditModal.tsx:134`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error("Media search failed", err);`
+- **WARNING** `1-SITE/apps/web/src/components/ui/WorkshopEditModal.tsx:209`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error("Failed to update edition", err);`
+- **WARNING** `1-SITE/apps/web/src/components/ui/WorkshopEditModal.tsx:235`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error("Failed to duplicate edition", err);`
+- **WARNING** `1-SITE/apps/web/src/components/ui/WorkshopEditModal.tsx:261`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error("Failed to create edition", err);`
+- **WARNING** `1-SITE/apps/web/src/components/ui/WorkshopEditModal.tsx:297`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error("Upload error:", err);`
+- **WARNING** `1-SITE/apps/web/src/components/ui/WorkshopEditModal.tsx:541`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error("Failed to fetch media details", err);`
 - **WARNING** `1-SITE/apps/web/src/components/ui/ademing/AdemingBento.tsx:61`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="max-w-3xl mx-auto space-y-8">`
 - **WARNING** `1-SITE/apps/web/src/components/ui/ademing/AdemingBento.tsx:76`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="max-w-4xl mx-auto space-y-16">`
 - **WARNING** `1-SITE/apps/web/src/components/ui/ademing/AdemingBento.tsx:77`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="text-center space-y-6">`
+- **WARNING** `1-SITE/apps/web/src/components/ui/ademing/admin/AdemingSmartUpload.tsx:91`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Upload/Analysis error:', error);`
+- **WARNING** `1-SITE/apps/web/src/components/ui/ademing/admin/AdemingSmartUpload.tsx:137`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Save error:', error);`
+- **WARNING** `1-SITE/apps/web/src/components/ui/ademing/admin/AdemingTrackEdit.tsx:118`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Save error:', error);`
+- **WARNING** `1-SITE/apps/web/src/contexts/AuthContext.tsx:55`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[GhostMode] Failed to restore admin session', e);`
+- **WARNING** `1-SITE/apps/web/src/contexts/AuthContext.tsx:99`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('[Voices] Fetching current user session...')`
+- **WARNING** `1-SITE/apps/web/src/contexts/AuthContext.tsx:104`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Voices] Session error:', sessionError);`
+- **WARNING** `1-SITE/apps/web/src/contexts/AuthContext.tsx:116`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('[Voices] Auth check result:', {`
+- **WARNING** `1-SITE/apps/web/src/contexts/AuthContext.tsx:134`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Voices] Unexpected auth error:', err);`
+- **WARNING** `1-SITE/apps/web/src/contexts/AuthContext.tsx:143`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('[Voices] Auth state change:', event, { hasSession: !!session, email: session?.user?.email });`
+- **WARNING** `1-SITE/apps/web/src/contexts/AuthContext.tsx:205`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[GhostMode] Failed to stop', err);`
+- **WARNING** `1-SITE/apps/web/src/contexts/CheckoutContext.tsx:222`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[CheckoutContext] Restoring state from localStorage: ${parsed.items?.length || 0} items`);`
+- **WARNING** `1-SITE/apps/web/src/contexts/CheckoutContext.tsx:232`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[CheckoutContext] Resetting journey to studio (was ${parsed.journey})`);`
+- **WARNING** `1-SITE/apps/web/src/contexts/CheckoutContext.tsx:237`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[CheckoutContext] Resetting journey to academy (was ${parsed.journey})`);`
+- **WARNING** `1-SITE/apps/web/src/contexts/CheckoutContext.tsx:242`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[CheckoutContext] Resetting journey to agency (was ${parsed.journey})`);`
+- **WARNING** `1-SITE/apps/web/src/contexts/CheckoutContext.tsx:277`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Failed to parse checkout state from localStorage', e);`
+- **WARNING** `1-SITE/apps/web/src/contexts/CheckoutContext.tsx:342`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn('[CheckoutContext] Failed to fetch config', e);`
+- **WARNING** `1-SITE/apps/web/src/contexts/CheckoutContext.tsx:397`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[CheckoutContext] Updating usage to: ${usage} (ID: ${usageId})`);`
+- **WARNING** `1-SITE/apps/web/src/contexts/CheckoutContext.tsx:406`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[CheckoutContext] Updating media to: ${JSON.stringify(media)} (IDs: ${JSON.stringify(mediaIds)})`);`
+- **WARNING** `1-SITE/apps/web/src/contexts/CheckoutContext.tsx:460`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn('[CheckoutContext] Attempted to add item with 0 price. Blocked.', item);`
+- **WARNING** `1-SITE/apps/web/src/contexts/CheckoutContext.tsx:477`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn('[CheckoutContext] Attempted to add duplicate item. Blocked.');`
+- **WARNING** `1-SITE/apps/web/src/contexts/CheckoutContext.tsx:488`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('[CheckoutContext] Clearing cart items and resetting selection');`
+- **WARNING** `1-SITE/apps/web/src/contexts/CheckoutContext.tsx:511`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[CheckoutContext] Removing item: ${itemId}. Remaining items: ${newItems.length}`);`
+- **WARNING** `1-SITE/apps/web/src/contexts/CheckoutContext.tsx:519`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('[CheckoutContext] Restoring item for editing:', item.id, item);`
+- **WARNING** `1-SITE/apps/web/src/contexts/CheckoutContext.tsx:591`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[CheckoutContext] Calculating pricing for journey: ${state.journey}, usage: ${state.usage}`);`
+- **WARNING** `1-SITE/apps/web/src/contexts/CheckoutContext.tsx:611`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[CheckoutContext] Academy total: ${academySubtotal}`);`
+- **WARNING** `1-SITE/apps/web/src/contexts/CheckoutContext.tsx:654`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[CheckoutContext] Calculating with media: ${JSON.stringify(state.media)}`);`
+- **WARNING** `1-SITE/apps/web/src/contexts/NotificationContext.tsx:73`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Voices] Failed to fetch notifications:', error);`
+- **WARNING** `1-SITE/apps/web/src/contexts/NotificationContext.tsx:115`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Voices] Failed to mark notification as read:', error);`
+- **WARNING** `1-SITE/apps/web/src/contexts/NotificationContext.tsx:140`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Voices] Failed to mark all notifications as read:', error);`
+- **WARNING** `1-SITE/apps/web/src/contexts/TranslationContext.tsx:60`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error("Failed to fetch translations", e);`
+- **WARNING** `1-SITE/apps/web/src/contexts/VoicesStateContext.tsx:45`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Failed to parse saved voices state', e);`
+- **WARNING** `1-SITE/apps/web/src/contexts/VoicesStateContext.tsx:58`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('[VoicesState] Config fetch skipped (unauthorized or error)');`
+- **WARNING** `1-SITE/apps/web/src/contexts/VoicesStateContext.tsx:78`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn('[VoicesState] Failed to fetch config', e);`
+- **WARNING** `1-SITE/apps/web/src/contexts/WatchdogContext.tsx:21`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Watchdog] Client-side error caught:', event.error);`
+- **WARNING** `1-SITE/apps/web/src/contexts/WatchdogContext.tsx:33`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Watchdog] Unhandled promise rejection:', event.reason);`
+- **WARNING** `1-SITE/apps/web/src/contexts/WorldContext.tsx:57`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Failed to fetch worlds for context:', error);`
 - **WARNING** `1-SITE/apps/web/src/db-cli.ts:22`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `language: 'nl',`
 - **WARNING** `1-SITE/apps/web/src/db-cli.ts:44`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
@@ -6684,8 +8082,236 @@
   > `.where(and(eq(translations.lang, 'fr'), ilike(translations.translatedText, '% ta %')));`
 - **WARNING** `1-SITE/apps/web/src/db-cli.ts:288`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `.where(and(eq(translations.lang, 'fr'), ilike(translations.translatedText, '% tes %')));`
+- **WARNING** `1-SITE/apps/web/src/db-cli.ts:18`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('🚀 Starting seedMarkets...');`
+- **WARNING** `1-SITE/apps/web/src/db-cli.ts:216`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('🚀 Seeding Market Configs...');`
+- **WARNING** `1-SITE/apps/web/src/db-cli.ts:227`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`✅ Seeded ${host}`);`
+- **WARNING** `1-SITE/apps/web/src/db-cli.ts:239`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('✨ Market Seeding Complete!');`
+- **WARNING** `1-SITE/apps/web/src/db-cli.ts:243`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(" CHRIS-PROTOCOL: Fixing French translations (Polite form & Hero)...");`
+- **WARNING** `1-SITE/apps/web/src/db-cli.ts:264`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`Found ${tonResults.length} instances of ' ton ' in French translations.`);`
+- **WARNING** `1-SITE/apps/web/src/db-cli.ts:298`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(' French translations fixed successfully.');`
+- **WARNING** `1-SITE/apps/web/src/db-cli.ts:300`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' Error fixing French translations:', e);`
+- **WARNING** `1-SITE/apps/web/src/db-cli.ts:305`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(" MARK & MOBY: Start injectie 'Zo werkt het', 'Garanties', 'FAQ', 'Scripts', 'Stories' & 'Muziek'...");`
+- **WARNING** `1-SITE/apps/web/src/db-cli.ts:419`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` MARK: Upserting article [${howSlug}]...`);`
+- **WARNING** `1-SITE/apps/web/src/db-cli.ts:445`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` MARK: Upserting article [${garSlug}]...`);`
+- **WARNING** `1-SITE/apps/web/src/db-cli.ts:471`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` MARK: Upserting article [${faqSlug}]...`);`
+- **WARNING** `1-SITE/apps/web/src/db-cli.ts:497`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` MARK: Upserting article [${scriptSlug}]...`);`
+- **WARNING** `1-SITE/apps/web/src/db-cli.ts:526`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` MARK: Upserting article [${coolSlug}]...`);`
+- **WARNING** `1-SITE/apps/web/src/db-cli.ts:550`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` MARK: Upserting story [${storySlug}]...`);`
+- **WARNING** `1-SITE/apps/web/src/db-cli.ts:579`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` MARK: Upserting story [${creoSlug}]...`);`
+- **WARNING** `1-SITE/apps/web/src/db-cli.ts:606`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` MARK: Upserting story [${jokerSlug}]...`);`
+- **WARNING** `1-SITE/apps/web/src/db-cli.ts:630`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` MARK: Upserting music [${musicSlug}]...`);`
+- **WARNING** `1-SITE/apps/web/src/db-cli.ts:656`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` MARK: Upserting article [${cookieSlug}]...`);`
+- **WARNING** `1-SITE/apps/web/src/db-cli.ts:670`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` MARK: Upserting article [${termsSlug}]...`);`
+- **WARNING** `1-SITE/apps/web/src/db-cli.ts:687`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` MARK: Upserting story [${slvSlug}]...`);`
+- **WARNING** `1-SITE/apps/web/src/db-cli.ts:714`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` MARK: Upserting story [${nkcSlug}]...`);`
+- **WARNING** `1-SITE/apps/web/src/db-cli.ts:741`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` MARK: Upserting story [${ttSlug}]...`);`
+- **WARNING** `1-SITE/apps/web/src/db-cli.ts:768`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` MARK: Upserting story [${jokerIntSlug}]...`);`
+- **WARNING** `1-SITE/apps/web/src/db-cli.ts:791`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(" MARK & MOBY: Alles is nu live in de database met de juiste thema-tags.");`
+- **WARNING** `1-SITE/apps/web/src/db-cli.ts:793`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(" MARK: Injectie mislukt:", error);`
+- **WARNING** `1-SITE/apps/web/src/db-cli.ts:818`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('✅ Removed market_config_voices.de from database');`
+- **WARNING** `1-SITE/apps/web/src/db-cli.ts:824`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('Total actors:', total[0].value);`
+- **WARNING** `1-SITE/apps/web/src/db-cli.ts:826`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('Actor statuses:', statuses);`
+- **WARNING** `1-SITE/apps/web/src/db-cli.ts:828`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('First 5 actors:', firstFive);`
+- **WARNING** `1-SITE/apps/web/src/db-cli.ts:831`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('Usage: npx ts-node src/db-cli.ts <command>');`
+- **WARNING** `1-SITE/apps/web/src/db-cli.ts:832`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('Available commands: sync, seed-instructors, inject-mark-moby, seed-markets, fix-fr-translations, cleanup-de-market');`
+- **WARNING** `1-SITE/apps/web/src/db-cli.ts:838`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(err);`
+- **WARNING** `1-SITE/apps/web/src/hooks/useAdminTracking.ts:32`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Failed to log admin action', e);`
+- **WARNING** `1-SITE/apps/web/src/hooks/useConsent.ts:37`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error("[Consent] Failed to parse meta", e);`
+- **WARNING** `1-SITE/apps/web/src/hooks/useConsent.ts:89`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn("[Consent] DB Logging failed", e);`
+- **WARNING** `1-SITE/apps/web/src/inspect-db.ts:8`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log("🚀 Inspecting artists table structure...");`
+- **WARNING** `1-SITE/apps/web/src/inspect-db.ts:19`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log("Columns in 'artists' table:", columns);`
+- **WARNING** `1-SITE/apps/web/src/inspect-db.ts:22`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log("Sample artist record:", sample[0]);`
+- **WARNING** `1-SITE/apps/web/src/inspect-db.ts:25`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error("❌ Inspection failed:", error);`
+- **WARNING** `1-SITE/apps/web/src/lib/auth/api-auth.ts:35`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(' NUCLEAR AUTH: Admin access granted via Legacy Bridge Cookie.');`
+- **WARNING** `1-SITE/apps/web/src/lib/auth/api-auth.ts:48`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn(' API Auth Drizzle failed, falling back to SDK');`
+- **WARNING** `1-SITE/apps/web/src/lib/auth/server-auth.ts:44`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[Auth] Admin Bridge session verified for: ${data.email}`);`
+- **WARNING** `1-SITE/apps/web/src/lib/auth/server-auth.ts:48`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn('[Auth] Admin Bridge validation failed');`
+- **WARNING** `1-SITE/apps/web/src/lib/auth/server-auth.ts:72`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[Auth] User ${user.email} verified with role: ${data.role}`);`
+- **WARNING** `1-SITE/apps/web/src/lib/auth/server-auth.ts:77`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn(' Auth SDK Fetch error:', error.message);`
+- **WARNING** `1-SITE/apps/web/src/lib/auth/server-auth.ts:83`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn(' Auth Fetch critical failure:', err.message);`
+- **WARNING** `1-SITE/apps/web/src/lib/bridges/academy-bridge.ts:70`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error("Core Logic Error (Academy Dashboard):", error);`
+- **WARNING** `1-SITE/apps/web/src/lib/bridges/academy-bridge.ts:100`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error("Core Logic Error (Academy Progress):", error);`
+- **WARNING** `1-SITE/apps/web/src/lib/bridges/academy-bridge.ts:131`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error("Core Logic Error (Academy Feedback):", error);`
+- **WARNING** `1-SITE/apps/web/src/lib/bridges/academy-bridge.ts:141`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log("Core Bridge: Certificate generation would happen here via Native Service");`
+- **WARNING** `1-SITE/apps/web/src/lib/bridges/agency-bridge.ts:38`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(' Fetching actors from Supabase with params:', params);`
+- **WARNING** `1-SITE/apps/web/src/lib/bridges/agency-bridge.ts:57`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(' Johfrah AI allowed (Telephony or Explicit Search)');`
+- **WARNING** `1-SITE/apps/web/src/lib/bridges/dropbox-bridge.ts:31`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` [DROPBOX BRIDGE] Uploading ${filePath} to ${dropboxPath}`);`
+- **WARNING** `1-SITE/apps/web/src/lib/bridges/studio-bridge.ts:86`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Error fetching workshop by id:', error);`
+- **WARNING** `1-SITE/apps/web/src/lib/bridges/studio-bridge.ts:196`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error("Core Logic Error (Workshop Detail):", error);`
+- **WARNING** `1-SITE/apps/web/src/lib/bridges/studio-bridge.ts:267`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error("Core Logic Error (Studio Dashboard):", error);`
+- **WARNING** `1-SITE/apps/web/src/lib/bridges/studio-bridge.ts:297`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error("Core Logic Error (Capacity):", error);`
+- **WARNING** `1-SITE/apps/web/src/lib/bridges/studio-bridge.ts:309`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(' [StudioBridge] Fetching finance stats via SDK...');`
+- **WARNING** `1-SITE/apps/web/src/lib/bridges/studio-bridge.ts:322`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' [StudioBridge] Orders SDK Error:', ordersError.message);`
+- **WARNING** `1-SITE/apps/web/src/lib/bridges/studio-bridge.ts:325`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' [StudioBridge] Costs SDK Error:', costsError.message);`
+- **WARNING** `1-SITE/apps/web/src/lib/bridges/studio-bridge.ts:345`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn(' [StudioBridge] Error parsing order:', o.id);`
+- **WARNING** `1-SITE/apps/web/src/lib/bridges/studio-bridge.ts:366`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(' [StudioBridge] Finance stats calculated successfully.');`
+- **WARNING** `1-SITE/apps/web/src/lib/bridges/studio-bridge.ts:369`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(" [StudioBridge] Core Logic Error (Finance):", error.message);`
+- **WARNING** `1-SITE/apps/web/src/lib/bridges/studio-bridge.ts:387`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error("Core Logic Error (Participants):", error);`
+- **WARNING** `1-SITE/apps/web/src/lib/bridges/studio-bridge.ts:408`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error("Core Logic Error (Workshop Editions):", error);`
+- **WARNING** `1-SITE/apps/web/src/lib/bridges/studio-bridge.ts:431`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error("Core Logic Error (User Registrations):", error);`
+- **WARNING** `1-SITE/apps/web/src/lib/bridges/studio-bridge.ts:446`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error("Core Logic Error (Create Workshop):", error);`
+- **WARNING** `1-SITE/apps/web/src/lib/bridges/studio-bridge.ts:463`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error("Core Logic Error (Update Workshop):", error);`
+- **WARNING** `1-SITE/apps/web/src/lib/bridges/studio-bridge.ts:481`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Error fetching instructors:', error);`
+- **WARNING** `1-SITE/apps/web/src/lib/bridges/studio-bridge.ts:499`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Error fetching instructor by slug:', error);`
+- **WARNING** `1-SITE/apps/web/src/lib/bridges/studio-bridge.ts:520`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Error fetching workshops by instructor:', error);`
+- **WARNING** `1-SITE/apps/web/src/lib/bridges/studio-bridge.ts:538`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Error fetching instructor by user_id:', error);`
+- **WARNING** `1-SITE/apps/web/src/lib/bridges/studio-bridge.ts:557`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Error fetching instructor editions:', error);`
+- **WARNING** `1-SITE/apps/web/src/lib/bridges/studio-bridge.ts:568`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` [StudioBridge] Fetching edition ${id} via SDK...`);`
+- **WARNING** `1-SITE/apps/web/src/lib/bridges/studio-bridge.ts:593`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Error fetching edition by id:', error);`
+- **WARNING** `1-SITE/apps/web/src/lib/bridges/studio-bridge.ts:604`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` [StudioBridge] Fetching participants for edition ${editionId} via SDK...`);`
+- **WARNING** `1-SITE/apps/web/src/lib/bridges/studio-bridge.ts:629`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Error fetching participants by edition:', error);`
+- **WARNING** `1-SITE/apps/web/src/lib/bridges/studio-bridge.ts:640`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(' [StudioBridge] Fetching all editions via SDK...');`
+- **WARNING** `1-SITE/apps/web/src/lib/bridges/studio-bridge.ts:669`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Error fetching all editions:', error);`
+- **WARNING** `1-SITE/apps/web/src/lib/bridges/studio-bridge.ts:687`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Error fetching costs by editionId:', error);`
+- **WARNING** `1-SITE/apps/web/src/lib/bridges/studio-bridge.ts:725`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(`Error fetching financial stats for ${journey}:`, error);`
+- **WARNING** `1-SITE/apps/web/src/lib/bridges/studio-bridge.ts:743`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Error fetching instructor conversations:', error);`
+- **WARNING** `1-SITE/apps/web/src/lib/bridges/studio-bridge.ts:771`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Error fetching orphaned participants:', error);`
+- **WARNING** `1-SITE/apps/web/src/lib/bridges/studio-bridge.ts:799`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Error fetching workshops:', error);`
+- **WARNING** `1-SITE/apps/web/src/lib/bridges/studio-bridge.ts:812`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Error creating edition:', error);`
+- **WARNING** `1-SITE/apps/web/src/lib/bridges/studio-bridge.ts:828`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Error moving participant:', error);`
+- **WARNING** `1-SITE/apps/web/src/lib/bridges/studio-bridge.ts:861`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Error fetching total participants:', error);`
+- **WARNING** `1-SITE/apps/web/src/lib/bridges/studio-bridge.ts:873`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Error fetching locations:', error);`
+- **WARNING** `1-SITE/apps/web/src/lib/bridges/studio-bridge.ts:891`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Error fetching all instructors:', error);`
+- **WARNING** `1-SITE/apps/web/src/lib/bridges/studio-bridge.ts:911`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(`Error fetching participants for edition ${editionId}:`, error);`
+- **WARNING** `1-SITE/apps/web/src/lib/bridges/voiceglot-bridge.ts:64`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn(' Voiceglot Drizzle failed, falling back to SDK');`
+- **WARNING** `1-SITE/apps/web/src/lib/bridges/voiceglot-bridge.ts:85`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' Voiceglot Error:', e);`
+- **WARNING** `1-SITE/apps/web/src/lib/bridges/voiceglot-bridge.ts:116`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn(' Voiceglot Batch Drizzle failed, falling back to SDK');`
+- **WARNING** `1-SITE/apps/web/src/lib/checkout/checkout-service.ts:33`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` Zero-Loss Checkout: Creating ${data.journey} order for ${data.billingEmail}...`);`
+- **WARNING** `1-SITE/apps/web/src/lib/checkout/checkout-service.ts:71`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` Order #${newOrder.id} created successfully.`);`
+- **WARNING** `1-SITE/apps/web/src/lib/checkout/checkout-service.ts:79`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' Zero-Loss Checkout Error:', error);`
+- **WARNING** `1-SITE/apps/web/src/lib/commerce/financial-sync-engine.ts:19`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('[Financial Sync]  Starting Direct Match sync with Yuki...');`
+- **WARNING** `1-SITE/apps/web/src/lib/commerce/financial-sync-engine.ts:46`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('[Financial Sync]  Direct Match sync completed.');`
+- **WARNING** `1-SITE/apps/web/src/lib/commerce/financial-sync-engine.ts:48`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Financial Sync Error]:', error);`
+- **WARNING** `1-SITE/apps/web/src/lib/commerce/invoice-service.ts:31`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` Generating Invoice for Order #${orderId}...`);`
+- **WARNING** `1-SITE/apps/web/src/lib/commerce/invoice-service.ts:75`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` Invoice #${yukiResponse.invoiceNumber} created and synced to Yuki.`);`
+- **WARNING** `1-SITE/apps/web/src/lib/commerce/invoice-service.ts:84`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(` Invoice Generation Failed for Order #${orderId}:`, error);`
+- **WARNING** `1-SITE/apps/web/src/lib/commerce/yuki-inbound-monitor.ts:65`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Yuki Inbound Monitor Error]:', error);`
+- **WARNING** `1-SITE/apps/web/src/lib/compliance/lex-check.ts:58`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn(` LEX ALERT: ${issues.join(' | ')}`);`
+- **WARNING** `1-SITE/apps/web/src/lib/compliance/lex-check.ts:85`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' LEX: Failed to notify admin via Telegram:', e);`
+- **WARNING** `1-SITE/apps/web/src/lib/compliance/vat-service.ts:62`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Core VAT Service Error]:', error);`
+- **WARNING** `1-SITE/apps/web/src/lib/core-internal/database/index.ts:37`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' [getDb] FAILED: DATABASE_URL is missing!');`
+- **WARNING** `1-SITE/apps/web/src/lib/core-internal/database/index.ts:92`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`✅ Drizzle initialized (Pool size: ${poolSize})`);`
+- **WARNING** `1-SITE/apps/web/src/lib/core-internal/database/index.ts:94`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('❌ Failed to initialize Drizzle:', e);`
 - **WARNING** `1-SITE/apps/web/src/lib/core-internal/database/schema/index.ts:1092`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `language: text('language').default('nl'),`
+- **WARNING** `1-SITE/apps/web/src/lib/engines/audio-mapper.ts:13`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(' Starting Core Audio Mapping...');`
+- **WARNING** `1-SITE/apps/web/src/lib/engines/audio-mapper.ts:19`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` Found ${allActors.length} actors in database.`);`
+- **WARNING** `1-SITE/apps/web/src/lib/engines/audio-mapper.ts:33`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` Scanning for actor: ${actor.first_name} (ID: ${actor.id}, WP: ${actor.wp_product_id})`);`
+- **WARNING** `1-SITE/apps/web/src/lib/engines/audio-mapper.ts:46`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' Audio Mapping Failed:', error);`
 - **WARNING** `1-SITE/apps/web/src/lib/engines/content-engine.ts:371`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `if (lowLang === "en") {`
 - **WARNING** `1-SITE/apps/web/src/lib/engines/content-engine.ts:374`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
@@ -6694,6 +8320,70 @@
   > `const separator = lowLang === "de" ? " bis " : " tot ";`
 - **WARNING** `1-SITE/apps/web/src/lib/engines/content-engine.ts:392`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `if (lowLang === "en") return format(date, "MMMM do", { locale: enUS });`
+- **WARNING** `1-SITE/apps/web/src/lib/engines/content-engine.ts:115`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` CONTENT ENGINE: Loaded [${slug}] from Database`);`
+- **WARNING** `1-SITE/apps/web/src/lib/engines/content-engine.ts:137`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' CONTENT ENGINE: Database fetch failed, falling back to FS:', dbError);`
+- **WARNING** `1-SITE/apps/web/src/lib/engines/content-engine.ts:146`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` CONTENT ENGINE: Falling back to Markdown for [${slug}]`);`
+- **WARNING** `1-SITE/apps/web/src/lib/engines/content-engine.ts:173`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` CONTENT ENGINE: Translating [${slug}] to [${targetLocale}] via Voiceglot...`);`
+- **WARNING** `1-SITE/apps/web/src/lib/engines/pricing-engine.ts:502`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[SlimmeKassa] Media ${m} NOT available for actor ${actor.id}. Fee: ${fee}, Global: ${getFee(globalRates[m])}`);`
+- **WARNING** `1-SITE/apps/web/src/lib/engines/voice-affinity.ts:13`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(' Starting Voice Affinity Deep Scan...');`
+- **WARNING** `1-SITE/apps/web/src/lib/engines/voice-affinity.ts:25`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` Found ${multiVoiceOrders.length} multi-voice orders to analyze.`);`
+- **WARNING** `1-SITE/apps/web/src/lib/engines/voice-affinity.ts:41`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` Mapping ${Object.keys(pairs).length} unique voice relationships...`);`
+- **WARNING** `1-SITE/apps/web/src/lib/engines/voice-affinity.ts:64`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' Voice Affinity Scan Failed:', error);`
+- **WARNING** `1-SITE/apps/web/src/lib/engines/voice-filter-engine.ts:47`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `// console.log(`[VoiceFilter] Starting filter with ${actors.length} actors. Journey: ${criteria.journey}`, {`
+- **WARNING** `1-SITE/apps/web/src/lib/engines/voice-filter-engine.ts:88`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[VoiceFilter] Actor ${actor.id} (${actor.display_name}) is unavailable for:`, { effectiveMedia, country });`
+- **WARNING** `1-SITE/apps/web/src/lib/intelligence/boost.ts:32`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(' Starting Workshop Participant linking...');`
+- **WARNING** `1-SITE/apps/web/src/lib/intelligence/boost.ts:53`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`    Creating Shadow User for Workshop Participant (${email})...`);`
+- **WARNING** `1-SITE/apps/web/src/lib/intelligence/boost.ts:89`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` Workshop Participants linked: (Shadow Users created: ${createdCount})`);`
+- **WARNING** `1-SITE/apps/web/src/lib/intelligence/boost.ts:97`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(' Boosting Subroles (Talent Ladder)...');`
+- **WARNING** `1-SITE/apps/web/src/lib/intelligence/boost.ts:187`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` Users boosted: ${updatedCount}`);`
+- **WARNING** `1-SITE/apps/web/src/lib/intelligence/boost.ts:195`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(' Crunching Voice Affinity from Historical Orders...');`
+- **WARNING** `1-SITE/apps/web/src/lib/intelligence/boost.ts:199`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` Analyzing ${allOrders.length} orders for voice pairs...`);`
+- **WARNING** `1-SITE/apps/web/src/lib/intelligence/boost.ts:254`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` Affinity crunching completed. ${pairsFound} pairs updated.`);`
+- **WARNING** `1-SITE/apps/web/src/lib/intelligence/boost.ts:261`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(' STARTING FULL NUCLEAR INTELLIGENCE BOOST...');`
+- **WARNING** `1-SITE/apps/web/src/lib/intelligence/boost.ts:266`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(' ALL ENGINES COMPLETED SILENTLY.');`
+- **WARNING** `1-SITE/apps/web/src/lib/intelligence/intent-learning-engine.ts:30`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` INTENT LEARNING: Analyzing ${type} interaction from ${userId || visitorHash}`);`
+- **WARNING** `1-SITE/apps/web/src/lib/intelligence/intent-learning-engine.ts:88`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` DNA Updated for user ${userId}: Intent=${analysis.intent}`);`
+- **WARNING** `1-SITE/apps/web/src/lib/intelligence/intent-learning-engine.ts:94`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' Intent Learning failed:', error);`
+- **WARNING** `1-SITE/apps/web/src/lib/intelligence/tracker.ts:65`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` TRACKED: ${eventName}`, params);`
+- **WARNING** `1-SITE/apps/web/src/lib/intelligence/uci-service.ts:73`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn(' UCI Service Drizzle failed, falling back to SDK');`
+- **WARNING** `1-SITE/apps/web/src/lib/intelligence/uci-service.ts:129`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn(' UCI Order stats Drizzle failed, falling back to SDK:', err.message);`
+- **WARNING** `1-SITE/apps/web/src/lib/intelligence/uci-service.ts:141`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn(' UCI UTM Drizzle failed, falling back to SDK:', err.message);`
+- **WARNING** `1-SITE/apps/web/src/lib/intelligence/uci-service.ts:159`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' UCI Parallel queries failed:', parallelError);`
+- **WARNING** `1-SITE/apps/web/src/lib/intelligence/uci-service.ts:195`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[UCI Service Error]:', error);`
+- **WARNING** `1-SITE/apps/web/src/lib/intelligence/uci-service.ts:222`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(`[UCI Service] updateInsights failed for ${userId}:`, err);`
+- **WARNING** `1-SITE/apps/web/src/lib/mail/VumeEngine.ts:137`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[VUME ] Mail verzonden via template: ${template} naar ${to}`);`
 - **WARNING** `1-SITE/apps/web/src/lib/mail/templates/VumeActorAssignmentTemplate.ts:40`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div style="margin-bottom: 30px;">`
 - **WARNING** `1-SITE/apps/web/src/lib/mail/templates/VumeActorAssignmentTemplate.ts:41`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -6920,10 +8610,266 @@
   > `}[isNl ? 'nl' : 'en'];`
 - **WARNING** `1-SITE/apps/web/src/lib/mail/templates/VumeStudioTemplate.ts:100`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `}[isNl ? 'nl' : 'en'];`
+- **WARNING** `1-SITE/apps/web/src/lib/mail/test-vume.ts:14`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` Starting VUME Test Suite for ${recipient}...`);`
+- **WARNING** `1-SITE/apps/web/src/lib/mail/test-vume.ts:33`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(' Magic Link test mail verzonden.');`
+- **WARNING** `1-SITE/apps/web/src/lib/mail/test-vume.ts:64`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(' Studio Experience test mail verzonden.');`
+- **WARNING** `1-SITE/apps/web/src/lib/mail/test-vume.ts:88`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(' Invoice Reply test mail verzonden.');`
+- **WARNING** `1-SITE/apps/web/src/lib/mail/test-vume.ts:92`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' VUME Test Suite Failed:', error);`
+- **WARNING** `1-SITE/apps/web/src/lib/payments/mollie.ts:61`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Mollie Service] ❌ FATAL: MOLLIE_API_KEY is missing in environment variables');`
+- **WARNING** `1-SITE/apps/web/src/lib/payments/mollie.ts:65`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn('[Mollie Service] ⚠️ WARNING: MOLLIE_API_KEY format is invalid (should start with test_ or live_)');`
+- **WARNING** `1-SITE/apps/web/src/lib/payments/mollie.ts:67`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('[Mollie Service] ✅ API Key validated:', this.API_KEY.substring(0, 10) + '...');`
+- **WARNING** `1-SITE/apps/web/src/lib/payments/mollie.ts:75`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Mollie Service] ❌ FATAL: Attempted to make API request without valid API key');`
+- **WARNING** `1-SITE/apps/web/src/lib/payments/mollie.ts:91`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Mollie API Error]:', data);`
+- **WARNING** `1-SITE/apps/web/src/lib/payments/mollie.ts:105`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Mollie Service]: Payment creation failed:', error);`
+- **WARNING** `1-SITE/apps/web/src/lib/payments/mollie.ts:118`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Mollie Service]: Order creation failed:', error);`
+- **WARNING** `1-SITE/apps/web/src/lib/payments/ponto-bridge.ts:49`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` [Ponto HITL] Suggesting payout for ${recipient.name}: ${recipient.amount}`);`
+- **WARNING** `1-SITE/apps/web/src/lib/payments/ponto-bridge.ts:93`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[Ponto ] Initiating bulk payment for ${recipients.length} recipients...`);`
+- **WARNING** `1-SITE/apps/web/src/lib/payments/ponto-bridge.ts:143`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Ponto Bridge Error]:', error);`
+- **WARNING** `1-SITE/apps/web/src/lib/reviews/review-intelligence.ts:48`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Review Intelligence Error]:', error);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/api-server.ts:31`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(' API: Querying artist from the artists table:', slugOrId);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/api-server.ts:45`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn(`[api-server] Artist not found for ${isNumericId ? 'id' : 'slug'}: ${slugOrId}`, error);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/api-server.ts:264`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' [getActors] SDK Error:', sdkError);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/api-server.ts:311`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' [getActors] SDK Query failed:', dbError);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/api-server.ts:610`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[getActors FATAL ERROR]:', error);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/api-server.ts:624`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn(`[api-server] Article not found for slug: ${slug}`, error);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/api-server.ts:649`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(` [api-server] getActor lookup START: "${cleanSlug}" (isId: ${isNumericId}, lang: ${lang})`);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/api-server.ts:663`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(` [api-server] Executing Drizzle query for ID: ${cleanSlug}`);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/api-server.ts:666`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(` [api-server] Executing Drizzle query for slug: ${cleanSlug}`);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/api-server.ts:673`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(` [api-server] SUCCESS: Found actor ${actor.first_name} by ${isNumericId ? 'ID' : 'slug'} (Drizzle).`);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/api-server.ts:679`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn(` [api-server] Slug match failed, trying first_name fallback (Drizzle)...`);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/api-server.ts:684`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(` [api-server] SUCCESS: Found actor ${fallbackActor.first_name} by first_name (Drizzle).`);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/api-server.ts:691`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(` [api-server] NUCLEAR FALLBACK: Fetching Johfrah by ID 1760 (Drizzle)`);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/api-server.ts:701`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(` [api-server] Drizzle failed, falling back to Supabase SDK:`, err.message);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/api-server.ts:706`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(` [api-server] Executing Supabase SDK fallback for ${isNumericId ? 'ID' : 'slug'}: ${cleanSlug}`);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/api-server.ts:718`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(` [api-server] SUCCESS: Found actor ${sdkActor.first_name} by ${isNumericId ? 'ID' : 'slug'} (SDK).`);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/api-server.ts:722`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(` [api-server] Supabase SDK fallback failed:`, sdkErr.message);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/api-server.ts:725`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(` [api-server] Actor NOT FOUND for ${isNumericId ? 'ID' : 'slug'}: "${cleanSlug}"`);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/api-server.ts:733`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(` [api-server] processActorData START for ${actor.first_name} (ID: ${actor.id})`);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/api-server.ts:767`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn(` [api-server] processActorData: Drizzle relations failed, using empty arrays:`, err.message);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/api-server.ts:788`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(` [api-server] processActorData SUCCESS for ${actor.first_name}`);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/auto-reply-service.ts:46`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` Instant HTML autoreply verzenden naar ${to} voor markt ${market.market_code}...`);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/auto-reply-service.ts:65`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` VUME HTML Template autoreply verzonden naar ${to}`);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/auto-reply-service.ts:67`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' VUME HTML Template AutoReply Error:', error);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/calendar-sync-service.ts:48`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Error fetching iCloud calendar:', error);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/contact-enrichment-service.ts:51`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`    AI heeft gegevens gedestilleerd voor user ${userId}:`, extractedData);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/contact-enrichment-service.ts:61`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' Contact Enrichment Error:', error);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/db-service.ts:40`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' DbService.getTaxonomies failed:', error);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/direct-mail-service.ts:108`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` Generating XOAUTH2 token for ${targetUser}...`);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/direct-mail-service.ts:141`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`🛑 [DirectMailService] NUCLEAR SAFETY BLOCK: Redirecting mail for ${options.to} to ${fallbackEmail}`);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/direct-mail-service.ts:166`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `// console.log(`[SMTP Debug] Host: ${smtpHost}, User: ${smtpUser}, Pass: ${smtpPass ? '********' : 'MISSING'}`);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/direct-mail-service.ts:167`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`🚀 [DirectMailService] Preparing SMTP: host=${smtpHost}, user=${smtpUser}, from=${from}`);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/direct-mail-service.ts:196`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` Mail succesvol verzonden naar ${options.to} via ${from} (${market.market_code})`);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/direct-mail-service.ts:234`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` DirectMailService: Fetching folder ${folder} for ${user || this.config.user}...`);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/direct-mail-service.ts:329`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` Filtering signature attachment: ${att.filename} (${att.size} bytes)`);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/dropbox-service.ts:37`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('[Dropbox] Initialiseren client met Refresh Token...');`
+- **WARNING** `1-SITE/apps/web/src/lib/services/dropbox-service.ts:42`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Dropbox] Initialisatie fout:', error);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/dropbox-service.ts:58`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[Dropbox] Aanmaken map: ${folderPath}`);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/dropbox-service.ts:76`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Dropbox] Fout bij aanmaken map:', error);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/dropbox-service.ts:92`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[Dropbox] Aanmaken controle-map: ${folderPath}`);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/dropbox-service.ts:101`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[Dropbox] Fout bij aanmaken controle-map:', error);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/fonzer-service.ts:26`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[FonzerService] Missing credentials in .env.local');`
+- **WARNING** `1-SITE/apps/web/src/lib/services/fonzer-service.ts:81`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(`[FonzerService] Request failed (${res.statusCode}):`, responseBody);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/fonzer-service.ts:88`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[FonzerService] Socket error:', e);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/fonzer-service.ts:102`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('[FonzerService] Requesting token...');`
+- **WARNING** `1-SITE/apps/web/src/lib/services/fonzer-service.ts:112`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[FonzerService] Auth failed:', error);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/fonzer-service.ts:134`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[FonzerService] Attempting originate: ${extension} -> ${destination}`);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/fonzer-service.ts:145`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[FonzerService] Originate failed:', error);`
 - **WARNING** `1-SITE/apps/web/src/lib/services/gemini-service.ts:169`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `async transcribeAudio(audioBuffer: Buffer, mimeType: string, lang: string = 'nl'): Promise<string> {`
+- **WARNING** `1-SITE/apps/web/src/lib/services/gemini-service.ts:43`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(`[GeminiService] Failed to fetch DNA for ${lang}:`, e);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/gemini-service.ts:89`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' Gemini Text Generation Error:', error);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/gemini-service.ts:138`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' Gemini Analysis Error:', error);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/gemini-service.ts:160`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' Gemini Embedding Error:', error);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/gemini-service.ts:184`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' Gemini Transcription Error:', error);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/gemini-service.ts:242`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' Gemini Vision Error:', error);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/github-api.ts:66`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' GitHub Commit Failed:', error);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/github-api.ts:84`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' Workflow Trigger Failed:', error);`
 - **WARNING** `1-SITE/apps/web/src/lib/services/johfrai-mail-bridge.ts:26`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div style="background: #f9f9f9; padding: 15px; border-radius: 10px; margin: 20px 0;">`
+- **WARNING** `1-SITE/apps/web/src/lib/services/knowledge-service.ts:50`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn(`Could not read Voicy knowledge file: ${file}`);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/knowledge-service.ts:59`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn("Could not read Voice Scores Inventory");`
+- **WARNING** `1-SITE/apps/web/src/lib/services/knowledge-service.ts:64`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Knowledge Service Error:', error);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/knowledge-service.ts:88`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn(`Could not read Bijbel file: ${file}`);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/knowledge-service.ts:94`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Knowledge Service Error:', error);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/knowledge-service.ts:109`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Failed to fetch pricing config:', e);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/knowledge-service.ts:122`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Failed to fetch FAQs:', e);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/knowledge-service.ts:136`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Failed to fetch workshop editions:', e);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/knowledge-service.ts:149`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Failed to fetch workshops:', e);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/master-sync.ts:34`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(' Starting Core Master Sync...');`
+- **WARNING** `1-SITE/apps/web/src/lib/services/master-sync.ts:56`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` Processing Actor: ${actor.first_name} (ID: ${actorId})`);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/master-sync.ts:62`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` ⚠️ No rates found for ${actor.first_name}. Skipping price update to avoid slop.`);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/master-sync.ts:90`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' Master Sync Failed:', error);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/music-delivery-service.ts:17`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` [MUSIC DELIVERY] Starting delivery for Order #${orderId}...`);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/music-delivery-service.ts:30`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` [MUSIC DELIVERY] No music found in Order #${orderId}. Skipping.`);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/music-delivery-service.ts:42`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(` [MUSIC DELIVERY] Track ${musicMeta.trackId} not found in database!`);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/music-delivery-service.ts:48`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(` [MUSIC DELIVERY] No formats found for track ${track.fileName}`);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/music-delivery-service.ts:68`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` [MUSIC DELIVERY] Successfully pushed ${filesToDeliver.length} files to Dropbox for Order #${orderId}.`);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/music-delivery-service.ts:73`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(` [MUSIC DELIVERY] Failed to deliver music for Order #${orderId}:`, err);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/payout-readiness-service.ts:32`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` Payout Check voor Order Item ${orderItemId}...`);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/payout-readiness-service.ts:52`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`    Order Item niet gevonden.`);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/payout-readiness-service.ts:58`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`    Geen Payout nodig: Order behoort tot journey '${(item.order as any)?.journey}'.`);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/payout-readiness-service.ts:76`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`    Klant Approved: ${isClientApproved ? '' : ''}`);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/payout-readiness-service.ts:77`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`    Factuur Binnen: ${hasInvoice ? '' : ''}`);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/payout-readiness-service.ts:80`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`    PONTO-READY! Betaling voorbereiden...`);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/private-voice-bridge.ts:21`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn('⚠️ Private Voice Bridge: Geen tunnel URL geconfigureerd.');`
+- **WARNING** `1-SITE/apps/web/src/lib/services/private-voice-bridge.ts:37`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('❌ Private Voice Bridge Error:', error);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/push-service.ts:27`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[PushService] VAPID keys missing in environment');`
+- **WARNING** `1-SITE/apps/web/src/lib/services/push-service.ts:33`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('[PushService] VAPID details initialized');`
+- **WARNING** `1-SITE/apps/web/src/lib/services/push-service.ts:55`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('[PushService] No active subscriptions found');`
+- **WARNING** `1-SITE/apps/web/src/lib/services/push-service.ts:59`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[PushService] Sending notification to ${subscriptions.length} subscribers...`);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/push-service.ts:75`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[PushService] Successfully sent to ${sub.endpoint.substring(0, 30)}... Status: ${res.statusCode}`);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/push-service.ts:85`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(`[PushService] Failed for ${subscriptions[i].endpoint.substring(0, 30)}... Reason:`, r.reason.message || r.reason);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/push-service.ts:98`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[PushService] Cleaned up ${failedEndpoints.length} expired subscriptions`);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/push-service.ts:102`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[PushService] Notification broadcast failed:', error);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/security-service.ts:29`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn(' Security Service Access Drizzle failed, falling back to SDK');`
+- **WARNING** `1-SITE/apps/web/src/lib/services/security-service.ts:54`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn(' Security Service Track Drizzle failed, falling back to SDK');`
+- **WARNING** `1-SITE/apps/web/src/lib/services/security-service.ts:81`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn(' Security Service Update Drizzle failed, falling back to SDK');`
+- **WARNING** `1-SITE/apps/web/src/lib/services/security-service.ts:88`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn(` Account sharing alert: User ${user_id} has ${deviceCount} active devices.`);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/shadow-persona-service.ts:46`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' Shadow Persona Error:', error);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/studio-service.ts:177`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[getStudioWorkshopsData] Database Error:', error);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/telegram-service.ts:21`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn('[TelegramService] Bot token or Admin IDs missing, skipping alert.');`
+- **WARNING** `1-SITE/apps/web/src/lib/services/telegram-service.ts:31`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('[TelegramService] 🤫 Rate-limited. Alert suppressed to prevent spam.');`
+- **WARNING** `1-SITE/apps/web/src/lib/services/telegram-service.ts:37`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[TelegramService] Sending alert to ${this.ADMIN_IDS.length} admins: ${message.substring(0, 50)}...`);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/telegram-service.ts:52`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(`[TelegramService] Telegram API Error for ${chatId}:`, errData);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/telegram-service.ts:54`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[TelegramService] Successfully sent alert to ${chatId}`);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/telegram-service.ts:56`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `}).catch(err => console.error(`[TelegramService] Fetch failed for ${chatId}:`, err))`
+- **WARNING** `1-SITE/apps/web/src/lib/services/twilio-service.ts:17`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[TwilioService] Missing credentials');`
+- **WARNING** `1-SITE/apps/web/src/lib/services/twilio-service.ts:52`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[TwilioService] Initiating callback. Mode: ${whisperMode}. Destination: ${destination} (Market: ${market.market_code})`);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/twilio-service.ts:79`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[TwilioService] Call SID: ${call.sid}`);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/twilio-service.ts:85`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[TwilioService] Error:', error);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/vies-service.ts:36`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` VIES check voor ${cleanVat}...`);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/vies-service.ts:40`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[ViesService] Fetching: https://ec.europa.eu/taxation_customs/vies/rest-api/ms/${countryCode}/vat/${vatOnly}`);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/vies-service.ts:56`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(`[ViesService] API Error (${response.status}):`, errorText);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/vies-service.ts:61`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[ViesService] API Response for ${cleanVat}:`, data);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/vies-service.ts:81`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' VIES API Error:', error);`
 - **WARNING** `1-SITE/apps/web/src/lib/services/voices-mail-engine.ts:54`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `${logoUrl ? `<img src="${logoUrl}" alt="${marketName}" width="120" style="display: block; outline: none; border: none; height: auto;" />` : `<div style="font-size: 13px; letter-spacing: 0.4em; text-transform: uppercase; color: #cccccc;">${marketName}</div>`}`
 - **WARNING** `1-SITE/apps/web/src/lib/services/voices-mail-engine.ts:64`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -6938,6 +8884,58 @@
   > `${options.buttonText || (lang.startsWith('nl') ? 'Klik hier' : lang.startsWith('fr') ? 'Cliquez ici' : 'Click here')}`
 - **WARNING** `1-SITE/apps/web/src/lib/services/voices-mail-engine.ts:115`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `${options.buttonText || (lang.startsWith('nl') ? 'Klik hier' : lang.startsWith('fr') ? 'Cliquez ici' : 'Click here')}`
+- **WARNING** `1-SITE/apps/web/src/lib/services/yuki-service.ts:127`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Error upserting contact in Yuki:', error);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/yuki-service.ts:137`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn('Yuki Access Key missing, skipping Yuki sync');`
+- **WARNING** `1-SITE/apps/web/src/lib/services/yuki-service.ts:218`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Error syncing with Yuki:', error);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/yuki-service.ts:226`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `}).catch(e => console.warn('[YukiService] Failed to log system event:', e));`
+- **WARNING** `1-SITE/apps/web/src/lib/services/yuki-service.ts:265`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Error fetching accounting info from Yuki:', error);`
+- **WARNING** `1-SITE/apps/web/src/lib/services/yuki-service.ts:303`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Error fetching outstanding invoices from Yuki:', error);`
+- **WARNING** `1-SITE/apps/web/src/lib/sync/migrate-languages.ts:5`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(' Starting Relational Language Migration (Drizzle Script)...');`
+- **WARNING** `1-SITE/apps/web/src/lib/sync/migrate-languages.ts:9`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('Creating tables...');`
+- **WARNING** `1-SITE/apps/web/src/lib/sync/migrate-languages.ts:20`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(' languages table ready');`
+- **WARNING** `1-SITE/apps/web/src/lib/sync/migrate-languages.ts:32`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(' actor_languages table ready');`
+- **WARNING** `1-SITE/apps/web/src/lib/sync/migrate-languages.ts:35`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('Seeding languages...');`
+- **WARNING** `1-SITE/apps/web/src/lib/sync/migrate-languages.ts:64`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(' languages seeded');`
+- **WARNING** `1-SITE/apps/web/src/lib/sync/migrate-languages.ts:67`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('Migrating data...');`
+- **WARNING** `1-SITE/apps/web/src/lib/sync/migrate-languages.ts:114`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(' data migrated');`
+- **WARNING** `1-SITE/apps/web/src/lib/sync/migrate-languages.ts:117`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' Migration failed:', err);`
+- **WARNING** `1-SITE/apps/web/src/lib/system/ancestry-sync.ts:13`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('🌳 Syncing MarketManager with Database Worlds...');`
+- **WARNING** `1-SITE/apps/web/src/lib/system/ancestry-sync.ts:22`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`✅ Found ${allWorlds.length} Worlds in DB.`);`
+- **WARNING** `1-SITE/apps/web/src/lib/system/ancestry-sync.ts:27`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('❌ Failed to sync MarketManager with Worlds:', error);`
+- **WARNING** `1-SITE/apps/web/src/lib/system/cache-manager.ts:33`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` NUCLEAR CACHE FLUSHED: ${path || 'FULL SITE'}`);`
+- **WARNING** `1-SITE/apps/web/src/lib/system/cache-manager.ts:53`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn(` SLOW OPERATION DETECTED: ${label} took ${duration}ms`);`
+- **WARNING** `1-SITE/apps/web/src/lib/system/certificate-service.ts:66`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` Generating PDF Certificate for ${data.participantName}...`);`
+- **WARNING** `1-SITE/apps/web/src/lib/system/client-logger.ts:59`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('🚀 [Voices] Client Logger initialized (Nuclear Mode)');`
+- **WARNING** `1-SITE/apps/web/src/lib/system/core-automation-engine.ts:28`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[Core ] Triggering event: ${event}`, data);`
+- **WARNING** `1-SITE/apps/web/src/lib/system/core-automation-engine.ts:53`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn(`[Core ] No handler for event: ${event}`);`
+- **WARNING** `1-SITE/apps/web/src/lib/system/core-automation-engine.ts:56`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(`[Core ] Error handling ${event}:`, error);`
+- **WARNING** `1-SITE/apps/web/src/lib/system/core-automation-engine.ts:99`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`[Core ] Proactive Smartmail queued for ${opp.email}`);`
 - **WARNING** `1-SITE/apps/web/src/lib/system/fix-notifier.ts:25`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div style="font-family: sans-serif; padding: 40px; background: #f9f9f9; border-radius: 24px; max-width: 600px; margin: 0 auto; border: 1px solid #eee;">`
 - **WARNING** `1-SITE/apps/web/src/lib/system/fix-notifier.ts:26`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -6952,3 +8950,271 @@
   > `<p style="font-size: 14px; color: #444; line-height: 1.6; margin: 0;">${details}</p>`
 - **WARNING** `1-SITE/apps/web/src/lib/system/fix-notifier.ts:34`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<p style="font-size: 12px; color: #999; text-align: center;">Gegenereerd door Voices - Pure Excellence 2026</p>`
+- **WARNING** `1-SITE/apps/web/src/lib/system/fix-notifier.ts:38`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`✅ Fix notification sent to Johfrah for: ${fixId}`);`
+- **WARNING** `1-SITE/apps/web/src/lib/system/fix-notifier.ts:40`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('❌ Failed to send fix notification:', e);`
+- **WARNING** `1-SITE/apps/web/src/lib/system/market-manager-db.ts:48`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` [MarketDatabaseService] Cache miss for ${cacheKey}, querying DB via SDK...`);`
+- **WARNING** `1-SITE/apps/web/src/lib/system/market-manager-db.ts:61`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn(` [MarketDatabaseService] SDK Fetch failed for ${cacheKey}:`, error.message);`
+- **WARNING** `1-SITE/apps/web/src/lib/system/market-manager-db.ts:104`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn(` [MarketDatabaseService] DB Timeout for ${cacheKey}, using fallback.`);`
+- **WARNING** `1-SITE/apps/web/src/lib/system/market-manager-db.ts:111`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[MarketDatabaseService] DB Fetch failed, checking for stale cache fallback:', e);`
+- **WARNING** `1-SITE/apps/web/src/lib/system/market-manager-db.ts:113`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` [MarketDatabaseService] SUCCESS: Serving stale cache fallback for ${cacheKey}`);`
+- **WARNING** `1-SITE/apps/web/src/lib/system/market-manager-db.ts:140`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` [MarketDatabaseService] Locales cache miss, querying DB via SDK...`);`
+- **WARNING** `1-SITE/apps/web/src/lib/system/market-manager-db.ts:151`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn(' [MarketDatabaseService] Locales SDK Fetch failed:', error.message);`
+- **WARNING** `1-SITE/apps/web/src/lib/system/market-manager-db.ts:176`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn(` [MarketDatabaseService] Locales DB Timeout, using fallback.`);`
+- **WARNING** `1-SITE/apps/web/src/lib/system/market-manager-db.ts:183`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('[MarketDatabaseService] Failed to fetch all locales:', e);`
+- **WARNING** `1-SITE/apps/web/src/lib/system/reschedule-service.ts:68`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` Rescheduling Order #${orderId} to ${newDate.toISOString()}...`);`
+- **WARNING** `1-SITE/apps/web/src/lib/system/self-healing-service.ts:22`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn(` [HEAL] systemEvents table not available (Level: ${level}, Message: ${message})`);`
+- **WARNING** `1-SITE/apps/web/src/lib/system/self-healing-service.ts:36`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` [HEAL] Event geconsolideerd (spam preventie): ${message}`);`
+- **WARNING** `1-SITE/apps/web/src/lib/system/self-healing-service.ts:48`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(' [HEAL] Kon event niet loggen:', e);`
+- **WARNING** `1-SITE/apps/web/src/lib/system/smartmail-service.ts:54`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn('[Smartmail] No EMAIL_SERVICE_URL configured, skipping mail queue.');`
+- **WARNING** `1-SITE/apps/web/src/lib/system/waitlist-service.ts:30`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(` Registering interest for ${data.email}...`);`
+- **WARNING** `1-SITE/apps/web/src/lib/utils/config-bridge.ts:87`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(`[ConfigBridge] Error fetching world config for ${worldId}/${languageId}:`, err);`
+- **WARNING** `1-SITE/apps/web/src/lib/utils/config-bridge.ts:117`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(`[ConfigBridge] Error fetching nav config for ${key}:`, error);`
+- **WARNING** `1-SITE/apps/web/src/lib/utils/config-bridge.ts:162`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(`[ConfigBridge] DNA Resolve failed for ${routingType}:${entityId}`, err);`
+- **WARNING** `1-SITE/apps/web/src/lib/utils/config-bridge.ts:185`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn(` ConfigBridge Drizzle failed for ${key}, falling back to SDK`);`
+- **WARNING** `1-SITE/apps/web/src/lib/utils/config-bridge.ts:201`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(`[ConfigBridge] SDK fallback failed for ${key}:`, sdkErr.message);`
+- **WARNING** `1-SITE/apps/web/src/lib/utils/config-bridge.ts:239`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(`[ConfigBridge] Error saving nav config for ${key}:`, error);`
+- **WARNING** `1-SITE/apps/web/src/lib/utils/edge-config.ts:23`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error(`[EdgeConfig] Fout bij ophalen van key "${key}":`, error);`
+- **WARNING** `1-SITE/apps/web/src/migrate-subtitles.ts:9`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log("🚀 Starting subtitle migration for Youssef Zaki (Direct Postgres - iap_context)...");`
+- **WARNING** `1-SITE/apps/web/src/migrate-subtitles.ts:20`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error("❌ Artist 'youssef' not found.");`
+- **WARNING** `1-SITE/apps/web/src/migrate-subtitles.ts:25`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`✅ Found artist: ${artist.display_name} (ID: ${artist.id})`);`
+- **WARNING** `1-SITE/apps/web/src/migrate-subtitles.ts:40`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log("✨ Subtitles successfully migrated to iap_context!");`
+- **WARNING** `1-SITE/apps/web/src/migrate-subtitles.ts:42`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error("❌ Migration failed:", error);`
+- **WARNING** `1-SITE/apps/web/src/scripts/check-errors.ts:6`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('🔍 Checking recent system events...');`
+- **WARNING** `1-SITE/apps/web/src/scripts/check-errors.ts:14`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('Recent Errors:');`
+- **WARNING** `1-SITE/apps/web/src/scripts/check-errors.ts:15`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(JSON.stringify(events, null, 2));`
+- **WARNING** `1-SITE/apps/web/src/scripts/check-errors.ts:17`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('Failed to fetch events:', err);`
+- **WARNING** `1-SITE/apps/web/src/scripts/column-audit.ts:5`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('🔍 STARTING NUCLEAR COLUMN AUDIT\n');`
+- **WARNING** `1-SITE/apps/web/src/scripts/column-audit.ts:9`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('🎙️ Columns in actors table:');`
+- **WARNING** `1-SITE/apps/web/src/scripts/column-audit.ts:10`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `columns.forEach(c => console.log(`   - ${c.column_name} (${c.data_type})`));`
+- **WARNING** `1-SITE/apps/web/src/scripts/column-audit.ts:13`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('\n🚻 Current gender distribution (string):');`
+- **WARNING** `1-SITE/apps/web/src/scripts/column-audit.ts:14`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `genderCount.forEach(g => console.log(`   - ${g.gender || 'NULL'}: ${g.count}`));`
+- **WARNING** `1-SITE/apps/web/src/scripts/column-audit.ts:16`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('\n✅ AUDIT COMPLETE.');`
+- **WARNING** `1-SITE/apps/web/src/scripts/column-audit.ts:18`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('\n❌ AUDIT FAILED:', err);`
+- **WARNING** `1-SITE/apps/web/src/scripts/data-audit.ts:5`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('🔍 STARTING NUCLEAR DATA AUDIT (Handshake Truth 2026)\n');`
+- **WARNING** `1-SITE/apps/web/src/scripts/data-audit.ts:10`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`🚻 Genders in DB: ${allGenders.length}`);`
+- **WARNING** `1-SITE/apps/web/src/scripts/data-audit.ts:11`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `allGenders.forEach(g => console.log(`   - [${g.id}] ${g.code}: ${g.label}`));`
+- **WARNING** `1-SITE/apps/web/src/scripts/data-audit.ts:14`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`\n🎙️ Actors missing genderId: ${actorsMissingGenderId[0].count}`);`
+- **WARNING** `1-SITE/apps/web/src/scripts/data-audit.ts:18`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`\n🗣️ Languages in DB: ${allLangs.length}`);`
+- **WARNING** `1-SITE/apps/web/src/scripts/data-audit.ts:21`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`🎙️ Actors missing nativeLanguageId: ${actorsMissingLangId[0].count}`);`
+- **WARNING** `1-SITE/apps/web/src/scripts/data-audit.ts:25`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`\n🛤️ Journeys in DB: ${allJourneys.length}`);`
+- **WARNING** `1-SITE/apps/web/src/scripts/data-audit.ts:26`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `allJourneys.forEach(j => console.log(`   - [${j.id}] ${j.code}: ${j.label}`));`
+- **WARNING** `1-SITE/apps/web/src/scripts/data-audit.ts:30`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`\n📺 Media Types in DB: ${allMediaTypes.length}`);`
+- **WARNING** `1-SITE/apps/web/src/scripts/data-audit.ts:31`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `allMediaTypes.forEach(m => console.log(`   - [${m.id}] ${m.code}: ${m.label}`));`
+- **WARNING** `1-SITE/apps/web/src/scripts/data-audit.ts:37`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('\n🎵 Actor Demo Types:');`
+- **WARNING** `1-SITE/apps/web/src/scripts/data-audit.ts:38`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `demoTypes.forEach(dt => console.log(`   - ${dt.type || 'NULL'}: ${dt.count}`));`
+- **WARNING** `1-SITE/apps/web/src/scripts/data-audit.ts:40`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('\n✅ AUDIT COMPLETE.');`
+- **WARNING** `1-SITE/apps/web/src/scripts/data-audit.ts:42`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('\n❌ AUDIT FAILED:', err);`
+- **WARNING** `1-SITE/apps/web/src/scripts/demo-audit.ts:5`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('🔍 STARTING NUCLEAR DEMO AUDIT\n');`
+- **WARNING** `1-SITE/apps/web/src/scripts/demo-audit.ts:9`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('🎵 Current demo types (string):');`
+- **WARNING** `1-SITE/apps/web/src/scripts/demo-audit.ts:10`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `demoTypes.forEach(dt => console.log(`   - ${dt.type || 'NULL'}: ${dt.count}`));`
+- **WARNING** `1-SITE/apps/web/src/scripts/demo-audit.ts:13`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('\n📺 Available media_types:');`
+- **WARNING** `1-SITE/apps/web/src/scripts/demo-audit.ts:14`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `mediaTypes.forEach(mt => console.log(`   - [${mt.id}] ${mt.code}: ${mt.label}`));`
+- **WARNING** `1-SITE/apps/web/src/scripts/demo-audit.ts:16`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('\n✅ AUDIT COMPLETE.');`
+- **WARNING** `1-SITE/apps/web/src/scripts/demo-audit.ts:18`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('\n❌ AUDIT FAILED:', err);`
+- **WARNING** `1-SITE/apps/web/src/scripts/demo-id-audit.ts:5`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('🔍 STARTING NUCLEAR DEMO ID AUDIT\n');`
+- **WARNING** `1-SITE/apps/web/src/scripts/demo-id-audit.ts:9`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('🎵 Current media_type_id distribution in actor_demos:');`
+- **WARNING** `1-SITE/apps/web/src/scripts/demo-id-audit.ts:10`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `demosWithMediaId.forEach(d => console.log(`   - ${d.media_type_id || 'NULL'}: ${d.count}`));`
+- **WARNING** `1-SITE/apps/web/src/scripts/demo-id-audit.ts:12`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('\n✅ AUDIT COMPLETE.');`
+- **WARNING** `1-SITE/apps/web/src/scripts/demo-id-audit.ts:14`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('\n❌ AUDIT FAILED:', err);`
+- **WARNING** `1-SITE/apps/web/src/scripts/fix-mollie-icons.ts:10`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('🚀 Starting Mollie Icon Fixer...');`
+- **WARNING** `1-SITE/apps/web/src/scripts/fix-mollie-icons.ts:14`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('✅ Fetched methods from Mollie:', methods._embedded?.methods?.length || 0);`
+- **WARNING** `1-SITE/apps/web/src/scripts/fix-mollie-icons.ts:18`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`- ${m.id}: ${m.image?.size2x}`);`
+- **WARNING** `1-SITE/apps/web/src/scripts/fix-mollie-icons.ts:22`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('\n💡 Tip: Zorg dat de volgende domeinen in next.config.mjs staan:');`
+- **WARNING** `1-SITE/apps/web/src/scripts/fix-mollie-icons.ts:23`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('- www.mollie.com');`
+- **WARNING** `1-SITE/apps/web/src/scripts/fix-mollie-icons.ts:26`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('❌ Error fetching Mollie methods:', error.message);`
+- **WARNING** `1-SITE/apps/web/src/scripts/gender-audit.ts:5`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('🔍 STARTING NUCLEAR GENDER TABLE AUDIT\n');`
+- **WARNING** `1-SITE/apps/web/src/scripts/gender-audit.ts:9`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('🚻 Rows in genders table:');`
+- **WARNING** `1-SITE/apps/web/src/scripts/gender-audit.ts:10`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `genders.forEach(g => console.log(`   - [${g.id}] ${g.code}: ${g.label}`));`
+- **WARNING** `1-SITE/apps/web/src/scripts/gender-audit.ts:13`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('\n🎙️ Current gender_id distribution in actors:');`
+- **WARNING** `1-SITE/apps/web/src/scripts/gender-audit.ts:14`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `actorsWithGenderId.forEach(g => console.log(`   - ${g.gender_id || 'NULL'}: ${g.count}`));`
+- **WARNING** `1-SITE/apps/web/src/scripts/gender-audit.ts:16`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('\n✅ AUDIT COMPLETE.');`
+- **WARNING** `1-SITE/apps/web/src/scripts/gender-audit.ts:18`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('\n❌ AUDIT FAILED:', err);`
+- **WARNING** `1-SITE/apps/web/src/scripts/generate-admin-link.ts:16`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`🚀 Genereren van PERSISTENTE admin link voor: ${adminEmail}`);`
+- **WARNING** `1-SITE/apps/web/src/scripts/generate-admin-link.ts:33`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('✅ Database schema updated (admin_key column added)');`
+- **WARNING** `1-SITE/apps/web/src/scripts/generate-admin-link.ts:45`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('\n✅ Persistente link succesvol gegenereerd!');`
+- **WARNING** `1-SITE/apps/web/src/scripts/generate-admin-link.ts:46`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('Deze link is herbruikbaar en blijft 1 jaar geldig op je smartphone.');`
+- **WARNING** `1-SITE/apps/web/src/scripts/generate-admin-link.ts:47`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('-----------------------------------');`
+- **WARNING** `1-SITE/apps/web/src/scripts/generate-admin-link.ts:48`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(finalLink);`
+- **WARNING** `1-SITE/apps/web/src/scripts/generate-admin-link.ts:49`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('-----------------------------------');`
+- **WARNING** `1-SITE/apps/web/src/scripts/generate-admin-link.ts:50`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('\nTIP: Open deze link op je smartphone en kies "Zet op beginscherm" voor de app-ervaring.');`
+- **WARNING** `1-SITE/apps/web/src/scripts/generate-admin-link.ts:53`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('❌ Fout bij database update:', error.message);`
+- **WARNING** `1-SITE/apps/web/src/scripts/lang-audit.ts:5`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('🔍 STARTING NUCLEAR ACTOR_LANGUAGES AUDIT\n');`
+- **WARNING** `1-SITE/apps/web/src/scripts/lang-audit.ts:9`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`🗣️ Total rows in actor_languages: ${actorLangs[0].count}`);`
+- **WARNING** `1-SITE/apps/web/src/scripts/lang-audit.ts:12`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`🎙️ Native languages mapped: ${nativeLangs[0].count}`);`
+- **WARNING** `1-SITE/apps/web/src/scripts/lang-audit.ts:15`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`🎙️ Actors with native_language_id set: ${actorsWithNativeId[0].count}`);`
+- **WARNING** `1-SITE/apps/web/src/scripts/lang-audit.ts:17`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('\n✅ AUDIT COMPLETE.');`
+- **WARNING** `1-SITE/apps/web/src/scripts/lang-audit.ts:19`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('\n❌ AUDIT FAILED:', err);`
+- **WARNING** `1-SITE/apps/web/src/scripts/nuclear-id-seed.ts:87`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('🚀 Starting Atomic ID-First Seed...');`
+- **WARNING** `1-SITE/apps/web/src/scripts/nuclear-id-seed.ts:113`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('✅ Languages verified.');`
+- **WARNING** `1-SITE/apps/web/src/scripts/nuclear-id-seed.ts:121`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn(`⚠️ Actor ${entry.name} (ID: ${entry.id}) not found in database. Skipping.`);`
+- **WARNING** `1-SITE/apps/web/src/scripts/nuclear-id-seed.ts:125`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log(`📦 Syncing ${entry.name} (ID: ${actor.id})...`);`
+- **WARNING** `1-SITE/apps/web/src/scripts/nuclear-id-seed.ts:161`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('✅ Atomic Seed Completed Successfully!');`
+- **WARNING** `1-SITE/apps/web/src/scripts/nuclear-id-seed.ts:164`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('❌ Atomic Seed Failed:', error);`
+- **WARNING** `1-SITE/apps/web/src/scripts/schema-audit.ts:5`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('🔍 STARTING NUCLEAR SCHEMA AUDIT\n');`
+- **WARNING** `1-SITE/apps/web/src/scripts/schema-audit.ts:9`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('📋 Available schemas:');`
+- **WARNING** `1-SITE/apps/web/src/scripts/schema-audit.ts:10`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `schemas.forEach(s => console.log(`   - ${s.schema_name}`));`
+- **WARNING** `1-SITE/apps/web/src/scripts/schema-audit.ts:13`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('\n🚻 Locations of "genders" table:');`
+- **WARNING** `1-SITE/apps/web/src/scripts/schema-audit.ts:14`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `allTables.forEach(t => console.log(`   - ${t.table_schema}.${t.table_name}`));`
+- **WARNING** `1-SITE/apps/web/src/scripts/schema-audit.ts:16`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('\n✅ AUDIT COMPLETE.');`
+- **WARNING** `1-SITE/apps/web/src/scripts/schema-audit.ts:18`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('\n❌ AUDIT FAILED:', err);`
+- **WARNING** `1-SITE/apps/web/src/scripts/setup-tables.ts:5`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('🚀 STARTING NUCLEAR TABLE SETUP (Handshake Truth 2026)\n');`
+- **WARNING** `1-SITE/apps/web/src/scripts/setup-tables.ts:9`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('🚻 Creating genders table...');`
+- **WARNING** `1-SITE/apps/web/src/scripts/setup-tables.ts:20`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('🛤️ Creating journeys table...');`
+- **WARNING** `1-SITE/apps/web/src/scripts/setup-tables.ts:34`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('📺 Creating media_types table...');`
+- **WARNING** `1-SITE/apps/web/src/scripts/setup-tables.ts:48`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('🌱 Seeding genders...');`
+- **WARNING** `1-SITE/apps/web/src/scripts/setup-tables.ts:61`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('🌱 Seeding journeys...');`
+- **WARNING** `1-SITE/apps/web/src/scripts/setup-tables.ts:78`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('🌱 Seeding media types...');`
+- **WARNING** `1-SITE/apps/web/src/scripts/setup-tables.ts:92`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('🌐 Updating languages with icons...');`
+- **WARNING** `1-SITE/apps/web/src/scripts/setup-tables.ts:115`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('🎙️ Adding missing columns to actors...');`
+- **WARNING** `1-SITE/apps/web/src/scripts/setup-tables.ts:123`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('🎙️ Mapping actors.gender_id...');`
+- **WARNING** `1-SITE/apps/web/src/scripts/setup-tables.ts:132`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('🗣️ Mapping actors.native_language_id...');`
+- **WARNING** `1-SITE/apps/web/src/scripts/setup-tables.ts:141`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn('⚠️ native_lang column not found, skipping mapping.');`
+- **WARNING** `1-SITE/apps/web/src/scripts/setup-tables.ts:145`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('🎵 Mapping actor_demos types to media_types...');`
+- **WARNING** `1-SITE/apps/web/src/scripts/setup-tables.ts:155`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('🧹 Cleaning up legacy data...');`
+- **WARNING** `1-SITE/apps/web/src/scripts/setup-tables.ts:159`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('\n✅ SETUP COMPLETE.');`
+- **WARNING** `1-SITE/apps/web/src/scripts/setup-tables.ts:161`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('\n❌ SETUP FAILED:', err);`
+- **WARNING** `1-SITE/apps/web/src/scripts/table-audit.ts:5`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('🔍 STARTING NUCLEAR TABLE AUDIT\n');`
+- **WARNING** `1-SITE/apps/web/src/scripts/table-audit.ts:9`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('📋 Tables in public schema:');`
+- **WARNING** `1-SITE/apps/web/src/scripts/table-audit.ts:10`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `tables.forEach(t => console.log(`   - ${t.table_name}`));`
+- **WARNING** `1-SITE/apps/web/src/scripts/table-audit.ts:12`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('\n✅ AUDIT COMPLETE.');`
+- **WARNING** `1-SITE/apps/web/src/scripts/table-audit.ts:14`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.error('\n❌ AUDIT FAILED:', err);`
+- **WARNING** `1-SITE/apps/web/src/utils/supabase/client.ts:28`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn(`
+- **WARNING** `1-SITE/apps/web/src/utils/supabase/client.ts:38`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.log('[Voices] Initializing Supabase Browser Client (lockSession: false)')`
+- **WARNING** `1-SITE/apps/web/src/utils/supabase/client.ts:45`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn('[Voices] Caught global AbortError (locks.js) - suppressing crash.');`
+- **WARNING** `1-SITE/apps/web/src/utils/supabase/client.ts:70`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn('[Voices] Supabase fetch aborted (harmless):', err.message)`
+- **WARNING** `1-SITE/apps/web/src/utils/supabase/server.ts:21`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn('[Voices] Supabase env vars missing  server client unavailable')`
+- **WARNING** `1-SITE/apps/web/src/utils/supabase/server.ts:68`: Console statement gedetecteerd. Verwijder voor productie of gebruik ServerWatchdog.
+  > `console.warn('[Voices] Supabase Admin env vars missing')`

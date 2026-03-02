@@ -37,7 +37,7 @@ De centrale logica voor prijsberekeningen inclusief buy-outs en woordenaantallen
 ### 2. Voice Search & Casting (Suzy & Laya)
 - **UI:** `src/app/voice/[slug]/page.tsx`
 - **Butler Action:** `FILTER_VOICES`
-Intelligente interface voor het filteren en selecteren van stemmen op basis van taal, vibe en gender.
+Intelligente interface voor het filteren en selecteren van stemmen op basis van taal, vibe en gender via de **Smart Router**.
 
 ### 3. Checkout & Commerce (Kelly & Lex)
 - **Context:** `src/contexts/CheckoutContext.tsx`

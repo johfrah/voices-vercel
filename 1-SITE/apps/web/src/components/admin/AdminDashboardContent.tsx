@@ -36,7 +36,8 @@ import {
     ShoppingBag,
     Loader2,
     Link as LinkIcon,
-    X
+    X,
+    Info
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -137,7 +138,7 @@ export default function AdminDashboardContent() {
       <SectionInstrument className="flex justify-between items-end">
         <ContainerInstrument className="space-y-2">
           <ContainerInstrument className="flex items-center gap-2 text-primary">
-            <Image  src="/assets/common/branding/icons/INFO.svg" width={16} height={16} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
+            <Info size={16} strokeWidth={2} />
             <TextInstrument as="span" className="text-[15px] font-bold tracking-[0.15em] uppercase"><VoiceglotText  translationKey="admin.badge" defaultText="Voices Admin" /></TextInstrument>
           </ContainerInstrument>
           <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter text-va-black"><VoiceglotText  translationKey="admin.title" defaultText="Beheer-dashboard" /></HeadingInstrument>
@@ -184,12 +185,12 @@ export default function AdminDashboardContent() {
           <ContainerInstrument className="flex justify-between items-center mb-8">
           <ContainerInstrument>
             <ContainerInstrument className="w-10 h-10 bg-primary/10 text-primary rounded-[10px] flex items-center justify-center">
-              <Image  src="/assets/common/branding/icons/INFO.svg" width={20} height={20} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} />
+              <Info size={20} strokeWidth={1.5} />
             </ContainerInstrument>
             <HeadingInstrument level={2} className="text-2xl font-light tracking-tight text-va-black mt-4"><VoiceglotText  translationKey="admin.feed.title" defaultText="Recente activiteit" /></HeadingInstrument>
             <TextInstrument className="text-[15px] text-va-black/40 font-light"><VoiceglotText  translationKey="admin.feed.subtitle" defaultText="Meldingen uit de mailbox en van assistenten" /></TextInstrument>
           </ContainerInstrument>
-            <ButtonInstrument as={Link} href="/admin/mailbox" className="text-[15px] font-light tracking-widest text-primary flex items-center gap-2 hover:gap-3 transition-all"><VoiceglotText  translationKey="admin.feed.full_inbox" defaultText="Volledige inbox" /><Image  src="/assets/common/branding/icons/FORWARD.svg" width={12} height={12} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)' }} /></ButtonInstrument>
+            <ButtonInstrument as={Link} href="/admin/mailbox" className="text-[15px] font-light tracking-widest text-primary flex items-center gap-2 hover:gap-3 transition-all"><VoiceglotText  translationKey="admin.feed.full_inbox" defaultText="Volledige inbox" /><ArrowRight size={12} strokeWidth={2} /></ButtonInstrument>
           </ContainerInstrument>
 
       <ContainerInstrument className="space-y-4">
@@ -233,7 +234,7 @@ export default function AdminDashboardContent() {
         <ContainerInstrument className="bg-va-black text-white rounded-[20px] p-10 relative overflow-hidden flex flex-col justify-between">
           <ContainerInstrument className="relative z-10">
             <ContainerInstrument className="w-12 h-12 bg-primary rounded-[10px] flex items-center justify-center mb-8 shadow-lg shadow-primary/20">
-              <Image  src="/assets/common/branding/icons/INFO.svg" width={24} height={24} alt="" className="brightness-0 invert" />
+              <Info size={24} strokeWidth={1.5} className="text-va-black" />
             </ContainerInstrument>
             <HeadingInstrument level={2} className="text-3xl font-light tracking-tighter mb-4 leading-tight text-white">
               <VoiceglotText  translationKey="admin.voicy_brain.title" defaultText="De assistent denkt mee" />

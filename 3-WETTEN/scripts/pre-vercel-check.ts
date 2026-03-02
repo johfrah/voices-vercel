@@ -84,15 +84,47 @@ async function runCheck() {
     }
 
     // 3. ASSET AUDIT
-    console.log(chalk.yellow('\n🖼️ Stap 3: Asset Naming Audit...'));
+    console.log(chalk.yellow('\n🖼️ Stap 3: Asset Naming Audit & Self-Healing...'));
     const publicDir = path.join(webAppDir, 'public');
     if (fs.existsSync(publicDir)) {
       const assets = getAllFiles(publicDir);
       assets.forEach(asset => {
         const filename = path.basename(asset);
         if (/[^a-zA-Z0-9.\-_]/.test(filename)) {
+          const newFilename = filename.replace(/[^a-zA-Z0-9.\-_]/g, '-').replace(/-+/g, '-');
+          const newPath = path.join(path.dirname(asset), newFilename);
+          
           console.log(chalk.red(`❌ ERROR: Ongeldige karakters in asset naam: ${path.relative(rootDir, asset)}`));
-          hasErrors = true;
+          
+          if (process.argv.includes('--fix')) {
+            try {
+              fs.renameSync(asset, newPath);
+              console.log(chalk.green(`✅ FIXED: Asset hernoemd naar: ${newFilename}`));
+            } catch (e) {
+              console.log(chalk.red(`❌ FAILED: Kon asset niet hernoemen.`));
+              hasErrors = true;
+            }
+          } else {
+            hasErrors = true;
+          }
+        }
+      });
+    }
+
+    // 3.5 LEGACY ICON AUDIT
+    console.log(chalk.yellow('\n🎨 Stap 3.5: Legacy Icon Audit (Lucide Migration)...'));
+    const iconsDir = path.join(publicDir, 'assets/common/branding/icons');
+    if (fs.existsSync(iconsDir)) {
+      const legacyIcons = ['CART.svg', 'BACK.svg', 'FORWARD.svg'];
+      legacyIcons.forEach(icon => {
+        const iconPath = path.join(iconsDir, icon);
+        if (fs.existsSync(iconPath)) {
+          // We scannen of dit icoon nog ergens in de src wordt gebruikt
+          const usages = execSync(`grep -r "${icon}" ${srcDir} || true`).toString().trim();
+          if (usages) {
+            console.log(chalk.red(`❌ ERROR: Legacy icon '${icon}' wordt nog gebruikt. Vervang door Lucide component.`));
+            hasErrors = true;
+          }
         }
       });
     }

@@ -1,4 +1,4 @@
-import { MarketManagerServer as MarketManager } from "../core/market-manager";
+import { MarketManagerServer as MarketManager } from "../system/core/market-manager";
 import { OAuth2Client } from 'google-auth-library';
 import { Mail, ShieldCheck } from 'lucide-react';
 import { Attachment, ParsedMail, simpleParser } from 'mailparser';

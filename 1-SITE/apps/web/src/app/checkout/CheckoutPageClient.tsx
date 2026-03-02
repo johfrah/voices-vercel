@@ -15,7 +15,7 @@ import { useTranslation } from '@/contexts/TranslationContext';
 import Image from 'next/image';
 import { VoicesLink as Link } from '@/components/ui/VoicesLink';
 
-import { Check, ChevronRight, Loader2, Star, Edit2 } from 'lucide-react';
+import { ArrowLeft, Check, ChevronRight, Loader2, Star, Edit2, ShoppingCart } from 'lucide-react';
 import { CheckoutForm } from '@/components/checkout/CheckoutForm';
 import { PricingSummary } from '@/components/checkout/PricingSummary';
 import { OrderStepsInstrument } from '@/components/ui/OrderStepsInstrument';
@@ -81,7 +81,7 @@ export default function CheckoutPageClient() {
         <LiquidBackground />
         <ContainerInstrument plain className="text-center space-y-8 max-w-md relative z-[11]">
           <ContainerInstrument className="w-24 h-24 bg-va-off-white rounded-[20px] flex items-center justify-center mx-auto text-va-black/10">
-            <Image  src="/assets/common/branding/icons/CART.svg" width={48} height={48} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.1 }} />
+            <ShoppingCart size={48} strokeWidth={1} className="opacity-10" />
           </ContainerInstrument>
           <ContainerInstrument className="space-y-2">
             <HeadingInstrument level={1} className="text-4xl font-light tracking-tighter">
@@ -110,7 +110,7 @@ export default function CheckoutPageClient() {
               href="/agency" 
               className="inline-flex items-center gap-2 text-[15px] font-light tracking-widest text-va-black/40 hover:text-primary transition-colors"
             >
-              <Image  src="/assets/common/branding/icons/BACK.svg" width={14} height={14} alt="" style={{ filter: 'invert(18%) sepia(91%) saturate(6145%) hue-rotate(332deg) brightness(95%) contrast(105%)', opacity: 0.4 }} /> 
+              <ArrowLeft size={14} strokeWidth={1.5} className="opacity-40" /> 
               <VoiceglotText  translationKey="checkout.back_to_agency" defaultText="Verder casten" />
             </Link>
           </ContainerInstrument>

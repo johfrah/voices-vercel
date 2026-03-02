@@ -1,4 +1,4 @@
-import { OpenAIService } from '@/lib/services/openai-service';
+import { GeminiService } from '@/lib/services/gemini-service';
 import { db } from '@/lib/system/voices-config';
 import { getTable } from '@/lib/system/voices-config';
 
@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
       `;
 
       try {
-        const improved = await OpenAIService.generateText(prompt, "gpt-4o", row.lang);
+        const improved = await GeminiService.generateText(prompt, { lang: row.lang });
         const cleanImproved = improved.trim().replace(/^"|"$/g, '');
 
         //  CHRIS-FILTER: Alleen updaten als er echt een verbetering is

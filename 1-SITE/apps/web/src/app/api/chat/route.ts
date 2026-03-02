@@ -117,7 +117,7 @@ async function handleSendMessage(params: any, request?: NextRequest) {
 
   try {
     //  LANGUAGE ADAPTATION: Voicy past haar taal aan aan de gebruiker
-    const { MarketManagerServer: MarketManager } = await import('@/lib/system/market-manager-server');
+    const { MarketManagerServer: MarketManager } = await import('@/lib/system/core/market-manager');
     const isEnglish = language === 'en' || /hello|hi|price|how|can you/i.test(message);
     const journey = context?.journey || 'agency';
     
@@ -631,7 +631,7 @@ ${workshopEditionsData.filter((ed: any) => ed.status === 'upcoming').map((ed: an
           // 🛡️ CHRIS-PROTOCOL: Forceer imports binnen de thread voor isolatie
           const { VoicesMailEngine } = await import('@/lib/services/voices-mail-engine');
           const mailEngine = VoicesMailEngine.getInstance();
-          const { MarketManagerServer: MarketManagerLocal } = await import('@/lib/system/market-manager-server');
+          const { MarketManagerServer: MarketManagerLocal } = await import('@/lib/system/core/market-manager');
           const { PushService } = await import('@/lib/services/push-service');
           const { TelegramService } = await import('@/lib/services/telegram-service');
           

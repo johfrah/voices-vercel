@@ -52,9 +52,9 @@ Tijdens de transitie naar Voices OS gelden de volgende wetten:
 ---
 
 ## 4. CORE ENGINES
-- **VoicesCockpit**: De configuratie-gestuurde UI engine.
-- **Voiceglot 2.0**: Het vertaalsysteem met Dutch als bron.
-- **Master Door**: De centrale router die domeinen en sidecars valideert.
+- **Voices Dashboard**: De configuratie-gestuurde UI engine.
+- **Voiceglot 2.0**: Het vertaalsysteem met Dutch als bron (ISO-FIRST).
+- **Smart Router**: De centrale router die domeinen en slugs valideert via de `slug_registry`.
 
 ---
 **ULTIEME WET:** De techniek ademt in functie van de ervaring.

@@ -23,7 +23,7 @@ We bouwen de site primair voor **Voicy**, onze AI Assistant. Zij is de ultieme "
 
 ## 4. De Strijd tegen Technische Schuld (Zero-CSS)
 Jarenlang hebben we "pleisters geplakt". Dat stopt nu.
-*   **De Oplossing:** De **VoicesCockpit Engine**. Eén centrale bron die alle pixels aanstuurt.
+*   **De Oplossing:** De **Unified Voices Engine**. Eén centrale bron die alle pixels aanstuurt.
 *   **De Belofte:** Geen handmatig gedoe meer met CSS-conflicten. Alles is modulair, herbruikbaar en schaalbaar.
 
 ## 5. De Apple-Standaard
