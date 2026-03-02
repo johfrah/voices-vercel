@@ -1,9 +1,30 @@
-import { db, ordersV2, users, orderItems, recordingSessions, ordersLegacyBloat, systemEvents } from '@/lib/system/voices-config';
-import { eq, sql } from 'drizzle-orm';
-import { NextRequest, NextResponse } from 'next/server';
+import { db, ordersV2, users, orderItems, ordersLegacyBloat, orderStatuses } from '@/lib/system/voices-config';
+import { eq } from 'drizzle-orm';
+import { NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth/api-auth';
 
 export const dynamic = 'force-dynamic';
+
+function mapStatusToUiLabel(statusCode?: string | null, statusLabel?: string | null): string {
+  switch (statusCode) {
+    case 'completed_paid':
+      return 'Betaald';
+    case 'completed':
+    case 'completed_unpaid':
+      return 'In behandeling';
+    case 'awaiting_payment':
+    case 'unpaid':
+    case 'waiting_po':
+      return 'Wacht op betaling';
+    case 'quote_sent':
+      return 'Offerte';
+    case 'failed':
+    case 'refunded':
+      return 'Mislukt';
+    default:
+      return statusLabel || 'In behandeling';
+  }
+}
 
 export async function GET(request: Request, { params }: { params: { id: string } }) {
   const idStr = params.id ? String(params.id).replace(/\/$/, '') : '';
@@ -55,7 +76,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
     // Resolve User
     let customerInfo = null;
     if (userId) {
-      const dbUser = await db.select().from(users).where(eq(users.id, userId)).limit(1).then(res => res[0]).catch(() => null);
+      const dbUser = await db.select().from(users).where(eq(users.id, userId)).limit(1).then((res: any[]) => res[0]).catch(() => null);
       if (dbUser) {
         customerInfo = {
           id: dbUser.id,
@@ -108,19 +129,18 @@ export async function GET(request: Request, { params }: { params: { id: string }
       4: 'Voices Artist'
     };
 
-    const statusMap: Record<string, string> = {
-      'completed': 'Voltooid',
-      'processing': 'In productie',
-      'pending': 'Wacht op kassa',
-      'on-hold': 'Gepauzeerd',
-      'cancelled': 'Geannuleerd',
-      'refunded': 'Terugbetaald',
-      'failed': 'Mislukt',
-      'wc-completed': 'Voltooid',
-      'wc-processing': 'In productie',
-      'wc-pending': 'Wacht op kassa',
-      'waiting-po': 'Wacht op PO-nummer'
-    };
+    const [statusMeta] = await db
+      .select({
+        code: orderStatuses.code,
+        label: orderStatuses.label
+      })
+      .from(orderStatuses)
+      .where(eq(orderStatuses.id, Number(order.statusId)))
+      .limit(1);
+
+    const statusCode = statusMeta?.code || null;
+    const statusLabel = statusMeta?.label || null;
+    const statusForUi = mapStatusToUiLabel(statusCode, statusLabel);
 
     const paymentMap: Record<number, string> = {
       1: 'Bancontact',
@@ -134,14 +154,16 @@ export async function GET(request: Request, { params }: { params: { id: string }
       id: orderPk,
       orderNumber: orderPk.toString(),
       date: order.createdAt,
-      status: statusMap[order.statusId?.toString() || ''] || statusMap['completed'] || 'In behandeling',
+      status: statusForUi,
+      statusCode,
+      statusLabel,
       unit: journeyMap[Number(order.journeyId)] || 'Voices',
       
       // 🚦 ACTION-DRIVEN LOGIC (Punt 3 Scope)
       actions: {
-        needsPO: order.statusId === 'waiting-po' || (!order.purchaseOrder && Number(order.journeyId) === 1),
-        canGeneratePaymentLink: ['pending', 'wc-pending', 'failed'].includes(order.statusId?.toString() || ''),
-        isYukiReady: !!order.amountTotal && order.statusId === 'completed'
+        needsPO: statusCode === 'waiting_po' || (!order.purchaseOrder && Number(order.journeyId) === 1),
+        canGeneratePaymentLink: ['awaiting_payment', 'unpaid', 'failed', 'waiting_po'].includes(statusCode || ''),
+        isYukiReady: !!order.amountTotal && ['completed', 'completed_paid'].includes(statusCode || '')
       },
 
       customer: customerInfo ? {

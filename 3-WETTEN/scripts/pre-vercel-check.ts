@@ -40,7 +40,11 @@ async function runCheck() {
     // 1.5 INTEGRITY HANDSHAKE CHECK
     console.log(chalk.yellow('\n🤝 Stap 1.5: Nuclear Handshake Integrity Check...'));
     try {
-      execSync('npx tsx 3-WETTEN/scripts/integrity-handshake.ts', {
+      const handshakeFromCwd = path.join(rootDir, '3-WETTEN/scripts/integrity-handshake.ts');
+      const handshakeFromRepoRoot = path.resolve(rootDir, '../../3-WETTEN/scripts/integrity-handshake.ts');
+      const handshakeScriptPath = fs.existsSync(handshakeFromCwd) ? handshakeFromCwd : handshakeFromRepoRoot;
+
+      execSync(`npx tsx "${handshakeScriptPath}"`, {
         cwd: rootDir,
         stdio: 'inherit',
         shell: true

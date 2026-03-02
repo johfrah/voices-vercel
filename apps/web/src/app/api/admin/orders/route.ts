@@ -1,10 +1,9 @@
 import { db } from '@/lib/system/voices-config';
-import { orders, users, notifications, orderItems, systemEvents, ordersV2, orderStatuses, ordersLegacyBloat } from '@/lib/system/voices-config';
-import { desc, eq, sql, count } from 'drizzle-orm';
+import { orders, users, orderItems, orderStatuses, ordersLegacyBloat } from '@/lib/system/voices-config';
+import { eq, sql } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth/api-auth';
 import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
-import { createClient } from '@/utils/supabase/server';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -16,6 +15,52 @@ export const revalidate = 0;
  * 🛡️ CHRIS-PROTOCOL: RESTORED STABLE v2.15.012 ARCHITECTURE
  */
 
+function mapStatusToUiLabel(statusCode?: string | null, statusLabel?: string | null): string {
+  switch (statusCode) {
+    case 'completed_paid':
+      return 'Betaald';
+    case 'completed':
+    case 'completed_unpaid':
+      return 'In behandeling';
+    case 'awaiting_payment':
+    case 'unpaid':
+    case 'waiting_po':
+      return 'Wacht op betaling';
+    case 'quote_sent':
+      return 'Offerte';
+    case 'failed':
+    case 'refunded':
+      return 'Mislukt';
+    default:
+      return statusLabel || 'In behandeling';
+  }
+}
+
+function mapWorldToUnit(worldId?: number | null): string {
+  switch (worldId) {
+    case 1:
+      return 'Agency';
+    case 2:
+      return 'Studio';
+    case 3:
+      return 'Academy';
+    case 5:
+      return 'Portfolio';
+    case 6:
+      return 'Ademing';
+    case 7:
+      return 'Freelance';
+    case 8:
+      return 'Partner';
+    case 10:
+      return 'Johfrai';
+    case 25:
+      return 'Artist';
+    default:
+      return 'Voices';
+  }
+}
+
 export async function GET(request: NextRequest) {
   try {
     // 🛡️ CHRIS-PROTOCOL: Auth Check
@@ -23,34 +68,38 @@ export async function GET(request: NextRequest) {
     if (auth instanceof NextResponse) return auth;
 
     const { searchParams } = new URL(request.url);
-    const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '50');
-    const search = searchParams.get('search') || '';
-    const worldCode = searchParams.get('world'); // 🌍 Filter op World
+    const pageParam = parseInt(searchParams.get('page') || '1');
+    const limitParam = parseInt(searchParams.get('limit') || '50');
+    const page = Number.isFinite(pageParam) && pageParam > 0 ? pageParam : 1;
+    const limit = Number.isFinite(limitParam) ? Math.min(Math.max(limitParam, 1), 100) : 50;
+    const search = (searchParams.get('search') || '').trim();
+    const worldCode = (searchParams.get('world') || '').trim(); // 🌍 Filter op World
     const offset = (page - 1) * limit;
 
-    // 🛡️ CHRIS-PROTOCOL: 1 TRUTH MANDATE (v2.14.638)
-    let whereClause = '';
-    let conditions = [];
-    
+    const conditions: any[] = [];
     if (search) {
-      conditions.push(`(id::text ILIKE '%' || \${sql.raw(\`'\${search}'\`)} || '%' OR billing_email_alt ILIKE '%' || \${sql.raw(\`'\${search}'\`)} || '%')`);
+      const searchTerm = `%${search}%`;
+      conditions.push(sql`(CAST(id AS TEXT) ILIKE ${searchTerm} OR billing_email_alt ILIKE ${searchTerm})`);
     }
-    
+
     if (worldCode) {
-      conditions.push(`world_id = (SELECT id FROM worlds WHERE code = \${sql.raw(\`'\${worldCode}'\`)})`);
+      conditions.push(sql`world_id = (SELECT id FROM worlds WHERE code = ${worldCode} LIMIT 1)`);
     }
 
-    if (conditions.length > 0) {
-      whereClause = `WHERE \${conditions.join(' AND ')}`;
-    }
+    const whereSql = conditions.length > 0
+      ? sql`WHERE ${sql.join(conditions, sql` AND `)}`
+      : sql``;
 
-    const countResult = await db.execute(sql.raw(`SELECT count(*) as value FROM orders_v2 \${whereClause}`));
+    const countResult = await db.execute(sql`
+      SELECT count(*)::int as value
+      FROM orders_v2
+      ${whereSql}
+    `);
     const countRows: any = Array.isArray(countResult) ? countResult : (countResult.rows || []);
     const totalInDb = countRows[0] ? Number(countRows[0].value || countRows[0].count || 0) : 0;
 
     let debugInfo: any = {
-      version: '2.16.016',
+      version: '2.16.017',
       db_host: process.env.DATABASE_URL?.split('@')[1]?.split('/')[0] || 'unknown',
       page,
       limit,
@@ -59,39 +108,33 @@ export async function GET(request: NextRequest) {
       timestamp: new Date()
     };
 
-    // 🚀 NUCLEAR RAW SQL FETCH (v2.14.652)
-    const rowsResult = await db.execute(sql.raw(`
+    const rowsResult = await db.execute(sql`
       SELECT 
         id, user_id, world_id, journey_id, status_id, payment_method_id, 
-        amount_net, amount_total, purchase_order, billing_email_alt, created_at
+        amount_net, amount_total, purchase_order, billing_email_alt, created_at, legacy_internal_id
       FROM orders_v2
-      \${whereClause}
+      ${whereSql}
       ORDER BY created_at DESC
-      LIMIT \${limit}
-      OFFSET \${offset}
-    `));
+      LIMIT ${limit}
+      OFFSET ${offset}
+    `);
 
     const rows: any = Array.isArray(rowsResult) ? rowsResult : (rowsResult.rows || []);
-    
-    const allOrders = rows.map((row: any) => ({
-      id: row.id,
-      userId: row.user_id,
-      worldId: row.world_id,
-      journeyId: row.journey_id,
-      statusId: row.status_id,
-      paymentMethodId: row.payment_method_id,
-      amountNet: row.amount_net,
-      amountTotal: row.amount_total,
-      purchaseOrder: row.purchase_order,
-      billingEmailAlt: row.billing_email_alt,
-      createdAt: row.created_at
-    }));
-    
-    debugInfo.source = 'hybrid_sql.orders';
-    debugInfo.fetchedCount = allOrders.length;
+    const statusRows = await db
+      .select({
+        id: orderStatuses.id,
+        code: orderStatuses.code,
+        label: orderStatuses.label
+      })
+      .from(orderStatuses) as Array<{ id: number; code: string | null; label: string | null }>;
+    const statusById = new Map<number, { code: string | null; label: string | null }>(
+      statusRows.map((status: { id: number; code: string | null; label: string | null }) => [Number(status.id), status])
+    );
 
-    // 🕵️ GUEST & USER RESOLVER
-    const sanitizedOrders = await Promise.all(allOrders.map(async (order) => {
+    debugInfo.source = 'hybrid_sql.orders';
+    debugInfo.fetchedCount = rows.length;
+
+    const sanitizedOrders = await Promise.all(rows.map(async (order: any) => {
       try {
         const defaultDomain = MarketManager.getMarketDomains()['BE']?.replace('https://www.', '') || ['voices', 'be'].join('.');
         let customerInfo = {
@@ -101,14 +144,14 @@ export async function GET(request: NextRequest) {
           companyName: ""
         };
 
-        const userId = order.user_id || order.userId;
+        const userId = order.user_id;
         let dbUser = null;
 
         if (userId) {
           try {
-            dbUser = await db.select().from(users).where(eq(users.id, userId)).limit(1).then(res => res[0]);
+            dbUser = await db.select().from(users).where(eq(users.id, userId)).limit(1).then((res: any[]) => res[0]);
             if (!dbUser && userId > 1000) {
-              dbUser = await db.select().from(users).where(eq(users.wpUserId, userId)).limit(1).then(res => res[0]);
+              dbUser = await db.select().from(users).where(eq(users.wpUserId, userId)).limit(1).then((res: any[]) => res[0]);
             }
           } catch (e) {}
         }
@@ -123,14 +166,14 @@ export async function GET(request: NextRequest) {
               const email = meta.billing?.email || meta._billing_email;
               
               if (email) {
-                dbUser = await db.select().from(users).where(eq(users.email, email)).limit(1).then(res => res[0]);
+                dbUser = await db.select().from(users).where(eq(users.email, email)).limit(1).then((res: any[]) => res[0]);
                 if (!dbUser) {
                   const [newUser] = await db.insert(users).values({
                     email: email,
                     first_name: meta.billing?.first_name || meta._billing_first_name || "Guest",
                     last_name: meta.billing?.last_name || meta._billing_last_name || "",
                     companyName: meta.billing?.company || meta._billing_company || "",
-                    wpUserId: userId || null,
+                    wpUserId: Number.isFinite(Number(userId)) ? Number(userId) : null,
                     role: 'guest',
                     createdAt: new Date()
                   }).returning();
@@ -150,29 +193,59 @@ export async function GET(request: NextRequest) {
           };
         }
 
-        let displayStatus = 'completed';
-        if (order.status_id) {
-          const [statusRow] = await db.select().from(orderStatuses).where(eq(orderStatuses.id, order.status_id)).limit(1);
-          if (statusRow) displayStatus = statusRow.code;
+        const statusMeta = statusById.get(Number(order.status_id));
+        const statusCode = statusMeta?.code || null;
+        const statusLabel = statusMeta?.label || null;
+        const statusForUi = mapStatusToUiLabel(statusCode, statusLabel);
+
+        const orderPk = Number(order.id);
+        const detailOrderId = Number(order.legacy_internal_id || orderPk);
+        let itemsCount = 0;
+        try {
+          const itemCountResult = await db.execute(sql`
+            SELECT count(*)::int as value
+            FROM order_items
+            WHERE order_id = ${detailOrderId}
+          `);
+          const itemCountRows: any = Array.isArray(itemCountResult) ? itemCountResult : (itemCountResult.rows || []);
+          itemsCount = Number(itemCountRows[0]?.value || 0);
+        } catch {
+          itemsCount = 0;
         }
 
-        // 🤝 DE HANDDRUK: Return structure matching v2.14.714 frontend
+        const customerName = `${customerInfo.first_name || ''} ${customerInfo.last_name || ''}`.trim();
+        const totalAmount = Number(order.amount_total || 0);
+
         return {
-          id: order.id,
-          wpOrderId: order.id,
-          displayOrderId: order.id?.toString(),
-          total: order.amountTotal?.toString() || "0.00",
-          amountNet: order.amountNet?.toString() || "0.00",
-          purchaseOrder: order.purchaseOrder || null,
-          billingEmailAlt: order.billingEmailAlt || null,
-          status: displayStatus, 
+          id: orderPk,
+          orderNumber: String(orderPk),
+          date: order.created_at,
+          status: statusForUi,
+          unit: mapWorldToUnit(Number(order.world_id)),
+          customer: {
+            name: customerName || 'Onbekende Klant',
+            email: customerInfo.email,
+            company: customerInfo.companyName || null,
+          },
+          total: Number.isFinite(totalAmount) ? totalAmount : 0,
+          currency: 'EUR',
+          itemsCount,
+
+          // Legacy compatibility for older admin consumers
+          wpOrderId: orderPk,
+          displayOrderId: String(orderPk),
+          amountNet: order.amount_net?.toString() || "0.00",
+          purchaseOrder: order.purchase_order || null,
+          billingEmailAlt: order.billing_email_alt || null,
           journey: 'agency', // Default for now
-          worldId: order.worldId,
-          journeyId: order.journeyId,
-          statusId: order.statusId,
-          paymentMethodId: order.paymentMethodId,
-          createdAt: order.createdAt,
-          isQuote: false,
+          worldId: order.world_id,
+          journeyId: order.journey_id,
+          statusId: order.status_id,
+          statusCode,
+          statusLabel,
+          paymentMethodId: order.payment_method_id,
+          createdAt: order.created_at,
+          isQuote: statusCode === 'quote_sent',
           user: customerInfo
         };
       } catch (innerError) {

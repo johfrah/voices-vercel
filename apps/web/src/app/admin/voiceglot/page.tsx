@@ -434,12 +434,12 @@ export default function VoiceglotMasterPage() {
           className="bg-va-off-white border-none rounded-xl py-4 px-6 text-[15px] font-medium outline-none focus:ring-2 focus:ring-primary/20"
         >
           <option value="all">Alle talen</option>
-          <option value="fr">Français</option>
-          <option value="en">English</option>
-          <option value="de">Deutsch</option>
-          <option value="es">Español</option>
-          <option value="it">Italiano</option>
-          <option value="pt">Português</option>
+          <option value="fr-be">Français</option>
+          <option value="en-gb">English</option>
+          <option value="de-de">Deutsch</option>
+          <option value="es-es">Español</option>
+          <option value="it-it">Italiano</option>
+          <option value="pt-pt">Português</option>
           <option value="nl-be">Vlaams</option>
           <option value="nl-nl">Nederlands</option>
         </select>
