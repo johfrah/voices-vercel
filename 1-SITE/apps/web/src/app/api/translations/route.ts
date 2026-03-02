@@ -28,17 +28,23 @@ export async function GET(request: NextRequest) {
   }
 
   const { searchParams } = new URL(request.url);
-  let lang = searchParams.get('lang') || 'nl-be';
-
-  // 💀 TERMINATION: 'nl' variant is eliminated. Force 'nl-be'.
-  if (lang === 'nl') lang = 'nl-be';
+  // 🛡️ CHRIS-PROTOCOL: Handshake ID Truth (v2.26.2)
+  // We map the incoming lang code to the official ISO codes used in the DB.
+  let targetLang = lang || 'nl-be';
+  if (targetLang === 'en') targetLang = 'en-gb';
+  if (targetLang === 'fr') targetLang = 'fr-be';
+  if (targetLang === 'de') targetLang = 'de-de';
+  if (targetLang === 'es') targetLang = 'es-es';
+  if (targetLang === 'pt') targetLang = 'pt-pt';
+  if (targetLang === 'it') targetLang = 'it-it';
+  if (targetLang === 'nl') targetLang = 'nl-be';
 
   try {
     // 🛡️ CHRIS-PROTOCOL: Use SDK for stability (v2.14.273)
     const { data: results, error } = await supabase
       .from('translations')
       .select('translation_key, translated_text, original_text, is_manually_edited, lang_id')
-      .eq('lang', lang);
+      .eq('lang', targetLang);
 
     if (error) throw error;
 

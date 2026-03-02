@@ -31,13 +31,18 @@ export const TranslationProvider: React.FC<{
   const healingKeys = React.useRef<Set<string>>(new Set());
 
   useEffect(() => {
-    // Als we al initialTranslations hebben, hoeven we niet direct opnieuw te laden
-    // tenzij de taal verandert.
     const fetchTranslations = async () => {
-      // 🛡️ CHRIS-PROTOCOL: Gebruik altijd de korte code voor DB fetches (v2.16.001)
-      const dataLang = lang.includes('-') ? lang.split('-')[0] : lang;
+      // 🛡️ CHRIS-PROTOCOL: Handshake ID Truth (v2.26.2)
+      // We map the incoming lang code to the official ISO codes used in the DB.
+      let dataLang = lang;
+      if (lang === 'en') dataLang = 'en-gb';
+      if (lang === 'fr') dataLang = 'fr-be';
+      if (lang === 'de') dataLang = 'de-de';
+      if (lang === 'es') dataLang = 'es-es';
+      if (lang === 'pt') dataLang = 'pt-pt';
+      if (lang === 'it') dataLang = 'it-it';
+      if (lang === 'nl') dataLang = 'nl-be';
 
-      // 🛡️ CHRIS-PROTOCOL: Source of Truth check via ID
       if (isSourceOfTruth) {
         setLoading(false);
         return;
