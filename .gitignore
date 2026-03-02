@@ -52,10 +52,9 @@ next-env.d.ts
 !package.json
 !package-lock.json
 !tsconfig.json
-!apps/**/package.json
-!apps/**/tsconfig.json
-!packages/**/package.json
-!packages/**/tsconfig.json
+!.eslintrc.json
+!apps/**/*.json
+!packages/**/*.json
 *.txt
 *.log
 
