@@ -58,5 +58,9 @@
     "postgres": "^3.4.8",
     "react-image-crop": "^11.0.10",
     "sharp": "^0.34.5"
+  },
+  "overrides": {
+    "react": "^18",
+    "react-dom": "^18"
   }
 }
