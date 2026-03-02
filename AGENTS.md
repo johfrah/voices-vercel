@@ -27,3 +27,5 @@ This is a Next.js 14 monorepo for a multi-tenant voice-over agency platform ("Vo
 - **Node.js**: Requires v22+. The environment already has v22.22.0.
 - **Package manager**: Uses npm (not pnpm/yarn/bun). Lockfiles at both root and `1-SITE/`.
 - **Port 3000 cleanup**: When restarting the dev server, use `netstat -tlnp | grep 3000` to find the PID and kill it by PID. `lsof -i:3000` may miss IPv6 listeners.
+- **Vercel deployments**: A `VERCEL_TOKEN` secret is available. Use `npx vercel ls --token "$VERCEL_TOKEN"` to check deployments, or push to `main` to trigger a production deploy. You can also force a redeploy with an empty commit: `git commit --allow-empty -m "Redeploy" && git push origin main`.
+- **DB connection**: The `core-internal/database/index.ts` must use the Supabase Pooler (port 6543), NOT the direct host (port 5432). The direct host gives `ECONNRESET`. If someone re-introduces pooler-to-direct rewriting, the `/studio/` page and other server-rendered routes will break.
