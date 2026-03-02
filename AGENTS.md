@@ -29,3 +29,8 @@ This is a Next.js 14 monorepo for a multi-tenant voice-over agency platform ("Vo
 - **Port 3000 cleanup**: When restarting the dev server, use `netstat -tlnp | grep 3000` to find the PID and kill it by PID. `lsof -i:3000` may miss IPv6 listeners.
 - **Vercel deployments**: A `VERCEL_TOKEN` secret is available. Use `npx vercel ls --token "$VERCEL_TOKEN"` to check deployments, or push to `main` to trigger a production deploy. You can also force a redeploy with an empty commit: `git commit --allow-empty -m "Redeploy" && git push origin main`.
 - **DB connection**: The `core-internal/database/index.ts` must use the Supabase Pooler (port 6543), NOT the direct host (port 5432). The direct host gives `ECONNRESET`. If someone re-introduces pooler-to-direct rewriting, the `/studio/` page and other server-rendered routes will break.
+- **Workshop media**: Workshop cards use images (.webp/.jpg) from Supabase Storage, not videos. The `WorkshopCard` detects media type by file extension. Aftermovie videos exist separately in `studio/workshops/videos/` but are not currently linked as workshop media.
+- **Testing preference**: The project owner prefers terminal output and screenshots over screen recordings. Only record video for complex UI bug reproduction where it's truly necessary.
+
+### Deploying to Production
+Push to `main` to trigger Vercel auto-deploy. Check status with `gh api repos/johfrah/voices-vercel/commits/<sha>/status`. Builds take ~2 minutes. If Vercel gives an internal error, retry — it's usually a transient infra issue in the `iad1` region.
