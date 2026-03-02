@@ -604,6 +604,35 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
     let journey = cleanSegments[1];
     let medium = cleanSegments[2];
 
+    // 🛡️ CHRIS-PROTOCOL: Pre-Registry Special Routes (v2.28.1)
+    // Handle known hardcoded routes BEFORE registry lookup so they work
+    // regardless of slug_registry state.
+    if (lookupSlug === 'studio/quiz') {
+      return (
+        <PageWrapperInstrument className="bg-va-off-white">
+          <Suspense fallback={null}><LiquidBackground /></Suspense>
+          <ContainerInstrument className="py-32 max-w-xl mx-auto">
+            <WorkshopQuiz />
+          </ContainerInstrument>
+        </PageWrapperInstrument>
+      );
+    }
+
+    if (lookupSlug === 'studio/doe-je-mee') {
+      return (
+        <PageWrapperInstrument className="bg-va-off-white">
+          <Suspense fallback={null}><LiquidBackground /></Suspense>
+          <ContainerInstrument className="py-32 max-w-4xl mx-auto">
+            <header className="mb-16 text-center">
+              <HeadingInstrument level={1} className="text-5xl font-light tracking-tighter mb-4">Doe je mee?</HeadingInstrument>
+              <TextInstrument className="text-va-black/40 font-light">Laat ons weten welke workshop je interesseert.</TextInstrument>
+            </header>
+            <WorkshopInterestForm />
+          </ContainerInstrument>
+        </PageWrapperInstrument>
+      );
+    }
+
     const resolved = await resolveSlugFromRegistry(lookupSlug, market.market_code);
 
     if (resolved) {
@@ -974,10 +1003,10 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
       )}
     }
 
-    // 🛡️ CHRIS-PROTOCOL: Registry-First Mandate (v2.15.034)
-    // We only allow legacy fallbacks for very specific, known entry points.
-    // This prevents the SmartRouter from "hijacking" unknown paths or system routes.
-    const isKnownEntryPoint = MarketManager.isAgencyEntryPoint(segments[0]) || ['voice', 'artist', 'portfolio'].includes(segments[0]);
+    // 🛡️ CHRIS-PROTOCOL: Registry-First Mandate (v2.28.1)
+    // World prefixes are valid entry points — their sub-pages resolve via CMS article lookup.
+    const worldPrefixes = ['studio', 'academy', 'ademing', 'johfrai', 'partners', 'freelance', 'casting'];
+    const isKnownEntryPoint = MarketManager.isAgencyEntryPoint(segments[0]) || ['voice', 'artist', 'portfolio'].includes(segments[0]) || worldPrefixes.includes(segments[0]?.toLowerCase());
     
     // 🛡️ CHRIS-PROTOCOL: Category/Native/Language Route Protection (v2.16.103)
     const isCategoryNative = segments[0] === 'category' || segments[0] === 'native' || segments[0] === 'language';
@@ -1201,11 +1230,6 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
 
     // 3. Check voor Stem (Legacy Fallback by Slug)
     try {
-      // 🛡️ CHRIS-PROTOCOL: Registry-First Mandate (v2.15.034)
-      // We only allow legacy fallbacks for very specific, known entry points.
-      // This prevents the SmartRouter from "hijacking" unknown paths or system routes.
-      const isKnownEntryPoint = MarketManager.isAgencyEntryPoint(segments[0]) || ['voice', 'artist', 'portfolio'].includes(segments[0]);
-      
       if (!resolved && !isKnownEntryPoint && segments.length > 1) {
         console.error(` [SmartRouter] NUCLEAR BLOCK: Path "${lookupSlug}" not in registry and not a known entry point. Blocking.`);
         return notFound();
@@ -1258,8 +1282,9 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
     const isAgencySubRoute = segments.length === 2 && MarketManager.isAgencySegment(segments[0]);
     const isArticlePrefix = segments[0] === 'article' && segments.length === 2;
     const isStudioAgendaPrefix = segments[0] === 'studio-agenda' && segments.length === 2;
+    const isWorldSubRoute = segments.length >= 2 && worldPrefixes.includes(segments[0]?.toLowerCase());
 
-    if (segments.length === 1 || isAgencySubRoute || isArticlePrefix || isStudioAgendaPrefix) {
+    if (segments.length === 1 || isAgencySubRoute || isArticlePrefix || isStudioAgendaPrefix || isWorldSubRoute) {
       const cmsSlug = isArticlePrefix || isStudioAgendaPrefix ? segments[1] : (isAgencySubRoute ? segments[1] : lookupSlug);
       try {
         console.log(` [SmartRouter] Fetching CMS article (Legacy Fallback): ${cmsSlug}`);
@@ -1294,7 +1319,8 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
           // 🛡️ NUCLEAR SAFETY: Always provide a fallback for worldId to prevent ReferenceError
           let currentWorldId = 1;
           try {
-            currentWorldId = MarketManager.getWorldId(page.iapContext?.journey || (cmsSlug === 'studio' ? 'studio' : (cmsSlug === 'academy' ? 'academy' : (cmsSlug === 'ademing' ? 'ademing' : 'agency'))));
+            const worldHint = page.iapContext?.journey || (cmsSlug.startsWith('studio') ? 'studio' : (cmsSlug.startsWith('academy') ? 'academy' : (cmsSlug.startsWith('ademing') ? 'ademing' : (cmsSlug.startsWith('johfrai') ? 'johfrai' : (cmsSlug.startsWith('partners') ? 'partners' : 'agency')))));
+            currentWorldId = MarketManager.getWorldId(worldHint);
           } catch (e) {
             console.error(` [SmartRouter] getWorldId failed for legacy CMS extraData:`, e);
           }

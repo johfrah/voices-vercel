@@ -50,7 +50,7 @@ export const VoiceglotText: React.FC<VoiceglotTextProps> = ({
   // 🛡️ CHRIS-PROTOCOL: Nuclear Hydration Guard (v2.14.199)
   // We renderen ALTIJD de defaultText op de server om hydration mismatches te voorkomen.
   // De client zal in de useEffect de vertaling ophalen.
-  const [content, setContent] = useState<string>(defaultText);
+  const [content, setContent] = useState<string>(defaultText || '');
   const [mounted, setMounted] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isHealing, setIsHealing] = useState(false);
@@ -238,7 +238,8 @@ export const VoiceglotText: React.FC<VoiceglotTextProps> = ({
 
   //  RENDER LOGIC (Semantic Templates & Styling Markers)
   const renderContent = () => {
-    if (isEditMode) return content;
+    if (isEditMode) return content || '';
+    if (!content) return '';
 
     // 1. Handle Styling Markers (e.g., *text*)
     // Dit zorgt ervoor dat we hele zinnen kunnen vertalen en toch delen kunnen stylen
