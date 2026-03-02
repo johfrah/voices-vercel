@@ -154,6 +154,12 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
       },
       level: w.level_label || 'Starter',
       skill_dna: meta.skill_dna || {},
+      day_schedule: (meta.day_schedule?.items || []).map((item: any) => ({
+        time: item.time,
+        title: item.label,
+        description: item.description || '',
+        icon: item.icon
+      })),
       expert_note: w.expert_note || meta.expert_note,
       featured_image: w.media_file_path ? { file_path: w.media_file_path, alt_text: w.media_alt_text } : null,
       upcoming_editions: editionsByWorkshop[wid] || [],
