@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useRef, useState, useEffect, useMemo, useCallback } from 'react';
+import { ContainerInstrument, HeadingInstrument, SectionInstrument, TextInstrument, ButtonInstrument, InputInstrument } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { useVoicesState } from '@/contexts/VoicesStateContext';
@@ -34,7 +35,7 @@ import dynamic from 'next/dynamic';
 
 const LiquidBackground = dynamic(() => import('@/components/ui/LiquidBackgroundInstrument').then((mod) => mod.LiquidBackground), { 
   ssr: false,
-  loading: () => <div className="fixed inset-0 bg-va-off-white" />
+  loading: () => <ContainerInstrument plain className="fixed inset-0 bg-va-off-white" />
 });
 
 import { CommercialMediaType } from '@/lib/engines/pricing-engine';
@@ -212,17 +213,17 @@ export function StudioLaunchpad({ initialActors = [], initialJourney }: StudioLa
   }, []);
 
   const renderStep1 = () => (
-    <div className="max-w-6xl mx-auto">
-      <div className="space-y-8">
-        <div className="p-10 bg-white/80 backdrop-blur-xl rounded-[30px] border border-white/20 shadow-aura space-y-12">
-          <div className="flex justify-center">
-            <div className="flex p-1 bg-va-off-white rounded-2xl border border-black/5 shadow-inner">
+    <ContainerInstrument className="max-w-6xl mx-auto">
+      <ContainerInstrument className="space-y-8">
+        <ContainerInstrument className="p-10 bg-white/80 backdrop-blur-xl rounded-[30px] border border-white/20 shadow-aura space-y-12">
+          <ContainerInstrument className="flex justify-center">
+            <ContainerInstrument className="flex p-1 bg-va-off-white rounded-2xl border border-black/5 shadow-inner">
               {[
                 { id: 'telefonie', label: 'Telefoon', icon: Phone },
                 { id: 'unpaid', label: 'Video', icon: Video },
                 { id: 'paid', label: 'Advertentie', icon: Megaphone }
               ].map((u) => (
-                <button 
+                <ButtonInstrument 
                   key={u.id}
                   onClick={() => {
                     setCalcUsage(u.id as any);
@@ -235,226 +236,254 @@ export function StudioLaunchpad({ initialActors = [], initialJourney }: StudioLa
                 >
                   <u.icon size={14} className={calcUsage === u.id ? "text-primary" : ""} />
                   <span>{u.label}</span>
-                </button>
+                </ButtonInstrument>
               ))}
-            </div>
-          </div>
+            </ContainerInstrument>
+          </ContainerInstrument>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-            <div className="space-y-8">
-              <div className="space-y-3">
-                <label className="text-va-black/40 ml-0 tracking-[0.2em] text-[11px] font-bold uppercase">
+          <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 gap-12">
+            <ContainerInstrument className="space-y-8">
+              <ContainerInstrument className="space-y-3">
+                <TextInstrument as="label" className="text-va-black/40 ml-0 tracking-[0.2em] text-[11px] font-bold uppercase">
                   <VoiceglotText translationKey="common.project_name" defaultText="Projectnaam" />
-                </label>
-                <input value={projectName} onChange={(e) => setProjectName(e.target.value)} placeholder={t('launchpad.placeholder.project', "Bijv. Zomer Campagne 2026")} className="w-full h-14 bg-va-off-white/50 border-none rounded-[10px] px-6 py-4 text-[15px] font-medium focus:ring-2 focus:ring-va-black/10 transition-all placeholder:text-va-black/40" />
-              </div>
-              <div className="space-y-3">
-                <label className="text-va-black/40 ml-0 tracking-[0.2em] text-[11px] font-bold uppercase">
+                </TextInstrument>
+                <InputInstrument value={projectName} onChange={(e) => setProjectName(e.target.value)} placeholder={t('launchpad.placeholder.project', "Bijv. Zomer Campagne 2026")} className="w-full h-14 bg-va-off-white/50" />
+              </ContainerInstrument>
+              <ContainerInstrument className="space-y-3">
+                <TextInstrument as="label" className="text-va-black/40 ml-0 tracking-[0.2em] text-[11px] font-bold uppercase">
                   <VoiceglotText translationKey="common.email" defaultText="E-mailadres" />
-                </label>
-                <input type="email" value={clientEmail} onChange={(e) => setClientEmail(e.target.value)} placeholder={t('common.placeholder.email', "naam@bedrijf.be")} className="w-full h-14 bg-va-off-white/50 border-none rounded-[10px] px-6 py-4 text-[15px] font-medium focus:ring-2 focus:ring-va-black/10 transition-all placeholder:text-va-black/40" />
-              </div>
-            </div>
+                </TextInstrument>
+                <InputInstrument type="email" value={clientEmail} onChange={(e) => setClientEmail(e.target.value)} placeholder={t('common.placeholder.email', "naam@bedrijf.be")} className="w-full h-14 bg-va-off-white/50" />
+              </ContainerInstrument>
+            </ContainerInstrument>
 
-            <div className="space-y-8">
+            <ContainerInstrument className="space-y-8">
               {calcUsage === 'paid' ? (
-                <div className="space-y-4">
-                  <label className="text-va-black/40 ml-0 tracking-[0.2em] text-[11px] font-bold uppercase">
+                <ContainerInstrument className="space-y-4">
+                  <TextInstrument as="label" className="text-va-black/40 ml-0 tracking-[0.2em] text-[11px] font-bold uppercase">
                     <VoiceglotText translationKey="common.select_channels" defaultText="Selecteer Kanalen" />
-                  </label>
-                  <div className="space-y-3">
+                  </TextInstrument>
+                  <ContainerInstrument className="space-y-3">
                     {mediaOptions.map((m) => {
                       const isActive = selectedMedia.includes(m.id as any);
                       return (
-                        <div key={m.id} className={cn(
+                        <ContainerInstrument key={m.id} className={cn(
                           "p-4 rounded-2xl border-2 transition-all duration-500 bg-white",
                           isActive ? "border-primary/20 shadow-aura-sm" : "border-black/5 opacity-60"
                         )}>
-                          <button
+                          <ButtonInstrument
                             onClick={() => setSelectedMedia((prev) => prev.includes(m.id as any) ? (prev.length > 1 ? prev.filter((i) => i !== m.id) : prev) : [...prev, m.id as any])}
                             className="w-full flex items-center justify-between mb-3"
                           >
-                            <div className="flex items-center gap-4">
-                              <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center", isActive ? "bg-primary text-white" : "bg-va-off-white text-va-black/20")}>
+                            <ContainerInstrument className="flex items-center gap-4">
+                              <ContainerInstrument className={cn("w-10 h-10 rounded-xl flex items-center justify-center", isActive ? "bg-primary text-white" : "bg-va-off-white text-va-black/20")}>
                                 <m.icon size={20} />
-                              </div>
-                              <div className="text-left">
-                                <div className="text-[14px] font-bold text-va-black">
+                              </ContainerInstrument>
+                              <ContainerInstrument className="text-left">
+                                <TextInstrument className="text-[14px] font-bold text-va-black">
                                   <VoiceglotText translationKey={`common.media.${m.id}`} defaultText={m.label} />
-                                </div>
-                                <div className="text-[11px] text-va-black/30 font-light">
+                                </TextInstrument>
+                                <TextInstrument className="text-[11px] text-va-black/30 font-light">
                                   <VoiceglotText translationKey={`common.media.${m.id}.desc`} defaultText={m.sub} />
-                                </div>
-                              </div>
-                            </div>
-                            <div className={cn("w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all", isActive ? "bg-primary border-primary text-white" : "border-black/10")}>
+                                </TextInstrument>
+                              </ContainerInstrument>
+                            </ContainerInstrument>
+                            <ContainerInstrument className={cn("w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all", isActive ? "bg-primary border-primary text-white" : "border-black/10")}>
                               {isActive && <CheckCircle2 size={14} />}
-                            </div>
-                          </button>
+                            </ContainerInstrument>
+                          </ButtonInstrument>
                           
                           {isActive && (
-                            <div className="grid grid-cols-2 gap-4 pt-3 border-t border-black/5">
-                              <div className="space-y-2">
-                                <label className="text-[9px] font-bold text-va-black/30 uppercase tracking-[0.2em]">
+                            <ContainerInstrument className="grid grid-cols-2 gap-4 pt-3 border-t border-black/5">
+                              <ContainerInstrument className="space-y-2">
+                                <TextInstrument as="label" className="text-[9px] font-bold text-va-black/30 uppercase tracking-[0.2em]">
                                   <VoiceglotText translationKey="common.spots" defaultText="Spots" />
-                                </label>
-                                <div className="flex items-center justify-between bg-va-off-white rounded-lg p-1">
-                                  <button onClick={() => setSpotsDetail((prev) => ({ ...prev, [m.id]: Math.max(1, (prev[m.id] || 1) - 1) }))} className="w-6 h-6 flex items-center justify-center text-va-black/40 hover:text-primary"><Minus size={12} /></button>
-                                  <span className="text-[12px] font-bold text-primary">{spotsDetail[m.id] || 1}</span>
-                                  <button onClick={() => setSpotsDetail((prev) => ({ ...prev, [m.id]: (prev[m.id] || 1) + 1 }))} className="w-6 h-6 flex items-center justify-center text-va-black/40 hover:text-primary"><Plus size={12} /></button>
-                                </div>
-                              </div>
-                              <div className="space-y-2">
-                                <label className="text-[9px] font-bold text-va-black/30 uppercase tracking-[0.2em]">
+                                </TextInstrument>
+                                <ContainerInstrument className="flex items-center justify-between bg-va-off-white rounded-lg p-1">
+                                  <ButtonInstrument onClick={() => setSpotsDetail((prev) => ({ ...prev, [m.id]: Math.max(1, (prev[m.id] || 1) - 1) }))} className="w-6 h-6 flex items-center justify-center text-va-black/40 hover:text-primary"><Minus size={12} /></ButtonInstrument>
+                                  <TextInstrument className="text-[12px] font-bold text-primary">{spotsDetail[m.id] || 1}</TextInstrument>
+                                  <ButtonInstrument onClick={() => setSpotsDetail((prev) => ({ ...prev, [m.id]: (prev[m.id] || 1) + 1 }))} className="w-6 h-6 flex items-center justify-center text-va-black/40 hover:text-primary"><Plus size={12} /></ButtonInstrument>
+                                </ContainerInstrument>
+                              </ContainerInstrument>
+                              <ContainerInstrument className="space-y-2">
+                                <TextInstrument as="label" className="text-[9px] font-bold text-va-black/30 uppercase tracking-[0.2em]">
                                   <VoiceglotText translationKey="common.duration" defaultText="Looptijd" />
-                                </label>
-                                <div className="flex items-center justify-between bg-va-off-white rounded-lg p-1">
-                                  <button onClick={() => setYearsDetail((prev) => ({ ...prev, [m.id]: Math.max(1, (prev[m.id] || 1) - 1) }))} className="w-6 h-6 flex items-center justify-center text-va-black/40 hover:text-primary"><Minus size={12} /></button>
-                                  <span className="text-[12px] font-bold text-primary">{yearsDetail[m.id] || 1}j</span>
-                                  <button onClick={() => setYearsDetail((prev) => ({ ...prev, [m.id]: (prev[m.id] || 1) + 1 }))} className="w-6 h-6 flex items-center justify-center text-va-black/40 hover:text-primary"><Plus size={12} /></button>
-                                </div>
-                              </div>
-                            </div>
+                                </TextInstrument>
+                                <ContainerInstrument className="flex items-center justify-between bg-va-off-white rounded-lg p-1">
+                                  <ButtonInstrument onClick={() => setYearsDetail((prev) => ({ ...prev, [m.id]: Math.max(1, (prev[m.id] || 1) - 1) }))} className="w-6 h-6 flex items-center justify-center text-va-black/40 hover:text-primary"><Minus size={12} /></ButtonInstrument>
+                                  <TextInstrument className="text-[12px] font-bold text-primary">{yearsDetail[m.id] || 1}j</TextInstrument>
+                                  <ButtonInstrument onClick={() => setYearsDetail((prev) => ({ ...prev, [m.id]: (prev[m.id] || 1) + 1 }))} className="w-6 h-6 flex items-center justify-center text-va-black/40 hover:text-primary"><Plus size={12} /></ButtonInstrument>
+                                </ContainerInstrument>
+                              </ContainerInstrument>
+                            </ContainerInstrument>
                           )}
-                        </div>
+                        </ContainerInstrument>
                       );
                     })}
-                  </div>
-                </div>
+                  </ContainerInstrument>
+                </ContainerInstrument>
               ) : (
-                <div className="space-y-6">
-                  <label className="text-va-black/40 ml-0 tracking-[0.2em] text-[11px] font-bold uppercase">
+                <ContainerInstrument className="space-y-6">
+                  <TextInstrument as="label" className="text-va-black/40 ml-0 tracking-[0.2em] text-[11px] font-bold uppercase">
                     <VoiceglotText translationKey="common.word_count" defaultText="Hoeveelheid woorden" />
-                  </label>
-                  <div className="bg-white rounded-[24px] p-8 border border-black/5 shadow-aura space-y-8">
-                    <div className="flex justify-between items-center">
-                      <span className="text-[13px] font-medium text-va-black/40">
+                  </TextInstrument>
+                  <ContainerInstrument className="bg-white rounded-[24px] p-8 border border-black/5 shadow-aura space-y-8">
+                    <ContainerInstrument className="flex justify-between items-center">
+                      <TextInstrument className="text-[13px] font-medium text-va-black/40">
                         <VoiceglotText translationKey="common.volume" defaultText="Volume" />
-                      </span>
-                      <span className="text-xl font-bold text-primary">{calcWords} <VoiceglotText translationKey="common.words" defaultText="woorden" /></span>
-                    </div>
-                    <input 
+                      </TextInstrument>
+                      <TextInstrument className="text-xl font-bold text-primary">{calcWords} <VoiceglotText translationKey="common.words" defaultText="woorden" /></TextInstrument>
+                    </ContainerInstrument>
+                    <InputInstrument 
                       type="range" 
                       min={calcUsage === 'telefonie' ? (pricingConfig?.telephonyWordThreshold || 25) : (pricingConfig?.videoWordThreshold || 200)} 
                       max={2000} 
                       value={calcWords} 
                       onChange={(e) => setCalcWords(parseInt(e.target.value))} 
-                      className="w-full h-1.5 bg-black/5 rounded-lg appearance-none cursor-pointer accent-primary" 
+                      className="w-full h-1.5 bg-black/5 rounded-lg appearance-none cursor-pointer accent-primary p-0" 
                     />
-                    <div className="flex items-center gap-4 bg-va-off-white rounded-2xl p-1.5 border border-black/5 max-w-xs mx-auto">
-                      <button onClick={() => setCalcWords(Math.max(calcUsage === 'telefonie' ? (pricingConfig?.telephonyWordThreshold || 25) : (pricingConfig?.videoWordThreshold || 200), calcWords - 25))} className="w-10 h-10 rounded-xl bg-white flex items-center justify-center hover:bg-primary hover:text-white transition-all text-va-black/40 shadow-sm">-</button>
-                      <div className="flex-1 text-center font-bold text-primary">{calcWords}</div>
-                      <button onClick={() => setCalcWords(calcWords + 25)} className="w-10 h-10 rounded-xl bg-white flex items-center justify-center hover:bg-primary hover:text-white transition-all text-va-black/40 shadow-sm">+</button>
-                    </div>
-                  </div>
-                </div>
+                    <ContainerInstrument className="flex items-center gap-4 bg-va-off-white rounded-2xl p-1.5 border border-black/5 max-w-xs mx-auto">
+                      <ButtonInstrument onClick={() => setCalcWords(Math.max(calcUsage === 'telefonie' ? (pricingConfig?.telephonyWordThreshold || 25) : (pricingConfig?.videoWordThreshold || 200), calcWords - 25))} className="w-10 h-10 rounded-xl bg-white flex items-center justify-center hover:bg-primary hover:text-white transition-all text-va-black/40 shadow-sm">-</ButtonInstrument>
+                      <TextInstrument className="flex-1 text-center font-bold text-primary">{calcWords}</TextInstrument>
+                      <ButtonInstrument onClick={() => setCalcWords(calcWords + 25)} className="w-10 h-10 rounded-xl bg-white flex items-center justify-center hover:bg-primary hover:text-white transition-all text-va-black/40 shadow-sm">+</ButtonInstrument>
+                    </ContainerInstrument>
+                  </ContainerInstrument>
+                </ContainerInstrument>
               )}
-            </div>
-          </div>
+            </ContainerInstrument>
+          </ContainerInstrument>
 
-          <div className="flex justify-end pt-8 border-t border-black/5">
-            <button onClick={handleNext} className="va-btn-pro !bg-va-black !text-white px-12 py-6 rounded-2xl text-lg flex items-center gap-3 shadow-aura-lg hover:scale-105 transition-all">
+          <ContainerInstrument className="flex justify-end pt-8 border-t border-black/5">
+            <ButtonInstrument onClick={handleNext} className="va-btn-pro !bg-va-black !text-white px-12 py-6 rounded-2xl text-lg flex items-center gap-3 shadow-aura-lg hover:scale-105 transition-all">
               <VoiceglotText translationKey="common.next_step" defaultText="Volgende stap" /> <ArrowRight size={20} />
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+            </ButtonInstrument>
+          </ContainerInstrument>
+        </ContainerInstrument>
+      </ContainerInstrument>
+    </ContainerInstrument>
   );
 
   const renderStep2 = () => (
-    <div className="max-w-6xl mx-auto">
-      <div className="flex flex-col gap-8">
-        <div className="p-10 bg-white/80 backdrop-blur-xl rounded-[30px] border border-white/20 shadow-aura">
-          <div className="flex items-center justify-between mb-12"><h3 className="text-3xl font-light tracking-tight text-va-black"><VoiceglotText translationKey="launchpad.step2.title" defaultText="Jouw selectie" /></h3><Link href="/agency" className="text-primary text-[15px] font-light hover:underline tracking-widest uppercase"><VoiceglotText translationKey="launchpad.add_more" defaultText="+ Voeg meer toe" /></Link></div>
+    <ContainerInstrument className="max-w-6xl mx-auto">
+      <ContainerInstrument className="flex flex-col gap-8">
+        <ContainerInstrument className="p-10 bg-white/80 backdrop-blur-xl rounded-[30px] border border-white/20 shadow-aura">
+          <ContainerInstrument className="flex items-center justify-between mb-12">
+            <HeadingInstrument level={3} className="text-3xl font-light tracking-tight text-va-black">
+              <VoiceglotText translationKey="launchpad.step2.title" defaultText="Jouw selectie" />
+            </HeadingInstrument>
+            <Link href="/agency" className="text-primary text-[15px] font-light hover:underline tracking-widest uppercase">
+              <VoiceglotText translationKey="launchpad.add_more" defaultText="+ Voeg meer toe" />
+            </Link>
+          </ContainerInstrument>
           {selectedActors.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+            <ContainerInstrument className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
               {selectedActors.map((actor) => (
-                <div key={actor.id} className="relative group flex flex-col gap-3">
-                  <div className="relative">
+                <ContainerInstrument key={actor.id} className="relative group flex flex-col gap-3">
+                  <ContainerInstrument className="relative">
                     <VoiceCard voice={actor} hideButton compact hidePrice />
-                    <button 
+                    <ButtonInstrument 
                       onClick={() => toggleActorSelection(actor)} 
                       className="absolute -top-3 -right-3 w-8 h-8 bg-white text-va-black/20 hover:text-red-500 rounded-full flex items-center justify-center shadow-lg border border-va-black/5 transition-all z-50"
                     >
                       <LucideX strokeWidth={1.5} size={16} />
-                    </button>
-                  </div>
-                </div>
+                    </ButtonInstrument>
+                  </ContainerInstrument>
+                </ContainerInstrument>
               ))}
-            </div>
+            </ContainerInstrument>
           ) : (
-            <div className="py-20 text-center space-y-6"><Link href="/agency" className="inline-block bg-va-black text-white px-8 py-4 rounded-[10px] font-medium tracking-widest uppercase hover:scale-105 transition-all">Bekijk stemmen</Link></div>
+            <ContainerInstrument className="py-20 text-center space-y-6">
+              <ButtonInstrument as={Link} href="/agency" className="inline-block bg-va-black text-white px-8 py-4 rounded-[10px] font-medium tracking-widest uppercase hover:scale-105 transition-all">
+                Bekijk stemmen
+              </ButtonInstrument>
+            </ContainerInstrument>
           )}
-          <div className="flex items-center justify-between pt-12 border-t border-black/5 mt-12">
-            <button onClick={handleBack} className="flex items-center gap-2 px-8 py-4 rounded-xl border border-black/10 hover:bg-black/5 transition-all text-va-black/60 font-medium tracking-widest uppercase"><LucideArrowLeft size={16} /><VoiceglotText translationKey="common.previous" defaultText="Vorige" /></button>
-            <button onClick={handleNext} className="va-btn-pro !bg-va-black !text-white px-12 py-6 rounded-2xl text-lg flex items-center gap-3 shadow-aura-lg hover:scale-105 transition-all"><VoiceglotText translationKey="common.next_step" defaultText="Volgende stap" /> <ArrowRight size={20} /></button>
-          </div>
-        </div>
-      </div>
-    </div>
+          <ContainerInstrument className="flex items-center justify-between pt-12 border-t border-black/5 mt-12">
+            <ButtonInstrument onClick={handleBack} className="flex items-center gap-2 px-8 py-4 rounded-xl border border-black/10 hover:bg-black/5 transition-all text-va-black/60 font-medium tracking-widest uppercase">
+              <LucideArrowLeft size={16} />
+              <VoiceglotText translationKey="common.previous" defaultText="Vorige" />
+            </ButtonInstrument>
+            <ButtonInstrument onClick={handleNext} className="va-btn-pro !bg-va-black !text-white px-12 py-6 rounded-2xl text-lg flex items-center gap-3 shadow-aura-lg hover:scale-105 transition-all">
+              <VoiceglotText translationKey="common.next_step" defaultText="Volgende stap" /> <ArrowRight size={20} />
+            </ButtonInstrument>
+          </ContainerInstrument>
+        </ContainerInstrument>
+      </ContainerInstrument>
+    </ContainerInstrument>
   );
 
   const renderStep3 = () => (
-    <div className="max-w-6xl mx-auto">
-      <div className="flex flex-col gap-8">
-        <div className="p-10 bg-white/80 backdrop-blur-xl rounded-[30px] border border-white/20 shadow-aura">
-          <div className="flex items-center justify-between mb-8"><h3 className="text-3xl font-light tracking-tight text-va-black"><VoiceglotText translationKey="launchpad.step3.title" defaultText="Het Script" /></h3><button onClick={() => fileInputRef.current?.click()} className="flex items-center gap-2 text-primary text-[15px] font-light hover:opacity-80 transition-opacity tracking-widest uppercase">{isMatching ? <Loader2 size={16} className="animate-spin" /> : <LucideUpload size={16} strokeWidth={1.5} />}<VoiceglotText translationKey="launchpad.upload" defaultText={isMatching ? "Bezig..." : "Upload bestand"} /></button><input type="file" ref={fileInputRef} className="hidden" onChange={(e) => { const file = e.target.files?.[0]; if (file) console.log('File uploaded:', file.name); }} accept=".pdf,.doc,.docx,.txt" /></div>
-          <div className={cn("relative min-h-[320px] rounded-[20px] transition-all duration-500 overflow-hidden", isDragging ? "bg-primary/5 ring-2 ring-primary ring-inset scale-[0.99]" : "bg-va-off-white")} onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }} onDragLeave={() => setIsDragging(false)} onDrop={handleFileDrop}>
+    <ContainerInstrument className="max-w-6xl mx-auto">
+      <ContainerInstrument className="flex flex-col gap-8">
+        <ContainerInstrument className="p-10 bg-white/80 backdrop-blur-xl rounded-[30px] border border-white/20 shadow-aura">
+          <ContainerInstrument className="flex items-center justify-between mb-8">
+            <HeadingInstrument level={3} className="text-3xl font-light tracking-tight text-va-black">
+              <VoiceglotText translationKey="launchpad.step3.title" defaultText="Het Script" />
+            </HeadingInstrument>
+            <ButtonInstrument onClick={() => fileInputRef.current?.click()} className="flex items-center gap-2 text-primary text-[15px] font-light hover:opacity-80 transition-opacity tracking-widest uppercase">
+              {isMatching ? <Loader2 size={16} className="animate-spin" /> : <LucideUpload size={16} strokeWidth={1.5} />}
+              <VoiceglotText translationKey="launchpad.upload" defaultText={isMatching ? "Bezig..." : "Upload bestand"} />
+            </ButtonInstrument>
+            <InputInstrument type="file" ref={fileInputRef} className="hidden" onChange={(e) => { const file = e.target.files?.[0]; if (file) console.log('File uploaded:', file.name); }} accept=".pdf,.doc,.docx,.txt" />
+          </ContainerInstrument>
+          <ContainerInstrument className={cn("relative min-h-[320px] rounded-[20px] transition-all duration-500 overflow-hidden", isDragging ? "bg-primary/5 ring-2 ring-primary ring-inset scale-[0.99]" : "bg-va-off-white")} onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }} onDragLeave={() => setIsDragging(false)} onDrop={handleFileDrop}>
             <textarea value={script} onChange={(e) => setScript(e.target.value)} placeholder={t('launchpad.placeholder.script', "Plak hier je tekst of sleep een bestand...")} className="w-full h-80 bg-transparent rounded-[20px] p-8 text-lg font-light leading-relaxed border-none focus:ring-2 focus:ring-primary/10 transition-all resize-none relative z-10" spellCheck={false} />
-          </div>
-          <div className="flex items-center justify-between pt-12 border-t border-black/5 mt-12">
-            <button onClick={handleBack} className="flex items-center gap-2 px-8 py-4 rounded-xl border border-black/10 hover:bg-black/5 transition-all text-va-black/60 font-medium tracking-widest uppercase"><LucideArrowLeft size={16} /><VoiceglotText translationKey="common.previous" defaultText="Vorige" /></button>
-            <button onClick={handleLaunch} disabled={isLaunching} className="va-btn-pro !bg-primary !text-white px-12 py-6 rounded-2xl text-lg flex items-center gap-3 shadow-xl shadow-primary/20 hover:scale-105 transition-all disabled:opacity-50 disabled:hover:scale-100">
+          </ContainerInstrument>
+          <ContainerInstrument className="flex items-center justify-between pt-12 border-t border-black/5 mt-12">
+            <ButtonInstrument onClick={handleBack} className="flex items-center gap-2 px-8 py-4 rounded-xl border border-black/10 hover:bg-black/5 transition-all text-va-black/60 font-medium tracking-widest uppercase">
+              <LucideArrowLeft size={16} />
+              <VoiceglotText translationKey="common.previous" defaultText="Vorige" />
+            </ButtonInstrument>
+            <ButtonInstrument onClick={handleLaunch} disabled={isLaunching} className="va-btn-pro !bg-primary !text-white px-12 py-6 rounded-2xl text-lg flex items-center gap-3 shadow-xl shadow-primary/20 hover:scale-105 transition-all disabled:opacity-50 disabled:hover:scale-100">
               {isLaunching ? <Loader2 size={20} className="animate-spin" /> : <Sparkles size={20} />}
               <VoiceglotText translationKey="launchpad.cta" defaultText="Ontvang gratis proefopnames" />
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+            </ButtonInstrument>
+          </ContainerInstrument>
+        </ContainerInstrument>
+      </ContainerInstrument>
+    </ContainerInstrument>
   );
 
   return (
-    <div className="bg-va-off-white min-h-screen pb-32 overflow-hidden">
+    <ContainerInstrument className="bg-va-off-white min-h-screen pb-32 overflow-hidden">
       <LiquidBackground />
-      <div className="pt-40 pb-12 relative z-10 max-w-5xl mx-auto px-6 text-center">
-        <header className="max-w-4xl mx-auto">
-          <h1 className="text-[8vw] lg:text-[80px] font-extralight tracking-tighter mb-8 leading-[0.85] text-va-black">
+      <ContainerInstrument className="pt-40 pb-12 relative z-10 max-w-5xl mx-auto px-6 text-center">
+        <ContainerInstrument as="header" className="max-w-4xl mx-auto">
+          <HeadingInstrument level={1} className="text-[8vw] lg:text-[80px] font-extralight tracking-tighter mb-8 leading-[0.85] text-va-black">
             <VoiceglotText translationKey="launchpad.title" defaultText="Gratis Proefopname" />
-          </h1>
-          <div className="h-[60px] flex items-center justify-center overflow-hidden">
-            <p className="text-xl lg:text-2xl text-va-black/40 font-light tracking-tight max-w-2xl mx-auto leading-tight">
+          </HeadingInstrument>
+          <ContainerInstrument className="h-[60px] flex items-center justify-center overflow-hidden">
+            <TextInstrument className="text-xl lg:text-2xl text-va-black/40 font-light tracking-tight max-w-2xl mx-auto leading-tight">
               <VoiceglotText translationKey={`launchpad.subtitle.step${currentStep}`} defaultText={currentStep === 1 ? "Wat gaan we maken? Kies je projecttype en details." : currentStep === 2 ? "Bevestig je selectie van stemacteurs voor je proefopname." : "Geef je script en instructies door voor de proefopname."} />
-            </p>
-          </div>
-          <div className="w-16 h-1 bg-primary/20 rounded-full mx-auto mt-6" />
-        </header>
-      </div>
+            </TextInstrument>
+          </ContainerInstrument>
+          <ContainerInstrument className="w-16 h-1 bg-primary/20 rounded-full mx-auto mt-6" />
+        </ContainerInstrument>
+      </ContainerInstrument>
 
-      <div className="relative z-20 max-w-6xl mx-auto px-6 mb-12">
-        <div className="bg-white/50 border border-black/5 p-2 rounded-[32px] shadow-aura flex items-center gap-2 max-w-xl mx-auto">
+      <ContainerInstrument className="relative z-20 max-w-6xl mx-auto px-6 mb-12">
+        <ContainerInstrument className="bg-white/50 border border-black/5 p-2 rounded-[32px] shadow-aura flex items-center gap-2 max-w-xl mx-auto">
           {steps.map((step) => {
             const isActive = currentStep === step.id;
             const isCompleted = currentStep > step.id;
             return (
-              <button key={step.id} onClick={() => { if (isCompleted || (isActive && currentStep > 1)) setCurrentStep(step.id); }} disabled={!isCompleted && !isActive} className={cn("flex-1 flex items-center justify-start gap-4 px-6 py-4 rounded-[28px] transition-all duration-500 relative overflow-hidden text-left group", isActive ? "text-white cursor-default" : isCompleted ? "text-primary hover:bg-primary/5" : "text-va-black/20 cursor-not-allowed")}>
+              <ButtonInstrument key={step.id} onClick={() => { if (isCompleted || (isActive && currentStep > 1)) setCurrentStep(step.id); }} disabled={!isCompleted && !isActive} className={cn("flex-1 flex items-center justify-start gap-4 px-6 py-4 rounded-[28px] transition-all duration-500 relative overflow-hidden text-left group", isActive ? "text-white cursor-default" : isCompleted ? "text-primary hover:bg-primary/5" : "text-va-black/20 cursor-not-allowed")}>
                 {isActive && <motion.div layoutId="activeStep" className="absolute inset-0 bg-va-black shadow-xl" style={{ borderRadius: 28 }} transition={{ type: "spring", bounce: 0.2, duration: 0.6 }} />}
-                <div className={cn("w-8 h-8 rounded-full flex items-center justify-center border-2 shrink-0 transition-colors relative z-10", isActive ? "border-primary bg-primary/10" : isCompleted ? "border-primary/20 bg-primary/5" : "border-black/5 bg-black/5")}>
-                  {isCompleted ? <LucideCheckCircle size={14} strokeWidth={3} /> : <span className="text-[13px] font-bold tracking-tighter">0{step.id}</span>}
-                </div>
-                <div className="flex flex-col relative z-10 min-w-0">
-                  <span className={cn("text-[12px] font-bold tracking-widest leading-none mb-1 uppercase truncate", isActive ? "text-white" : isCompleted ? "text-va-black" : "text-va-black/20")}>
+                <ContainerInstrument className={cn("w-8 h-8 rounded-full flex items-center justify-center border-2 shrink-0 transition-colors relative z-10", isActive ? "border-primary bg-primary/10" : isCompleted ? "border-primary/20 bg-primary/5" : "border-black/5 bg-black/5")}>
+                  {isCompleted ? <LucideCheckCircle size={14} strokeWidth={3} /> : <TextInstrument className="text-[13px] font-bold tracking-tighter">0{step.id}</TextInstrument>}
+                </ContainerInstrument>
+                <ContainerInstrument className="flex flex-col relative z-10 min-w-0">
+                  <TextInstrument as="span" className={cn("text-[12px] font-bold tracking-widest leading-none mb-1 uppercase truncate", isActive ? "text-white" : isCompleted ? "text-va-black" : "text-va-black/20")}>
                     <VoiceglotText translationKey={step.key} defaultText={step.title} />
-                  </span>
-                </div>
-              </button>
+                  </TextInstrument>
+                </ContainerInstrument>
+              </ButtonInstrument>
             );
           })}
-        </div>
-      </div>
+        </ContainerInstrument>
+      </ContainerInstrument>
 
-      <section className="py-4 relative z-10 max-w-5xl mx-auto px-6">
+      <SectionInstrument className="py-4 relative z-10 max-w-5xl mx-auto px-6">
         <AnimatePresence mode="wait">
           <motion.div key={currentStep} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}>
             {currentStep === 1 && renderStep1()}
@@ -462,7 +491,7 @@ export function StudioLaunchpad({ initialActors = [], initialJourney }: StudioLa
             {currentStep === 3 && renderStep3()}
           </motion.div>
         </AnimatePresence>
-      </section>
-    </div>
+      </SectionInstrument>
+    </ContainerInstrument>
   );
 }

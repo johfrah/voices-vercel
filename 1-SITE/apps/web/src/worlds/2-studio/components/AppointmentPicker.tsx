@@ -1,4 +1,5 @@
-'use client';
+import { ContainerInstrument, TextInstrument, ButtonInstrument } from '@/components/ui/LayoutInstruments';
+import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import React, { useState, useEffect } from 'react';
 import { format, addDays, isSameDay, parseISO } from 'date-fns';
 import { nlBE } from 'date-fns/locale';
@@ -37,11 +38,11 @@ export const AppointmentPicker: React.FC<{ onSelect: (slot: TimeSlot) => void }>
   const days = Array.from({ length: 14 }, (_, i) => addDays(new Date(), i + 1));
 
   return (
-    <div className="space-y-8">
+    <ContainerInstrument className="space-y-8">
       {/* Date Selection */}
-      <div className="flex gap-2 overflow-x-auto pb-4 no-scrollbar">
+      <ContainerInstrument plain className="flex gap-2 overflow-x-auto pb-4 no-scrollbar">
         {days.map((day) => (
-          <button
+          <ButtonInstrument
             key={day.toISOString()}
             onClick={() => setSelectedDate(day)}
             className={`flex-shrink-0 w-20 py-4 rounded-2xl border-2 transition-all ${
@@ -50,26 +51,27 @@ export const AppointmentPicker: React.FC<{ onSelect: (slot: TimeSlot) => void }>
                 : 'border-black/5 bg-white text-black/40 hover:border-black/10'
             }`}
           >
-            <div className="text-[15px] font-black tracking-widest mb-1">
+            <TextInstrument className="text-[15px] font-black tracking-widest mb-1">
               {format(day, 'EEE', { locale: nlBE })}
-            </div>
-            <div className="text-xl font-black tracking-tighter">
+            </TextInstrument>
+            <TextInstrument className="text-xl font-black tracking-tighter">
               {format(day, 'd')}
-            </div>
-          </button>
+            </TextInstrument>
+          </ButtonInstrument>
         ))}
-      </div>
+      </ContainerInstrument>
 
       {/* Time Selection */}
-      <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+      <ContainerInstrument className="grid grid-cols-3 sm:grid-cols-4 gap-3">
         <AnimatePresence  mode="wait">
           {loading ? (
-            <div className="col-span-full py-12 text-center animate-pulse text-black/20 font-black tracking-widest">
-              Zoeken naar gaatjes...
-            </div>
+            <ContainerInstrument className="col-span-full py-12 text-center animate-pulse text-black/20 font-black tracking-widest">
+              <VoiceglotText translationKey="studio.calendar.searching" defaultText="Zoeken naar gaatjes..." />
+            </ContainerInstrument>
           ) : slots.length > 0 ? (
             slots.map((slot) => (
-              <motion.button
+              <ButtonInstrument
+                as={motion.button}
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 key={slot.start}
@@ -84,15 +86,15 @@ export const AppointmentPicker: React.FC<{ onSelect: (slot: TimeSlot) => void }>
                 }`}
               >
                 {slot.time}
-              </motion.button>
+              </ButtonInstrument>
             ))
           ) : (
-            <div className="col-span-full py-12 text-center text-black/20 font-black tracking-widest">
-              Geen plekjes vrij op deze dag.
-            </div>
+            <ContainerInstrument className="col-span-full py-12 text-center text-black/20 font-black tracking-widest">
+              <VoiceglotText translationKey="studio.calendar.no_slots" defaultText="Geen plekjes vrij op deze dag." />
+            </ContainerInstrument>
           )}
         </AnimatePresence>
-      </div>
-    </div>
+      </ContainerInstrument>
+    </ContainerInstrument>
   );
 };

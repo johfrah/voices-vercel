@@ -1,7 +1,6 @@
 "use client";
 
-import React from "react";
-import { ContainerInstrument, HeadingInstrument, TextInstrument } from "@/components/ui/LayoutInstruments";
+import { ContainerInstrument, HeadingInstrument, SectionInstrument, TextInstrument } from "@/components/ui/LayoutInstruments";
 import { cn } from "@/lib/utils";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
 
@@ -32,54 +31,54 @@ export const SkillDNAIsland: React.FC<SkillDNAIslandProps> = ({ workshop }) => {
   if (!workshop) return null;
 
   return (
-    <section className="relative">
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
+    <SectionInstrument className="relative">
+      <ContainerInstrument className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
         
         {/* Left: Heading & Level */}
-        <div className="lg:col-span-5 space-y-8">
-          <div>
+        <ContainerInstrument className="lg:col-span-5 space-y-8">
+          <ContainerInstrument>
             <TextInstrument className="text-[11px] font-bold tracking-[0.3em] uppercase text-primary mb-4">
-              Wat leer je écht?
+              <VoiceglotText translationKey="studio.skill_dna.label" defaultText="Wat leer je écht?" />
             </TextInstrument>
             <HeadingInstrument level={2} className="text-4xl md:text-6xl font-light tracking-tighter text-va-black leading-tight">
-              Jouw Skill DNA
+              <VoiceglotText translationKey="studio.skill_dna.title" defaultText="Jouw Skill DNA" />
             </HeadingInstrument>
-          </div>
+          </ContainerInstrument>
 
-          <div className="p-8 bg-white rounded-[24px] shadow-aura border border-black/[0.02] flex items-center gap-6 group hover:shadow-aura-lg transition-all duration-500">
-            <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0 group-hover:scale-110 transition-transform duration-500">
-              <span className="text-2xl font-light tracking-tighter">
+          <ContainerInstrument className="p-8 bg-white rounded-[24px] shadow-aura border border-black/[0.02] flex items-center gap-6 group hover:shadow-aura-lg transition-all duration-500">
+            <ContainerInstrument className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0 group-hover:scale-110 transition-transform duration-500">
+              <TextInstrument as="span" className="text-2xl font-light tracking-tighter">
                 {level === 'Starter' ? 'S' : 'B'}
-              </span>
-            </div>
-            <div>
+              </TextInstrument>
+            </ContainerInstrument>
+            <ContainerInstrument>
               <TextInstrument className="text-[11px] font-bold tracking-[0.2em] uppercase text-va-black/30 mb-1">
-                Instapniveau
+                <VoiceglotText translationKey="studio.skill_dna.level_label" defaultText="Instapniveau" />
               </TextInstrument>
               <TextInstrument className="text-xl font-light tracking-tight text-va-black">
                 {level === 'Starter' ? 'Geen ervaring vereist' : 'Basiservaring vereist'}
               </TextInstrument>
-            </div>
-          </div>
-        </div>
+            </ContainerInstrument>
+          </ContainerInstrument>
+        </ContainerInstrument>
 
         {/* Right: Skill Dots Grid */}
-        <div className="lg:col-span-7 grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
+        <ContainerInstrument className="lg:col-span-7 grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
           {skills.map((skill) => {
             const score = dna[skill.key] || 1;
             return (
-              <div key={skill.key} className="space-y-4">
-                <div className="flex justify-between items-end">
+              <ContainerInstrument key={skill.key} className="space-y-4">
+                <ContainerInstrument className="flex justify-between items-end">
                   <TextInstrument className="text-[13px] font-medium tracking-widest uppercase text-va-black/60">
                     {skill.label}
                   </TextInstrument>
                   <TextInstrument className="text-[11px] font-bold text-primary/40">
                     {score}/5
                   </TextInstrument>
-                </div>
-                <div className="flex gap-2">
+                </ContainerInstrument>
+                <ContainerInstrument className="flex gap-2">
                   {Array.from({ length: 5 }).map((_, i) => (
-                    <div 
+                    <ContainerInstrument 
                       key={i}
                       className={cn(
                         "w-full h-2.5 rounded-full transition-all duration-700",
@@ -90,13 +89,13 @@ export const SkillDNAIsland: React.FC<SkillDNAIslandProps> = ({ workshop }) => {
                       style={{ transitionDelay: `${i * 100}ms` }}
                     />
                   ))}
-                </div>
-              </div>
+                </ContainerInstrument>
+              </ContainerInstrument>
             );
           })}
-        </div>
+        </ContainerInstrument>
 
-      </div>
-    </section>
+      </ContainerInstrument>
+    </SectionInstrument>
   );
 };

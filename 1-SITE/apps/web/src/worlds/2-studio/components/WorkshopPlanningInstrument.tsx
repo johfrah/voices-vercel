@@ -3,11 +3,12 @@
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { Calendar, CheckCircle2, FileCheck } from 'lucide-react';
 import React from 'react';
-import { BentoCard } from '../BentoGrid';
+import { BentoCard } from "@/components/ui/BentoGridInstrument";
 import { 
   ContainerInstrument, 
   TextInstrument,
-  ButtonInstrument
+  ButtonInstrument,
+  HeadingInstrument
 } from '@/components/ui/LayoutInstruments';
 
 interface WorkshopPlanningInstrumentProps {

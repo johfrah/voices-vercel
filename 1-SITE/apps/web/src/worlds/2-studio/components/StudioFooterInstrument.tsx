@@ -100,11 +100,11 @@ export function StudioFooter({ market, activeSocials, activePhone, activeEmail }
         <ContainerInstrument className="pt-4 space-y-3 w-full border-t border-black/5">
           <VoicesLinkInstrument href="/academy" className="flex items-center gap-2 text-[13px] font-light text-va-black/40 hover:text-primary transition-colors">
             <GraduationCap size={14} />
-            <TextInstrument as="span">Naar de Academy</TextInstrument>
+            <TextInstrument as="span"><VoiceglotText translationKey="footer.link.academy" defaultText="Naar de Academy" /></TextInstrument>
           </VoicesLinkInstrument>
           <VoicesLinkInstrument href="/studio/faq" className="flex items-center gap-2 text-[13px] font-light text-va-black/40 hover:text-primary transition-colors">
             <BookOpen size={14} />
-            <TextInstrument as="span">Veelgestelde vragen</TextInstrument>
+            <TextInstrument as="span"><VoiceglotText translationKey="footer.link.faq" defaultText="Veelgestelde vragen" /></TextInstrument>
           </VoicesLinkInstrument>
         </ContainerInstrument>
       </ContainerInstrument>

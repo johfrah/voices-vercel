@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef, useState } from 'react';
-import { ContainerInstrument } from "@/components/ui/LayoutInstruments";
+import { ContainerInstrument, ButtonInstrument } from "@/components/ui/LayoutInstruments";
 import { WorkshopCard } from './WorkshopCard';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useSonicDNA } from '@/lib/engines/sonic-dna';
@@ -32,18 +32,18 @@ export const WorkshopCarousel: React.FC<WorkshopCarouselProps> = ({ workshops: i
     <ContainerInstrument className="relative group/carousel">
       {/* Navigation Buttons */}
       <ContainerInstrument className="absolute -top-20 right-4 flex gap-4 z-20">
-        <button 
+        <ButtonInstrument 
           onClick={() => scroll('left')}
-          className="w-12 h-12 rounded-full bg-white border border-black/5 shadow-sm flex items-center justify-center text-black/40 hover:text-primary hover:border-primary/20 transition-all active:scale-90"
+          className="w-12 h-12 rounded-full bg-white border border-black/5 shadow-sm flex items-center justify-center text-black/40 hover:text-primary hover:border-primary/20 transition-all active:scale-90 p-0"
         >
           <ChevronLeft strokeWidth={1.5} size={24} />
-        </button>
-        <button 
+        </ButtonInstrument>
+        <ButtonInstrument 
           onClick={() => scroll('right')}
-          className="w-12 h-12 rounded-full bg-white border border-black/5 shadow-sm flex items-center justify-center text-black/40 hover:text-primary hover:border-primary/20 transition-all active:scale-90"
+          className="w-12 h-12 rounded-full bg-white border border-black/5 shadow-sm flex items-center justify-center text-black/40 hover:text-primary hover:border-primary/20 transition-all active:scale-90 p-0"
         >
           <ChevronRight strokeWidth={1.5} size={24} />
-        </button>
+        </ButtonInstrument>
       </ContainerInstrument>
 
       {/* Carousel Container */}

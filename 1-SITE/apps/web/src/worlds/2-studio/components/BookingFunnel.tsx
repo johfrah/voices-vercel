@@ -93,6 +93,7 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
     try {
       //  NUCLEAR WORKSHOP SPA ENGINE
       // We voegen de workshop toe aan de checkout en navigeren direct.
+      const priceExclVatValue = selectedDate ? parseFloat(selectedDate.price) || priceExclVat : priceExclVat;
       const workshopItem = {
         id: `workshop-${workshopId}-${Date.now()}`,
         type: 'workshop_edition',
@@ -134,24 +135,24 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
     return (
       <ContainerInstrument plain className="space-y-8 animate-pulse">
         <ContainerInstrument plain className="space-y-4">
-          <div className="h-4 w-32 bg-va-black/5 rounded-full mb-4" />
-          <div className="grid gap-3">
+          <ContainerInstrument className="h-4 w-32 bg-va-black/5 rounded-full mb-4" />
+          <ContainerInstrument className="grid gap-3">
             {[1, 2].map((i) => (
-              <div key={i} className="w-full h-[84px] rounded-[15px] bg-va-black/5 border border-va-black/5" />
+              <ContainerInstrument key={i} className="w-full h-[84px] rounded-[15px] bg-va-black/5 border border-va-black/5" />
             ))}
-          </div>
+          </ContainerInstrument>
         </ContainerInstrument>
         <ContainerInstrument plain className="space-y-4">
-          <div className="h-4 w-32 bg-va-black/5 rounded-full mb-4" />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <ContainerInstrument className="h-4 w-32 bg-va-black/5 rounded-full mb-4" />
+          <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {[1, 2, 3, 4, 5].map((i) => (
-              <div key={i} className={cn("h-[54px] bg-va-black/5 rounded-[10px]", i === 3 && "md:col-span-2")} />
+              <ContainerInstrument key={i} className={cn("h-[54px] bg-va-black/5 rounded-[10px]", i === 3 && "md:col-span-2")} />
             ))}
-          </div>
+          </ContainerInstrument>
         </ContainerInstrument>
-        <div className="pt-8 border-t border-va-black/5">
-          <div className="w-full h-[68px] bg-va-black/5 rounded-[10px]" />
-        </div>
+        <ContainerInstrument className="pt-8 border-t border-va-black/5">
+          <ContainerInstrument className="w-full h-[68px] bg-va-black/5 rounded-[10px]" />
+        </ContainerInstrument>
       </ContainerInstrument>
     );
   }
@@ -211,7 +212,7 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
                   <ContainerInstrument plain className="flex items-center gap-3">
                     <TextInstrument className="text-[15px] font-light tracking-tight text-inherit">{date.date_raw}</TextInstrument>
                     {date.capacity && (
-                      <div className={cn(
+                      <ContainerInstrument className={cn(
                         "px-2 py-0.5 rounded-full text-[9px] font-black tracking-widest uppercase",
                         (date.capacity - (date.filled || 0)) <= 0 
                           ? "bg-red-500/20 text-red-500" 
@@ -224,7 +225,7 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
                           : (date.capacity - (date.filled || 0)) <= 2 
                             ? <VoiceglotText translationKey="common.last_spots" defaultText={t('common.last_spots_count', `LAATSTE ${ (date.capacity - (date.filled || 0)) === 1 ? 'PLEK' : 'PLEKKEN' }`, { count: date.capacity - (date.filled || 0) })} /> 
                             : <VoiceglotText translationKey="common.available" defaultText="BESCHIKBAAR" />}
-                      </div>
+                      </ContainerInstrument>
                     )}
                   </ContainerInstrument>
                   <TextInstrument className="text-[15px] font-light opacity-60 tracking-widest mt-1 text-inherit">

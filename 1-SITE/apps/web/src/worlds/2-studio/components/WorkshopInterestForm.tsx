@@ -6,7 +6,9 @@ import {
     HeadingInstrument,
     InputInstrument,
     LabelInstrument,
-    TextInstrument
+    TextInstrument,
+    SelectInstrument,
+    OptionInstrument
 } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useTranslation } from '@/contexts/TranslationContext';
@@ -165,10 +167,10 @@ export const WorkshopInterestForm: React.FC = () => {
               {isFetching ? (
                 // Skeleton loading
                 [1, 2, 3, 4].map((i) => (
-                  <div key={i} className="h-16 bg-va-black/5 rounded-[20px] animate-pulse" />
+                  <ContainerInstrument key={i} className="h-16 bg-va-black/5 rounded-[20px] animate-pulse" />
                 ))
               ) : workshops.map((w) => (
-                <button
+                <ButtonInstrument
                   key={w.id}
                   type="button"
                   onClick={() => { playClick('light'); toggleWorkshop(w.id); }}
@@ -190,7 +192,7 @@ export const WorkshopInterestForm: React.FC = () => {
                   )}>
                     {selectedWorkshops.includes(w.id) && <Check size={14} strokeWidth={3} className="text-white" />}
                   </ContainerInstrument>
-                </button>
+                </ButtonInstrument>
               ))}
             </ContainerInstrument>
           </ContainerInstrument>
@@ -279,16 +281,16 @@ export const WorkshopInterestForm: React.FC = () => {
               </ContainerInstrument>
               <ContainerInstrument className="space-y-2 md:col-span-2">
                 <LabelInstrument className="text-[15px] font-light text-black/50 px-1"><VoiceglotText  translationKey="common.experience" defaultText="Ervaring met stemwerk" /></LabelInstrument>
-                <select 
+                <SelectInstrument 
                   className="w-full p-4 rounded-[20px] border-2 border-black/5 bg-white text-[15px] font-light outline-none focus:border-primary transition-all duration-100 min-h-[52px]"
                   value={formData.experience}
                   onChange={(e) => setFormData({...formData, experience: e.target.value})}
                 >
-                  <option value=""><VoiceglotText  translationKey="common.choose_level" defaultText="Kies je niveau..." /></option>
-                  <option value="beginner"><VoiceglotText  translationKey="common.level.beginner" defaultText="Beginner (geen ervaring)" /></option>
-                  <option value="intermediate"><VoiceglotText  translationKey="common.level.intermediate" defaultText="Enige ervaring (hobby/amateur)" /></option>
-                  <option value="pro"><VoiceglotText  translationKey="common.level.pro" defaultText="Professional" /></option>
-                </select>
+                  <OptionInstrument value=""><VoiceglotText  translationKey="common.choose_level" defaultText="Kies je niveau..." /></OptionInstrument>
+                  <OptionInstrument value="beginner"><VoiceglotText  translationKey="common.level.beginner" defaultText="Beginner (geen ervaring)" /></OptionInstrument>
+                  <OptionInstrument value="intermediate"><VoiceglotText  translationKey="common.level.intermediate" defaultText="Enige ervaring (hobby/amateur)" /></OptionInstrument>
+                  <OptionInstrument value="pro"><VoiceglotText  translationKey="common.level.pro" defaultText="Professional" /></OptionInstrument>
+                </SelectInstrument>
               </ContainerInstrument>
               <ContainerInstrument className="space-y-2 md:col-span-2">
                 <LabelInstrument className="text-[15px] font-light text-black/50 px-1"><VoiceglotText  translationKey="common.goal" defaultText="Wat is je doel?" /></LabelInstrument>

@@ -25,19 +25,19 @@ export const WorkshopContent: React.FC<WorkshopContentProps> = ({ workshop, isLo
   return (
     <ContainerInstrument plain className="space-y-32">
       {/*  SECTION 2: BOOKING TOOL (Centraal) */}
-      <ContainerInstrument className="max-w-[1140px] mx-auto">
+      <SectionInstrument className="max-w-[1140px] mx-auto">
         <ContainerInstrument className="max-w-3xl mx-auto">
           <HeadingInstrument level={2} className="text-4xl md:text-5xl font-light tracking-tighter text-va-black text-center mb-12">
             {workshop.dates && workshop.dates.length > 0 ? (
-              <>
+              <ContainerInstrument plain>
                 <VoiceglotText translationKey="workshop.booking.title.available_prefix" defaultText="Doe je mee met de workshop" />
-                <span className="text-primary"> &apos;{workshop.title}&apos;</span>?
-              </>
+                <TextInstrument as="span" className="text-primary"> &apos;{workshop.title}&apos;</TextInstrument>?
+              </ContainerInstrument>
             ) : (
-              <>
+              <ContainerInstrument plain>
                 <VoiceglotText translationKey="workshop.booking.title.empty_prefix" defaultText="Blijf op de hoogte van" />
-                <span className="text-primary"> &apos;{workshop.title}&apos;</span>
-              </>
+                <TextInstrument as="span" className="text-primary"> &apos;{workshop.title}&apos;</TextInstrument>
+              </ContainerInstrument>
             )}
           </HeadingInstrument>
           
@@ -53,11 +53,11 @@ export const WorkshopContent: React.FC<WorkshopContentProps> = ({ workshop, isLo
             />
           </BentoCard>
         </ContainerInstrument>
-      </ContainerInstrument>
+      </SectionInstrument>
 
       {/*  SECTION 3: INHOUD, PROGRAMMA & AFTERMOVIE */}
       <SectionInstrument className="py-32 bg-va-off-white/50 border-y border-black/[0.03]">
-        <ContainerInstrument className="max-w-[1140px] mx-auto space-y-32">
+        <ContainerInstrument className="max-w-1140px mx-auto space-y-32">
           
           {/* WORKSHOP INFO & INSTRUCTOR */}
           <ContainerInstrument className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
@@ -87,18 +87,18 @@ export const WorkshopContent: React.FC<WorkshopContentProps> = ({ workshop, isLo
                       />
                     </ContainerInstrument>
                     <ContainerInstrument plain>
-                    <TextInstrument className="text-[15px] font-light tracking-[0.2em] text-white/30 mb-1">
-                      <VoiceglotText translationKey="workshop.instructor.label" defaultText="Jouw Workshopgever" />
-                    </TextInstrument>
-                    <TextInstrument className="text-2xl font-light text-white">
-                      <VoiceglotText translationKey={`instructor.${workshop.instructor_id || 'default'}.name`} defaultText={workshop.instructeur || "Johfrah Lefebvre"} />
-                    </TextInstrument>
+                      <TextInstrument className="text-[15px] font-light tracking-[0.2em] text-white/30 mb-1">
+                        <VoiceglotText translationKey="workshop.instructor.label" defaultText="Jouw Workshopgever" />
+                      </TextInstrument>
+                      <TextInstrument className="text-2xl font-light text-white">
+                        <VoiceglotText translationKey={`instructor.${workshop.instructor_id || 'default'}.name`} defaultText={workshop.instructeur || "Johfrah Lefebvre"} />
+                      </TextInstrument>
+                    </ContainerInstrument>
                   </ContainerInstrument>
-                </ContainerInstrument>
                 
-                <TextInstrument className="text-[15px] font-light leading-relaxed text-white/60 italic">
-                  <VoiceglotText translationKey={`instructor.${workshop.instructor_id || 'default'}.about`} defaultText={cleanText(workshop.about_me) || "Meester in stem en spreken, met meer dan 20 jaar ervaring in de studio."} />
-                </TextInstrument>
+                  <TextInstrument className="text-[15px] font-light leading-relaxed text-white/60 italic">
+                    <VoiceglotText translationKey={`instructor.${workshop.instructor_id || 'default'}.about`} defaultText={cleanText(workshop.about_me) || "Meester in stem en spreken, met meer dan 20 jaar ervaring in de studio."} />
+                  </TextInstrument>
                 </ContainerInstrument>
               </BentoCard>
             </ContainerInstrument>
@@ -117,7 +117,9 @@ export const WorkshopContent: React.FC<WorkshopContentProps> = ({ workshop, isLo
               </HeadingInstrument>
               <BentoCard span="full" className="relative group aspect-video bg-black overflow-hidden rounded-[40px] shadow-aura-lg">
                 <ContainerInstrument plain className="absolute inset-0 flex items-center justify-center">
-                  <ContainerInstrument plain className="text-white/20 font-light tracking-tighter text-4xl group-hover:scale-110 transition-transform duration-700"><VoiceglotText  translationKey="workshop.aftermovie.label" defaultText="Aftermovie" /></ContainerInstrument>
+                  <TextInstrument className="text-white/20 font-light tracking-tighter text-4xl group-hover:scale-110 transition-transform duration-700">
+                    <VoiceglotText  translationKey="workshop.aftermovie.label" defaultText="Aftermovie" />
+                  </TextInstrument>
                   <ButtonInstrument className="absolute inset-0 flex items-center justify-center group-hover:bg-black/20 transition-all duration-500">
                     <ContainerInstrument plain className="w-24 h-24 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center group-hover:scale-110 transition-all duration-500">
                       <Play strokeWidth={1.5} className="text-white fill-white ml-2" size={32} />

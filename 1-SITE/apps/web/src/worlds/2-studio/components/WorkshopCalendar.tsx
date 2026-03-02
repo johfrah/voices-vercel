@@ -58,7 +58,7 @@ export const WorkshopCalendar: React.FC<{ workshops: any[] }> = ({ workshops }) 
               <VoiceglotText  translationKey="studio.calendar.title" defaultText="Workshop kalender" />
             </HeadingInstrument>
             <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/30 mt-1 ">
-              <VoiceglotText  translationKey="studio.calendar.month" defaultText="Februari 2026" />
+              <VoiceglotText  translationKey="studio.calendar.month" defaultText="Maart 2026" />
             </TextInstrument>
           </ContainerInstrument>
         </ContainerInstrument>

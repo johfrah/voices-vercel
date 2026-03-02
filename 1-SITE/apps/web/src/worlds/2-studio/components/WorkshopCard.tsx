@@ -1,6 +1,6 @@
 "use client";
 
-import { ContainerInstrument, HeadingInstrument, TextInstrument } from "@/components/ui/LayoutInstruments";
+import { ContainerInstrument, HeadingInstrument, TextInstrument, ButtonInstrument } from "@/components/ui/LayoutInstruments";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { WorkshopEditModal } from "@/components/ui/WorkshopEditModalInstrument";
 import { useEditMode } from "@/contexts/EditModeContext";
@@ -160,13 +160,13 @@ export const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onUpdate }
     >
       {/* ADMIN EDIT BUTTON */}
       {isEditMode && (
-        <button
+        <ButtonInstrument
           onClick={handleAdminClick}
-          className="absolute top-4 right-4 z-[60] w-10 h-10 rounded-full bg-primary text-white shadow-lg flex items-center justify-center hover:scale-110 active:scale-95 transition-all animate-in fade-in zoom-in duration-300"
+          className="absolute top-4 right-4 z-[60] w-10 h-10 rounded-full bg-primary text-white shadow-lg flex items-center justify-center hover:scale-110 active:scale-95 transition-all animate-in fade-in zoom-in duration-300 p-0"
           title="Bewerk Workshop & Edities"
         >
           <Settings size={20} strokeWidth={2} />
-        </button>
+        </ButtonInstrument>
       )}
 
       {/* VIDEO PREVIEW / AFTERMOVIE */}
@@ -174,9 +174,9 @@ export const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onUpdate }
         <ContainerInstrument plain className="relative aspect-square w-full bg-va-black overflow-hidden">
           {/*  SMART AVAILABILITY CHIP */}
           {availability && (
-            <div className={`absolute top-6 left-6 z-30 px-3 py-1.5 rounded-full text-[10px] font-black tracking-[0.2em] uppercase shadow-lg ${availability.color}`}>
+            <ContainerInstrument className={`absolute top-6 left-6 z-30 px-3 py-1.5 rounded-full text-[10px] font-black tracking-[0.2em] uppercase shadow-lg ${availability.color}`}>
               {availability.label}
-            </div>
+            </ContainerInstrument>
           )}
 
           {shouldLoadVideo ? (
@@ -201,7 +201,7 @@ export const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onUpdate }
               />
             </video>
           ) : (
-            <div className="w-full h-full bg-va-black/20 animate-pulse" />
+            <ContainerInstrument className="w-full h-full bg-va-black/20 animate-pulse" />
           )}
 
           {/* PLAY BUTTON OVERLAY */}
@@ -225,11 +225,11 @@ export const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onUpdate }
           
           {/*  CUSTOM SUBTITLES (VOICES MIX) */}
           {activeSubtitle && (
-            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 w-[85%] z-20 pointer-events-none text-center">
-              <span className="inline-block px-4 py-2 bg-va-black/80 backdrop-blur-md rounded-[12px] text-white text-[14px] font-light leading-relaxed shadow-aura-lg border border-white/5 animate-in fade-in slide-in-from-bottom-2 duration-300">
+            <ContainerInstrument className="absolute bottom-8 left-1/2 -translate-x-1/2 w-[85%] z-20 pointer-events-none text-center">
+              <TextInstrument as="span" className="inline-block px-4 py-2 bg-va-black/80 backdrop-blur-md rounded-[12px] text-white text-[14px] font-light leading-relaxed shadow-aura-lg border border-white/5 animate-in fade-in slide-in-from-bottom-2 duration-300">
                 {activeSubtitle}
-              </span>
-            </div>
+              </TextInstrument>
+            </ContainerInstrument>
           )}
         </ContainerInstrument>
       )}
@@ -308,7 +308,7 @@ export const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onUpdate }
           </ContainerInstrument>
 
           {/* Spacer to push price/cta to bottom */}
-          <div className="flex-grow" />
+          <ContainerInstrument className="flex-grow" />
 
           <ContainerInstrument plain className="flex justify-between items-end pt-6 border-t border-black/[0.03] mt-auto">
             <ContainerInstrument plain>
@@ -320,7 +320,8 @@ export const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onUpdate }
               </TextInstrument>
             </ContainerInstrument>
             
-            <Link 
+            <ButtonInstrument 
+              as={Link}
               href={nextEdition ? `/studio/${workshop.slug}` : `/studio/doe-je-mee?workshop=${workshop.slug}`}
               onClick={(e) => {
                 e.preventDefault();
@@ -334,7 +335,7 @@ export const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onUpdate }
             >
               <VoiceglotText translationKey={ctaLabel} defaultText={ctaDefaultText} />
               <ArrowRight size={16} strokeWidth={1.5} className="group-hover/btn:translate-x-1 transition-transform" />
-            </Link>
+            </ButtonInstrument>
           </ContainerInstrument>
         </ContainerInstrument>
       </ContainerInstrument>

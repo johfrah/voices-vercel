@@ -3,7 +3,7 @@
 import { Mic, BookOpen, Calendar, Star, PlayCircle, Users } from "lucide-react";
 import Image from "next/image";
 import React from 'react';
-import { BentoCard, BentoGrid } from "./BentoGrid";
+import { BentoCard, BentoGrid } from "./BentoGridInstrument";
 import { VoiceglotText } from "./VoiceglotText";
 import { ContainerInstrument, HeadingInstrument, TextInstrument } from "./LayoutInstruments";
 import { useTranslation } from "@/contexts/TranslationContext";

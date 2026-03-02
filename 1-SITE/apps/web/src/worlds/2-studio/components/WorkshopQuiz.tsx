@@ -1,4 +1,5 @@
-'use client';
+import { ContainerInstrument, HeadingInstrument, TextInstrument, ButtonInstrument } from '@/components/ui/LayoutInstruments';
+import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowRight, Loader2, Volume2, VolumeX } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
@@ -178,28 +179,28 @@ export const WorkshopQuiz: React.FC = () => {
   //  CHRIS-PROTOCOL: Deterministic Skeleton (Server-side safe)
   if (!isMounted || isLoading) {
     return (
-      <div className="relative w-full aspect-[9/16] bg-va-off-white rounded-[20px] overflow-hidden shadow-aura border border-black/5 flex-shrink-0">
-        <div className="absolute inset-0 flex items-center justify-center">
+      <ContainerInstrument className="relative w-full aspect-[9/16] bg-va-off-white rounded-[20px] overflow-hidden shadow-aura border border-black/5 flex-shrink-0">
+        <ContainerInstrument className="absolute inset-0 flex items-center justify-center">
           <Loader2 strokeWidth={1.5} className="w-8 h-8 text-va-black/10 animate-spin" />
-        </div>
-        <div className="absolute bottom-0 left-0 right-0 p-8 space-y-4">
-          <div className="h-8 bg-va-black/5 rounded-lg w-3/4 animate-pulse" />
-          <div className="h-12 bg-va-black/5 rounded-xl w-full animate-pulse" />
-          <div className="h-12 bg-va-black/5 rounded-xl w-full animate-pulse" />
-        </div>
-      </div>
+        </ContainerInstrument>
+        <ContainerInstrument className="absolute bottom-0 left-0 right-0 p-8 space-y-4">
+          <ContainerInstrument className="h-8 bg-va-black/5 rounded-lg w-3/4 animate-pulse" />
+          <ContainerInstrument className="h-12 bg-va-black/5 rounded-xl w-full animate-pulse" />
+          <ContainerInstrument className="h-12 bg-va-black/5 rounded-xl w-full animate-pulse" />
+        </ContainerInstrument>
+      </ContainerInstrument>
     );
   }
 
   const shouldShowContent = forceContentVisible || isVideoLoaded || hasError;
 
   return (
-    <div className="relative w-full aspect-[9/16] bg-va-black rounded-[20px] overflow-hidden shadow-aura border border-white/10 group flex-shrink-0 will-change-transform">
+    <ContainerInstrument className="relative w-full aspect-[9/16] bg-va-black rounded-[20px] overflow-hidden shadow-aura border border-white/10 group flex-shrink-0 will-change-transform">
       {/*  Video Loading State */}
       {!isVideoLoaded && !hasError && (
-        <div className="absolute inset-0 flex items-center justify-center z-20 bg-va-black/50">
+        <ContainerInstrument className="absolute inset-0 flex items-center justify-center z-20 bg-va-black/50">
           <Loader2 strokeWidth={1.5} className="w-8 h-8 text-white/20 animate-spin" />
-        </div>
+        </ContainerInstrument>
       )}
 
       {/* Video Background */}
@@ -221,12 +222,12 @@ export const WorkshopQuiz: React.FC = () => {
       />
 
       {/*  Mute Toggle */}
-      <button 
+      <ButtonInstrument 
         onClick={toggleMute}
         className="absolute top-6 right-6 z-50 p-3 bg-va-black/20 hover:bg-va-black/40 backdrop-blur-md rounded-full text-white transition-all active:scale-90 border border-white/10"
       >
         {isMuted ? <VolumeX size={18} strokeWidth={1.5} /> : <Volume2 size={18} strokeWidth={1.5} />}
-      </button>
+      </ButtonInstrument>
 
       {/*  Subtitles (Top-aligned to avoid buttons) */}
       <AnimatePresence>
@@ -237,24 +238,24 @@ export const WorkshopQuiz: React.FC = () => {
             exit={{ opacity: 0, y: -10 }}
             className="absolute top-20 left-6 right-6 z-40 text-center"
           >
-            <span className="inline-block px-4 py-2 bg-va-black/60 backdrop-blur-lg rounded-lg text-white text-[15px] font-light leading-snug shadow-lg border border-white/5">
+            <TextInstrument as="span" className="inline-block px-4 py-2 bg-va-black/60 backdrop-blur-lg rounded-lg text-white text-[15px] font-light leading-snug shadow-lg border border-white/5">
               {currentSubtitle.text}
-            </span>
+            </TextInstrument>
           </motion.div>
         )}
       </AnimatePresence>
 
       {/* Fallback Background */}
       {hasError && (
-        <div className="absolute inset-0 bg-va-black flex items-center justify-center z-10">
-          <div className="text-white/20 text-[15px] text-center p-4 font-light">
+        <ContainerInstrument className="absolute inset-0 bg-va-black flex items-center justify-center z-10">
+          <TextInstrument className="text-white/20 text-[15px] text-center p-4 font-light">
             Video tijdelijk niet beschikbaar
-          </div>
-        </div>
+          </TextInstrument>
+        </ContainerInstrument>
       )}
 
       {/* Glass Overlay Content */}
-      <div className="absolute inset-0 flex flex-col justify-end p-8 bg-gradient-to-t from-va-black/90 via-va-black/20 to-transparent z-30">
+      <ContainerInstrument className="absolute inset-0 flex flex-col justify-end p-8 bg-gradient-to-t from-va-black/90 via-va-black/20 to-transparent z-30">
         <AnimatePresence mode="wait">
           {shouldShowContent && (
             <motion.div
@@ -265,36 +266,36 @@ export const WorkshopQuiz: React.FC = () => {
               transition={{ duration: 0.5, ease: VA_BEZIER }}
               className="space-y-6"
             >
-              <h3 className="text-2xl font-light font-display text-white leading-tight drop-shadow-lg">
+              <HeadingInstrument level={3} className="text-2xl font-light font-display text-white leading-tight drop-shadow-lg">
                 {currentStep.question}
-              </h3>
+              </HeadingInstrument>
 
-              <div className="space-y-3">
+              <ContainerInstrument className="space-y-3">
                 {currentStep.choices.map((choice, idx) => (
-                  <button
+                  <ButtonInstrument
                     key={idx}
                     onClick={() => handleChoice(choice)}
                     className="w-full py-4 px-6 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 rounded-xl text-white text-[15px] font-light text-left flex items-center justify-between group/btn transition-all active:scale-[0.98] ease-va-bezier"
                   >
-                    <span>{choice.text}</span>
+                    <TextInstrument as="span">{choice.text}</TextInstrument>
                     <ArrowRight strokeWidth={1.5} size={18} className="opacity-40 group-hover/btn:opacity-100 group-hover/btn:translate-x-1 transition-all" />
-                  </button>
+                  </ButtonInstrument>
                 ))}
-              </div>
+              </ContainerInstrument>
             </motion.div>
           )}
         </AnimatePresence>
-      </div>
+      </ContainerInstrument>
 
       {/* Progress Bar */}
-      <div className="absolute top-6 left-6 right-6 flex gap-1.5 z-40 pr-12">
+      <ContainerInstrument className="absolute top-6 left-6 right-6 flex gap-1.5 z-40 pr-12">
         {QUIZ_DATA.filter(s => !s.id.startsWith('resultaat')).map((s, idx) => {
           const steps = QUIZ_DATA.filter(st => !st.id.startsWith('resultaat'));
           const activeIdx = steps.findIndex(step => step.id === currentStepId);
           const isCompleted = activeIdx === -1 || activeIdx >= idx;
           
           return (
-            <div 
+            <ContainerInstrument 
               key={s.id} 
               className={cn(
                 "h-1 flex-1 rounded-full transition-all duration-500 ease-va-bezier",
@@ -305,7 +306,7 @@ export const WorkshopQuiz: React.FC = () => {
             />
           );
         })}
-      </div>
-    </div>
+      </ContainerInstrument>
+    </ContainerInstrument>
   );
 };
