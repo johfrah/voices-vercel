@@ -616,9 +616,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
 
     // 🛡️ CHRIS-PROTOCOL: World-Aware Handshake (v2.24.4)
     // We use the world_id from the registry as the absolute truth for the theme/context.
-    // If no world_id is in registry, we force Studio world for /studio prefix.
     let worldId = resolved?.world_id;
-    if (!worldId && lookupSlug.startsWith('studio')) worldId = 2;
     
     // 🛡️ NUCLEAR SAFETY: Always provide a fallback for worldId to prevent ReferenceError
     const safeJourney = resolved?.journey || (lookupSlug.startsWith('studio') ? 'studio' : (lookupSlug.startsWith('academy') ? 'academy' : 'agency'));
