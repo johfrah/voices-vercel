@@ -63,7 +63,7 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
 
     // 3. Fetch Reviews (Hard Handshake via junction table)
     const reviewsRows = await db.execute(sql`
-    SELECT wr.workshop_id, r.id, r.author_name, r.rating, r.text_nl, r.text_en, r.provider
+    SELECT wr.workshop_id, r.id, r.author_name, r.rating, r.text_nl, r.text_en, r.provider, r.author_photo_url
     FROM workshop_reviews wr
     JOIN reviews r ON r.id = wr.review_id
     WHERE wr.workshop_id IN (${sql.join(workshopIds.map((id) => sql`${id}`), sql`, `)})
@@ -121,7 +121,8 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
       author_name: r.author_name,
       text: r.text_nl || r.text_en,
       rating: r.rating,
-      provider: r.provider
+      provider: r.provider,
+      author_photo_url: r.author_photo_url ? `https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices/${r.author_photo_url}` : null
     });
     return acc;
   }, {} as Record<string, any[]>);
