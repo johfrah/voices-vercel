@@ -42,11 +42,13 @@ In 2026 is webdesign "theater": een strak geregisseerde samenwerking tussen expe
 
 ## 🧠 De Kern van de Bob-methode
 1. **Antifragile Architectuur**: Edge-first, 100ms LCP, en onverwoestbare database-integriteit.
-2. **Nuclear Loading Law**: Gebruik UITSLUITEND `next/dynamic` met `ssr: false` for zware interactieve instrumenten (Chat, Audio, Docks) om de main bundle te minimaliseren en 100ms LCP te garanderen.
-3. **Psychologische Conversie**: Copy en design die de bezoeker ontlasten en verleiden (Natural Capitalization, va-bezier).
-4. **Zero-Touch Automatisatie**: De 'Nuclear Workflow' transformeert grondstoffen autonoom naar de etalage.
-5. **Esthetische Engineering**: Elke pixel ademt **Voices** (Liquid DNA, Island filosofie).
-6. **Forensisch Herstel**: Proactief debuggen en zelfhelende code.
+2. **ID-First DNA Routing**: ELKE route resolveert via de `slug_registry` naar een `entity_id`. Geen hardcoded slop.
+3. **Nuclear Loading Law**: Gebruik UITSLUITEND `next/dynamic` met `ssr: false` for zware interactieve instrumenten (Chat, Audio, Docks) om de main bundle te minimaliseren en 100ms LCP te garanderen.
+4. **World-Aware Foyer**: Elke World (0-9) heeft zijn eigen contextuele foyer (`/world/contact`, `/world/faq`).
+5. **Psychologische Conversie**: Copy en design die de bezoeker ontlasten en verleiden (Natural Capitalization, va-bezier).
+6. **Zero-Touch Automatisatie**: De 'Nuclear Workflow' transformeert grondstoffen autonoom naar de etalage.
+7. **Esthetische Engineering**: Elke pixel ademt **Voices** (Liquid DNA, Island filosofie).
+8. **Forensisch Herstel**: Proactief debuggen en zelfhelende code.
 
 ## 🛡️ Het Chris-Protocol (V8 - Zero-Drift Integrity)
 

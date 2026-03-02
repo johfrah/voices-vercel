@@ -24,7 +24,10 @@ export class SlopFilter {
     'null',
     'contenteditable',
     'focus:ring-primary/30',
-    'outline-none focus:ring-2'
+    'outline-none focus:ring-2',
+    'i need a bit more time to think',
+    'please try again',
+    'as an ai model'
   ];
 
   /**

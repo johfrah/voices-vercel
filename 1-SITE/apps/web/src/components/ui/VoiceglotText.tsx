@@ -69,6 +69,8 @@ export const VoiceglotText: React.FC<VoiceglotTextProps> = ({
   useEffect(() => {
     if (!mounted) return;
     
+    const market = mounted ? MarketManager.getCurrentMarket() : null;
+    
     // 🛡️ BRAND PROTECTION: 'Ademing' is een brand die niet vertaald mag worden
     const isAdemingBrand = ((defaultText || '')).toLowerCase() === 'ademing' || ((defaultText || '')).toLowerCase() === 'ademing.be';
     
@@ -109,6 +111,7 @@ export const VoiceglotText: React.FC<VoiceglotTextProps> = ({
         await new Promise(resolve => setTimeout(resolve, Math.random() * 5000));
         
         const market = MarketManager.getCurrentMarket();
+        if (!market) return;
         
         await fetch('/api/admin/voiceglot/register', {
           method: 'POST',
@@ -128,6 +131,8 @@ export const VoiceglotText: React.FC<VoiceglotTextProps> = ({
 
     // Alleen registreren als we in de bron-taal (NL) zitten of in Edit Mode
     const market = MarketManager.getCurrentMarket();
+    if (!market) return;
+    
     const sourceLang = market.market_code === 'ARTIST' ? 'en' : 'nl';
     
     if (language === sourceLang || isEditMode) {
@@ -139,7 +144,9 @@ export const VoiceglotText: React.FC<VoiceglotTextProps> = ({
   useEffect(() => {
     // CHRIS-PROTOCOL: Determine default language based on market
     // In Youssef market, 'en' is the source of truth, otherwise 'nl'
-    const market = MarketManager.getCurrentMarket();
+    const market = mounted ? MarketManager.getCurrentMarket() : null;
+    if (!market) return;
+    
     const sourceLang = market.market_code === 'ARTIST' ? 'en' : 'nl';
 
     if (noTranslate || language === sourceLang) return;

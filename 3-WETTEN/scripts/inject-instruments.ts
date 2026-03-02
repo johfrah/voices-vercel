@@ -443,6 +443,57 @@ async function inject() {
       ]
     },
     {
+      slug: 'academy/contact',
+      title: 'Contact | Voices Academy',
+      blocks: [
+        {
+          type: 'HeroInstrument',
+          settings: {
+            data: {
+              title: 'Contacteer de Academy',
+              highlight: 'Academy',
+              subtitle: 'Vragen over onze online leertrajecten of coaching? We helpen je graag verder.',
+              cta: { text: 'Stuur een bericht', href: '#form' }
+            }
+          }
+        },
+        {
+          type: 'WorkshopInterestForm',
+          settings: {
+            data: {
+              title: 'Stuur ons een bericht',
+              subtitle: 'Vragen over cursussen of coaching.'
+            }
+          }
+        }
+      ]
+    },
+    {
+      slug: 'academy/faq',
+      title: 'Veelgestelde Vragen | Voices Academy',
+      blocks: [
+        {
+          type: 'HeroInstrument',
+          settings: {
+            data: {
+              title: 'Academy FAQ',
+              highlight: 'FAQ',
+              subtitle: 'Alles wat je moet weten over onze online cursussen en certificering.'
+            }
+          }
+        },
+        {
+          type: 'AccordionInstrument',
+          settings: {
+            data: {
+              title: 'Vragen over de Academy',
+              category: 'academy'
+            }
+          }
+        }
+      ]
+    },
+    {
       slug: 'contact',
       title: 'Contact',
       blocks: [
