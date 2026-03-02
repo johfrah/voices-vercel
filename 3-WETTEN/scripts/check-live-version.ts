@@ -1,88 +1,74 @@
 #!/usr/bin/env tsx
 /**
- * Check Live Version Script
- * Validates the deployed version on voices.be
+ * Quick Live Version Check
+ * Extracts the version from console logs on voices.be
  */
 
+import { chromium } from 'playwright';
+
 async function checkLiveVersion() {
-  const maxRetries = 3;
-  const retryDelay = 30000; // 30 seconds
+  console.log('🔍 Checking live version on https://www.voices.be...\n');
+  
+  const browser = await chromium.launch({ headless: true });
+  const context = await browser.newContext({
+    viewport: { width: 1920, height: 1080 }
+  });
+  const page = await context.newPage();
 
-  for (let attempt = 1; attempt <= maxRetries; attempt++) {
-    try {
-      console.log(`\n🔍 Attempt ${attempt}/${maxRetries}: Checking live version...`);
-      
-      const response = await fetch('https://www.voices.be/api/admin/config', {
-        method: 'GET',
-        headers: {
-          'User-Agent': 'Voices-Forensic-Audit/1.0',
-          'Accept': 'application/json',
-        },
-        redirect: 'follow',
-      });
+  let versionFound = '';
+  let lengthErrors = 0;
+  let totalErrors = 0;
 
-      console.log(`📡 Response Status: ${response.status}`);
-      
-      if (response.ok) {
-        const data = await response.json();
-        console.log(`\n✅ LIVE VERSION DETECTED:`);
-        console.log(JSON.stringify(data, null, 2));
-        return data;
-      } else if (response.status === 401) {
-        console.log(`⚠️  Endpoint requires authentication (401)`);
-        console.log(`   Trying alternative method...`);
-        
-        // Try to fetch the main page and look for version in scripts
-        const pageResponse = await fetch('https://www.voices.be/', {
-          headers: {
-            'User-Agent': 'Voices-Forensic-Audit/1.0',
-          },
-        });
-        
-        const html = await pageResponse.text();
-        
-        // Look for version in Next.js build ID or meta tags
-        const buildIdMatch = html.match(/_buildManifest\.js\?v=([a-zA-Z0-9]+)/);
-        const versionMatch = html.match(/version["\s:]+["']?([0-9]+\.[0-9]+\.[0-9]+)/i);
-        
-        if (versionMatch) {
-          console.log(`\n✅ VERSION FOUND IN HTML: ${versionMatch[1]}`);
-          return { version: versionMatch[1], source: 'html' };
-        }
-        
-        if (buildIdMatch) {
-          console.log(`\n📦 Build ID: ${buildIdMatch[1]}`);
-        }
-        
-        console.log(`\n⚠️  Could not extract version from HTML`);
-      } else {
-        console.log(`❌ Unexpected status: ${response.status}`);
-        const text = await response.text();
-        console.log(`Response: ${text.substring(0, 200)}`);
-      }
-
-      if (attempt < maxRetries) {
-        console.log(`\n⏳ Waiting ${retryDelay/1000}s before retry...`);
-        await new Promise(resolve => setTimeout(resolve, retryDelay));
-      }
-    } catch (error) {
-      console.error(`❌ Error on attempt ${attempt}:`, error);
-      if (attempt < maxRetries) {
-        console.log(`\n⏳ Waiting ${retryDelay/1000}s before retry...`);
-        await new Promise(resolve => setTimeout(resolve, retryDelay));
+  page.on('console', (msg) => {
+    const text = msg.text();
+    
+    // Capture version log
+    if (text.includes('Nuclear Version:') || text.includes('Version:')) {
+      versionFound = text;
+      console.log(`✅ ${text}`);
+    }
+    
+    // Count errors
+    if (msg.type() === 'error') {
+      totalErrors++;
+      if (text.includes("Cannot read properties of undefined (reading 'length')")) {
+        lengthErrors++;
+        console.log(`❌ .length TypeError detected: ${text.substring(0, 100)}...`);
       }
     }
-  }
+  });
 
-  console.log(`\n❌ Failed to retrieve version after ${maxRetries} attempts`);
-  return null;
+  page.on('pageerror', (error) => {
+    totalErrors++;
+    if (error.message.includes("Cannot read properties of undefined (reading 'length')")) {
+      lengthErrors++;
+      console.log(`❌ .length TypeError detected: ${error.message.substring(0, 100)}...`);
+    }
+  });
+
+  try {
+    await page.goto('https://www.voices.be', { 
+      waitUntil: 'domcontentloaded',
+      timeout: 30000 
+    });
+
+    // Wait for version log to appear
+    await page.waitForTimeout(5000);
+
+    console.log('\n' + '='.repeat(60));
+    console.log('📊 SUMMARY');
+    console.log('='.repeat(60));
+    console.log(`Version Log:       ${versionFound || '❌ NOT FOUND'}`);
+    console.log(`Total Errors:      ${totalErrors}`);
+    console.log(`.length Errors:    ${lengthErrors}`);
+    console.log(`Status:            ${lengthErrors === 0 ? '✅ CLEAN' : '❌ BROKEN'}`);
+    console.log('='.repeat(60));
+
+  } catch (error) {
+    console.error('❌ Check failed:', error);
+  } finally {
+    await browser.close();
+  }
 }
 
-// Run the check
-checkLiveVersion().then(result => {
-  if (result) {
-    process.exit(0);
-  } else {
-    process.exit(1);
-  }
-});
+checkLiveVersion();

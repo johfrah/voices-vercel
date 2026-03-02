@@ -1276,26 +1276,6 @@ export const marketConfigs = pgTable('market_configs', {
   updatedAt: timestamp('updated_at').defaultNow(),
 });
 
-// 🌍 WORLD CONFIGURATIONS (V3 - ID-First Handshake)
-export const worldConfigs = pgTable('world_configs', {
-  id: serial('id').primaryKey(),
-  worldId: integer('world_id').references(() => worlds.id).notNull(),
-  languageId: integer('language_id').references(() => languages.id).notNull(),
-  name: text('name').notNull(),
-  email: text('email').notNull(),
-  phone: text('phone').notNull(),
-  vatNumber: text('vat_number'),
-  cocNumber: text('coc_number'),
-  address: jsonb('address'),
-  socialLinks: jsonb('social_links'),
-  legal: jsonb('legal'),
-  seoData: jsonb('seo_data'),
-  localization: jsonb('localization'),
-  updatedAt: timestamp('updated_at').defaultNow(),
-}, (table) => [
-  unique('world_configs_world_id_language_id_key').on(table.worldId, table.languageId),
-]);
-
 export const siteSettings = pgTable('site_settings', {
   id: serial('id').primaryKey(),
   key: text('key').unique().notNull(), // site_title, site_description, copyright, logo_url

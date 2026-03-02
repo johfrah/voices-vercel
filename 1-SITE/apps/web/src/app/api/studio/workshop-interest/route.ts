@@ -9,17 +9,18 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     const {
-      firstName,
-      lastName,
+      first_name,
+      last_name,
       email,
       selectedWorkshops,
       profession,
       age,
       experience,
-      goal
+      goal,
+      worldId
     } = body;
 
-    if (!firstName || !lastName || !email) {
+    if (!first_name || !last_name || !email) {
       return NextResponse.json(
         { error: 'Voornaam, familienaam en e-mail zijn verplicht.' },
         { status: 400 }
@@ -29,6 +30,9 @@ export async function POST(request: Request) {
     const productIds = Array.isArray(selectedWorkshops)
       ? selectedWorkshops.join(',')
       : '';
+
+    // 🛡️ CHRIS-PROTOCOL: ID-First Handshake (v2.27.1)
+    const activeWorldId = worldId || 2; // Default to Studio (ID 2)
 
     const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -41,14 +45,15 @@ export async function POST(request: Request) {
       const [result] = await db
         .insert(workshopInterest)
         .values({
-          first_name: String(firstName).trim(),
-          last_name: String(lastName).trim(),
+          first_name: String(first_name).trim(),
+          last_name: String(last_name).trim(),
           email: String(email).trim(),
           profession: profession?.trim() || null,
           age: age ? parseInt(String(age), 10) : null,
           experience: experience?.trim() || null,
           goal: goal?.trim() || null,
           productIds: productIds || null,
+          worldId: activeWorldId, // 🛡️ Link to World
           sourceUrl:
             typeof request.headers.get('referer') === 'string'
               ? request.headers.get('referer')
@@ -64,14 +69,15 @@ export async function POST(request: Request) {
       const { data: sdkResult, error: sdkError } = await supabase
         .from('workshop_interest')
         .insert({
-          first_name: String(firstName).trim(),
-          last_name: String(lastName).trim(),
+          first_name: String(first_name).trim(),
+          last_name: String(last_name).trim(),
           email: String(email).trim(),
           profession: profession?.trim() || null,
           age: age ? parseInt(String(age), 10) : null,
           experience: experience?.trim() || null,
           goal: goal?.trim() || null,
           product_ids: productIds || null,
+          world_id: activeWorldId, // 🛡️ Link to World
           source_url: request.headers.get('referer'),
           status: 'pending',
           opt_out_token: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
@@ -88,6 +94,7 @@ export async function POST(request: Request) {
       await supabase.from('system_events').insert({
         source: 'workshop_interest_api',
         level: 'info',
+        world_id: activeWorldId,
         message: `Workshop interest: ${email} voor ${productIds || 'geen workshops'}`,
         details: { interestId: resultId },
         created_at: new Date()

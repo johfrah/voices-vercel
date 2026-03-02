@@ -90,6 +90,10 @@ export const WorkshopInterestForm: React.FC = () => {
     setIsLoading(true);
     playClick('light');
 
+    // 🛡️ CHRIS-PROTOCOL: Handshake Truth (v2.27.1)
+    const handshake = typeof window !== 'undefined' ? (window as any).handshakeContext : null;
+    const worldId = handshake?.worldId || 2;
+
     try {
       const res = await fetch('/api/studio/workshop-interest', {
         method: 'POST',
@@ -102,7 +106,8 @@ export const WorkshopInterestForm: React.FC = () => {
           profession: formData.profession || undefined,
           age: formData.age || undefined,
           experience: formData.experience || undefined,
-          goal: formData.goal || undefined
+          goal: formData.goal || undefined,
+          worldId // 🛡️ Link to World
         })
       });
 

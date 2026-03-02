@@ -52,17 +52,21 @@ export async function GET(request: NextRequest) {
     if (totalErr) throw totalErr;
     const totalStrings = totalCount || 0;
 
-    // Haal tellingen per lang_id op
+          // Haal tellingen per lang_id op
     const { data: langData, error: langErr } = await supabase
       .from('translations')
-      .select('lang_id');
+      .select('lang_id, lang');
     
     if (langErr) throw langErr;
 
     const counts: Record<number, number> = {};
+    const codeCounts: Record<string, number> = {};
     (langData || []).forEach((t: any) => {
       if (t.lang_id) {
         counts[t.lang_id] = (counts[t.lang_id] || 0) + 1;
+      }
+      if (t.lang) {
+        codeCounts[t.lang] = (codeCounts[t.lang] || 0) + 1;
       }
     });
 
@@ -77,7 +81,8 @@ export async function GET(request: NextRequest) {
     ];
 
     const coverage = targetLangs.map(target => {
-      const count = counts[target.id] || 0;
+      // Gebruik de hoogste count (ofwel via ID of via code) voor maximale accuraatheid tijdens migratie
+      const count = Math.max(counts[target.id] || 0, codeCounts[target.code] || 0);
       return {
         lang: target.code,
         lang_id: target.id,

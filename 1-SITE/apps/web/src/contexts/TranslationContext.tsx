@@ -24,7 +24,7 @@ export const TranslationProvider: React.FC<{
   
   // 🛡️ CHRIS-PROTOCOL: Handshake ID Truth (v2.19.5)
   // We resolve the language ID once and use it as the primary anchor.
-  const languageId = market.primary_language_id || 1;
+  const languageId = market?.primary_language_id || 1;
   const isSourceOfTruth = languageId === 1; // nl-be is ID 1
 
   const [loading, setLoading] = useState(Object.keys(initialTranslations).length === 0 && !isSourceOfTruth);

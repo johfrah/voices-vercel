@@ -201,9 +201,33 @@ export class SlimmeKassa {
     let quoteReason = "";
     
     const isSubscription = input.usage === 'subscription';
-    const isWorkshop = (input as any).journey === 'studio' || (input as any).editionId;
+    const isWorkshop = input.usageId === 1 || input.usageId === 30 || (input as any).journey === 'studio' || (input as any).editionId;
     
-    if (!input.actorRates && !isSubscription && !isWorkshop) {
+    // 🛡️ CHRIS-PROTOCOL: Studio/Academy Isolation (v2.27.1)
+    if (isWorkshop) {
+      const workshopPriceCents = activeConfig.workshopPrice || 29500;
+      const academyPriceCents = activeConfig.academyPrice || 19900;
+      const priceCents = input.usageId === 30 ? academyPriceCents : workshopPriceCents;
+      
+      const subtotalCents = priceCents;
+      const currentVatRate = input.isVatExempt ? 0 : activeConfig.vatRate;
+      const vatCents = Math.round(subtotalCents * currentVatRate);
+      
+      return {
+        base: this.toEuros(subtotalCents),
+        wordSurcharge: 0,
+        mediaSurcharge: 0,
+        musicSurcharge: 0,
+        radioReadySurcharge: 0,
+        subtotal: this.toEuros(subtotalCents),
+        vat: this.toEuros(vatCents),
+        total: this.toEuros(subtotalCents + vatCents),
+        vatRate: currentVatRate,
+        legalDisclaimer: input.usageId === 30 ? "Voices Academy - Jaarabonnement" : "Voices Studio - Workshop Deelname"
+      };
+    }
+
+    if (!input.actorRates && !isSubscription) {
       return {
         base: 0, wordSurcharge: 0, mediaSurcharge: 0, musicSurcharge: 0, radioReadySurcharge: 0,
         subtotal: 0, vat: 0, total: 0, vatRate: input.isVatExempt ? 0 : activeConfig.vatRate

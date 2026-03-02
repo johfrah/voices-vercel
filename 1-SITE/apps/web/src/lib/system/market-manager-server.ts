@@ -253,8 +253,12 @@ export class MarketManagerServer {
 
     // Path-based language overrides (e.g. /en/...)
     if (cleanPath.startsWith('/en/')) languageId = 5;
-    else if (cleanPath.startsWith('/fr/')) languageId = 4;
+    else if (cleanPath.startsWith('/fr/')) languageId = 3; // fr-be (Handshake ID Truth)
     else if (cleanPath.startsWith('/de/')) languageId = 7;
+    else if (cleanPath.startsWith('/es/')) languageId = 8;
+    else if (cleanPath.startsWith('/pt/')) languageId = 12;
+    else if (cleanPath.startsWith('/it/')) languageId = 9; // it-it (Handshake ID Truth)
+    else if (cleanPath.startsWith('/nl/')) languageId = 1; // nl-be (Handshake ID Truth)
 
     // 3. Determine Journey ID (optional)
     let journeyId: number | null = null;
