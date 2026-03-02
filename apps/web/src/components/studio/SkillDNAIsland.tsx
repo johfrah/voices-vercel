@@ -42,7 +42,7 @@ export const SkillDNAIsland: React.FC<SkillDNAIslandProps> = ({ workshop }) => {
               Wat leer je écht?
             </TextInstrument>
             <HeadingInstrument level={2} className="text-4xl md:text-6xl font-light tracking-tighter text-va-black leading-tight">
-              Jouw Skill DNA
+              Hier groei je in
             </HeadingInstrument>
           </div>
 
