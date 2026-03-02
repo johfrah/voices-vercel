@@ -1,11 +1,13 @@
-# 🛡️ Forensic Audit Report (3/2/2026, 9:23:18 AM)
+# 🛡️ Forensic Audit Report (3/2/2026, 9:56:19 AM)
 
 ## Summary
-- **Status**: ✅ PASSED
-- **Errors**: 0
-- **Warnings**: 3531
+- **Status**: ❌ FAILED
+- **Errors**: 2
+- **Warnings**: 3527
 
 ## Detailed Issues
+- **WARNING** `1-SITE/apps/web/src/app/Providers.tsx:49`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+  > `language: 'nl',`
 - **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:690`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<Suspense fallback={<div className="h-[600px] bg-va-black animate-pulse" />}>`
 - **WARNING** `1-SITE/apps/web/src/app/[...slug]/page.tsx:694`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
@@ -2084,17 +2086,7 @@
   > `<pre style="font-family: monospace; font-size: 11px; color: #444; margin: 0;">${JSON.stringify(details, null, 2)}</pre>`
 - **WARNING** `1-SITE/apps/web/src/app/api/admin/voiceglot/audit-tones/route.ts:29`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `not(eq(translations.lang, 'nl'))`
-- **WARNING** `1-SITE/apps/web/src/app/api/admin/voiceglot/heal-all/route.ts:24`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
-  > `const targetLanguages = ['en', 'fr', 'de', 'es', 'pt'];`
-- **WARNING** `1-SITE/apps/web/src/app/api/admin/voiceglot/heal-all/route.ts:24`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
-  > `const targetLanguages = ['en', 'fr', 'de', 'es', 'pt'];`
-- **WARNING** `1-SITE/apps/web/src/app/api/admin/voiceglot/heal-all/route.ts:24`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
-  > `const targetLanguages = ['en', 'fr', 'de', 'es', 'pt'];`
-- **WARNING** `1-SITE/apps/web/src/app/api/admin/voiceglot/heal-all/route.ts:24`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
-  > `const targetLanguages = ['en', 'fr', 'de', 'es', 'pt'];`
-- **WARNING** `1-SITE/apps/web/src/app/api/admin/voiceglot/heal-all/route.ts:24`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
-  > `const targetLanguages = ['en', 'fr', 'de', 'es', 'pt'];`
-- **WARNING** `1-SITE/apps/web/src/app/api/admin/voiceglot/heal-all/route.ts:99`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `1-SITE/apps/web/src/app/api/admin/voiceglot/heal-all/route.ts:111`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `if (!detection.is_dutch && detection.detected_lang !== 'nl') {`
 - **WARNING** `1-SITE/apps/web/src/app/api/admin/voiceglot/list/route.ts:98`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `let detectedLang = 'nl';`
@@ -2544,29 +2536,33 @@
   > `<html lang="nl">`
 - **WARNING** `1-SITE/apps/web/src/app/global-error.tsx:33`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `<TranslationProvider lang="nl">`
+- **ERROR** `1-SITE/apps/web/src/app/layout.tsx:60`: Hardcoded contactgegevens gedetecteerd. Gebruik MarketManager.
+  > `return MarketManagerServer.getCurrentMarket(process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be');`
+- **ERROR** `1-SITE/apps/web/src/app/layout.tsx:66`: Hardcoded contactgegevens gedetecteerd. Gebruik MarketManager.
+  > `const fallbackHost = process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be';`
 - **WARNING** `1-SITE/apps/web/src/app/layout.tsx:35`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `const TopBar = dynamic(() => import("@/components/ui/TopBar").then(mod => mod.TopBar), { ssr: false, loading: () => <div className="h-[80px] bg-va-off-white/50 backdrop-blur-md" /> });`
 - **WARNING** `1-SITE/apps/web/src/app/layout.tsx:36`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `const GlobalNav = dynamic(() => import("@/components/ui/GlobalNav"), { ssr: false, loading: () => <div className="h-[60px] bg-va-off-white/50 backdrop-blur-md" /> });`
-- **WARNING** `1-SITE/apps/web/src/app/layout.tsx:435`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/app/layout.tsx:444`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `JOHFRAH<span className="text-primary">.</span>`
-- **WARNING** `1-SITE/apps/web/src/app/layout.tsx:437`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/app/layout.tsx:446`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex gap-8 items-center text-[13px] font-bold tracking-[0.2em] uppercase text-va-black/40">`
-- **WARNING** `1-SITE/apps/web/src/app/layout.tsx:455`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/app/layout.tsx:464`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<SafeErrorGuard name="Footer" fallback={<div className="py-12 bg-va-off-white border-t border-black/5 text-center text-[11px] text-va-black/20 uppercase tracking-widest">Voices Footer Safe-Mode</div>}>`
-- **WARNING** `1-SITE/apps/web/src/app/layout.tsx:462`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/app/layout.tsx:471`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="text-3xl font-light tracking-tighter">`
-- **WARNING** `1-SITE/apps/web/src/app/layout.tsx:463`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/app/layout.tsx:472`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `JOHFRAH<span className="text-primary">.</span>`
-- **WARNING** `1-SITE/apps/web/src/app/layout.tsx:465`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/app/layout.tsx:474`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="flex gap-12 text-[11px] font-bold tracking-[0.3em] uppercase text-white/40">`
-- **WARNING** `1-SITE/apps/web/src/app/layout.tsx:470`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
+- **WARNING** `1-SITE/apps/web/src/app/layout.tsx:479`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `<div className="text-[11px] font-bold tracking-[0.3em] uppercase text-white/20">`
-- **WARNING** `1-SITE/apps/web/src/app/layout.tsx:117`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `1-SITE/apps/web/src/app/layout.tsx:126`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `const translationPromise = getTranslationsServer(langHeader || 'nl');`
-- **WARNING** `1-SITE/apps/web/src/app/layout.tsx:235`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `1-SITE/apps/web/src/app/layout.tsx:244`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `const translationPromise = getTranslationsServer(langHeader || 'nl');`
-- **WARNING** `1-SITE/apps/web/src/app/layout.tsx:269`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
+- **WARNING** `1-SITE/apps/web/src/app/layout.tsx:278`: Mogelijke non-ISO taalcode gedetecteerd. Gebruik ISO-5 (nl-BE) of sta combinatietalen toe.
   > `const navConfig = await ConfigBridge.getNavConfig(journeyKey, langHeader || 'nl');`
 - **WARNING** `1-SITE/apps/web/src/app/light/page.tsx:16`: Rauwe HTML gedetecteerd. Gebruik LayoutInstruments.
   > `loading: () => <div className="fixed inset-0 z-0 bg-va-off-white" />`

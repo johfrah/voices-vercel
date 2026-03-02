@@ -11,7 +11,7 @@ import chalk from 'chalk';
  */
 
 const BASE_URL = 'https://www.voices.be';
-const EXPECTED_VERSION = '2.27.5';
+const EXPECTED_VERSION = '2.27.8';
 
 async function validateVersion(): Promise<boolean> {
   let browser: Browser | null = null;
