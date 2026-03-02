@@ -328,8 +328,18 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
   const popoverRef = useRef<HTMLDivElement>(null);
 
   const getJourneyKey = useCallback(() => {
-    // 🛡️ CHRIS-PROTOCOL: ID-First Journey Detection (v3.0.0)
-    if (worldId === 1) return 'agency';
+    // 🛡️ CHRIS-PROTOCOL: URL-First Journey Detection (v2.29)
+    // Pathname takes priority over worldId because worldId may reflect
+    // the domain's default world (e.g. voices.be = World 1/Agency),
+    // not the actual page context (e.g. /studio/ = World 2/Studio).
+    if (pathname.startsWith('/studio') || pathname.includes('/studio')) return 'studio';
+    if (pathname.startsWith('/academy') || pathname.includes('/academy')) return 'academy';
+    if (pathname.startsWith('/ademing')) return 'ademing';
+    if (pathname.startsWith('/johfrai')) return 'johfrai';
+    if (pathname.startsWith('/freelance')) return 'freelance';
+    if (pathname.startsWith('/partner')) return 'partner';
+
+    // ID-based detection for dedicated domains (ademing.be, johfrah.be, etc.)
     if (worldId === 2) return 'studio';
     if (worldId === 3) return 'academy';
     if (worldId === 6) return 'ademing';
@@ -338,15 +348,6 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
     if (worldId === 10) return 'johfrai';
     if (worldId === 7) return 'freelance';
     if (worldId === 8) return 'partner';
-
-    // 🛡️ CHRIS-PROTOCOL: URL-First Journey Detection (v2.25.0)
-    // Ensures the header matches the current world context even on shared domains.
-    if (pathname.startsWith('/studio') || pathname.includes('/studio')) return 'studio';
-    if (pathname.startsWith('/academy') || pathname.includes('/academy')) return 'academy';
-    if (pathname.startsWith('/ademing')) return 'ademing';
-    if (pathname.startsWith('/johfrai')) return 'johfrai';
-    if (pathname.startsWith('/freelance')) return 'freelance';
-    if (pathname.startsWith('/partner')) return 'partner';
     
     switch (market.market_code) {
       case 'ADEMING': return 'ademing';
@@ -365,11 +366,12 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
     setMounted(true);
     
     const fetchNavConfig = async () => {
-      // 🛡️ CHRIS-PROTOCOL: Skip fetch if we already have initial config from server
-      if (initialNavConfig && links.length > 0) return;
+      const journeyKey = getJourneyKey();
+      // 🛡️ CHRIS-PROTOCOL: Always fetch for world-specific journeys (v2.29)
+      // Server-side Drizzle may return stale nav; client API provides fresh data.
+      if (journeyKey === 'agency' && initialNavConfig && links.length > 0) return;
 
       try {
-        const journeyKey = getJourneyKey();
         console.log(`[GlobalNav] Fetching nav for journey: ${journeyKey}`);
         const res = await fetch(`/api/admin/config?type=navigation&journey=${journeyKey}&lang=${language}`);
         if (!res.ok) {
@@ -403,7 +405,8 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
     };
 
     fetchNavConfig();
-  }, [market.market_code, pathname, getJourneyKey, isAdmin, initialNavConfig, links.length]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [market.market_code, pathname, getJourneyKey, isAdmin]);
 
   const saveNav = async (newLinks: any[], newLogo?: any) => {
     try {

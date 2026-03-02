@@ -29,6 +29,11 @@ export interface NavConfig {
     entityId?: number;
     routingType?: string;
     key?: string;
+    submenu?: Array<{
+      name: string;
+      href?: string;
+      key?: string;
+    }>;
   }>;
   sections?: Array<{
     title: string;
@@ -125,11 +130,13 @@ export class ConfigBridge {
    */
   private static async resolveDNA(config: NavConfig, language: string): Promise<NavConfig> {
     const resolvedLinks = await Promise.all(config.links.map(async (link) => {
-      if (link.entityId && link.routingType) {
-        const slug = await this.resolveSlug(link.entityId, link.routingType, language);
-        return { ...link, href: slug || link.href || '#' };
+      const resolved = link.entityId && link.routingType
+        ? { ...link, href: (await this.resolveSlug(link.entityId, link.routingType, language)) || link.href || '#' }
+        : { ...link };
+      if (resolved.submenu) {
+        resolved.submenu = [...resolved.submenu];
       }
-      return link;
+      return resolved;
     }));
 
     const resolvedSections = config.sections ? await Promise.all(config.sections.map(async (section) => {
