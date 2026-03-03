@@ -15,8 +15,9 @@ import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { cn } from '@/lib/utils';
 import { VOICES_CONFIG } from '@/lib/core-internal/config';
+import { normalizeLocale } from '@/lib/system/locale-utils';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircle2, Loader2, Trash2, Edit2, X, ChevronRight, Info, Star, CreditCard, FileText, Tag, Eye, Lock, AlertCircle, Send, ArrowRight, Check } from 'lucide-react';
+import { CheckCircle2, Loader2, Trash2, Edit2, X, ChevronRight, Info, CreditCard, FileText, Tag, Eye, Lock, AlertCircle, Send, ArrowRight, Check, Instagram } from 'lucide-react';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
 import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
@@ -33,7 +34,7 @@ export const PricingSummary: React.FC<{
   const { state, subtotal, cartHash, removeItem, clearCart, restoreItem, isVatExempt, updateCustomer, updateIsSubmitting, updateAgreedToTerms, isHydrated } = useCheckout();
   const { updateStep } = useMasterControl();
   const { playClick } = useSonicDNA();
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   
   // CHRIS-PROTOCOL: Hydration Guard to prevent Error #419
   const [selectedItem, setSelectedItem] = useState<any>(null);
@@ -43,6 +44,7 @@ export const PricingSummary: React.FC<{
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [isTermsOpen, setIsTermsOpen] = useState(false);
   const [reviewStats, setReviewStats] = useState<{ averageRating: number, totalCount: number } | null>(null);
+  const [workshopThumbnailMap, setWorkshopThumbnailMap] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (!isHydrated) return;
@@ -58,6 +60,49 @@ export const PricingSummary: React.FC<{
     };
     fetchStats();
   }, [isHydrated]);
+
+  useEffect(() => {
+    if (!isHydrated) return;
+    const workshopItems = (state.items || []).filter((item: any) => item?.type === 'workshop_edition');
+    if (workshopItems.length === 0) return;
+
+    let cancelled = false;
+
+    const fetchWorkshopThumbnails = async () => {
+      try {
+        const res = await fetch('/api/studio/workshops', { cache: 'no-store' });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (!data?.workshops || !Array.isArray(data.workshops)) return;
+
+        const mappedThumbnails: Record<string, string> = {};
+        for (const workshop of data.workshops) {
+          const rawFilePath = workshop?.featured_image?.file_path;
+          if (!rawFilePath || typeof rawFilePath !== 'string') continue;
+
+          const normalizedUrl = rawFilePath.startsWith('http://') || rawFilePath.startsWith('https://') || rawFilePath.startsWith('/')
+            ? rawFilePath
+            : `https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices/${rawFilePath.replace(/^\/+/, '')}`;
+
+          if (workshop.id) mappedThumbnails[`id:${String(workshop.id)}`] = normalizedUrl;
+          if (workshop.slug) mappedThumbnails[`slug:${String(workshop.slug).toLowerCase()}`] = normalizedUrl;
+          if (workshop.title) mappedThumbnails[`title:${String(workshop.title).trim().toLowerCase()}`] = normalizedUrl;
+        }
+
+        if (!cancelled) {
+          setWorkshopThumbnailMap(mappedThumbnails);
+        }
+      } catch (error) {
+        console.warn('[PricingSummary] Workshop thumbnail hydration failed:', error);
+      }
+    };
+
+    fetchWorkshopThumbnails();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isHydrated, state.items]);
 
   const applyCoupon = async () => {
     const cleanCode = couponCode.trim().toUpperCase();
@@ -117,6 +162,7 @@ export const PricingSummary: React.FC<{
         postal_code: state.customer.postal_code,
         city: state.customer.city,
         country: state.customer.country || 'BE',
+        language: normalizeLocale(language),
         usage: state.usage,
         plan: state.plan,
         briefing: safeBriefing,
@@ -184,12 +230,53 @@ export const PricingSummary: React.FC<{
     }
   };
 
-  const isSubscription = state.usage === 'subscription';
   const isCartPage = typeof window !== 'undefined' && window.location.pathname.includes('/cart');
   const isCheckoutPage = typeof window !== 'undefined' && window.location.pathname.includes('/checkout');
-  // 🛡️ CHRIS-PROTOCOL: Defensive guard for items array (v2.15.065)
-  const hasContextData = (state.items?.length || 0) > 0 || state.selectedActor || state.briefing || isSubscription || state.editionId;
-  
+  const localePrefix = typeof window !== 'undefined'
+    ? (window.location.pathname.match(/^\/(fr|en|nl|de|es|it|pt)(?=\/|$)/i)?.[0] || '')
+    : '';
+  const isStudioJourney = state.journey === 'studio'
+    || !!state.editionId
+    || (state.items || []).some((item: any) => item?.type === 'workshop_edition');
+  const studioCartPath = `${localePrefix}/studio/cart`;
+  const defaultCartPath = `${localePrefix}/cart`;
+  const resolveWorkshopImageSrc = (workshopItem: any): string => {
+    const workshopIdHint = String(
+      workshopItem?.workshop_id ||
+      workshopItem?.workshopId ||
+      workshopItem?.editionId ||
+      workshopItem?.id ||
+      ''
+    );
+    const workshopIdMatch = workshopIdHint.match(/workshop-(\d+)/i) || workshopIdHint.match(/^(\d+)$/);
+    const matchedWorkshopId = workshopIdMatch?.[1];
+    const workshopTitleKey = String(workshopItem?.name || '').trim().toLowerCase();
+
+    const rawSource =
+      workshopItem?.thumbnail_url ||
+      workshopItem?.featured_image_url ||
+      workshopItem?.image_url ||
+      workshopItem?.media_url ||
+      (matchedWorkshopId ? workshopThumbnailMap[`id:${matchedWorkshopId}`] : undefined) ||
+      (workshopTitleKey ? workshopThumbnailMap[`title:${workshopTitleKey}`] : undefined) ||
+      workshopItem?.featured_image?.file_path ||
+      workshopItem?.media?.file_path ||
+      workshopItem?.media?.filePath;
+
+    if (!rawSource || typeof rawSource !== 'string') {
+      return '/icon-workshop.svg';
+    }
+
+    if (
+      rawSource.startsWith('http://') ||
+      rawSource.startsWith('https://') ||
+      rawSource.startsWith('/')
+    ) {
+      return rawSource;
+    }
+
+    return `https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices/${rawSource.replace(/^\/+/, '')}`;
+  };
   const discountAmount = state.customer.active_coupon 
     ? (state.customer.active_coupon.type === 'percentage' 
         ? (subtotal * (state.customer.active_coupon.discount / 100)) 
@@ -209,213 +296,229 @@ export const PricingSummary: React.FC<{
         <ContainerInstrument className="space-y-4 w-full max-w-full">
           {/* Cart items list */}
           <ContainerInstrument className="space-y-4">
-            {isSubscription && (
-              <motion.div 
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="flex justify-between items-center p-6 bg-va-black text-white rounded-[20px] shadow-aura-lg border-b-4 border-primary relative overflow-hidden group"
-              >
-                <ContainerInstrument className="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                <ContainerInstrument className="flex items-center gap-4 relative z-10">
-                  <ContainerInstrument className="w-12 h-12 rounded-[10px] bg-primary/20 flex items-center justify-center text-primary shadow-inner">
-                    <Star size={24} strokeWidth={1.5} className="animate-pulse" />
-                  </ContainerInstrument>
-                  <ContainerInstrument>
-                    <HeadingInstrument level={4} className="font-light text-lg tracking-tight text-white">
-                      Johfrai {state.plan}
-                    </HeadingInstrument>
-                    <TextInstrument className="text-[15px] tracking-widest text-white/40 font-light ">
-                      <VoiceglotText  translationKey="checkout.summary.subscription_desc" defaultText="Jaarabonnement  Direct Actief" />
-                    </TextInstrument>
-                  </ContainerInstrument>
-                </ContainerInstrument>
-                <ContainerInstrument className="text-right relative z-10">
-                  <motion.span 
-                    key={state.pricing.total}
-                    initial={{ y: 10, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    className="block font-light text-2xl"
-                  >
-                    € {state.pricing.total.toFixed(2)}
-                  </motion.span>
-                  <TextInstrument className="text-[15px] tracking-widest text-white/20 font-light ">
-                    <VoiceglotText  translationKey="common.per_month" defaultText="per maand" />
-                  </TextInstrument>
-                </ContainerInstrument>
-              </motion.div>
-            )}
-
             {/* 🛡️ CHRIS-PROTOCOL: Defensive guard for items array (v2.15.065) */}
-            {(state.items?.length || 0) > 0 && (state.items || []).map((itemObj, idx) => (
-              <ContainerInstrument 
-                key={itemObj.id || idx} 
-                onClick={() => !isCartPage && setSelectedItem(itemObj)}
-                className={cn(
-                  "flex items-start gap-6 p-8 bg-white rounded-[32px] border border-va-black/5 shadow-aura group relative transition-all",
-                  !isCartPage && "cursor-pointer hover:border-primary/20 active:scale-[0.98]"
-                )}
-              >
-                {/* Afbeelding links uitgelijnd (LAYA-MANDAAT) */}
-                <ContainerInstrument className="w-16 h-16 rounded-[20px] overflow-hidden bg-va-off-white relative border border-va-black/5 shrink-0 shadow-sm">
-                  <Image  
-                    src={itemObj.actor?.photo_url || VOICES_CONFIG.assets.placeholders.voice} 
-                    alt={itemObj.actor?.display_name || 'Item'} 
-                    fill 
-                    sizes="64px"
-                    className="object-cover" 
-                  />
-                </ContainerInstrument>
+            {(state.items?.length || 0) > 0 && (state.items || []).map((itemObj, idx) => {
+              const isWorkshopItem = itemObj.type === 'workshop_edition';
+              const itemImage = isWorkshopItem
+                ? resolveWorkshopImageSrc(itemObj)
+                : (itemObj.actor?.photo_url || VOICES_CONFIG.assets.placeholders.voice);
+              const itemTitle = itemObj.actor?.display_name || itemObj.name || (isWorkshopItem ? 'Workshop' : 'Stemopname');
 
-                {/* Uitleg, prijs en deleteknop rechts (LAYA-MANDAAT) */}
-                <ContainerInstrument className="flex flex-1 items-center justify-between gap-4 min-w-0">
-                  <ContainerInstrument className="min-w-0 flex-1">
-                    <HeadingInstrument level={4} className="font-light text-xl text-va-black truncate tracking-tight">
-                      {itemObj.actor?.display_name || itemObj.name || 'Stemopname'}
-                    </HeadingInstrument>
-                    <div className="text-[13px] leading-relaxed text-va-black/40 font-light mt-1">
-                      <div className="flex flex-col gap-1">
-                        <span className="font-medium text-va-black/60">
-                          {itemObj.usage === 'commercial' ? (
-                            Array.isArray(itemObj.media) 
-                              ? itemObj.media.map((m: string) => MarketManager.getMediaLabel(m)).join(' • ')
-                              : MarketManager.getMediaLabel(itemObj.media)
-                          ) : MarketManager.getUsageLabel(itemObj.usage)}
-                        </span>
-                        {itemObj.usage === 'commercial' && (
-                          <span className="text-[11px] uppercase tracking-widest opacity-70">
-                            {MarketManager.getCountryLabel(itemObj.country) || t('common.country.be', 'België')}
-                          </span>
-                        )}
-                      </div>
-                      
-                      {isCartPage && (
-                        <div className="mt-6 space-y-6">
-                          {/* Script Preview */}
-                          {(itemObj.script || itemObj.briefing) && (
-                            <div className="space-y-2">
-                              <LabelInstrument className="text-[10px] uppercase tracking-widest text-va-black/30 font-bold ml-0">
-                                Ingevoerde tekst
-                              </LabelInstrument>
-                              <div className="p-6 bg-va-off-white/40 rounded-[24px] border border-va-black/[0.03] italic text-va-black/80 relative group/script-preview text-[15px] leading-relaxed">
-                                <div className="absolute -top-2 -left-2 bg-white rounded-full p-1.5 shadow-sm border border-va-black/5">
-                                  <FileText size={12} className="text-primary" />
-                                </div>
-                                &quot;{itemObj.script || itemObj.briefing}&quot;
-                              </div>
-                            </div>
+              return (
+                <ContainerInstrument 
+                  key={itemObj.id || idx} 
+                  onClick={() => !isCartPage && setSelectedItem(itemObj)}
+                  className={cn(
+                    "flex items-start gap-6 p-8 bg-white rounded-[32px] border border-va-black/5 shadow-aura group relative transition-all",
+                    !isCartPage && "cursor-pointer hover:border-primary/20 active:scale-[0.98]"
+                  )}
+                >
+                  {/* Afbeelding links uitgelijnd (LAYA-MANDAAT) */}
+                  <ContainerInstrument className="w-16 h-16 rounded-[20px] overflow-hidden bg-va-off-white relative border border-va-black/5 shrink-0 shadow-sm">
+                    <Image  
+                      src={itemImage} 
+                      alt={itemTitle} 
+                      fill 
+                      sizes="64px"
+                      className="object-cover" 
+                    />
+                  </ContainerInstrument>
+
+                  {/* Uitleg, prijs en deleteknop rechts (LAYA-MANDAAT) */}
+                  <ContainerInstrument className="flex flex-1 items-center justify-between gap-4 min-w-0">
+                    <ContainerInstrument className="min-w-0 flex-1">
+                      <HeadingInstrument level={4} className="font-light text-xl text-va-black truncate tracking-tight">
+                        {itemTitle}
+                      </HeadingInstrument>
+                      <div className="text-[13px] leading-relaxed text-va-black/40 font-light mt-1">
+                        <div className="flex flex-col gap-1">
+                          {isWorkshopItem ? (
+                            <>
+                              <span className="font-medium text-va-black/60">
+                                <VoiceglotText translationKey="cart.workshop.label" defaultText="Studio workshop" />
+                              </span>
+                              {itemObj.date && (
+                                <span className="text-[11px] uppercase tracking-widest opacity-70">
+                                  {itemObj.date}
+                                </span>
+                              )}
+                              {itemObj.location && (
+                                <span className="text-[11px] uppercase tracking-widest opacity-70">
+                                  {itemObj.location}
+                                </span>
+                              )}
+                            </>
+                          ) : (
+                            <>
+                              <span className="font-medium text-va-black/60">
+                                {itemObj.usage === 'commercial' ? (
+                                  Array.isArray(itemObj.media) 
+                                    ? itemObj.media.map((m: string) => MarketManager.getMediaLabel(m)).join(' • ')
+                                    : MarketManager.getMediaLabel(itemObj.media)
+                                ) : MarketManager.getUsageLabel(itemObj.usage)}
+                              </span>
+                              {itemObj.usage === 'commercial' && (
+                                <span className="text-[11px] uppercase tracking-widest opacity-70">
+                                  {MarketManager.getCountryLabel(itemObj.country) || t('common.country.be', 'België')}
+                                </span>
+                              )}
+                            </>
                           )}
-                          
-                          {/* Delivery & Pricing Grid */}
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4 border-t border-va-black/[0.03]">
-                            {/* Delivery Date */}
-                            <div className="space-y-2">
-                              <LabelInstrument className="text-[10px] uppercase tracking-widest text-va-black/30 font-bold ml-0">
-                                Levering
-                              </LabelInstrument>
-                              {(() => {
-                                const delivery = calculateDeliveryDate({
-                                  delivery_days_min: itemObj.actor?.delivery_days_min || 1,
-                                  delivery_days_max: itemObj.actor?.delivery_days_max || 3,
-                                  cutoff_time: itemObj.actor?.cutoff_time || '18:00',
-                                  availability: itemObj.actor?.availability || []
-                                });
-                                return (
-                                  <div className="inline-flex items-center gap-2 px-3 py-2 bg-green-500/5 border border-green-500/10 rounded-xl w-fit">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-                                    <span className="text-[12px] font-bold text-green-600/80 uppercase tracking-wider">
-                                      {delivery.formatted}
-                                    </span>
-                                  </div>
-                                );
-                              })()}
-                            </div>
-
-                            {/* Price Breakdown */}
-                            {itemObj.pricing && (
-                              <div className="space-y-3">
+                        </div>
+                        
+                        {isCartPage && (
+                          <div className="mt-6 space-y-6">
+                            {isWorkshopItem ? (
+                              <div className="pt-4 border-t border-va-black/[0.03] space-y-3">
                                 <LabelInstrument className="text-[10px] uppercase tracking-widest text-va-black/30 font-bold ml-0">
-                                  Prijsopbouw (excl. BTW)
+                                  <VoiceglotText translationKey="cart.workshop.details" defaultText="Workshop details" />
                                 </LabelInstrument>
-                                <div className="space-y-1.5">
-                                  <div className="flex justify-between text-[13px] text-va-black/60">
-                                    <span>Basistarief</span>
-                                    <span className="font-medium">€ {(itemObj.pricing.base ?? 0).toFixed(2)}</span>
-                                  </div>
-                                  {(itemObj.pricing.wordSurcharge ?? 0) > 0 && (
-                                    <div className="flex justify-between text-[13px] text-va-black/60">
-                                      <span>Extra woorden/verwerking</span>
-                                      <span className="font-medium">+ € {(itemObj.pricing.wordSurcharge ?? 0).toFixed(2)}</span>
+                                <div className="space-y-1.5 text-[13px] text-va-black/60">
+                                  {itemObj.date && (
+                                    <div className="flex justify-between gap-6">
+                                      <span>Datum</span>
+                                      <span className="font-medium text-va-black/70">{itemObj.date}</span>
                                     </div>
                                   )}
-                                  {(itemObj.pricing.mediaSurcharge ?? 0) > 0 && (
-                                    <div className="flex justify-between text-[13px] text-va-black/60">
-                                      <span>Licenties & Buyouts</span>
-                                      <span className="font-medium">+ € {(itemObj.pricing.mediaSurcharge ?? 0).toFixed(2)}</span>
-                                    </div>
-                                  )}
-                                  {(itemObj.pricing.musicSurcharge ?? 0) > 0 && (
-                                    <div className="flex justify-between text-[13px] text-va-black/60">
-                                      <span>Muziek & Mixage</span>
-                                      <span className="font-medium">+ € {(itemObj.pricing.musicSurcharge ?? 0).toFixed(2)}</span>
+                                  {itemObj.location && (
+                                    <div className="flex justify-between gap-6">
+                                      <span>Locatie</span>
+                                      <span className="font-medium text-va-black/70">{itemObj.location}</span>
                                     </div>
                                   )}
                                 </div>
                               </div>
+                            ) : (
+                              <>
+                                {/* Script Preview */}
+                                {(itemObj.script || itemObj.briefing) && (
+                                  <div className="space-y-2">
+                                    <LabelInstrument className="text-[10px] uppercase tracking-widest text-va-black/30 font-bold ml-0">
+                                      Ingevoerde tekst
+                                    </LabelInstrument>
+                                    <div className="p-6 bg-va-off-white/40 rounded-[24px] border border-va-black/[0.03] italic text-va-black/80 relative group/script-preview text-[15px] leading-relaxed">
+                                      <div className="absolute -top-2 -left-2 bg-white rounded-full p-1.5 shadow-sm border border-va-black/5">
+                                        <FileText size={12} className="text-primary" />
+                                      </div>
+                                      &quot;{itemObj.script || itemObj.briefing}&quot;
+                                    </div>
+                                  </div>
+                                )}
+                                
+                                {/* Delivery & Pricing Grid */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4 border-t border-va-black/[0.03]">
+                                  {/* Delivery Date */}
+                                  <div className="space-y-2">
+                                    <LabelInstrument className="text-[10px] uppercase tracking-widest text-va-black/30 font-bold ml-0">
+                                      Levering
+                                    </LabelInstrument>
+                                    {(() => {
+                                      const delivery = calculateDeliveryDate({
+                                        delivery_days_min: itemObj.actor?.delivery_days_min || 1,
+                                        delivery_days_max: itemObj.actor?.delivery_days_max || 3,
+                                        cutoff_time: itemObj.actor?.cutoff_time || '18:00',
+                                        availability: itemObj.actor?.availability || []
+                                      });
+                                      return (
+                                        <div className="inline-flex items-center gap-2 px-3 py-2 bg-green-500/5 border border-green-500/10 rounded-xl w-fit">
+                                          <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                                          <span className="text-[12px] font-bold text-green-600/80 uppercase tracking-wider">
+                                            {delivery.formatted}
+                                          </span>
+                                        </div>
+                                      );
+                                    })()}
+                                  </div>
+
+                                  {/* Price Breakdown */}
+                                  {itemObj.pricing && (
+                                    <div className="space-y-3">
+                                      <LabelInstrument className="text-[10px] uppercase tracking-widest text-va-black/30 font-bold ml-0">
+                                        Prijsopbouw (excl. BTW)
+                                      </LabelInstrument>
+                                      <div className="space-y-1.5">
+                                        <div className="flex justify-between text-[13px] text-va-black/60">
+                                          <span>Basistarief</span>
+                                          <span className="font-medium">€ {(itemObj.pricing.base ?? 0).toFixed(2)}</span>
+                                        </div>
+                                        {(itemObj.pricing.wordSurcharge ?? 0) > 0 && (
+                                          <div className="flex justify-between text-[13px] text-va-black/60">
+                                            <span>Extra woorden/verwerking</span>
+                                            <span className="font-medium">+ € {(itemObj.pricing.wordSurcharge ?? 0).toFixed(2)}</span>
+                                          </div>
+                                        )}
+                                        {(itemObj.pricing.mediaSurcharge ?? 0) > 0 && (
+                                          <div className="flex justify-between text-[13px] text-va-black/60">
+                                            <span>Licenties & Buyouts</span>
+                                            <span className="font-medium">+ € {(itemObj.pricing.mediaSurcharge ?? 0).toFixed(2)}</span>
+                                          </div>
+                                        )}
+                                        {(itemObj.pricing.musicSurcharge ?? 0) > 0 && (
+                                          <div className="flex justify-between text-[13px] text-va-black/60">
+                                            <span>Muziek & Mixage</span>
+                                            <span className="font-medium">+ € {(itemObj.pricing.musicSurcharge ?? 0).toFixed(2)}</span>
+                                          </div>
+                                        )}
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+                              </>
                             )}
                           </div>
-                        </div>
-                      )}
-                    </div>
-                  </ContainerInstrument>
+                        )}
+                      </div>
+                    </ContainerInstrument>
 
-                  <div className="flex items-center gap-6 shrink-0">
-                    <div className="flex items-center gap-2">
-                      <button 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          if (!isCartPage) {
-                            window.location.href = '/cart';
-                          } else {
-                            restoreItem(itemObj);
-                            updateStep('script');
-                          }
-                        }}
-                        className="w-10 h-10 rounded-full bg-va-off-white flex items-center justify-center text-va-black/20 hover:text-primary hover:bg-primary/5 transition-all group/edit"
-                        title={isCartPage ? t('action.edit_item', "Bewerk item") : t('action.view_details', "Bekijk details")}
-                      >
-                        {isCartPage ? <Edit2 size={18} strokeWidth={1.5} className="group-hover/edit:scale-110 transition-transform" /> : <Eye size={18} strokeWidth={1.5} className="group-hover/edit:scale-110 transition-transform" />}
-                      </button>
-                      <button 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          removeItem(itemObj.id);
-                        }}
-                        className="w-10 h-10 rounded-full bg-va-off-white flex items-center justify-center text-va-black/20 hover:text-red-500 hover:bg-red-50 transition-all group/delete"
-                        title={t('action.remove_item', "Verwijder item")}
-                      >
-                        <Trash2 size={18} strokeWidth={1.5} className="group-hover/delete:scale-110 transition-transform" />
-                      </button>
-                    </div>
-                    <div className="flex flex-col items-end min-w-[120px]">
-                      {state.customer.active_coupon && (
-                        <TextInstrument className="text-[12px] text-va-black/20 line-through font-light">
+                    <div className="flex items-center gap-6 shrink-0">
+                      <div className="flex items-center gap-2">
+                        <button 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (!isCartPage) {
+                              window.location.href = isStudioJourney ? studioCartPath : defaultCartPath;
+                            } else {
+                              restoreItem(itemObj);
+                              updateStep('script');
+                            }
+                          }}
+                          className="w-10 h-10 rounded-full bg-va-off-white flex items-center justify-center text-va-black/20 hover:text-primary hover:bg-primary/5 transition-all group/edit"
+                          title={isCartPage ? t('action.edit_item', "Bewerk item") : t('action.view_details', "Bekijk details")}
+                        >
+                          {isCartPage ? <Edit2 size={18} strokeWidth={1.5} className="group-hover/edit:scale-110 transition-transform" /> : <Eye size={18} strokeWidth={1.5} className="group-hover/edit:scale-110 transition-transform" />}
+                        </button>
+                        <button 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            removeItem(itemObj.id);
+                          }}
+                          className="w-10 h-10 rounded-full bg-va-off-white flex items-center justify-center text-va-black/20 hover:text-red-500 hover:bg-red-50 transition-all group/delete"
+                          title={t('action.remove_item', "Verwijder item")}
+                        >
+                          <Trash2 size={18} strokeWidth={1.5} className="group-hover/delete:scale-110 transition-transform" />
+                        </button>
+                      </div>
+                      <div className="flex flex-col items-end min-w-[120px]">
+                        {state.customer.active_coupon && (
+                          <TextInstrument className="text-[12px] text-va-black/20 line-through font-light">
+                            €{(itemObj.pricing?.subtotal ?? itemObj.pricing?.total ?? 0).toFixed(2)}
+                          </TextInstrument>
+                        )}
+                        <TextInstrument className={cn(
+                          "font-light text-2xl tracking-tight",
+                          "text-va-black"
+                        )}>
                           €{(itemObj.pricing?.subtotal ?? itemObj.pricing?.total ?? 0).toFixed(2)}
                         </TextInstrument>
-                      )}
-                      <TextInstrument className={cn(
-                        "font-light text-2xl tracking-tight",
-                        "text-va-black"
-                      )}>
-                        €{(itemObj.pricing?.subtotal ?? itemObj.pricing?.total ?? 0).toFixed(2)}
-                      </TextInstrument>
-                      <TextInstrument className="text-[10px] text-va-black/20 font-light uppercase tracking-widest mt-0.5">
-                        Excl. BTW
-                      </TextInstrument>
+                        <TextInstrument className="text-[10px] text-va-black/20 font-light uppercase tracking-widest mt-0.5">
+                          Excl. BTW
+                        </TextInstrument>
+                      </div>
                     </div>
-                  </div>
+                  </ContainerInstrument>
                 </ContainerInstrument>
-              </ContainerInstrument>
-            ))}
+              );
+            })}
           </ContainerInstrument>
         </ContainerInstrument>
       )}
@@ -467,8 +570,8 @@ export const PricingSummary: React.FC<{
                   <div className="flex items-center gap-6">
                     <div className="w-24 h-24 rounded-[32px] overflow-hidden border border-va-black/5 shadow-md shrink-0 relative bg-va-off-white">
                       <Image 
-                        src={selectedItem.actor?.photo_url || VOICES_CONFIG.assets.placeholders.voice} 
-                        alt={selectedItem.actor?.display_name || 'Item'} 
+                        src={selectedItem.type === 'workshop_edition' ? resolveWorkshopImageSrc(selectedItem) : (selectedItem.actor?.photo_url || VOICES_CONFIG.assets.placeholders.voice)} 
+                        alt={selectedItem.actor?.display_name || selectedItem.name || 'Item'} 
                         fill
                         sizes="96px"
                         className="object-cover"
@@ -479,8 +582,23 @@ export const PricingSummary: React.FC<{
                         {selectedItem.actor?.display_name || selectedItem.name}
                       </HeadingInstrument>
                       <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] font-bold tracking-[0.1em] uppercase text-va-black/40">
-                        <span>{MarketManager.getUsageLabel(selectedItem.usage)}</span>
-                        {selectedItem.usage === 'telefonie' ? (
+                        <span>{selectedItem.type === 'workshop_edition' ? 'Studio workshop' : MarketManager.getUsageLabel(selectedItem.usage)}</span>
+                        {selectedItem.type === 'workshop_edition' ? (
+                          <>
+                            {selectedItem.date && (
+                              <>
+                                <span className="w-1 h-1 rounded-full bg-va-black/10" />
+                                <span>{selectedItem.date}</span>
+                              </>
+                            )}
+                            {selectedItem.location && (
+                              <>
+                                <span className="w-1 h-1 rounded-full bg-va-black/10" />
+                                <span>{selectedItem.location}</span>
+                              </>
+                            )}
+                          </>
+                        ) : selectedItem.usage === 'telefonie' ? (
                           <>
                             <span className="w-1 h-1 rounded-full bg-va-black/10" />
                             <span><VoiceglotText translationKey="common.unlimited_usage" defaultText="Onbeperkt gebruik" /></span>
@@ -823,27 +941,57 @@ const CTASection: React.FC<any> = ({ handleSubmit, setIsPreviewOpen, setIsTermsO
 
       {/* Trust & Security Section */}
       <ContainerInstrument className="pt-2 space-y-4">
-        <div className="flex flex-col items-center gap-3 text-center">
-          <div className="flex items-center gap-2 text-green-600/60">
-            <div className="flex -space-x-0.5">
+        <ContainerInstrument className="flex flex-col items-center gap-3 text-center">
+          <TextInstrument className="text-[11px] font-bold tracking-[0.2em] uppercase text-va-black/45">
+            <VoiceglotText translationKey="checkout.trust.heading" defaultText="Bedankt voor het vertrouwen" />
+          </TextInstrument>
+
+          <ContainerInstrument className="flex items-center gap-2 text-green-600/60">
+            <ContainerInstrument className="flex -space-x-0.5">
               {[1,2,3,4,5].map(i => (
                 <svg key={i} className="w-3 h-3 fill-current" viewBox="0 0 20 20">
                   <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                 </svg>
               ))}
-            </div>
+            </ContainerInstrument>
             <TextInstrument className="text-[11px] font-bold tracking-[0.2em] uppercase">
-              <VoiceglotText translationKey="checkout.social_proof" defaultText={`${reviewStats?.averageRating || "4.9"}/5 sterren op ${reviewStats?.totalCount || "395"}+ reviews`} />
+              <VoiceglotText translationKey="checkout.trust.rating_line" defaultText={`${reviewStats?.averageRating || "4.9"}/5 sterren op ${reviewStats?.totalCount || "395"}+ reviews`} />
             </TextInstrument>
-          </div>
+          </ContainerInstrument>
+
+          <ContainerInstrument className="flex items-center gap-2">
+            <ContainerInstrument
+              title="Google"
+              className="w-8 h-8 rounded-full bg-[#4285F4]/10 border border-[#4285F4]/20 flex items-center justify-center"
+            >
+              <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 text-[#4285F4] fill-current">
+                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.16H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.84l3.66-2.75z" />
+                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.16l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+              </svg>
+            </ContainerInstrument>
+            <ContainerInstrument
+              title="Facebook"
+              className="w-8 h-8 rounded-full bg-[#1877F2]/10 border border-[#1877F2]/20 flex items-center justify-center"
+            >
+              <TextInstrument className="text-[12px] font-bold text-[#1877F2] leading-none">f</TextInstrument>
+            </ContainerInstrument>
+            <ContainerInstrument
+              title="Instagram"
+              className="w-8 h-8 rounded-full bg-[#E1306C]/10 border border-[#E1306C]/20 flex items-center justify-center"
+            >
+              <Instagram size={12} className="text-[#E1306C]" strokeWidth={2} />
+            </ContainerInstrument>
+          </ContainerInstrument>
           
-          <div className="flex items-center gap-2 text-va-black/20">
+          <ContainerInstrument className="flex items-center gap-2 text-va-black/20">
             <Lock size={12} strokeWidth={2} />
             <TextInstrument className="text-[11px] font-bold tracking-[0.2em] uppercase">
               <VoiceglotText translationKey="checkout.secure_dutch" defaultText="Veilig afrekenen" />
             </TextInstrument>
-          </div>
-        </div>
+          </ContainerInstrument>
+        </ContainerInstrument>
       </ContainerInstrument>
     </ContainerInstrument>
   );

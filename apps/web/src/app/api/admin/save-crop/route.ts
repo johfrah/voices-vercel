@@ -8,8 +8,8 @@ export async function POST(req: NextRequest) {
     const { voiceId, fileName, crop, aspect } = await req.json();
 
     // Bronpad bepalen (we gaan ervan uit dat het in visuals/active/photos staat)
-    const sourceDir = path.resolve(process.cwd(), '1-SITE/assets/visuals/active/photos');
-    const targetDir = path.resolve(process.cwd(), '1-SITE/assets/visuals/active/photos/optimised');
+    const sourceDir = path.resolve(process.cwd(), 'assets/visuals/active/photos');
+    const targetDir = path.resolve(process.cwd(), 'assets/visuals/active/photos/optimised');
     
     if (!fs.existsSync(targetDir)) fs.mkdirSync(targetDir, { recursive: true });
 

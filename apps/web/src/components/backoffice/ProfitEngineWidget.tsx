@@ -46,9 +46,35 @@ export const ProfitEngineWidget: React.FC = () => {
     </BentoCard>
   );
 
-  if (!data) return null;
+  if (!data) {
+    return (
+      <BentoCard span="md" className="bg-white border border-va-black/5 p-8 rounded-[20px]">
+        <ContainerInstrument className="space-y-2">
+          <HeadingInstrument level={3} className="text-2xl font-light tracking-tight">
+            Profit Engine
+          </HeadingInstrument>
+          <TextInstrument className="text-va-black/50">
+            Geen data beschikbaar op dit moment.
+          </TextInstrument>
+        </ContainerInstrument>
+      </BentoCard>
+    );
+  }
 
-  const { stats } = data;
+  const summary = data.summary || {};
+  const stats = data.stats || {};
+  const profitValue = Number(summary.profit ?? stats.profit?.value ?? 0);
+  const revenueValue = Number(summary.revenue ?? stats.revenue?.value ?? 0);
+  const marginValue = typeof summary.margin === 'string'
+    ? summary.margin
+    : (stats.margin?.formatted || `${Number(stats.margin?.value || 0).toFixed(2)}%`);
+
+  const formatEuro = (amount: number) => new Intl.NumberFormat('nl-BE', {
+    style: 'currency',
+    currency: 'EUR',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }).format(Number.isFinite(amount) ? amount : 0);
 
   return (
     <BentoCard span="md" className="bg-white border border-va-black/5 p-8 flex flex-col justify-between group overflow-hidden relative">
@@ -79,7 +105,7 @@ export const ProfitEngineWidget: React.FC = () => {
               <VoiceglotText  translationKey="order.financial.net_profit_30d" defaultText="Netto Winst (30d)" />
             </HeadingInstrument>
             <TextInstrument className="text-5xl font-light tracking-tighter text-va-black">
-              {stats.profit.formatted.split(',')[0]}
+              {formatEuro(profitValue)}
             </TextInstrument>
           </ContainerInstrument>
 
@@ -88,13 +114,13 @@ export const ProfitEngineWidget: React.FC = () => {
               <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/30 mb-1 ">
                 <VoiceglotText  translationKey="order.financial.revenue" defaultText="Omzet" />
               </TextInstrument>
-              <TextInstrument className="text-lg font-light tracking-tight text-va-black">{stats.revenue.formatted}</TextInstrument>
+              <TextInstrument className="text-lg font-light tracking-tight text-va-black">{formatEuro(revenueValue)}</TextInstrument>
             </ContainerInstrument>
             <ContainerInstrument className="p-4 bg-va-off-white rounded-[20px] border border-va-black/5">
               <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/30 mb-1 ">
                 <VoiceglotText  translationKey="order.financial.margin" defaultText="Marge" />
               </TextInstrument>
-              <TextInstrument className="text-lg font-light tracking-tight text-emerald-500">{stats.margin.formatted}</TextInstrument>
+              <TextInstrument className="text-lg font-light tracking-tight text-emerald-500">{marginValue}</TextInstrument>
             </ContainerInstrument>
           </ContainerInstrument>
         </ContainerInstrument>

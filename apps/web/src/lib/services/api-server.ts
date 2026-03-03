@@ -1,7 +1,10 @@
 import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
 import { MarketDatabaseService } from "@/lib/system/market-manager-db";
+import { getLocaleFallbacks, normalizeLocale } from "@/lib/system/locale-utils";
+import { db, ademingTracks } from "@/lib/system/voices-config";
 import { createClient } from "@supabase/supabase-js";
 import { and, asc, desc, eq, ilike, or, sql } from "drizzle-orm";
+import { unstable_cache } from "next/cache";
 import {
     Actor,
     SearchResults,
@@ -613,33 +616,63 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
 }
 
 export async function getArticle(slug: string, lang: string = 'nl-BE'): Promise<any> {
-  // 🛡️ CHRIS-PROTOCOL: Use SDK for stability (v2.14.273)
-  const { data: article, error } = await supabase
-    .from('content_articles')
-    .select('*')
-    .eq('slug', slug)
-    .single();
+  return getArticlePayloadCached(slug, lang);
+}
 
-  if (error || !article) {
-    console.warn(`[api-server] Article not found for slug: ${slug}`, error);
-    return null;
-  }
+const getArticlePayloadCached = unstable_cache(
+  async (slug: string, lang: string) => {
+    // 🛡️ CHRIS-PROTOCOL: Use SDK for stability (v2.14.273)
+    const { data: article, error } = await supabase
+      .from('content_articles')
+      .select('*')
+      .eq('slug', slug)
+      .single();
 
-  const translatedTitle = await VoiceglotBridge.t(`page.${slug}.title`, lang, true);
-  
-  // Fetch blocks via SDK
-  const { data: blocks } = await supabase
-    .from('content_blocks')
-    .select('*')
-    .eq('article_id', article.id)
-    .order('display_order', { ascending: true });
+    if (error || !article) {
+      console.warn(`[api-server] Article not found for slug: ${slug}`, error);
+      return null;
+    }
 
-  return { 
-    ...article, 
-    id: article.id,
-    title: translatedTitle, 
-    blocks: blocks || [] 
-  };
+    const translatedTitleRaw = await VoiceglotBridge.t(`page.${slug}.title`, lang, true);
+    const translatedTitle =
+      translatedTitleRaw && translatedTitleRaw !== `page.${slug}.title`
+        ? translatedTitleRaw
+        : article.title;
+    
+    const { data: blocks } = await supabase
+      .from('content_blocks')
+      .select('*')
+      .eq('article_id', article.id)
+      .order('display_order', { ascending: true });
+
+    return {
+      ...article,
+      id: article.id,
+      title: translatedTitle,
+      blocks: blocks || []
+    };
+  },
+  ["api-server-article-payload-v1"],
+  { revalidate: 120, tags: ["content-articles", "content-blocks"] }
+);
+
+const getPublicAdemingTracksCached = unstable_cache(
+  async () => {
+    try {
+      if (!db || !ademingTracks) return [];
+      const tracks = await db.select().from(ademingTracks).where(eq(ademingTracks.is_public, true));
+      return tracks || [];
+    } catch (error) {
+      console.error("[api-server] getAdemingTracksPublic failed:", error);
+      return [];
+    }
+  },
+  ["api-server-ademing-public-tracks-v1"],
+  { revalidate: 60, tags: ["ademing-tracks"] }
+);
+
+export async function getAdemingTracksPublic(): Promise<any[]> {
+  return getPublicAdemingTracksCached();
 }
 
 export async function getActor(slug: string, lang: string = 'nl-BE'): Promise<Actor> {
@@ -886,12 +919,11 @@ async function processActorData(actor: any, slug: string): Promise<Actor> {
 }
 
 export async function getMusicLibrary(category: string = 'music'): Promise<any[]> {
-  // 🛡️ CHRIS-PROTOCOL: Use SDK for stability (v2.14.273)
   const { data: musicMedia, error } = await supabase
     .from('media')
     .select('*')
     .eq('category', category)
-    .limit(50);
+    .limit(100);
 
   if (error) {
     const { ServerWatchdog } = await import('./server-watchdog');
@@ -904,11 +936,22 @@ export async function getMusicLibrary(category: string = 'music'): Promise<any[]
     return [];
   }
 
-  return (musicMedia || []).map(m => ({ 
-    id: m.id.toString(), 
-    title: m.file_name || m.fileName, 
-    preview: m.file_path || m.filePath 
-  }));
+  const storageBase = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/voices/`;
+
+  return (musicMedia || [])
+    .filter(m => {
+      const path = (m.file_path || m.filePath || '').toLowerCase();
+      return path.includes('music/') && path.includes('-preview.mp3');
+    })
+    .map(m => {
+      const filePath = m.file_path || m.filePath || '';
+      return {
+        id: m.id.toString(),
+        title: m.alt_text || m.file_name?.replace('music-', '').replace('-preview.mp3', '').replace(/-/g, ' ') || 'Onbekend',
+        preview: filePath.startsWith('http') ? filePath : `${storageBase}${filePath}`,
+        fileName: m.file_name,
+      };
+    });
 }
 
 export async function getAcademyLesson(id: string): Promise<any> {
@@ -1034,32 +1077,47 @@ export async function getWorkshops(params: { limit?: number, worldId?: number, j
 }
 
 export async function getTranslationsServer(lang: string): Promise<Record<string, string>> {
-  // 💀 TERMINATION: 'nl' variant is eliminated. Force 'nl-be'.
-  const targetLang = lang === 'nl' ? 'nl-be' : lang;
+  const targetLang = normalizeLocale(lang);
   
   const cache = getGlobalCache();
-  const cached = cache.translationCache[targetLang];
-  if (cached && (Date.now() - cached.timestamp) < 3600000) return cached.data;
+  const localeCandidates = getLocaleFallbacks(targetLang);
+  for (const candidate of localeCandidates) {
+    const cached = cache.translationCache[candidate];
+    if (cached && (Date.now() - cached.timestamp) < 3600000) {
+      cache.translationCache[targetLang] = cached;
+      return cached.data;
+    }
+  }
   
   try {
-    // 🛡️ CHRIS-PROTOCOL: Use SDK for stability (v2.14.273)
-    const { data, error } = await supabase
-      .from('translations')
-      .select('translation_key, translated_text, original_text')
-      .eq('lang', targetLang)
-      .limit(1000); // 🛡️ Increased limit for full registry coverage
-
-    if (error) throw error;
-
+    let effectiveLang = targetLang;
+    let data: any[] = [];
+    for (const candidate of localeCandidates) {
+      const response = await supabase
+        .from('translations')
+        .select('translation_key, translated_text, original_text')
+        .eq('lang', candidate)
+        .limit(5000); // 🛡️ Full multilingual registry coverage
+      if (response.error) {
+        throw response.error;
+      }
+      if ((response.data?.length || 0) > 0) {
+        data = response.data || [];
+        effectiveLang = candidate;
+        break;
+      }
+    }
     const translationMap: Record<string, string> = {};
-    data?.forEach((row: any) => { 
-      const key = row.translation_key || row.translationKey;
+    data?.forEach((row: any) => {
+      const key = row.translation_key;
       if (key) {
-        translationMap[key] = row.translated_text || row.translatedText || row.original_text || row.originalText || ''; 
+        translationMap[key] = row.translated_text || row.original_text || '';
       }
     });
     
-    cache.translationCache[targetLang] = { data: translationMap, timestamp: Date.now() };
+    const payload = { data: translationMap, timestamp: Date.now() };
+    cache.translationCache[effectiveLang] = payload;
+    cache.translationCache[targetLang] = payload;
     return translationMap;
   } catch (e) { 
     const { ServerWatchdog } = await import('./server-watchdog');

@@ -36,7 +36,7 @@ Houd Dropbox en Supabase synchroon:
 Houd de repo Masterclass Clean:
 1. Gebruik het `/clean` commando.
 2. Scan op underscores in root folders.
-3. Verplaats zwerfbestanden naar `4-KELDER`.
+3. Verplaats zwerfbestanden naar `docs/archive`.
 4. Dwing het `Instrument` suffix af op alle UI componenten.
 
 ### 5. Legacy Extraction Workflow

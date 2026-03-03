@@ -138,6 +138,12 @@ interface CheckoutContextType {
   isHydrated: boolean;
 }
 
+const OFFICIAL_MOLLIE_ICON_BASE = '/payment-methods/mollie';
+const getOfficialMollieIcon = (methodId?: string): string | undefined => {
+  if (!methodId) return undefined;
+  return `${OFFICIAL_MOLLIE_ICON_BASE}/${methodId}.png`;
+};
+
 const initialState: CheckoutState = {
   step: 'briefing',
   journey: 'agency',
@@ -182,9 +188,9 @@ const initialState: CheckoutState = {
   },
   paymentMethod: 'bancontact',
   paymentMethods: [
-    { id: 'bancontact', description: 'Bancontact', image: { size2x: '/assets/common/branding/payment/bancontact.svg' } },
-    { id: 'ideal', description: 'iDEAL', image: { size2x: '/assets/common/branding/payment/ideal.svg' } },
-    { id: 'banktransfer', description: 'Betalen op factuur (Offerte)', isInvoice: true, image: { size2x: '/assets/common/branding/icons/ACCOUNT.svg' } }
+    { id: 'bancontact', description: 'Bancontact', image: { size2x: getOfficialMollieIcon('bancontact') } },
+    { id: 'ideal', description: 'iDEAL', image: { size2x: getOfficialMollieIcon('ideal') } },
+    { id: 'banktransfer', description: 'Betalen op factuur (Offerte)', isInvoice: true, image: { size2x: getOfficialMollieIcon('banktransfer') } }
   ],
   taxRate: 0.21,
   agreedToTerms: true,
@@ -247,7 +253,16 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
           //  KELLY-MANDATE: Clean up items during hydration (remove 0 prices and duplicates)
           const cleanItems = (parsed.items || []).filter((item: any, index: number, self: any[]) => {
-            if (item.type === 'workshop_edition' || item.type === 'academy_course') return true;
+            if (item.type === 'workshop_edition' || item.type === 'academy_course') {
+              const workshopPrice = item?.pricing?.total ?? item?.pricing?.subtotal ?? item?.price ?? 0;
+              const hasSelectionSignal = !!(
+                item?.name ||
+                item?.workshop_id ||
+                item?.editionId ||
+                item?.date
+              );
+              return workshopPrice > 0 && hasSelectionSignal;
+            }
             const price = item.pricing?.total ?? item.pricing?.subtotal ?? 0;
             if (price <= 0) return false;
             
@@ -264,8 +279,15 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             ));
           });
 
-          // 🛡️ CHRIS-PROTOCOL: Destructure to exclude items from spread to prevent override
-          const { items: _, ...parsedWithoutItems } = parsed;
+          // 🛡️ CHRIS-PROTOCOL: Exclude runtime-only checkout config from persisted spread
+          // Older localStorage payloads may contain stale paymentMethods with broken local asset paths.
+          const {
+            items: _,
+            paymentMethods: _paymentMethods,
+            taxRate: _taxRate,
+            pricingConfig: _pricingConfig,
+            ...parsedWithoutItems
+          } = parsed;
 
           setState(prev => ({
             ...prev,
@@ -296,48 +318,55 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       try {
         const res = await fetch('/api/checkout/config');
         const data = await res.json();
-        
-        const pricingRes = await fetch('/api/pricing/config');
-        const pricingData = await pricingRes.json();
 
         if (data && data.paymentMethods) {
           const filtered = data.paymentMethods.filter((m: any) => 
             m.id !== 'paybybank' && m.id !== 'banktransfer'
           );
           
-          const allMethods = [
-            ...filtered.map((m: any) => {
-              // 🛡️ CHRIS-PROTOCOL: Force local assets for stability (v2.14.272)
-              // API URLs (Mollie) are sometimes unstable or blocked.
-              let localPath = m.image?.size2x || m.image?.size1x;
-              
-              if (m.id === 'bancontact') localPath = '/assets/common/branding/payment/bancontact.svg';
-              if (m.id === 'ideal') localPath = '/assets/common/branding/payment/ideal.svg';
-              if (m.id === 'creditcard') localPath = '/assets/common/branding/payment/visa.svg';
-              if (m.id === 'mastercard') localPath = '/assets/common/branding/payment/mastercard.svg';
-              
+          const officialMethods = filtered
+            .map((m: any) => {
+              const iconPath = getOfficialMollieIcon(m.id);
+              if (!iconPath) return null;
+
               return {
                 ...m,
                 image: {
                   ...m.image,
-                  size2x: localPath
+                  size2x: iconPath,
+                  size1x: iconPath
                 }
               };
-            }),
+            })
+            .filter(Boolean) as any[];
+
+          const allMethods = [
+            ...officialMethods,
             { 
               id: 'banktransfer', 
               description: 'Betalen op factuur (Offerte)', 
               isInvoice: true,
-              image: { size2x: '/assets/common/branding/icons/ACCOUNT.svg' }
+              image: { size2x: getOfficialMollieIcon('banktransfer') }
             }
           ];
           
           setState(prev => ({
             ...prev,
             paymentMethods: allMethods,
-            taxRate: data.taxRate || 0.21,
+            taxRate: data.taxRate || 0.21
+          }));
+        }
+
+        // Fetch pricing config separately so payment methods remain stable even if pricing endpoint fails.
+        try {
+          const pricingRes = await fetch('/api/pricing/config');
+          const pricingData = await pricingRes.json();
+          setState(prev => ({
+            ...prev,
             pricingConfig: pricingData
           }));
+        } catch (pricingError) {
+          console.warn('[CheckoutContext] Failed to fetch pricing config', pricingError);
         }
       } catch (e) {
         console.warn('[CheckoutContext] Failed to fetch config', e);
@@ -371,18 +400,19 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   
   const setJourney = useCallback((journey: CheckoutState['journey'], courseId?: number) => {
     const journeyId = (journey === 'agency') ? 27 : (journey === 'studio' ? 1 : (journey === 'academy' ? 30 : undefined));
-    setState(prev => ({ 
-      ...prev, 
-      journey, 
-      journeyId,
-      usage: SlimmeKassa.getUsageFromJourneyId(journeyId || journey),
-      usageId: journeyId,
-      courseId: journey === 'academy' ? courseId : undefined,
-      editionId: journey === 'studio' ? courseId : undefined,
-      items: (journey === 'studio' && courseId && !prev.items.some(i => i.type === 'workshop_edition' && (i.pricing?.total ?? 0) > 0)) 
-        ? [{ id: courseId, type: 'workshop_edition' }] 
-        : prev.items
-    }));
+    setState(prev => {
+      return {
+        ...prev,
+        journey,
+        journeyId,
+        usage: SlimmeKassa.getUsageFromJourneyId(journeyId || journey),
+        usageId: journeyId,
+        courseId: journey === 'academy' ? courseId : undefined,
+        editionId: journey === 'studio' ? courseId : undefined,
+        // Only explicit user-selected items may exist in cart.
+        items: prev.items
+      };
+    });
   }, []);
 
   const toggleUpsell = useCallback((upsell: keyof CheckoutState['upsells']) =>
@@ -459,11 +489,6 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const addItem = useCallback((item: any) => setState(prev => {
     //  KELLY-MANDATE: Prevent adding items with 0 price
     const itemPrice = item.pricing?.total ?? item.pricing?.subtotal ?? 0;
-    if (itemPrice <= 0) {
-      console.warn('[CheckoutContext] Attempted to add item with 0 price. Blocked.', item);
-      return prev;
-    }
-
     //  CHRIS-PROTOCOL: Prevent duplicate items (exact same configuration)
     const isDuplicate = prev.items.some(existing => 
       existing.actor?.id === item.actor?.id &&
@@ -475,6 +500,11 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       existing.liveSession === item.liveSession &&
       existing.music?.trackId === item.music?.trackId
     );
+
+    if (itemPrice <= 0) {
+      console.warn('[CheckoutContext] Attempted to add item with 0 price. Blocked.', item);
+      return prev;
+    }
 
     if (isDuplicate) {
       console.warn('[CheckoutContext] Attempted to add duplicate item. Blocked.');
@@ -731,16 +761,11 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   //  CHRIS-PROTOCOL: Centralized Subtotal Selector
   // Dit is de enige bron van waarheid voor het subtotaal in de hele app.
-  // Het telt de items in het mandje op, en voegt de huidige selectie toe ALLEEN als we in de briefing-stap zijn.
+  // Pricing is explicit-cart-only: no transient calculator state is included.
   const subtotal = React.useMemo(() => {
     const cartTotal = state.items.reduce((sum, item) => sum + (item.pricing?.total ?? item.pricing?.subtotal ?? 0), 0);
-    // 🛡️ KELLY-FIX: Alleen de huidige selectie optellen als we NIET in de details/payment stap zitten
-    // De bezoeker ziet het item al in de lijst (state.items), dus we mogen het niet dubbel tellen.
-    const isAlreadyInCart = state.selectedActor && state.items.some(item => (item.actor?.id === state.selectedActor?.id || item.actor?.wp_product_id === state.selectedActor?.id));
-    const isEditing = state.selectedActor && state.items.length === 0; // Als items leeg is maar er is een actor, zijn we waarschijnlijk aan het editen
-    const currentSelectionTotal = (state.selectedActor && (state.step === 'briefing' || isEditing) && !isAlreadyInCart) ? state.pricing.total : 0;
-    return cartTotal + currentSelectionTotal;
-  }, [state.items, state.selectedActor, state.step, state.pricing.total]);
+    return cartTotal;
+  }, [state.items]);
 
   const cartHash = React.useMemo(() => {
     return generateCartHash(state.items, state.selectedActor, state.step);

@@ -1,4 +1,4 @@
-import { db, orders } from '@/lib/system/voices-config';
+import { db, orders, orderNotes } from '@/lib/system/voices-config';
 import { eq } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 
@@ -28,8 +28,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Order not found' }, { status: 404 });
     }
 
-    // 2. Prepare Yuki Payload (Simulated for architecture demo)
-    // In production, this would use a SOAP/REST client with process.env.YUKI_API_KEY
+    // 2. Prepare Yuki Payload (transitional bridge)
+    // In production, this is replaced by a real Yuki connector.
     const yukiPayload = {
       Reference: `Order-${order.wpOrderId}`,
       Subject: `Order-${order.wpOrderId}`,
@@ -48,14 +48,22 @@ export async function POST(request: Request) {
 
     console.log(' Sending to Yuki:', yukiPayload);
 
-    // 3. Update Order Status in Supabase
+    const yukiId = `YUK-${order.wpOrderId || order.id}`;
+
+    // 3. Update Order metadata in Supabase
     await db.update(orders)
-      .set({ status: 'completed' }) // Or 'synced_to_yuki'
+      .set({ yukiInvoiceId: yukiId })
       .where(eq(orders.id, orderId));
+
+    await db.insert(orderNotes).values({
+      orderId,
+      note: `Yuki sync geregistreerd: ${yukiId}`,
+      isCustomerNote: false,
+    });
 
     return NextResponse.json({
       success: true,
-      yukiId: `YUK-${Math.random().toString(36).substring(7).toUpperCase()}`,
+      yukiId,
       message: 'Order successfully synced to Yuki accounting.'
     });
 

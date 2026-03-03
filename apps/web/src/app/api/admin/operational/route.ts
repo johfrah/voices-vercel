@@ -24,8 +24,8 @@ export async function GET(request: NextRequest) {
     }
 
     // 1. Studio Data (Media)
-    let mediaFiles = [];
-    let mediaStats = {};
+    let mediaFiles: any[] = [];
+    let mediaStats: Record<string, number> = {};
     try {
       let mediaQuery = supabase
         .from('media')
@@ -49,7 +49,7 @@ export async function GET(request: NextRequest) {
     }
 
     // 2. Meetings Data (Appointments + Studio Sessions)
-    let appointments = [];
+    let appointments: any[] = [];
     try {
       const { data } = await supabase
         .from('appointments')
@@ -62,7 +62,7 @@ export async function GET(request: NextRequest) {
     }
 
     // 3. Vacations Data (Actors with holidays)
-    let actorHolidays = [];
+    let actorHolidays: any[] = [];
     try {
       let actorsQuery = supabase
         .from('actors')
@@ -110,28 +110,28 @@ export async function POST(request: NextRequest) {
       // We log consent even for non-admins to maintain a legal audit trail.
       try {
         const { error } = await supabase.from('system_events').insert({
-          event_type: 'cookie_consent',
-          severity: 'info',
+          level: 'info',
+          source: 'cookie_consent',
           message: `Consent updated: ${consent.type} (v${consent.version})`,
-          metadata: {
+          details: {
             consent_type: consent.type,
             consent_version: consent.version,
             visitor_hash: consent.visitor_hash,
             user_agent: request.headers.get('user-agent'),
             ip_address: request.headers.get('x-forwarded-for') || 'unknown'
           },
-          created_at: new Date()
+          created_at: new Date().toISOString()
         });
 
         if (error) {
           console.error('[Operational API] Consent log failed:', error);
-          // Don't throw, just return success false or similar to not break the client
-          return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+          // Never break UX because of forensic logging drift.
+          return NextResponse.json({ success: true, logged: false, warning: error.message });
         }
         return NextResponse.json({ success: true });
       } catch (err: any) {
         console.error('[Operational API] Consent log exception:', err);
-        return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+        return NextResponse.json({ success: true, logged: false, warning: err.message });
       }
     }
 

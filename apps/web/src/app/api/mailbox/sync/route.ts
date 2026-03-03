@@ -2,6 +2,7 @@ import { DirectMailService } from '@/lib/services/direct-mail-service';
 import { VectorService } from '@/lib/services/vector-service';
 import { GeminiService } from '@/lib/services/gemini-service';
 import { db, mailContent } from '@/lib/system/voices-config';
+import { requireAdmin } from '@/lib/auth/api-auth';
 import { NextRequest, NextResponse } from 'next/server';
 
 /**
@@ -12,6 +13,16 @@ import { NextRequest, NextResponse } from 'next/server';
  * en voert een diepe analyse uit via Gemini.
  */
 export async function POST(request: NextRequest) {
+  const auth = await requireAdmin();
+  if (auth instanceof NextResponse) return auth;
+
+  if (process.env.ENABLE_IMAP_INBOX !== 'true') {
+    return NextResponse.json(
+      { error: 'Mailbox sync is disabled by security policy. Set ENABLE_IMAP_INBOX=true to enable.' },
+      { status: 503 }
+    );
+  }
+
   try {
     const { folder = 'INBOX.Archive', limit = 10 } = await request.json();
     

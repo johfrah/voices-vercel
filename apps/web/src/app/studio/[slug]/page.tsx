@@ -23,6 +23,7 @@ const DayScheduleIsland = nextDynamic(() => import("@/components/studio/DaySched
 const InstructorLocationIsland = nextDynamic(() => import("@/components/studio/InstructorLocationIsland").then(mod => mod.InstructorLocationIsland), { ssr: false });
 const ReviewGrid = nextDynamic(() => import("@/components/studio/ReviewGrid").then(mod => mod.ReviewGrid), { ssr: false });
 const LiquidBackground = nextDynamic(() => import("@/components/ui/LiquidBackground").then(mod => mod.LiquidBackground), { ssr: false });
+const VideoPlayerDynamic = nextDynamic(() => import("@/components/ui/VideoPlayer").then(mod => mod.VideoPlayer), { ssr: false });
 const WorkshopInterestForm = nextDynamic(() => import("@/components/studio/WorkshopInterestForm").then(mod => mod.WorkshopInterestForm), { ssr: false });
 const WorkshopQuiz = nextDynamic(() => import("@/components/studio/WorkshopQuiz").then(mod => mod.WorkshopQuiz), { ssr: false });
 
@@ -193,6 +194,69 @@ function renderWorkshopDetail(workshop: WorkshopApiResponse['workshops'][number]
         <WorkshopHeroIsland workshop={workshop} />
       </Suspense>
 
+      {/* Workshop Content: short_description + workshop_content_detail */}
+      {(workshop.short_description || workshop.workshop_content_detail) && (
+        <ContainerInstrument className="max-w-4xl mx-auto px-6 mt-24 space-y-8">
+          {workshop.short_description && (
+            <ContainerInstrument plain>
+              <TextInstrument className="text-[11px] font-bold tracking-[0.3em] uppercase text-primary mb-4">
+                <VoiceglotText translationKey="studio.detail.about_label" defaultText="Over deze workshop" />
+              </TextInstrument>
+              <TextInstrument className="text-xl md:text-2xl font-light text-va-black/70 leading-relaxed">
+                {workshop.short_description}
+              </TextInstrument>
+            </ContainerInstrument>
+          )}
+          {workshop.workshop_content_detail && (
+            <ContainerInstrument className="bg-white rounded-[24px] p-8 md:p-10 border border-black/[0.03] shadow-aura">
+              <HeadingInstrument level={3} className="text-2xl font-light tracking-tighter text-va-black mb-6">
+                <VoiceglotText translationKey="studio.detail.content_title" defaultText="Wat ga je leren?" />
+              </HeadingInstrument>
+              <TextInstrument className="text-va-black/60 font-light leading-relaxed whitespace-pre-line">
+                {workshop.workshop_content_detail}
+              </TextInstrument>
+            </ContainerInstrument>
+          )}
+        </ContainerInstrument>
+      )}
+
+      {/* Aftermovie sectie met video */}
+      {(workshop.aftermovie_description || workshop.aftermovie_video) && (
+        <ContainerInstrument className="max-w-5xl mx-auto px-6 mt-24">
+          <ContainerInstrument plain className="mb-8">
+            <TextInstrument className="text-[11px] font-bold tracking-[0.3em] uppercase text-primary mb-4">
+              <VoiceglotText translationKey="studio.detail.aftermovie_label" defaultText="Een blik achter de schermen" />
+            </TextInstrument>
+            <HeadingInstrument level={2} className="text-3xl md:text-4xl font-light tracking-tighter text-va-black">
+              <VoiceglotText translationKey="studio.detail.aftermovie_title" defaultText="Zo ziet een workshopdag eruit" />
+            </HeadingInstrument>
+          </ContainerInstrument>
+          <ContainerInstrument plain className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+            {workshop.aftermovie_video && (
+              <ContainerInstrument plain className="lg:col-span-5 flex justify-center">
+                <ContainerInstrument plain className="w-full max-w-[320px] aspect-[9/16] rounded-[24px] overflow-hidden shadow-2xl">
+                  <Suspense fallback={<ContainerInstrument className="w-full h-full bg-va-black animate-pulse" />}>
+                    <VideoPlayerDynamic
+                      src={`https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices/${workshop.aftermovie_video.file_path}`}
+                      className="w-full h-full object-cover"
+                      autoPlay={false}
+                      muted={true}
+                    />
+                  </Suspense>
+                </ContainerInstrument>
+              </ContainerInstrument>
+            )}
+            {workshop.aftermovie_description && (
+              <ContainerInstrument plain className={workshop.aftermovie_video ? "lg:col-span-7" : "lg:col-span-12"}>
+                <TextInstrument className="text-va-black/50 font-light leading-relaxed whitespace-pre-line text-[15px]">
+                  {workshop.aftermovie_description}
+                </TextInstrument>
+              </ContainerInstrument>
+            )}
+          </ContainerInstrument>
+        </ContainerInstrument>
+      )}
+
       <ContainerInstrument className="max-w-7xl mx-auto px-6 mt-24 space-y-32">
         <Suspense fallback={<ContainerInstrument className="h-96 bg-white rounded-[30px] animate-pulse" />}>
           <SkillDNAIsland workshop={workshop} />
@@ -206,6 +270,75 @@ function renderWorkshopDetail(workshop: WorkshopApiResponse['workshops'][number]
           <InstructorLocationIsland workshop={workshop} />
         </Suspense>
       </ContainerInstrument>
+
+      {/* Workshop-specifieke FAQ's */}
+      {workshop.faqs && workshop.faqs.length > 0 && (
+        <ContainerInstrument className="max-w-4xl mx-auto px-6 mt-32">
+          <ContainerInstrument plain className="text-center mb-16">
+            <TextInstrument className="text-[11px] font-bold tracking-[0.3em] uppercase text-primary mb-4">
+              <VoiceglotText translationKey="studio.detail.faq_label" defaultText="Vragen over deze workshop" />
+            </TextInstrument>
+            <HeadingInstrument level={2} className="text-3xl md:text-4xl font-light tracking-tighter text-va-black">
+              <VoiceglotText translationKey="studio.detail.faq_title" defaultText="Veelgestelde vragen" />
+            </HeadingInstrument>
+          </ContainerInstrument>
+          <ContainerInstrument plain className="space-y-4">
+            {workshop.faqs.map((faq: { id: number; question: string; answer: string }) => (
+              <ContainerInstrument key={faq.id} className="bg-white rounded-[20px] p-8 border border-black/[0.03] shadow-aura">
+                <HeadingInstrument level={4} className="text-lg font-light text-va-black mb-3">{faq.question}</HeadingInstrument>
+                <TextInstrument className="text-va-black/50 font-light leading-relaxed">{faq.answer}</TextInstrument>
+              </ContainerInstrument>
+            ))}
+          </ContainerInstrument>
+        </ContainerInstrument>
+      )}
+
+      {/* Feedback Snippets (Interne feedback als social proof) */}
+      {workshop.feedback_snippets && workshop.feedback_snippets.length > 0 && (
+        <ContainerInstrument className="max-w-4xl mx-auto px-6 mt-16">
+          <TextInstrument className="text-[11px] font-bold tracking-[0.3em] uppercase text-primary mb-6">
+            <VoiceglotText translationKey="studio.detail.feedback_label" defaultText="Wat deelnemers het meest waardeerden" />
+          </TextInstrument>
+          <ContainerInstrument plain className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {workshop.feedback_snippets.slice(0, 6).map((fb: { text: string; rating: number }, i: number) => (
+              <ContainerInstrument key={i} className="bg-white rounded-[16px] p-6 border border-black/[0.03] shadow-aura">
+                <TextInstrument className="text-primary text-[13px] mb-2">{'⭐'.repeat(fb.rating || 5)}</TextInstrument>
+                <TextInstrument className="text-[14px] text-va-black/60 font-light leading-relaxed italic">
+                  &ldquo;{fb.text}&rdquo;
+                </TextInstrument>
+              </ContainerInstrument>
+            ))}
+          </ContainerInstrument>
+        </ContainerInstrument>
+      )}
+
+      {/* Volgende Stappen (Related Journeys) */}
+      {workshop.next_steps && workshop.next_steps.length > 0 && (
+        <ContainerInstrument className="max-w-4xl mx-auto px-6 mt-32">
+          <ContainerInstrument plain className="text-center mb-12">
+            <TextInstrument className="text-[11px] font-bold tracking-[0.3em] uppercase text-primary mb-4">
+              <VoiceglotText translationKey="studio.detail.next_label" defaultText="Verder groeien?" />
+            </TextInstrument>
+            <HeadingInstrument level={2} className="text-3xl md:text-4xl font-light tracking-tighter text-va-black">
+              <VoiceglotText translationKey="studio.detail.next_title" defaultText="Aanbevolen vervolgworkshops" />
+            </HeadingInstrument>
+          </ContainerInstrument>
+          <ContainerInstrument plain className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {workshop.next_steps.map((step: { label: string; slug: string; title: string }, i: number) => (
+              <ContainerInstrument key={i} className="bg-white rounded-[20px] p-8 border border-black/[0.03] shadow-aura hover:shadow-aura-lg transition-all duration-500 group cursor-pointer">
+                <a href={`/studio/${step.slug}`} className="block space-y-3">
+                  <TextInstrument className="text-[11px] font-bold tracking-[0.2em] uppercase text-primary">
+                    {step.label}
+                  </TextInstrument>
+                  <HeadingInstrument level={4} className="text-xl font-light tracking-tight text-va-black group-hover:text-primary transition-colors">
+                    {step.title}
+                  </HeadingInstrument>
+                </a>
+              </ContainerInstrument>
+            ))}
+          </ContainerInstrument>
+        </ContainerInstrument>
+      )}
 
       <ContainerInstrument plain className="mt-32">
         <Suspense fallback={<ContainerInstrument className="h-96 bg-va-off-white animate-pulse" />}>

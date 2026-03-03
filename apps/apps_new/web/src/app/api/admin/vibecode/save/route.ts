@@ -71,7 +71,7 @@ ${code}
 
     if (isProduction) {
       //  CLOUD MODE: Commit to GitHub
-      const fullRepoPath = `1-SITE/apps/web/${relativePath}/${safeFilename}`;
+      const fullRepoPath = `apps/web/${relativePath}/${safeFilename}`;
       console.log(` Cloud Save: Committing to ${fullRepoPath}`);
       
       await commitFileToGitHub(

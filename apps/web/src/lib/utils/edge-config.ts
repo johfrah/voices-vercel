@@ -1,28 +1,32 @@
-import { get } from '@vercel/edge-config';
-
 /**
  * Voices Global Config
  * 
- * Deze helper haalt real-time instellingen op uit de Vercel Edge Config.
+ * Deze helper haalt instellingen op uit een lokale JSON env-bridge.
  * Gebruik dit voor prijzen (Kelly), onderhoud (Anna) en feature flags.
  */
-export async function getVoicesConfig<T>(key: string): Promise<T | undefined> {
-  // 🛡️ CHRIS-PROTOCOL: Resilient Edge Config (v2.14.346)
-  // Voorkom noisy errors in dev mode als de token ontbreekt of ongeldig is.
-  if (process.env.NODE_ENV === 'development' && !process.env.EDGE_CONFIG?.includes('token=')) {
-    return undefined;
-  }
+let cachedEdgeConfig: Record<string, unknown> | null = null;
+
+function loadEdgeConfigFromEnv(): Record<string, unknown> {
+  if (cachedEdgeConfig) return cachedEdgeConfig;
+
+  const raw =
+    process.env.VOICES_EDGE_CONFIG_JSON ||
+    process.env.VERCEL_EDGE_CONFIG_JSON ||
+    '{}';
 
   try {
-    return await get<T>(key);
-  } catch (error: any) {
-    if (error.message?.includes('Unauthorized')) {
-      // Silent fail voor unauthorized in dev
-      return undefined;
-    }
-    console.error(`[EdgeConfig] Fout bij ophalen van key "${key}":`, error);
-    return undefined;
+    const parsed = JSON.parse(raw);
+    cachedEdgeConfig = typeof parsed === 'object' && parsed !== null ? parsed : {};
+  } catch {
+    cachedEdgeConfig = {};
   }
+
+  return cachedEdgeConfig;
+}
+
+export async function getVoicesConfig<T>(key: string): Promise<T | undefined> {
+  const config = loadEdgeConfigFromEnv();
+  return config[key] as T | undefined;
 }
 
 /**

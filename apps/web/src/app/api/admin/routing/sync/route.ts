@@ -10,7 +10,7 @@ export async function POST() {
     console.log('☢️ Starting Nuclear Sync from UI...');
     
     // We run the sitemap generation script
-    const scriptPath = path.resolve(process.cwd(), '3-WETTEN/scripts/generate-atomic-sitemap.ts');
+    const scriptPath = path.resolve(process.cwd(), 'scripts/generate-atomic-sitemap.ts');
     const { stdout, stderr } = await execAsync(`npx tsx ${scriptPath}`);
     
     if (stderr && !stdout) {

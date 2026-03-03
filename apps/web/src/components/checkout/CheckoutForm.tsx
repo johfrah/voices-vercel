@@ -20,6 +20,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { VoicesLink as Link } from '@/components/ui/VoicesLink';
 import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
+import { normalizeLocale } from '@/lib/system/locale-utils';
 import React, { useEffect, useState } from 'react';
 import { AcademyUpsellSection } from './AcademyUpsellSection';
 import { EmailPreviewModal } from './EmailPreviewModal';
@@ -82,7 +83,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
       const response = await fetch('/api/auth/send-magic-link/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: modalEmail, redirect: '/checkout' }),
+        body: JSON.stringify({ email: modalEmail, redirect: '/checkout', language: normalizeLocale(language) }),
       });
 
       const result = await response.json();
@@ -321,6 +322,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
         postal_code: formData.postal_code,
         city: formData.city,
         country: formData.country || 'BE',
+        language: normalizeLocale(language),
         usage: state.usage,
         plan: state.plan,
         briefing: safeBriefing,

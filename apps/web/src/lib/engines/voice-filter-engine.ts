@@ -93,10 +93,12 @@ export class VoiceFilterEngine {
     }
 
     // 2. STRICT NATIVE LANGUAGE MATCHING (ID-First Mandate 2026)
-    if (criteria.languageId != null) {
+    // 🛡️ CHRIS-PROTOCOL: Use languageId (singular) OR languageIds[0] (v2.28.1)
+    const effectiveLangId = criteria.languageId ?? (criteria.languageIds && criteria.languageIds.length === 1 ? criteria.languageIds[0] : null);
+    if (effectiveLangId != null) {
       result = result.filter(actor => {
         // 🛡️ CHRIS-PROTOCOL: NATIVE-ONLY LOGIC (v2.14.740)
-        return actor.native_lang_id === criteria.languageId || actor.native_language_id === criteria.languageId;
+return actor.native_lang_id === effectiveLangId || actor.native_language_id === effectiveLangId;
       });
     }
 
@@ -104,8 +106,9 @@ export class VoiceFilterEngine {
     if (criteria.journey === 'telephony' && criteria.languageIds && criteria.languageIds.length > 1) {
       const selectedIds = criteria.languageIds;
       result = result.filter(actor => {
+        const actorAny = actor as any;
         // Moedertaal moet de eerste ID zijn
-        if ((actor.native_lang_id || actor.native_language_id) !== selectedIds[0]) return false;
+        if ((actor.native_lang_id || actorAny.native_language_id) !== selectedIds[0]) return false;
         
         // Moet alle andere IDs in extra_lang_ids hebben
         const actorExtras = actor.extra_lang_ids || [];
@@ -122,8 +125,12 @@ export class VoiceFilterEngine {
     }
 
     // 5. COUNTRY FILTERING (ID-First)
+    // 🛡️ CHRIS-PROTOCOL: Actors with null country_id are available in ALL countries (v2.28.1)
     if (criteria.countryId != null) {
-      result = result.filter(actor => (actor.country_id || (actor as any).countryId) === criteria.countryId);
+      result = result.filter(actor => {
+        const actorCountryId = actor.country_id || (actor as any).countryId;
+        return actorCountryId == null || actorCountryId === criteria.countryId;
+      });
     }
 
     // 6. GENDER (Handshake Truth v2.14.714)
@@ -189,30 +196,28 @@ export class VoiceFilterEngine {
           // 1.5 Market-Aware Language Priority (Bob-methode)
           // CHRIS-PROTOCOL: If no manual order, prioritize market-specific languages.
           const market = MarketManager.getCurrentMarket();
-          const primaryLang = (market?.primary_language || '').toLowerCase();
+          const preferredLanguageIds = Array.from(
+            new Set(
+              [
+                market?.primary_language_id,
+                ...((market?.popular_languages || [])
+                  .map((code) => MarketManager.getLanguageId(code, market?.primary_language || 'nl-be'))
+                  .filter((id): id is number => typeof id === 'number'))
+              ].filter((id): id is number => typeof id === 'number')
+            )
+          );
+          const preferredRank = new Map(preferredLanguageIds.map((id, index) => [id, index + 1]));
           
           const getLangScore = (actor: Actor) => {
-            const actorNativeId = actor.native_lang_id || (actor as any).nativeLanguageId;
-            const marketPrimaryId = market?.primary_language_id;
-            
-            // 1. Primary Language of the market (ID-First)
-            if (actorNativeId === marketPrimaryId) return 1;
-            
-            // 2. English (Global standard - ID 5 is English GB, ID 6 is English US)
-            if (actorNativeId === 5 || actorNativeId === 6) return 2;
-            
-            // 3. Market-specific secondary priorities (ID-based)
-            if (market?.market_code === 'BE') {
-              if (actorNativeId === 2) return 3; // Nederlands
-              if (actorNativeId === 4) return 4; // Frans
-              if (actorNativeId === 7) return 5; // Duits
-            } else if (market?.market_code === 'NLNL') {
-              if (actorNativeId === 1) return 3; // Vlaams
-              if (actorNativeId === 7) return 4; // Duits
-              if (actorNativeId === 4) return 5; // Frans
-            }
-            
-            return 100;
+            const actorAny = actor as any;
+            const actorNativeId =
+              actor.native_lang_id ||
+              actorAny.native_language_id ||
+              actorAny.nativeLanguageId;
+            if (actorNativeId == null) return 999;
+            const ranked = preferredRank.get(actorNativeId);
+            if (ranked != null) return ranked;
+            return 100 + (actorNativeId / 1000);
           };
 
           const langScoreA = getLangScore(a);
@@ -221,16 +226,18 @@ export class VoiceFilterEngine {
 
           // 2. delivery_date_min_priority (Nuclear Speed Priority)
           // CHRIS-PROTOCOL: High priority actors (e.g. Christina) should appear first.
-          const aSpeedPrio = a.delivery_date_min_priority || 0;
-          const bSpeedPrio = b.delivery_date_min_priority || 0;
+          const aAny = a as any;
+          const bAny = b as any;
+          const aSpeedPrio = aAny.delivery_date_min_priority || 0;
+          const bSpeedPrio = bAny.delivery_date_min_priority || 0;
           if (aSpeedPrio !== bSpeedPrio) {
             return bSpeedPrio - aSpeedPrio;
           }
 
           // 3. delivery_date_min (Actual availability)
-          if (a.delivery_date_min && b.delivery_date_min) {
-            const aDate = new Date(a.delivery_date_min).getTime();
-            const bDate = new Date(b.delivery_date_min).getTime();
+          if (aAny.delivery_date_min && bAny.delivery_date_min) {
+            const aDate = new Date(aAny.delivery_date_min).getTime();
+            const bDate = new Date(bAny.delivery_date_min).getTime();
             if (aDate !== bDate) {
               return aDate - bDate;
             }

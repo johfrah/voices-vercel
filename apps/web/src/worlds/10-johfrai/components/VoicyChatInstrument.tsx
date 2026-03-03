@@ -1043,9 +1043,9 @@ export const VoicyChatV2: React.FC = () => {
           <AnimatePresence>
             {getSmartChips().map((chip, i) => (
               <ContainerInstrument
+                key={`${chip.label}-${i}`}
                 as={motion.button}
                 {...({
-                  key: `${chip.label}-${i}`,
                   initial: { opacity: 0, x: 20 },
                   animate: { opacity: 1, x: 0 },
                   exit: { opacity: 0, x: 20 },

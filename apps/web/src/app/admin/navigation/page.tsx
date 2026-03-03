@@ -364,7 +364,7 @@ export default function NavigationAdminPage() {
                           </button>
                         ))}
                         {searchQuery.length >= 2 && searchResults.length === 0 && !searching && (
-                          <div className="py-8 text-center text-black/20 italic">Geen resultaten gevonden voor "{searchQuery}"</div>
+                          <div className="py-8 text-center text-black/20 italic">{`Geen resultaten gevonden voor '${searchQuery}'`}</div>
                         )}
                         {searchQuery.length < 2 && (
                           <div className="py-8 text-center text-black/20 italic">Typ minimaal 2 tekens om te zoeken...</div>

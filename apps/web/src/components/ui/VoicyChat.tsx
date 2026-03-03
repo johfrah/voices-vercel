@@ -38,6 +38,7 @@ import { isOfficeOpen, getNextOpeningTime } from '@/lib/utils/delivery-logic';
 import { ButtonInstrument, ContainerInstrument, FormInstrument, HeadingInstrument, InputInstrument, LabelInstrument, TextInstrument } from './LayoutInstruments';
 import { VoiceglotText } from './VoiceglotText';
 import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
+import { normalizeLocale } from '@/lib/system/locale-utils';
 
 export const VoicyChatV2: React.FC = () => {
   // 🛡️ CHRIS-PROTOCOL: All State at the top to prevent TDZ errors
@@ -361,6 +362,7 @@ export const VoicyChatV2: React.FC = () => {
                 selectedActor: state.selectedActor,
                 briefing: params.briefing || state.briefing,
                 usage: state.usage,
+                language: normalizeLocale(language),
                 payment_method: 'bancontact',
                 metadata: {
                   words: (params.briefing || state.briefing || '').trim().split(/\s+/).filter(Boolean).length,
@@ -538,7 +540,9 @@ export const VoicyChatV2: React.FC = () => {
   };
 
   //  Get current language
-  const language = typeof window !== 'undefined' ? (document.cookie.split('; ').find(row => row.startsWith('voices_lang='))?.split('=')[1] || 'nl') : 'nl';
+  const language = typeof window !== 'undefined'
+    ? normalizeLocale(document.cookie.split('; ').find(row => row.startsWith('voices_lang='))?.split('=')[1] || 'nl-be')
+    : 'nl-be';
 
   //  Listen for Voicy Suggestions from other components
   useEffect(() => {
@@ -827,7 +831,7 @@ export const VoicyChatV2: React.FC = () => {
       aiResponse.isDbError = !!data._db_error;
 
       //  VOICEGLOT: Ensure AI content is translated if needed
-      if (language !== 'nl' && aiResponse.content) {
+      if (!language.startsWith('nl') && aiResponse.content) {
         try {
           const transRes = await fetch('/api/translations/heal', {
             method: 'POST',
@@ -1294,9 +1298,9 @@ export const VoicyChatV2: React.FC = () => {
                                 </ButtonInstrument>
                               </ContainerInstrument>
                             ) : msg.content}
-                            {msg.actions && msg.actions.length > 0 && (
+                            {msg.actions && msg.actions.filter((a: any) => !a.isButlerAction).length > 0 && (
                               <ContainerInstrument plain className="mt-4 flex flex-wrap gap-2">
-                              {msg.actions.map((action: any, i: number) => (
+                              {msg.actions.filter((a: any) => !a.isButlerAction).map((action: any, i: number) => (
                                 <ButtonInstrument
                                   key={i}
                                   onClick={() => {

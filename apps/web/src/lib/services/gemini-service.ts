@@ -58,6 +58,13 @@ export class GeminiService {
    * NU MET AGENT-MANDAAT: Kan gestructureerde acties voorstellen.
    */
   async generateText(prompt: string, options?: { jsonMode?: boolean, lang?: string, host?: string }): Promise<string> {
+    if (!process.env.GOOGLE_API_KEY) {
+      console.warn('[GeminiService] GOOGLE_API_KEY not configured. Returning fallback.');
+      return options?.jsonMode
+        ? JSON.stringify({ message: "Voicy is momenteel offline. Neem contact op via e-mail of telefoon.", actions: [] })
+        : "Voicy is momenteel offline. Neem contact op via e-mail of telefoon.";
+    }
+
     try {
       const model = this.getModel();
       let finalPrompt = prompt;

@@ -24,6 +24,12 @@ export const CheckoutPayloadSchema = z.object({
   items: z.array(z.object({
     id: z.string(),
     type: z.string(),
+    name: z.string().optional(),
+    workshop_id: z.coerce.number().optional(),
+    workshopId: z.coerce.number().optional(),
+    edition_id: z.coerce.number().optional(),
+    editionId: z.coerce.number().optional(),
+    price: z.coerce.number().optional(),
     actor: z.object({
       id: z.coerce.number(),
       display_name: z.string().optional(),
@@ -32,6 +38,7 @@ export const CheckoutPayloadSchema = z.object({
     briefing: z.string().optional(),
     pricing: z.object({
       total: z.coerce.number(),
+      subtotal: z.coerce.number().optional(),
       tax: z.coerce.number().optional(),
     }).optional(),
   })).default([]),
@@ -54,6 +61,7 @@ export const CheckoutPayloadSchema = z.object({
   postal_code: z.string().min(1, "Postcode is verplicht"),
   city: z.string().min(1, "Stad is verplicht"),
   country: z.string().default('BE'),
+  language: z.string().regex(/^[a-z]{2}(-[a-z]{2})?$/i).default('nl-be'),
 
   // 4. Project Context
   usage: z.enum(['unpaid', 'commercial', 'telefonie', 'subscription']).default('unpaid'),

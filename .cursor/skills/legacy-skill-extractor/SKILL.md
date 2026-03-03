@@ -15,7 +15,7 @@ Dit is de specialistische skill voor het transformeren van legacy scripts (`scri
    - Behoud alle mandaten (bijv. Chris-Protocol, Bob-methode).
    - Neem de exacte CLI commando's over.
    - Documenteer de input/output verwachtingen.
-4. **Archive**: Zodra de skill is aangemaakt en geverifieerd, verplaats het legacy script naar `4-KELDER/3-LEGACY-CODE/scripts/`.
+4. **Archive**: Zodra de skill is aangemaakt en geverifieerd, verplaats het legacy script naar `docs/archive/legacy-code/scripts/`.
 
 ## 📜 Chris-Protocol Compliance
 - Elke nieuwe skill MOET verwijzen naar de relevante `.mdc` rules.

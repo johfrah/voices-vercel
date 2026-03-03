@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db, orders, orderNotes, users, orderItems, actors } from '@/lib/system/voices-config';
+import { db, orders, orderNotes, users, orderItems, actors, ordersV2, orderStatuses } from '@/lib/system/voices-config';
 import { eq, sql, inArray } from 'drizzle-orm';
 import { MollieService } from '@/lib/payments/mollie';
 import { UCIService } from '@/lib/intelligence/uci-service';
@@ -8,6 +8,7 @@ import { MusicDeliveryService } from '@/lib/services/music-delivery-service';
 import { YukiService } from '@/lib/services/yuki-service';
 import { VumeEngine } from '@/lib/mail/VumeEngine';
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
+import { localeToShort, normalizeLocale } from '@/lib/system/locale-utils';
 
 /**
  *  MOLLIE WEBHOOK (NUCLEAR)
@@ -19,6 +20,18 @@ import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 const sdkClient = createSupabaseClient(supabaseUrl, supabaseKey);
+
+function v2StatusCandidates(statusCode: string): string[] {
+  const normalized = String(statusCode || '').toLowerCase();
+  if (normalized === 'completed') return ['completed', 'completed_paid', 'paid'];
+  if (normalized === 'paid') return ['paid', 'completed_paid', 'completed'];
+  if (normalized === 'pending') return ['pending', 'awaiting_payment', 'unpaid'];
+  if (normalized === 'cancelled') return ['cancelled', 'failed'];
+  if (normalized === 'expired') return ['failed', 'cancelled'];
+  if (normalized === 'failed') return ['failed', 'cancelled'];
+  if (normalized === 'in_productie') return ['in_productie', 'in_progress', 'processing', 'active'];
+  return [normalized];
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -59,9 +72,16 @@ export async function POST(request: NextRequest) {
     const market = MarketManager.getCurrentMarket(host);
     const adminEmail = process.env.ADMIN_EMAIL || market.email;
 
-    await db.transaction(async (tx) => {
+    await db.transaction(async (tx: any) => {
       // Haal de order op om te zien wat erin zit
       const [order] = await tx.select().from(orders).where(eq(orders.id, orderId)).limit(1);
+      const orderLanguage = normalizeLocale(
+        (order?.rawMeta as any)?.language ||
+        payment.metadata?.language ||
+        market.primary_language ||
+        'nl-be'
+      );
+      const orderLanguageShort = localeToShort(orderLanguage);
       
       // Update Order status
       let finalStatus = newStatus;
@@ -85,14 +105,18 @@ export async function POST(request: NextRequest) {
             try {
               await VumeEngine.send({
                 to: donationContext.donorEmail,
-                subject: `Bedankt voor je support aan Youssef Zaki!`,
+                subject: orderLanguageShort === 'fr'
+                  ? 'Merci pour votre soutien à Youssef Zaki !'
+                  : orderLanguageShort === 'en'
+                    ? 'Thank you for supporting Youssef Zaki!'
+                    : 'Bedankt voor je support aan Youssef Zaki!',
                 template: 'donation-thank-you',
                 context: {
                   name: donationContext.donorName || 'Supporter',
                   amount: order.total,
                   artistName: 'Youssef Zaki',
                   message: donationContext.message,
-                  language: 'nl-be'
+                  language: orderLanguage
                 },
                 host: host
               });
@@ -127,6 +151,26 @@ export async function POST(request: NextRequest) {
         .set({ status: finalStatus, updatedAt: new Date() })
         .where(eq(orders.id, orderId));
 
+      // 🔁 V2 status sync: keep orders_v2 aligned with webhook transitions.
+      if (order?.wpOrderId) {
+        const candidateCodes = v2StatusCandidates(finalStatus);
+        const statusRows = await tx
+          .select({ id: orderStatuses.id, code: orderStatuses.code })
+          .from(orderStatuses)
+          .where(inArray(orderStatuses.code, candidateCodes))
+          .limit(1);
+        const matchedStatus = statusRows[0];
+        if (matchedStatus) {
+          await tx
+            .update(ordersV2)
+            .set({
+              statusId: matchedStatus.id,
+              legacyInternalId: order.id,
+            })
+            .where(eq(ordersV2.id, Number(order.wpOrderId)));
+        }
+      }
+
       // Log Note
       await tx.insert(orderNotes).values({
         orderId: orderId,
@@ -142,7 +186,9 @@ export async function POST(request: NextRequest) {
             .from(orderItems)
             .where(eq(orderItems.orderId, orderId));
           
-          const actorIds = items.map(i => i.actorId).filter((id): id is number => id !== null);
+          const actorIds = items
+            .map((i: any) => i.actorId)
+            .filter((id: number | null): id is number => id !== null);
           
           if (actorIds.length > 0) {
             await tx.update(actors)
@@ -163,19 +209,23 @@ export async function POST(request: NextRequest) {
                 try {
                   await VumeEngine.send({
                     to: user.email,
-                    subject: `Bestelling Bevestigd: #${orderId} - Voices`,
+                    subject: orderLanguageShort === 'fr'
+                      ? `Commande confirmée : #${orderId} - Voices`
+                      : orderLanguageShort === 'en'
+                        ? `Order confirmed: #${orderId} - Voices`
+                        : `Bestelling Bevestigd: #${orderId} - Voices`,
                     template: 'order-confirmation',
                     context: {
                       userName: user.first_name || 'Klant',
                       orderId: orderId.toString(),
                       total: parseFloat(order.total || '0'),
-                      items: items.map(i => ({
+                      items: items.map((i: any) => ({
                         name: i.name,
                         price: parseFloat(i.price || '0'),
                         deliveryTime: (i.metaData as any)?.deliveryTime
                       })),
                       paymentMethod: payment.method || 'Online',
-                      language: 'nl'
+                      language: orderLanguage
                     },
                     host: host
                   });
@@ -191,12 +241,55 @@ export async function POST(request: NextRequest) {
           console.error(' Failed to update actor sales:', salesErr);
         }
 
-        // 2. Lever muziek uit indien aanwezig in de order
+        // 2. Creëer Dropbox Exports folder voor deze order
+        try {
+          const dropboxParams = new URLSearchParams();
+          dropboxParams.append('grant_type', 'refresh_token');
+          dropboxParams.append('refresh_token', process.env.DROPBOX_REFRESH_TOKEN || '');
+          dropboxParams.append('client_id', process.env.DROPBOX_CLIENT_ID || '');
+          dropboxParams.append('client_secret', process.env.DROPBOX_CLIENT_SECRET || '');
+          const tokenRes = await fetch('https://api.dropboxapi.com/oauth2/token', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: dropboxParams
+          });
+          const { access_token: dbxToken } = await tokenRes.json();
+          
+          if (dbxToken) {
+            const exportBase = `/Voices.be/Projects/Exports/${orderId}`;
+            // 🛡️ CHRIS-PROTOCOL: ID-First Handshake — Telephony = journey_id 26
+            const orderJourneyId = (order as any)?.journeyId ?? (order as any)?.journey_id;
+            const metaJourneyId = (order?.rawMeta as any)?.journeyId ?? (order?.rawMeta as any)?.journey_id;
+            const isTelephony = orderJourneyId === 26 || metaJourneyId === 26;
+            const subFolders = isTelephony 
+              ? ['48kHz 24bit', '8kHz 16bit', '16kHz 16bit']
+              : ['48kHz 24bit'];
+            
+            for (const sub of subFolders) {
+              await fetch('https://api.dropboxapi.com/2/files/create_folder_v2', {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${dbxToken}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ path: `${exportBase}/${sub}`, autorename: false })
+              }).catch(() => {});
+            }
+            
+            // Save Dropbox folder URL on the order
+            const dropboxUrl = `https://www.dropbox.com/home/Voices.be/Projects/Exports/${orderId}`;
+            await tx.update(orders)
+              .set({ dropboxFolderUrl: dropboxUrl })
+              .where(eq(orders.id, orderId));
+            
+            console.log(` [Dropbox] Exports folder created: ${exportBase}`);
+          }
+        } catch (dropboxErr) {
+          console.error(' Failed to create Dropbox folder:', dropboxErr);
+        }
+
+        // 3. Lever muziek uit indien aanwezig in de order
         try {
           await MusicDeliveryService.deliverMusic(orderId);
         } catch (musicErr) {
           console.error(' Failed to deliver music after payment:', musicErr);
-          // We gaan door, want de betaling is wel gelukt
         }
 
         // 🛡️ CHRIS-PROTOCOL: HITL MANDATE (v2.14.332)

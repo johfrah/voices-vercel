@@ -21,6 +21,11 @@ export const WorkshopContent: React.FC<WorkshopContentProps> = ({ workshop, isLo
   // Haal het programma op van de geselecteerde editie, of fallback naar het workshop-brede programma
   const currentEdition = workshop.dates?.[selectedDateIndex];
   const currentProgram = currentEdition?.program || workshop.dagindeling;
+  const workshopThumbnailUrl = workshop.featured_image?.file_path
+    ? (workshop.featured_image.file_path.startsWith('http')
+      ? workshop.featured_image.file_path
+      : `https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices/${workshop.featured_image.file_path.replace(/^\/+/, '')}`)
+    : null;
 
   return (
     <ContainerInstrument plain className="space-y-32">
@@ -48,6 +53,7 @@ export const WorkshopContent: React.FC<WorkshopContentProps> = ({ workshop, isLo
               title={workshop.title}
               priceExclVat={workshop.price}
               dates={workshop.dates || []}
+              thumbnail_url={workshopThumbnailUrl}
               onDateSelect={setSelectedDateIndex}
               selectedDateIndex={selectedDateIndex} 
             />

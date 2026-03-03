@@ -6,7 +6,7 @@ import * as dotenv from 'dotenv';
 // Load env from apps/web/.env.local
 dotenv.config({ path: path.join(__dirname, '../.env.local') });
 
-const SQL_PATH = path.join(__dirname, '../../../../4-KELDER/CONTAINER/ID348299_voices.sql');
+const SQL_PATH = process.env.LEGACY_SQL_PATH || path.join(__dirname, '../../../../docs/archive/ID348299_voices.sql');
 const DATABASE_URL = process.env.DATABASE_URL || "postgresql://postgres.vcbxyyjsxuquytcsskpj:VoicesHeadless20267654323456@aws-1-eu-west-1.pooler.supabase.com:6543/postgres?pgbouncer=true";
 
 if (!DATABASE_URL) {

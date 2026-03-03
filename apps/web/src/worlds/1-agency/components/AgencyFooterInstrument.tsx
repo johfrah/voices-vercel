@@ -157,9 +157,9 @@ export function AgencyFooter({ market, activeSocials, activePhone, activeEmail, 
             <VoiceglotText translationKey="footer.section.payment.title" defaultText="Veilig betalen" />
           </HeadingInstrument>
           <ContainerInstrument className="flex items-center gap-4 opacity-40 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-500">
-            <Image src="/assets/common/branding/payment/mollie.svg" alt="Mollie" width={50} height={15} className="h-3 w-auto" />
-            <Image src="/assets/common/branding/payment/bancontact.svg" alt="Bancontact" width={25} height={15} className="h-4 w-auto" />
-            <Image src="/assets/common/branding/payment/visa.svg" alt="Visa" width={30} height={15} className="h-2.5 w-auto" />
+            <Image src="/payment-methods/mollie/bancontact.png" alt="Bancontact" width={30} height={20} className="h-4 w-auto object-contain" />
+            <Image src="/payment-methods/mollie/ideal.png" alt="iDEAL" width={34} height={20} className="h-4 w-auto object-contain" />
+            <Image src="/payment-methods/mollie/creditcard.png" alt="Creditcard" width={40} height={20} className="h-3.5 w-auto object-contain" />
           </ContainerInstrument>
         </ContainerInstrument>
       </ContainerInstrument>
