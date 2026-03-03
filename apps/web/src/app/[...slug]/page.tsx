@@ -1576,10 +1576,16 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
 
   const extractTitle = (content: string = '') => {
     if (!content) return { title: null, body: '' };
-    const match = content.match(/^(?:###|#####)\s+(.+)$/m);
+    const sanitized = content.replace(/\\/g, '').trim();
+    const match = sanitized.match(/#{2,5}\s*([^#\n]+)/);
     return {
-      title: match ? match[1] : null,
-      body: content.replace(/^(?:###|#####)\s+.+$/m, '').replace(/\\/g, '').replace(/\*\*/g, '').trim()
+      title: match ? match[1].trim() : null,
+      body: sanitized
+        .replace(/#{2,5}\s*[^#\n]+/, '')
+        .replace(/#{2,5}\s*/g, '')
+        .replace(/^\s*-{3,}\s*$/gm, '')
+        .replace(/\*\*/g, '')
+        .trim()
     };
   };
 
@@ -1832,6 +1838,74 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
           </SectionInstrument>
         );
 
+      case 'text':
+      case 'deep-read':
+        return (
+          <SectionInstrument key={block.id} className="py-24 md:py-28 border-t border-black/5">
+            <ContainerInstrument className="max-w-4xl mx-auto space-y-6">
+              {title && (
+                <HeadingInstrument level={2} className="text-4xl md:text-5xl font-light tracking-tight text-va-black leading-[1.03]">
+                  {title}
+                </HeadingInstrument>
+              )}
+              <TextInstrument className="text-[17px] md:text-[18px] text-va-black/55 font-light leading-relaxed whitespace-pre-line">
+                {body}
+              </TextInstrument>
+            </ContainerInstrument>
+          </SectionInstrument>
+        );
+
+      case 'split-screen':
+      case 'Split-Screen':
+      case 'story-layout':
+        return (
+          <SectionInstrument key={block.id} className="py-24 md:py-28 border-t border-black/5">
+            <ContainerInstrument className="grid grid-cols-1 lg:grid-cols-12 gap-7 lg:gap-10 max-w-6xl mx-auto">
+              <ContainerInstrument className="lg:col-span-5 bg-white rounded-[20px] border border-black/5 p-8 md:p-10">
+                {title && (
+                  <HeadingInstrument level={3} className="text-3xl md:text-4xl font-light tracking-tight text-va-black leading-[1.04]">
+                    {title}
+                  </HeadingInstrument>
+                )}
+              </ContainerInstrument>
+              <ContainerInstrument className="lg:col-span-7 bg-white rounded-[20px] border border-black/5 p-8 md:p-10">
+                <TextInstrument className="text-[16px] md:text-[17px] text-va-black/55 font-light leading-relaxed whitespace-pre-line">
+                  {body}
+                </TextInstrument>
+              </ContainerInstrument>
+            </ContainerInstrument>
+          </SectionInstrument>
+        );
+
+      case 'lifestyle-overlay':
+        const legacyOverlayVideoUrl = body.match(/video:\s*([^\n]+)/)?.[1]?.trim();
+        const legacyOverlayBody = body.replace(/video:\s*[^\n]+/g, '').trim();
+        return (
+          <SectionInstrument key={block.id} className="py-24 md:py-28 border-t border-black/5">
+            <ContainerInstrument className="grid grid-cols-1 lg:grid-cols-12 gap-7 lg:gap-10 max-w-6xl mx-auto">
+              <ContainerInstrument className="lg:col-span-7 space-y-6">
+                {title && (
+                  <HeadingInstrument level={2} className="text-4xl md:text-5xl font-light tracking-tight text-va-black leading-[1.03]">
+                    {title}
+                  </HeadingInstrument>
+                )}
+                <TextInstrument className="text-[16px] md:text-[17px] text-va-black/55 font-light leading-relaxed whitespace-pre-line">
+                  {legacyOverlayBody}
+                </TextInstrument>
+              </ContainerInstrument>
+              <ContainerInstrument className="lg:col-span-5">
+                {legacyOverlayVideoUrl ? (
+                  <Suspense fallback={<ContainerInstrument className="h-72 rounded-[20px] bg-va-black/5 animate-pulse" />}>
+                    <VideoPlayer src={legacyOverlayVideoUrl} className="w-full h-full" />
+                  </Suspense>
+                ) : (
+                  <ContainerInstrument className="h-72 rounded-[20px] bg-gradient-to-br from-primary/10 to-va-black/5 border border-black/5" />
+                )}
+              </ContainerInstrument>
+            </ContainerInstrument>
+          </SectionInstrument>
+        );
+
       case 'founder':
         return (
           <section key={block.id} className="py-48 grid grid-cols-1 lg:grid-cols-12 gap-24 items-center animate-in fade-in slide-in-from-bottom-12 duration-1000 fill-mode-both">
@@ -1982,6 +2056,12 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
       case 'Betaling':
       case 'Juridisch':
       case 'Service':
+      case 'Inschrijving':
+      case 'Annulering':
+      case 'Eigendom':
+      case 'Veiligheid':
+      case 'Overmacht':
+      case 'Korting':
         return (
           <section key={block.id} className="grid grid-cols-1 lg:grid-cols-12 gap-24 items-start group py-32 border-b border-black/[0.03] last:border-none animate-in fade-in slide-in-from-bottom-8 duration-1000 fill-mode-both">
             <ContainerInstrument className="lg:col-span-5 sticky top-40">
@@ -2013,6 +2093,9 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
     }
   };
 
+  const instrumentBlocks = Array.isArray(page.blocks) ? page.blocks.filter((b: any) => Boolean(b?.settings)) : [];
+  const legacyBlocks = Array.isArray(page.blocks) ? page.blocks.filter((b: any) => !b?.settings) : [];
+
   return (
     <PageWrapperInstrument className="bg-va-off-white">
       <Suspense fallback={null}>
@@ -2030,16 +2113,16 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
         </header>
         
         {/* 🛡️ DNA-ROUTING: Render instruments from database if settings exist */}
-        <InstrumentRenderer blocks={page.blocks} extraData={extraData} />
+        <InstrumentRenderer blocks={instrumentBlocks} extraData={extraData} />
 
         <ContainerInstrument className="space-y-24">
-          {page.blocks && page.blocks.length > 0 ? (
-            page.blocks.filter((b: any) => !b.settings).map((block: any, index: number) => renderBlock(block, index))
-          ) : (
+          {legacyBlocks.length > 0 ? (
+            legacyBlocks.map((block: any, index: number) => renderBlock(block, index))
+          ) : instrumentBlocks.length === 0 ? (
             <TextInstrument className="text-va-black/40 text-center py-32">
               Content wordt binnenkort toegevoegd.
             </TextInstrument>
-          )}
+          ) : null}
         </ContainerInstrument>
         <footer className="mt-80 text-center">
           {journey !== 'portfolio' && (

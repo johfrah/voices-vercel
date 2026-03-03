@@ -21,6 +21,7 @@ const WorkshopCalendar = nextDynamic(() => import('../studio/WorkshopCalendar').
 const WorkshopQuiz = nextDynamic(() => import('../studio/WorkshopQuiz').then(mod => mod.WorkshopQuiz), { ssr: false });
 const WorkshopInterestForm = nextDynamic(() => import('../studio/WorkshopInterestForm').then(mod => mod.WorkshopInterestForm), { ssr: false });
 const ContactFormInstrument = nextDynamic(() => import('./ContactFormInstrument').then(mod => mod.ContactFormInstrument), { ssr: false });
+const VideoPlayer = nextDynamic(() => import('./VideoPlayer').then(mod => mod.VideoPlayer), { ssr: false });
 
 // Fallback voor onbekende instrumenten
 const UnknownInstrument = ({ type }: { type: string }) => (
@@ -59,14 +60,15 @@ export const InstrumentRenderer = ({ blocks, extraData = {} }: InstrumentRendere
     </Suspense>
   );
 
-  const parseLegacyDeepRead = (raw: string): { title: string; body: string } => {
+  const parseLegacyTextBlock = (raw: string): { title: string; body: string } => {
     if (!raw) return { title: '', body: '' };
-    const lines = raw.split('\n');
-    const headingLine = lines.find((line) => /^(#{2,3})\s+/.test(line.trim()));
-    const title = headingLine ? headingLine.replace(/^(#{2,3})\s+/, '').trim() : '';
-    const body = lines
-      .filter((line) => line !== headingLine)
-      .join('\n')
+    const sanitized = raw.replace(/\\/g, '').trim();
+    const match = sanitized.match(/#{2,5}\s*([^#\n]+)/);
+    const title = match ? match[1].trim() : '';
+    const body = sanitized
+      .replace(/#{2,5}\s*[^#\n]+/, '')
+      .replace(/#{2,5}\s*/g, '')
+      .replace(/^\s*-{3,}\s*$/gm, '')
       .replace(/\*\*/g, '')
       .trim();
     return { title, body };
@@ -75,6 +77,12 @@ export const InstrumentRenderer = ({ blocks, extraData = {} }: InstrumentRendere
   return (
     <div className="space-y-0">
       {blocks.map((block) => {
+        // Legacy blocks without settings are handled server-side in CmsPageContent.
+        // Skipping them here prevents duplicate content rendering and unknown-type noise.
+        if (!block?.settings) {
+          return null;
+        }
+
         const settings = block.settings || {};
         const type = block.type;
 
@@ -144,21 +152,39 @@ export const InstrumentRenderer = ({ blocks, extraData = {} }: InstrumentRendere
               isStudioWorldContext() ? <WorkshopInterestForm {...settings.data} /> : <ContactFormInstrument />
             );
 
-          case 'deep-read': {
+          case 'lifestyle-overlay':
+          case 'story-layout': {
             const rawContent = typeof block.content === 'string' ? block.content : '';
-            const parsed = parseLegacyDeepRead(rawContent);
+            const parsed = parseLegacyTextBlock(rawContent);
+            const videoSrc = settings?.video_url || settings?.data?.video_url || null;
+            const imageUrl = settings?.image_url || settings?.data?.image_url || null;
             return withSkeleton(
               block.id,
               "article",
               <ContainerInstrument className="py-14 md:py-18 border-t border-black/5">
-                {parsed.title ? (
-                  <HeadingInstrument level={3} className="text-3xl md:text-4xl font-light tracking-tight text-va-black mb-5">
-                    {parsed.title}
-                  </HeadingInstrument>
-                ) : null}
-                <TextInstrument className="text-[16px] md:text-[17px] text-va-black/60 font-light leading-relaxed whitespace-pre-line">
-                  {parsed.body || rawContent}
-                </TextInstrument>
+                <ContainerInstrument className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10">
+                  <ContainerInstrument className="lg:col-span-7 space-y-5">
+                    {parsed.title ? (
+                      <HeadingInstrument level={3} className="text-3xl md:text-4xl font-light tracking-tight text-va-black">
+                        {parsed.title}
+                      </HeadingInstrument>
+                    ) : null}
+                    <TextInstrument className="text-[16px] md:text-[17px] text-va-black/60 font-light leading-relaxed whitespace-pre-line">
+                      {parsed.body || rawContent}
+                    </TextInstrument>
+                  </ContainerInstrument>
+
+                  <ContainerInstrument className="lg:col-span-5">
+                    {videoSrc ? (
+                      <VideoPlayer src={videoSrc} className="w-full" aspectRatio="video" />
+                    ) : (
+                      <ContainerInstrument
+                        className="w-full h-64 md:h-72 rounded-[20px] bg-gradient-to-br from-primary/10 to-va-black/5 border border-black/5"
+                        style={imageUrl ? { backgroundImage: `url(${imageUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' } : undefined}
+                      />
+                    )}
+                  </ContainerInstrument>
+                </ContainerInstrument>
               </ContainerInstrument>
             );
           }
