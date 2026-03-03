@@ -34,5 +34,10 @@ This is a Next.js 14 monorepo for a multi-tenant voice-over agency platform ("Vo
 - **GlobalNav journey detection**: The GlobalNav uses URL pathname first, then worldId, then market_code to determine which World navigation to show. On `voices.be/studio/`, the worldId from handshakeContext is 1 (Agency), so pathname detection (`/studio/` → `'studio'`) must take priority. Do not revert to ID-first detection order.
 - **React overrides**: Root `package.json` has `"overrides"` for `react` and `react-dom` to force a single React instance across the monorepo. Do not remove these — they prevent `styled-jsx` useContext crashes during static page generation.
 
+### Open Features (Next Session)
+- **Video Subtitle Generation**: Workshops need auto-generated subtitles via Whisper API. 4/11 workshops have subtitle_data from aftermovie_description text; remaining 7 need speech-to-text from video audio. Consider building an admin video management page at `/admin/studio/videos/` with: (1) Whisper transcription trigger, (2) subtitle editor with timing, (3) VTT preview. The `VideoPlayer` component already supports inline subtitle data via `subtitles` prop with `{ srcLang, label, data: [{ start, end, text }] }`.
+- **Workshop Participant Registration**: The deelnemer form (WorkshopParticipantForm) works as a modal. Consider making it a dedicated page step for better UX. The `order_items.meta_data.participant_info` structure is already in use in production orders.
+- **StudioWorkshopsMenu mega-menu**: Component built but nav dropdown condition needs refinement — `pathname.startsWith('/studio')` works but the old submenu data from nav config still renders in some hydration states.
+
 ### Deploying to Production
 Push to `main` to trigger Vercel auto-deploy. Check status with `gh api repos/johfrah/voices-vercel/commits/<sha>/status` or `npx vercel ls --token "$VERCEL_TOKEN"`. Builds take ~2 minutes. If Vercel gives an internal error, retry — it's usually a transient infra issue in the `iad1` region.
