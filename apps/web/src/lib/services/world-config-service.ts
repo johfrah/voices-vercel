@@ -59,15 +59,42 @@ export async function getWorldConfig(worldId: number): Promise<WorldConfig | nul
 
     if (error || !data) return null;
 
-    // Contact via junction table (ID-First)
+    // Contact via junction table (ID-First) — resolves to contacts OR actors
     const { data: contactMapping } = await supabase
       .from('world_contact_mappings')
-      .select('contacts(id, label, email, phone, address, vat_number, company_name, website, social_links, opening_hours, country_code, logo_media_id)')
+      .select(`
+        contact_id, actor_id,
+        contacts(id, label, email, phone, address, vat_number, company_name, website, social_links, opening_hours, country_code),
+        actors(id, first_name, last_name, email, phone, bio, tagline, website, social_links)
+      `)
       .eq('world_id', worldId)
       .eq('role', 'primary')
       .maybeSingle();
 
-    const contact = (contactMapping as any)?.contacts || {};
+    const contactData = (contactMapping as any)?.contacts;
+    const actorData = (contactMapping as any)?.actors;
+    
+    const contact = contactData ? {
+      email: contactData.email,
+      phone: contactData.phone,
+      address: contactData.address,
+      vat_number: contactData.vat_number,
+      company_name: contactData.company_name,
+      website: contactData.website,
+      social_links: contactData.social_links,
+      opening_hours: contactData.opening_hours,
+      country_code: contactData.country_code,
+    } : actorData ? {
+      email: actorData.email,
+      phone: actorData.phone,
+      address: null,
+      vat_number: null,
+      company_name: `${actorData.first_name} ${actorData.last_name}`.trim(),
+      website: actorData.website,
+      social_links: actorData.social_links,
+      opening_hours: null,
+      country_code: 'BE',
+    } : {};
 
     const config: WorldConfig = {
       world_id: data.world_id,
