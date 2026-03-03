@@ -1298,9 +1298,9 @@ export const VoicyChatV2: React.FC = () => {
                                 </ButtonInstrument>
                               </ContainerInstrument>
                             ) : msg.content}
-                            {msg.actions && msg.actions.length > 0 && (
+                            {msg.actions && msg.actions.filter((a: any) => !a.isButlerAction).length > 0 && (
                               <ContainerInstrument plain className="mt-4 flex flex-wrap gap-2">
-                              {msg.actions.map((action: any, i: number) => (
+                              {msg.actions.filter((a: any) => !a.isButlerAction).map((action: any, i: number) => (
                                 <ButtonInstrument
                                   key={i}
                                   onClick={() => {

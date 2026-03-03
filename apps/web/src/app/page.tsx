@@ -17,7 +17,7 @@ import { SlimmeKassa } from '@/lib/engines/pricing-engine';
 import { VoiceFilterEngine } from "@/lib/engines/voice-filter-engine";
 import { Actor } from "@/types";
 import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
-import { Suspense, useEffect, useMemo, useState } from 'react';
+import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import nextDynamic from "next/dynamic";
 
 //  NUCLEAR LOADING MANDATE
@@ -77,6 +77,7 @@ function HomeContent({
   const { openEditModal } = useEditMode();
   const [customerDNA, setCustomerDNA] = useState<any>(null);
   const [actors, setActors] = useState<Actor[]>(initialActors);
+  const prevLangRef = useRef<number | undefined>(undefined);
 
   const [marketCode, setMarketCode] = useState('BE');
 
@@ -129,6 +130,39 @@ function HomeContent({
     setActors(initialActors);
   }, [initialActors]);
 
+  // 🛡️ CHRIS-PROTOCOL: Re-fetch actors on language change (v2.28.1)
+  const masterStateRef = useRef(masterControlState);
+  masterStateRef.current = masterControlState;
+  useEffect(() => {
+    const checkLang = () => {
+      const st = masterStateRef.current;
+      const langIds = st?.filters?.languageIds;
+      const langId = langIds?.length === 1 ? langIds[0] : (st?.filters?.languageId || 1);
+      if (langId === prevLangRef.current || !langId) return;
+      prevLangRef.current = langId;
+      if (langId === 1) { setActors(initialActors); return; }
+      console.log(`[LANG-POLL] Fetching actors for langId=${langId}`);
+      fetch(`/api/actors?languageId=${langId}`)
+        .then(r => r.json())
+        .then(d => {
+          console.log(`[LANG-POLL] Got ${d.results?.length || 0} actors`);
+          if (d.results?.length > 0) {
+            setActors(d.results.map((a: any) => ({
+              ...a,
+              photo_url: a.photo_url && !a.photo_url.startsWith('http') && !a.photo_url.startsWith('/api/proxy')
+                ? `/api/proxy/?path=${encodeURIComponent(a.photo_url)}` : a.photo_url,
+            })));
+          }
+        })
+        .catch(() => {});
+    };
+    const interval = setInterval(checkLang, 500);
+    return () => clearInterval(interval);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Language re-fetch is handled by polling interval above
+
   useEffect(() => {
     if (isAuthenticated && user?.email) {
       const fetchDNA = async () => {
@@ -173,11 +207,18 @@ function HomeContent({
 
   const filteredActors = useMemo(() => {
     if (!actors || actors.length === 0 || !masterControlState) return [];
+
+    // 🛡️ CHRIS-PROTOCOL: Effective language ID resolution (v2.28.1)
+    // languageIds (set by dropdown) takes priority over languageId (may be stale default)
+    const effectiveLangId = (masterControlState.filters?.languageIds?.length === 1 ? masterControlState.filters.languageIds[0] : null)
+      || masterControlState.filters?.languageId || undefined;
+    
+    console.log(`[FILTER] effectiveLangId=${effectiveLangId}, langId=${masterControlState.filters?.languageId}, langIds=${JSON.stringify(masterControlState.filters?.languageIds)}, actors=${actors.length}`);
       
     const result = VoiceFilterEngine.filter(actors, {
       journey: masterControlState.journey,
       language: masterControlState.filters?.language,
-      languageId: masterControlState.filters?.languageId,
+      languageId: effectiveLangId,
       languages: masterControlState.filters?.languages,
       languageIds: masterControlState.filters?.languageIds,
       gender: masterControlState.filters?.gender,
@@ -753,7 +794,8 @@ export default function Home() {
       });
 
     return () => controller.abort();
-  }, [mounted, searchParamsKey, data]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mounted, searchParamsKey]);
 
   if (!mounted || (!data && isLoading)) {
     return (

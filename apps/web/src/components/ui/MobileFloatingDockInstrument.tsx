@@ -59,7 +59,7 @@ export function MobileFloatingDock() {
       <div className="relative mx-auto max-w-sm">
         {/*  CHRIS-PROTOCOL: Casting Action Trigger (Floating above dock when selection exists) */}
         <AnimatePresence>
-          {hasSelection && !isTelephony && (
+          {hasSelection && (
             <motion.div
               initial={{ y: 20, opacity: 0, scale: 0.8 }}
               animate={{ y: -12, opacity: 1, scale: 1 }}
@@ -81,10 +81,16 @@ export function MobileFloatingDock() {
                 </div>
                 <div className="flex flex-col items-start">
                   <span className="text-[13px] font-bold tracking-widest uppercase leading-none">
-                    <VoiceglotText translationKey="auto.castingdock.proefopname" defaultText="Gratis proefopname" />
+                    {isTelephony 
+                      ? <VoiceglotText translationKey="castingdock.telephony.cta" defaultText="Stem boeken" />
+                      : <VoiceglotText translationKey="auto.castingdock.proefopname" defaultText="Gratis proefopname" />
+                    }
                   </span>
                   <span className="text-[9px] font-medium opacity-70 leading-none mt-1 uppercase tracking-wider">
-                    <VoiceglotText translationKey="auto.castingdock.start_selectie" defaultText="Bevestig selectie" />
+                    {isTelephony
+                      ? <VoiceglotText translationKey="castingdock.telephony.sub" defaultText="Direct bestellen" />
+                      : <VoiceglotText translationKey="auto.castingdock.start_selectie" defaultText="Bevestig selectie" />
+                    }
                   </span>
                 </div>
                 <LucideChevronRight size={18} strokeWidth={3} />

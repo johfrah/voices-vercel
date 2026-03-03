@@ -127,8 +127,13 @@ export const VoicesMasterControlProvider: React.FC<{
         if (saved) savedState = JSON.parse(saved);
       } catch (e) {}
 
-      const journey = initialJourney || (searchParams?.get('journey') as JourneyType) || 
-                     (voicesState?.current_journey && voicesState.current_journey !== 'general' ? voicesState.current_journey as JourneyType : 'video');
+      // 🛡️ CHRIS-PROTOCOL: Journey Resolution Priority (v2.28.1)
+      // When user has explicitly switched journey (current_journey !== 'general'),
+      // prefer that over initialJourney to prevent tab state reset.
+      const userSelectedJourney = voicesState?.current_journey && voicesState.current_journey !== 'general' && voicesState.current_journey !== 'agency'
+        ? voicesState.current_journey as JourneyType
+        : null;
+      const journey = (searchParams?.get('journey') as JourneyType) || userSelectedJourney || initialJourney || 'video';
       
       const journeyId = searchParams?.get('journeyId') ? parseInt(searchParams.get('journeyId')!) : (savedState.journeyId || MarketManager.getJourneyId(journey));
       const targetUsage = SlimmeKassa.getUsageFromJourneyId(journeyId || journey);
@@ -613,7 +618,10 @@ export const VoicesMasterControlProvider: React.FC<{
     setState(prev => {
       const updatedFilters = { ...prev.filters, ...newFilters };
 
-      // 🛡️ CHRIS-PROTOCOL: Auto-sync IDs for Handshake Truth (v2.18.4)
+      // 🛡️ CHRIS-PROTOCOL: Auto-sync IDs for Handshake Truth (v2.28.1)
+      if (newFilters.languageIds && newFilters.languageIds.length > 0 && !newFilters.languageId) {
+        updatedFilters.languageId = newFilters.languageIds[0];
+      }
       if (newFilters.language && !newFilters.languageId) {
         const langId = MarketManager.getLanguageId(newFilters.language);
         if (langId) updatedFilters.languageId = langId;

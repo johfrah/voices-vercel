@@ -887,12 +887,11 @@ async function processActorData(actor: any, slug: string): Promise<Actor> {
 }
 
 export async function getMusicLibrary(category: string = 'music'): Promise<any[]> {
-  // 🛡️ CHRIS-PROTOCOL: Use SDK for stability (v2.14.273)
   const { data: musicMedia, error } = await supabase
     .from('media')
     .select('*')
     .eq('category', category)
-    .limit(50);
+    .limit(100);
 
   if (error) {
     const { ServerWatchdog } = await import('./server-watchdog');
@@ -905,11 +904,22 @@ export async function getMusicLibrary(category: string = 'music'): Promise<any[]
     return [];
   }
 
-  return (musicMedia || []).map(m => ({ 
-    id: m.id.toString(), 
-    title: m.file_name || m.fileName, 
-    preview: m.file_path || m.filePath 
-  }));
+  const storageBase = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/voices/`;
+
+  return (musicMedia || [])
+    .filter(m => {
+      const path = (m.file_path || m.filePath || '').toLowerCase();
+      return path.includes('music/') && path.includes('-preview.mp3');
+    })
+    .map(m => {
+      const filePath = m.file_path || m.filePath || '';
+      return {
+        id: m.id.toString(),
+        title: m.alt_text || m.file_name?.replace('music-', '').replace('-preview.mp3', '').replace(/-/g, ' ') || 'Onbekend',
+        preview: filePath.startsWith('http') ? filePath : `${storageBase}${filePath}`,
+        fileName: m.file_name,
+      };
+    });
 }
 
 export async function getAcademyLesson(id: string): Promise<any> {

@@ -20,6 +20,7 @@ import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import { VoicesLinkInstrument, useVoicesRouter } from '@/components/ui/VoicesLinkInstrument';
 import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
 import { useAuth } from '@/contexts/AuthContext';
+import { useMasterControl } from '@/contexts/VoicesMasterControlContext';
 import toast from 'react-hot-toast';
 
 /**
@@ -34,6 +35,8 @@ export const CastingDock = () => {
   const { playClick } = useSonicDNA();
   const { isAdmin } = useAuth();
   const { t } = useTranslation();
+  const { state: masterState } = useMasterControl();
+  const isTelephony = masterState?.journey === 'telephony';
   const [isGeneratingLink, setIsGeneratingLink] = useState(false);
   const selectedActors = state.selected_actors;
   
@@ -178,10 +181,16 @@ export const CastingDock = () => {
                 <Heart size={18} strokeWidth={2.5} className="group-hover:animate-pulse md:w-5 md:h-5 fill-white/20" />
                 <div className="flex flex-col items-start">
                   <span className="text-[12px] md:text-[14px] font-bold tracking-widest uppercase leading-none">
-                    <VoiceglotText translationKey="auto.castingdock.proefopname" defaultText="Gratis proefopname" />
+                    {isTelephony 
+                      ? <VoiceglotText translationKey="castingdock.telephony.cta" defaultText="Stem boeken" />
+                      : <VoiceglotText translationKey="auto.castingdock.proefopname" defaultText="Gratis proefopname" />
+                    }
                   </span>
                   <span className="text-[9px] md:text-[10px] font-medium opacity-70 leading-none mt-1 uppercase">
-                    <VoiceglotText translationKey="auto.castingdock.start_selectie" defaultText="Bevestig selectie" />
+                    {isTelephony
+                      ? <VoiceglotText translationKey="castingdock.telephony.sub" defaultText="Direct bestellen" />
+                      : <VoiceglotText translationKey="auto.castingdock.start_selectie" defaultText="Bevestig selectie" />
+                    }
                   </span>
                 </div>
                 <LucideChevronRight size={16} strokeWidth={2.5} className="group-hover:translate-x-1 transition-transform md:w-5 md:h-5" />

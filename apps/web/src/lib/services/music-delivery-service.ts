@@ -32,11 +32,18 @@ export class MusicDeliveryService {
       }
 
       // 3. Haal de track details op uit de media tabel
-      // @ts-ignore - Drizzle metadata query
-      const [track] = await db.select().from(media)
-        .where(eq(media.category, 'music'))
-        .where(sql`${media.metadata}->>'legacyId' = ${musicMeta.trackId}`)
+      // 🛡️ CHRIS-PROTOCOL: Match by media.id first (new flow), fallback to legacyId (v2.28.1)
+      let [track] = await db.select().from(media)
+        .where(eq(media.id, parseInt(musicMeta.trackId)))
         .limit(1);
+      
+      if (!track) {
+        // @ts-ignore - Drizzle metadata query (legacy fallback)
+        [track] = await db.select().from(media)
+          .where(eq(media.category, 'music'))
+          .where(sql`${media.metadata}->>'legacyId' = ${musicMeta.trackId}`)
+          .limit(1);
+      }
 
       if (!track) {
         console.error(` [MUSIC DELIVERY] Track ${musicMeta.trackId} not found in database!`);
@@ -49,25 +56,73 @@ export class MusicDeliveryService {
         return;
       }
 
-      // 4. Bepaal welke bestanden geleverd moeten worden
-      const filesToDeliver: string[] = [];
+      // 4. Download WAVs from Supabase Storage and upload to Dropbox Exports
+      const storageBase = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/voices/`;
+      // Order folder name = just the order ID number (e.g. "27342")
+      const orderRef = String(orderId);
+      const trackName = (track as any).altText || (track as any).alt_text || (track as any).fileName || 'muziek';
       
-      // We leveren ALTIJD alle formaten van de gekozen track
-      if (formats['48khz']) filesToDeliver.push(formats['48khz']);
-      if (formats['16khz']) filesToDeliver.push(formats['16khz']);
-      if (formats['8khz']) filesToDeliver.push(formats['8khz']);
+      let deliveredCount = 0;
+      
+      // Get Dropbox access token via OAuth refresh
+      const tokenParams = new URLSearchParams();
+      tokenParams.append('grant_type', 'refresh_token');
+      tokenParams.append('refresh_token', process.env.DROPBOX_REFRESH_TOKEN || '');
+      tokenParams.append('client_id', process.env.DROPBOX_CLIENT_ID || '');
+      tokenParams.append('client_secret', process.env.DROPBOX_CLIENT_SECRET || '');
+      const tokenRes = await fetch('https://api.dropboxapi.com/oauth2/token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: tokenParams
+      });
+      const { access_token: accessToken } = await tokenRes.json();
+      if (!accessToken) {
+        console.error(' [MUSIC DELIVERY] Failed to get Dropbox access token');
+        return { success: false, files: 0 };
+      }
+      
+      for (const [quality, storagePath] of Object.entries(formats)) {
+        const fileName = storagePath.split('/').pop() || `${trackName}-${quality}.wav`;
+        const dropboxPath = `/Voices.be/Projects/Exports/${orderRef}/music/${fileName}`;
+        
+        try {
+          // Download from Supabase
+          const wavRes = await fetch(`${storageBase}${storagePath}`);
+          if (!wavRes.ok) {
+            console.error(` [MUSIC DELIVERY] Failed to download ${quality}: ${wavRes.status}`);
+            continue;
+          }
+          const wavBuffer = Buffer.from(await wavRes.arrayBuffer());
+          
+          // Upload to Dropbox
+          const uploadRes = await fetch('https://content.dropboxapi.com/2/files/upload', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${accessToken}`,
+              'Content-Type': 'application/octet-stream',
+              'Dropbox-API-Arg': JSON.stringify({
+                path: dropboxPath,
+                mode: 'overwrite',
+                autorename: false
+              })
+            },
+            body: wavBuffer
+          });
+          const uploadData = await uploadRes.json();
+          
+          if (uploadData.id) {
+            console.log(` [MUSIC DELIVERY] ✅ ${quality}: ${fileName} → ${dropboxPath}`);
+            deliveredCount++;
+          } else {
+            console.error(` [MUSIC DELIVERY] ❌ ${quality} upload failed:`, uploadData.error_summary);
+          }
+        } catch (err) {
+          console.error(` [MUSIC DELIVERY] ❌ ${quality} delivery error:`, err);
+        }
+      }
 
-      // 5. Push naar Dropbox via de Service
-      const dropbox = DropboxService.getInstance();
-      await dropbox.syncToControlFolder(
-        orderId.toString(),
-        `${user.first_name || ''} ${user.last_name || ''}`.trim() || 'Klant',
-        `Muzieklicentie - ${track.altText || track.fileName}`
-      );
-
-      console.log(` [MUSIC DELIVERY] Successfully pushed ${filesToDeliver.length} files to Dropbox for Order #${orderId}.`);
-
-      return { success: true, files: filesToDeliver.length };
+      console.log(` [MUSIC DELIVERY] Delivered ${deliveredCount} music files for Order #${orderId}.`);
+      return { success: deliveredCount > 0, files: deliveredCount };
 
     } catch (err) {
       console.error(` [MUSIC DELIVERY] Failed to deliver music for Order #${orderId}:`, err);
