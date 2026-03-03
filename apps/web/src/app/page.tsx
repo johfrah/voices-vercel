@@ -403,7 +403,7 @@ function HomeContent({
               <ContainerInstrument plain className="mb-20 text-center max-w-4xl mx-auto space-y-8 px-4 md:px-6">
                 <HeadingInstrument level={1} className="text-6xl md:text-8xl font-light tracking-tighter leading-[0.9] text-va-black">
                   <VoiceglotText 
-                    translationKey={`home.hero.title_v4_${masterControlState.journey}_${marketCode}`} 
+                    translationKey={`home.hero.title_v5_runtime_${masterControlState.journey}_${marketCode}`} 
                     defaultText={heroTitleDefault}
                     components={{
                       highlight: (children) => (

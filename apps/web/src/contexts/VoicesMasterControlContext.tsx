@@ -436,7 +436,11 @@ export const VoicesMasterControlProvider: React.FC<{
 
   useEffect(() => {
     const urlState = detectStateFromUrl(pathname);
-    if (urlState.journey || urlState.step !== state.currentStep) {
+    const hasLocaleLanguageChange =
+      !!urlState.language &&
+      (urlState.language !== state.filters.language ||
+        urlState.languageId !== state.filters.languageId);
+    if (urlState.journey || urlState.step !== state.currentStep || hasLocaleLanguageChange) {
       const journey = urlState.journey || state.journey;
       const journeyId = MarketManager.getJourneyId(journey);
       setState(prev => ({
@@ -458,7 +462,7 @@ export const VoicesMasterControlProvider: React.FC<{
         }
       }));
     }
-  }, [pathname, detectStateFromUrl, state.currentStep]);
+  }, [pathname, detectStateFromUrl, state.currentStep, state.filters.language, state.filters.languageId]);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
