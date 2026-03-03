@@ -2,6 +2,7 @@
 
 import { ContainerInstrument, HeadingInstrument, SectionInstrument, TextInstrument } from "@/components/ui/LayoutInstruments";
 import { VoiceglotImage } from "@/components/ui/VoiceglotImage";
+import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
 import { Suspense, useEffect, useMemo, useState } from 'react';
 import nextDynamic from "next/dynamic";
@@ -202,10 +203,10 @@ export default function LightPage() {
         <ContainerInstrument plain className="max-w-[1440px] mx-auto px-4 md:px-6">
           <div className="mb-16 text-center max-w-4xl mx-auto space-y-6">
             <HeadingInstrument level={1} className="text-5xl md:text-7xl font-light tracking-tighter leading-none text-va-black">
-              Vind de perfecte <span className="text-primary italic">stem</span>.
+              <VoiceglotText translationKey="light.hero.find_perfect" defaultText="Vind de perfecte" /> <span className="text-primary italic"><VoiceglotText translationKey="light.hero.voice_word" defaultText="stem" /></span>.
             </HeadingInstrument>
             <TextInstrument className="text-lg md:text-xl font-light text-va-black/40">
-              Beluister onze stemmen en stuur een mailtje om direct te boeken.
+              <VoiceglotText translationKey="light.hero.subtitle" defaultText="Beluister onze stemmen en stuur een mailtje om direct te boeken." />
             </TextInstrument>
           </div>
 

@@ -12,6 +12,45 @@ import { createClient } from "@supabase/supabase-js";
 
 export const dynamic = 'force-dynamic';
 
+const RECENT_ROWS_CHUNK = 500;
+
+async function collectRecentUniqueKeys(
+  supabase: any,
+  uniqueOffset: number,
+  uniqueLimit: number,
+) {
+  const seen = new Set<string>();
+  const uniqueKeys: string[] = [];
+  const targetUniqueCount = uniqueOffset + uniqueLimit + 1; // +1 om hasMore exact te bepalen
+  let rowOffset = 0;
+
+  while (uniqueKeys.length < targetUniqueCount) {
+    const { data, error } = await supabase
+      .from('translations')
+      .select('translation_key, updated_at')
+      .order('updated_at', { ascending: false })
+      .range(rowOffset, rowOffset + RECENT_ROWS_CHUNK - 1);
+
+    if (error) throw error;
+    if (!data || data.length === 0) break;
+
+    for (const row of (data || []) as any[]) {
+      const key = String(row?.translation_key || '');
+      if (!key || seen.has(key)) continue;
+      seen.add(key);
+      uniqueKeys.push(key);
+      if (uniqueKeys.length >= targetUniqueCount) break;
+    }
+
+    if (data.length < RECENT_ROWS_CHUNK) break;
+    rowOffset += RECENT_ROWS_CHUNK;
+  }
+
+  const pagedKeys = uniqueKeys.slice(uniqueOffset, uniqueOffset + uniqueLimit);
+  const hasMore = uniqueKeys.length > uniqueOffset + uniqueLimit;
+  return { pagedKeys, hasMore };
+}
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -29,34 +68,23 @@ export async function GET(request: Request) {
       let hasMore = false;
 
       if (sort === 'recent_translated') {
-        // CHRIS-PROTOCOL: Sort by most recently updated translations
-        // 1. Haal de unieke keys op die het laatst zijn bijgewerkt in de translations tabel
-        const { data: recentTrans, error: transErr } = await supabase
-          .from('translations')
-          .select('translation_key, updated_at')
-          .order('updated_at', { ascending: false })
-          .range(offset, offset + limit - 1);
-
-        if (transErr) throw transErr;
-
-        if (!recentTrans || recentTrans.length === 0) {
+        // CHRIS-PROTOCOL: Pagineer op unieke keys (niet op translation-rows)
+        const { pagedKeys, hasMore: hasMoreUniqueKeys } = await collectRecentUniqueKeys(supabase, offset, limit);
+        if (pagedKeys.length === 0) {
           return NextResponse.json({ translations: [], page, limit, hasMore: false });
         }
 
-        // Unieke keys behouden (in volgorde van verschijning)
-        const uniqueKeys = [...new Set(recentTrans.map(t => t.translation_key))];
-        
-        // 2. Haal de bijbehorende registry items op
+        // Haal de bijbehorende registry items op
         const { data: items, error: regErr } = await supabase
           .from('translation_registry')
           .select('*')
-          .in('string_hash', uniqueKeys);
+          .in('string_hash', pagedKeys);
 
         if (regErr) throw regErr;
 
-        // Sorteer de items terug in de volgorde van de recentTrans
-        registryItems = uniqueKeys.map(key => items?.find(i => i.string_hash === key)).filter(Boolean);
-        hasMore = recentTrans.length === limit;
+        // Sorteer de items terug in de volgorde van de unieke recent keys
+        registryItems = pagedKeys.map(key => items?.find(i => i.string_hash === key)).filter(Boolean);
+        hasMore = hasMoreUniqueKeys;
       } else {
         // Standaard: Sorteer op last_seen in de registry
         const { data, error: regErr } = await supabase

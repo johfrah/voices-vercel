@@ -825,8 +825,12 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
           <Suspense fallback={null}><LiquidBackground /></Suspense>
           <ContainerInstrument className="py-32 max-w-4xl mx-auto">
             <header className="mb-16 text-center">
-              <HeadingInstrument level={1} className="text-5xl font-light tracking-tighter mb-4">Doe je mee?</HeadingInstrument>
-              <TextInstrument className="text-va-black/40 font-light">Laat ons weten welke workshop je interesseert.</TextInstrument>
+              <HeadingInstrument level={1} className="text-5xl font-light tracking-tighter mb-4">
+                <VoiceglotText translationKey="studio.workshop_interest.title" defaultText="Doe je mee?" />
+              </HeadingInstrument>
+              <TextInstrument className="text-va-black/40 font-light">
+                <VoiceglotText translationKey="studio.workshop_interest.subtitle" defaultText="Laat ons weten welke workshop je interesseert." />
+              </TextInstrument>
             </header>
             <WorkshopInterestForm />
           </ContainerInstrument>
@@ -1075,8 +1079,12 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
                             className="group p-10 bg-white hover:bg-va-black transition-all duration-700 rounded-[20px] shadow-aura hover:shadow-aura-lg border border-black/5"
                           >
                             <ContainerInstrument className="flex justify-between items-start mb-12">
-                              <ContainerInstrument className="bg-va-black/5 group-hover:bg-white/10 text-va-black group-hover:text-white text-[11px] font-bold px-3 py-1 rounded-full tracking-[0.2em] uppercase transition-colors ">ACADEMY</ContainerInstrument>
-                              <TextInstrument className="text-[11px] font-bold text-va-black/30 group-hover:text-white/30 tracking-[0.2em] uppercase transition-colors ">Les {lesson.display_order || lesson.id}</TextInstrument>
+                              <ContainerInstrument className="bg-va-black/5 group-hover:bg-white/10 text-va-black group-hover:text-white text-[11px] font-bold px-3 py-1 rounded-full tracking-[0.2em] uppercase transition-colors ">
+                                <VoiceglotText translationKey="academy.label.badge" defaultText="ACADEMY" />
+                              </ContainerInstrument>
+                              <TextInstrument className="text-[11px] font-bold text-va-black/30 group-hover:text-white/30 tracking-[0.2em] uppercase transition-colors ">
+                                <VoiceglotText translationKey="academy.lesson.label_prefix" defaultText="Les" /> {lesson.display_order || lesson.id}
+                              </TextInstrument>
                             </ContainerInstrument>
                             <HeadingInstrument level={3} className="text-4xl font-light tracking-tighter leading-[0.9] mb-8 text-va-black group-hover:text-white transition-colors">{lesson.title}</HeadingInstrument>
                             <TextInstrument className="text-va-black/40 group-hover:text-white/40 text-[15px] mb-8 font-light leading-relaxed">{lesson.description}</TextInstrument>
@@ -1158,8 +1166,12 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
             <Suspense fallback={null}><LiquidBackground /></Suspense>
             <ContainerInstrument className="py-32 max-w-4xl mx-auto">
               <header className="mb-16 text-center">
-                <HeadingInstrument level={1} className="text-5xl font-light tracking-tighter mb-4">Doe je mee?</HeadingInstrument>
-                <TextInstrument className="text-va-black/40 font-light">Laat ons weten welke workshop je interesseert.</TextInstrument>
+                <HeadingInstrument level={1} className="text-5xl font-light tracking-tighter mb-4">
+                  <VoiceglotText translationKey="studio.workshop_interest.title" defaultText="Doe je mee?" />
+                </HeadingInstrument>
+                <TextInstrument className="text-va-black/40 font-light">
+                  <VoiceglotText translationKey="studio.workshop_interest.subtitle" defaultText="Laat ons weten welke workshop je interesseert." />
+                </TextInstrument>
               </header>
               <WorkshopInterestForm />
             </ContainerInstrument>
@@ -1210,10 +1222,10 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
               <ContainerInstrument className="max-w-7xl mx-auto px-6 py-32 space-y-32">
                 <header className="text-center space-y-8">
                   <ContainerInstrument className="inline-block bg-primary/20 text-primary text-[13px] font-bold px-4 py-1.5 rounded-full tracking-[0.2em] uppercase border border-primary/20">
-                    Johfrai AI World
+                    <VoiceglotText translationKey="johfrai.hero.badge" defaultText="Johfrai AI World" />
                   </ContainerInstrument>
                   <HeadingInstrument level={1} className="text-7xl md:text-9xl font-light tracking-tighter leading-none text-white">
-                    The Future of <span className="text-primary italic">Voice</span>
+                    <VoiceglotText translationKey="johfrai.hero.title_prefix" defaultText="The Future of" /> <span className="text-primary italic"><VoiceglotText translationKey="johfrai.hero.title_voice" defaultText="Voice" /></span>
                   </HeadingInstrument>
                 </header>
                 
@@ -1771,15 +1783,23 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
                     className="group p-10 bg-white hover:bg-va-black transition-all duration-700 rounded-[20px] shadow-aura hover:shadow-aura-lg border border-black/5"
                   >
                     <ContainerInstrument className="flex justify-between items-start mb-12">
-                      <ContainerInstrument className="bg-va-black/5 group-hover:bg-white/10 text-va-black group-hover:text-white text-[11px] font-bold px-3 py-1 rounded-full tracking-[0.2em] uppercase transition-colors ">ACADEMY</ContainerInstrument>
-                      <TextInstrument className="text-[11px] font-bold text-va-black/30 group-hover:text-white/30 tracking-[0.2em] uppercase transition-colors ">Les {lesson.display_order || lesson.id}</TextInstrument>
+                      <ContainerInstrument className="bg-va-black/5 group-hover:bg-white/10 text-va-black group-hover:text-white text-[11px] font-bold px-3 py-1 rounded-full tracking-[0.2em] uppercase transition-colors ">
+                        <VoiceglotText translationKey="academy.label.badge" defaultText="ACADEMY" />
+                      </ContainerInstrument>
+                      <TextInstrument className="text-[11px] font-bold text-va-black/30 group-hover:text-white/30 tracking-[0.2em] uppercase transition-colors ">
+                        <VoiceglotText translationKey="academy.lesson.label_prefix" defaultText="Les" /> {lesson.display_order || lesson.id}
+                      </TextInstrument>
                     </ContainerInstrument>
                     <HeadingInstrument level={3} className="text-4xl font-light tracking-tighter leading-[0.9] mb-8 text-va-black group-hover:text-white transition-colors">{lesson.title}</HeadingInstrument>
                     <TextInstrument className="text-va-black/40 group-hover:text-white/40 text-[15px] mb-8 font-light leading-relaxed">{lesson.description}</TextInstrument>
                     <Link href={`/academy/lesson/${lesson.display_order || lesson.id}`} className="mt-auto flex justify-between items-end">
                       <ContainerInstrument>
-                        <TextInstrument className="text-[11px] text-va-black/40 group-hover:text-white/40 font-bold tracking-[0.2em] uppercase mb-1 transition-colors ">Start nu</TextInstrument>
-                        <TextInstrument as="span" className="text-2xl font-light tracking-tighter text-va-black group-hover:text-white transition-colors">Bekijk les</TextInstrument>
+                        <TextInstrument className="text-[11px] text-va-black/40 group-hover:text-white/40 font-bold tracking-[0.2em] uppercase mb-1 transition-colors ">
+                          <VoiceglotText translationKey="action.start_now" defaultText="Start nu" />
+                        </TextInstrument>
+                        <TextInstrument as="span" className="text-2xl font-light tracking-tighter text-va-black group-hover:text-white transition-colors">
+                          <VoiceglotText translationKey="action.view_lesson" defaultText="Bekijk les" />
+                        </TextInstrument>
                       </ContainerInstrument>
                       <ButtonInstrument className="!bg-va-black group-hover:!bg-white group-hover:!text-va-black !rounded-[10px] !px-6 transition-all">
                         <Play strokeWidth={1.5} size={16} fill="currentColor" />
@@ -1834,7 +1854,9 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
                 </ContainerInstrument>
                 <ContainerInstrument className="flex flex-col items-center gap-4">
                   <TextInstrument className="text-8xl font-extralight tracking-tighter text-va-black leading-none">{price}</TextInstrument>
-                  <TextInstrument className="text-[11px] font-bold text-va-black/30 uppercase tracking-[0.2em]">Eenmalige investering (excl. BTW)</TextInstrument>
+                  <TextInstrument className="text-[11px] font-bold text-va-black/30 uppercase tracking-[0.2em]">
+                    <VoiceglotText translationKey="academy.pricing.one_time_investment" defaultText="Eenmalige investering (excl. BTW)" />
+                  </TextInstrument>
                 </ContainerInstrument>
                 <ContainerInstrument className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-12 border-t border-black/[0.03]">
                   {features.map((feature, i) => (
@@ -1847,7 +1869,9 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
                   ))}
                 </ContainerInstrument>
                 <ContainerInstrument className="pt-12">
-                  <ButtonInstrument as={Link} href="/checkout?journey=academy" className="va-btn-pro !rounded-[10px] px-20 py-8 text-xl shadow-aura-lg hover:scale-105 transition-transform duration-500 uppercase">Nu inschrijven</ButtonInstrument>
+                  <ButtonInstrument as={Link} href="/checkout?journey=academy" className="va-btn-pro !rounded-[10px] px-20 py-8 text-xl shadow-aura-lg hover:scale-105 transition-transform duration-500 uppercase">
+                    <VoiceglotText translationKey="academy.cta.enroll_now" defaultText="Nu inschrijven" />
+                  </ButtonInstrument>
                 </ContainerInstrument>
               </BentoCard>
             </ContainerInstrument>
@@ -1867,7 +1891,9 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
                 <ContainerInstrument className="lg:col-span-4 space-y-6">
                   <ContainerInstrument className="inline-flex items-center gap-3 px-4 py-1.5 bg-va-black/5 rounded-full">
                     <Info strokeWidth={1.5} size={16} className="text-va-black/40" />
-                    <TextInstrument className="text-[11px] font-bold tracking-[0.2em] text-va-black/40 uppercase">Support</TextInstrument>
+                    <TextInstrument className="text-[11px] font-bold tracking-[0.2em] text-va-black/40 uppercase">
+                      <VoiceglotText translationKey="common.support" defaultText="Support" />
+                    </TextInstrument>
                   </ContainerInstrument>
                   {title && <HeadingInstrument level={2} className="text-5xl font-light tracking-tighter leading-none text-va-black">{title}</HeadingInstrument>}
                 </ContainerInstrument>

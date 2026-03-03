@@ -1092,17 +1092,37 @@ export async function getTranslationsServer(lang: string): Promise<Record<string
   try {
     let effectiveLang = targetLang;
     let data: any[] = [];
-    for (const candidate of localeCandidates) {
-      const response = await supabase
-        .from('translations')
-        .select('translation_key, translated_text, original_text')
-        .eq('lang', candidate)
-        .limit(5000); // 🛡️ Full multilingual registry coverage
-      if (response.error) {
-        throw response.error;
+    const fetchAllRowsForLocale = async (candidate: string) => {
+      const rows: any[] = [];
+      const pageSize = 1000;
+      let offset = 0;
+
+      while (true) {
+        const response = await supabase
+          .from('translations')
+          .select('translation_key, translated_text, original_text')
+          .eq('lang', candidate)
+          .range(offset, offset + pageSize - 1);
+
+        if (response.error) {
+          throw response.error;
+        }
+
+        const batch = response.data || [];
+        if (batch.length === 0) break;
+        rows.push(...batch);
+
+        if (batch.length < pageSize) break;
+        offset += pageSize;
       }
-      if ((response.data?.length || 0) > 0) {
-        data = response.data || [];
+
+      return rows;
+    };
+
+    for (const candidate of localeCandidates) {
+      const rows = await fetchAllRowsForLocale(candidate);
+      if (rows.length > 0) {
+        data = rows;
         effectiveLang = candidate;
         break;
       }
