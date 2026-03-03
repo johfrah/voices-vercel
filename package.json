@@ -20,7 +20,8 @@
     "db:generate": "npx drizzle-kit generate --config packages/database/drizzle.config.ts",
     "db:migrate": "npx drizzle-kit migrate --config packages/database/drizzle.config.ts",
     "db:studio": "npx drizzle-kit studio --config packages/database/drizzle.config.ts",
-    "prepare": "husky || true"
+    "prepare": "husky || true",
+    "voiceglot:oneshot": "cd apps/web && npm run voiceglot:oneshot"
   },
   "keywords": [],
   "author": "",

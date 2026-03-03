@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import {
   getVoiceglotCoverageSnapshot,
+  VOICEGLOT_ALIAS_TO_CANONICAL,
   VOICEGLOT_TARGET_LANGUAGES,
 } from '@/lib/services/voiceglot-heal-service';
 
@@ -34,6 +35,8 @@ export async function GET() {
     const coverage = await getVoiceglotCoverageSnapshot(VOICEGLOT_TARGET_LANGUAGES);
     return NextResponse.json({
       success: true,
+      target_languages: VOICEGLOT_TARGET_LANGUAGES,
+      alias_to_canonical: VOICEGLOT_ALIAS_TO_CANONICAL,
       cron_health: cronHealthRows?.[0] || null,
       coverage,
     });

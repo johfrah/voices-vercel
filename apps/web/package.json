@@ -23,7 +23,8 @@
     "test:unit": "vitest run",
     "test:e2e": "playwright test",
     "test:all": "npm run audit:forensic && npm run test:unit && npm run test:e2e",
-    "admin:link": "tsx src/scripts/generate-admin-link.ts"
+    "admin:link": "tsx src/scripts/generate-admin-link.ts",
+    "voiceglot:oneshot": "tsx scripts/voiceglot-oneshot-heal.ts"
   },
   "dependencies": {
     "@capacitor/core": "^8.0.2",

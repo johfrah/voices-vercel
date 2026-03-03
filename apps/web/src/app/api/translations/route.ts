@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextRequest, NextResponse } from 'next/server';
-import { getLocaleFallbacks, normalizeLocale } from '@/lib/system/locale-utils';
+import { getTranslationLocaleCandidates, normalizeLocale } from '@/lib/system/locale-utils';
 
 //  CHRIS-PROTOCOL: SDK fallback for stability (v2.14.273)
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
   const targetLang = normalizeLocale(requestedLang);
 
   try {
-    const localeCandidates = getLocaleFallbacks(targetLang);
+    const localeCandidates = getTranslationLocaleCandidates(targetLang, targetLang);
     let effectiveLang = targetLang;
     let localeLocked = false;
     const mergedRows = new Map<string, {
