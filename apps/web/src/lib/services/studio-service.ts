@@ -116,6 +116,9 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
     acc[wid].push({
       id: e.id,
       date: e.date,
+      start_time: e.start_time || null,
+      end_time: e.end_time || null,
+      price: e.edition_price || null,
       location: e.location_id ? { 
         id: e.location_id, name: e.location_name, city: e.location_city, 
         address: e.location_address, map_url: e.map_url, access_instructions: e.access_instructions 

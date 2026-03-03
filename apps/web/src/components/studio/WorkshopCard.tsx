@@ -268,7 +268,7 @@ export const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onUpdate }
                       {mounted ? (
                         <VoiceglotText 
                           translationKey={`studio.workshop.${workshop.id}.edition.${edition.id}.time`} 
-                          defaultText={new Date(edition.date).toLocaleTimeString('nl-BE', { hour: '2-digit', minute: '2-digit' })} 
+                          defaultText={edition.start_time ? edition.start_time.substring(0, 5) : new Date(edition.date).toLocaleTimeString('nl-BE', { hour: '2-digit', minute: '2-digit' })} 
                         />
                       ) : '...'}
                     </TextInstrument>
