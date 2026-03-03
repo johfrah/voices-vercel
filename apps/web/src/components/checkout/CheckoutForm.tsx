@@ -39,6 +39,13 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
   const market = React.useMemo(() => {
     return MarketManager.getCurrentMarket();
   }, []);
+  const localePrefix = typeof window !== 'undefined'
+    ? (window.location.pathname.match(/^\/(fr|en|nl|de|es|it|pt)(?=\/|$)/i)?.[0] || '')
+    : '';
+  const isStudioJourney = state.journey === 'studio'
+    || !!state.editionId
+    || (state.items || []).some((item: any) => item?.type === 'workshop_edition');
+  const authRedirectPath = isStudioJourney ? `${localePrefix}/studio/checkout` : `${localePrefix}/checkout`;
 
   const [formData, setFormData] = useState({
     ...state.customer,
@@ -83,7 +90,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
       const response = await fetch('/api/auth/send-magic-link/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: modalEmail, redirect: '/checkout', language: normalizeLocale(language) }),
+        body: JSON.stringify({ email: modalEmail, redirect: authRedirectPath, language: normalizeLocale(language) }),
       });
 
       const result = await response.json();

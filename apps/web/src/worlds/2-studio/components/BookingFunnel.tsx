@@ -121,7 +121,7 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
 
       setTimeout(() => {
         setIsBooking(false);
-        router.push('/checkout');
+        router.push('/studio/checkout');
       }, 800);
     } catch (error) {
       console.error('[BookingFunnel] Error during booking:', error);

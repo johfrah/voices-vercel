@@ -12,6 +12,7 @@ import {
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useCheckout } from '@/contexts/CheckoutContext';
 import { VoicesLink as Link } from '@/components/ui/VoicesLink';
+import { usePathname, useRouter } from 'next/navigation';
 
 import { ArrowLeft, Edit2, ShoppingCart } from 'lucide-react';
 import { CheckoutForm } from '@/components/checkout/CheckoutForm';
@@ -26,6 +27,20 @@ const LiquidBackground = nextDynamic(() => import('@/components/ui/LiquidBackgro
  */
 export default function CheckoutPageClient() {
   const { state, setJourney, isHydrated } = useCheckout();
+  const pathname = usePathname();
+  const router = useRouter();
+  const hasWorkshopItem = useMemo(
+    () => (state.items || []).some((item: any) => item?.type === 'workshop_edition'),
+    [state.items]
+  );
+  const isStudioJourney = state.journey === 'studio' || !!state.editionId || hasWorkshopItem;
+  const localePrefix = useMemo(() => {
+    const match = pathname?.match(/^\/(fr|en|nl|de|es|it|pt)(?=\/|$)/i);
+    return match ? `/${match[1].toLowerCase()}` : '';
+  }, [pathname]);
+  const backPath = isStudioJourney ? `${localePrefix}/studio` : `${localePrefix}/agency`;
+  const cartPath = isStudioJourney ? `${localePrefix}/studio/cart` : `${localePrefix}/cart`;
+  const studioCheckoutPath = `${localePrefix}/studio/checkout`;
   
   const searchParams = useMemo(() => {
     if (typeof window === 'undefined') return null;
@@ -40,6 +55,15 @@ export default function CheckoutPageClient() {
       setJourney('studio', parseInt(editionId));
     }
   }, [searchParams, setJourney]);
+
+  useEffect(() => {
+    if (!isHydrated || !pathname) return;
+    const isCheckoutPath = pathname.includes('/checkout');
+    const isStudioCheckoutPath = pathname.includes('/studio/checkout');
+    if (isStudioJourney && isCheckoutPath && !isStudioCheckoutPath) {
+      router.replace(studioCheckoutPath);
+    }
+  }, [isHydrated, isStudioJourney, pathname, router, studioCheckoutPath]);
 
   if (!isHydrated) return <LoadingScreenInstrument />;
 
@@ -59,7 +83,7 @@ export default function CheckoutPageClient() {
               <VoiceglotText  translationKey="checkout.empty.text" defaultText="Je hebt nog geen stemmen geselecteerd voor je project." />
             </TextInstrument>
           </ContainerInstrument>
-          <ButtonInstrument as={Link} href="/agency" className="relative z-[12]">
+          <ButtonInstrument as={Link} href={backPath} className="relative z-[12]">
             <VoiceglotText  translationKey="checkout.empty.cta" defaultText="Ontdek stemmen" />
           </ButtonInstrument>
         </ContainerInstrument>
@@ -75,11 +99,14 @@ export default function CheckoutPageClient() {
           <ContainerInstrument className="space-y-4 w-full flex flex-col items-center">
             <OrderStepsInstrument currentStep="checkout" className="opacity-100 mb-4" />
             <Link  
-              href="/agency" 
+              href={backPath} 
               className="inline-flex items-center gap-2 text-[15px] font-light tracking-widest text-va-black/40 hover:text-primary transition-colors"
             >
               <ArrowLeft size={14} strokeWidth={1.5} className="opacity-40" /> 
-              <VoiceglotText  translationKey="checkout.back_to_agency" defaultText="Verder casten" />
+              <VoiceglotText
+                translationKey={isStudioJourney ? "checkout.back_to_studio" : "checkout.back_to_agency"}
+                defaultText={isStudioJourney ? "Terug naar studio" : "Verder casten"}
+              />
             </Link>
           </ContainerInstrument>
         </ContainerInstrument>
@@ -92,7 +119,7 @@ export default function CheckoutPageClient() {
                 <HeadingInstrument level={3} className="text-2xl font-light tracking-tight">
                   Jouw bestelling
                 </HeadingInstrument>
-                <Link href="/cart" className="text-[11px] font-bold uppercase tracking-widest text-primary hover:underline">
+                <Link href={cartPath} className="text-[11px] font-bold uppercase tracking-widest text-primary hover:underline">
                   Aanpassen
                 </Link>
               </div>
@@ -103,7 +130,7 @@ export default function CheckoutPageClient() {
                   <HeadingInstrument level={3} className="text-2xl font-light tracking-tight">
                     Overzicht
                   </HeadingInstrument>
-                  <Link href="/cart" className="text-[11px] font-bold uppercase tracking-widest text-va-black/40 hover:text-primary transition-colors flex items-center gap-1.5">
+                  <Link href={cartPath} className="text-[11px] font-bold uppercase tracking-widest text-va-black/40 hover:text-primary transition-colors flex items-center gap-1.5">
                     <Edit2 size={12} />
                     Aanpassen
                   </Link>

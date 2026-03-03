@@ -189,6 +189,14 @@ export const PricingSummary: React.FC<{
   const isSubscription = state.usage === 'subscription';
   const isCartPage = typeof window !== 'undefined' && window.location.pathname.includes('/cart');
   const isCheckoutPage = typeof window !== 'undefined' && window.location.pathname.includes('/checkout');
+  const localePrefix = typeof window !== 'undefined'
+    ? (window.location.pathname.match(/^\/(fr|en|nl|de|es|it|pt)(?=\/|$)/i)?.[0] || '')
+    : '';
+  const isStudioJourney = state.journey === 'studio'
+    || !!state.editionId
+    || (state.items || []).some((item: any) => item?.type === 'workshop_edition');
+  const studioCartPath = `${localePrefix}/studio/cart`;
+  const defaultCartPath = `${localePrefix}/cart`;
   // 🛡️ CHRIS-PROTOCOL: Defensive guard for items array (v2.15.065)
   const hasContextData = (state.items?.length || 0) > 0 || state.selectedActor || state.briefing || isSubscription || state.editionId;
   
@@ -248,176 +256,228 @@ export const PricingSummary: React.FC<{
             )}
 
             {/* 🛡️ CHRIS-PROTOCOL: Defensive guard for items array (v2.15.065) */}
-            {(state.items?.length || 0) > 0 && (state.items || []).map((itemObj, idx) => (
-              <ContainerInstrument 
-                key={itemObj.id || idx} 
-                onClick={() => !isCartPage && setSelectedItem(itemObj)}
-                className={cn(
-                  "flex items-start gap-6 p-8 bg-white rounded-[32px] border border-va-black/5 shadow-aura group relative transition-all",
-                  !isCartPage && "cursor-pointer hover:border-primary/20 active:scale-[0.98]"
-                )}
-              >
-                {/* Afbeelding links uitgelijnd (LAYA-MANDAAT) */}
-                <ContainerInstrument className="w-16 h-16 rounded-[20px] overflow-hidden bg-va-off-white relative border border-va-black/5 shrink-0 shadow-sm">
-                  <Image  
-                    src={itemObj.actor?.photo_url || VOICES_CONFIG.assets.placeholders.voice} 
-                    alt={itemObj.actor?.display_name || 'Item'} 
-                    fill 
-                    sizes="64px"
-                    className="object-cover" 
-                  />
-                </ContainerInstrument>
+            {(state.items?.length || 0) > 0 && (state.items || []).map((itemObj, idx) => {
+              const isWorkshopItem = itemObj.type === 'workshop_edition';
+              const itemImage = isWorkshopItem
+                ? '/icon-workshop.svg'
+                : (itemObj.actor?.photo_url || VOICES_CONFIG.assets.placeholders.voice);
+              const itemTitle = itemObj.actor?.display_name || itemObj.name || (isWorkshopItem ? 'Workshop' : 'Stemopname');
 
-                {/* Uitleg, prijs en deleteknop rechts (LAYA-MANDAAT) */}
-                <ContainerInstrument className="flex flex-1 items-center justify-between gap-4 min-w-0">
-                  <ContainerInstrument className="min-w-0 flex-1">
-                    <HeadingInstrument level={4} className="font-light text-xl text-va-black truncate tracking-tight">
-                      {itemObj.actor?.display_name || itemObj.name || 'Stemopname'}
-                    </HeadingInstrument>
-                    <div className="text-[13px] leading-relaxed text-va-black/40 font-light mt-1">
-                      <div className="flex flex-col gap-1">
-                        <span className="font-medium text-va-black/60">
-                          {itemObj.usage === 'commercial' ? (
-                            Array.isArray(itemObj.media) 
-                              ? itemObj.media.map((m: string) => MarketManager.getMediaLabel(m)).join(' • ')
-                              : MarketManager.getMediaLabel(itemObj.media)
-                          ) : MarketManager.getUsageLabel(itemObj.usage)}
-                        </span>
-                        {itemObj.usage === 'commercial' && (
-                          <span className="text-[11px] uppercase tracking-widest opacity-70">
-                            {MarketManager.getCountryLabel(itemObj.country) || t('common.country.be', 'België')}
-                          </span>
-                        )}
-                      </div>
-                      
-                      {isCartPage && (
-                        <div className="mt-6 space-y-6">
-                          {/* Script Preview */}
-                          {(itemObj.script || itemObj.briefing) && (
-                            <div className="space-y-2">
-                              <LabelInstrument className="text-[10px] uppercase tracking-widest text-va-black/30 font-bold ml-0">
-                                Ingevoerde tekst
-                              </LabelInstrument>
-                              <div className="p-6 bg-va-off-white/40 rounded-[24px] border border-va-black/[0.03] italic text-va-black/80 relative group/script-preview text-[15px] leading-relaxed">
-                                <div className="absolute -top-2 -left-2 bg-white rounded-full p-1.5 shadow-sm border border-va-black/5">
-                                  <FileText size={12} className="text-primary" />
-                                </div>
-                                &quot;{itemObj.script || itemObj.briefing}&quot;
-                              </div>
-                            </div>
-                          )}
-                          
-                          {/* Delivery & Pricing Grid */}
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4 border-t border-va-black/[0.03]">
-                            {/* Delivery Date */}
-                            <div className="space-y-2">
-                              <LabelInstrument className="text-[10px] uppercase tracking-widest text-va-black/30 font-bold ml-0">
-                                Levering
-                              </LabelInstrument>
-                              {(() => {
-                                const delivery = calculateDeliveryDate({
-                                  delivery_days_min: itemObj.actor?.delivery_days_min || 1,
-                                  delivery_days_max: itemObj.actor?.delivery_days_max || 3,
-                                  cutoff_time: itemObj.actor?.cutoff_time || '18:00',
-                                  availability: itemObj.actor?.availability || []
-                                });
-                                return (
-                                  <div className="inline-flex items-center gap-2 px-3 py-2 bg-green-500/5 border border-green-500/10 rounded-xl w-fit">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-                                    <span className="text-[12px] font-bold text-green-600/80 uppercase tracking-wider">
-                                      {delivery.formatted}
-                                    </span>
-                                  </div>
-                                );
-                              })()}
-                            </div>
-
-                            {/* Price Breakdown */}
-                            {itemObj.pricing && (
-                              <div className="space-y-3">
-                                <LabelInstrument className="text-[10px] uppercase tracking-widest text-va-black/30 font-bold ml-0">
-                                  Prijsopbouw (excl. BTW)
-                                </LabelInstrument>
-                                <div className="space-y-1.5">
-                                  <div className="flex justify-between text-[13px] text-va-black/60">
-                                    <span>Basistarief</span>
-                                    <span className="font-medium">€ {(itemObj.pricing.base ?? 0).toFixed(2)}</span>
-                                  </div>
-                                  {(itemObj.pricing.wordSurcharge ?? 0) > 0 && (
-                                    <div className="flex justify-between text-[13px] text-va-black/60">
-                                      <span>Extra woorden/verwerking</span>
-                                      <span className="font-medium">+ € {(itemObj.pricing.wordSurcharge ?? 0).toFixed(2)}</span>
-                                    </div>
-                                  )}
-                                  {(itemObj.pricing.mediaSurcharge ?? 0) > 0 && (
-                                    <div className="flex justify-between text-[13px] text-va-black/60">
-                                      <span>Licenties & Buyouts</span>
-                                      <span className="font-medium">+ € {(itemObj.pricing.mediaSurcharge ?? 0).toFixed(2)}</span>
-                                    </div>
-                                  )}
-                                  {(itemObj.pricing.musicSurcharge ?? 0) > 0 && (
-                                    <div className="flex justify-between text-[13px] text-va-black/60">
-                                      <span>Muziek & Mixage</span>
-                                      <span className="font-medium">+ € {(itemObj.pricing.musicSurcharge ?? 0).toFixed(2)}</span>
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      )}
-                    </div>
+              return (
+                <ContainerInstrument 
+                  key={itemObj.id || idx} 
+                  onClick={() => !isCartPage && setSelectedItem(itemObj)}
+                  className={cn(
+                    "flex items-start gap-6 p-8 bg-white rounded-[32px] border border-va-black/5 shadow-aura group relative transition-all",
+                    !isCartPage && "cursor-pointer hover:border-primary/20 active:scale-[0.98]"
+                  )}
+                >
+                  {/* Afbeelding links uitgelijnd (LAYA-MANDAAT) */}
+                  <ContainerInstrument className="w-16 h-16 rounded-[20px] overflow-hidden bg-va-off-white relative border border-va-black/5 shrink-0 shadow-sm">
+                    <Image  
+                      src={itemImage} 
+                      alt={itemTitle} 
+                      fill 
+                      sizes="64px"
+                      className="object-cover" 
+                    />
                   </ContainerInstrument>
 
-                  <div className="flex items-center gap-6 shrink-0">
-                    <div className="flex items-center gap-2">
-                      <button 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          if (!isCartPage) {
-                            window.location.href = '/cart';
-                          } else {
-                            restoreItem(itemObj);
-                            updateStep('script');
-                          }
-                        }}
-                        className="w-10 h-10 rounded-full bg-va-off-white flex items-center justify-center text-va-black/20 hover:text-primary hover:bg-primary/5 transition-all group/edit"
-                        title={isCartPage ? t('action.edit_item', "Bewerk item") : t('action.view_details', "Bekijk details")}
-                      >
-                        {isCartPage ? <Edit2 size={18} strokeWidth={1.5} className="group-hover/edit:scale-110 transition-transform" /> : <Eye size={18} strokeWidth={1.5} className="group-hover/edit:scale-110 transition-transform" />}
-                      </button>
-                      <button 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          removeItem(itemObj.id);
-                        }}
-                        className="w-10 h-10 rounded-full bg-va-off-white flex items-center justify-center text-va-black/20 hover:text-red-500 hover:bg-red-50 transition-all group/delete"
-                        title={t('action.remove_item', "Verwijder item")}
-                      >
-                        <Trash2 size={18} strokeWidth={1.5} className="group-hover/delete:scale-110 transition-transform" />
-                      </button>
-                    </div>
-                    <div className="flex flex-col items-end min-w-[120px]">
-                      {state.customer.active_coupon && (
-                        <TextInstrument className="text-[12px] text-va-black/20 line-through font-light">
+                  {/* Uitleg, prijs en deleteknop rechts (LAYA-MANDAAT) */}
+                  <ContainerInstrument className="flex flex-1 items-center justify-between gap-4 min-w-0">
+                    <ContainerInstrument className="min-w-0 flex-1">
+                      <HeadingInstrument level={4} className="font-light text-xl text-va-black truncate tracking-tight">
+                        {itemTitle}
+                      </HeadingInstrument>
+                      <div className="text-[13px] leading-relaxed text-va-black/40 font-light mt-1">
+                        <div className="flex flex-col gap-1">
+                          {isWorkshopItem ? (
+                            <>
+                              <span className="font-medium text-va-black/60">
+                                <VoiceglotText translationKey="cart.workshop.label" defaultText="Studio workshop" />
+                              </span>
+                              {itemObj.date && (
+                                <span className="text-[11px] uppercase tracking-widest opacity-70">
+                                  {itemObj.date}
+                                </span>
+                              )}
+                              {itemObj.location && (
+                                <span className="text-[11px] uppercase tracking-widest opacity-70">
+                                  {itemObj.location}
+                                </span>
+                              )}
+                            </>
+                          ) : (
+                            <>
+                              <span className="font-medium text-va-black/60">
+                                {itemObj.usage === 'commercial' ? (
+                                  Array.isArray(itemObj.media) 
+                                    ? itemObj.media.map((m: string) => MarketManager.getMediaLabel(m)).join(' • ')
+                                    : MarketManager.getMediaLabel(itemObj.media)
+                                ) : MarketManager.getUsageLabel(itemObj.usage)}
+                              </span>
+                              {itemObj.usage === 'commercial' && (
+                                <span className="text-[11px] uppercase tracking-widest opacity-70">
+                                  {MarketManager.getCountryLabel(itemObj.country) || t('common.country.be', 'België')}
+                                </span>
+                              )}
+                            </>
+                          )}
+                        </div>
+                        
+                        {isCartPage && (
+                          <div className="mt-6 space-y-6">
+                            {isWorkshopItem ? (
+                              <div className="pt-4 border-t border-va-black/[0.03] space-y-3">
+                                <LabelInstrument className="text-[10px] uppercase tracking-widest text-va-black/30 font-bold ml-0">
+                                  <VoiceglotText translationKey="cart.workshop.details" defaultText="Workshop details" />
+                                </LabelInstrument>
+                                <div className="space-y-1.5 text-[13px] text-va-black/60">
+                                  {itemObj.date && (
+                                    <div className="flex justify-between gap-6">
+                                      <span>Datum</span>
+                                      <span className="font-medium text-va-black/70">{itemObj.date}</span>
+                                    </div>
+                                  )}
+                                  {itemObj.location && (
+                                    <div className="flex justify-between gap-6">
+                                      <span>Locatie</span>
+                                      <span className="font-medium text-va-black/70">{itemObj.location}</span>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            ) : (
+                              <>
+                                {/* Script Preview */}
+                                {(itemObj.script || itemObj.briefing) && (
+                                  <div className="space-y-2">
+                                    <LabelInstrument className="text-[10px] uppercase tracking-widest text-va-black/30 font-bold ml-0">
+                                      Ingevoerde tekst
+                                    </LabelInstrument>
+                                    <div className="p-6 bg-va-off-white/40 rounded-[24px] border border-va-black/[0.03] italic text-va-black/80 relative group/script-preview text-[15px] leading-relaxed">
+                                      <div className="absolute -top-2 -left-2 bg-white rounded-full p-1.5 shadow-sm border border-va-black/5">
+                                        <FileText size={12} className="text-primary" />
+                                      </div>
+                                      &quot;{itemObj.script || itemObj.briefing}&quot;
+                                    </div>
+                                  </div>
+                                )}
+                                
+                                {/* Delivery & Pricing Grid */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4 border-t border-va-black/[0.03]">
+                                  {/* Delivery Date */}
+                                  <div className="space-y-2">
+                                    <LabelInstrument className="text-[10px] uppercase tracking-widest text-va-black/30 font-bold ml-0">
+                                      Levering
+                                    </LabelInstrument>
+                                    {(() => {
+                                      const delivery = calculateDeliveryDate({
+                                        delivery_days_min: itemObj.actor?.delivery_days_min || 1,
+                                        delivery_days_max: itemObj.actor?.delivery_days_max || 3,
+                                        cutoff_time: itemObj.actor?.cutoff_time || '18:00',
+                                        availability: itemObj.actor?.availability || []
+                                      });
+                                      return (
+                                        <div className="inline-flex items-center gap-2 px-3 py-2 bg-green-500/5 border border-green-500/10 rounded-xl w-fit">
+                                          <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                                          <span className="text-[12px] font-bold text-green-600/80 uppercase tracking-wider">
+                                            {delivery.formatted}
+                                          </span>
+                                        </div>
+                                      );
+                                    })()}
+                                  </div>
+
+                                  {/* Price Breakdown */}
+                                  {itemObj.pricing && (
+                                    <div className="space-y-3">
+                                      <LabelInstrument className="text-[10px] uppercase tracking-widest text-va-black/30 font-bold ml-0">
+                                        Prijsopbouw (excl. BTW)
+                                      </LabelInstrument>
+                                      <div className="space-y-1.5">
+                                        <div className="flex justify-between text-[13px] text-va-black/60">
+                                          <span>Basistarief</span>
+                                          <span className="font-medium">€ {(itemObj.pricing.base ?? 0).toFixed(2)}</span>
+                                        </div>
+                                        {(itemObj.pricing.wordSurcharge ?? 0) > 0 && (
+                                          <div className="flex justify-between text-[13px] text-va-black/60">
+                                            <span>Extra woorden/verwerking</span>
+                                            <span className="font-medium">+ € {(itemObj.pricing.wordSurcharge ?? 0).toFixed(2)}</span>
+                                          </div>
+                                        )}
+                                        {(itemObj.pricing.mediaSurcharge ?? 0) > 0 && (
+                                          <div className="flex justify-between text-[13px] text-va-black/60">
+                                            <span>Licenties & Buyouts</span>
+                                            <span className="font-medium">+ € {(itemObj.pricing.mediaSurcharge ?? 0).toFixed(2)}</span>
+                                          </div>
+                                        )}
+                                        {(itemObj.pricing.musicSurcharge ?? 0) > 0 && (
+                                          <div className="flex justify-between text-[13px] text-va-black/60">
+                                            <span>Muziek & Mixage</span>
+                                            <span className="font-medium">+ € {(itemObj.pricing.musicSurcharge ?? 0).toFixed(2)}</span>
+                                          </div>
+                                        )}
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+                              </>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </ContainerInstrument>
+
+                    <div className="flex items-center gap-6 shrink-0">
+                      <div className="flex items-center gap-2">
+                        <button 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (!isCartPage) {
+                              window.location.href = isStudioJourney ? studioCartPath : defaultCartPath;
+                            } else {
+                              restoreItem(itemObj);
+                              updateStep('script');
+                            }
+                          }}
+                          className="w-10 h-10 rounded-full bg-va-off-white flex items-center justify-center text-va-black/20 hover:text-primary hover:bg-primary/5 transition-all group/edit"
+                          title={isCartPage ? t('action.edit_item', "Bewerk item") : t('action.view_details', "Bekijk details")}
+                        >
+                          {isCartPage ? <Edit2 size={18} strokeWidth={1.5} className="group-hover/edit:scale-110 transition-transform" /> : <Eye size={18} strokeWidth={1.5} className="group-hover/edit:scale-110 transition-transform" />}
+                        </button>
+                        <button 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            removeItem(itemObj.id);
+                          }}
+                          className="w-10 h-10 rounded-full bg-va-off-white flex items-center justify-center text-va-black/20 hover:text-red-500 hover:bg-red-50 transition-all group/delete"
+                          title={t('action.remove_item', "Verwijder item")}
+                        >
+                          <Trash2 size={18} strokeWidth={1.5} className="group-hover/delete:scale-110 transition-transform" />
+                        </button>
+                      </div>
+                      <div className="flex flex-col items-end min-w-[120px]">
+                        {state.customer.active_coupon && (
+                          <TextInstrument className="text-[12px] text-va-black/20 line-through font-light">
+                            €{(itemObj.pricing?.subtotal ?? itemObj.pricing?.total ?? 0).toFixed(2)}
+                          </TextInstrument>
+                        )}
+                        <TextInstrument className={cn(
+                          "font-light text-2xl tracking-tight",
+                          "text-va-black"
+                        )}>
                           €{(itemObj.pricing?.subtotal ?? itemObj.pricing?.total ?? 0).toFixed(2)}
                         </TextInstrument>
-                      )}
-                      <TextInstrument className={cn(
-                        "font-light text-2xl tracking-tight",
-                        "text-va-black"
-                      )}>
-                        €{(itemObj.pricing?.subtotal ?? itemObj.pricing?.total ?? 0).toFixed(2)}
-                      </TextInstrument>
-                      <TextInstrument className="text-[10px] text-va-black/20 font-light uppercase tracking-widest mt-0.5">
-                        Excl. BTW
-                      </TextInstrument>
+                        <TextInstrument className="text-[10px] text-va-black/20 font-light uppercase tracking-widest mt-0.5">
+                          Excl. BTW
+                        </TextInstrument>
+                      </div>
                     </div>
-                  </div>
+                  </ContainerInstrument>
                 </ContainerInstrument>
-              </ContainerInstrument>
-            ))}
+              );
+            })}
           </ContainerInstrument>
         </ContainerInstrument>
       )}
@@ -469,8 +529,8 @@ export const PricingSummary: React.FC<{
                   <div className="flex items-center gap-6">
                     <div className="w-24 h-24 rounded-[32px] overflow-hidden border border-va-black/5 shadow-md shrink-0 relative bg-va-off-white">
                       <Image 
-                        src={selectedItem.actor?.photo_url || VOICES_CONFIG.assets.placeholders.voice} 
-                        alt={selectedItem.actor?.display_name || 'Item'} 
+                        src={selectedItem.type === 'workshop_edition' ? '/icon-workshop.svg' : (selectedItem.actor?.photo_url || VOICES_CONFIG.assets.placeholders.voice)} 
+                        alt={selectedItem.actor?.display_name || selectedItem.name || 'Item'} 
                         fill
                         sizes="96px"
                         className="object-cover"
@@ -481,8 +541,23 @@ export const PricingSummary: React.FC<{
                         {selectedItem.actor?.display_name || selectedItem.name}
                       </HeadingInstrument>
                       <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] font-bold tracking-[0.1em] uppercase text-va-black/40">
-                        <span>{MarketManager.getUsageLabel(selectedItem.usage)}</span>
-                        {selectedItem.usage === 'telefonie' ? (
+                        <span>{selectedItem.type === 'workshop_edition' ? 'Studio workshop' : MarketManager.getUsageLabel(selectedItem.usage)}</span>
+                        {selectedItem.type === 'workshop_edition' ? (
+                          <>
+                            {selectedItem.date && (
+                              <>
+                                <span className="w-1 h-1 rounded-full bg-va-black/10" />
+                                <span>{selectedItem.date}</span>
+                              </>
+                            )}
+                            {selectedItem.location && (
+                              <>
+                                <span className="w-1 h-1 rounded-full bg-va-black/10" />
+                                <span>{selectedItem.location}</span>
+                              </>
+                            )}
+                          </>
+                        ) : selectedItem.usage === 'telefonie' ? (
                           <>
                             <span className="w-1 h-1 rounded-full bg-va-black/10" />
                             <span><VoiceglotText translationKey="common.unlimited_usage" defaultText="Onbeperkt gebruik" /></span>

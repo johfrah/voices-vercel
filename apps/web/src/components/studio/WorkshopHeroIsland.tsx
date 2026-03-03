@@ -63,7 +63,7 @@ export const WorkshopHeroIsland: React.FC<WorkshopHeroIslandProps> = ({ workshop
       };
       addItem(workshopItem);
       setJourney('studio', nextEdition!.id);
-      router.push('/checkout');
+      router.push(`/studio/checkout?journey=studio&editionId=${nextEdition!.id}`);
     } else {
       router.push(`/studio/doe-je-mee?workshopId=${workshop.id}`);
     }

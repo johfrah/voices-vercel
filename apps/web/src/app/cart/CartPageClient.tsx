@@ -14,6 +14,7 @@ import { useCheckout } from '@/contexts/CheckoutContext';
 import { useTranslation } from '@/contexts/TranslationContext';
 import Image from 'next/image';
 import { VoicesLink as Link } from '@/components/ui/VoicesLink';
+import { usePathname, useRouter } from 'next/navigation';
 import { ShoppingCart, ArrowRight, Star, Trash2, Edit2, Eye, Info, ArrowLeft } from 'lucide-react';
 import { PricingSummary } from '@/components/checkout/PricingSummary';
 import { OrderStepsInstrument } from '@/components/ui/OrderStepsInstrument';
@@ -31,7 +32,21 @@ const LiquidBackground = nextDynamic(() => import('@/components/ui/LiquidBackgro
 export default function CartPageClient() {
   const { t } = useTranslation();
   const { state, subtotal, isHydrated } = useCheckout();
+  const router = useRouter();
+  const pathname = usePathname();
   const [reviewStats, setReviewStats] = React.useState<{ averageRating: number, totalCount: number } | null>(null);
+  const hasWorkshopItem = useMemo(
+    () => (state.items || []).some((item: any) => item?.type === 'workshop_edition'),
+    [state.items]
+  );
+  const isStudioJourney = state.journey === 'studio' || !!state.editionId || hasWorkshopItem;
+  const localePrefix = useMemo(() => {
+    const match = pathname?.match(/^\/(fr|en|nl|de|es|it|pt)(?=\/|$)/i);
+    return match ? `/${match[1].toLowerCase()}` : '';
+  }, [pathname]);
+  const backPath = isStudioJourney ? `${localePrefix}/studio` : `${localePrefix}/agency`;
+  const checkoutPath = isStudioJourney ? `${localePrefix}/studio/checkout` : `${localePrefix}/checkout`;
+  const studioCartPath = `${localePrefix}/studio/cart`;
 
   useEffect(() => {
     if (!isHydrated) return;
@@ -44,6 +59,15 @@ export default function CartPageClient() {
     };
     fetchStats();
   }, [isHydrated]);
+
+  useEffect(() => {
+    if (!isHydrated || !pathname) return;
+    const isAnyCartPath = pathname.includes('/cart');
+    const isStudioCartPath = pathname.includes('/studio/cart');
+    if (isStudioJourney && isAnyCartPath && !isStudioCartPath) {
+      router.replace(studioCartPath);
+    }
+  }, [isHydrated, isStudioJourney, pathname, router, studioCartPath]);
 
   if (!isHydrated) return <LoadingScreenInstrument />;
 
@@ -63,7 +87,7 @@ export default function CartPageClient() {
               <VoiceglotText translationKey="cart.empty.text" defaultText="Je hebt nog geen stemmen geselecteerd voor je project." />
             </TextInstrument>
           </ContainerInstrument>
-          <ButtonInstrument as={Link} href="/agency" className="relative z-[12]">
+          <ButtonInstrument as={Link} href={backPath} className="relative z-[12]">
             <VoiceglotText translationKey="cart.empty.cta" defaultText="Ontdek stemmen" />
           </ButtonInstrument>
         </ContainerInstrument>
@@ -79,11 +103,14 @@ export default function CartPageClient() {
           <ContainerInstrument className="space-y-4 w-full flex flex-col items-center">
             <OrderStepsInstrument currentStep="checkout" className="opacity-100 mb-4" />
             <Link  
-              href="/agency" 
+              href={backPath} 
               className="inline-flex items-center gap-2 text-[15px] font-light tracking-widest text-va-black/40 hover:text-primary transition-colors"
             >
               <ArrowLeft size={14} strokeWidth={1.5} className="opacity-40" /> 
-              <VoiceglotText translationKey="cart.back_to_agency" defaultText="Verder casten" />
+              <VoiceglotText
+                translationKey={isStudioJourney ? "cart.back_to_studio" : "cart.back_to_agency"}
+                defaultText={isStudioJourney ? "Terug naar studio" : "Verder casten"}
+              />
             </Link>
           </ContainerInstrument>
         </ContainerInstrument>
@@ -99,10 +126,20 @@ export default function CartPageClient() {
               </div>
               <div className="flex-1">
                 <h4 className="text-[15px] font-bold tracking-tight mb-1 text-va-black uppercase">
-                  <VoiceglotText translationKey="cart.info.title" defaultText="Productie & Levering" />
+                  <VoiceglotText
+                    translationKey={isStudioJourney ? "cart.studio.info.title" : "cart.info.title"}
+                    defaultText={isStudioJourney ? "Workshop & Inschrijving" : "Productie & Levering"}
+                  />
                 </h4>
                 <p className="text-[15px] text-va-black/40 font-light leading-relaxed">
-                  <VoiceglotText translationKey="cart.info.desc" defaultText="Zodra je de bestelling afrondt, ontvangen de stemacteurs direct je briefing. De meeste opnames worden binnen 24 uur geleverd." />
+                  <VoiceglotText
+                    translationKey={isStudioJourney ? "cart.studio.info.desc" : "cart.info.desc"}
+                    defaultText={
+                      isStudioJourney
+                        ? "Na afronden ontvang je direct de praktische workshopinfo en bevestiging per e-mail."
+                        : "Zodra je de bestelling afrondt, ontvangen de stemacteurs direct je briefing. De meeste opnames worden binnen 24 uur geleverd."
+                    }
+                  />
                 </p>
               </div>
             </div>
@@ -120,7 +157,7 @@ export default function CartPageClient() {
                 
                 <ButtonInstrument 
                   as={Link}
-                  href="/checkout"
+                  href={checkoutPath}
                   className="w-full va-btn-pro !py-8 text-xl !rounded-[24px] !bg-va-black !text-white flex items-center justify-center gap-3 group transition-all duration-500 hover:shadow-aura-lg hover:scale-[1.02]"
                 >
                   <VoiceglotText translationKey="cart.cta.checkout" defaultText="Naar afrekenen" />
@@ -143,7 +180,7 @@ export default function CartPageClient() {
 
               {/* Security Nudge */}
               <div className="flex items-center justify-center gap-4 text-va-black/20">
-                <Image src="/assets/common/branding/payment/mollie.svg" width={60} height={20} alt="Mollie" className="grayscale opacity-50" priority />
+                <Image src="/icon-mollie.svg" width={60} height={20} alt="Mollie" className="grayscale opacity-50" priority />
                 <div className="w-px h-4 bg-va-black/10" />
                 <TextInstrument className="text-[10px] font-bold uppercase tracking-widest">
                   Veilig betalen via SSL
