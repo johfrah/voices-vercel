@@ -199,10 +199,10 @@ export default function GlobalFooter() {
             {/* Trust Logos (Kelly-Mandate) */}
             {!isSpecial && (
               <ContainerInstrument className="flex items-center gap-6 opacity-20 grayscale hover:grayscale-0 hover:opacity-50 transition-all duration-700">
-                <Image src="/assets/common/branding/payment/mollie.svg" alt={t('common.payment.mollie', "Mollie")} width={60} height={20} className="h-4 w-auto" />
-                <Image src="/assets/common/branding/payment/bancontact.svg" alt={t('common.payment.bancontact', "Bancontact")} width={30} height={20} className="h-5 w-auto" />
-                <Image src="/assets/common/branding/payment/visa.svg" alt={t('common.payment.visa', "Visa")} width={40} height={20} className="h-3 w-auto" />
-                <Image src="/assets/common/branding/payment/mastercard.svg" alt={t('common.payment.mastercard', "Mastercard")} width={30} height={20} className="h-5 w-auto" />
+                <Image src="/payment-methods/mollie/bancontact.png" alt={t('common.payment.bancontact', "Bancontact")} width={30} height={20} className="h-5 w-auto object-contain" />
+                <Image src="/payment-methods/mollie/ideal.png" alt={t('common.payment.ideal', "iDEAL")} width={34} height={20} className="h-5 w-auto object-contain" />
+                <Image src="/payment-methods/mollie/creditcard.png" alt={t('common.payment.creditcard', "Creditcard")} width={40} height={20} className="h-4 w-auto object-contain" />
+                <Image src="/payment-methods/mollie/applepay.png" alt={t('common.payment.applepay', "Apple Pay")} width={40} height={20} className="h-4 w-auto object-contain" />
               </ContainerInstrument>
             )}
           </ContainerInstrument>

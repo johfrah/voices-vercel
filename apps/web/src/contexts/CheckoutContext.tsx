@@ -138,26 +138,10 @@ interface CheckoutContextType {
   isHydrated: boolean;
 }
 
-const PAYMENT_ICON_FALLBACKS: Record<string, string> = {
-  bancontact: '/icon-bancontact.svg',
-  ideal: '/icon-ideal.svg',
-  creditcard: '/icon-card.svg',
-  mastercard: '/icon-mastercard.svg',
-  belfius: '/icon-belfius.svg',
-  applepay: '/icon-applepay.svg'
-};
-
-const resolvePaymentFallbackIcon = (methodId?: string, methodDescription?: string): string | undefined => {
-  const hint = `${methodId || ''} ${methodDescription || ''}`.toLowerCase();
-
-  if (hint.includes('bancontact')) return PAYMENT_ICON_FALLBACKS.bancontact;
-  if (hint.includes('ideal')) return PAYMENT_ICON_FALLBACKS.ideal;
-  if (hint.includes('mastercard')) return PAYMENT_ICON_FALLBACKS.mastercard;
-  if (hint.includes('belfius')) return PAYMENT_ICON_FALLBACKS.belfius;
-  if (hint.includes('apple')) return PAYMENT_ICON_FALLBACKS.applepay;
-  if (hint.includes('card') || hint.includes('credit')) return PAYMENT_ICON_FALLBACKS.creditcard;
-
-  return methodId ? PAYMENT_ICON_FALLBACKS[methodId] : undefined;
+const OFFICIAL_MOLLIE_ICON_BASE = '/payment-methods/mollie';
+const getOfficialMollieIcon = (methodId?: string): string | undefined => {
+  if (!methodId) return undefined;
+  return `${OFFICIAL_MOLLIE_ICON_BASE}/${methodId}.png`;
 };
 
 const initialState: CheckoutState = {
@@ -204,9 +188,9 @@ const initialState: CheckoutState = {
   },
   paymentMethod: 'bancontact',
   paymentMethods: [
-    { id: 'bancontact', description: 'Bancontact', image: { size2x: PAYMENT_ICON_FALLBACKS.bancontact } },
-    { id: 'ideal', description: 'iDEAL', image: { size2x: PAYMENT_ICON_FALLBACKS.ideal } },
-    { id: 'banktransfer', description: 'Betalen op factuur (Offerte)', isInvoice: true, image: { size2x: '/assets/common/branding/icons/ACCOUNT.svg' } }
+    { id: 'bancontact', description: 'Bancontact', image: { size2x: getOfficialMollieIcon('bancontact') } },
+    { id: 'ideal', description: 'iDEAL', image: { size2x: getOfficialMollieIcon('ideal') } },
+    { id: 'banktransfer', description: 'Betalen op factuur (Offerte)', isInvoice: true, image: { size2x: getOfficialMollieIcon('banktransfer') } }
   ],
   taxRate: 0.21,
   agreedToTerms: true,
@@ -331,26 +315,29 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             m.id !== 'paybybank' && m.id !== 'banktransfer'
           );
           
-          const allMethods = [
-            ...filtered.map((m: any) => {
-              const iconPath =
-                resolvePaymentFallbackIcon(m.id, m.description) ||
-                m.image?.size2x ||
-                m.image?.size1x;
-              
+          const officialMethods = filtered
+            .map((m: any) => {
+              const iconPath = getOfficialMollieIcon(m.id);
+              if (!iconPath) return null;
+
               return {
                 ...m,
                 image: {
                   ...m.image,
-                  size2x: iconPath
+                  size2x: iconPath,
+                  size1x: iconPath
                 }
               };
-            }),
+            })
+            .filter(Boolean) as any[];
+
+          const allMethods = [
+            ...officialMethods,
             { 
               id: 'banktransfer', 
               description: 'Betalen op factuur (Offerte)', 
               isInvoice: true,
-              image: { size2x: '/assets/common/branding/icons/ACCOUNT.svg' }
+              image: { size2x: getOfficialMollieIcon('banktransfer') }
             }
           ];
           

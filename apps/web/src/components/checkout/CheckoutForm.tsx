@@ -443,26 +443,6 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
   const selectedMethod = state.paymentMethod || 'bancontact';
   const selectedMethodObj = state.paymentMethods.find(m => m.id === selectedMethod);
   const methodLabel = selectedMethodObj?.description || (selectedMethod.charAt(0).toUpperCase() + selectedMethod.slice(1));
-  const paymentIconFallbacks: Record<string, string> = {
-    bancontact: '/icon-bancontact.svg',
-    ideal: '/icon-ideal.svg',
-    creditcard: '/icon-card.svg',
-    mastercard: '/icon-mastercard.svg',
-    belfius: '/icon-belfius.svg',
-    applepay: '/icon-applepay.svg'
-  };
-  const resolvePaymentFallbackIcon = (methodId?: string, methodDescription?: string): string | undefined => {
-    const hint = `${methodId || ''} ${methodDescription || ''}`.toLowerCase();
-
-    if (hint.includes('bancontact')) return paymentIconFallbacks.bancontact;
-    if (hint.includes('ideal')) return paymentIconFallbacks.ideal;
-    if (hint.includes('mastercard')) return paymentIconFallbacks.mastercard;
-    if (hint.includes('belfius')) return paymentIconFallbacks.belfius;
-    if (hint.includes('apple')) return paymentIconFallbacks.applepay;
-    if (hint.includes('card') || hint.includes('credit')) return paymentIconFallbacks.creditcard;
-
-    return methodId ? paymentIconFallbacks[methodId] : undefined;
-  };
 
   return (
     <ContainerInstrument className="space-y-8 w-full max-w-full">
@@ -733,10 +713,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
 
           <ContainerInstrument className="space-y-2">
             {state.paymentMethods.map((method) => {
-              const iconSrc =
-                resolvePaymentFallbackIcon(method.id, method.description) ||
-                method.image?.size2x ||
-                method.image?.size1x;
+              const iconSrc = method.image?.size2x || method.image?.size1x;
               return (
               <ButtonInstrument
                 key={method.id}
@@ -756,11 +733,9 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
                 <div className="flex items-center gap-4">
                   <div className={cn(
                     "w-10 h-8 flex items-center justify-center transition-all duration-500",
-                    state.paymentMethod === method.id ? "scale-105" : "grayscale opacity-30 group-hover:grayscale-0 group-hover:opacity-100"
+                    state.paymentMethod === method.id ? "scale-105" : "opacity-70 group-hover:opacity-100"
                   )}>
-                    {method.id === 'banktransfer' ? (
-                      <FileText size={20} strokeWidth={1.2} className={state.paymentMethod === method.id ? "text-primary" : "text-va-black/40"} />
-                    ) : iconSrc ? (
+                    {iconSrc ? (
                       <Image  
                         src={iconSrc} 
                         alt={method.description} 
@@ -769,7 +744,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
                         className="h-5 object-contain"
                       />
                     ) : (
-                      <CreditCard size={20} strokeWidth={1.2} className="text-va-black/40" />
+                      <ContainerInstrument className="w-10 h-5" />
                     )}
                   </div>
                   <div className="text-left">

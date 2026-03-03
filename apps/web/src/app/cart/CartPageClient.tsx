@@ -179,7 +179,9 @@ export default function CartPageClient() {
 
               {/* Security Nudge */}
               <div className="flex items-center justify-center gap-4 text-va-black/20">
-                <Image src="/icon-mollie.svg" width={60} height={20} alt="Mollie" className="grayscale opacity-50" priority />
+                <Image src="/payment-methods/mollie/bancontact.png" width={36} height={20} alt="Bancontact" className="h-5 w-auto object-contain grayscale opacity-50" priority />
+                <Image src="/payment-methods/mollie/ideal.png" width={36} height={20} alt="iDEAL" className="h-5 w-auto object-contain grayscale opacity-50" priority />
+                <Image src="/payment-methods/mollie/creditcard.png" width={40} height={20} alt="Creditcard" className="h-5 w-auto object-contain grayscale opacity-50" priority />
                 <div className="w-px h-4 bg-va-black/10" />
                 <TextInstrument className="text-[10px] font-bold uppercase tracking-widest">
                   Veilig betalen via SSL

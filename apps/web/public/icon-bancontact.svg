@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="120" height="60" viewBox="0 0 120 60" role="img" aria-label="Bancontact">
-  <rect width="120" height="60" rx="8" fill="#1d5fcb"/>
-  <rect y="34" width="120" height="26" fill="#f7c600"/>
-  <rect y="28" width="120" height="6" fill="#d7002d"/>
-  <text x="60" y="24" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="700" fill="#ffffff">BC</text>
-</svg>
