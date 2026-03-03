@@ -107,11 +107,14 @@ export default function CheckoutPageClient() {
           <ContainerInstrument className="space-y-4 w-full flex flex-col items-center">
             <OrderStepsInstrument currentStep="checkout" className="opacity-100 mb-4" />
             <Link  
-              href="/agency" 
+              href={state.journey === 'studio' ? '/studio' : '/agency'} 
               className="inline-flex items-center gap-2 text-[15px] font-light tracking-widest text-va-black/40 hover:text-primary transition-colors"
             >
               <ArrowLeft size={14} strokeWidth={1.5} className="opacity-40" /> 
-              <VoiceglotText  translationKey="checkout.back_to_agency" defaultText="Verder casten" />
+              {state.journey === 'studio' 
+                ? <VoiceglotText translationKey="checkout.back_to_studio" defaultText="Terug naar workshops" />
+                : <VoiceglotText translationKey="checkout.back_to_agency" defaultText="Verder casten" />
+              }
             </Link>
           </ContainerInstrument>
         </ContainerInstrument>
