@@ -44,5 +44,9 @@ This is a Next.js 14 monorepo for a multi-tenant voice-over agency platform ("Vo
 - `/studio/[slug]/page.tsx` intercepts all `/studio/*` paths before the SmartRouter. Studio sub-pages (quiz, doe-je-mee, contact, faq) are handled as special cases in this file — NOT in the SmartRouter.
 - World prefixes (`studio`, `academy`, `ademing`, `johfrai`, `partners`, `freelance`, `casting`) are recognized as valid entry points so their sub-routes can fall through to CMS article lookup.
 
+### Business Rules
+- **No IVR bundles**: Telephony customers order each message separately (welcome, hold, closed). This is intentional — do NOT build multi-message bundle features or suggest bundle pricing.
+- **No free trial for Telephony**: The "Gratis proefopname" concept does not exist in the Telefonie journey. The CastingDock shows "Stem boeken" / "Direct bestellen" instead.
+
 ### Deploying to Production
 Push to `main` to trigger Vercel auto-deploy. Check status with `gh api repos/johfrah/voices-vercel/commits/<sha>/status` or `npx vercel ls --token "$VERCEL_TOKEN"`. Builds take ~2 minutes. If Vercel gives an internal error, retry — it's usually a transient infra issue in the `iad1` region.
