@@ -44,7 +44,7 @@ export async function getWorldConfig(worldId: number): Promise<WorldConfig | nul
     const { data, error } = await supabase
       .from('world_configs')
       .select(`
-        world_id, name, email, phone, address, vat_number, social_links,
+        world_id, name, social_links,
         meta_title, meta_description, nav_theme,
         logo_media:logo_media_id(file_path),
         og_media:og_image_media_id(file_path),
@@ -55,13 +55,23 @@ export async function getWorldConfig(worldId: number): Promise<WorldConfig | nul
 
     if (error || !data) return null;
 
+    // Contact via junction table (ID-First)
+    const { data: contactMapping } = await supabase
+      .from('world_contact_mappings')
+      .select('contacts(email, phone, address, vat_number)')
+      .eq('world_id', worldId)
+      .eq('role', 'primary')
+      .maybeSingle();
+
+    const contact = (contactMapping as any)?.contacts || {};
+
     const config: WorldConfig = {
       world_id: data.world_id,
       name: data.name,
-      email: data.email,
-      phone: data.phone,
-      address: data.address,
-      vat_number: data.vat_number,
+      email: contact.email || data.email,
+      phone: contact.phone || data.phone,
+      address: contact.address || null,
+      vat_number: contact.vat_number || null,
       social_links: data.social_links,
       logo_url: (data as any).logo_media?.file_path 
         ? `${STORAGE_BASE}${(data as any).logo_media.file_path}` 
