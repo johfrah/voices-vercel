@@ -33,7 +33,6 @@ import {
 } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '../ui/VoiceglotText';
 import { cn } from '@/lib/utils';
-import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
 
 interface MediaItem {
   id: number;
@@ -60,6 +59,7 @@ export const MediaLibrary: React.FC = () => {
   const [media, setMedia] = useState<MediaItem[]>([]);
   const [actors, setActors] = useState<Actor[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [mediaError, setMediaError] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isConverting, setIsConverting] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -71,27 +71,57 @@ export const MediaLibrary: React.FC = () => {
   const [youtubeUrl, setYoutubeUrl] = useState<string | null>(null);
   const { playClick } = useSonicDNA();
 
+  const buildMediaApiUrl = React.useCallback(() => {
+    const params = new URLSearchParams();
+    params.set('sort', sortBy);
+    if (filterJourney !== 'all') params.set('journey', filterJourney);
+    if (filterStatus === 'orphans') params.set('filter', 'orphans');
+    if (selectedActorId) params.set('actorId', String(selectedActorId));
+    if (searchQuery) params.set('search', searchQuery);
+    return `/api/backoffice/media/?${params.toString()}`;
+  }, [sortBy, filterJourney, filterStatus, selectedActorId, searchQuery]);
+
   const fetchMedia = React.useCallback(async () => {
     setIsLoading(true);
+    setMediaError(null);
     try {
-      let url = `/api/backoffice/media?sort=${sortBy}`;
-      if (filterJourney !== 'all') url += `&journey=${filterJourney}`;
-      if (filterStatus === 'orphans') url += `&filter=orphans`;
-      if (selectedActorId) url += `&actorId=${selectedActorId}`;
-      if (searchQuery) url += `&search=${encodeURIComponent(searchQuery)}`;
-      
-      const res = await fetch(url);
-      if (res.ok) {
+      const url = buildMediaApiUrl();
+
+      const requestMedia = async () => {
+        const res = await fetch(url, { cache: 'no-store' });
+        if (!res.ok) {
+          let serverError = `HTTP ${res.status}`;
+          try {
+            const payload = await res.json();
+            if (payload?.error) serverError = payload.error;
+          } catch {
+            // keep generic server error
+          }
+          throw new Error(serverError);
+        }
+
         const data = await res.json();
-        setMedia(data.results || []);
-        setYoutubeUrl(data.youtubeUrl || null);
+        setMedia(Array.isArray(data?.results) ? data.results : []);
+        setYoutubeUrl(typeof data?.youtubeUrl === 'string' ? data.youtubeUrl : null);
+      };
+
+      try {
+        await requestMedia();
+      } catch (firstError) {
+        // Retry once for transient aborted network requests in dev/hot-reload flows.
+        await requestMedia().catch(() => {
+          throw firstError;
+        });
       }
     } catch (e) {
       console.error('Failed to fetch media', e);
+      const fallbackMessage = e instanceof Error ? e.message : 'Onbekende fout bij het laden van media.';
+      setMediaError(fallbackMessage);
+      setMedia([]);
     } finally {
       setIsLoading(false);
     }
-  }, [sortBy, filterJourney, filterStatus, selectedActorId, searchQuery]);
+  }, [buildMediaApiUrl]);
 
   useEffect(() => {
     fetchActors();
@@ -103,13 +133,25 @@ export const MediaLibrary: React.FC = () => {
 
   const fetchActors = async () => {
     try {
-      const res = await fetch('/api/backoffice/actors');
-      if (res.ok) {
+      const requestActors = async () => {
+        const res = await fetch('/api/backoffice/actors/', { cache: 'no-store' });
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}`);
+        }
         const data = await res.json();
-        setActors(data);
+        setActors(Array.isArray(data) ? data : []);
+      };
+
+      try {
+        await requestActors();
+      } catch (firstError) {
+        await requestActors().catch(() => {
+          throw firstError;
+        });
       }
     } catch (e) {
       console.error('Failed to fetch actors', e);
+      setActors([]);
     }
   };
 
@@ -454,6 +496,36 @@ export const MediaLibrary: React.FC = () => {
             Array.from({ length: 8 }).map((_, i) => (
               <ContainerInstrument key={i} className="aspect-square bg-white/50 animate-pulse rounded-[20px] border border-va-black/5" />
             ))
+          ) : mediaError ? (
+            <ContainerInstrument className="col-span-full py-20 text-center bg-white rounded-[20px] shadow-aura border border-red-500/15">
+              <ContainerInstrument className="w-24 h-24 bg-red-500/5 rounded-full flex items-center justify-center mx-auto mb-6">
+                <AlertCircle className="text-red-500/70" size={40} strokeWidth={1.5} />
+              </ContainerInstrument>
+              <HeadingInstrument level={3} className="text-2xl font-light tracking-tight">
+                <VoiceglotText translationKey="media.load_failed" defaultText="Media kon niet geladen worden" />
+              </HeadingInstrument>
+              <TextInstrument className="text-va-black/40 font-light mt-2 max-w-xl mx-auto">
+                <VoiceglotText
+                  translationKey="media.load_failed_desc"
+                  defaultText="Controleer je verbinding of serverstatus en probeer opnieuw. Als dit blijft gebeuren, open de systeemlogs in de backoffice."
+                />
+              </TextInstrument>
+              <ContainerInstrument className="mt-6">
+                <ButtonInstrument
+                  onClick={() => {
+                    playClick('light');
+                    fetchMedia();
+                  }}
+                  className="px-6 py-3 rounded-[10px] bg-va-black text-white text-[15px] font-light tracking-widest hover:opacity-90 transition-opacity"
+                >
+                  <RefreshCw size={14} strokeWidth={1.5} className="inline mr-2" />
+                  Opnieuw proberen
+                </ButtonInstrument>
+              </ContainerInstrument>
+              <TextInstrument className="text-[12px] text-va-black/30 font-light mt-4">
+                Debug: {mediaError}
+              </TextInstrument>
+            </ContainerInstrument>
           ) : media.length === 0 ? (
             <ContainerInstrument className="col-span-full py-32 text-center bg-white rounded-[20px] shadow-aura border-2 border-dashed border-va-black/5">
               <ContainerInstrument className="w-24 h-24 bg-va-off-white rounded-full flex items-center justify-center mx-auto mb-6">

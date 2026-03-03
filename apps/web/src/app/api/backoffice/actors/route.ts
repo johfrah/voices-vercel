@@ -1,6 +1,6 @@
 import { db, actors } from '@/lib/system/voices-config';
 import { DbService } from '@/lib/services/db-service';
-import { desc, ilike, or } from 'drizzle-orm';
+import { asc, ilike, or } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
@@ -8,19 +8,27 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const search = searchParams.get('search');
 
-    let query = db.select().from(actors);
-    
-    if (search) {
-      // @ts-ignore
-      query = query.where(or(
-        ilike(actors.first_name, `%${search}%`),
-        ilike(actors.last_name, `%${search}%`)
-      ));
-    }
+    const baseQuery = db
+      .select({
+        id: actors.id,
+        first_name: actors.first_name,
+        last_name: actors.last_name,
+      })
+      .from(actors);
 
-    const results = await query.orderBy(desc(actors.voice_score)).limit(50);
+    const filteredQuery = search
+      ? baseQuery.where(
+          or(
+            ilike(actors.first_name, `%${search}%`),
+            ilike(actors.last_name, `%${search}%`)
+          )
+        )
+      : baseQuery;
+
+    const results = await filteredQuery.orderBy(asc(actors.first_name), asc(actors.last_name)).limit(50);
     return NextResponse.json(results);
   } catch (error) {
+    console.error('[Backoffice Actors GET Error]:', error);
     return NextResponse.json({ error: 'Kon acteurs niet ophalen' }, { status: 500 });
   }
 }
