@@ -5,6 +5,74 @@ import { requireAdmin } from '@/lib/auth/api-auth';
 
 export const dynamic = 'force-dynamic';
 
+const STATUS_WORKFLOW_MAP: Record<
+  string,
+  {
+    title: string;
+    adminAction: string;
+    customerImpact: string;
+  }
+> = {
+  quote_sent: {
+    title: 'Offerte klaar voor klantbevestiging',
+    adminAction: 'Wacht op akkoord, update pas naar betaal- of leverstatus na bevestiging.',
+    customerImpact: 'Klant ontvangt/raadpleegt offerte, nog geen productie.',
+  },
+  waiting_po: {
+    title: 'Wacht op PO-nummer',
+    adminAction: 'Vraag PO op en houd productie on hold tot PO intern bevestigd is.',
+    customerImpact: 'Klant moet PO bezorgen voor verdere afhandeling.',
+  },
+  awaiting_payment: {
+    title: 'Wacht op betaling',
+    adminAction: 'Volg betaling op en stuur indien nodig een betaallink.',
+    customerImpact: 'Bestelling staat klaar, levering wacht op financiële vrijgave.',
+  },
+  unpaid: {
+    title: 'Onbetaald',
+    adminAction: 'Escalatie op openstaand bedrag, controleer betaalmethode en dunningflow.',
+    customerImpact: 'Order blijft geblokkeerd tot betaling verwerkt is.',
+  },
+  completed_unpaid: {
+    title: 'Geleverd maar nog onbetaald',
+    adminAction: 'Levering is gebeurd; volg openstaande factuur strikt op.',
+    customerImpact: 'Klant ontving levering, maar betaling staat nog open.',
+  },
+  completed: {
+    title: 'Voltooid',
+    adminAction: 'Order administratief afgerond, controleer uitbetaling en archivering.',
+    customerImpact: 'Bestelling is volledig afgewerkt.',
+  },
+  completed_paid: {
+    title: 'Voltooid en betaald',
+    adminAction: 'Flow volledig rond: levering, betaling, boekhouding en payout kunnen sluiten.',
+    customerImpact: 'Alles is afgerond zonder open acties.',
+  },
+  refunded: {
+    title: 'Terugbetaald',
+    adminAction: 'Controleer refund-bewijs, noteer reden en sluit order met audit trail.',
+    customerImpact: 'Klant kreeg terugbetaling volgens afgesproken scope.',
+  },
+};
+
+const PAYMENT_METHOD_MAP: Record<string, string> = {
+  mollie_bancontact: 'Online Bancontact-flow (directe PSP-statussync).',
+  mollie_ideal: 'Online iDEAL-flow (directe PSP-statussync).',
+  mollie_banktransfer: 'Mollie overschrijving (trager, eerst betaling detecteren).',
+  manual_invoice: 'Factuurflow via PO/boekhouding (manuele opvolging vereist).',
+};
+
+const STATUS_SORT_ORDER = [
+  'quote_sent',
+  'waiting_po',
+  'awaiting_payment',
+  'unpaid',
+  'completed_unpaid',
+  'completed',
+  'completed_paid',
+  'refunded',
+];
+
 export async function GET(request: Request, { params }: { params: { id: string } }) {
   const idStr = params.id ? String(params.id).replace(/\/$/, '') : '';
   const id = parseInt(idStr);
@@ -22,6 +90,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
     const [order] = await db.select({
       id: ordersV2.id,
       userId: ordersV2.userId,
+      worldId: ordersV2.worldId,
       journeyId: ordersV2.journeyId,
       statusId: ordersV2.statusId,
       paymentMethodId: ordersV2.paymentMethodId,
@@ -52,6 +121,23 @@ export async function GET(request: Request, { params }: { params: { id: string }
     if (!order) {
       return NextResponse.json({ error: 'Order not found' }, { status: 404 });
     }
+
+    const [statusCatalogRows, paymentCatalogRows] = await Promise.all([
+      db
+        .select({
+          id: orderStatuses.id,
+          code: orderStatuses.code,
+          label: orderStatuses.label,
+        })
+        .from(orderStatuses),
+      db
+        .select({
+          id: paymentMethods.id,
+          code: paymentMethods.code,
+          label: paymentMethods.label,
+        })
+        .from(paymentMethods),
+    ]);
 
     // 🛡️ CHRIS-PROTOCOL: Robust Type Casting
     const orderPk = Number(order.id);
@@ -248,6 +334,48 @@ export async function GET(request: Request, { params }: { params: { id: string }
     };
     const parsedRawMeta: any = parseJson(rawMeta);
     const statusCode = (order.statusCode || '').toLowerCase();
+    const statusCatalog = [...statusCatalogRows]
+      .sort((a: any, b: any) => {
+        const aIndex = STATUS_SORT_ORDER.indexOf(String(a.code || '').toLowerCase());
+        const bIndex = STATUS_SORT_ORDER.indexOf(String(b.code || '').toLowerCase());
+        const normalizedA = aIndex === -1 ? 999 : aIndex;
+        const normalizedB = bIndex === -1 ? 999 : bIndex;
+        if (normalizedA !== normalizedB) return normalizedA - normalizedB;
+        return String(a.label || '').localeCompare(String(b.label || ''));
+      })
+      .map((row: any) => {
+        const code = String(row.code || '').toLowerCase();
+        const workflow = STATUS_WORKFLOW_MAP[code] || {
+          title: row.label || code || 'Onbekende status',
+          adminAction: 'Geen specifieke workflow geconfigureerd.',
+          customerImpact: 'Geen specifieke klantimpact geconfigureerd.',
+        };
+        return {
+          id: Number(row.id),
+          code,
+          label: row.label || code,
+          title: workflow.title,
+          adminAction: workflow.adminAction,
+          customerImpact: workflow.customerImpact,
+        };
+      });
+    const paymentMethodCatalog = paymentCatalogRows
+      .map((row: any) => {
+        const code = String(row.code || '').toLowerCase();
+        return {
+          id: Number(row.id),
+          code,
+          label: row.label || code,
+          behavior: PAYMENT_METHOD_MAP[code] || 'Geen specifieke betaalflow geconfigureerd.',
+        };
+      })
+      .sort((a: any, b: any) => a.label.localeCompare(b.label));
+    const currentStatus =
+      statusCatalog.find((entry: any) => entry.code === statusCode) ||
+      statusCatalog.find((entry: any) => entry.id === Number(order.statusId || 0)) ||
+      null;
+    const currentPaymentMethod =
+      paymentMethodCatalog.find((entry: any) => entry.id === Number(order.paymentMethodId || 0)) || null;
     const orderBriefingFallback = firstString(
       parsedRawMeta.briefing,
       parsedRawMeta._billing_wo_briefing,
@@ -443,6 +571,10 @@ export async function GET(request: Request, { params }: { params: { id: string }
       statusCode: order.statusCode || null,
       unit: order.journeyLabel || 'Voices',
       journeyCode: order.journeyCode || null,
+      statusManager: {
+        current: currentStatus,
+        available: statusCatalog,
+      },
       
       // 🚦 ACTION-DRIVEN LOGIC (Punt 3 Scope)
       actions: {
@@ -475,7 +607,10 @@ export async function GET(request: Request, { params }: { params: { id: string }
         cost: totalCost.toFixed(2),
         margin: margin.toFixed(2),
         marginPercentage: `${marginPercentage}%`,
-        method: order.paymentLabel || 'Online betaling'
+        method: order.paymentLabel || 'Online betaling',
+        paymentMethod: currentPaymentMethod,
+        paymentMethodId: order.paymentMethodId ? Number(order.paymentMethodId) : null,
+        paymentCatalog: paymentMethodCatalog,
       },
 
       production: {
@@ -516,6 +651,10 @@ export async function GET(request: Request, { params }: { params: { id: string }
         sourceId: legacyInternalId,
         sourceOrderId,
         userId: userId,
+        worldId: order.worldId ? Number(order.worldId) : null,
+        journeyId: order.journeyId ? Number(order.journeyId) : null,
+        statusId: order.statusId ? Number(order.statusId) : null,
+        paymentMethodId: order.paymentMethodId ? Number(order.paymentMethodId) : null,
         metaKeyCount: Object.keys(parsedRawMeta || {}).length,
         meta: parsedRawMeta,
       },

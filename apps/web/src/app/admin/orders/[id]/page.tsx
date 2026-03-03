@@ -43,21 +43,26 @@ export default function OrderDetailPage() {
   const [itemDrafts, setItemDrafts] = useState<
     Record<number, { deliveryStatus: string; payoutStatus: string; deliveryFileUrl: string; invoiceFileUrl: string }>
   >({});
-  const [selectedStatusCode, setSelectedStatusCode] = useState<string>('pending');
-
-  const statusOptions = [
-    { value: 'awaiting_payment', label: 'Wacht op betaling' },
-    { value: 'waiting_po', label: 'Wacht op PO' },
-    { value: 'unpaid', label: 'Onbetaald' },
-    { value: 'quote_sent', label: 'Offerte verstuurd' },
-    { value: 'completed_unpaid', label: 'Voltooid (onbetaald)' },
-    { value: 'completed', label: 'Voltooid' },
-    { value: 'completed_paid', label: 'Betaald' },
-    { value: 'refunded', label: 'Terugbetaald' },
-  ];
-  const statusOptionsWithCurrent = statusOptions.some((option) => option.value === selectedStatusCode)
-    ? statusOptions
-    : [{ value: selectedStatusCode, label: `Huidige status (${selectedStatusCode})` }, ...statusOptions];
+  const [selectedStatusCode, setSelectedStatusCode] = useState<string>('awaiting_payment');
+  const statusCatalog = Array.isArray(order?.statusManager?.available) ? order.statusManager.available : [];
+  const statusOptionsWithCurrent = statusCatalog.some((option: any) => option.code === selectedStatusCode)
+    ? statusCatalog
+    : selectedStatusCode
+      ? [
+          {
+            id: null,
+            code: selectedStatusCode,
+            label: `Huidige status (${selectedStatusCode})`,
+            title: 'Onbekende status',
+            adminAction: 'Geen mapping gevonden.',
+            customerImpact: 'Geen mapping gevonden.',
+          },
+          ...statusCatalog,
+        ]
+      : statusCatalog;
+  const selectedStatusInfo =
+    statusOptionsWithCurrent.find((option: any) => option.code === selectedStatusCode) || null;
+  const currentOrderStatusCode = order?.statusManager?.current?.code || order?.statusCode || 'awaiting_payment';
 
   const fetchOrder = useCallback(async () => {
     setIsLoading(true);
@@ -96,8 +101,8 @@ export default function OrderDetailPage() {
   }, [order]);
 
   useEffect(() => {
-    setSelectedStatusCode(order?.statusCode || 'pending');
-  }, [order?.statusCode]);
+    setSelectedStatusCode(currentOrderStatusCode);
+  }, [currentOrderStatusCode]);
 
   const saveOrderStatus = async () => {
     setIsUpdating(true);
@@ -285,10 +290,10 @@ export default function OrderDetailPage() {
                     <select
                       value={selectedStatusCode}
                       onChange={(e) => setSelectedStatusCode(e.target.value)}
-                      className="w-full rounded-[12px] border border-black/[0.06] bg-white px-4 py-3 text-[14px] font-light outline-none"
+                      className="w-full rounded-[14px] border border-primary/20 bg-white px-4 py-3 text-[14px] font-light tracking-tight text-va-black shadow-[0_8px_24px_-16px_rgba(219,39,119,0.45)] outline-none transition-all focus:border-primary/50 focus:ring-2 focus:ring-primary/15"
                     >
-                      {statusOptionsWithCurrent.map((option) => (
-                        <option key={option.value} value={option.value}>
+                      {statusOptionsWithCurrent.map((option: any) => (
+                        <option key={`${option.id ?? 'x'}-${option.code}`} value={option.code}>
                           {option.label}
                         </option>
                       ))}
@@ -303,6 +308,32 @@ export default function OrderDetailPage() {
                     Status opslaan
                   </button>
                 </div>
+
+                {selectedStatusInfo && (
+                  <div className="rounded-[14px] border border-black/[0.05] bg-white px-5 py-4 space-y-2">
+                    <div className="text-[10px] uppercase tracking-[0.2em] text-va-black/35">Status effect</div>
+                    <div className="text-[14px] font-light text-va-black/85">{selectedStatusInfo.title}</div>
+                    <div className="text-[12px] font-light text-va-black/55">
+                      <span className="font-medium text-va-black/70">Admin:</span> {selectedStatusInfo.adminAction}
+                    </div>
+                    <div className="text-[12px] font-light text-va-black/55">
+                      <span className="font-medium text-va-black/70">Klant:</span> {selectedStatusInfo.customerImpact}
+                    </div>
+                  </div>
+                )}
+
+                {statusOptionsWithCurrent.length > 0 && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {statusOptionsWithCurrent.map((status: any) => (
+                      <div key={`status-map-${status.id ?? status.code}`} className="rounded-[12px] border border-black/[0.04] bg-white/90 px-4 py-3 space-y-1">
+                        <div className="text-[11px] uppercase tracking-[0.18em] text-va-black/35">
+                          {status.label} {status.id ? `(ID ${status.id})` : ''}
+                        </div>
+                        <div className="text-[12px] font-light text-va-black/70">{status.adminAction}</div>
+                      </div>
+                    ))}
+                  </div>
+                )}
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <button
@@ -658,6 +689,16 @@ export default function OrderDetailPage() {
               <div className="pt-4 border-t border-white/5">
                 <div className="text-[11px] text-white/30 uppercase tracking-widest mb-1">Betaalmethode</div>
                 <div className="text-[13px] font-light">{order.finance?.method}</div>
+                {order.finance?.paymentMethod?.id && (
+                  <div className="text-[11px] text-white/35 mt-1">
+                    Handshake ID: {order.finance.paymentMethod.id} ({order.finance.paymentMethod.code})
+                  </div>
+                )}
+                {order.finance?.paymentMethod?.behavior && (
+                  <div className="text-[12px] text-white/55 mt-2 font-light leading-relaxed">
+                    {order.finance.paymentMethod.behavior}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -665,6 +706,9 @@ export default function OrderDetailPage() {
             <div className="bg-white rounded-[20px] p-8 border border-black/[0.03] shadow-sm space-y-4">
               <HeadingInstrument level={3} className="text-[11px] font-medium tracking-[0.2em] text-va-black/20 uppercase">Integratie</HeadingInstrument>
               <div className="text-[12px] font-light text-va-black/50">Source order id: {order.technical?.sourceOrderId || order.technical?.sourceId || '-'}</div>
+              <div className="text-[12px] font-light text-va-black/50">
+                Handshake IDs: world {order.technical?.worldId ?? '-'} • journey {order.technical?.journeyId ?? '-'} • status {order.technical?.statusId ?? '-'} • payment {order.technical?.paymentMethodId ?? '-'}
+              </div>
               <div className="text-[12px] font-light text-va-black/50">Meta keys: {order.technical?.metaKeyCount ?? '-'}</div>
               <div className="text-[12px] font-light text-va-black/50 break-all">Dropbox pad: {order.integration?.dropboxFolderPath || '-'}</div>
               {order.integration?.orderDownloadUrl && (

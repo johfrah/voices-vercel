@@ -36,12 +36,14 @@ async function syncStatusForOrder(args: {
     .map((candidate) => statusRows.find((row: any) => row.code === candidate))
     .find(Boolean);
 
-  if (statusRow) {
-    await db.update(ordersV2).set({ statusId: statusRow.id }).where(eq(ordersV2.id, v2OrderId));
+  if (!statusRow) {
+    throw new Error(`No status found for candidates: ${statusCandidates.join(', ')}`);
   }
 
+  await db.update(ordersV2).set({ statusId: statusRow.id }).where(eq(ordersV2.id, v2OrderId));
+
   if (legacyOrderId) {
-    const legacyStatus = mapStatusToLegacyStatus(statusRow?.code || statusCandidates[0] || 'pending');
+    const legacyStatus = mapStatusToLegacyStatus(statusRow.code || statusCandidates[0] || 'pending');
     await db.update(orders).set({ status: legacyStatus }).where(eq(orders.id, legacyOrderId));
 
     if (note) {
@@ -53,7 +55,7 @@ async function syncStatusForOrder(args: {
     }
   }
 
-  return statusRow?.code || statusCandidates[0] || null;
+  return statusRow.code || statusCandidates[0] || null;
 }
 
 export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
@@ -111,8 +113,8 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
       const statusCode = await syncStatusForOrder({
         v2OrderId: id,
         legacyOrderId,
-        statusCandidates: ['in_productie', 'in_progress', 'processing', 'active'],
-        note: 'Script nagekeken: order in productie gezet.',
+        statusCandidates: ['awaiting_payment', 'waiting_po', 'unpaid'],
+        note: 'Productie gestart: order in actieve opvolging.',
       });
       return NextResponse.json({ success: true, action, statusCode });
     }
@@ -121,7 +123,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
       const statusCode = await syncStatusForOrder({
         v2OrderId: id,
         legacyOrderId,
-        statusCandidates: ['completed', 'completed_paid', 'paid'],
+        statusCandidates: ['completed_unpaid', 'completed'],
         note: 'Order gemarkeerd als verzonden naar klant.',
       });
       return NextResponse.json({ success: true, action, statusCode });
