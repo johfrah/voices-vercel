@@ -185,6 +185,7 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
       video: meta.video_id && videoPathsMap[meta.video_id] 
         ? { id: meta.video_id, file_path: videoPathsMap[meta.video_id] } 
         : null,
+      subtitle_data: meta.subtitle_data || null,
       featured_image: w.media_file_path ? { file_path: w.media_file_path, alt_text: w.media_alt_text } : null,
       upcoming_editions: editionsByWorkshop[wid] || [],
       reviews: reviewsByWorkshop[wid] || [],

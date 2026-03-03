@@ -17,6 +17,8 @@ interface WorkshopHeroIslandProps {
     price: number | string;
     expert_note?: string;
     featured_image?: { file_path: string; alt_text?: string } | null;
+    video?: { id: number; file_path: string } | null;
+    subtitle_data?: { lang: string; label: string; items: Array<{ start: number; end: number; text: string }> } | null;
     taxonomy?: { type?: string; category?: string };
     upcoming_editions?: Array<{
       id: number;
@@ -100,6 +102,11 @@ export const WorkshopHeroIsland: React.FC<WorkshopHeroIslandProps> = ({ workshop
                 className="w-full h-full object-cover rounded-[24px] shadow-2xl border border-white/10"
                 autoPlay={true}
                 muted={true}
+                subtitles={workshop.subtitle_data ? [{
+                  srcLang: workshop.subtitle_data.lang || 'nl',
+                  label: workshop.subtitle_data.label || 'Nederlands',
+                  data: workshop.subtitle_data.items || []
+                }] : []}
               />
             </ContainerInstrument>
           </ContainerInstrument>
