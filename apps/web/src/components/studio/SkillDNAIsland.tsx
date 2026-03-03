@@ -5,6 +5,15 @@ import { ContainerInstrument, HeadingInstrument, TextInstrument } from "@/compon
 import { cn } from "@/lib/utils";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
 
+const SKILL_LABELS: Record<string, string> = {
+  stemtechniek: "Stemtechniek",
+  uitspraak: "Uitspraak",
+  intonatie: "Intonatie",
+  storytelling: "Storytelling",
+  studiotechniek: "Studiotechniek",
+  business: "Business",
+};
+
 interface SkillDNAIslandProps {
   workshop: any;
 }
@@ -39,10 +48,10 @@ export const SkillDNAIsland: React.FC<SkillDNAIslandProps> = ({ workshop }) => {
         <div className="lg:col-span-5 space-y-8">
           <div>
             <TextInstrument className="text-[11px] font-bold tracking-[0.3em] uppercase text-primary mb-4">
-              Wat leer je écht?
+              <VoiceglotText translationKey="studio.skill_dna.label" defaultText="Wat leer je écht?" />
             </TextInstrument>
             <HeadingInstrument level={2} className="text-4xl md:text-6xl font-light tracking-tighter text-va-black leading-tight">
-              Jouw Skill DNA
+              <VoiceglotText translationKey="studio.skill_dna.title" defaultText="Hier groei je in" />
             </HeadingInstrument>
           </div>
 
@@ -54,10 +63,13 @@ export const SkillDNAIsland: React.FC<SkillDNAIslandProps> = ({ workshop }) => {
             </div>
             <div>
               <TextInstrument className="text-[11px] font-bold tracking-[0.2em] uppercase text-va-black/30 mb-1">
-                Instapniveau
+                <VoiceglotText translationKey="studio.skill_dna.level_label" defaultText="Instapniveau" />
               </TextInstrument>
               <TextInstrument className="text-xl font-light tracking-tight text-va-black">
-                {level === 'Starter' ? 'Geen ervaring vereist' : 'Basiservaring vereist'}
+                {level === 'Starter' 
+                  ? <VoiceglotText translationKey="studio.skill_dna.level_starter" defaultText="Geen ervaring vereist" />
+                  : <VoiceglotText translationKey="studio.skill_dna.level_basis" defaultText="Basiservaring vereist" />
+                }
               </TextInstrument>
             </div>
           </div>
@@ -71,7 +83,7 @@ export const SkillDNAIsland: React.FC<SkillDNAIslandProps> = ({ workshop }) => {
               <div key={skill.key} className="space-y-4">
                 <div className="flex justify-between items-end">
                   <TextInstrument className="text-[13px] font-medium tracking-widest uppercase text-va-black/60">
-                    {skill.label}
+                    <VoiceglotText translationKey={`studio.skill.${skill.key}`} defaultText={skill.label} />
                   </TextInstrument>
                   <TextInstrument className="text-[11px] font-bold text-primary/40">
                     {score}/5

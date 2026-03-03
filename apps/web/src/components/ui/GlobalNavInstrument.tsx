@@ -37,6 +37,7 @@ import {
   Users 
 } from 'lucide-react';
 import { VoicesLinkInstrument, useVoicesRouter } from './VoicesLinkInstrument';
+import { StudioWorkshopsMenu } from '@/components/studio/StudioWorkshopsMenu';
 import { 
   ButtonInstrument, 
   ContainerInstrument,
@@ -568,7 +569,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
   const showFavorites = isAdmin || (navConfig?.icons?.favorites ?? (!isSpecialJourney && !isStudioJourney && !isMobile));
   const showCart = isAdmin || (navConfig?.icons?.cart ?? (!isSpecialJourney && !isStudioJourney && !isPortfolioMarket && !isMobile));
   const showNotifications = isAdmin || (navConfig?.icons?.notifications ?? (auth.isAuthenticated && notificationsCount > 0 && !isPortfolioMarket && !isMobile));
-  const showLanguage = isAdmin || (navConfig?.icons?.language ?? !isMobile);
+  const showLanguage = isAdmin || (navConfig?.icons?.language ?? true);
   const showAccount = isAdmin || (navConfig?.icons?.account ?? (!isSpecialJourney && !isStudioJourney && !isMobile));
   const showMenu = isAdmin || (navConfig?.icons?.menu ?? !isSpecialJourney);
   const showLinks = isAdmin || (((navConfig?.links || [])?.length ?? 0) > 0 && !isMobile); 
@@ -691,16 +692,22 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
 
             {hasSubmenu && (
               <ContainerInstrument plain className="absolute top-full left-1/2 -translate-x-1/2 pt-4 opacity-0 translate-y-2 pointer-events-none group-hover/link:opacity-100 group-hover/link:translate-y-0 group-hover/link:pointer-events-auto transition-all duration-500 z-[250]">
-                <ContainerInstrument plain className="bg-white rounded-[20px] shadow-aura border border-black/5 p-2 w-64 overflow-hidden">
-                  {link.submenu.map((sub: any, subIdx: number) => (
-                    <DropdownItem 
-                      key={subIdx}
-                      icon={ChevronRight}
-                      label={<VoiceglotText translationKey={sub.key} defaultText={sub.name} />}
-                      href={sub.href}
-                    />
-                  ))}
-                </ContainerInstrument>
+                {(pathname.startsWith('/studio') && idx === 0) ? (
+                  <ContainerInstrument plain className="bg-white rounded-[20px] shadow-aura border border-black/5 w-[480px] overflow-hidden">
+                    <StudioWorkshopsMenu />
+                  </ContainerInstrument>
+                ) : (
+                  <ContainerInstrument plain className="bg-white rounded-[20px] shadow-aura border border-black/5 p-2 w-64 overflow-hidden">
+                    {link.submenu.map((sub: any, subIdx: number) => (
+                      <DropdownItem 
+                        key={subIdx}
+                        icon={ChevronRight}
+                        label={<VoiceglotText translationKey={sub.key} defaultText={sub.name} />}
+                        href={sub.href}
+                      />
+                    ))}
+                  </ContainerInstrument>
+                )}
               </ContainerInstrument>
             )}
 
@@ -1263,6 +1270,14 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
                     <TextInstrument className="text-[11px] font-bold text-va-black/40 tracking-[0.2em] uppercase">
                       <VoiceglotText translationKey="nav.mobile_menu_label" defaultText="Menu" />
                     </TextInstrument>
+                  </ContainerInstrument>
+                  <ContainerInstrument plain className="px-3 py-2 border-b border-black/5 mb-1">
+                    <ContainerInstrument plain className="flex items-center justify-between gap-3">
+                      <TextInstrument className="text-[11px] font-bold text-va-black/40 tracking-[0.2em] uppercase">
+                        <VoiceglotText translationKey="nav.language_selection" defaultText="Language choice" />
+                      </TextInstrument>
+                      <LanguageSwitcher className="w-9 h-9 rounded-full transition-all duration-500 cursor-pointer group flex items-center justify-center relative hover:bg-va-black/5 text-va-black/40 hover:text-va-black" />
+                    </ContainerInstrument>
                   </ContainerInstrument>
                   <DropdownItem icon={Home} label={<VoiceglotText translationKey="nav.home" defaultText="Home" />} href="/" />
                   {activeLinks.map((link: any) => (

@@ -1,15 +1,17 @@
-import { db } from '../../1-SITE/packages/database/src/index';
-import { orders, ordersV2, ordersLegacyBloat } from '../../1-SITE/packages/database/src/schema';
+import { db } from '../../packages/database/src/index';
+import { orders, ordersV2, ordersLegacyBloat } from '../../packages/database/src/schema/index';
 import { eq, and, sql } from 'drizzle-orm';
 
 async function migrateToV2Tables() {
   console.log('🚀 Starting Migration to Clean V2 Tables (WP ID as PK + Legacy ID)...');
+  const startDate = process.env.MIGRATION_FROM || '2025-12-01';
+  const endDate = process.env.MIGRATION_TO || '2026-01-01';
 
   try {
     const decemberOrders = await db.select().from(orders).where(
       and(
-        sql`created_at >= '2025-12-01'`,
-        sql`created_at <= '2025-12-31'`
+        sql`created_at >= ${startDate}`,
+        sql`created_at < ${endDate}`
       )
     );
 
@@ -36,6 +38,7 @@ async function migrateToV2Tables() {
       await db.insert(ordersV2).values({
         id: order.wpOrderId, // 🛡️ WP ID is nu de ID
         userId: order.user_id,
+        worldId: order.worldId,
         journeyId: order.journeyId,
         statusId: order.statusId,
         paymentMethodId: order.paymentMethodId,
@@ -48,9 +51,11 @@ async function migrateToV2Tables() {
       }).onConflictDoUpdate({
         target: ordersV2.id,
         set: {
+          userId: order.user_id,
+          worldId: order.worldId,
           journeyId: order.journeyId,
           statusId: order.statusId,
-          paymentMethodId: order.payment_method_id,
+          paymentMethodId: order.paymentMethodId,
           amountNet: order.amountNet,
           amountTotal: order.total,
           purchaseOrder: order.purchaseOrder,

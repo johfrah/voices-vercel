@@ -2,6 +2,7 @@
 
 import React from "react";
 import { ContainerInstrument, HeadingInstrument, TextInstrument } from "@/components/ui/LayoutInstruments";
+import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { Clock, MapPin } from "lucide-react";
 
 interface DayScheduleIslandProps {
@@ -31,10 +32,10 @@ export const DayScheduleIsland: React.FC<DayScheduleIslandProps> = ({ workshop }
         <div className="lg:col-span-5 space-y-8">
           <div>
             <TextInstrument className="text-[11px] font-bold tracking-[0.3em] uppercase text-primary mb-4">
-              Het Programma
+              <VoiceglotText translationKey="studio.schedule.label" defaultText="Het Programma" />
             </TextInstrument>
             <HeadingInstrument level={2} className="text-4xl md:text-6xl font-light tracking-tighter text-va-black leading-tight">
-              De Dagindeling
+              <VoiceglotText translationKey="studio.schedule.title" defaultText="De Dagindeling" />
             </HeadingInstrument>
           </div>
 
@@ -46,7 +47,7 @@ export const DayScheduleIsland: React.FC<DayScheduleIslandProps> = ({ workshop }
                 </div>
                 <div>
                   <TextInstrument className="text-[11px] font-bold tracking-[0.2em] uppercase text-white/30 mb-0.5">
-                    Timing
+                    <VoiceglotText translationKey="studio.schedule.timing" defaultText="Timing" />
                   </TextInstrument>
                   <TextInstrument className="text-lg font-light tracking-tight">
                     09:45 Ontvangst — 17:00 Einde
@@ -60,7 +61,7 @@ export const DayScheduleIsland: React.FC<DayScheduleIslandProps> = ({ workshop }
                 </div>
                 <div>
                   <TextInstrument className="text-[11px] font-bold tracking-[0.2em] uppercase text-white/30 mb-0.5">
-                    Locatie
+                    <VoiceglotText translationKey="studio.schedule.location" defaultText="Locatie" />
                   </TextInstrument>
                   <TextInstrument className="text-lg font-light tracking-tight">
                     {nextEdition.location?.name}, {nextEdition.location?.city}

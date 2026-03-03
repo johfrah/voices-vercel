@@ -37,23 +37,32 @@ export const WorkshopInterestForm: React.FC = () => {
   const [isFetching, setIsFetching] = useState(true);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
-  // 🛡️ CHRIS-PROTOCOL: Handshake Truth - Fetch workshops from DB
+  // 🛡️ CHRIS-PROTOCOL: Pre-select workshop from URL parameter (ID-First)
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const params = new URLSearchParams(window.location.search);
+    const workshopId = params.get('workshopId');
+    if (workshopId) {
+      setSelectedWorkshops(prev => prev.includes(workshopId) ? prev : [...prev, workshopId]);
+    }
+  }, []);
+
+  // 🛡️ CHRIS-PROTOCOL: Fetch workshops from Studio API (Source of Truth)
   useEffect(() => {
     const fetchWorkshops = async () => {
       try {
-        const res = await fetch('/api/admin/config?type=actors'); // Using actors as a proxy for workshops for now
+        const res = await fetch('/api/studio/workshops/');
         const data = await res.json();
         
-        // If we have live workshops in the DB, use them
-        if (data.results && data.results.length > 0) {
-          setWorkshops(data.results.map((w: any) => ({
+        if (data.workshops && data.workshops.length > 0) {
+          setWorkshops(data.workshops.map((w: any) => ({
             id: w.id.toString(),
             title: w.title
           })));
         } else {
           setWorkshops(WORKSHOPS);
         }
-      } catch (err) {
+      } catch {
         setWorkshops(WORKSHOPS);
       } finally {
         setIsFetching(false);

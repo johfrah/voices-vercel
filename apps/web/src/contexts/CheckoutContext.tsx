@@ -247,6 +247,7 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
           //  KELLY-MANDATE: Clean up items during hydration (remove 0 prices and duplicates)
           const cleanItems = (parsed.items || []).filter((item: any, index: number, self: any[]) => {
+            if (item.type === 'workshop_edition' || item.type === 'academy_course') return true;
             const price = item.pricing?.total ?? item.pricing?.subtotal ?? 0;
             if (price <= 0) return false;
             
@@ -378,7 +379,9 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       usageId: journeyId,
       courseId: journey === 'academy' ? courseId : undefined,
       editionId: journey === 'studio' ? courseId : undefined,
-      items: (journey === 'studio' && courseId) ? [{ id: courseId, type: 'workshop_edition' }] : prev.items
+      items: (journey === 'studio' && courseId && !prev.items.some(i => i.type === 'workshop_edition' && (i.pricing?.total ?? 0) > 0)) 
+        ? [{ id: courseId, type: 'workshop_edition' }] 
+        : prev.items
     }));
   }, []);
 

@@ -1,20 +1,20 @@
 /**
- * WORKSHOP DETAIL PAGE (2026)
+ * STUDIO [SLUG] HANDLER (2026)
  *
- * Smart Router: Works with both slugs and IDs.
- * Nuclear Loading: Islands are loaded dynamically (ssr: false).
- * Handshake: 100% data-driven from Supabase.
- *
- * 🛡️ CHRIS-PROTOCOL: Studio sub-foyer pages (quiz, doe-je-mee, contact, faq)
- * are handled here before the workshop lookup to prevent false 404s.
+ * ID-First Handshake: Resolves via slug_registry FIRST.
+ * Routing: workshop → detail page, article → InstrumentRenderer/specific component.
+ * Sub-Foyer: doe-je-mee, quiz, faq, contact (World 2 info pages).
+ * Nuclear Loading: Islands loaded dynamically (ssr: false).
  */
 
-import { ContainerInstrument, HeadingInstrument, TextInstrument, PageWrapperInstrument } from "@/components/ui/LayoutInstruments";
+import { ContainerInstrument, HeadingInstrument, PageWrapperInstrument, TextInstrument } from "@/components/ui/LayoutInstruments";
+import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import nextDynamic from "next/dynamic";
-import { getStudioWorkshopsData } from "@/lib/services/studio-service";
+import { getStudioWorkshopsData, WorkshopApiResponse } from "@/lib/services/studio-service";
+import { createClient } from "@supabase/supabase-js";
 
 // NUCLEAR ISLANDS (ssr: false)
 const WorkshopHeroIsland = nextDynamic(() => import("@/components/studio/WorkshopHeroIsland").then(mod => mod.WorkshopHeroIsland), { ssr: false });
@@ -22,50 +22,145 @@ const SkillDNAIsland = nextDynamic(() => import("@/components/studio/SkillDNAIsl
 const DayScheduleIsland = nextDynamic(() => import("@/components/studio/DayScheduleIsland").then(mod => mod.DayScheduleIsland), { ssr: false });
 const InstructorLocationIsland = nextDynamic(() => import("@/components/studio/InstructorLocationIsland").then(mod => mod.InstructorLocationIsland), { ssr: false });
 const ReviewGrid = nextDynamic(() => import("@/components/studio/ReviewGrid").then(mod => mod.ReviewGrid), { ssr: false });
-const WorkshopQuiz = nextDynamic(() => import("@/components/studio/WorkshopQuiz").then(mod => mod.WorkshopQuiz), { ssr: false });
-const WorkshopInterestForm = nextDynamic(() => import("@/components/studio/WorkshopInterestForm").then(mod => mod.WorkshopInterestForm), { ssr: false });
 const LiquidBackground = nextDynamic(() => import("@/components/ui/LiquidBackground").then(mod => mod.LiquidBackground), { ssr: false });
+const WorkshopInterestForm = nextDynamic(() => import("@/components/studio/WorkshopInterestForm").then(mod => mod.WorkshopInterestForm), { ssr: false });
+const WorkshopQuiz = nextDynamic(() => import("@/components/studio/WorkshopQuiz").then(mod => mod.WorkshopQuiz), { ssr: false });
 
-const STUDIO_SUB_PAGES = ['quiz', 'doe-je-mee', 'contact', 'faq', 'maak-een-afspraak'] as const;
+// 🛡️ CHRIS-PROTOCOL: SDK for slug_registry resolution
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const supabase = createClient(supabaseUrl, supabaseKey, {
+  auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false }
+});
 
-async function getWorkshopData(slugOrId: string) {
+// 🛡️ ID-First Handshake: resolve slug via registry
+interface RegistryEntry {
+  entity_id: number;
+  routing_type: string;
+  world_id: number | null;
+}
+
+async function resolveFromRegistry(slug: string): Promise<RegistryEntry | null> {
   try {
-    // 🛡️ CHRIS-PROTOCOL: Direct Service Call (v2.24.9)
-    // Eliminates internal HTTP fetch during SSR to prevent timeouts and deadlocks.
-    const data = await getStudioWorkshopsData();
-    const workshop = data.workshops.find(w => w.slug === slugOrId || w.id.toString() === slugOrId);
-    return workshop || null;
-  } catch (err) {
-    console.error(`[Workshop Detail] Failed to fetch workshop data for ${slugOrId}:`, err);
+    const lookupSlug = `studio/${slug}`.toLowerCase();
+    const { data } = await supabase
+      .from('slug_registry')
+      .select('entity_id, routing_type, world_id')
+      .eq('slug', lookupSlug)
+      .eq('is_active', true)
+      .maybeSingle();
+    return data || null;
+  } catch {
     return null;
   }
 }
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  if (STUDIO_SUB_PAGES.includes(params.slug as any)) {
-    const titles: Record<string, string> = {
-      'quiz': 'Welke workshop past bij jou? | Voices Studio',
-      'doe-je-mee': 'Doe je mee? | Voices Studio',
-      'contact': 'Contact | Voices Studio',
-      'faq': 'FAQ | Voices Studio',
-      'maak-een-afspraak': 'Maak een afspraak | Voices Studio',
-    };
-    return { title: titles[params.slug] || 'Voices Studio' };
+async function getWorkshopByEntityId(entityId: number): Promise<WorkshopApiResponse['workshops'][number] | null> {
+  try {
+    const data = await getStudioWorkshopsData();
+    return data.workshops.find(w => w.id === entityId) || null;
+  } catch {
+    return null;
   }
-
-  const workshop = await getWorkshopData(params.slug);
-  if (!workshop) return { title: "Workshop niet gevonden" };
-
-  return {
-    title: `${workshop.title} | Voices Studio`,
-    description: workshop.expert_note || workshop.description,
-    openGraph: {
-      images: workshop.featured_image ? [`https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices/${workshop.featured_image.file_path}`] : []
-    }
-  };
 }
 
-export default async function WorkshopDetailPage({ params }: { params: { slug: string } }) {
+async function getWorkshopBySlug(slug: string): Promise<WorkshopApiResponse['workshops'][number] | null> {
+  try {
+    const data = await getStudioWorkshopsData();
+    return data.workshops.find(w => w.slug === slug || w.id.toString() === slug) || null;
+  } catch {
+    return null;
+  }
+}
+
+// 🛡️ CHRIS-PROTOCOL: Metadata via ID-First
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  const entry = await resolveFromRegistry(params.slug);
+
+  if (entry?.routing_type === 'article') {
+    const { data: article } = await supabase
+      .from('content_articles')
+      .select('title')
+      .eq('id', entry.entity_id)
+      .maybeSingle();
+    return { title: article?.title || 'Voices Studio' };
+  }
+
+  if (entry?.routing_type === 'workshop') {
+    const workshop = await getWorkshopByEntityId(entry.entity_id);
+    if (workshop) {
+      return {
+        title: `${workshop.title} | Voices Studio`,
+        description: workshop.expert_note || workshop.description,
+        openGraph: {
+          images: workshop.featured_image ? [`https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices/${workshop.featured_image.file_path}`] : []
+        }
+      };
+    }
+  }
+
+  // Fallback: special component routes
+  const specialTitles: Record<string, string> = {
+    'doe-je-mee': 'Doe je mee? | Voices Studio',
+    'quiz': 'Workshop Quiz | Voices Studio',
+  };
+  if (specialTitles[params.slug]) return { title: specialTitles[params.slug] };
+
+  // Fallback: try workshop by slug directly (Lazy Discovery)
+  const workshop = await getWorkshopBySlug(params.slug);
+  if (workshop) {
+    return {
+      title: `${workshop.title} | Voices Studio`,
+      description: workshop.expert_note || workshop.description,
+    };
+  }
+
+  return { title: "Voices Studio" };
+}
+
+export default async function StudioSlugPage({ params }: { params: { slug: string } }) {
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // STAP 1: ID-First Handshake via slug_registry
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  const entry = await resolveFromRegistry(params.slug);
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // STAP 2: Route op basis van routing_type
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  // 2A: Workshop (entity_type = workshop in registry)
+  if (entry?.routing_type === 'workshop') {
+    const workshop = await getWorkshopByEntityId(entry.entity_id);
+    if (workshop) return renderWorkshopDetail(workshop);
+  }
+
+  // 2B: Article (sub-foyer CMS pages: faq, contact, etc.)
+  if (entry?.routing_type === 'article') {
+    return await renderSubFoyerArticle(entry.entity_id, params.slug);
+  }
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // STAP 3: Special component routes (geen registry entry)
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  if (params.slug === 'doe-je-mee') {
+    return (
+      <PageWrapperInstrument className="bg-va-off-white">
+        <Suspense fallback={null}><LiquidBackground /></Suspense>
+        <ContainerInstrument className="py-32 max-w-4xl mx-auto">
+          <ContainerInstrument plain className="mb-16 text-center">
+            <HeadingInstrument level={1} className="text-5xl font-light tracking-tighter mb-4">
+              <VoiceglotText translationKey="studio.interest.title" defaultText="Doe je mee?" />
+            </HeadingInstrument>
+            <TextInstrument className="text-va-black/40 font-light">
+              <VoiceglotText translationKey="studio.interest.subtitle" defaultText="Laat ons weten welke workshop je interesseert." />
+            </TextInstrument>
+          </ContainerInstrument>
+          <WorkshopInterestForm />
+        </ContainerInstrument>
+      </PageWrapperInstrument>
+    );
+  }
+
   if (params.slug === 'quiz') {
     return (
       <PageWrapperInstrument className="bg-va-off-white">
@@ -77,93 +172,133 @@ export default async function WorkshopDetailPage({ params }: { params: { slug: s
     );
   }
 
-  if (params.slug === 'doe-je-mee') {
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // STAP 4: Lazy Discovery — workshop niet in registry maar wel in DB
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  const workshopFallback = await getWorkshopBySlug(params.slug);
+  if (workshopFallback) return renderWorkshopDetail(workshopFallback);
+
+  // Niets gevonden
+  notFound();
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// RENDER FUNCTIONS
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+function renderWorkshopDetail(workshop: WorkshopApiResponse['workshops'][number]) {
+  return (
+    <PageWrapperInstrument className="bg-va-off-white min-h-screen pb-32">
+      <Suspense fallback={<ContainerInstrument className="h-[600px] bg-va-black animate-pulse" />}>
+        <WorkshopHeroIsland workshop={workshop} />
+      </Suspense>
+
+      <ContainerInstrument className="max-w-7xl mx-auto px-6 mt-24 space-y-32">
+        <Suspense fallback={<ContainerInstrument className="h-96 bg-white rounded-[30px] animate-pulse" />}>
+          <SkillDNAIsland workshop={workshop} />
+        </Suspense>
+
+        <Suspense fallback={<ContainerInstrument className="h-96 bg-white rounded-[30px] animate-pulse" />}>
+          <DayScheduleIsland workshop={workshop} />
+        </Suspense>
+
+        <Suspense fallback={<ContainerInstrument className="h-96 bg-white rounded-[30px] animate-pulse" />}>
+          <InstructorLocationIsland workshop={workshop} />
+        </Suspense>
+      </ContainerInstrument>
+
+      <ContainerInstrument plain className="mt-32">
+        <Suspense fallback={<ContainerInstrument className="h-96 bg-va-off-white animate-pulse" />}>
+          <ReviewGrid
+            reviews={workshop.reviews}
+            title={`Wat deelnemers zeggen over ${workshop.title}`}
+            maxItems={6}
+          />
+        </Suspense>
+      </ContainerInstrument>
+    </PageWrapperInstrument>
+  );
+}
+
+async function renderSubFoyerArticle(entityId: number, slug: string) {
+  // FAQ: entity opgehaald via ID, FAQs via studio-service (Source of Truth)
+  if (slug === 'faq') {
+    const { faqs } = await getStudioWorkshopsData();
     return (
       <PageWrapperInstrument className="bg-va-off-white">
         <Suspense fallback={null}><LiquidBackground /></Suspense>
-        <ContainerInstrument className="py-32 max-w-4xl mx-auto">
-          <header className="mb-16 text-center">
-            <HeadingInstrument level={1} className="text-5xl font-light tracking-tighter mb-4">Doe je mee?</HeadingInstrument>
-            <TextInstrument className="text-va-black/40 font-light">Laat ons weten welke workshop je interesseert.</TextInstrument>
-          </header>
-          <WorkshopInterestForm />
+        <ContainerInstrument className="max-w-4xl mx-auto px-6 py-32">
+          <ContainerInstrument plain className="text-center mb-20">
+            <TextInstrument className="text-[11px] font-bold tracking-[0.3em] uppercase text-primary mb-4">
+              <VoiceglotText translationKey="studio.faq.label" defaultText="Veelgestelde Vragen" />
+            </TextInstrument>
+            <HeadingInstrument level={1} className="text-4xl md:text-5xl font-light tracking-tighter text-va-black">
+              <VoiceglotText translationKey="studio.faq.title" defaultText="Alles wat je moet weten over onze workshops" />
+            </HeadingInstrument>
+          </ContainerInstrument>
+          <ContainerInstrument plain className="space-y-4">
+            {faqs.map((faq) => (
+              <ContainerInstrument key={faq.id} className="bg-white rounded-[20px] p-8 border border-black/[0.03] shadow-aura">
+                <HeadingInstrument level={4} className="text-xl font-light text-va-black mb-4">{faq.question}</HeadingInstrument>
+                <TextInstrument className="text-va-black/60 font-light leading-relaxed">{faq.answer}</TextInstrument>
+              </ContainerInstrument>
+            ))}
+          </ContainerInstrument>
         </ContainerInstrument>
       </PageWrapperInstrument>
     );
   }
 
-  if (params.slug === 'contact' || params.slug === 'faq' || params.slug === 'maak-een-afspraak') {
-    const { createClient } = await import('@supabase/supabase-js');
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false } }
-    );
-    const cmsSlug = `studio/${params.slug}`;
-    const { data: page } = await supabase.from('content_articles').select('*').eq('slug', cmsSlug).maybeSingle();
-    if (page) {
-      const { data: blocks } = await supabase.from('content_blocks').select('*').eq('article_id', page.id).order('display_order', { ascending: true });
-      const { InstrumentRenderer } = await import('@/components/ui/InstrumentRenderer');
-      const { VoiceglotText } = await import('@/components/ui/VoiceglotText');
-      return (
-        <PageWrapperInstrument className="bg-va-off-white">
-          <Suspense fallback={null}><LiquidBackground /></Suspense>
-          <ContainerInstrument className="py-48 relative z-10 max-w-5xl mx-auto px-6">
-            <header className="mb-64">
-              <TextInstrument className="text-[11px] font-bold tracking-[0.4em] text-primary/60 mb-12 block uppercase">Studio</TextInstrument>
-              <HeadingInstrument level={1} className="text-[10vw] lg:text-[120px] font-light tracking-tighter mb-20 leading-[0.85] text-va-black" suppressHydrationWarning>
-                <VoiceglotText translationKey={`page.${cmsSlug}.title`} defaultText={page.title} />
-              </HeadingInstrument>
-            </header>
-            <InstrumentRenderer blocks={blocks || []} />
+  // Contact: Studio-specifieke contactinfo
+  if (slug === 'contact') {
+    return (
+      <PageWrapperInstrument className="bg-va-off-white">
+        <Suspense fallback={null}><LiquidBackground /></Suspense>
+        <ContainerInstrument className="max-w-4xl mx-auto px-6 py-32">
+          <ContainerInstrument plain className="text-center mb-20">
+            <TextInstrument className="text-[11px] font-bold tracking-[0.3em] uppercase text-primary mb-4">
+              <VoiceglotText translationKey="studio.contact.label" defaultText="Contact" />
+            </TextInstrument>
+            <HeadingInstrument level={1} className="text-4xl md:text-5xl font-light tracking-tighter text-va-black mb-4">
+              <VoiceglotText translationKey="studio.contact.title" defaultText="Voices Studio" />
+            </HeadingInstrument>
+            <TextInstrument className="text-va-black/40 font-light text-lg">
+              <VoiceglotText translationKey="studio.contact.subtitle" defaultText="Heb je vragen over onze workshops of wil je meer weten? Neem gerust contact op." />
+            </TextInstrument>
           </ContainerInstrument>
-        </PageWrapperInstrument>
-      );
-    }
-    notFound();
+          <ContainerInstrument plain className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <ContainerInstrument className="bg-white rounded-[20px] p-8 border border-black/[0.03] shadow-aura space-y-4">
+              <HeadingInstrument level={3} className="text-xl font-light text-va-black"><VoiceglotText translationKey="studio.contact.reach" defaultText="Bereikbaarheid" /></HeadingInstrument>
+              <TextInstrument className="text-va-black/60 font-light"><VoiceglotText translationKey="studio.contact.email" defaultText="E-mail: studio@voices.be" noTranslate /></TextInstrument>
+              <TextInstrument className="text-va-black/60 font-light"><VoiceglotText translationKey="studio.contact.phone" defaultText="Telefoon: +32 (0)2 793 19 91" noTranslate /></TextInstrument>
+            </ContainerInstrument>
+            <ContainerInstrument className="bg-va-black text-white rounded-[20px] p-8 shadow-aura-lg space-y-4">
+              <HeadingInstrument level={3} className="text-xl font-light text-white"><VoiceglotText translationKey="studio.contact.studio_title" defaultText="De Studio" /></HeadingInstrument>
+              <TextInstrument className="text-white/60 font-light"><VoiceglotText translationKey="studio.contact.address" defaultText="Jules Delhaizestraat 42" noTranslate /></TextInstrument>
+              <TextInstrument className="text-white/60 font-light"><VoiceglotText translationKey="studio.contact.city" defaultText="1080 Brussel (Molenbeek)" noTranslate /></TextInstrument>
+            </ContainerInstrument>
+          </ContainerInstrument>
+        </ContainerInstrument>
+      </PageWrapperInstrument>
+    );
   }
 
-  const workshop = await getWorkshopData(params.slug);
-  if (!workshop) notFound();
+  // Generieke article: ophalen via entity_id en renderen
+  const { data: article } = await supabase
+    .from('content_articles')
+    .select('*, content_blocks(*)')
+    .eq('id', entityId)
+    .maybeSingle();
 
-  return (
-    <PageWrapperInstrument className="bg-va-off-white min-h-screen pb-32">
-      
-      {/* 1. HERO ISLAND: Video, Expert Note, Price, CTA */}
-      <Suspense fallback={<div className="h-[600px] bg-va-black animate-pulse" />}>
-        <WorkshopHeroIsland workshop={workshop} />
-      </Suspense>
+  if (article?.content_blocks?.length > 0) {
+    const { InstrumentRenderer } = await import("@/components/ui/InstrumentRenderer");
+    return (
+      <PageWrapperInstrument className="bg-va-off-white">
+        <Suspense fallback={null}><LiquidBackground /></Suspense>
+        <InstrumentRenderer blocks={article.content_blocks} />
+      </PageWrapperInstrument>
+    );
+  }
 
-      <ContainerInstrument className="max-w-7xl mx-auto px-6 mt-24 space-y-32">
-        
-        {/* 2. SKILL DNA & LEVEL ISLAND */}
-        <Suspense fallback={<div className="h-96 bg-white rounded-[30px] animate-pulse" />}>
-          <SkillDNAIsland workshop={workshop} />
-        </Suspense>
-
-        {/* 3. SMART DAY SCHEDULE ISLAND */}
-        <Suspense fallback={<div className="h-96 bg-white rounded-[30px] animate-pulse" />}>
-          <DayScheduleIsland workshop={workshop} />
-        </Suspense>
-
-        {/* 4. INSTRUCTOR & LOCATION ISLAND */}
-        <Suspense fallback={<div className="h-96 bg-white rounded-[30px] animate-pulse" />}>
-          <InstructorLocationIsland workshop={workshop} />
-        </Suspense>
-
-      </ContainerInstrument>
-
-      {/* 5. SOCIAL PROOF: Filtered Reviews */}
-      <div className="mt-32">
-        <Suspense fallback={<div className="h-96 bg-va-off-white animate-pulse" />}>
-          <ReviewGrid 
-            reviews={workshop.reviews} 
-            title={`Wat deelnemers zeggen over ${workshop.title}`} 
-            maxItems={6} 
-          />
-        </Suspense>
-      </div>
-
-    </PageWrapperInstrument>
-  );
+  notFound();
 }

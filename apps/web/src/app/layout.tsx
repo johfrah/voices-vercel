@@ -25,6 +25,7 @@ import { getTranslationsServer } from "@/lib/services/api-server";
 import { cn } from "@/lib/utils";
 import { SafeErrorGuard } from "@/components/ui/SafeErrorGuard";
 import { ConfigBridge } from "@/lib/utils/config-bridge";
+import { localeToBcp47, normalizeLocale, stripLocalePrefix, withLocalePrefix } from "@/lib/system/locale-utils";
 
 //  NUCLEAR LOADING MANDATE: Zware instrumenten dynamisch laden (ssr: false) voor 100ms LCP
 const JohfrahActionDock = dynamic(() => import("@/components/portfolio/JohfrahActionDock").then(mod => mod.JohfrahActionDock), { ssr: false, loading: () => null });
@@ -43,6 +44,62 @@ const VoicyChat = dynamic(() => import("@/components/ui/VoicyChat").then(mod => 
 });
 
 const inter = Inter({ subsets: ["latin"] });
+
+const FALLBACK_LOCALE_DOMAINS: Record<string, string> = {
+  'nl-be': 'https://www.voices.be',
+  'nl-nl': 'https://www.voices.nl',
+  'fr-fr': 'https://www.voices.fr',
+  'en-gb': 'https://www.voices.eu',
+  'de-de': 'https://www.voices.eu',
+  'es-es': 'https://www.voices.es',
+  'pt-pt': 'https://www.voices.pt',
+  'it-it': 'https://www.voices.eu',
+};
+
+function normalizeLocaleDomainMap(rawLocales?: Record<string, string>) {
+  const merged: Record<string, string> = { ...FALLBACK_LOCALE_DOMAINS };
+  for (const [locale, domain] of Object.entries(rawLocales || {})) {
+    if (!domain) continue;
+    const normalizedLocale = normalizeLocale(locale);
+    const normalizedDomain = domain.replace(/\/$/, '');
+    const host = normalizedDomain.replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0];
+    const isVoicesDomain = host.includes('voices.');
+    if (!isVoicesDomain && FALLBACK_LOCALE_DOMAINS[normalizedLocale]) {
+      continue;
+    }
+    merged[normalizedLocale] = normalizedDomain;
+  }
+  return merged;
+}
+
+function getPrimaryLocaleForDomain(domain: string): string {
+  const host = domain.replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0];
+  if (host.endsWith('voices.fr')) return 'fr-fr';
+  if (host.endsWith('voices.es')) return 'es-es';
+  if (host.endsWith('voices.pt')) return 'pt-pt';
+  if (host.endsWith('voices.nl')) return 'nl-nl';
+  if (host.endsWith('voices.eu')) return 'en-gb';
+  return 'nl-be';
+}
+
+function buildLocaleUrl(locale: string, pathname: string, localeDomainMap: Record<string, string>): string {
+  const normalizedLocale = normalizeLocale(locale);
+  const domain = localeDomainMap[normalizedLocale] || FALLBACK_LOCALE_DOMAINS[normalizedLocale] || FALLBACK_LOCALE_DOMAINS['en-gb'];
+  const primaryLocale = getPrimaryLocaleForDomain(domain);
+  const cleanPath = stripLocalePrefix(pathname || '/');
+  const localizedPath = withLocalePrefix(cleanPath, normalizedLocale, primaryLocale);
+  return `${domain.replace(/\/$/, '')}${localizedPath === '/' ? '/' : localizedPath}`;
+}
+
+function buildAlternatesForPath(pathname: string, rawLocales?: Record<string, string>) {
+  const localeDomainMap = normalizeLocaleDomainMap(rawLocales);
+  const alternates: Record<string, string> = {};
+  for (const locale of Object.keys(localeDomainMap)) {
+    alternates[localeToBcp47(locale)] = buildLocaleUrl(locale, pathname, localeDomainMap);
+  }
+  alternates['x-default'] = buildLocaleUrl('en-gb', pathname, localeDomainMap);
+  return alternates;
+}
 
   /** Veilige market-resolutie: voorkomt 500 bij onverwachte hosts (Combell proxy, etc.) */
 async function getMarketSafe(host: string) {
@@ -85,7 +142,7 @@ export const viewport: Viewport = {
 export async function generateMetadata(): Promise<Metadata> {
   const headersList = headers();
   const langHeader = headersList.get('x-voices-lang');
-  const domains = MarketManagerServer.getMarketDomains();
+  const activeLocale = normalizeLocale(langHeader || 'nl-be');
   const pathname = headersList.get('x-voices-pathname') || '';
   const host = headersList.get("x-voices-host") || headersList.get("host") || process.env.NEXT_PUBLIC_SITE_URL || MarketManagerServer.getMarketDomains()['BE'].replace('https://', '');
   const cleanHost = host.replace(/^https?:\/\//, '');
@@ -123,7 +180,7 @@ export async function generateMetadata(): Promise<Metadata> {
     })(),
     (async () => {
       try {
-        const translationPromise = getTranslationsServer(langHeader || 'nl');
+        const translationPromise = getTranslationsServer(activeLocale);
         const timeoutPromise = new Promise((_, reject) => 
           setTimeout(() => reject(new Error('Translation Timeout')), 2500)
         );
@@ -139,7 +196,8 @@ export async function generateMetadata(): Promise<Metadata> {
     throw new Error('Market configuration could not be resolved.');
   }
 
-  const baseUrl = `https://${market.market_code === 'BE' ? MarketManagerServer.getMarketDomains()['BE'].replace('https://', '') : (market.market_code === 'NLNL' ? (MarketManagerServer.getMarketDomains()['NLNL']?.replace('https://', '') || 'www.voices.nl') : cleanHost)}`;
+  const alternateMap = buildAlternatesForPath(pathname || '/', alternateLanguages);
+  const canonicalUrl = alternateMap[localeToBcp47(activeLocale)] || buildLocaleUrl(activeLocale, pathname || '/', normalizeLocaleDomainMap(alternateLanguages));
 
   const isAdeming = market.market_code === 'ADEMING';
   const isJohfrah = market.market_code === 'PORTFOLIO';
@@ -177,15 +235,15 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     description,
     icons,
-    metadataBase: host ? new URL(baseUrl) : undefined,
+    metadataBase: host ? new URL(new URL(canonicalUrl).origin) : undefined,
     alternates: {
-      canonical: "/",
-      languages: alternateLanguages,
+      canonical: canonicalUrl,
+      languages: alternateMap,
     },
     openGraph: {
       type: "website",
       locale: market.seo_data?.locale_code?.replace('-', '_') || (market.primary_language.replace('-', '_')),
-      url: baseUrl,
+      url: canonicalUrl,
       siteName: market.name,
       images: [
         {
@@ -219,7 +277,6 @@ export default async function RootLayout({
 }) {
   const headersList = headers();
   const langHeader = headersList.get('x-voices-lang');
-  const domains = MarketManagerServer.getMarketDomains();
   const pathname = headersList.get('x-voices-pathname') || '';
   const host = headersList.get("x-voices-host") || headersList.get("host") || process.env.NEXT_PUBLIC_SITE_URL || MarketManagerServer.getMarketDomains()['BE'].replace('https://', '');
   const cleanHost = host.replace(/^https?:\/\//, '');
@@ -237,11 +294,11 @@ export default async function RootLayout({
   const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
   const supabase = createClient(supabaseUrl, supabaseKey);
 
-  const [market, studioTranslations, worldLanguages, worldConfig] = await Promise.all([
+  const [market, studioTranslations, worldLanguages, handshakeLanguages, worldConfig] = await Promise.all([
     getMarketSafe(lookupHost),
     (async () => {
       try {
-        const translationPromise = getTranslationsServer(langHeader || 'nl');
+        const translationPromise = getTranslationsServer(normalizeLocale(langHeader || 'nl-be'));
         const timeoutPromise = new Promise((_, reject) => 
           setTimeout(() => reject(new Error('Translation Timeout')), 2500)
         );
@@ -260,6 +317,15 @@ export default async function RootLayout({
         return [];
       }
     })(),
+    (async () => {
+      try {
+        const { data } = await supabase.from('languages').select('id, code, label');
+        return data || [];
+      } catch (err) {
+        console.error(' RootLayout: Failed to load language registry:', err);
+        return [];
+      }
+    })(),
     ConfigBridge.getWorldConfig(worldId, languageId)
   ]);
 
@@ -269,13 +335,14 @@ export default async function RootLayout({
   
   // 🛡️ CHRIS-PROTOCOL: Prime MarketManager with World Languages
   MarketManagerServer.setWorldLanguages(worldLanguages);
+  MarketManagerServer.setLanguages(handshakeLanguages);
   
   // 🛡️ CHRIS-PROTOCOL: World Detection for Provider Injection (v2.25.1)
   const isStudioPage = pathname.startsWith('/studio/') || pathname === '/studio' || pathname === '/workshops' || pathname === '/voorwaarden-studio' || pathname.includes('/studio');
   const isAcademyPage = pathname.startsWith('/academy/') || pathname === '/academy' || pathname.includes('/academy');
   
   const journeyKey = isStudioPage ? 'studio' : (isAcademyPage ? 'academy' : (market.market_code === 'ADEMING' ? 'ademing' : (market.market_code === 'PORTFOLIO' ? 'portfolio' : (market.market_code === 'ARTIST' ? 'artist' : 'agency'))));
-  const navConfig = await ConfigBridge.getNavConfig(journeyKey, langHeader || 'nl');
+  const navConfig = await ConfigBridge.getNavConfig(journeyKey, normalizeLocale(langHeader || 'nl-be'));
 
   const initialJourney = isStudioPage ? 'studio' : (isAcademyPage ? 'academy' : (market.market_code === 'ADEMING' ? 'ademing' : (market.market_code === 'PORTFOLIO' ? 'portfolio' : (market.market_code === 'ARTIST' ? 'artist' : 'agency'))));
   const initialUsage = isStudioPage || isAcademyPage ? 'subscription' : (market.market_code === 'ADEMING' ? 'subscription' : 'unpaid');
@@ -293,7 +360,10 @@ export default async function RootLayout({
     !isAdeming && "pt-[80px] md:pt-[110px]",
     isAdeming && "bg-background text-foreground"
   );
-  const lang = langHeader || (pathname.includes('/artist/youssef') || market.market_code === 'ARTIST' ? 'en-EU' : (market.primary_language || 'nl-BE'));
+  const lang = normalizeLocale(
+    langHeader || (pathname.includes('/artist/youssef') || market.market_code === 'ARTIST' ? 'en-gb' : (market.primary_language || 'nl-be'))
+  );
+  const htmlLang = localeToBcp47(lang);
 
   // 🛡️ CHRIS-PROTOCOL: ID-First Handshake (v3.0.0)
   // We pass worldId and languageId to Providers to anchor the entire client-side context.
@@ -306,7 +376,7 @@ export default async function RootLayout({
 
   if (isAdminRoute || isStudioPage || (isAdeming && isOffline && !isAdmin)) {
     return (
-      <html lang={lang} className={htmlClass} suppressHydrationWarning>
+      <html lang={htmlLang} className={htmlClass} suppressHydrationWarning>
         <body className={bodyClass} suppressHydrationWarning>
           <Providers 
             lang={lang} 
@@ -315,6 +385,7 @@ export default async function RootLayout({
             initialJourney={initialJourney} 
             initialUsage={initialUsage}
             handshakeContext={handshakeContext}
+            handshakeLanguages={handshakeLanguages}
           >
             <SafeErrorGuard>
               <Suspense fallback={isAdeming && isOffline ? null : <LoadingScreenInstrument text={isAdminRoute ? "Beheer laden..." : "Studio laden..."} />}>
@@ -342,6 +413,9 @@ export default async function RootLayout({
   const showVoicy = !isArtistJourney && !isUnderConstruction && market.market_code !== 'ADEMING';
   const showTopBar = !isArtistJourney && !isUnderConstruction && market.market_code !== 'ADEMING' && market.market_code !== 'PORTFOLIO';
   const showGlobalNav = !isUnderConstruction && market.market_code !== 'ADEMING' && market.market_code !== 'PORTFOLIO';
+  const schemaLanguages = Array.from(
+    new Set((market.supported_languages || [market.primary_language]).map((l: string) => localeToBcp47(l)))
+  );
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -354,14 +428,14 @@ export default async function RootLayout({
       "telephone": market.phone,
       "contactType": "customer service",
       "email": market.email,
-      "availableLanguage": ["Dutch", "French", "English"]
+      "availableLanguage": schemaLanguages
     }
   };
 
   // UNDER CONSTRUCTION MODE: Minimalistische layout zonder navigatie/footer/voicy
   if (isUnderConstruction) {
     return (
-      <html lang={lang} className={htmlClass} suppressHydrationWarning>
+      <html lang={htmlLang} className={htmlClass} suppressHydrationWarning>
       <body className={bodyClass}>
         <Providers 
           lang={lang} 
@@ -370,6 +444,7 @@ export default async function RootLayout({
           initialJourney={initialJourney} 
           initialUsage={initialUsage}
           handshakeContext={handshakeContext}
+          handshakeLanguages={handshakeLanguages}
         >
           <Suspense fallback={null}>
             <SonicDNAHandler />
@@ -384,7 +459,7 @@ export default async function RootLayout({
   }
 
   return (
-    <html lang={lang} className={htmlClass} suppressHydrationWarning>
+    <html lang={htmlLang} className={htmlClass} suppressHydrationWarning>
       <body className={bodyClass}>
         <script
           type="application/ld+json"
@@ -397,6 +472,7 @@ export default async function RootLayout({
           initialJourney={initialJourney} 
           initialUsage={initialUsage}
           handshakeContext={handshakeContext}
+          handshakeLanguages={handshakeLanguages}
         >
           <SafeErrorGuard>
             <PageWrapperInstrument>

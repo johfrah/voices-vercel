@@ -1,5 +1,6 @@
 ---
 description: Standard procedure for pushing code and validating the deployment via forensic logs.
+globs: 
 alwaysApply: true
 ---
 

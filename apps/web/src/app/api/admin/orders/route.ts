@@ -1,194 +1,238 @@
-import { db } from '@/lib/system/voices-config';
-import { orders, users, notifications, orderItems, systemEvents, ordersV2, orderStatuses, ordersLegacyBloat } from '@/lib/system/voices-config';
-import { desc, eq, sql, count } from 'drizzle-orm';
+import {
+  db,
+  orderItems,
+  orderStatuses,
+  orders,
+  ordersLegacyBloat,
+  ordersV2,
+  journeys,
+  users,
+  worlds
+} from '@/lib/system/voices-config';
+import { and, count, eq, inArray, sql } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth/api-auth';
 import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
-import { createClient } from '@/utils/supabase/server';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-/**
- *  API: ADMIN ORDERS (2026)
- * 
- * Haalt bestellingen op voor de admin cockpit met paginering.
- * 🛡️ CHRIS-PROTOCOL: RESTORED STABLE v2.15.012 ARCHITECTURE
- */
+const STATUS_FILTER_MAP: Record<string, string[]> = {
+  Betaald: ['completed', 'completed_paid', 'paid', 'wc-completed'],
+  'In behandeling': ['processing', 'in_progress', 'in_productie', 'active'],
+  'Wacht op betaling': ['unpaid', 'pending', 'awaiting_payment', 'waiting_po', 'wc-pending'],
+  Offerte: ['quote_sent', 'quote_pending', 'quote-pending'],
+  Mislukt: ['failed', 'cancelled', 'refunded', 'wc-refunded'],
+};
+
+function mapStatusForAdmin(statusCode: string | null, fallbackLabel?: string | null): string {
+  const code = (statusCode || '').toLowerCase();
+
+  if (['completed', 'completed_paid', 'paid', 'wc-completed'].includes(code)) return 'Betaald';
+  if (['processing', 'in_progress', 'in_productie', 'active'].includes(code)) return 'In behandeling';
+  if (['unpaid', 'pending', 'awaiting_payment', 'waiting_po', 'wc-pending'].includes(code)) return 'Wacht op betaling';
+  if (['quote_sent', 'quote_pending', 'quote-pending'].includes(code)) return 'Offerte';
+  if (['failed', 'cancelled', 'refunded', 'wc-refunded'].includes(code)) return 'Mislukt';
+
+  return fallbackLabel || 'In behandeling';
+}
+
+function mapStatusToLegacyStatus(code: string): string {
+  const normalized = code.toLowerCase();
+  if (['completed', 'completed_paid', 'paid', 'wc-completed'].includes(normalized)) return 'completed';
+  if (['quote_sent', 'quote_pending', 'quote-pending'].includes(normalized)) return 'quote-pending';
+  if (['failed'].includes(normalized)) return 'failed';
+  if (['cancelled'].includes(normalized)) return 'cancelled';
+  if (['refunded', 'wc-refunded'].includes(normalized)) return 'refunded';
+  if (['waiting_po', 'awaiting_payment', 'unpaid', 'pending', 'wc-pending'].includes(normalized)) return 'pending';
+  return 'processing';
+}
 
 export async function GET(request: NextRequest) {
   try {
-    // 🛡️ CHRIS-PROTOCOL: Auth Check
     const auth = await requireAdmin();
     if (auth instanceof NextResponse) return auth;
 
     const { searchParams } = new URL(request.url);
-    const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '50');
-    const search = searchParams.get('search') || '';
-    const worldCode = searchParams.get('world'); // 🌍 Filter op World
+    const page = Math.max(parseInt(searchParams.get('page') || '1', 10), 1);
+    const limit = Math.min(Math.max(parseInt(searchParams.get('limit') || '20', 10), 1), 100);
+    const search = (searchParams.get('search') || '').trim();
+    const worldCode = (searchParams.get('world') || '').trim();
+    const statusFilter = (searchParams.get('status') || '').trim();
     const offset = (page - 1) * limit;
 
-    // 🛡️ CHRIS-PROTOCOL: 1 TRUTH MANDATE (v2.14.638)
-    let whereClause = '';
-    let conditions = [];
-    
+    const conditions: any[] = [];
+
     if (search) {
-      conditions.push(`(id::text ILIKE '%' || \${sql.raw(\`'\${search}'\`)} || '%' OR billing_email_alt ILIKE '%' || \${sql.raw(\`'\${search}'\`)} || '%')`);
+      const q = `%${search}%`;
+      conditions.push(sql`(
+        cast(${ordersV2.id} as text) ilike ${q}
+        or ${ordersV2.billingEmailAlt} ilike ${q}
+        or ${users.email} ilike ${q}
+        or coalesce(${users.first_name}, '') ilike ${q}
+        or coalesce(${users.last_name}, '') ilike ${q}
+        or coalesce(${users.companyName}, '') ilike ${q}
+      )`);
     }
-    
+
     if (worldCode) {
-      conditions.push(`world_id = (SELECT id FROM worlds WHERE code = \${sql.raw(\`'\${worldCode}'\`)})`);
+      conditions.push(eq(worlds.code, worldCode));
     }
 
-    if (conditions.length > 0) {
-      whereClause = `WHERE \${conditions.join(' AND ')}`;
+    if (statusFilter) {
+      const mapped = STATUS_FILTER_MAP[statusFilter];
+      const normalized = statusFilter.toLowerCase().replace(/\s+/g, '_').replace(/-/g, '_');
+      const statusCodes = mapped && mapped.length > 0 ? mapped : [normalized, statusFilter];
+      conditions.push(inArray(orderStatuses.code, statusCodes));
     }
 
-    const countResult = await db.execute(sql.raw(`SELECT count(*) as value FROM orders_v2 \${whereClause}`));
-    const countRows: any = Array.isArray(countResult) ? countResult : (countResult.rows || []);
-    const totalInDb = countRows[0] ? Number(countRows[0].value || countRows[0].count || 0) : 0;
+    const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
 
-    let debugInfo: any = {
-      version: '2.16.016',
-      db_host: process.env.DATABASE_URL?.split('@')[1]?.split('/')[0] || 'unknown',
-      page,
-      limit,
-      offset,
-      totalInDb,
-      timestamp: new Date()
-    };
+    const countQuery = db
+      .select({ value: count() })
+      .from(ordersV2)
+      .leftJoin(users, eq(ordersV2.userId, users.id))
+      .leftJoin(orderStatuses, eq(ordersV2.statusId, orderStatuses.id))
+      .leftJoin(worlds, eq(ordersV2.worldId, worlds.id));
 
-    // 🚀 NUCLEAR RAW SQL FETCH (v2.14.652)
-    const rowsResult = await db.execute(sql.raw(`
-      SELECT 
-        id, user_id, world_id, journey_id, status_id, payment_method_id, 
-        amount_net, amount_total, purchase_order, billing_email_alt, created_at
-      FROM orders_v2
-      \${whereClause}
-      ORDER BY created_at DESC
-      LIMIT \${limit}
-      OFFSET \${offset}
-    `));
+    const rowQuery = db
+      .select({
+        id: ordersV2.id,
+        legacyInternalId: ordersV2.legacyInternalId,
+        worldId: ordersV2.worldId,
+        journeyId: ordersV2.journeyId,
+        statusId: ordersV2.statusId,
+        paymentMethodId: ordersV2.paymentMethodId,
+        amountTotal: ordersV2.amountTotal,
+        amountNet: ordersV2.amountNet,
+        purchaseOrder: ordersV2.purchaseOrder,
+        billingEmailAlt: ordersV2.billingEmailAlt,
+        createdAt: ordersV2.createdAt,
+        userEmail: users.email,
+        userFirstName: users.first_name,
+        userLastName: users.last_name,
+        userCompany: users.companyName,
+        statusCode: orderStatuses.code,
+        statusLabel: orderStatuses.label,
+        journeyLabel: journeys.label,
+        worldLabel: worlds.label,
+      })
+      .from(ordersV2)
+      .leftJoin(users, eq(ordersV2.userId, users.id))
+      .leftJoin(orderStatuses, eq(ordersV2.statusId, orderStatuses.id))
+      .leftJoin(journeys, eq(ordersV2.journeyId, journeys.id))
+      .leftJoin(worlds, eq(ordersV2.worldId, worlds.id));
 
-    const rows: any = Array.isArray(rowsResult) ? rowsResult : (rowsResult.rows || []);
-    
-    const allOrders = rows.map((row: any) => ({
-      id: row.id,
-      userId: row.user_id,
-      worldId: row.world_id,
-      journeyId: row.journey_id,
-      statusId: row.status_id,
-      paymentMethodId: row.payment_method_id,
-      amountNet: row.amount_net,
-      amountTotal: row.amount_total,
-      purchaseOrder: row.purchase_order,
-      billingEmailAlt: row.billing_email_alt,
-      createdAt: row.created_at
-    }));
-    
-    debugInfo.source = 'hybrid_sql.orders';
-    debugInfo.fetchedCount = allOrders.length;
+    const countRows = whereClause ? await countQuery.where(whereClause) : await countQuery;
+    const rows = whereClause
+      ? await rowQuery.where(whereClause).orderBy(sql`${ordersV2.createdAt} desc`).limit(limit).offset(offset)
+      : await rowQuery.orderBy(sql`${ordersV2.createdAt} desc`).limit(limit).offset(offset);
 
-    // 🕵️ GUEST & USER RESOLVER
-    const sanitizedOrders = await Promise.all(allOrders.map(async (order) => {
-      try {
-        const defaultDomain = MarketManager.getMarketDomains()['BE']?.replace('https://www.', '') || ['voices', 'be'].join('.');
-        let customerInfo = {
-          first_name: "Guest",
-          last_name: "",
-          email: `guest@${defaultDomain}`,
-          companyName: ""
-        };
+    const totalInDb = Number(countRows[0]?.value || 0);
+    const wpOrderIds = rows.map((row: any) => Number(row.id)).filter((id: number) => Number.isFinite(id));
+    const legacyIds = rows
+      .map((row: any) => (row.legacyInternalId ? Number(row.legacyInternalId) : null))
+      .filter((id: number | null): id is number => id !== null);
 
-        const userId = order.user_id || order.userId;
-        let dbUser = null;
+    const bloatRows = wpOrderIds.length > 0
+      ? await db
+          .select({
+            wpOrderId: ordersLegacyBloat.wpOrderId,
+            rawMeta: ordersLegacyBloat.rawMeta,
+          })
+          .from(ordersLegacyBloat)
+          .where(inArray(ordersLegacyBloat.wpOrderId, wpOrderIds))
+      : [];
 
-        if (userId) {
-          try {
-            dbUser = await db.select().from(users).where(eq(users.id, userId)).limit(1).then(res => res[0]);
-            if (!dbUser && userId > 1000) {
-              dbUser = await db.select().from(users).where(eq(users.wpUserId, userId)).limit(1).then(res => res[0]);
-            }
-          } catch (e) {}
-        }
+    const itemCountRows = legacyIds.length > 0
+      ? await db
+          .select({
+            orderId: orderItems.orderId,
+            value: count(),
+          })
+          .from(orderItems)
+          .where(inArray(orderItems.orderId, legacyIds))
+          .groupBy(orderItems.orderId)
+      : [];
 
-        if (!dbUser) {
-          try {
-            const [bloat] = await db.select().from(ordersLegacyBloat).where(eq(ordersLegacyBloat.wpOrderId, order.id)).limit(1);
-            const rawMeta = bloat?.rawMeta;
+    const bloatByOrderId = new Map<number, any>();
+    for (const row of bloatRows) {
+      bloatByOrderId.set(Number(row.wpOrderId), row.rawMeta);
+    }
 
-            if (rawMeta) {
-              const meta = typeof rawMeta === 'string' ? JSON.parse(rawMeta) : rawMeta;
-              const email = meta.billing?.email || meta._billing_email;
-              
-              if (email) {
-                dbUser = await db.select().from(users).where(eq(users.email, email)).limit(1).then(res => res[0]);
-                if (!dbUser) {
-                  const [newUser] = await db.insert(users).values({
-                    email: email,
-                    first_name: meta.billing?.first_name || meta._billing_first_name || "Guest",
-                    last_name: meta.billing?.last_name || meta._billing_last_name || "",
-                    companyName: meta.billing?.company || meta._billing_company || "",
-                    wpUserId: userId || null,
-                    role: 'guest',
-                    createdAt: new Date()
-                  }).returning();
-                  dbUser = newUser;
-                }
-              }
-            }
-          } catch (e) {}
-        }
-
-        if (dbUser) {
-          customerInfo = {
-            first_name: dbUser.first_name || "",
-            last_name: dbUser.last_name || "",
-            email: dbUser.email || `unknown@${defaultDomain}`,
-            companyName: dbUser.companyName || ""
-          };
-        }
-
-        let displayStatus = 'completed';
-        if (order.status_id) {
-          const [statusRow] = await db.select().from(orderStatuses).where(eq(orderStatuses.id, order.status_id)).limit(1);
-          if (statusRow) displayStatus = statusRow.code;
-        }
-
-        // 🤝 DE HANDDRUK: Return structure matching v2.14.714 frontend
-        return {
-          id: order.id,
-          wpOrderId: order.id,
-          displayOrderId: order.id?.toString(),
-          total: order.amountTotal?.toString() || "0.00",
-          amountNet: order.amountNet?.toString() || "0.00",
-          purchaseOrder: order.purchaseOrder || null,
-          billingEmailAlt: order.billingEmailAlt || null,
-          status: displayStatus, 
-          journey: 'agency', // Default for now
-          worldId: order.worldId,
-          journeyId: order.journeyId,
-          statusId: order.statusId,
-          paymentMethodId: order.paymentMethodId,
-          createdAt: order.createdAt,
-          isQuote: false,
-          user: customerInfo
-        };
-      } catch (innerError) {
-        return null;
+    const itemCountByLegacyOrderId = new Map<number, number>();
+    for (const row of itemCountRows) {
+      if (row.orderId !== null) {
+        itemCountByLegacyOrderId.set(Number(row.orderId), Number(row.value || 0));
       }
-    }));
+    }
+
+    const defaultDomain = MarketManager.getMarketDomains()['BE']?.replace('https://www.', '') || 'voices.be';
+    const sanitizedOrders = rows.map((row: any) => {
+      const rawMeta = bloatByOrderId.get(Number(row.id));
+      let parsedMeta: any = {};
+      if (typeof rawMeta === 'string') {
+        try {
+          parsedMeta = JSON.parse(rawMeta || '{}');
+        } catch {
+          parsedMeta = {};
+        }
+      } else {
+        parsedMeta = rawMeta || {};
+      }
+
+      const fallbackFirst = parsedMeta?.billing?.first_name || parsedMeta?._billing_first_name || 'Guest';
+      const fallbackLast = parsedMeta?.billing?.last_name || parsedMeta?._billing_last_name || '';
+      const fallbackEmail = parsedMeta?.billing?.email || parsedMeta?._billing_email || `guest@${defaultDomain}`;
+      const fallbackCompany = parsedMeta?.billing?.company || parsedMeta?._billing_company || '';
+
+      const firstName = row.userFirstName || fallbackFirst;
+      const lastName = row.userLastName || fallbackLast;
+      const email = row.userEmail || fallbackEmail;
+      const company = row.userCompany || fallbackCompany;
+      const customerName = `${firstName || ''} ${lastName || ''}`.trim() || 'Guest';
+
+      const itemCount = row.legacyInternalId
+        ? itemCountByLegacyOrderId.get(Number(row.legacyInternalId)) || 0
+        : 0;
+
+      return {
+        id: Number(row.id),
+        wpOrderId: Number(row.id),
+        orderNumber: String(row.id),
+        displayOrderId: String(row.id),
+        date: row.createdAt,
+        createdAt: row.createdAt,
+        status: mapStatusForAdmin(row.statusCode, row.statusLabel),
+        statusCode: row.statusCode,
+        unit: row.journeyLabel || row.worldLabel || 'Voices',
+        journeyId: row.journeyId,
+        worldId: row.worldId,
+        statusId: row.statusId,
+        paymentMethodId: row.paymentMethodId,
+        total: Number(row.amountTotal || 0),
+        amountNet: Number(row.amountNet || 0),
+        currency: 'EUR',
+        itemsCount: itemCount,
+        purchaseOrder: row.purchaseOrder || null,
+        billingEmailAlt: row.billingEmailAlt || null,
+        isQuote: (row.statusCode || '').includes('quote'),
+        customer: {
+          name: customerName,
+          email,
+          company: company || null,
+        },
+      };
+    });
 
     return NextResponse.json({
-      orders: sanitizedOrders.filter(Boolean),
+      orders: sanitizedOrders,
       pagination: {
         page,
         limit,
         totalInDb,
         totalPages: Math.ceil(totalInDb / limit)
-      },
-      _debug: debugInfo
+      }
     });
   } catch (error: any) {
     console.error('[Admin Orders GET Critical Error]:', error);
@@ -208,7 +252,11 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { userId, journey, items, internalNotes, syncToYuki, status } = body;
+    const userId = body.userId ?? body.user_id;
+    const journey = body.journey || 'agency';
+    const items = Array.isArray(body.items) ? body.items : [];
+    const internalNotes = body.internalNotes ?? body.internal_notes ?? null;
+    const status = body.status || 'pending';
 
     if (!userId || !items || items.length === 0) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
@@ -218,12 +266,12 @@ export async function POST(request: NextRequest) {
     const totalTax = total * 0.21;
     
     const [newOrder] = await db.insert(orders).values({
-      userId,
+      user_id: Number(userId),
       journey,
       total: total.toString(),
-      totalTax: totalTax.toString(),
+      tax: totalTax.toString(),
       status: status || 'pending',
-      internalNotes,
+      internal_notes: internalNotes,
       is_manually_edited: true,
       market: 'BE',
       createdAt: new Date(),
@@ -240,8 +288,74 @@ export async function POST(request: NextRequest) {
 
     await db.insert(orderItems).values(orderItemsToInsert);
 
-    return NextResponse.json(newOrder);
+    return NextResponse.json({
+      ...newOrder,
+      displayOrderId: newOrder.wpOrderId || newOrder.id,
+    });
   } catch (error) {
     return NextResponse.json({ error: 'Failed to create order' }, { status: 500 });
+  }
+}
+
+export async function PATCH(request: NextRequest) {
+  const auth = await requireAdmin();
+  if (auth instanceof NextResponse) return auth;
+
+  try {
+    const body = await request.json();
+    const id = Number(body.id);
+    const statusInput = String(body.status || '').trim();
+
+    if (!id || !statusInput) {
+      return NextResponse.json({ error: 'Missing id or status' }, { status: 400 });
+    }
+
+    const normalizedStatus = statusInput.toLowerCase().replace(/\s+/g, '_').replace(/-/g, '_');
+    const mappedCodes = STATUS_FILTER_MAP[statusInput] || [normalizedStatus, statusInput];
+
+    const statusRows = await db
+      .select({
+        id: orderStatuses.id,
+        code: orderStatuses.code,
+      })
+      .from(orderStatuses)
+      .where(inArray(orderStatuses.code, mappedCodes))
+      .limit(1);
+
+    const statusRow = statusRows[0];
+    if (!statusRow) {
+      return NextResponse.json({ error: `Unknown status: ${statusInput}` }, { status: 400 });
+    }
+
+    const orderRows = await db
+      .select({
+        id: ordersV2.id,
+        legacyInternalId: ordersV2.legacyInternalId,
+      })
+      .from(ordersV2)
+      .where(eq(ordersV2.id, id))
+      .limit(1);
+
+    const foundOrder = orderRows[0];
+    if (!foundOrder) {
+      return NextResponse.json({ error: 'Order not found' }, { status: 404 });
+    }
+
+    await db
+      .update(ordersV2)
+      .set({ statusId: statusRow.id })
+      .where(eq(ordersV2.id, id));
+
+    if (foundOrder.legacyInternalId) {
+      await db
+        .update(orders)
+        .set({ status: mapStatusToLegacyStatus(statusRow.code) })
+        .where(eq(orders.id, Number(foundOrder.legacyInternalId)));
+    }
+
+    return NextResponse.json({ success: true, id, status: statusRow.code });
+  } catch (error) {
+    console.error('[Admin Orders PATCH Error]:', error);
+    return NextResponse.json({ error: 'Failed to update status' }, { status: 500 });
   }
 }

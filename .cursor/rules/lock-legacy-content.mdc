@@ -1,7 +1,7 @@
 ---
 description: Locks the legacy content blueprint for Voices Studio to prevent AI modification.
 globs: docs/5-CONTENT-AND-MARKETING/02-VOICE-OVER-CURSUS.md
-alwaysApply: true
+alwaysApply: false
 ---
 
 # 🔒 Legacy Content Lock

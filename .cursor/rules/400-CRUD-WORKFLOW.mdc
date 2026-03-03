@@ -1,7 +1,7 @@
 ---
 description: Nuclear CRUD Workflow & ID-First Handshake for Project Atomic (2026)
-globs: **/*.{ts,tsx}
-alwaysApply: true
+globs: ["apps/web/src/app/api/**/*", "packages/database/**/*"]
+alwaysApply: false
 ---
 
 # 🚀 NUCLEAR WORKFLOW: ID-FIRST ENGINE (2026)

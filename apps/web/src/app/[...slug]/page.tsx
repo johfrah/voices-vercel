@@ -13,6 +13,7 @@ import { Suspense } from "react";
 import { getActor, getArtist, getActors, getWorkshops, getArticle } from "@/lib/services/api-server";
 import { WorkshopApiResponse } from "@/app/api/studio/workshops/route";
 import { MarketManager } from "@/lib/system/core/market-manager";
+import { MarketDatabaseService } from "@/lib/system/market-manager-db";
 import { headers } from "next/headers";
 import { VoiceDetailClient } from "@/components/legacy/VoiceDetailClient";
 import { ArtistDetailClient } from "@/components/legacy/ArtistDetailClient";
@@ -22,6 +23,7 @@ import { InstrumentRenderer } from "@/components/ui/InstrumentRenderer";
 import nextDynamic from "next/dynamic";
 import { JourneyType } from '@/contexts/VoicesMasterControlContext';
 import { normalizeSlug, stripLanguagePrefix } from '@/lib/system/slug';
+import { localeToBcp47, normalizeLocale, stripLocalePrefix, withLocalePrefix } from '@/lib/system/locale-utils';
 import { BentoGrid, BentoCard } from '@/components/ui/BentoGrid';
 import { createClient } from "@supabase/supabase-js";
 
@@ -129,28 +131,122 @@ function generateArtistSchema(artist: any, host: string = '') {
   };
 }
 
+const FALLBACK_LOCALE_DOMAINS: Record<string, string> = {
+  'nl-be': 'https://www.voices.be',
+  'nl-nl': 'https://www.voices.nl',
+  'fr-fr': 'https://www.voices.fr',
+  'en-gb': 'https://www.voices.eu',
+  'de-de': 'https://www.voices.eu',
+  'es-es': 'https://www.voices.es',
+  'pt-pt': 'https://www.voices.pt',
+  'it-it': 'https://www.voices.eu',
+};
+
+function getPrimaryLocaleForDomain(domain: string): string {
+  const host = domain.replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0];
+  if (host.endsWith('voices.fr')) return 'fr-fr';
+  if (host.endsWith('voices.es')) return 'es-es';
+  if (host.endsWith('voices.pt')) return 'pt-pt';
+  if (host.endsWith('voices.nl')) return 'nl-nl';
+  if (host.endsWith('voices.eu')) return 'en-gb';
+  return 'nl-be';
+}
+
+function normalizeLocaleDomainMap(rawLocales?: Record<string, string>) {
+  const merged: Record<string, string> = { ...FALLBACK_LOCALE_DOMAINS };
+  for (const [locale, domain] of Object.entries(rawLocales || {})) {
+    if (!domain) continue;
+    const normalizedLocale = normalizeLocale(locale);
+    const normalizedDomain = domain.replace(/\/$/, '');
+    const host = normalizedDomain.replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0];
+    const isVoicesDomain = host.includes('voices.');
+    if (!isVoicesDomain && FALLBACK_LOCALE_DOMAINS[normalizedLocale]) {
+      continue;
+    }
+    merged[normalizedLocale] = normalizedDomain;
+  }
+  return merged;
+}
+
+function buildLocaleUrl(locale: string, pathname: string, localeDomainMap: Record<string, string>): string {
+  const normalizedLocale = normalizeLocale(locale);
+  const domain = localeDomainMap[normalizedLocale] || FALLBACK_LOCALE_DOMAINS[normalizedLocale] || FALLBACK_LOCALE_DOMAINS['en-gb'];
+  const primaryLocale = getPrimaryLocaleForDomain(domain);
+  const cleanPath = stripLocalePrefix(pathname || '/');
+  const localizedPath = withLocalePrefix(cleanPath, normalizedLocale, primaryLocale);
+  return `${domain.replace(/\/$/, '')}${localizedPath === '/' ? '/' : localizedPath}`;
+}
+
+type ResolvedSlugEntry = {
+  slug?: string;
+  market_code?: string;
+  entity_id: number;
+  routing_type: string;
+  journey: string;
+  world_id?: number;
+  canonical_slug?: string;
+  metadata?: any;
+  entity_type_id?: number;
+  language_id?: number;
+};
+
+function scoreSlugEntry(entry: any, marketCode: string, languageId?: number | null): number {
+  let score = 0;
+  const entryMarket = String(entry.market_code || 'ALL').toUpperCase();
+  const targetMarket = String(marketCode || 'ALL').toUpperCase();
+  if (entryMarket === targetMarket) score += 100;
+  else if (entryMarket === 'ALL') score += 50;
+
+  if (languageId != null) {
+    if (entry.language_id === languageId) score += 40;
+    else if (entry.language_id == null) score += 20;
+  } else if (entry.language_id == null) {
+    score += 10;
+  }
+
+  if (entry.entity_type_id != null) {
+    score += Math.min(Number(entry.entity_type_id) / 1000, 1);
+  }
+  return score;
+}
+
 /**
  * 🧠 SLUG RESOLVER (ID-FIRST 2026)
  * Zoekt de entiteit op basis van de slug_registry (ID Handshake Truth).
  * 🛡️ CHRIS-PROTOCOL: Added Lazy Discovery (v2.15.043)
  */
-async function resolveSlugFromRegistry(slug: string, marketCode: string = 'ALL', journey: string = 'agency'): Promise<{ entity_id: number, routing_type: string, journey: string, world_id?: number, canonical_slug?: string, metadata?: any, entity_type_id?: number, language_id?: number } | null> {
+async function resolveSlugFromRegistry(
+  slug: string,
+  marketCode: string = 'ALL',
+  journey: string = 'agency',
+  languageId?: number | null
+): Promise<ResolvedSlugEntry | null> {
   try {
-    const { data: entry, error } = await supabase
-      .from('slug_registry')
-      .select('entity_id, journey, world_id, canonical_slug, metadata, entity_type_id, language_id, entity_types(code)')
-      .eq('slug', slug.toLowerCase())
-      .or(`market_code.eq.${marketCode},market_code.eq.ALL`)
-      .eq('is_active', true)
-      .order('entity_type_id', { ascending: false })
-      .limit(1)
-      .maybeSingle();
+    const normalizedSlug = slug.toLowerCase();
+    const marketCandidates = Array.from(new Set([marketCode, 'ALL'].filter(Boolean)));
 
-    if (!error && entry) {
+    const { data: entries, error } = await supabase
+      .from('slug_registry')
+      .select('slug, market_code, entity_id, journey, world_id, canonical_slug, metadata, entity_type_id, language_id, entity_types(code)')
+      .eq('slug', normalizedSlug)
+      .in('market_code', marketCandidates)
+      .eq('is_active', true)
+      .limit(50);
+
+    if (!error && entries && entries.length > 0) {
+      const ranked = [...entries].sort((a, b) => {
+        const scoreA = scoreSlugEntry(a, marketCode, languageId);
+        const scoreB = scoreSlugEntry(b, marketCode, languageId);
+        return scoreB - scoreA;
+      });
+      const entry = ranked[0];
+
       // 🛡️ CHRIS-PROTOCOL: Map entity_type_id 5 to 'workshop' if code is missing (v2.16.097)
       const routingType = (entry.entity_types as any)?.code || (entry.entity_type_id === 5 ? 'workshop' : 'article');
       
       return {
+        slug: entry.slug,
+        market_code: entry.market_code,
         entity_id: Number(entry.entity_id),
         routing_type: routingType,
         journey: entry.journey,
@@ -163,7 +259,7 @@ async function resolveSlugFromRegistry(slug: string, marketCode: string = 'ALL',
     }
 
     // 🛡️ NUCLEAR AUTO-HEALING: If not in registry, try to discover it
-    if (error || !entry) {
+    if (error || !entries || entries.length === 0) {
       console.warn(` [SmartRouter] Registry MISS for "${slug}". Triggering Lazy Discovery...`);
       return await discoverAndRegisterSlug(slug, marketCode, journey);
     }
@@ -171,6 +267,66 @@ async function resolveSlugFromRegistry(slug: string, marketCode: string = 'ALL',
     console.error('[resolveSlugFromRegistry] Fatal Error:', err);
   }
   return null;
+}
+
+async function findLocalizedSlugVariant(
+  entityId: number,
+  entityTypeId: number | undefined,
+  marketCode: string,
+  languageId?: number | null
+): Promise<string | null> {
+  if (!entityId || entityTypeId == null) return null;
+
+  try {
+    const marketCandidates = Array.from(new Set([marketCode, 'ALL'].filter(Boolean)));
+    const { data, error } = await supabase
+      .from('slug_registry')
+      .select('slug, market_code, language_id')
+      .eq('entity_id', entityId)
+      .eq('entity_type_id', entityTypeId)
+      .in('market_code', marketCandidates)
+      .eq('is_active', true)
+      .limit(200);
+
+    if (error || !data || data.length === 0) return null;
+
+    const ranked = [...data]
+      .filter((row) => typeof row.slug === 'string' && row.slug.trim().length > 0)
+      .sort((a, b) => {
+        const scoreA = scoreSlugEntry(a, marketCode, languageId);
+        const scoreB = scoreSlugEntry(b, marketCode, languageId);
+        return scoreB - scoreA;
+      });
+
+    return ranked[0]?.slug || null;
+  } catch (error) {
+    console.error('[findLocalizedSlugVariant] Failed:', error);
+    return null;
+  }
+}
+
+function buildLocalizedRoutePath(currentSlug: string, matchedSlug: string, localizedSlug: string): string {
+  const cleanCurrent = normalizeSlug(currentSlug || '');
+  const cleanMatched = normalizeSlug(matchedSlug || '');
+  const cleanLocalized = normalizeSlug(localizedSlug || '');
+
+  if (!cleanLocalized) return cleanCurrent ? `/${cleanCurrent}` : '/';
+  if (!cleanCurrent) return `/${cleanLocalized}`;
+  if (cleanMatched && cleanCurrent === cleanMatched) return `/${cleanLocalized}`;
+
+  if (cleanMatched && cleanCurrent.startsWith(`${cleanMatched}/`)) {
+    const suffix = cleanCurrent.slice(cleanMatched.length + 1);
+    return `/${cleanLocalized}${suffix ? `/${suffix}` : ''}`;
+  }
+
+  const currentSegments = cleanCurrent.split('/').filter(Boolean);
+  if (currentSegments.length > 0) {
+    const localizedSegments = cleanLocalized.split('/').filter(Boolean);
+    const suffixSegments = currentSegments.slice(1);
+    return `/${[...localizedSegments, ...suffixSegments].join('/')}`;
+  }
+
+  return `/${cleanLocalized}`;
 }
 
 /**
@@ -335,8 +491,7 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
   const headersList = headers();
   const host = (headersList.get('host') || (MarketManager.getMarketDomains()['BE']?.replace('https://', '') || MarketManager.getMarketDomains()['BE']?.replace('https://', ''))).replace(/^https?:\/\//, '');
   const market = MarketManager.getCurrentMarket(host);
-  const domains = MarketManager.getMarketDomains();
-  const lang = headersList.get('x-voices-lang') || 'nl-BE';
+  const lang = normalizeLocale(headersList.get('x-voices-lang') || 'nl-be');
   const normalizedSlug = normalizeSlug(params.slug);
   
   console.error(` [SmartRouter] Metadata context: host=${host}, market=${market.market_code}, lang=${lang}, slug=${normalizedSlug}`);
@@ -344,16 +499,50 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
   // 🛡️ CHRIS-PROTOCOL: Strip language prefix for metadata resolution
   const cleanSlug = stripLanguagePrefix(normalizedSlug);
   const cleanSegments = cleanSlug.split('/').filter(Boolean);
-
-  const siteUrl = domains[market.market_code] || `https://${host || (MarketManager.getMarketDomains()['BE']?.replace('https://', '') || MarketManager.getMarketDomains()['BE']?.replace('https://', ''))}`;
+  const metadataPath = cleanSegments.length > 0 ? `/${cleanSegments.join('/')}` : '/';
+  const localeDomainMap = normalizeLocaleDomainMap(
+    await MarketDatabaseService.getAllLocalesAsync().catch(() => ({}))
+  );
   
   // 🛡️ NUCLEAR HANDSHAKE: Resolve via Slug Registry for Metadata
   let lookupSlug = cleanSegments.join('/').toLowerCase();
+  const activeLanguageId =
+    MarketManager.getLanguageId(lang, market.primary_language) ||
+    market.primary_language_id ||
+    null;
+  const resolved = await resolveSlugFromRegistry(
+    lookupSlug,
+    market.market_code,
+    'agency',
+    activeLanguageId
+  );
+
+  const alternateLanguages: Record<string, string> = {};
+  for (const locale of Object.keys(localeDomainMap)) {
+    let localizedPath = metadataPath;
+    if (resolved?.entity_id && resolved?.entity_type_id && resolved?.slug) {
+      const localeLanguageId = MarketManager.getLanguageId(locale, market.primary_language);
+      const localizedSlug = await findLocalizedSlugVariant(
+        resolved.entity_id,
+        resolved.entity_type_id,
+        market.market_code,
+        localeLanguageId
+      );
+      if (localizedSlug) {
+        localizedPath = buildLocalizedRoutePath(cleanSlug, resolved.slug, localizedSlug);
+      }
+    }
+    alternateLanguages[localeToBcp47(locale)] = buildLocaleUrl(locale, localizedPath, localeDomainMap);
+  }
+  alternateLanguages['x-default'] =
+    alternateLanguages[localeToBcp47('en-gb')] ||
+    buildLocaleUrl('en-gb', metadataPath, localeDomainMap);
+  const canonicalUrl =
+    alternateLanguages[localeToBcp47(lang)] ||
+    buildLocaleUrl(lang, metadataPath, localeDomainMap);
   
   // Special case: if there's only one segment and it's a known prefix, we might need to handle it
   // But with multilingual registry, the full path should be in the database.
-  
-  const resolved = await resolveSlugFromRegistry(lookupSlug, market.market_code);
   const firstSegment = lookupSlug;
 
   console.error(` [SmartRouter] Resolved firstSegment: ${firstSegment} (from cleanSlug: ${cleanSlug})`);
@@ -384,7 +573,8 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
       title,
       description,
       alternates: {
-        canonical: `${siteUrl}/${lang !== 'nl-BE' ? lang.split('-')[0] + '/' : ''}${normalizedSlug}`,
+        canonical: canonicalUrl,
+        languages: alternateLanguages,
       }
     };
   }
@@ -400,6 +590,10 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
         return {
           title,
           description,
+          alternates: {
+            canonical: canonicalUrl,
+            languages: alternateLanguages,
+          },
           other: {
             'script:ld+json': JSON.stringify(generateArtistSchema(artist, host))
           }
@@ -433,7 +627,8 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
           title,
           description,
           alternates: {
-            canonical: `${siteUrl}/${lang !== 'nl-BE' ? lang.split('-')[0] + '/' : ''}${params.slug.join('/')}`,
+            canonical: canonicalUrl,
+            languages: alternateLanguages,
           },
           other: {
             'script:ld+json': JSON.stringify(schema)
@@ -460,7 +655,8 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
               title,
               description,
               alternates: {
-                canonical: `${siteUrl}/${lang !== 'nl-BE' ? lang.split('-')[0] + '/' : ''}${page.slug}`,
+                canonical: canonicalUrl,
+                languages: alternateLanguages,
               }
             };
           }
@@ -482,7 +678,8 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
             title,
             description,
             alternates: {
-              canonical: `${siteUrl}/${lang !== 'nl-BE' ? lang.split('-')[0] + '/' : ''}${firstSegment}`,
+              canonical: canonicalUrl,
+              languages: alternateLanguages,
             }
           };
         }
@@ -518,7 +715,7 @@ export default async function SmartRoutePage({ params }: { params: SmartRoutePar
 async function SmartRouteContent({ segments }: { segments: string[] }) {
   const normalizedSlug = normalizeSlug(segments);
   const headersList = headers();
-  const lang = headersList.get('x-voices-lang') || 'nl-BE';
+  const lang = normalizeLocale(headersList.get('x-voices-lang') || 'nl-be');
   
   // 🛡️ CHRIS-PROTOCOL: Strip language prefix if present (e.g. /nl/johfrah -> johfrah)
   const cleanSlug = stripLanguagePrefix(normalizedSlug);
@@ -603,6 +800,10 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
     let lookupSlug = cleanSegments.join('/').toLowerCase();
     let journey = cleanSegments[1];
     let medium = cleanSegments[2];
+    const activeLanguageId =
+      MarketManager.getLanguageId(lang, market.primary_language) ||
+      market.primary_language_id ||
+      null;
 
     // 🛡️ CHRIS-PROTOCOL: Pre-Registry Special Routes (v2.28.1)
     // Handle known hardcoded routes BEFORE registry lookup so they work
@@ -633,14 +834,46 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
       );
     }
 
-    const resolved = await resolveSlugFromRegistry(lookupSlug, market.market_code);
+    const resolved = await resolveSlugFromRegistry(
+      lookupSlug,
+      market.market_code,
+      'agency',
+      activeLanguageId
+    );
 
     if (resolved) {
+      // Locale-aware slug handshake: if we resolved a different language variant for this entity,
+      // redirect to the slug that matches the active language.
+      if (
+        activeLanguageId != null &&
+        resolved.entity_type_id != null &&
+        resolved.language_id != null &&
+        resolved.language_id !== activeLanguageId
+      ) {
+        const localizedSlug = await findLocalizedSlugVariant(
+          resolved.entity_id,
+          resolved.entity_type_id,
+          market.market_code,
+          activeLanguageId
+        );
+        if (localizedSlug && localizedSlug !== lookupSlug) {
+          const localizedPath = buildLocalizedRoutePath(
+            cleanSlug,
+            resolved.slug || lookupSlug,
+            localizedSlug
+          );
+          const redirectPath = withLocalePrefix(localizedPath, lang, market.primary_language);
+          console.error(` [SmartRouter] Locale slug redirect: "${lookupSlug}" -> "${redirectPath}"`);
+          return redirect(redirectPath);
+        }
+      }
+
       // 🛡️ CHRIS-PROTOCOL: Handle Redirects (Canonical Handshake)
       if (resolved.canonical_slug && resolved.canonical_slug !== lookupSlug) {
-        console.error(` [SmartRouter] Redirecting legacy slug "${lookupSlug}" to canonical: "/${resolved.canonical_slug}"`);
+        const canonicalPath = withLocalePrefix(`/${resolved.canonical_slug}`, lang, market.primary_language);
+        console.error(` [SmartRouter] Redirecting legacy slug "${lookupSlug}" to canonical: "${canonicalPath}"`);
         // 🛡️ NUCLEAR SEO: Use 301 Permanent Redirect for canonical handshake
-        return redirect(`/${resolved.canonical_slug}`);
+        return redirect(canonicalPath);
       }
 
     // 🛡️ CHRIS-PROTOCOL: World-Aware Handshake (v2.24.4)

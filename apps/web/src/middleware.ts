@@ -1,5 +1,6 @@
 import { updateSession } from '@/utils/supabase/middleware'
 import { type NextRequest, NextResponse } from 'next/server'
+import { normalizeLocale, SUPPORTED_LOCALE_PREFIXES } from '@/lib/system/locale-utils'
 
 /**
  * NUCLEAR MIDDLEWARE (GOD MODE 2026)
@@ -299,10 +300,10 @@ export async function middleware(request: NextRequest) {
       url.pathname = `/artist/youssef${targetPath}`;
       const artistResponse = NextResponse.rewrite(url)
       artistResponse.headers.set('x-voices-market', 'ARTIST')
-      artistResponse.headers.set('x-voices-lang', 'en')
+      artistResponse.headers.set('x-voices-lang', 'en-gb')
       artistResponse.headers.set('x-voices-pathname', pathname)
       artistResponse.headers.set('x-voices-host', `${request.nextUrl.protocol}//${host}`)
-      artistResponse.cookies.set('voices_lang', 'en', { path: '/', maxAge: 60 * 60 * 24 * 365, sameSite: 'lax' })
+      artistResponse.cookies.set('voices_lang', 'en-gb', { path: '/', maxAge: 60 * 60 * 24 * 365, sameSite: 'lax' })
       return artistResponse
     }
     // If root path, proceed to normal headers injection
@@ -340,17 +341,21 @@ export async function middleware(request: NextRequest) {
     return ademingResponse
   }
 
+  const shortLocalePattern = SUPPORTED_LOCALE_PREFIXES.join('|')
+  const shortLocaleRegex = new RegExp(`^/(${shortLocalePattern})(/|$)`, 'i')
+  const isoLocaleRegex = /^\/(fr-fr|en-gb|nl-be|de-de|es-es|it-it|pt-pt)(\/|$)/i
+
   // 4. I18N NUCLEAR REWRITE (CLEAN URLS)
   // 🛡️ CHRIS-PROTOCOL: Public URLs MUST use 2-char language codes (nl, fr, en, etc.)
   // ISO-5 codes (nl-be, en-gb) are strictly for internal logic and database.
-  const langMatch = pathname.match(/^\/(fr|en|nl|de|es|it|pt)(\/|$)/i)
-  const isoMatch = pathname.match(/^\/(fr-fr|en-gb|nl-be|de-de|es-es|it-it|pt-pt)(\/|$)/i)
+  const langMatch = pathname.match(shortLocaleRegex)
+  const isoMatch = pathname.match(isoLocaleRegex)
   
   // 🛡️ CHRIS-PROTOCOL: Force Redirect ISO-5 to 2-char for public URLs
   if (isoMatch) {
     const isoLang = isoMatch[1].toLowerCase()
     const shortLang = isoLang.split('-')[0]
-    const newPathname = pathname.replace(/^\/(fr-fr|en-gb|nl-be|de-de|es-es|it-it|pt-pt)/i, `/${shortLang}`)
+    const newPathname = pathname.replace(isoLocaleRegex, `/${shortLang}$2`)
     const redirectUrl = url.clone()
     redirectUrl.pathname = newPathname
     console.log(` NUCLEAR REDIRECT: ISO-5 [${isoLang}] to Short [${shortLang}] at ${pathname}`)
@@ -358,8 +363,8 @@ export async function middleware(request: NextRequest) {
   }
 
   // Intelligent Stickiness: Check cookie, then Accept-Language header
-  const cookieLang = request.cookies.get('voices_lang')?.value
-  let detectedLang = cookieLang
+  const cookieLangRaw = request.cookies.get('voices_lang')?.value
+  let detectedLang = cookieLangRaw ? normalizeLocale(cookieLangRaw) : undefined
   
   if (!detectedLang) {
     // 🛡️ CHRIS-PROTOCOL: Only fallback to browser headers if NOT on the root of a specific market
@@ -391,22 +396,9 @@ export async function middleware(request: NextRequest) {
   // Als de URL een taalprefix heeft, overschrijft deze alles en zetten we de cookie
   if (langMatch) {
     const urlLangShort = langMatch[1].toLowerCase()
-    
-    // 🛡️ CHRIS-PROTOCOL: Internal mapping of Short to ISO-5
-    // 💀 TERMINATION: 'nl' variant is eliminated. Everything is 'nl-be'.
-    const internalMap: Record<string, string> = {
-      'nl': 'nl-be',
-      'fr': 'fr-fr',
-      'en': 'en-gb',
-      'de': 'de-de',
-      'es': 'es-es',
-      'it': 'it-it',
-      'pt': 'pt-pt'
-    };
-    
-    detectedLang = internalMap[urlLangShort] || urlLangShort;
+    detectedLang = normalizeLocale(urlLangShort);
 
-    const pathWithoutLocale = pathname.replace(/^\/(fr|en|nl|de|es|it|pt)/i, '') || '/'
+    const pathWithoutLocale = pathname.replace(shortLocaleRegex, '/') || '/'
     
     // 🛡️ CHRIS-PROTOCOL: Prevent rewrite loops by checking if we are already at the target path
     if (pathname === pathWithoutLocale) {
@@ -475,6 +467,6 @@ export const config = {
      * - wp-content, wp-includes (legacy assets)
      * - alle bestanden met een extensie (svg, png, jpg, etc.)
      */
-    '/((?!_next/static|_next/image|favicon.ico|api|admin|backoffice|account|auth|assets|static|reviews|agency|active|studio|visuals|wp-content|wp-includes|[\\w-]+\\.\\w+).*)',
+    '/((?!_next/static|_next/image|favicon.ico|api|admin|backoffice|account|auth|assets|static|reviews|agency|active|visuals|wp-content|wp-includes|[\\w-]+\\.\\w+).*)',
   ],
 }

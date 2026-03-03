@@ -21,7 +21,8 @@ export const VumeDonationThankYouTemplate = (props: DonationThankYouProps) => {
   const { name, amount, artistName, host = (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || MarketManager.getMarketDomains()['BE']?.replace('https://', '')), language = 'nl-BE' } = props;
   const market = MarketManager.getCurrentMarket(host);
 
-  const isNl = language === 'nl';
+  const languageShort = (language || 'nl').toLowerCase().split('-')[0];
+  const isNl = languageShort === 'nl';
 
   const content = `
     <div style="text-align: center; padding: 20px 0;">
