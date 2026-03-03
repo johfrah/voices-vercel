@@ -23,6 +23,7 @@ const DayScheduleIsland = nextDynamic(() => import("@/components/studio/DaySched
 const InstructorLocationIsland = nextDynamic(() => import("@/components/studio/InstructorLocationIsland").then(mod => mod.InstructorLocationIsland), { ssr: false });
 const ReviewGrid = nextDynamic(() => import("@/components/studio/ReviewGrid").then(mod => mod.ReviewGrid), { ssr: false });
 const LiquidBackground = nextDynamic(() => import("@/components/ui/LiquidBackground").then(mod => mod.LiquidBackground), { ssr: false });
+const VideoPlayerDynamic = nextDynamic(() => import("@/components/ui/VideoPlayer").then(mod => mod.VideoPlayer), { ssr: false });
 const WorkshopInterestForm = nextDynamic(() => import("@/components/studio/WorkshopInterestForm").then(mod => mod.WorkshopInterestForm), { ssr: false });
 const WorkshopQuiz = nextDynamic(() => import("@/components/studio/WorkshopQuiz").then(mod => mod.WorkshopQuiz), { ssr: false });
 
@@ -219,9 +220,9 @@ function renderWorkshopDetail(workshop: WorkshopApiResponse['workshops'][number]
         </ContainerInstrument>
       )}
 
-      {/* Aftermovie sectie */}
-      {workshop.aftermovie_description && (
-        <ContainerInstrument className="max-w-4xl mx-auto px-6 mt-24">
+      {/* Aftermovie sectie met video */}
+      {(workshop.aftermovie_description || workshop.aftermovie_video) && (
+        <ContainerInstrument className="max-w-5xl mx-auto px-6 mt-24">
           <ContainerInstrument plain className="mb-8">
             <TextInstrument className="text-[11px] font-bold tracking-[0.3em] uppercase text-primary mb-4">
               <VoiceglotText translationKey="studio.detail.aftermovie_label" defaultText="Een blik achter de schermen" />
@@ -230,9 +231,29 @@ function renderWorkshopDetail(workshop: WorkshopApiResponse['workshops'][number]
               <VoiceglotText translationKey="studio.detail.aftermovie_title" defaultText="Zo ziet een workshopdag eruit" />
             </HeadingInstrument>
           </ContainerInstrument>
-          <TextInstrument className="text-va-black/50 font-light leading-relaxed whitespace-pre-line text-[15px]">
-            {workshop.aftermovie_description}
-          </TextInstrument>
+          <ContainerInstrument plain className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+            {workshop.aftermovie_video && (
+              <ContainerInstrument plain className="lg:col-span-5 flex justify-center">
+                <ContainerInstrument plain className="w-full max-w-[320px] aspect-[9/16] rounded-[24px] overflow-hidden shadow-2xl">
+                  <Suspense fallback={<ContainerInstrument className="w-full h-full bg-va-black animate-pulse" />}>
+                    <VideoPlayerDynamic
+                      src={`https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices/${workshop.aftermovie_video.file_path}`}
+                      className="w-full h-full object-cover"
+                      autoPlay={false}
+                      muted={true}
+                    />
+                  </Suspense>
+                </ContainerInstrument>
+              </ContainerInstrument>
+            )}
+            {workshop.aftermovie_description && (
+              <ContainerInstrument plain className={workshop.aftermovie_video ? "lg:col-span-7" : "lg:col-span-12"}>
+                <TextInstrument className="text-va-black/50 font-light leading-relaxed whitespace-pre-line text-[15px]">
+                  {workshop.aftermovie_description}
+                </TextInstrument>
+              </ContainerInstrument>
+            )}
+          </ContainerInstrument>
         </ContainerInstrument>
       )}
 
@@ -268,23 +289,6 @@ function renderWorkshopDetail(workshop: WorkshopApiResponse['workshops'][number]
                 <TextInstrument className="text-va-black/50 font-light leading-relaxed">{faq.answer}</TextInstrument>
               </ContainerInstrument>
             ))}
-          </ContainerInstrument>
-        </ContainerInstrument>
-      )}
-
-      {/* Demo Bundle Indicator */}
-      {workshop.has_demo_bundle && (
-        <ContainerInstrument className="max-w-4xl mx-auto px-6 mt-16">
-          <ContainerInstrument className="bg-primary/5 border border-primary/10 rounded-[20px] p-6 flex items-center gap-4">
-            <TextInstrument as="span" className="text-2xl">📦</TextInstrument>
-            <ContainerInstrument plain>
-              <TextInstrument className="text-[14px] font-medium text-va-black">
-                <VoiceglotText translationKey="studio.detail.demo_bundle" defaultText="Opnames inbegrepen" />
-              </TextInstrument>
-              <TextInstrument className="text-[13px] text-va-black/40 font-light">
-                <VoiceglotText translationKey="studio.detail.demo_bundle_desc" defaultText="Je gaat naar huis met een professionele opname voor je portfolio." />
-              </TextInstrument>
-            </ContainerInstrument>
           </ContainerInstrument>
         </ContainerInstrument>
       )}

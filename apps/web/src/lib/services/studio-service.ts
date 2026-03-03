@@ -108,8 +108,10 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
 
     // 4d. Fetch Video media paths (from meta.video_id)
     const videoIds = (workshopsList as any[])
-      .map((w) => ((w.meta as Record<string, any>) || {}).video_id)
-      .filter(Boolean);
+      .flatMap((w) => {
+        const m = (w.meta as Record<string, any>) || {};
+        return [m.video_id, m.aftermovie_video_id].filter(Boolean);
+      });
     
     let videoPathsMap: Record<number, string> = {};
     if (videoIds.length > 0) {
@@ -222,6 +224,9 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
       aftermovie_description: meta.aftermovie_description || null,
       video: meta.video_id && videoPathsMap[meta.video_id] 
         ? { id: meta.video_id, file_path: videoPathsMap[meta.video_id] } 
+        : null,
+      aftermovie_video: meta.aftermovie_video_id && videoPathsMap[meta.aftermovie_video_id]
+        ? { id: meta.aftermovie_video_id, file_path: videoPathsMap[meta.aftermovie_video_id] }
         : null,
       subtitle_data: meta.subtitle_data || null,
       featured_image: w.media_file_path ? { file_path: w.media_file_path, alt_text: w.media_alt_text } : null,
