@@ -138,7 +138,12 @@ export function LoginPageClient() {
         }
       } else {
         document.cookie = `voices_remembered_email=${encodeURIComponent(email)}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`;
-        setMessage(t('auth.login.success_message', 'Check je inbox! We hebben een magische inloglink gestuurd.'));
+        setMessage(
+          t(
+            'auth.login.success_message_simple',
+            'Check je mailbox. Je ontvangt een link om automatisch in te loggen. Klik op die link.'
+          )
+        );
       }
     } catch (err: any) {
       console.error('[LoginPage] Custom auth failed:', err);
@@ -175,7 +180,10 @@ export function LoginPageClient() {
             </span>
           </HeadingInstrument>
           <TextInstrument className="text-xl md:text-2xl font-light text-va-black/40 leading-tight tracking-tight mx-auto max-w-2xl">
-            <VoiceglotText  translationKey="auth.login.subtitle" defaultText="Vul je e-mailadres in voor een magische inloglink." />
+            <VoiceglotText
+              translationKey="auth.login.subtitle_simple"
+              defaultText="Inloggen? Vul je e-mailadres in en klik op Verstuur."
+            />
           </TextInstrument>
         </ContainerInstrument>
 
@@ -187,12 +195,12 @@ export function LoginPageClient() {
               </ContainerInstrument>
               <ContainerInstrument className="space-y-2">
                 <HeadingInstrument level={2} className="text-3xl font-light tracking-tighter">
-                  <VoiceglotText translationKey="auth.login.success.title" defaultText="Check je inbox!" />
+                  <VoiceglotText translationKey="auth.login.success.title_simple" defaultText="Check je mailbox." />
                 </HeadingInstrument>
                 <TextInstrument className="text-[15px] text-va-black/40 font-light leading-relaxed">
-                  <VoiceglotText 
-                    translationKey="auth.login.success.text" 
-                    defaultText={`${t('auth.login.success.text_prefix', "We hebben een magische inloglink gestuurd naar")} ${email}. ${t('auth.login.success.text_suffix', "Klik op de link in de e-mail om direct toegang te krijgen.")}`}
+                  <VoiceglotText
+                    translationKey="auth.login.success.text_simple"
+                    defaultText="Je ontvangt een link om automatisch in te loggen. Klik op die link in je mailbox."
                   />
                 </TextInstrument>
               </ContainerInstrument>
@@ -250,7 +258,7 @@ export function LoginPageClient() {
                   <>
                     <ContainerInstrument className="flex items-center gap-3">
                       <span className="text-lg font-light tracking-widest uppercase">
-                        <VoiceglotText translationKey="auth.login.send_link" defaultText="Stuur Magische Link" />
+                        <VoiceglotText translationKey="auth.login.send_simple" defaultText="Verstuur" />
                       </span>
                       <ArrowRight strokeWidth={1.5} size={20} className="group-hover:translate-x-1 transition-transform" />
                     </ContainerInstrument>
@@ -260,7 +268,7 @@ export function LoginPageClient() {
               
               {!isLoading && (
                 <TextInstrument className="text-[12px] text-va-black/30 text-center font-light leading-relaxed px-4">
-                  <VoiceglotText  translationKey="auto.loginpageclient.je_ontvangt_een_eenm.b03532" defaultText="Je ontvangt binnen enkele seconden een eenmalige inloglink per e-mail." />
+                  <VoiceglotText translationKey="auth.login.no_password_needed" defaultText="Geen wachtwoord nodig." />
                 </TextInstrument>
               )}
             </ContainerInstrument>
