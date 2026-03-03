@@ -25,6 +25,7 @@ const ReviewGrid = nextDynamic(() => import("@/components/studio/ReviewGrid").th
 const LiquidBackground = nextDynamic(() => import("@/components/ui/LiquidBackground").then(mod => mod.LiquidBackground), { ssr: false });
 const WorkshopInterestForm = nextDynamic(() => import("@/components/studio/WorkshopInterestForm").then(mod => mod.WorkshopInterestForm), { ssr: false });
 const WorkshopQuiz = nextDynamic(() => import("@/components/studio/WorkshopQuiz").then(mod => mod.WorkshopQuiz), { ssr: false });
+const defaultStudioEmail = process.env.NEXT_PUBLIC_STUDIO_CONTACT_EMAIL || "studio@localhost";
 
 // 🛡️ CHRIS-PROTOCOL: SDK for slug_registry resolution
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -269,7 +270,7 @@ async function renderSubFoyerArticle(entityId: number, slug: string) {
           <ContainerInstrument plain className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <ContainerInstrument className="bg-white rounded-[20px] p-8 border border-black/[0.03] shadow-aura space-y-4">
               <HeadingInstrument level={3} className="text-xl font-light text-va-black"><VoiceglotText translationKey="studio.contact.reach" defaultText="Bereikbaarheid" /></HeadingInstrument>
-              <TextInstrument className="text-va-black/60 font-light"><VoiceglotText translationKey="studio.contact.email" defaultText="E-mail: studio@voices.be" noTranslate /></TextInstrument>
+              <TextInstrument className="text-va-black/60 font-light"><VoiceglotText translationKey="studio.contact.email" defaultText={`E-mail: ${defaultStudioEmail}`} noTranslate /></TextInstrument>
               <TextInstrument className="text-va-black/60 font-light"><VoiceglotText translationKey="studio.contact.phone" defaultText="Telefoon: +32 (0)2 793 19 91" noTranslate /></TextInstrument>
             </ContainerInstrument>
             <ContainerInstrument className="bg-va-black text-white rounded-[20px] p-8 shadow-aura-lg space-y-4">

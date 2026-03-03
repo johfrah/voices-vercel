@@ -974,6 +974,18 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
       )}
     }
 
+    // 🛡️ CHRIS-PROTOCOL: Top-level recovery redirects (non-registry legacy slugs)
+    const topLevelRecoveryRoutes: Record<string, string> = {
+      contact: "/agency/contact",
+      "hoe-het-werkt": "/agency/zo-werkt-het",
+      "how-it-works": "/agency/zo-werkt-het",
+      faq: "/agency/faq"
+    };
+    const recoveryRoute = topLevelRecoveryRoutes[lookupSlug];
+    if (!resolved && segments.length === 1 && recoveryRoute) {
+      return redirect(recoveryRoute);
+    }
+
     // 🛡️ CHRIS-PROTOCOL: Registry-First Mandate (v2.15.034)
     // We only allow legacy fallbacks for very specific, known entry points.
     // This prevents the SmartRouter from "hijacking" unknown paths or system routes.

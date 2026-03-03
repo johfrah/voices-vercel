@@ -17,6 +17,13 @@ import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-m
  * Chris-Protocol: Volledig instrument-based.
  */
 
+const marketDomains = MarketManager.getMarketDomains();
+const fallbackHost = Object.values(marketDomains)
+  .find((value): value is string => typeof value === "string" && value.length > 0)
+  ?.replace(/^https?:\/\//, "") || "localhost:3000";
+const defaultTemplateHost = typeof window !== "undefined" ? window.location.hostname : fallbackHost;
+const testRecipient = process.env.NEXT_PUBLIC_TEST_VUME_RECIPIENT || `test@${fallbackHost.split(":")[0]}`;
+
 const TEMPLATES = [
   {
     id: 'magic-link',
@@ -24,8 +31,8 @@ const TEMPLATES = [
     journey: 'auth',
     icon: <ShieldCheck strokeWidth={1.5} size={20} />,
     description: 'Inloglink voor gebruikers.',
-    previewSubject: `Inloggen op ${typeof window !== 'undefined' ? window.location.hostname : 'Voices'}`,
-    context: { name: 'Admin', link: `https://${typeof window !== 'undefined' ? window.location.hostname : (MarketManager.getMarketDomains()['BE']?.replace('https://', '') || 'voices.be')}/account/callback?token=test` }
+    previewSubject: `Inloggen op ${typeof window !== "undefined" ? window.location.hostname : "Voices"}`,
+    context: { name: 'Admin', link: `https://${defaultTemplateHost}/account/callback?token=test` }
   },
   {
     id: 'studio-experience',
@@ -90,9 +97,9 @@ export default function VumeAdminPage() {
       const res = await fetch('/api/admin/test-vume', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ templateId: selectedTemplate.id, recipient: 'johfrah@voices.be' })
+        body: JSON.stringify({ templateId: selectedTemplate.id, recipient: testRecipient })
       });
-      if (res.ok) toast.success(`Testmail verzonden naar johfrah@voices.be`);
+      if (res.ok) toast.success(`Testmail verzonden naar ${testRecipient}`);
     } catch (e) { toast.error('Fout bij verzenden'); }
     finally { setIsSending(false); }
   };

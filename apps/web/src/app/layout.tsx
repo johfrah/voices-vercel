@@ -45,7 +45,22 @@ const VoicyChat = dynamic(() => import("@/components/ui/VoicyChat").then(mod => 
 
 const inter = Inter({ subsets: ["latin"] });
 
-  /** Veilige market-resolutie: voorkomt 500 bij onverwachte hosts (Combell proxy, etc.) */
+function resolveFallbackHost() {
+  const envHost = process.env.NEXT_PUBLIC_SITE_URL?.replace(/^https?:\/\//, '');
+  if (envHost) return envHost;
+
+  const marketDomains = MarketManagerServer.getMarketDomains();
+  const beHost = marketDomains.BE?.replace(/^https?:\/\//, '');
+  if (beHost) return beHost;
+
+  const firstKnownHost = Object.values(marketDomains)
+    .find((value): value is string => typeof value === "string" && value.length > 0)
+    ?.replace(/^https?:\/\//, '');
+
+  return firstKnownHost || "localhost:3000";
+}
+
+/** Veilige market-resolutie: voorkomt 500 bij onverwachte hosts (Combell proxy, etc.) */
 async function getMarketSafe(host: string) {
   try {
     //  CHRIS-PROTOCOL: Voeg een timeout toe aan de market resolution
@@ -58,14 +73,13 @@ async function getMarketSafe(host: string) {
     // 🛡️ CHRIS-PROTOCOL: Null-Safety Guard (v2.27.7)
     if (!market || !market.market_code) {
       console.error(' getMarketSafe: Market resolution returned invalid data, using fallback');
-      return MarketManagerServer.getCurrentMarket(process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be');
+      return MarketManagerServer.getCurrentMarket(resolveFallbackHost());
     }
     
     return market;
   } catch (err) {
     console.error(' getMarketSafe: Failed or timed out:', err);
-    const fallbackHost = process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be';
-    return MarketManagerServer.getCurrentMarket(fallbackHost);
+    return MarketManagerServer.getCurrentMarket(resolveFallbackHost());
   }
 }
 

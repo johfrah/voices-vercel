@@ -14,12 +14,9 @@ async function runCheck() {
   console.log(chalk.bold.blue('\n🚀 STARTING PRE-VERCEL CHECK...'));
   
   let hasErrors = false;
-  const rootDir = process.cwd();
-  // We gaan ervan uit dat we in 1-SITE/apps/web draaien als we via npm run check:pre-vercel komen
-  // maar we checken of we in de root zitten of in de app dir.
-  const webAppDir = fs.existsSync(path.join(rootDir, 'package.json')) && rootDir.endsWith('web') 
-    ? rootDir 
-    : path.join(rootDir, '1-SITE/apps/web');
+  const startDir = process.cwd();
+  const repoRoot = findRepoRoot(startDir);
+  const webAppDir = resolveWebAppDir(repoRoot);
 
   try {
     // 1. BUILD CHECK
@@ -41,7 +38,7 @@ async function runCheck() {
     console.log(chalk.yellow('\n🤝 Stap 1.5: Nuclear Handshake Integrity Check...'));
     try {
       execSync('npx tsx 3-WETTEN/scripts/integrity-handshake.ts', {
-        cwd: rootDir,
+        cwd: repoRoot,
         stdio: 'inherit',
         shell: true
       });
@@ -63,7 +60,7 @@ async function runCheck() {
       // We negeren layout.tsx omdat die vaak globale laders heeft in Suspense
       // We checken specifiek op next/dynamic imports
       if (content.includes('dynamic(') && content.includes('next/dynamic') && !content.includes('loading:') && !file.includes('layout.tsx')) {
-        console.log(chalk.red(`❌ ERROR: Dynamic import zonder loading fallback in: ${path.relative(rootDir, file)}`));
+        console.log(chalk.red(`❌ ERROR: Dynamic import zonder loading fallback in: ${path.relative(repoRoot, file)}`));
         hasErrors = true;
       }
 
@@ -73,7 +70,7 @@ async function runCheck() {
         if (content.includes(domain) && !content.includes('MarketManager') && 
             !file.includes('config.ts') && !file.includes('market-manager') && 
             !file.includes('MarketManager') && !file.includes('pre-vercel-check.ts')) {
-          console.log(chalk.red(`❌ ERROR: Hardcoded '${domain}' gedetecteerd in: ${path.relative(rootDir, file)}`));
+          console.log(chalk.red(`❌ ERROR: Hardcoded '${domain}' gedetecteerd in: ${path.relative(repoRoot, file)}`));
           hasErrors = true;
         }
       });
@@ -94,7 +91,7 @@ async function runCheck() {
           const newFilename = filename.replace(/[^a-zA-Z0-9.\-_]/g, '-').replace(/-+/g, '-');
           const newPath = path.join(path.dirname(asset), newFilename);
           
-          console.log(chalk.red(`❌ ERROR: Ongeldige karakters in asset naam: ${path.relative(rootDir, asset)}`));
+          console.log(chalk.red(`❌ ERROR: Ongeldige karakters in asset naam: ${path.relative(repoRoot, asset)}`));
           
           if (process.argv.includes('--fix')) {
             try {
@@ -120,7 +117,9 @@ async function runCheck() {
         const iconPath = path.join(iconsDir, icon);
         if (fs.existsSync(iconPath)) {
           // We scannen of dit icoon nog ergens in de src wordt gebruikt
-          const usages = execSync(`grep -r "${icon}" ${srcDir} || true`).toString().trim();
+          const usages = execSync(`rg -n --fixed-strings "${icon}" "${srcDir}" || true`, {
+            shell: true
+          }).toString().trim();
           if (usages) {
             console.log(chalk.red(`❌ ERROR: Legacy icon '${icon}' wordt nog gebruikt. Vervang door Lucide component.`));
             hasErrors = true;
@@ -151,7 +150,7 @@ async function runCheck() {
           });
           names.forEach(name => {
             if (name && importedNames.has(name)) {
-              console.log(chalk.red(`❌ ERROR: Duplicate import '${name}' gedetecteerd in: ${path.relative(rootDir, file)}`));
+              console.log(chalk.red(`❌ ERROR: Duplicate import '${name}' gedetecteerd in: ${path.relative(repoRoot, file)}`));
               hasErrors = true;
             }
             if (name) importedNames.add(name);
@@ -194,6 +193,40 @@ function getAllFiles(dirPath: string, extensions?: string[], arrayOfFiles: strin
   });
 
   return arrayOfFiles;
+}
+
+function resolveWebAppDir(repoRoot: string): string {
+  const modernWebAppDir = path.join(repoRoot, 'apps/web');
+  if (fs.existsSync(path.join(modernWebAppDir, 'package.json'))) {
+    return modernWebAppDir;
+  }
+
+  const legacyWebAppDir = path.join(repoRoot, '1-SITE/apps/web');
+  if (fs.existsSync(path.join(legacyWebAppDir, 'package.json'))) {
+    return legacyWebAppDir;
+  }
+
+  throw new Error(`Unable to resolve web app directory from repo root: ${repoRoot}`);
+}
+
+function findRepoRoot(startDir: string): string {
+  let currentDir = path.resolve(startDir);
+
+  while (true) {
+    const hasModernWebApp = fs.existsSync(path.join(currentDir, 'apps/web/package.json'));
+    const hasLegacyWebApp = fs.existsSync(path.join(currentDir, '1-SITE/apps/web/package.json'));
+    const hasWetDir = fs.existsSync(path.join(currentDir, '3-WETTEN'));
+
+    if ((hasModernWebApp || hasLegacyWebApp) && hasWetDir) {
+      return currentDir;
+    }
+
+    const parentDir = path.dirname(currentDir);
+    if (parentDir === currentDir) {
+      return path.resolve(startDir);
+    }
+    currentDir = parentDir;
+  }
 }
 
 runCheck();

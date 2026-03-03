@@ -10,7 +10,7 @@ import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-m
 import { cn } from '@/lib/utils';
 import { Actor } from '@/types';
 import { AnimatePresence, motion } from 'framer-motion';
-import { CheckCircle2, ChevronRight, Clock, Globe, Info, Loader2, Megaphone, Mic, Mic2, Minus, Music as MusicIcon, Paperclip, Pause, Phone, Play, Plus, Radio, Search as SearchIcon, ShieldCheck, ShoppingBag, Sparkles, Star, Tv, Type, Upload, User, Users, Video, X, Zap } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, ChevronRight, Clock, Globe, Info, Loader2, Megaphone, Mic, Mic2, Minus, Music as MusicIcon, Paperclip, Pause, Phone, Play, Plus, Radio, Search as SearchIcon, ShieldCheck, ShoppingBag, Sparkles, Star, Tv, Type, Upload, User, Users, Video, X, Zap } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import React, { useEffect, useMemo, useState } from 'react';
 import { ActorReorderModal } from './ActorReorderModal';

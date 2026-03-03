@@ -9,15 +9,14 @@ import chalk from 'chalk';
  * Dit script is de onverbiddelijke bewaker van de code-integriteit.
  */
 
-const ROOT_DIR = process.cwd();
+const START_DIR = process.cwd();
+const ROOT_DIR = findRepoRoot(START_DIR);
 const REPORTS_DIR = path.join(ROOT_DIR, '3-WETTEN/reports');
 if (!fs.existsSync(REPORTS_DIR)) {
   fs.mkdirSync(REPORTS_DIR, { recursive: true });
 }
 
-const WEB_APP_DIR = fs.existsSync(path.join(ROOT_DIR, 'src')) 
-  ? path.join(ROOT_DIR, 'src')
-  : path.join(ROOT_DIR, '1-SITE/apps/web/src');
+const WEB_APP_DIR = resolveWebAppSrcDir(ROOT_DIR);
 
 interface AuditIssue {
   file: string;
@@ -214,4 +213,34 @@ if (errors.length > 0) {
 } else {
   console.log(chalk.bold.green('✅ AUDIT PASSED: Masterclass quality confirmed.\n'));
   process.exit(0);
+}
+
+function resolveWebAppSrcDir(repoRoot: string): string {
+  const modernWebSrcDir = path.join(repoRoot, 'apps/web/src');
+  if (fs.existsSync(modernWebSrcDir)) return modernWebSrcDir;
+
+  const legacyWebSrcDir = path.join(repoRoot, '1-SITE/apps/web/src');
+  if (fs.existsSync(legacyWebSrcDir)) return legacyWebSrcDir;
+
+  throw new Error(`Cannot locate web src directory from repo root: ${repoRoot}`);
+}
+
+function findRepoRoot(startDir: string): string {
+  let currentDir = path.resolve(startDir);
+
+  while (true) {
+    const hasModernWeb = fs.existsSync(path.join(currentDir, 'apps/web/package.json'));
+    const hasLegacyWeb = fs.existsSync(path.join(currentDir, '1-SITE/apps/web/package.json'));
+    const hasWetDir = fs.existsSync(path.join(currentDir, '3-WETTEN'));
+
+    if ((hasModernWeb || hasLegacyWeb) && hasWetDir) {
+      return currentDir;
+    }
+
+    const parentDir = path.dirname(currentDir);
+    if (parentDir === currentDir) {
+      return path.resolve(startDir);
+    }
+    currentDir = parentDir;
+  }
 }
