@@ -15,6 +15,9 @@ import { useAdminTracking } from '@/hooks/useAdminTracking';
 import { 
   ArrowLeft, 
   CheckCircle2, 
+  CircleDollarSign,
+  FileText,
+  Loader2,
   User,
   ShoppingBag,
   Mic,
@@ -29,15 +32,20 @@ import Link from 'next/link';
 import { useEffect, useState, useCallback } from 'react';
 import { format } from 'date-fns';
 import { nl } from 'date-fns/locale';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 
 export default function OrderDetailPage() {
   const { id } = useParams();
-  const router = useRouter();
   const { logAction } = useAdminTracking();
   const [order, setOrder] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [actionBusy, setActionBusy] = useState<string | null>(null);
+  const [actionMessage, setActionMessage] = useState<string | null>(null);
+  const [itemBusyId, setItemBusyId] = useState<number | null>(null);
+  const [itemDrafts, setItemDrafts] = useState<
+    Record<number, { deliveryStatus: string; payoutStatus: string; deliveryFileUrl: string; invoiceFileUrl: string }>
+  >({});
 
   const fetchOrder = useCallback(async () => {
     setIsLoading(true);
@@ -58,21 +66,98 @@ export default function OrderDetailPage() {
     fetchOrder();
   }, [fetchOrder]);
 
-  const updateStatus = async (newStatus: string) => {
+  useEffect(() => {
+    const items = order?.production?.items || [];
+    const nextDrafts: Record<
+      number,
+      { deliveryStatus: string; payoutStatus: string; deliveryFileUrl: string; invoiceFileUrl: string }
+    > = {};
+    items.forEach((item: any) => {
+      nextDrafts[item.id] = {
+        deliveryStatus: item.deliveryStatus || 'waiting',
+        payoutStatus: item.payoutStatus || 'pending',
+        deliveryFileUrl: item.deliveryFileUrl || '',
+        invoiceFileUrl: item.invoiceFileUrl || '',
+      };
+    });
+    setItemDrafts(nextDrafts);
+  }, [order]);
+
+  const runOrderAction = async (action: 'request_po' | 'mark_in_production' | 'mark_delivered' | 'generate_payment_link') => {
     setIsUpdating(true);
+    setActionBusy(action);
+    setActionMessage(null);
     try {
-      const res = await fetch('/api/admin/orders', {
+      const res = await fetch(`/api/admin/orders/${id}/actions`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setActionMessage(data.error || 'Actie mislukt.');
+        return;
+      }
+      if (data.checkoutUrl) {
+        window.open(data.checkoutUrl, '_blank', 'noopener,noreferrer');
+      }
+      logAction('order_action', { id, action });
+      setActionMessage('Actie succesvol uitgevoerd.');
+      await fetchOrder();
+    } catch (e) {
+      console.error('Failed order action:', e);
+      setActionMessage('Actie mislukt door netwerkfout.');
+    } finally {
+      setActionBusy(null);
+      setIsUpdating(false);
+    }
+  };
+
+  const updateItemDraft = (itemId: number, patch: Partial<{ deliveryStatus: string; payoutStatus: string; deliveryFileUrl: string; invoiceFileUrl: string }>) => {
+    setItemDrafts((prev) => ({
+      ...prev,
+      [itemId]: {
+        ...(prev[itemId] || {
+          deliveryStatus: 'waiting',
+          payoutStatus: 'pending',
+          deliveryFileUrl: '',
+          invoiceFileUrl: '',
+        }),
+        ...patch,
+      },
+    }));
+  };
+
+  const saveItem = async (itemId: number) => {
+    const draft = itemDrafts[itemId];
+    if (!draft) return;
+    setIsUpdating(true);
+    setItemBusyId(itemId);
+    setActionMessage(null);
+    try {
+      const res = await fetch(`/api/admin/orders/${id}/items/${itemId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, status: newStatus })
+        body: JSON.stringify({
+          delivery_status: draft.deliveryStatus,
+          payout_status: draft.payoutStatus,
+          delivery_file_url: draft.deliveryFileUrl || null,
+          invoice_file_url: draft.invoiceFileUrl || null,
+        }),
       });
-      if (res.ok) {
-        logAction('order_status_update', { id, status: newStatus });
-        await fetchOrder();
+      const data = await res.json();
+      if (!res.ok) {
+        setActionMessage(data.error || `Item #${itemId} kon niet geüpdatet worden.`);
+        return;
       }
+      logAction('order_item_update', { id, itemId });
+      setActionMessage(`Item #${itemId} bijgewerkt.`);
+      await fetchOrder();
     } catch (e) {
-      console.error('Failed to update status:', e);
+      console.error('Failed to update order item:', e);
+      setActionMessage(`Netwerkfout bij item #${itemId}.`);
     } finally {
+      setItemBusyId(null);
       setIsUpdating(false);
     }
   };
@@ -80,6 +165,7 @@ export default function OrderDetailPage() {
   if (isLoading) return <LoadingScreenInstrument text="Order details laden..." />;
   if (!order) return <div className="p-20 text-center">Order niet gevonden.</div>;
   const recordingSessions = order.production?.recordingSessions || [];
+  const timelineNotes = order.timeline?.notes || [];
 
   return (
     <PageWrapperInstrument className="min-h-screen bg-va-off-white p-8 pt-24">
@@ -153,8 +239,10 @@ export default function OrderDetailPage() {
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <button 
-                    className="flex items-center justify-between p-6 bg-white rounded-[15px] border border-black/[0.03] hover:border-primary/30 transition-all group"
+                  <button
+                    onClick={() => runOrderAction('mark_in_production')}
+                    disabled={!!actionBusy || isUpdating}
+                    className="flex items-center justify-between p-6 bg-white rounded-[15px] border border-black/[0.03] hover:border-primary/30 transition-all group disabled:opacity-60"
                   >
                     <div className="flex items-center gap-4">
                       <div className="w-10 h-10 rounded-full bg-primary/5 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all">
@@ -165,11 +253,17 @@ export default function OrderDetailPage() {
                         <div className="text-[11px] font-light text-va-black/40 tracking-tight">Kwaliteitscontrole & verzenden</div>
                       </div>
                     </div>
-                    <Play size={14} className="text-va-black/10 group-hover:text-primary transition-all" />
+                    {actionBusy === 'mark_in_production' ? (
+                      <Loader2 size={14} className="text-primary animate-spin" />
+                    ) : (
+                      <Play size={14} className="text-va-black/10 group-hover:text-primary transition-all" />
+                    )}
                   </button>
 
-                  <button 
-                    className="flex items-center justify-between p-6 bg-white rounded-[15px] border border-black/[0.03] hover:border-green-500/30 transition-all group"
+                  <button
+                    onClick={() => runOrderAction('mark_delivered')}
+                    disabled={!!actionBusy || isUpdating}
+                    className="flex items-center justify-between p-6 bg-white rounded-[15px] border border-black/[0.03] hover:border-green-500/30 transition-all group disabled:opacity-60"
                   >
                     <div className="flex items-center gap-4">
                       <div className="w-10 h-10 rounded-full bg-green-500/5 flex items-center justify-center text-green-500 group-hover:bg-green-500 group-hover:text-white transition-all">
@@ -180,9 +274,65 @@ export default function OrderDetailPage() {
                         <div className="text-[11px] font-light text-va-black/40 tracking-tight">Audio is klaar voor de klant</div>
                       </div>
                     </div>
-                    <Play size={14} className="text-va-black/10 group-hover:text-green-500 transition-all" />
+                    {actionBusy === 'mark_delivered' ? (
+                      <Loader2 size={14} className="text-green-500 animate-spin" />
+                    ) : (
+                      <Play size={14} className="text-va-black/10 group-hover:text-green-500 transition-all" />
+                    )}
                   </button>
+
+                  {order.actions?.canGeneratePaymentLink && (
+                    <button
+                      onClick={() => runOrderAction('generate_payment_link')}
+                      disabled={!!actionBusy || isUpdating}
+                      className="flex items-center justify-between p-6 bg-white rounded-[15px] border border-black/[0.03] hover:border-primary/30 transition-all group disabled:opacity-60"
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 rounded-full bg-primary/5 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all">
+                          <CircleDollarSign size={18} strokeWidth={1.5} />
+                        </div>
+                        <div className="text-left">
+                          <div className="text-[15px] font-light tracking-tight">Betaallink maken</div>
+                          <div className="text-[11px] font-light text-va-black/40 tracking-tight">Open Mollie checkout voor klant</div>
+                        </div>
+                      </div>
+                      {actionBusy === 'generate_payment_link' ? (
+                        <Loader2 size={14} className="text-primary animate-spin" />
+                      ) : (
+                        <Play size={14} className="text-va-black/10 group-hover:text-primary transition-all" />
+                      )}
+                    </button>
+                  )}
+
+                  {order.actions?.needsPO && (
+                    <button
+                      onClick={() => runOrderAction('request_po')}
+                      disabled={!!actionBusy || isUpdating}
+                      className="flex items-center justify-between p-6 bg-white rounded-[15px] border border-black/[0.03] hover:border-yellow-500/40 transition-all group disabled:opacity-60"
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 rounded-full bg-yellow-500/10 flex items-center justify-center text-yellow-600 group-hover:bg-yellow-500 group-hover:text-white transition-all">
+                          <FileText size={18} strokeWidth={1.5} />
+                        </div>
+                        <div className="text-left">
+                          <div className="text-[15px] font-light tracking-tight">PO opvragen</div>
+                          <div className="text-[11px] font-light text-va-black/40 tracking-tight">Zet status op waiting PO</div>
+                        </div>
+                      </div>
+                      {actionBusy === 'request_po' ? (
+                        <Loader2 size={14} className="text-yellow-600 animate-spin" />
+                      ) : (
+                        <Play size={14} className="text-va-black/10 group-hover:text-yellow-600 transition-all" />
+                      )}
+                    </button>
+                  )}
                 </div>
+
+                {actionMessage && (
+                  <div className="text-[12px] font-light text-va-black/50 bg-white border border-black/[0.04] rounded-[12px] px-4 py-3">
+                    {actionMessage}
+                  </div>
+                )}
               </div>
 
               {/* Productie & Script */}
@@ -218,42 +368,107 @@ export default function OrderDetailPage() {
               <div className="space-y-6">
                 <HeadingInstrument level={3} className="text-[13px] font-light tracking-[0.2em] text-va-black/20 uppercase">Bestelde Items</HeadingInstrument>
                 <div className="space-y-4">
-                  {order.production?.items?.map((item: any, i: number) => (
-                    <div key={i} className="flex items-center justify-between p-6 rounded-[15px] border border-black/[0.02] bg-va-off-white/10">
-                      <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-[10px] bg-white flex items-center justify-center text-va-black/20 shadow-sm">
-                          <Mic size={20} />
-                        </div>
-                        <div>
-                          <div className="text-[16px] font-light tracking-tight">{item.name}</div>
-                          <div className="text-[12px] font-light text-va-black/30 tracking-tight">
-                            {item.actorName ? `Stem: ${item.actorName} • ` : ''}Aantal: {item.quantity} • Inkoop: €{item.cost}
-                          </div>
-                          <div className="text-[11px] font-light text-va-black/25 tracking-tight mt-1">
-                            Delivery: {item.deliveryStatus || 'waiting'} • Payout: {item.payoutStatus || 'pending'}
-                          </div>
-                          {(item.deliveryFileUrl || item.invoiceFileUrl) && (
-                            <div className="flex items-center gap-3 mt-2">
-                              {item.deliveryFileUrl && (
-                                <a href={item.deliveryFileUrl} target="_blank" className="text-[11px] text-primary hover:underline">
-                                  Delivery file
-                                </a>
-                              )}
-                              {item.invoiceFileUrl && (
-                                <a href={item.invoiceFileUrl} target="_blank" className="text-[11px] text-primary hover:underline">
-                                  Factuur file
-                                </a>
-                              )}
+                  {order.production?.items?.map((item: any) => {
+                    const draft = itemDrafts[item.id] || {
+                      deliveryStatus: item.deliveryStatus || 'waiting',
+                      payoutStatus: item.payoutStatus || 'pending',
+                      deliveryFileUrl: item.deliveryFileUrl || '',
+                      invoiceFileUrl: item.invoiceFileUrl || '',
+                    };
+                    return (
+                      <div key={item.id} className="p-6 rounded-[15px] border border-black/[0.02] bg-va-off-white/10 space-y-4">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 rounded-[10px] bg-white flex items-center justify-center text-va-black/20 shadow-sm">
+                              <Mic size={20} />
                             </div>
-                          )}
+                            <div>
+                              <div className="text-[16px] font-light tracking-tight">{item.name}</div>
+                              <div className="text-[12px] font-light text-va-black/30 tracking-tight">
+                                {item.actorName ? `Stem: ${item.actorName} • ` : ''}Aantal: {item.quantity} • Inkoop: €{item.cost}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <div className="text-[16px] font-medium tracking-tight">€{item.price}</div>
+                            <div className="text-[11px] font-light text-va-black/30">Subtotaal €{item.subtotal}</div>
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          <label className="text-[11px] font-light text-va-black/50 space-y-1">
+                            <span className="block uppercase tracking-widest text-[10px]">Delivery status</span>
+                            <select
+                              value={draft.deliveryStatus}
+                              onChange={(e) => updateItemDraft(item.id, { deliveryStatus: e.target.value })}
+                              className="w-full rounded-[10px] border border-black/[0.06] bg-white px-3 py-2 text-[13px] font-light outline-none"
+                            >
+                              <option value="waiting">waiting</option>
+                              <option value="in_review">in_review</option>
+                              <option value="approved">approved</option>
+                              <option value="delivered">delivered</option>
+                            </select>
+                          </label>
+                          <label className="text-[11px] font-light text-va-black/50 space-y-1">
+                            <span className="block uppercase tracking-widest text-[10px]">Payout status</span>
+                            <select
+                              value={draft.payoutStatus}
+                              onChange={(e) => updateItemDraft(item.id, { payoutStatus: e.target.value })}
+                              className="w-full rounded-[10px] border border-black/[0.06] bg-white px-3 py-2 text-[13px] font-light outline-none"
+                            >
+                              <option value="pending">pending</option>
+                              <option value="approved">approved</option>
+                              <option value="paid">paid</option>
+                              <option value="cancelled">cancelled</option>
+                            </select>
+                          </label>
+                          <label className="text-[11px] font-light text-va-black/50 space-y-1 md:col-span-2">
+                            <span className="block uppercase tracking-widest text-[10px]">Delivery file URL</span>
+                            <input
+                              type="url"
+                              value={draft.deliveryFileUrl}
+                              onChange={(e) => updateItemDraft(item.id, { deliveryFileUrl: e.target.value })}
+                              className="w-full rounded-[10px] border border-black/[0.06] bg-white px-3 py-2 text-[13px] font-light outline-none"
+                              placeholder="https://..."
+                            />
+                          </label>
+                          <label className="text-[11px] font-light text-va-black/50 space-y-1 md:col-span-2">
+                            <span className="block uppercase tracking-widest text-[10px]">Factuur file URL</span>
+                            <input
+                              type="url"
+                              value={draft.invoiceFileUrl}
+                              onChange={(e) => updateItemDraft(item.id, { invoiceFileUrl: e.target.value })}
+                              className="w-full rounded-[10px] border border-black/[0.06] bg-white px-3 py-2 text-[13px] font-light outline-none"
+                              placeholder="https://..."
+                            />
+                          </label>
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            {item.deliveryFileUrl && (
+                              <a href={item.deliveryFileUrl} target="_blank" className="text-[11px] text-primary hover:underline">
+                                Delivery file
+                              </a>
+                            )}
+                            {item.invoiceFileUrl && (
+                              <a href={item.invoiceFileUrl} target="_blank" className="text-[11px] text-primary hover:underline">
+                                Factuur file
+                              </a>
+                            )}
+                          </div>
+                          <button
+                            onClick={() => saveItem(item.id)}
+                            disabled={itemBusyId === item.id}
+                            className="inline-flex items-center gap-2 px-4 py-2 rounded-[10px] border border-black/[0.08] bg-white text-[12px] font-medium tracking-wide hover:border-primary/40 disabled:opacity-60"
+                          >
+                            {itemBusyId === item.id ? <Loader2 size={13} className="animate-spin" /> : null}
+                            Item opslaan
+                          </button>
                         </div>
                       </div>
-                      <div className="text-right">
-                        <div className="text-[16px] font-medium tracking-tight">€{item.price}</div>
-                        <div className="text-[11px] font-light text-va-black/30">Subtotaal €{item.subtotal}</div>
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
 
@@ -277,6 +492,29 @@ export default function OrderDetailPage() {
                   </div>
                 </div>
               )}
+
+              {/* Tijdlijn / order notes */}
+              <div className="space-y-6">
+                <HeadingInstrument level={3} className="text-[13px] font-light tracking-[0.2em] text-va-black/20 uppercase">
+                  Order Tijdlijn
+                </HeadingInstrument>
+                {timelineNotes.length > 0 ? (
+                  <div className="space-y-3">
+                    {timelineNotes.map((note: any) => (
+                      <div key={note.id} className="p-4 rounded-[12px] border border-black/[0.04] bg-white space-y-1">
+                        <div className="text-[12px] font-light text-va-black/40">
+                          {note.createdAt ? format(new Date(note.createdAt), 'PPpp', { locale: nl }) : 'Onbekende datum'}
+                          {' • '}
+                          {note.isCustomerNote ? 'Klantnotitie' : 'Interne notitie'}
+                        </div>
+                        <div className="text-[13px] font-light text-va-black/75">{note.note}</div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-[13px] font-light text-va-black/35 italic">Nog geen ordernotities gevonden.</div>
+                )}
+              </div>
             </div>
           </div>
 

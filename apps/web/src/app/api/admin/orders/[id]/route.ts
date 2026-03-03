@@ -1,4 +1,4 @@
-import { db, ordersV2, users, ordersLegacyBloat, orderStatuses, paymentMethods, journeys } from '@/lib/system/voices-config';
+import { db, ordersV2, users, ordersLegacyBloat, orderStatuses, paymentMethods, journeys, orders } from '@/lib/system/voices-config';
 import { eq, sql } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth/api-auth';
@@ -32,6 +32,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
       createdAt: ordersV2.createdAt,
       legacyInternalId: ordersV2.legacyInternalId,
       rawMeta: ordersLegacyBloat.rawMeta,
+      legacyRawMeta: orders.rawMeta,
       statusCode: orderStatuses.code,
       statusLabel: orderStatuses.label,
       paymentCode: paymentMethods.code,
@@ -41,6 +42,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
     })
     .from(ordersV2)
     .leftJoin(ordersLegacyBloat, eq(ordersV2.id, ordersLegacyBloat.wpOrderId))
+    .leftJoin(orders, eq(orders.id, ordersV2.legacyInternalId))
     .leftJoin(orderStatuses, eq(ordersV2.statusId, orderStatuses.id))
     .leftJoin(paymentMethods, eq(ordersV2.paymentMethodId, paymentMethods.id))
     .leftJoin(journeys, eq(ordersV2.journeyId, journeys.id))
@@ -102,6 +104,15 @@ export async function GET(request: Request, { params }: { params: { id: string }
     `).catch(() => []);
     const recordingRows: any[] = Array.isArray(recordingRowsRaw) ? recordingRowsRaw : ((recordingRowsRaw as any)?.rows || []);
 
+    const notesRowsRaw = await db.execute(sql`
+      select id, note, is_customer_note, created_at
+      from order_notes
+      where order_id = ${sourceOrderId}
+      order by created_at desc
+      limit 50
+    `).catch(() => []);
+    const notesRows: any[] = Array.isArray(notesRowsRaw) ? notesRowsRaw : ((notesRowsRaw as any)?.rows || []);
+
     // Resolve User
     let customerInfo = null;
     if (userId) {
@@ -118,7 +129,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
     }
 
     // 🤝 DE HANDDRUK (Human-Centric Mapping)
-    const rawMeta = order.rawMeta || {};
+    const rawMeta = order.rawMeta || order.legacyRawMeta || {};
     const parseJson = (value: any) => {
       if (!value) return {};
       if (typeof value === 'string') {
@@ -286,6 +297,15 @@ export async function GET(request: Request, { params }: { params: { id: string }
           id: Number(row.id),
           orderItemId: row.order_item_id ? Number(row.order_item_id) : null,
           status: row.status || 'active',
+          createdAt: row.created_at || null,
+        })),
+      },
+
+      timeline: {
+        notes: notesRows.map((row: any) => ({
+          id: Number(row.id),
+          note: row.note || '',
+          isCustomerNote: !!row.is_customer_note,
           createdAt: row.created_at || null,
         })),
       },

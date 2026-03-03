@@ -1,6 +1,8 @@
 import {
   db,
   orderItems,
+  orderNotes,
+  paymentMethods,
   orderStatuses,
   orders,
   ordersLegacyBloat,
@@ -46,6 +48,73 @@ function mapStatusToLegacyStatus(code: string): string {
   if (['refunded', 'wc-refunded'].includes(normalized)) return 'refunded';
   if (['waiting_po', 'awaiting_payment', 'unpaid', 'pending', 'wc-pending'].includes(normalized)) return 'pending';
   return 'processing';
+}
+
+const WORLD_BY_JOURNEY: Record<string, number> = {
+  agency: 1,
+  studio: 2,
+  academy: 3,
+  portfolio: 5,
+  ademing: 6,
+  freelance: 7,
+  partner: 8,
+  johfrai: 10,
+  artist: 25,
+};
+
+function normalizeJourneyCode(value: unknown): string {
+  const normalized = String(value || 'agency').trim().toLowerCase();
+  return normalized || 'agency';
+}
+
+function journeyLookupCandidates(journeyCode: string): string[] {
+  const candidates = new Set<string>([journeyCode]);
+  if (journeyCode === 'agency') {
+    candidates.add('agency_vo');
+    candidates.add('agency_ivr');
+    candidates.add('agency_commercial');
+  }
+  if (journeyCode.startsWith('agency_')) {
+    candidates.add('agency');
+  }
+  return Array.from(candidates);
+}
+
+async function resolveYukiSync(orderId: number) {
+  const orderRow = await db
+    .select({
+      id: orders.id,
+      wpOrderId: orders.wpOrderId,
+      total: orders.total,
+    })
+    .from(orders)
+    .where(eq(orders.id, orderId))
+    .limit(1)
+    .then((rows: any[]) => rows[0]);
+
+  if (!orderRow) {
+    return { success: false, message: 'Order niet gevonden voor Yuki sync' };
+  }
+
+  const yukiId = `YUK-${orderRow.wpOrderId || orderRow.id}`;
+
+  await db
+    .update(orders)
+    .set({ yukiInvoiceId: yukiId })
+    .where(eq(orders.id, orderId));
+
+  await db.insert(orderNotes).values({
+    orderId,
+    note: `Yuki sync gekoppeld: ${yukiId}`,
+    isCustomerNote: false,
+  });
+
+  return {
+    success: true,
+    yukiId,
+    amount: orderRow.total || '0',
+    message: 'Order gekoppeld voor Yuki verwerking.',
+  };
 }
 
 export async function GET(request: NextRequest) {
@@ -257,43 +326,122 @@ export async function POST(request: NextRequest) {
     const items = Array.isArray(body.items) ? body.items : [];
     const internalNotes = body.internalNotes ?? body.internal_notes ?? null;
     const status = body.status || 'pending';
+    const syncToYuki = Boolean(body.syncToYuki ?? body.sync_to_yuki);
 
     if (!userId || !items || items.length === 0) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
+    const normalizedJourney = normalizeJourneyCode(journey);
+    const worldId = WORLD_BY_JOURNEY[normalizedJourney] || 1;
+    const normalizedStatusInput = String(status).trim();
+    const statusCandidates =
+      STATUS_FILTER_MAP[normalizedStatusInput] ||
+      [normalizedStatusInput.toLowerCase().replace(/\s+/g, '_').replace(/-/g, '_'), normalizedStatusInput];
+
+    const [statusRow, journeyRow, paymentRow] = await Promise.all([
+      db
+        .select({ id: orderStatuses.id, code: orderStatuses.code })
+        .from(orderStatuses)
+        .where(inArray(orderStatuses.code, statusCandidates))
+        .limit(1)
+        .then((rows: any[]) => rows[0] || null),
+      db
+        .select({ id: journeys.id, code: journeys.code })
+        .from(journeys)
+        .where(inArray(journeys.code, journeyLookupCandidates(normalizedJourney)))
+        .limit(1)
+        .then((rows: any[]) => rows[0] || null),
+      db
+        .select({ id: paymentMethods.id })
+        .from(paymentMethods)
+        .where(inArray(paymentMethods.code, ['manual_invoice', 'banktransfer', 'mollie_banktransfer']))
+        .limit(1)
+        .then((rows: any[]) => rows[0] || null),
+    ]);
+
+    const legacyStatus = mapStatusToLegacyStatus(statusRow?.code || normalizedStatusInput || 'pending');
     const total = items.reduce((acc: number, item: any) => acc + (parseFloat(item.price) * item.quantity), 0);
     const totalTax = total * 0.21;
-    
+    const netTotal = total;
+
+    const maxWpRows = await db
+      .select({ wpOrderId: orders.wpOrderId })
+      .from(orders)
+      .orderBy(sql`${orders.wpOrderId} desc`)
+      .limit(1);
+    const maxWpOrderId = Number(maxWpRows[0]?.wpOrderId || 0);
+    const uniqueWpId = Math.max(maxWpOrderId + 1, 310001);
+
     const [newOrder] = await db.insert(orders).values({
+      wpOrderId: uniqueWpId,
       user_id: Number(userId),
-      journey,
+      journey: normalizedJourney,
+      worldId,
+      journeyId: journeyRow?.id || null,
+      statusId: statusRow?.id || null,
+      paymentMethodId: paymentRow?.id || null,
       total: total.toString(),
       tax: totalTax.toString(),
-      status: status || 'pending',
+      amountNet: netTotal.toString(),
+      status: legacyStatus,
       internal_notes: internalNotes,
       is_manually_edited: true,
       market: 'BE',
       createdAt: new Date(),
     }).returning();
 
-    const orderItemsToInsert = items.map((item: any) => ({
-      orderId: newOrder.id,
-      name: item.name,
-      quantity: item.quantity,
-      price: item.price.toString(),
-      createdAt: new Date(),
-      is_manually_edited: true,
-    }));
+    for (const item of items) {
+      await db.execute(sql`
+        insert into order_items (
+          order_id,
+          name,
+          quantity,
+          price,
+          is_manually_edited,
+          created_at
+        ) values (
+          ${newOrder.id},
+          ${item.name},
+          ${Number(item.quantity || 1)},
+          ${String(item.price || '0')},
+          ${true},
+          ${new Date().toISOString()}
+        )
+      `);
+    }
 
-    await db.insert(orderItems).values(orderItemsToInsert);
+    await db.insert(ordersV2).values({
+      id: uniqueWpId,
+      userId: Number(userId),
+      worldId,
+      journeyId: journeyRow?.id || null,
+      statusId: statusRow?.id || null,
+      paymentMethodId: paymentRow?.id || null,
+      amountNet: netTotal.toFixed(2),
+      amountTotal: (netTotal + totalTax).toFixed(2),
+      createdAt: new Date(),
+      legacyInternalId: newOrder.id,
+    });
+
+    if (internalNotes) {
+      await db.insert(orderNotes).values({
+        orderId: newOrder.id,
+        note: `Admin notitie: ${internalNotes}`,
+        isCustomerNote: false,
+      });
+    }
+
+    const yukiResult = syncToYuki ? await resolveYukiSync(newOrder.id) : null;
 
     return NextResponse.json({
       ...newOrder,
-      displayOrderId: newOrder.wpOrderId || newOrder.id,
+      displayOrderId: uniqueWpId,
+      yukiResult,
     });
-  } catch (error) {
-    return NextResponse.json({ error: 'Failed to create order' }, { status: 500 });
+  } catch (error: any) {
+    console.error('[Admin Orders POST Error]:', error);
+    return NextResponse.json({ error: error?.message || 'Failed to create order' }, { status: 500 });
   }
 }
 

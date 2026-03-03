@@ -30,6 +30,53 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 const sdkClient = createSupabaseClient(supabaseUrl, supabaseKey);
 
+const DEFAULT_WORLD_BY_JOURNEY: Record<string, number> = {
+  agency: 1,
+  studio: 2,
+  academy: 3,
+  portfolio: 5,
+  ademing: 6,
+  freelance: 7,
+  partner: 8,
+  johfrai: 10,
+  artist: 25,
+};
+
+function normalizeJourneyCode(value: unknown): string {
+  const raw = String(value || 'agency').trim().toLowerCase();
+  if (!raw) return 'agency';
+  return raw;
+}
+
+function journeyCandidates(journeyCode: string): string[] {
+  const candidates = new Set<string>([journeyCode]);
+  if (journeyCode === 'agency') {
+    candidates.add('agency_vo');
+    candidates.add('agency_ivr');
+    candidates.add('agency_commercial');
+  }
+  if (journeyCode.startsWith('agency_')) {
+    candidates.add('agency');
+  }
+  return Array.from(candidates);
+}
+
+async function resolveLookupId(table: 'journeys' | 'order_statuses' | 'payment_methods', codes: string[]): Promise<number | null> {
+  const normalizedCodes = Array.from(
+    new Set(codes.map((code) => String(code || '').trim().toLowerCase()).filter(Boolean))
+  );
+  if (normalizedCodes.length === 0) return null;
+
+  const { data, error } = await sdkClient
+    .from(table)
+    .select('id, code')
+    .in('code', normalizedCodes)
+    .limit(1);
+
+  if (error || !data?.length) return null;
+  return Number(data[0].id);
+}
+
 export async function POST(request: Request) {
   return await ServerWatchdog.atomic('CheckoutAPI', 'SubmitOrder', {}, async () => {
     let rawBody: any = null;
@@ -208,6 +255,56 @@ export async function POST(request: Request) {
 
     const { error: itemsErr } = await sdkClient.from('order_items').insert(itemsToInsert);
     if (itemsErr) throw new Error(`Order items failed: ${itemsErr.message}`);
+
+    // 6.5 V2-FIRST MIRROR: garandeer directe write naar orders_v2.
+    const normalizedJourney = normalizeJourneyCode(validatedItems[0]?.journey || 'agency');
+    const worldId = DEFAULT_WORLD_BY_JOURNEY[normalizedJourney] || 1;
+    const [journeyId, statusId, paymentMethodId] = await Promise.all([
+      resolveLookupId('journeys', journeyCandidates(normalizedJourney)),
+      resolveLookupId(
+        'order_statuses',
+        isQuoteRequest ? ['quote_pending', 'quote-pending'] : ['pending', 'awaiting_payment', 'unpaid']
+      ),
+      resolveLookupId(
+        'payment_methods',
+        isQuoteRequest || payment_method === 'banktransfer'
+          ? ['manual_invoice', 'mollie_banktransfer', 'banktransfer']
+          : ['mollie', 'mollie_ideal', 'online', 'card']
+      ),
+    ]);
+
+    const { error: v2Err } = await sdkClient
+      .from('orders_v2')
+      .upsert(
+        {
+          id: uniqueWpId,
+          user_id: userId || null,
+          world_id: worldId,
+          journey_id: journeyId,
+          status_id: statusId,
+          payment_method_id: paymentMethodId,
+          amount_net: serverCalculatedSubtotal.toFixed(2),
+          amount_total: amount.toFixed(2),
+          purchase_order: billing_po || null,
+          billing_email_alt: financial_email || null,
+          created_at: newOrder.created_at || new Date().toISOString(),
+          legacy_internal_id: newOrder.id,
+        },
+        { onConflict: 'id' }
+      );
+
+    if (v2Err) {
+      throw new Error(`Orders V2 sync failed: ${v2Err.message}`);
+    }
+
+    // Compat-bridge: vul bloat entry zodat bestaande detail-weergaves niet breken.
+    await sdkClient.from('orders_legacy_bloat').upsert(
+      {
+        wp_order_id: uniqueWpId,
+        raw_meta: newOrder.raw_meta || {},
+      },
+      { onConflict: 'wp_order_id' }
+    );
 
     // 7. Payment Handshake
     const secureToken = sign({ userId, orderId: newOrder.id, email }, process.env.JWT_SECRET || 'voices-secret-2026', { expiresIn: '24h' });
