@@ -618,7 +618,10 @@ export const VoicesMasterControlProvider: React.FC<{
     setState(prev => {
       const updatedFilters = { ...prev.filters, ...newFilters };
 
-      // 🛡️ CHRIS-PROTOCOL: Auto-sync IDs for Handshake Truth (v2.18.4)
+      // 🛡️ CHRIS-PROTOCOL: Auto-sync IDs for Handshake Truth (v2.28.1)
+      if (newFilters.languageIds && newFilters.languageIds.length > 0 && !newFilters.languageId) {
+        updatedFilters.languageId = newFilters.languageIds[0];
+      }
       if (newFilters.language && !newFilters.languageId) {
         const langId = MarketManager.getLanguageId(newFilters.language);
         if (langId) updatedFilters.languageId = langId;
