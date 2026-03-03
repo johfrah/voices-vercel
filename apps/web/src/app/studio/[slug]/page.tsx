@@ -193,6 +193,32 @@ function renderWorkshopDetail(workshop: WorkshopApiResponse['workshops'][number]
         <WorkshopHeroIsland workshop={workshop} />
       </Suspense>
 
+      {/* Workshop Content: short_description + workshop_content_detail */}
+      {(workshop.short_description || workshop.workshop_content_detail) && (
+        <ContainerInstrument className="max-w-4xl mx-auto px-6 mt-24 space-y-8">
+          {workshop.short_description && (
+            <ContainerInstrument plain>
+              <TextInstrument className="text-[11px] font-bold tracking-[0.3em] uppercase text-primary mb-4">
+                <VoiceglotText translationKey="studio.detail.about_label" defaultText="Over deze workshop" />
+              </TextInstrument>
+              <TextInstrument className="text-xl md:text-2xl font-light text-va-black/70 leading-relaxed">
+                {workshop.short_description}
+              </TextInstrument>
+            </ContainerInstrument>
+          )}
+          {workshop.workshop_content_detail && (
+            <ContainerInstrument className="bg-white rounded-[24px] p-8 md:p-10 border border-black/[0.03] shadow-aura">
+              <HeadingInstrument level={3} className="text-2xl font-light tracking-tighter text-va-black mb-6">
+                <VoiceglotText translationKey="studio.detail.content_title" defaultText="Wat ga je leren?" />
+              </HeadingInstrument>
+              <TextInstrument className="text-va-black/60 font-light leading-relaxed whitespace-pre-line">
+                {workshop.workshop_content_detail}
+              </TextInstrument>
+            </ContainerInstrument>
+          )}
+        </ContainerInstrument>
+      )}
+
       <ContainerInstrument className="max-w-7xl mx-auto px-6 mt-24 space-y-32">
         <Suspense fallback={<ContainerInstrument className="h-96 bg-white rounded-[30px] animate-pulse" />}>
           <SkillDNAIsland workshop={workshop} />
@@ -206,6 +232,28 @@ function renderWorkshopDetail(workshop: WorkshopApiResponse['workshops'][number]
           <InstructorLocationIsland workshop={workshop} />
         </Suspense>
       </ContainerInstrument>
+
+      {/* Workshop-specifieke FAQ's */}
+      {workshop.faqs && workshop.faqs.length > 0 && (
+        <ContainerInstrument className="max-w-4xl mx-auto px-6 mt-32">
+          <ContainerInstrument plain className="text-center mb-16">
+            <TextInstrument className="text-[11px] font-bold tracking-[0.3em] uppercase text-primary mb-4">
+              <VoiceglotText translationKey="studio.detail.faq_label" defaultText="Vragen over deze workshop" />
+            </TextInstrument>
+            <HeadingInstrument level={2} className="text-3xl md:text-4xl font-light tracking-tighter text-va-black">
+              <VoiceglotText translationKey="studio.detail.faq_title" defaultText="Veelgestelde vragen" />
+            </HeadingInstrument>
+          </ContainerInstrument>
+          <ContainerInstrument plain className="space-y-4">
+            {workshop.faqs.map((faq: { id: number; question: string; answer: string }) => (
+              <ContainerInstrument key={faq.id} className="bg-white rounded-[20px] p-8 border border-black/[0.03] shadow-aura">
+                <HeadingInstrument level={4} className="text-lg font-light text-va-black mb-3">{faq.question}</HeadingInstrument>
+                <TextInstrument className="text-va-black/50 font-light leading-relaxed">{faq.answer}</TextInstrument>
+              </ContainerInstrument>
+            ))}
+          </ContainerInstrument>
+        </ContainerInstrument>
+      )}
 
       <ContainerInstrument plain className="mt-32">
         <Suspense fallback={<ContainerInstrument className="h-96 bg-va-off-white animate-pulse" />}>

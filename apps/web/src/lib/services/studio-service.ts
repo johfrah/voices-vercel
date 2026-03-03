@@ -179,6 +179,9 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
         icon: item.icon
       })),
       expert_note: w.expert_note || meta.expert_note,
+      short_description: meta.short_description || w.description || null,
+      workshop_content_detail: meta.workshop_content_detail || null,
+      aftermovie_description: meta.aftermovie_description || null,
       video: meta.video_id && videoPathsMap[meta.video_id] 
         ? { id: meta.video_id, file_path: videoPathsMap[meta.video_id] } 
         : null,
