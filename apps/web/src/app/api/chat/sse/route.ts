@@ -25,9 +25,30 @@ export async function GET(request: Request) {
   const stream = new ReadableStream({
     async start(controller) {
       const encoder = new TextEncoder();
+      let isClosed = false;
+      let interval: ReturnType<typeof setInterval> | null = null;
+
+      const safeClose = () => {
+        if (isClosed) return;
+        isClosed = true;
+        if (interval) {
+          clearInterval(interval);
+          interval = null;
+        }
+        try {
+          controller.close();
+        } catch {
+          // Stream is already closed; ignore.
+        }
+      };
 
       const sendEvent = (data: any) => {
-        controller.enqueue(encoder.encode(`data: ${JSON.stringify(data)}\n\n`));
+        if (isClosed) return;
+        try {
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify(data)}\n\n`));
+        } catch {
+          safeClose();
+        }
       };
 
       // Initial connection
@@ -35,9 +56,9 @@ export async function GET(request: Request) {
 
       // Poll loop (simulating real-time with database checks)
       // In a full production environment, this would use Postgres NOTIFY/LISTEN or a PubSub
-      const interval = setInterval(async () => {
-        if (request.signal.aborted) {
-          clearInterval(interval);
+      interval = setInterval(async () => {
+        if (isClosed || request.signal.aborted) {
+          safeClose();
           return;
         }
 
@@ -53,7 +74,7 @@ export async function GET(request: Request) {
             .orderBy(asc(chatMessages.id));
 
           if (newMessages.length > 0) {
-            lastMessageId = Math.max(...newMessages.map(m => m.id));
+            lastMessageId = Math.max(...newMessages.map((m: any) => m.id));
             sendEvent({
               type: 'new_messages',
               messages: newMessages
@@ -65,15 +86,13 @@ export async function GET(request: Request) {
         } catch (error) {
           console.error('SSE Error:', error);
           //  CHRIS-PROTOCOL: Stop bij fatale DB errors om serverload te beperken
-          clearInterval(interval);
-          controller.close();
+          safeClose();
         }
       }, 3000); // Check every 3 seconds
 
       // Cleanup on close
       request.signal.addEventListener('abort', () => {
-        clearInterval(interval);
-        controller.close();
+        safeClose();
       });
     }
   });

@@ -9,6 +9,9 @@ import { createClient } from '@supabase/supabase-js';
 /**
  *  CHAT & VOICY API (2026) - CORE EDITION
  */
+const CONVERSATION_CACHE_TTL_MS = 5000;
+const conversationsCache = new Map<string, { ts: number; data: any[] }>();
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -18,13 +21,23 @@ export async function POST(request: NextRequest) {
     switch (action) {
       case 'send':
         return handleSendMessage(params, request);
-      case 'conversations':
-        const { userId } = params;
-        
+      case 'conversations': {
+        const { userId, filter = 'active', search = '', limit = 180 } = params;
+        const safeFilter: 'active' | 'archived' | 'all' =
+          filter === 'archived' || filter === 'all' ? filter : 'active';
+        const normalizedSearch = typeof search === 'string' ? search.trim() : '';
+        const safeLimit = Math.min(Math.max(Number(limit) || 180, 20), 400);
+        const cacheKey = `${userId || 'all'}:${safeFilter}:${normalizedSearch.toLowerCase()}:${safeLimit}`;
+        const cached = conversationsCache.get(cacheKey);
+
+        if (cached && Date.now() - cached.ts < CONVERSATION_CACHE_TTL_MS) {
+          return NextResponse.json(cached.data);
+        }
+
         // 🛡️ CHRIS-PROTOCOL: Filter Empty Chats (v2.16.059)
         // We tonen alleen gesprekken die minimaal 1 bericht hebben om ghost-sessies te verbergen.
-        const conditions = [
-          sql`EXISTS (SELECT 1 FROM chat_messages WHERE conversation_id = ${chatConversations.id})`
+        const conditions: any[] = [
+          sql`EXISTS (SELECT 1 FROM chat_messages cm WHERE cm.conversation_id = ${chatConversations.id})`
         ];
 
         if (userId !== 'all') {
@@ -32,14 +45,138 @@ export async function POST(request: NextRequest) {
           conditions.push(eq(chatConversations.user_id, userId));
         }
 
-        const results = await db
-          .select()
+        if (safeFilter === 'active') {
+          conditions.push(
+            or(
+              eq(chatConversations.status, 'open'),
+              eq(chatConversations.status, 'admin_active')
+            )
+          );
+        } else if (safeFilter === 'archived') {
+          conditions.push(eq(chatConversations.status, 'archived'));
+        }
+
+        if (normalizedSearch) {
+          conditions.push(
+            or(
+              ilike(chatConversations.guestName, `%${normalizedSearch}%`),
+              ilike(chatConversations.guestEmail, `%${normalizedSearch}%`),
+              sql`EXISTS (
+                SELECT 1
+                FROM chat_messages cm
+                WHERE cm.conversation_id = ${chatConversations.id}
+                  AND cm.message ILIKE ${`%${normalizedSearch}%`}
+              )`
+            )
+          );
+        }
+
+        const drizzleQuery = db
+          .select({
+            id: chatConversations.id,
+            status: chatConversations.status,
+            updated_at: chatConversations.updatedAt,
+            iap_context: chatConversations.iapContext,
+            user_id: chatConversations.user_id,
+            guest_name: chatConversations.guestName,
+            guest_email: chatConversations.guestEmail,
+            lastMessage: sql<string>`(
+              SELECT cm.message
+              FROM chat_messages cm
+              WHERE cm.conversation_id = ${chatConversations.id}
+              ORDER BY cm.id DESC
+              LIMIT 1
+            )`,
+            message_count: sql<number>`(
+              SELECT count(*)::int
+              FROM chat_messages cm
+              WHERE cm.conversation_id = ${chatConversations.id}
+            )`,
+          })
           .from(chatConversations)
           .where(and(...conditions))
-          .orderBy(desc(chatConversations.updatedAt));
+          .orderBy(desc(chatConversations.updatedAt))
+          .limit(safeLimit);
 
-        console.log(`[Voicy API] Fetched ${results.length} active conversations for userId: ${userId}`);
+        let results: any[] = [];
+        try {
+          results = await Promise.race<any[]>([
+            drizzleQuery as unknown as Promise<any[]>,
+            new Promise<any[]>((_, reject) => setTimeout(() => reject(new Error('DRIZZLE_TIMEOUT')), 3500)),
+          ]);
+        } catch (drizzleError: any) {
+          console.warn('[Voicy API] Drizzle conversations timeout/failure, using Supabase SDK fallback:', drizzleError?.message || drizzleError);
+          const supabase = createClient(
+            process.env.NEXT_PUBLIC_SUPABASE_URL!,
+            process.env.SUPABASE_SERVICE_ROLE_KEY!
+          );
+
+          let convQuery = supabase
+            .from('chat_conversations')
+            .select('id,status,updated_at,iap_context,user_id,guest_name,guest_email')
+            .order('updated_at', { ascending: false })
+            .limit(Math.min(safeLimit * 20, 5000));
+
+          if (userId !== 'all') convQuery = convQuery.eq('user_id', userId);
+          if (safeFilter === 'active') convQuery = convQuery.in('status', ['open', 'admin_active']);
+          else if (safeFilter === 'archived') convQuery = convQuery.eq('status', 'archived');
+          if (normalizedSearch) {
+            convQuery = convQuery.or(`guest_name.ilike.%${normalizedSearch}%,guest_email.ilike.%${normalizedSearch}%`);
+          }
+
+          const { data: conversationRows, error: conversationError } = await convQuery;
+          if (conversationError) throw conversationError;
+
+          const conversationIds = (conversationRows || [])
+            .map((conversation: any) => Number(conversation.id))
+            .filter((id: number) => Number.isFinite(id));
+
+          if (conversationIds.length > 0) {
+            const { data: messageRows, error: messageError } = await supabase
+              .from('chat_messages')
+              .select('id,conversation_id,message')
+              .in('conversation_id', conversationIds)
+              .order('id', { ascending: false });
+
+            if (messageError) throw messageError;
+
+            const lastMessageByConversation = new Map<number, string>();
+            const messageCountByConversation = new Map<number, number>();
+            const messageSearchHits = new Set<number>();
+            for (const message of messageRows || []) {
+              const conversationId = Number(message.conversation_id);
+              if (!Number.isFinite(conversationId)) continue;
+              if (!lastMessageByConversation.has(conversationId)) {
+                lastMessageByConversation.set(conversationId, String(message.message || ''));
+              }
+              messageCountByConversation.set(conversationId, (messageCountByConversation.get(conversationId) || 0) + 1);
+              if (normalizedSearch && String(message.message || '').toLowerCase().includes(normalizedSearch.toLowerCase())) {
+                messageSearchHits.add(conversationId);
+              }
+            }
+
+            results = (conversationRows || [])
+              .map((conversation: any) => ({
+                ...conversation,
+                lastMessage: lastMessageByConversation.get(Number(conversation.id)) || '',
+                message_count: messageCountByConversation.get(Number(conversation.id)) || 0,
+              }))
+              .filter((conversation: any) => {
+                if (!conversation.message_count) return false;
+                if (!normalizedSearch) return true;
+                const localSearch = `${conversation.guest_name || ''} ${conversation.guest_email || ''}`.toLowerCase();
+                return localSearch.includes(normalizedSearch.toLowerCase()) || messageSearchHits.has(Number(conversation.id));
+              })
+              .slice(0, safeLimit);
+          } else {
+            results = [];
+          }
+        }
+
+        conversationsCache.set(cacheKey, { ts: Date.now(), data: results });
+        console.log(`[Voicy API] Fetched ${results.length} conversations (filter=${safeFilter}, limit=${safeLimit}) for userId: ${userId}`);
         return NextResponse.json(results);
+      }
       case 'history':
         const { conversationId: histId } = params;
         if (!histId) return NextResponse.json({ error: 'Missing conversationId' }, { status: 400 });
@@ -79,12 +216,20 @@ export async function POST(request: NextRequest) {
         await db.update(chatConversations)
           .set({ iapContext: updatedIap, updatedAt: new Date() })
           .where(eq(chatConversations.id, sensorConvId));
+        conversationsCache.clear();
           
         return NextResponse.json({ success: true });
       case 'update_status':
         const { conversationId, status } = params;
         if (!conversationId || !status) return NextResponse.json({ error: 'Missing params' }, { status: 400 });
-        await db.update(chatConversations).set({ status }).where(eq(chatConversations.id, conversationId));
+        if (!['open', 'admin_active', 'archived'].includes(status)) {
+          return NextResponse.json({ error: 'Invalid status' }, { status: 400 });
+        }
+        await db
+          .update(chatConversations)
+          .set({ status, updatedAt: new Date() })
+          .where(eq(chatConversations.id, conversationId));
+        conversationsCache.clear();
         return NextResponse.json({ success: true });
       default:
         return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
@@ -116,6 +261,92 @@ async function handleSendMessage(params: any, request?: NextRequest) {
   console.log('[Voicy API] handleSendMessage started:', { conversationId, messageLength: message?.length, mode, persona });
 
   try {
+    // ⚡ ADMIN FAST-LANE: admin replies must be instant and reliable.
+    if (senderType === 'admin') {
+      if (!conversationId || !message?.trim()) {
+        return NextResponse.json({ error: 'Missing conversationId or message' }, { status: 400 });
+      }
+
+      const now = new Date();
+      try {
+        const saved = await db.transaction(async (tx: any) => {
+          const [newMessage] = await tx
+            .insert(chatMessages)
+            .values({
+              conversationId,
+              senderId: senderId || null,
+              senderType: 'admin',
+              message: message.trim(),
+              metadata: {
+                interaction_type: context?.interaction_type || 'text',
+                current_page: context?.currentPage,
+              },
+              createdAt: now,
+            })
+            .returning({ id: chatMessages.id, createdAt: chatMessages.createdAt });
+
+          await tx
+            .update(chatConversations)
+            .set({ updatedAt: now, status: 'admin_active' })
+            .where(eq(chatConversations.id, conversationId));
+
+          return newMessage;
+        });
+
+        conversationsCache.clear();
+        return NextResponse.json({
+          success: true,
+          content: '',
+          actions: [],
+          conversationId,
+          messageId: saved?.id,
+          created_at: saved?.createdAt,
+        });
+      } catch (dbError: any) {
+        console.warn('[Voicy API] Admin fast-lane Drizzle failed, using Supabase SDK fallback:', dbError?.message || dbError);
+        const supabase = createClient(
+          process.env.NEXT_PUBLIC_SUPABASE_URL!,
+          process.env.SUPABASE_SERVICE_ROLE_KEY!
+        );
+
+        const { data: insertedMessage, error: messageError } = await supabase
+          .from('chat_messages')
+          .insert({
+            conversation_id: conversationId,
+            sender_id: senderId || null,
+            sender_type: 'admin',
+            message: message.trim(),
+            metadata: {
+              interaction_type: context?.interaction_type || 'text',
+              current_page: context?.currentPage,
+            },
+            created_at: now.toISOString(),
+          })
+          .select('id, created_at')
+          .single();
+
+        if (messageError) {
+          throw messageError;
+        }
+
+        await supabase
+          .from('chat_conversations')
+          .update({ updated_at: now.toISOString(), status: 'admin_active' })
+          .eq('id', conversationId);
+
+        conversationsCache.clear();
+        return NextResponse.json({
+          success: true,
+          content: '',
+          actions: [],
+          conversationId,
+          messageId: insertedMessage?.id,
+          created_at: insertedMessage?.created_at,
+          _source: 'supabase_sdk',
+        });
+      }
+    }
+
     //  LANGUAGE ADAPTATION: Voicy past haar taal aan aan de gebruiker
     const { MarketManagerServer: MarketManager } = await import('@/lib/system/core/market-manager');
     const isEnglish = language === 'en' || /hello|hi|price|how|can you/i.test(message);
@@ -704,6 +935,8 @@ ${workshopEditionsData.filter((ed: any) => ed.status === 'upcoming').map((ed: an
         }
       })();
     }
+
+    conversationsCache.clear();
 
     return NextResponse.json({
       success: true,
