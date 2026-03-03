@@ -12,7 +12,7 @@ import {
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useCheckout } from '@/contexts/CheckoutContext';
 import { VoicesLink as Link } from '@/components/ui/VoicesLink';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 
 import { ArrowLeft, Edit2, ShoppingCart } from 'lucide-react';
 import { CheckoutForm } from '@/components/checkout/CheckoutForm';
@@ -28,7 +28,6 @@ const LiquidBackground = nextDynamic(() => import('@/components/ui/LiquidBackgro
 export default function CheckoutPageClient() {
   const { state, setJourney, isHydrated } = useCheckout();
   const pathname = usePathname();
-  const router = useRouter();
   const hasWorkshopItem = useMemo(
     () => (state.items || []).some((item: any) => item?.type === 'workshop_edition'),
     [state.items]
@@ -61,9 +60,9 @@ export default function CheckoutPageClient() {
     const isCheckoutPath = pathname.includes('/checkout');
     const isStudioCheckoutPath = pathname.includes('/studio/checkout');
     if (isStudioJourney && isCheckoutPath && !isStudioCheckoutPath) {
-      router.replace(studioCheckoutPath);
+      window.location.replace(studioCheckoutPath);
     }
-  }, [isHydrated, isStudioJourney, pathname, router, studioCheckoutPath]);
+  }, [isHydrated, isStudioJourney, pathname, studioCheckoutPath]);
 
   if (!isHydrated) return <LoadingScreenInstrument />;
 

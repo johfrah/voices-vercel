@@ -14,7 +14,7 @@ import { useCheckout } from '@/contexts/CheckoutContext';
 import { useTranslation } from '@/contexts/TranslationContext';
 import Image from 'next/image';
 import { VoicesLink as Link } from '@/components/ui/VoicesLink';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { ShoppingCart, ArrowRight, Star, Trash2, Edit2, Eye, Info, ArrowLeft } from 'lucide-react';
 import { PricingSummary } from '@/components/checkout/PricingSummary';
 import { OrderStepsInstrument } from '@/components/ui/OrderStepsInstrument';
@@ -32,7 +32,6 @@ const LiquidBackground = nextDynamic(() => import('@/components/ui/LiquidBackgro
 export default function CartPageClient() {
   const { t } = useTranslation();
   const { state, subtotal, isHydrated } = useCheckout();
-  const router = useRouter();
   const pathname = usePathname();
   const [reviewStats, setReviewStats] = React.useState<{ averageRating: number, totalCount: number } | null>(null);
   const hasWorkshopItem = useMemo(
@@ -65,9 +64,9 @@ export default function CartPageClient() {
     const isAnyCartPath = pathname.includes('/cart');
     const isStudioCartPath = pathname.includes('/studio/cart');
     if (isStudioJourney && isAnyCartPath && !isStudioCartPath) {
-      router.replace(studioCartPath);
+      window.location.replace(studioCartPath);
     }
-  }, [isHydrated, isStudioJourney, pathname, router, studioCartPath]);
+  }, [isHydrated, isStudioJourney, pathname, studioCartPath]);
 
   if (!isHydrated) return <LoadingScreenInstrument />;
 
