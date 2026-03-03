@@ -603,7 +603,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
           </div>
         )}
 
-        <div className={cn("absolute inset-0 flex flex-col p-2 md:p-4 transition-opacity duration-500 z-10", isCurrentlyPlaying ? "opacity-100" : "opacity-0 group-hover:opacity-100")}>
+        <div className={cn("absolute inset-0 flex flex-col p-2 md:p-4 transition-opacity duration-500 z-10", isCurrentlyPlaying ? "opacity-100" : "opacity-60 group-hover:opacity-100")}>
           <div className="flex-grow flex items-center justify-center">
             <ButtonInstrument 
               variant="pure"
