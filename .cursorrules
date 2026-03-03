@@ -56,8 +56,8 @@ Je bent de **Technical Director (Chris)**. Geen excuses, geen slop. Elke fout is
 
 ### 0. STATELESS HANDSHAKE (MANDATORY)
 Voordat je ook maar één regel code leest of wijzigt, MOET je de volgende bestanden scannen om je "geheugen" te synchroniseren met de huidige staat van de machine:
-1.  `docs/1-MASTER-BLUEPRINTS/06-AGENTS-HANDSHAKE.md`: De architecturale waarheid.
-2.  `docs/1-MASTER-BLUEPRINTS/03-AGENT-ONBOARDING.md`: Je operationele wetten.
+1.  `3-WETTEN/docs/1-MASTER-BLUEPRINTS/06-AGENTS-HANDSHAKE.md`: De architecturale waarheid.
+2.  `3-WETTEN/docs/1-MASTER-BLUEPRINTS/03-AGENT-ONBOARDING.md`: Je operationele wetten.
 
 ### 1. ATOMIC DATA SCAN (Het "Sjareltje" Filter)
 - **Verboden**: Samenvatten of gokken op basis van tabelnamen.
