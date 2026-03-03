@@ -14,16 +14,18 @@ async function runCheck() {
   console.log(chalk.bold.blue('\n🚀 STARTING PRE-VERCEL CHECK...'));
   
   let hasErrors = false;
-  const rootDir = process.cwd();
-  // We gaan ervan uit dat we in 1-SITE/apps/web draaien als we via npm run check:pre-vercel komen
-  // maar we checken of we in de root zitten of in de app dir.
-  const webAppDir = fs.existsSync(path.join(rootDir, 'package.json')) && rootDir.endsWith('web') 
-    ? rootDir 
-    : path.join(rootDir, '1-SITE/apps/web');
+  const executionDir = process.cwd();
+
+  const repoRoot = resolveRepoRoot(executionDir);
+  const webAppDir = resolveWebAppDir(repoRoot, executionDir);
+  const handshakeScript = resolveHandshakeScript(repoRoot);
 
   try {
     // 1. BUILD CHECK
     console.log(chalk.yellow('\n📦 Stap 1: Volledige Next.js Build (Chunk & Type Check)...'));
+    if (!fs.existsSync(webAppDir)) {
+      throw new Error(`Web app directory niet gevonden: ${webAppDir}`);
+    }
     // Voer build uit in de web app directory
     try {
       execSync('npm run build', {
@@ -40,8 +42,8 @@ async function runCheck() {
     // 1.5 INTEGRITY HANDSHAKE CHECK
     console.log(chalk.yellow('\n🤝 Stap 1.5: Nuclear Handshake Integrity Check...'));
     try {
-      execSync('npx tsx 3-WETTEN/scripts/integrity-handshake.ts', {
-        cwd: rootDir,
+      execSync(`npx tsx "${handshakeScript}"`, {
+        cwd: repoRoot,
         stdio: 'inherit',
         shell: true
       });
@@ -63,7 +65,7 @@ async function runCheck() {
       // We negeren layout.tsx omdat die vaak globale laders heeft in Suspense
       // We checken specifiek op next/dynamic imports
       if (content.includes('dynamic(') && content.includes('next/dynamic') && !content.includes('loading:') && !file.includes('layout.tsx')) {
-        console.log(chalk.red(`❌ ERROR: Dynamic import zonder loading fallback in: ${path.relative(rootDir, file)}`));
+        console.log(chalk.red(`❌ ERROR: Dynamic import zonder loading fallback in: ${path.relative(repoRoot, file)}`));
         hasErrors = true;
       }
 
@@ -73,7 +75,7 @@ async function runCheck() {
         if (content.includes(domain) && !content.includes('MarketManager') && 
             !file.includes('config.ts') && !file.includes('market-manager') && 
             !file.includes('MarketManager') && !file.includes('pre-vercel-check.ts')) {
-          console.log(chalk.red(`❌ ERROR: Hardcoded '${domain}' gedetecteerd in: ${path.relative(rootDir, file)}`));
+          console.log(chalk.red(`❌ ERROR: Hardcoded '${domain}' gedetecteerd in: ${path.relative(repoRoot, file)}`));
           hasErrors = true;
         }
       });
@@ -94,7 +96,7 @@ async function runCheck() {
           const newFilename = filename.replace(/[^a-zA-Z0-9.\-_]/g, '-').replace(/-+/g, '-');
           const newPath = path.join(path.dirname(asset), newFilename);
           
-          console.log(chalk.red(`❌ ERROR: Ongeldige karakters in asset naam: ${path.relative(rootDir, asset)}`));
+          console.log(chalk.red(`❌ ERROR: Ongeldige karakters in asset naam: ${path.relative(repoRoot, asset)}`));
           
           if (process.argv.includes('--fix')) {
             try {
@@ -151,7 +153,7 @@ async function runCheck() {
           });
           names.forEach(name => {
             if (name && importedNames.has(name)) {
-              console.log(chalk.red(`❌ ERROR: Duplicate import '${name}' gedetecteerd in: ${path.relative(rootDir, file)}`));
+              console.log(chalk.red(`❌ ERROR: Duplicate import '${name}' gedetecteerd in: ${path.relative(repoRoot, file)}`));
               hasErrors = true;
             }
             if (name) importedNames.add(name);
@@ -176,6 +178,63 @@ async function runCheck() {
     console.error(error);
     process.exit(1);
   }
+}
+
+function resolveRepoRoot(startDir: string): string {
+  const candidates = [
+    startDir,
+    path.resolve(startDir, '..'),
+    path.resolve(startDir, '../..'),
+    path.resolve(startDir, '../../..'),
+  ];
+
+  const existing = candidates.find((candidate) => {
+    const packageJsonPath = path.join(candidate, 'package.json');
+    if (!fs.existsSync(packageJsonPath)) return false;
+
+    const hasWebApp = fs.existsSync(path.join(candidate, 'apps/web')) || fs.existsSync(path.join(candidate, '1-SITE/apps/web'));
+    if (!hasWebApp) return false;
+
+    const hasGitRootMarker = fs.existsSync(path.join(candidate, '.git'));
+    if (hasGitRootMarker) return true;
+
+    try {
+      const parsedPackage = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+      return Array.isArray(parsedPackage.workspaces);
+    } catch {
+      return false;
+    }
+  });
+
+  if (existing) return existing;
+
+  const fallback = candidates.find((candidate) => {
+    const hasPackage = fs.existsSync(path.join(candidate, 'package.json'));
+    const hasWebApp = fs.existsSync(path.join(candidate, 'apps/web')) || fs.existsSync(path.join(candidate, '1-SITE/apps/web'));
+    return hasPackage && hasWebApp;
+  });
+
+  return fallback || startDir;
+}
+
+function resolveWebAppDir(repoRoot: string, executionDir: string): string {
+  const modernPath = path.join(repoRoot, 'apps/web');
+  if (fs.existsSync(modernPath)) return modernPath;
+
+  const legacyPath = path.join(repoRoot, '1-SITE/apps/web');
+  if (fs.existsSync(legacyPath)) return legacyPath;
+
+  if (executionDir.endsWith(path.join('apps', 'web')) || executionDir.endsWith('web')) return executionDir;
+
+  return modernPath;
+}
+
+function resolveHandshakeScript(repoRoot: string): string {
+  const modernPath = path.join(repoRoot, '3-WETTEN/scripts/integrity-handshake.ts');
+  if (fs.existsSync(modernPath)) return modernPath;
+
+  const fallbackPath = path.join(repoRoot, 'scripts/integrity-handshake.ts');
+  return fallbackPath;
 }
 
 function getAllFiles(dirPath: string, extensions?: string[], arrayOfFiles: string[] = []) {

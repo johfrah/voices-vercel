@@ -7,11 +7,20 @@
  * Gebruik: npx tsx 3-WETTEN/scripts/integrity-handshake.ts
  */
 
-import { MarketManager } from '../../1-SITE/apps/web/src/lib/system/core/market-manager';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath, pathToFileURL } from 'url';
+
+type MarketManagerContract = {
+  getWorldId: (journeyOrSlug: string) => number;
+  resolveContext: (host: string, routePath: string) => { worldId: number; languageId: number };
+  [key: string]: unknown;
+};
 
 async function runIntegrityCheck() {
   console.log('🚀 Starting Nuclear Handshake Integrity Check...');
   let errors = 0;
+  const marketManager = await loadMarketManager();
 
   // 1. Test MarketManager Methods
   console.log('\n--- 1. MarketManager Validation ---');
@@ -27,7 +36,7 @@ async function runIntegrityCheck() {
   ];
 
   for (const method of requiredMethods) {
-    if (typeof (MarketManager as any)[method] === 'function') {
+    if (typeof marketManager[method] === 'function') {
       console.log(`✅ Method "${method}" is present.`);
     } else {
       console.error(`❌ CRITICAL: Method "${method}" is MISSING from MarketManager.`);
@@ -46,7 +55,7 @@ async function runIntegrityCheck() {
   ];
 
   for (const test of testCases) {
-    const result = MarketManager.getWorldId(test.input);
+    const result = marketManager.getWorldId(test.input);
     if (result === test.expected) {
       console.log(`✅ Mapping "${test.input}" -> World ${result} is correct.`);
     } else {
@@ -57,7 +66,7 @@ async function runIntegrityCheck() {
 
   // 3. Context Resolution Validation
   console.log('\n--- 3. Context Resolution Validation ---');
-  const context = MarketManager.resolveContext('voices.be', '/studio/workshops');
+  const context = marketManager.resolveContext('voices.be', '/studio/workshops');
   if (context.worldId === 2 && context.languageId === 1) {
     console.log('✅ Context resolution for voices.be/studio is correct.');
   } else {
@@ -73,6 +82,36 @@ async function runIntegrityCheck() {
     console.error(`❌ INTEGRITY FAILURE: ${errors} critical errors found.`);
     process.exit(1);
   }
+}
+
+async function loadMarketManager(): Promise<MarketManagerContract> {
+  const modulePath = resolveMarketManagerPath();
+  if (!modulePath) {
+    throw new Error('MarketManager module niet gevonden in moderne of legacy structuur.');
+  }
+
+  const module = await import(pathToFileURL(modulePath).href);
+  const marketManager = module.MarketManager;
+
+  if (!marketManager) {
+    throw new Error(`MarketManager export ontbreekt in: ${modulePath}`);
+  }
+
+  return marketManager as MarketManagerContract;
+}
+
+function resolveMarketManagerPath(): string | null {
+  const currentFilePath = fileURLToPath(import.meta.url);
+  const currentDir = path.dirname(currentFilePath);
+
+  const candidates = [
+    path.resolve(currentDir, '../../apps/web/src/lib/system/core/market-manager.ts'),
+    path.resolve(currentDir, '../../1-SITE/apps/web/src/lib/system/core/market-manager.ts'),
+    path.resolve(process.cwd(), 'apps/web/src/lib/system/core/market-manager.ts'),
+    path.resolve(process.cwd(), '1-SITE/apps/web/src/lib/system/core/market-manager.ts'),
+  ];
+
+  return candidates.find((candidate) => fs.existsSync(candidate)) || null;
 }
 
 runIntegrityCheck().catch(err => {

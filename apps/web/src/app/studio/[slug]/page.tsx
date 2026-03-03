@@ -15,6 +15,7 @@ import { Suspense } from "react";
 import nextDynamic from "next/dynamic";
 import { getStudioWorkshopsData, WorkshopApiResponse } from "@/lib/services/studio-service";
 import { createClient } from "@supabase/supabase-js";
+import { MarketManager } from "@/lib/system/core/market-manager";
 
 // NUCLEAR ISLANDS (ssr: false)
 const WorkshopHeroIsland = nextDynamic(() => import("@/components/studio/WorkshopHeroIsland").then(mod => mod.WorkshopHeroIsland), { ssr: false });
@@ -251,6 +252,10 @@ async function renderSubFoyerArticle(entityId: number, slug: string) {
 
   // Contact: Studio-specifieke contactinfo
   if (slug === 'contact') {
+    const studioMarket = MarketManager.getCurrentMarket(undefined, '/studio');
+    const studioEmailText = studioMarket.email ? `E-mail: ${studioMarket.email}` : 'E-mail:';
+    const studioPhoneText = studioMarket.phone ? `Telefoon: ${studioMarket.phone}` : 'Telefoon:';
+
     return (
       <PageWrapperInstrument className="bg-va-off-white">
         <Suspense fallback={null}><LiquidBackground /></Suspense>
@@ -269,8 +274,8 @@ async function renderSubFoyerArticle(entityId: number, slug: string) {
           <ContainerInstrument plain className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <ContainerInstrument className="bg-white rounded-[20px] p-8 border border-black/[0.03] shadow-aura space-y-4">
               <HeadingInstrument level={3} className="text-xl font-light text-va-black"><VoiceglotText translationKey="studio.contact.reach" defaultText="Bereikbaarheid" /></HeadingInstrument>
-              <TextInstrument className="text-va-black/60 font-light"><VoiceglotText translationKey="studio.contact.email" defaultText="E-mail: studio@voices.be" noTranslate /></TextInstrument>
-              <TextInstrument className="text-va-black/60 font-light"><VoiceglotText translationKey="studio.contact.phone" defaultText="Telefoon: +32 (0)2 793 19 91" noTranslate /></TextInstrument>
+              <TextInstrument className="text-va-black/60 font-light"><VoiceglotText translationKey="studio.contact.email" defaultText={studioEmailText} noTranslate /></TextInstrument>
+              <TextInstrument className="text-va-black/60 font-light"><VoiceglotText translationKey="studio.contact.phone" defaultText={studioPhoneText} noTranslate /></TextInstrument>
             </ContainerInstrument>
             <ContainerInstrument className="bg-va-black text-white rounded-[20px] p-8 shadow-aura-lg space-y-4">
               <HeadingInstrument level={3} className="text-xl font-light text-white"><VoiceglotText translationKey="studio.contact.studio_title" defaultText="De Studio" /></HeadingInstrument>
