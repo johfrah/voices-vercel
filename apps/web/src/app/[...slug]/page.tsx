@@ -981,8 +981,12 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
       "how-it-works": "/agency/zo-werkt-het",
       faq: "/agency/faq"
     };
-    const recoveryRoute = topLevelRecoveryRoutes[lookupSlug];
-    if (!resolved && segments.length === 1 && recoveryRoute) {
+    const normalizedLookupSlug = lookupSlug.toLowerCase();
+    const lookupTail = normalizedLookupSlug.split("/").filter(Boolean).pop() || normalizedLookupSlug;
+    const recoveryRoute = topLevelRecoveryRoutes[normalizedLookupSlug] || topLevelRecoveryRoutes[lookupTail];
+    const normalizedRecoveryTarget = recoveryRoute?.replace(/^\//, "");
+
+    if (!resolved && recoveryRoute && normalizedLookupSlug !== normalizedRecoveryTarget) {
       return redirect(recoveryRoute);
     }
 
