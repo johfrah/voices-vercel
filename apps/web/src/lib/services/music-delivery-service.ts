@@ -58,7 +58,8 @@ export class MusicDeliveryService {
 
       // 4. Download WAVs from Supabase Storage and upload to Dropbox Exports
       const storageBase = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/voices/`;
-      const orderRef = (order as any).order_reference || `BE-${orderId}`;
+      // Order folder name = just the order ID number (e.g. "27342")
+      const orderRef = String(orderId);
       const trackName = (track as any).altText || (track as any).alt_text || (track as any).fileName || 'muziek';
       
       const qualityMap: Record<string, string> = {
