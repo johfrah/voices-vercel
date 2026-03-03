@@ -2,6 +2,7 @@ import { createAdminClient } from '@/utils/supabase/server';
 import { VoicesMailEngine } from '@/lib/services/voices-mail-engine';
 import { NextResponse } from 'next/server';
 import { ServerWatchdog } from '@/lib/services/server-watchdog';
+import { normalizeLocale } from '@/lib/system/locale-utils';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -15,7 +16,7 @@ export const revalidate = 0;
 export async function POST(req: Request) {
   console.log('🚀 [Auth API] Magic Link request started');
   try {
-    const { email, redirect: redirectPath = '/account' } = await req.json();
+    const { email, redirect: redirectPath = '/account', language: requestedLanguage } = await req.json();
     console.log(`🚀 [Auth API] Request for: ${email}, redirect: ${redirectPath}`);
 
     const supabase = createAdminClient();
@@ -141,9 +142,13 @@ export async function POST(req: Request) {
     const { VoicesMailEngine } = await import('@/lib/services/voices-mail-engine');
     const mailEngine = VoicesMailEngine.getInstance();
     
-    // Detecteer taal
-    const lang = req.headers.get('accept-language')?.startsWith('fr') ? 'fr-fr' : 
-                 req.headers.get('accept-language')?.startsWith('en') ? 'en-gb' : 'nl-be';
+    const cookieLang = req.headers
+      .get('cookie')
+      ?.split('; ')
+      .find((part) => part.startsWith('voices_lang='))
+      ?.split('=')[1];
+    const acceptLang = req.headers.get('accept-language')?.split(',')[0];
+    const lang = normalizeLocale(requestedLanguage || cookieLang || req.headers.get('x-voices-lang') || acceptLang || market.primary_language || 'nl-be');
 
     // We gebruiken een Promise.race om de snelheid te garanderen
     try {

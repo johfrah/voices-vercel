@@ -10,6 +10,7 @@
  */
 
 import { VOICES_CONFIG } from '../voices-config';
+import { normalizeLocale } from '../locale-utils';
 
 export interface MarketConfig {
   market_code: string;
@@ -222,13 +223,17 @@ export class MarketManager {
     else if (cleanHost.endsWith('.pt')) languageId = 12;
     else if (cleanHost.endsWith('.eu') || cleanHost.endsWith('.com')) languageId = 5;
 
-    if (cleanPath.startsWith('/en/')) languageId = 5;
-    else if (cleanPath.startsWith('/fr/')) languageId = 3;
-    else if (cleanPath.startsWith('/de/')) languageId = 7;
-    else if (cleanPath.startsWith('/es/')) languageId = 8;
-    else if (cleanPath.startsWith('/pt/')) languageId = 12;
-    else if (cleanPath.startsWith('/it/')) languageId = 9;
-    else if (cleanPath.startsWith('/nl/')) languageId = 1;
+    const localeMatch = cleanPath.match(/^\/(en|fr|de|es|pt|it|nl)(\/|$)/i);
+    if (localeMatch) {
+      const localeSlug = localeMatch[1].toLowerCase();
+      if (localeSlug === 'en') languageId = 5;
+      else if (localeSlug === 'fr') languageId = 4;
+      else if (localeSlug === 'de') languageId = 7;
+      else if (localeSlug === 'es') languageId = 8;
+      else if (localeSlug === 'pt') languageId = 12;
+      else if (localeSlug === 'it') languageId = 10;
+      else if (localeSlug === 'nl') languageId = 1;
+    }
 
     let journeyId: number | null = null;
     if (worldId === 1) {
@@ -363,8 +368,8 @@ export class MarketManager {
       language: config.language || 'nl',
       primary_language: this.getLanguageCode(config.primary_language || 'nl-BE'),
       primary_language_id: (config as any).primary_language_id || 1,
-      supported_languages: isoSupported.length > 0 ? isoSupported : ['nl-BE', 'nl-NL', 'en-GB', 'fr-FR', 'de-DE'],
-      popular_languages: isoPopular.length > 0 ? isoPopular : ['nl-BE', 'nl-NL', 'en-GB', 'fr-FR', 'de-DE'],
+      supported_languages: isoSupported.length > 0 ? isoSupported : ['nl-be', 'nl-nl', 'en-gb', 'fr-fr', 'de-de'],
+      popular_languages: isoPopular.length > 0 ? isoPopular : ['nl-be', 'nl-nl', 'en-gb', 'fr-fr', 'de-de'],
       currency: config.currency || 'EUR',
       name: config.name || 'Voices',
       phone: config.phone || VOICES_CONFIG.company.phone,
@@ -391,21 +396,7 @@ export class MarketManager {
   }
 
   static getLanguageCode(label: string): string {
-    if (!label) return 'nl';
-    const lowLabel = label.toLowerCase().trim();
-    if (lowLabel.includes('-')) return lowLabel.split('-')[0];
-    
-    if (this.languagesRegistry.length > 0) {
-      const match = this.languagesRegistry.find(l => 
-        l.label.toLowerCase() === lowLabel || l.code.toLowerCase() === lowLabel
-      );
-      if (match) return match.code.includes('-') ? match.code.split('-')[0] : match.code;
-    }
-
-    const emergencyMap: Record<string, string> = {
-      'vlaams': 'nl', 'nederlands': 'nl', 'frans': 'fr', 'engels': 'en', 'duits': 'de'
-    };
-    return emergencyMap[lowLabel] || lowLabel;
+    return normalizeLocale(label, 'nl-be');
   }
 
   static getLanguageLabel(input: string | number): string {

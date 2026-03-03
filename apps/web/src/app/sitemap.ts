@@ -18,7 +18,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const { MarketManagerServer: MarketManager } = await import('@/lib/system/core/market-manager');
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || process.env.NEXT_PUBLIC_SITE_URL || MarketManager.getMarketDomains()['BE'];
-  const languages = ['', '/en', '/fr', '/de']; // Ondersteunde talen
+  const languages = ['', '/en', '/fr', '/de', '/es', '/pt', '/it']; // Ondersteunde talen
 
   // 1. Core Pages (Statisch) - Nuclear Deployment Trigger 2026.1
   const coreRoutes = [

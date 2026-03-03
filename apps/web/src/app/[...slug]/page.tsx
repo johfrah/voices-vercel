@@ -13,6 +13,7 @@ import { Suspense } from "react";
 import { getActor, getArtist, getActors, getWorkshops, getArticle } from "@/lib/services/api-server";
 import { WorkshopApiResponse } from "@/app/api/studio/workshops/route";
 import { MarketManager } from "@/lib/system/core/market-manager";
+import { MarketDatabaseService } from "@/lib/system/market-manager-db";
 import { headers } from "next/headers";
 import { VoiceDetailClient } from "@/components/legacy/VoiceDetailClient";
 import { ArtistDetailClient } from "@/components/legacy/ArtistDetailClient";
@@ -22,6 +23,7 @@ import { InstrumentRenderer } from "@/components/ui/InstrumentRenderer";
 import nextDynamic from "next/dynamic";
 import { JourneyType } from '@/contexts/VoicesMasterControlContext';
 import { normalizeSlug, stripLanguagePrefix } from '@/lib/system/slug';
+import { localeToBcp47, normalizeLocale, stripLocalePrefix, withLocalePrefix } from '@/lib/system/locale-utils';
 import { BentoGrid, BentoCard } from '@/components/ui/BentoGrid';
 import { createClient } from "@supabase/supabase-js";
 
@@ -127,6 +129,52 @@ function generateArtistSchema(artist: any, host: string = '') {
       artist.tiktokUrl
     ].filter(Boolean)
   };
+}
+
+const FALLBACK_LOCALE_DOMAINS: Record<string, string> = {
+  'nl-be': 'https://www.voices.be',
+  'nl-nl': 'https://www.voices.nl',
+  'fr-fr': 'https://www.voices.fr',
+  'en-gb': 'https://www.voices.eu',
+  'de-de': 'https://www.voices.eu',
+  'es-es': 'https://www.voices.es',
+  'pt-pt': 'https://www.voices.pt',
+  'it-it': 'https://www.voices.eu',
+};
+
+function getPrimaryLocaleForDomain(domain: string): string {
+  const host = domain.replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0];
+  if (host.endsWith('voices.fr')) return 'fr-fr';
+  if (host.endsWith('voices.es')) return 'es-es';
+  if (host.endsWith('voices.pt')) return 'pt-pt';
+  if (host.endsWith('voices.nl')) return 'nl-nl';
+  if (host.endsWith('voices.eu')) return 'en-gb';
+  return 'nl-be';
+}
+
+function normalizeLocaleDomainMap(rawLocales?: Record<string, string>) {
+  const merged: Record<string, string> = { ...FALLBACK_LOCALE_DOMAINS };
+  for (const [locale, domain] of Object.entries(rawLocales || {})) {
+    if (!domain) continue;
+    const normalizedLocale = normalizeLocale(locale);
+    const normalizedDomain = domain.replace(/\/$/, '');
+    const host = normalizedDomain.replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0];
+    const isVoicesDomain = host.includes('voices.');
+    if (!isVoicesDomain && FALLBACK_LOCALE_DOMAINS[normalizedLocale]) {
+      continue;
+    }
+    merged[normalizedLocale] = normalizedDomain;
+  }
+  return merged;
+}
+
+function buildLocaleUrl(locale: string, pathname: string, localeDomainMap: Record<string, string>): string {
+  const normalizedLocale = normalizeLocale(locale);
+  const domain = localeDomainMap[normalizedLocale] || FALLBACK_LOCALE_DOMAINS[normalizedLocale] || FALLBACK_LOCALE_DOMAINS['en-gb'];
+  const primaryLocale = getPrimaryLocaleForDomain(domain);
+  const cleanPath = stripLocalePrefix(pathname || '/');
+  const localizedPath = withLocalePrefix(cleanPath, normalizedLocale, primaryLocale);
+  return `${domain.replace(/\/$/, '')}${localizedPath === '/' ? '/' : localizedPath}`;
 }
 
 /**
@@ -335,8 +383,7 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
   const headersList = headers();
   const host = (headersList.get('host') || (MarketManager.getMarketDomains()['BE']?.replace('https://', '') || MarketManager.getMarketDomains()['BE']?.replace('https://', ''))).replace(/^https?:\/\//, '');
   const market = MarketManager.getCurrentMarket(host);
-  const domains = MarketManager.getMarketDomains();
-  const lang = headersList.get('x-voices-lang') || 'nl-BE';
+  const lang = normalizeLocale(headersList.get('x-voices-lang') || 'nl-be');
   const normalizedSlug = normalizeSlug(params.slug);
   
   console.error(` [SmartRouter] Metadata context: host=${host}, market=${market.market_code}, lang=${lang}, slug=${normalizedSlug}`);
@@ -344,8 +391,16 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
   // 🛡️ CHRIS-PROTOCOL: Strip language prefix for metadata resolution
   const cleanSlug = stripLanguagePrefix(normalizedSlug);
   const cleanSegments = cleanSlug.split('/').filter(Boolean);
-
-  const siteUrl = domains[market.market_code] || `https://${host || (MarketManager.getMarketDomains()['BE']?.replace('https://', '') || MarketManager.getMarketDomains()['BE']?.replace('https://', ''))}`;
+  const metadataPath = cleanSegments.length > 0 ? `/${cleanSegments.join('/')}` : '/';
+  const localeDomainMap = normalizeLocaleDomainMap(
+    await MarketDatabaseService.getAllLocalesAsync().catch(() => ({}))
+  );
+  const alternateLanguages: Record<string, string> = {};
+  for (const locale of Object.keys(localeDomainMap)) {
+    alternateLanguages[localeToBcp47(locale)] = buildLocaleUrl(locale, metadataPath, localeDomainMap);
+  }
+  alternateLanguages['x-default'] = buildLocaleUrl('en-gb', metadataPath, localeDomainMap);
+  const canonicalUrl = alternateLanguages[localeToBcp47(lang)] || buildLocaleUrl(lang, metadataPath, localeDomainMap);
   
   // 🛡️ NUCLEAR HANDSHAKE: Resolve via Slug Registry for Metadata
   let lookupSlug = cleanSegments.join('/').toLowerCase();
@@ -384,7 +439,8 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
       title,
       description,
       alternates: {
-        canonical: `${siteUrl}/${lang !== 'nl-BE' ? lang.split('-')[0] + '/' : ''}${normalizedSlug}`,
+        canonical: canonicalUrl,
+        languages: alternateLanguages,
       }
     };
   }
@@ -400,6 +456,10 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
         return {
           title,
           description,
+          alternates: {
+            canonical: canonicalUrl,
+            languages: alternateLanguages,
+          },
           other: {
             'script:ld+json': JSON.stringify(generateArtistSchema(artist, host))
           }
@@ -433,7 +493,8 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
           title,
           description,
           alternates: {
-            canonical: `${siteUrl}/${lang !== 'nl-BE' ? lang.split('-')[0] + '/' : ''}${params.slug.join('/')}`,
+            canonical: canonicalUrl,
+            languages: alternateLanguages,
           },
           other: {
             'script:ld+json': JSON.stringify(schema)
@@ -460,7 +521,8 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
               title,
               description,
               alternates: {
-                canonical: `${siteUrl}/${lang !== 'nl-BE' ? lang.split('-')[0] + '/' : ''}${page.slug}`,
+                canonical: canonicalUrl,
+                languages: alternateLanguages,
               }
             };
           }
@@ -482,7 +544,8 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
             title,
             description,
             alternates: {
-              canonical: `${siteUrl}/${lang !== 'nl-BE' ? lang.split('-')[0] + '/' : ''}${firstSegment}`,
+              canonical: canonicalUrl,
+              languages: alternateLanguages,
             }
           };
         }
@@ -518,7 +581,7 @@ export default async function SmartRoutePage({ params }: { params: SmartRoutePar
 async function SmartRouteContent({ segments }: { segments: string[] }) {
   const normalizedSlug = normalizeSlug(segments);
   const headersList = headers();
-  const lang = headersList.get('x-voices-lang') || 'nl-BE';
+  const lang = normalizeLocale(headersList.get('x-voices-lang') || 'nl-be');
   
   // 🛡️ CHRIS-PROTOCOL: Strip language prefix if present (e.g. /nl/johfrah -> johfrah)
   const cleanSlug = stripLanguagePrefix(normalizedSlug);

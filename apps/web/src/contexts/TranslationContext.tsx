@@ -2,7 +2,8 @@
 
 import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { SlopFilter } from '@/lib/engines/slop-filter';
-import { MarketConfig } from "@/lib/system/core/market-manager";
+import { MarketConfig, MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
+import { normalizeLocale } from '@/lib/system/locale-utils';
 
 interface TranslationContextType {
   t: (key: string, defaultText: string, values?: Record<string, string | number>, skipPlaceholderReplacement?: boolean) => string;
@@ -21,11 +22,15 @@ export const TranslationProvider: React.FC<{
   initialTranslations?: Record<string, string>;
 }> = ({ children, lang = 'nl-BE', market, initialTranslations = {} }) => {
   const [studioTranslations, setStudioTranslations] = useState<Record<string, string>>(initialTranslations);
+  const normalizedLang = React.useMemo(() => normalizeLocale(lang), [lang]);
   
   // 🛡️ CHRIS-PROTOCOL: Handshake ID Truth (v2.19.5)
   // We resolve the language ID once and use it as the primary anchor.
-  const languageId = market?.primary_language_id || 1;
-  const isSourceOfTruth = languageId === 1; // nl-be is ID 1
+  const languageId = React.useMemo(
+    () => MarketManager.getLanguageId(normalizedLang) || market?.primary_language_id || 1,
+    [normalizedLang, market?.primary_language_id]
+  );
+  const isSourceOfTruth = normalizedLang === 'nl-be'; // nl-be is the canonical source text
 
   const [loading, setLoading] = useState(Object.keys(initialTranslations).length === 0 && !isSourceOfTruth);
   const healingKeys = React.useRef<Set<string>>(new Set());
@@ -35,17 +40,6 @@ export const TranslationProvider: React.FC<{
     if (!market) return;
 
     const fetchTranslations = async () => {
-      // 🛡️ CHRIS-PROTOCOL: Handshake ID Truth (v2.26.2)
-      // We map the incoming lang code to the official ISO codes used in the DB.
-      let dataLang = lang;
-      if (lang === 'en') dataLang = 'en-gb';
-      if (lang === 'fr') dataLang = 'fr-be';
-      if (lang === 'de') dataLang = 'de-de';
-      if (lang === 'es') dataLang = 'es-es';
-      if (lang === 'pt') dataLang = 'pt-pt';
-      if (lang === 'it') dataLang = 'it-it';
-      if (lang === 'nl') dataLang = 'nl-be';
-
       if (isSourceOfTruth) {
         setLoading(false);
         return;
@@ -53,7 +47,7 @@ export const TranslationProvider: React.FC<{
       
       setLoading(true);
       try {
-        const res = await fetch(`/api/translations/?lang=${dataLang}`);
+        const res = await fetch(`/api/translations/?lang=${encodeURIComponent(normalizedLang)}`);
         const data = await res.json();
         setStudioTranslations(prev => ({ ...prev, ...(data.translations || {}) }));
       } catch (e) {
@@ -64,7 +58,7 @@ export const TranslationProvider: React.FC<{
     };
 
     fetchTranslations();
-  }, [lang, isSourceOfTruth]);
+  }, [normalizedLang, isSourceOfTruth, market?.market_code]);
 
   const t = (key: string, defaultText: string, values?: Record<string, string | number>, skipPlaceholderReplacement = false): string => {
     let text = defaultText;
@@ -75,7 +69,7 @@ export const TranslationProvider: React.FC<{
       const translation = studioTranslations[key];
       
       //  STABILITEIT: Gebruik SlopFilter om AI-foutmeldingen te blokkeren
-      if (!translation || translation.trim() === '' || SlopFilter.isSlop(translation, lang, defaultText)) {
+      if (!translation || translation.trim() === '' || SlopFilter.isSlop(translation, normalizedLang, defaultText)) {
         //  SELF-HEALING TRIGGER (Disabled temporarily for stability)
       } else {
         text = translation;
@@ -93,7 +87,7 @@ export const TranslationProvider: React.FC<{
   };
 
   return (
-    <StudioTranslationContext.Provider value={{ t, language: lang, languageId, market, loading }}>
+    <StudioTranslationContext.Provider value={{ t, language: normalizedLang, languageId, market, loading }}>
       {children}
     </StudioTranslationContext.Provider>
   );
