@@ -8,7 +8,7 @@ description: Activeert Consuela om de mappenstructuur te scannen en zwerfbestand
 Activeer Consuela voor een grote schoonmaak:
 
 1. **Underscore Scan**: Zoek naar mappen met underscores in de root en hernoem ze.
-2. **Stray File Scan**: Zoek naar losse bestanden in de root en verplaats ze naar `4-KELDER`.
+2. **Stray File Scan**: Zoek naar losse bestanden in de root en verplaats ze naar `docs/archive`.
 3. **Legacy Cleanup**: Verplaats `heal-*.ts` en `check-*.ts` bestanden uit `apps/web` naar de kelder.
 4. **Nomenclatuur Check**: Controleer op bestandsnamen die niet voldoen aan de kebab-case of context-actie regel.
 

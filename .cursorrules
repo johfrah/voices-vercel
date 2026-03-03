@@ -173,15 +173,15 @@ Volg strikt de regels in `100-BOB-ROUTING.mdc`, `200-CHRIS-DISCIPLINE.mdc`, `300
 ### 📜 docs/ (Referentie)
 - Strategie, handleidingen en `ACTIVE_VOICE_ACTORS.md`.
 
-### 🗄️ 4-KELDER/ (Het Archief - extern op Desktop)
-- Symlink naar `~/Desktop/4-KELDER`. Niet in Dropbox, niet in git.
+### 🗄️ docs/archive/ (Het Archief)
+- Het archief leeft in `docs/archive/` binnen de repo. Geen externe symlinks.
 
 ## 🏭 De Nuclear Workflow (Supersonic Transformatie)
 
 Dit is het proces om grondstoffen uit de kelder om te zetten naar een high-end, data-gedreven ervaring in de cloud.
 
-1. **De Grondstof (Kelder)**: 
-   - **Bron**: Ruwe `.md` bestanden in `4-KELDER/0-GRONDSTOFFEN-FABRIEK/`.
+1. **De Grondstof (Archief)**: 
+   - **Bron**: Ruwe `.md` bestanden in `docs/archive/0-grondstoffen-fabriek/`.
    - **Actie**: Identificeer de feitelijke kerninformatie. Gooi alle "AI Slop" weg.
 
 2. **De Fabriek (Transformatie)**:

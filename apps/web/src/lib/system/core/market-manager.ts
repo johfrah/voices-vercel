@@ -297,7 +297,10 @@ export class MarketManager {
     'voices.be/studio': {
       market_code: 'STUDIO', language: 'nl', primary_language: 'nl-be', primary_language_id: 1,
       supported_languages: ['nl-be', 'en-gb'], popular_languages: ['nl-be', 'en-gb'],
-      name: 'Voices Studio', logo_url: VOICES_CONFIG.assets.logos.studio || VOICES_CONFIG.assets.logos.be,
+      name: 'Voices Studio',
+      email: 'studio@voices.be',
+      phone: '+32 (0)2 793 19 91',
+      logo_url: VOICES_CONFIG.assets.logos.studio || VOICES_CONFIG.assets.logos.be,
       theme: 'voices'
     },
     'johfrah.be': {

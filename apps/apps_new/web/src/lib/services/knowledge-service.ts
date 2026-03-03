@@ -10,10 +10,12 @@ import path from 'path';
 export class KnowledgeService {
   private static instance: KnowledgeService;
   private bijbelPath: string;
+  private scoreInventoryPath: string;
 
   constructor() {
-    //  NUCLEAR FIX: Gebruik het absolute pad naar de WETTEN/docs/1-BIJBEL map
-    this.bijbelPath = '/Users/voices/Library/CloudStorage/Dropbox/voices-headless/3-WETTEN/docs/1-BIJBEL';
+    const repoRoot = this.resolveRepoRoot();
+    this.bijbelPath = path.join(repoRoot, 'docs', '1-BIJBEL');
+    this.scoreInventoryPath = path.join(repoRoot, 'docs', 'archive', 'VOICE_SCORES_INVENTORY.md');
   }
 
   public static getInstance(): KnowledgeService {
@@ -53,7 +55,7 @@ export class KnowledgeService {
 
       //  SUPERINTELLIGENCE: Injecteer ook diepe data uit de kelder
       try {
-        const scoreInventory = await fs.readFile('/Users/voices/Library/CloudStorage/Dropbox/voices-headless/4-KELDER/VOICE_SCORES_INVENTORY.md', 'utf-8');
+        const scoreInventory = await fs.readFile(this.scoreInventoryPath, 'utf-8');
         briefing += `\n[Deep Data: Voice Scores]\n${scoreInventory}\n`;
       } catch (e) {
         console.warn("Could not read Voice Scores Inventory");
@@ -165,5 +167,13 @@ export class KnowledgeService {
     } catch (e) {
       return "";
     }
+  }
+
+  private resolveRepoRoot(): string {
+    const cwd = process.cwd();
+    if (cwd.endsWith(path.join('apps', 'web'))) {
+      return path.resolve(cwd, '../..');
+    }
+    return cwd;
   }
 }

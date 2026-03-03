@@ -11,13 +11,13 @@ Dit document dwingt de structurele integriteit van de machinekamer af. Slop in d
 - **GEEN UNDERSCORES**: Het gebruik van underscores (`_`) in hoofdmappen in de root is STRIKT VERBODEN.
 - **docs/**: De enige toegestane plek voor database-mirrors en feitelijke snapshots.
 - **ALLOWED_ROOT_DIRS**: `apps`, `packages`, `docs`, `scripts`, `node_modules`, `.git`, `.cursor`, `.vscode`, `.husky`.
-- **4-KELDER**: Extern archief (symlink naar Desktop). Nooit naar GitHub.
+- **docs/archive/**: Intern archiefpad voor legacy en grondstoffen.
 - **GEEN RECURSIE**: Het is STRIKT VERBODEN om kopieën van de root-structuur binnen andere mappen te plaatsen.
 
 ## 2. ZERO STRAY FILES
 - **ROOT**: In de root mogen geen losse bestanden staan (behalve `package.json`, `.cursorrules`, etc.).
 - **docs/**: In `docs/` mogen geen losse `.md` bestanden staan; alles moet in een genummerde submap.
-- **apps/web/**: Hier mogen GEEN "werkbestanden" (`heal-*.ts`, `check-*.ts`) staan. Verplaats deze naar `4-KELDER/3-LEGACY-CODE/scripts/`.
+- **apps/web/**: Hier mogen GEEN "werkbestanden" (`heal-*.ts`, `check-*.ts`) staan. Verplaats deze naar `scripts/` of `docs/archive/legacy-code/scripts/`.
 
 ## 3. NOMENCLATUUR DISCIPLINE
 - **Kebab-Case**: Bestandsnamen moeten in `kebab-case` zijn. Vermijd vage namen zoals `test.ts`.
@@ -25,6 +25,6 @@ Dit document dwingt de structurele integriteit van de machinekamer af. Slop in d
 - **Instrument Suffix**: Dwing het `Instrument` suffix af op alle UI componenten in `src/components/ui/`.
 
 ## 4. ARCHIVERING
-- **Directe Correctie**: Elke map met een underscore of elk zwerfbestand moet DIRECT worden verplaatst naar `4-KELDER`.
+- **Directe Correctie**: Elke map met een underscore of elk zwerfbestand moet DIRECT worden verplaatst naar `docs/archive/`.
 
 "Houd de repo 100% Masterclass Clean. Vakmanschap is de afwezigheid van splinters."
