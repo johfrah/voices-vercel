@@ -15,24 +15,15 @@ import { useAdminTracking } from '@/hooks/useAdminTracking';
 import { 
   ArrowLeft, 
   CheckCircle2, 
-  Clock, 
-  AlertCircle,
-  FileText,
   User,
   ShoppingBag,
   Mic,
-  Calendar,
   Mail,
-  Phone,
-  Building,
   CreditCard,
   Zap,
   ShieldCheck,
   Play,
-  Send,
-  Loader2,
-  ExternalLink,
-  RefreshCw
+  ExternalLink
 } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState, useCallback } from 'react';
@@ -88,6 +79,7 @@ export default function OrderDetailPage() {
 
   if (isLoading) return <LoadingScreenInstrument text="Order details laden..." />;
   if (!order) return <div className="p-20 text-center">Order niet gevonden.</div>;
+  const recordingSessions = order.production?.recordingSessions || [];
 
   return (
     <PageWrapperInstrument className="min-h-screen bg-va-off-white p-8 pt-24">
@@ -130,6 +122,28 @@ export default function OrderDetailPage() {
               </div>
 
               <div className="h-[1px] bg-black/[0.03]" />
+
+              {/* Operationele status */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="rounded-[14px] border border-black/[0.05] bg-va-off-white/30 p-4">
+                  <div className="text-[10px] uppercase tracking-[0.2em] text-va-black/30 mb-1">PO vereist</div>
+                  <div className={`text-[13px] font-medium ${order.actions?.needsPO ? 'text-primary' : 'text-green-600'}`}>
+                    {order.actions?.needsPO ? 'Ja' : 'Nee'}
+                  </div>
+                </div>
+                <div className="rounded-[14px] border border-black/[0.05] bg-va-off-white/30 p-4">
+                  <div className="text-[10px] uppercase tracking-[0.2em] text-va-black/30 mb-1">Betaallink mogelijk</div>
+                  <div className={`text-[13px] font-medium ${order.actions?.canGeneratePaymentLink ? 'text-primary' : 'text-va-black/50'}`}>
+                    {order.actions?.canGeneratePaymentLink ? 'Ja' : 'Nee'}
+                  </div>
+                </div>
+                <div className="rounded-[14px] border border-black/[0.05] bg-va-off-white/30 p-4">
+                  <div className="text-[10px] uppercase tracking-[0.2em] text-va-black/30 mb-1">Yuki-ready</div>
+                  <div className={`text-[13px] font-medium ${order.actions?.isYukiReady ? 'text-green-600' : 'text-va-black/50'}`}>
+                    {order.actions?.isYukiReady ? 'Ja' : 'Nee'}
+                  </div>
+                </div>
+              </div>
 
               {/* REGIE */}
               <div className="bg-va-off-white/50 rounded-[20px] p-8 border border-primary/10 space-y-6">
@@ -188,6 +202,11 @@ export default function OrderDetailPage() {
                           <ShoppingBag size={14} /> Audio Referentie Openen
                         </a>
                       )}
+                      {order.integration?.orderDownloadUrl && (
+                        <a href={order.integration.orderDownloadUrl} target="_blank" className="inline-flex items-center gap-2 text-[13px] text-primary hover:underline font-medium">
+                          <ExternalLink size={14} /> Dropbox Export Openen
+                        </a>
+                      )}
                     </div>
                   ) : (
                     <div className="text-[15px] italic text-va-black/20">Geen script gevonden voor deze bestelling.</div>
@@ -207,14 +226,57 @@ export default function OrderDetailPage() {
                         </div>
                         <div>
                           <div className="text-[16px] font-light tracking-tight">{item.name}</div>
-                          <div className="text-[12px] font-light text-va-black/30 tracking-tight">Aantal: {item.quantity} • Inkoop: €{item.cost}</div>
+                          <div className="text-[12px] font-light text-va-black/30 tracking-tight">
+                            {item.actorName ? `Stem: ${item.actorName} • ` : ''}Aantal: {item.quantity} • Inkoop: €{item.cost}
+                          </div>
+                          <div className="text-[11px] font-light text-va-black/25 tracking-tight mt-1">
+                            Delivery: {item.deliveryStatus || 'waiting'} • Payout: {item.payoutStatus || 'pending'}
+                          </div>
+                          {(item.deliveryFileUrl || item.invoiceFileUrl) && (
+                            <div className="flex items-center gap-3 mt-2">
+                              {item.deliveryFileUrl && (
+                                <a href={item.deliveryFileUrl} target="_blank" className="text-[11px] text-primary hover:underline">
+                                  Delivery file
+                                </a>
+                              )}
+                              {item.invoiceFileUrl && (
+                                <a href={item.invoiceFileUrl} target="_blank" className="text-[11px] text-primary hover:underline">
+                                  Factuur file
+                                </a>
+                              )}
+                            </div>
+                          )}
                         </div>
                       </div>
-                      <div className="text-[16px] font-medium tracking-tight">€{item.price}</div>
+                      <div className="text-right">
+                        <div className="text-[16px] font-medium tracking-tight">€{item.price}</div>
+                        <div className="text-[11px] font-light text-va-black/30">Subtotaal €{item.subtotal}</div>
+                      </div>
                     </div>
                   ))}
                 </div>
               </div>
+
+              {/* Recording sessies */}
+              {recordingSessions.length > 0 && (
+                <div className="space-y-6">
+                  <HeadingInstrument level={3} className="text-[13px] font-light tracking-[0.2em] text-va-black/20 uppercase">
+                    Recording Sessies
+                  </HeadingInstrument>
+                  <div className="space-y-3">
+                    {recordingSessions.map((session: any) => (
+                      <div key={session.id} className="flex items-center justify-between p-4 rounded-[12px] border border-black/[0.04] bg-white">
+                        <div className="text-[13px] font-light text-va-black/70">
+                          Sessie #{session.id} • item #{session.orderItemId || 'n/a'}
+                        </div>
+                        <div className="text-[12px] font-medium text-va-black/60 uppercase tracking-wider">
+                          {session.status}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
@@ -244,6 +306,14 @@ export default function OrderDetailPage() {
                     <div className="text-[13px] font-light text-va-black/40">BTW: {order.customer.vat}</div>
                   </div>
                 )}
+
+                <div className="pt-3 border-t border-black/[0.05] space-y-2">
+                  <div className="text-[11px] uppercase tracking-widest text-va-black/25">Facturatie</div>
+                  <div className="text-[12px] font-light text-va-black/50">Facturatie e-mail: {order.billing?.email || '-'}</div>
+                  <div className="text-[12px] font-light text-va-black/50">PO: {order.billing?.purchaseOrder || '-'}</div>
+                  <div className="text-[12px] font-light text-va-black/50">Factuurnr: {order.billing?.invoiceNumber || '-'}</div>
+                  <div className="text-[12px] font-light text-va-black/50 break-all">Transactie: {order.billing?.transactionId || '-'}</div>
+                </div>
               </div>
 
               <ButtonInstrument as={Link} href={`/admin/users?id=${order.technical?.userId || order.technical?.sourceId}`} className="w-full va-btn-pro !bg-va-off-white !text-va-black/60 hover:!text-va-black flex items-center justify-center gap-2">
@@ -263,6 +333,14 @@ export default function OrderDetailPage() {
                   <span className="text-white/40">BTW (21%)</span>
                   <span>€{order.finance?.vat}</span>
                 </div>
+                <div className="flex justify-between text-[14px] font-light">
+                  <span className="text-white/40">Cost</span>
+                  <span>€{order.finance?.cost}</span>
+                </div>
+                <div className="flex justify-between text-[14px] font-light">
+                  <span className="text-white/40">Marge</span>
+                  <span>{order.finance?.marginPercentage} (€{order.finance?.margin})</span>
+                </div>
                 <div className="h-[1px] bg-white/10 my-2" />
                 <div className="flex justify-between text-[18px] font-medium">
                   <span>Totaal</span>
@@ -273,6 +351,20 @@ export default function OrderDetailPage() {
                 <div className="text-[11px] text-white/30 uppercase tracking-widest mb-1">Betaalmethode</div>
                 <div className="text-[13px] font-light">{order.finance?.method}</div>
               </div>
+            </div>
+
+            {/* Integratie & bron */}
+            <div className="bg-white rounded-[20px] p-8 border border-black/[0.03] shadow-sm space-y-4">
+              <HeadingInstrument level={3} className="text-[11px] font-medium tracking-[0.2em] text-va-black/20 uppercase">Integratie</HeadingInstrument>
+              <div className="text-[12px] font-light text-va-black/50">Source order id: {order.technical?.sourceOrderId || order.technical?.sourceId || '-'}</div>
+              <div className="text-[12px] font-light text-va-black/50">Meta keys: {order.technical?.metaKeyCount ?? '-'}</div>
+              <div className="text-[12px] font-light text-va-black/50 break-all">Dropbox pad: {order.integration?.dropboxFolderPath || '-'}</div>
+              {order.integration?.orderDownloadUrl && (
+                <a href={order.integration.orderDownloadUrl} target="_blank" className="inline-flex items-center gap-2 text-[12px] text-primary hover:underline">
+                  <ExternalLink size={14} />
+                  Open order-download
+                </a>
+              )}
             </div>
           </div>
         </div>
