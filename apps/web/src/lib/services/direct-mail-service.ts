@@ -132,12 +132,18 @@ export class DirectMailService {
     // 🛡️ CHRIS-PROTOCOL: NUCLEAR TEST SAFETY (v2.15.090)
     // Voorkom dat er echte mails naar klanten of stemmen worden gestuurd tijdens de testfase.
     const isTestMode = process.env.NODE_ENV === 'development' || process.env.NUCLEAR_TEST_MODE === 'true';
-    const allowedRecipients = MarketManager.getAllowedTestRecipients();
+    const getAllowedTestRecipients = (MarketManager as any).getAllowedTestRecipients;
+    const allowedRecipients: string[] = typeof getAllowedTestRecipients === 'function'
+      ? (getAllowedTestRecipients.call(MarketManager) as string[])
+      : ['@voices.be', '@johfrah.be', '@ademing.be', '@youssefzaki.eu', '@johfrai.be'];
     
-    const isAllowed = allowedRecipients.some(domain => options.to.toLowerCase().includes(domain));
+    const isAllowed = allowedRecipients.some((domain: string) => options.to.toLowerCase().includes(domain));
     
     if (isTestMode && !isAllowed) {
-      const fallbackEmail = MarketManager.getFallbackTestEmail();
+      const getFallbackTestEmail = (MarketManager as any).getFallbackTestEmail;
+      const fallbackEmail = typeof getFallbackTestEmail === 'function'
+        ? getFallbackTestEmail.call(MarketManager)
+        : (process.env.NUCLEAR_TEST_FALLBACK_EMAIL || process.env.NEXT_PUBLIC_ADMIN_EMAIL || 'johfrah@voices.be');
       console.log(`🛑 [DirectMailService] NUCLEAR SAFETY BLOCK: Redirecting mail for ${options.to} to ${fallbackEmail}`);
       options.subject = `[TEST-REDIRECT to ${options.to}] ${options.subject}`;
       options.to = fallbackEmail;
