@@ -16,7 +16,11 @@ export interface WorldConfig {
   phone: string;
   address: string | null;
   vat_number: string | null;
+  company_name: string | null;
+  website: string | null;
+  country_code: string;
   social_links: Record<string, string> | null;
+  opening_hours: Record<string, string> | null;
   logo_url: string | null;
   og_image_url: string | null;
   favicon_url: string | null;
@@ -58,7 +62,7 @@ export async function getWorldConfig(worldId: number): Promise<WorldConfig | nul
     // Contact via junction table (ID-First)
     const { data: contactMapping } = await supabase
       .from('world_contact_mappings')
-      .select('contacts(email, phone, address, vat_number)')
+      .select('contacts(id, label, email, phone, address, vat_number, company_name, website, social_links, opening_hours, country_code, logo_media_id)')
       .eq('world_id', worldId)
       .eq('role', 'primary')
       .maybeSingle();
@@ -68,11 +72,15 @@ export async function getWorldConfig(worldId: number): Promise<WorldConfig | nul
     const config: WorldConfig = {
       world_id: data.world_id,
       name: data.name,
-      email: contact.email || data.email,
-      phone: contact.phone || data.phone,
+      email: contact.email || '',
+      phone: contact.phone || '',
       address: contact.address || null,
       vat_number: contact.vat_number || null,
-      social_links: data.social_links,
+      company_name: contact.company_name || null,
+      website: contact.website || null,
+      country_code: contact.country_code || 'BE',
+      social_links: contact.social_links || data.social_links || null,
+      opening_hours: contact.opening_hours || null,
       logo_url: (data as any).logo_media?.file_path 
         ? `${STORAGE_BASE}${(data as any).logo_media.file_path}` 
         : null,
