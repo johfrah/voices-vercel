@@ -949,13 +949,42 @@ export class StudioDataBridge {
   static async getEditionParticipants(editionId: number) {
     try {
       const { data, error } = await supabase
-        .from('workshop_participants')
+        .from('view_workshop_participants')
         .select('*')
         .eq('edition_id', editionId)
-        .order('created_at', { ascending: false });
+        .order('registration_date', { ascending: false });
 
       if (error) throw error;
-      return data || [];
+      return (data || []).map((row: any) => {
+        const fullName = (row.participant_name || '').trim();
+        const nameParts = fullName.split(/\s+/).filter(Boolean);
+        const firstName = nameParts[0] || fullName || 'Onbekend';
+        const lastName = nameParts.slice(1).join(' ');
+        const statusCode = String(row.order_status || '').toLowerCase();
+
+        let paymentStatus: string | null = null;
+        if (['wc-completed', 'completed', 'paid'].includes(statusCode)) {
+          paymentStatus = 'paid';
+        } else if (['pending', 'wc-pending', 'processing', 'wc-processing', 'on-hold'].includes(statusCode)) {
+          paymentStatus = 'pending';
+        } else if (statusCode) {
+          paymentStatus = statusCode;
+        }
+
+        return {
+          id: Number(row.order_item_id),
+          first_name: firstName,
+          last_name: lastName,
+          email: row.participant_email || row.buyer_email || null,
+          phone: row.participant_phone || null,
+          age: row.participant_age || null,
+          profession: row.participant_profession || null,
+          payment_status: paymentStatus,
+          order_status: row.order_status || null,
+          order_id: Number(row.order_id || 0),
+          registration_date: row.registration_date || null,
+        };
+      });
     } catch (error) {
       console.error(`Error fetching participants for edition ${editionId}:`, error);
       return [];
