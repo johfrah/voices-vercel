@@ -5,8 +5,8 @@
 {
   "_llm_context": {
     "type": "onboarding",
-    "version": "1.1.0",
-    "protocol": "CHRIS-V9",
+    "version": "1.0.0",
+    "protocol": "CHRIS-V8",
     "description": "Standaard procedure voor nieuwe AI-agenten."
   }
 }
@@ -16,15 +16,13 @@ Welkom bij Voices.be. Je bent hier niet om "code te schrijven", je bent hier om 
 
 ---
 
-## 🏗️ STAP 1: DE MONOREPO TRUTH (Architectuur)
-Voices draait runtime op een **npm-workspaces monorepo**:
-1.  **`apps/web`**: De hoofdapp (Next.js 14 runtime).
-2.  **`packages/*`**: Gedeelde libraries (`database`, `config`, etc.).
-3.  **`docs/` + `3-WETTEN/docs/`**: Governance en referentie (geen runtime-entrypoint).
-4.  **`4-KELDER/`**: Extern archief/symlink voor legacy grondstoffen (geen runtime-code).
+## 🏗️ STAP 1: DE DRIE-EENHEID (Architectuur)
+Voices draait op de **Atomic Architectural Trinity**:
+1.  **1-SITE**: De motor (Next.js, Supabase, Drizzle).
+2.  **3-WETTEN**: De controlekamer (Wetten, Scripts, Docs).
+3.  **4-KELDER**: Het archief (Legacy, Grondstoffen).
 
-**WET:** `1-SITE` is deprecated als padnaam. Gebruik uitsluitend de actuele monorepo-paden onder `/workspace`.
-**WET:** Gebruik NOOIT mappen met underscores (`_`) in de root. Gebruik uitsluitend koppeltekens voor benoemde mappen.
+**WET:** Gebruik NOOIT mappen met underscores (`_`) in de root. Gebruik uitsluitend genummerde mappen met koppeltekens.
 
 ---
 
@@ -55,10 +53,8 @@ Je mag pas pushen als:
 ## 📚 ESSENTIËLE DOCUMENTATIE
 Lees deze bestanden VOORDAT je je eerste edit doet:
 1.  `.cursorrules`: Je operationele wetten.
-2.  `AGENTS.md`: De actuele Cursor Cloud runbook en repo-waarheid.
-3.  `3-WETTEN/docs/1-MASTER-BLUEPRINTS/06-AGENTS-HANDSHAKE.md`: De architecturale staat.
-4.  `3-WETTEN/docs/1-MASTER-BLUEPRINTS/01-MASTER-BLUEPRINT-2026.md`: De visie.
-5.  `.cursor/rules/310-LAYOUT-INSTRUMENTS.mdc`: Je UI-gereedschapskist.
+2.  `3-WETTEN/docs/1-MASTER-BLUEPRINTS/01-MASTER-BLUEPRINT-2026.md`: De visie.
+3.  `3-WETTEN/docs/3-TECHNICAL-SPECS/310-LAYOUT-INSTRUMENTS.mdc`: Je UI-gereedschapskist.
 
 ---
 
