@@ -11,94 +11,78 @@ import { MetadataRoute } from 'next';
  */
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  //  CHRIS-PROTOCOL: Build Safety
-  if (process.env.NEXT_PHASE === 'phase-production-build' || (process.env.NODE_ENV === 'production' && !process.env.VERCEL_URL)) {
-    return [];
-  }
+  const baseUrl = 'https://www.voices.be';
 
-  const { MarketManagerServer: MarketManager } = await import('@/lib/system/core/market-manager');
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || process.env.NEXT_PUBLIC_SITE_URL || MarketManager.getMarketDomains()['BE'];
-  const languages = ['', '/en', '/fr', '/de']; // Ondersteunde talen
-
-  // 1. Core Pages (Statisch) - Nuclear Deployment Trigger 2026.1
+  // 1. Core Pages
   const coreRoutes = [
-    '',
-    '/agency',
-    '/studio',
-    '/academy',
-    '/artist',
-    '/about',
-    '/blog',
-    '/faq',
-    '/contact',
-    '/terms',
-    '/privacy',
-    '/cookies',
-    '/tarieven',
-    '/over-ons',
-    '/zo-werkt-het',
+    { path: '', priority: 1.0, freq: 'daily' as const },
+    { path: '/agency', priority: 0.9, freq: 'daily' as const },
+    { path: '/studio', priority: 0.8, freq: 'weekly' as const },
+    { path: '/academy', priority: 0.7, freq: 'weekly' as const },
+    { path: '/johfrai', priority: 0.7, freq: 'weekly' as const },
+    { path: '/ademing', priority: 0.7, freq: 'weekly' as const },
+    { path: '/partners', priority: 0.6, freq: 'monthly' as const },
+    { path: '/contact', priority: 0.7, freq: 'monthly' as const },
+    { path: '/over-ons', priority: 0.6, freq: 'monthly' as const },
+    { path: '/hoe-het-werkt', priority: 0.7, freq: 'monthly' as const },
+    { path: '/veelgestelde-vragen', priority: 0.6, freq: 'monthly' as const },
+    { path: '/terms', priority: 0.3, freq: 'yearly' as const },
+    { path: '/privacy', priority: 0.3, freq: 'yearly' as const },
+    { path: '/studio/quiz', priority: 0.5, freq: 'monthly' as const },
+    { path: '/studio/doe-je-mee', priority: 0.5, freq: 'monthly' as const },
+    { path: '/account/login', priority: 0.4, freq: 'monthly' as const },
   ];
 
-  // 2. Dynamische Routes: Actors, Articles, Academy & Studio
-  let allActors: { slug: string | null }[] = [];
-  let allArticles: { slug: string }[] = [];
-  const academyLessons = Array.from({ length: 20 }, (_, i) => ({ id: (i + 1).toString() })); // 20 lessen
+  // 2. Dynamic routes from database
+  let actorSlugs: string[] = [];
+  let articleSlugs: string[] = [];
 
   try {
-    allActors = await db.select({ slug: actors.slug }).from(actors).where(eq(actors.status, 'live')).catch(() => []);
-    allArticles = await db.select({ slug: contentArticles.slug }).from(contentArticles).catch(() => []);
-  } catch (error) {
-    console.error('Sitemap generation error (database unreachable):', error);
-    // We gaan door met alleen de core routes als de database niet bereikbaar is
+    const liveActors = await db.select({ slug: actors.slug }).from(actors).where(eq(actors.status, 'live'));
+    actorSlugs = liveActors.map(a => a.slug).filter(Boolean) as string[];
+  } catch (e) {
+    console.error('[Sitemap] Actor query failed:', e);
   }
 
-  const sitemapEntries: MetadataRoute.Sitemap = [];
-
-  // Genereer entries voor alle talen
-  for (const lang of languages) {
-    // Core routes
-    coreRoutes.forEach(route => {
-      sitemapEntries.push({
-        url: `${baseUrl}${lang}${route}/`,
-        lastModified: new Date(),
-        changeFrequency: 'daily',
-        priority: route === '' ? 1.0 : 0.8,
-      });
-    });
-
-    // Actor routes
-    allActors.forEach(actor => {
-      if (actor.slug) {
-        sitemapEntries.push({
-          url: `${baseUrl}${lang}/voice/${actor.slug}/`,
-          lastModified: new Date(),
-          changeFrequency: 'weekly',
-          priority: 0.7,
-        });
-      }
-    });
-
-    // Article routes
-    allArticles.forEach(article => {
-      sitemapEntries.push({
-        url: `${baseUrl}${lang}/article/${article.slug}/`,
-        lastModified: new Date(),
-        changeFrequency: 'monthly',
-        priority: 0.6,
-      });
-    });
-
-    //  Academy routes
-    academyLessons.forEach(lesson => {
-      sitemapEntries.push({
-        url: `${baseUrl}${lang}/academy/lesson/${lesson.id}/`,
-        lastModified: new Date(),
-        changeFrequency: 'weekly',
-        priority: 0.7,
-      });
-    });
-
+  try {
+    const publishedArticles = await db.select({ slug: contentArticles.slug }).from(contentArticles).where(eq(contentArticles.status, 'publish'));
+    articleSlugs = publishedArticles.map(a => a.slug).filter(Boolean);
+  } catch (e) {
+    console.error('[Sitemap] Article query failed:', e);
   }
 
-  return sitemapEntries;
+  const entries: MetadataRoute.Sitemap = [];
+
+  // Core pages
+  coreRoutes.forEach(r => {
+    entries.push({
+      url: `${baseUrl}${r.path}`,
+      lastModified: new Date(),
+      changeFrequency: r.freq,
+      priority: r.priority,
+    });
+  });
+
+  // Actor pages — URL is /{slug} (SmartRouter resolves via slug_registry)
+  actorSlugs.forEach(slug => {
+    entries.push({
+      url: `${baseUrl}/${slug}`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.7,
+    });
+  });
+
+  // CMS article pages — URL is /{slug} (SmartRouter resolves via slug_registry)
+  const excludeSlugs = ['agency', 'contact', 'terms', 'privacy', 'account', 'checkout', 'cart', 'demos'];
+  articleSlugs.filter(s => !excludeSlugs.includes(s) && !s.startsWith('admin')).forEach(slug => {
+    entries.push({
+      url: `${baseUrl}/${slug}`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.5,
+    });
+  });
+
+  return entries;
 }
