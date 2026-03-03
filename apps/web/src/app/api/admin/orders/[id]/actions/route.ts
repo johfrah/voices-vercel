@@ -31,9 +31,10 @@ async function syncStatusForOrder(args: {
   const statusRows = await db
     .select({ id: orderStatuses.id, code: orderStatuses.code })
     .from(orderStatuses)
-    .where(inArray(orderStatuses.code, statusCandidates))
-    .limit(1);
-  const statusRow = statusRows[0];
+    .where(inArray(orderStatuses.code, statusCandidates));
+  const statusRow = statusCandidates
+    .map((candidate) => statusRows.find((row: any) => row.code === candidate))
+    .find(Boolean);
 
   if (statusRow) {
     await db.update(ordersV2).set({ statusId: statusRow.id }).where(eq(ordersV2.id, v2OrderId));

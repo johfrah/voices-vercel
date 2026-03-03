@@ -27,6 +27,21 @@ const STATUS_FILTER_MAP: Record<string, string[]> = {
   Mislukt: ['failed', 'cancelled', 'refunded', 'wc-refunded'],
 };
 
+const STATUS_ALIAS_MAP: Record<string, string[]> = {
+  paid: ['paid', 'completed_paid', 'completed', 'wc-completed'],
+  completed: ['completed', 'completed_paid', 'paid', 'wc-completed'],
+  in_productie: ['in_productie', 'in_progress', 'processing', 'active'],
+  in_progress: ['in_progress', 'in_productie', 'processing', 'active'],
+  awaiting_payment: ['awaiting_payment', 'pending', 'unpaid', 'waiting_po', 'wc-pending'],
+  pending: ['pending', 'awaiting_payment', 'unpaid', 'waiting_po', 'wc-pending'],
+  waiting_po: ['waiting_po', 'awaiting_payment', 'pending', 'unpaid'],
+  quote_pending: ['quote_pending', 'quote-pending', 'quote_sent'],
+  quote_sent: ['quote_sent', 'quote_pending', 'quote-pending'],
+  failed: ['failed', 'cancelled', 'refunded'],
+  cancelled: ['cancelled', 'failed'],
+  refunded: ['refunded', 'wc-refunded'],
+};
+
 function mapStatusForAdmin(statusCode: string | null, fallbackLabel?: string | null): string {
   const code = (statusCode || '').toLowerCase();
 
@@ -459,7 +474,14 @@ export async function PATCH(request: NextRequest) {
     }
 
     const normalizedStatus = statusInput.toLowerCase().replace(/\s+/g, '_').replace(/-/g, '_');
-    const mappedCodes = STATUS_FILTER_MAP[statusInput] || [normalizedStatus, statusInput];
+    const mappedCodes = Array.from(
+      new Set([
+        ...(STATUS_FILTER_MAP[statusInput] || []),
+        ...(STATUS_ALIAS_MAP[normalizedStatus] || []),
+        normalizedStatus,
+        statusInput,
+      ])
+    );
 
     const statusRows = await db
       .select({
@@ -467,10 +489,11 @@ export async function PATCH(request: NextRequest) {
         code: orderStatuses.code,
       })
       .from(orderStatuses)
-      .where(inArray(orderStatuses.code, mappedCodes))
-      .limit(1);
+      .where(inArray(orderStatuses.code, mappedCodes));
 
-    const statusRow = statusRows[0];
+    const statusRow = mappedCodes
+      .map((candidate) => statusRows.find((row: any) => row.code === candidate))
+      .find(Boolean);
     if (!statusRow) {
       return NextResponse.json({ error: `Unknown status: ${statusInput}` }, { status: 400 });
     }
