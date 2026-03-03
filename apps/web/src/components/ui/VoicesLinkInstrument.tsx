@@ -2,6 +2,7 @@
 
 import { useTranslation } from '@/contexts/TranslationContext';
 import { normalizeSlug } from '@/lib/system/slug';
+import { emitNavigationFeedbackStart } from '@/lib/utils/navigation-feedback';
 import Link, { LinkProps } from 'next/link';
 import { usePathname, useRouter as useNextRouter } from 'next/navigation';
 import React, { ReactNode } from 'react';
@@ -21,9 +22,15 @@ interface VoicesLinkInstrumentProps extends LinkProps {
   target?: string;
   rel?: string;
   onClick?: (e: React.MouseEvent<HTMLAnchorElement>) => void;
+  onMouseEnter?: (e: React.MouseEvent<HTMLAnchorElement>) => void;
+  onTouchStart?: (e: React.TouchEvent<HTMLAnchorElement>) => void;
   title?: string;
   entityId?: number;
   routingType?: string;
+}
+
+function isModifiedNavigationEvent(event: React.MouseEvent<HTMLAnchorElement>) {
+  return event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0;
 }
 
 export const VoicesLinkInstrument = ({ 
@@ -32,9 +39,15 @@ export const VoicesLinkInstrument = ({
   className, 
   entityId,
   routingType,
+  onClick,
+  onMouseEnter,
+  onTouchStart,
+  prefetch,
   ...props 
 }: VoicesLinkInstrumentProps) => {
   const { language } = useTranslation();
+  const pathname = usePathname();
+  const router = useNextRouter();
   const [resolvedHref, setResolvedHref] = React.useState<string | null>(null);
 
   // 🛡️ DNA-ROUTING: Resolve entityId to slug on the fly if needed
@@ -89,11 +102,52 @@ export const VoicesLinkInstrument = ({
   };
 
   const localizedHref = getLocalizedHref();
+  const isInternalHref = localizedHref.startsWith('/');
+
+  React.useEffect(() => {
+    if (!isInternalHref) return;
+    router.prefetch(localizedHref);
+  }, [isInternalHref, localizedHref, router]);
+
+  const triggerWarmup = (eventTargetHref: string) => {
+    if (!eventTargetHref.startsWith('/')) return;
+    router.prefetch(eventTargetHref);
+  };
+
+  const handleClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    onClick?.(event);
+    if (event.defaultPrevented) return;
+
+    if (
+      isInternalHref &&
+      (props.target === undefined || props.target === '_self') &&
+      !isModifiedNavigationEvent(event) &&
+      pathname !== localizedHref
+    ) {
+      emitNavigationFeedbackStart();
+    }
+  };
+
+  const handleMouseEnter = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    onMouseEnter?.(event);
+    if (event.defaultPrevented) return;
+    triggerWarmup(localizedHref);
+  };
+
+  const handleTouchStart = (event: React.TouchEvent<HTMLAnchorElement>) => {
+    onTouchStart?.(event);
+    if (event.defaultPrevented) return;
+    triggerWarmup(localizedHref);
+  };
 
   return (
     <Link 
       href={localizedHref} 
       className={className}
+      prefetch={isInternalHref ? (prefetch ?? true) : false}
+      onClick={handleClick}
+      onMouseEnter={handleMouseEnter}
+      onTouchStart={handleTouchStart}
       {...props}
     >
       {children}
@@ -123,6 +177,7 @@ export const useVoicesRouter = () => {
     const finalPath = normalized.startsWith('/') ? normalized : `/${normalized}`;
     const localizedHref = `${prefix}${finalPath === '/' ? '' : finalPath}`;
     
+    emitNavigationFeedbackStart();
     router.push(localizedHref, options);
   };
 
@@ -138,6 +193,7 @@ export const useVoicesRouter = () => {
     const finalPath = normalized.startsWith('/') ? normalized : `/${normalized}`;
     const localizedHref = `${prefix}${finalPath === '/' ? '' : finalPath}`;
     
+    emitNavigationFeedbackStart();
     router.replace(localizedHref, options);
   };
 

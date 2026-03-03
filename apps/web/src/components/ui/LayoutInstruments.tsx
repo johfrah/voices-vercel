@@ -22,7 +22,7 @@ export {
 } from './LayoutInstrumentsClient';
 
 // Import client hooks for client components
-import { ClientButtonInstrument } from './LayoutInstrumentsClient';
+import { ClientButtonInstrument, ContainerInstrument as BaseContainerInstrument, TextInstrument as BaseTextInstrument } from './LayoutInstrumentsClient';
 
 /**
  * BUTTON INSTRUMENT
@@ -374,47 +374,29 @@ export const LoadingScreenInstrument = ({
   text?: string;
 }) => {
   return (
-    <div className="fixed inset-0 bg-background z-[9999] flex flex-col items-center justify-center">
-      <div className="relative w-32 h-32">
-        <svg viewBox="0 0 1000 1000" className="w-full h-full">
-          <defs>
-            <linearGradient id="loader_grad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" style={{ stopColor: 'var(--primary, #FF0084)', stopOpacity: 1 }} />
-              <stop offset="100%" style={{ stopColor: 'var(--primary, #FF0084)', stopOpacity: 1 }} />
-            </linearGradient>
-          </defs>
-          <style>{`
-            .loader-bar {
-              fill: url(#loader_grad);
-              transform-box: fill-box;
-              transform-origin: 50% 50%;
-              animation: loader-wave 2s cubic-bezier(.4,0,.2,1) infinite;
-            }
-            .lb1 { animation-delay: -0.1s; animation-duration: 2.2s; }
-            .lb2 { animation-delay: -0.3s; animation-duration: 1.8s; }
-            .lb3 { animation-delay: -0.2s; animation-duration: 2.0s; }
-            .lb4 { animation-delay: -0.4s; animation-duration: 1.6s; }
-            .lb5 { animation-delay: -0.2s; animation-duration: 2.1s; }
+    <BaseContainerInstrument
+      plain
+      className="fixed inset-0 z-[9999] bg-background/96 backdrop-blur-[1.5px]"
+      aria-live="polite"
+      aria-busy="true"
+    >
+      <BaseContainerInstrument plain className="mx-auto max-w-7xl px-6 md:px-10 pt-24 md:pt-32 animate-pulse">
+        <BaseContainerInstrument plain className="h-8 w-36 rounded-full bg-va-black/10" />
+        <BaseContainerInstrument plain className="mt-7 h-11 w-[72%] rounded-full bg-va-black/10" />
+        <BaseContainerInstrument plain className="mt-4 h-5 w-[50%] rounded-full bg-va-black/10" />
 
-            @keyframes loader-wave {
-              0%, 100% { transform: scaleY(0.8) scaleX(1); opacity: 0.8; }
-              50% { transform: scaleY(1.2) scaleX(1.05); opacity: 1; }
-            }
-          `}</style>
-          <g transform="translate(500, 500) scale(0.8)">
-            <rect x="-40" y="-300" width="80" height="600" rx="40" ry="40" className="loader-bar lb1"/>
-            <rect x="-240" y="-150" width="90" height="300" rx="45" ry="45" className="loader-bar lb2"/>
-            <rect x="150" y="-150" width="90" height="300" rx="45" ry="45" className="loader-bar lb3"/>
-            <rect x="330" y="-50" width="80" height="100" rx="40" ry="40" className="loader-bar lb4"/>
-            <rect x="-410" y="-50" width="80" height="100" rx="40" ry="40" className="loader-bar lb5"/>
-          </g>
-        </svg>
-      </div>
-      {text && (
-        <p className="mt-12 text-[13px] font-bold text-va-black/20 uppercase tracking-[0.3em] animate-pulse">
-          {text}
-        </p>
-      )}
-    </div>
+        <BaseContainerInstrument plain className="mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          <BaseContainerInstrument plain className="h-40 rounded-[22px] bg-va-black/8" />
+          <BaseContainerInstrument plain className="h-40 rounded-[22px] bg-va-black/8" />
+          <BaseContainerInstrument plain className="h-40 rounded-[22px] bg-va-black/8" />
+        </BaseContainerInstrument>
+
+        {!!text && (
+          <BaseTextInstrument as="p" className="mt-10 text-[12px] tracking-[0.22em] uppercase text-va-black/30 font-medium">
+            {text}
+          </BaseTextInstrument>
+        )}
+      </BaseContainerInstrument>
+    </BaseContainerInstrument>
   );
 };

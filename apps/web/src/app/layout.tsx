@@ -7,6 +7,7 @@ import { LoadingScreenInstrument, PageWrapperInstrument, ContainerInstrument, He
 import { CookieBanner } from "@/components/ui/Legal/CookieBanner";
 import { GlobalModalManager } from "@/components/ui/GlobalModalManager";
 import { LiquidTransitionOverlay } from "@/components/ui/LiquidTransitionOverlay";
+import { NavigationSkeletonOverlayInstrument } from "@/components/ui/NavigationSkeletonOverlayInstrument";
 import { MarketManagerServer } from "@/lib/system/core/market-manager";
 import { MarketDatabaseService } from "@/lib/system/market-manager-db";
 import { createClient } from "@supabase/supabase-js";
@@ -317,7 +318,8 @@ export default async function RootLayout({
             handshakeContext={handshakeContext}
           >
             <SafeErrorGuard>
-              <Suspense fallback={isAdeming && isOffline ? null : <LoadingScreenInstrument text={isAdminRoute ? "Beheer laden..." : "Studio laden..."} />}>
+              <NavigationSkeletonOverlayInstrument />
+              <Suspense fallback={isAdeming && isOffline ? null : <LoadingScreenInstrument />}>
                 {children}
               </Suspense>
             </SafeErrorGuard>
@@ -400,13 +402,14 @@ export default async function RootLayout({
         >
           <SafeErrorGuard>
             <PageWrapperInstrument>
-              <Suspense fallback={<LoadingScreenInstrument text="Voices laden..." />}>
+              <Suspense fallback={<LoadingScreenInstrument />}>
                 {children}
               </Suspense>
             </PageWrapperInstrument>
             <EditModeOverlay>
               <GhostModeBar />
               <LiquidTransitionOverlay />
+              <NavigationSkeletonOverlayInstrument />
               <CodyPreviewBanner />
               <SafeErrorGuard name="Instruments" fallback={null}>
                 <Suspense fallback={null}>
