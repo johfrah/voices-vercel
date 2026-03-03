@@ -219,6 +219,23 @@ function renderWorkshopDetail(workshop: WorkshopApiResponse['workshops'][number]
         </ContainerInstrument>
       )}
 
+      {/* Aftermovie sectie */}
+      {workshop.aftermovie_description && (
+        <ContainerInstrument className="max-w-4xl mx-auto px-6 mt-24">
+          <ContainerInstrument plain className="mb-8">
+            <TextInstrument className="text-[11px] font-bold tracking-[0.3em] uppercase text-primary mb-4">
+              <VoiceglotText translationKey="studio.detail.aftermovie_label" defaultText="Een blik achter de schermen" />
+            </TextInstrument>
+            <HeadingInstrument level={2} className="text-3xl md:text-4xl font-light tracking-tighter text-va-black">
+              <VoiceglotText translationKey="studio.detail.aftermovie_title" defaultText="Zo ziet een workshopdag eruit" />
+            </HeadingInstrument>
+          </ContainerInstrument>
+          <TextInstrument className="text-va-black/50 font-light leading-relaxed whitespace-pre-line text-[15px]">
+            {workshop.aftermovie_description}
+          </TextInstrument>
+        </ContainerInstrument>
+      )}
+
       <ContainerInstrument className="max-w-7xl mx-auto px-6 mt-24 space-y-32">
         <Suspense fallback={<ContainerInstrument className="h-96 bg-white rounded-[30px] animate-pulse" />}>
           <SkillDNAIsland workshop={workshop} />
