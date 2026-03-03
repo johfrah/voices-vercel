@@ -444,7 +444,19 @@ export default function OrderDetailPage() {
                         <div className="rounded-[12px] border border-black/[0.04] bg-white p-4 space-y-3">
                           <div className="text-[11px] uppercase tracking-[0.2em] text-va-black/30">Script & Briefing (itemniveau)</div>
                           {item.briefing?.script ? (
-                            <pre className="whitespace-pre-wrap text-[13px] font-light text-va-black/80 leading-relaxed">{item.briefing.script}</pre>
+                            <div className="whitespace-pre-wrap text-[13px] font-light text-va-black/80 leading-relaxed">
+                              {String(item.briefing.script || '')
+                                .split(/(\(.*?\))/g)
+                                .map((part: string, index: number) =>
+                                  part.startsWith('(') && part.endsWith(')') ? (
+                                    <span key={`script-tag-${item.id}-${index}`} className="text-primary font-medium bg-primary/5 px-1 rounded">
+                                      {part}
+                                    </span>
+                                  ) : (
+                                    <span key={`script-text-${item.id}-${index}`}>{part}</span>
+                                  )
+                                )}
+                            </div>
                           ) : (
                             <div className="text-[12px] italic text-va-black/35">Geen script op dit item gevonden.</div>
                           )}

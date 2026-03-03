@@ -281,6 +281,30 @@ export async function GET(request: Request, { params }: { params: { id: string }
       }
       return '';
     };
+    const normalizeReadableText = (value: any): string => {
+      if (typeof value !== 'string') return '';
+      let text = value;
+      // Decode over-escaped apostrophes/quotes from legacy serialized payloads.
+      text = text.replace(/\\{2,}(['"])/g, '$1');
+      text = text.replace(/\\'/g, "'");
+      text = text.replace(/\\"/g, '"');
+      // Decode escaped line breaks if present in legacy payloads.
+      text = text.replace(/\\\\n/g, '\n');
+      text = text.replace(/\\n/g, '\n');
+      return text.trim();
+    };
+    const firstReadableText = (...values: any[]): string => {
+      for (const value of values) {
+        const normalized = normalizeReadableText(value);
+        if (normalized) return normalized;
+      }
+      return '';
+    };
+    const normalizeForComparison = (value: string): string =>
+      value
+        .replace(/\s+/g, ' ')
+        .trim()
+        .toLowerCase();
     const toNumberOrNull = (value: any): number | null => {
       const parsed = Number(value);
       return Number.isFinite(parsed) ? parsed : null;
@@ -376,14 +400,14 @@ export async function GET(request: Request, { params }: { params: { id: string }
       null;
     const currentPaymentMethod =
       paymentMethodCatalog.find((entry: any) => entry.id === Number(order.paymentMethodId || 0)) || null;
-    const orderBriefingFallback = firstString(
+    const orderBriefingFallback = firstReadableText(
       parsedRawMeta.briefing,
       parsedRawMeta._billing_wo_briefing,
       parsedRawMeta._billing_order_comments,
       parsedRawMeta.script,
       parsedRawMeta._billing_wo_script
     );
-    const orderNotesFallback = firstString(
+    const orderNotesFallback = firstReadableText(
       parsedRawMeta.instructions,
       parsedRawMeta.notes,
       parsedRawMeta.regie,
@@ -421,14 +445,14 @@ export async function GET(request: Request, { params }: { params: { id: string }
       const quantity = Number(item.quantity || 1);
       const unitPrice = Number(item.price || 0);
       const isVoiceItem = !!item.actor_id;
-      const itemScript = firstString(
+      const itemScript = firstReadableText(
         itemMeta?.script,
         itemMeta?.briefing,
         itemMeta?.copy,
         itemMeta?.text,
         isVoiceItem ? orderBriefingFallback : ''
       );
-      const itemNotes = firstString(
+      const itemNotes = firstReadableText(
         itemMeta?.instructions,
         itemMeta?.notes,
         itemMeta?.regie,
@@ -523,14 +547,22 @@ export async function GET(request: Request, { params }: { params: { id: string }
         typeof item.briefing?.notes === 'string' ? item.briefing.notes.trim() : '',
       ])
       .filter(Boolean);
+    const itemScriptFingerprints = new Set(
+      formattedItems
+        .map((item: any) => normalizeForComparison(item.briefing?.script || ''))
+        .filter(Boolean)
+    );
     const rawBriefingParts = [
       parsedRawMeta.briefing,
       parsedRawMeta._billing_wo_briefing,
       parsedRawMeta._billing_order_comments,
     ]
-      .map((value: any) => (typeof value === 'string' ? value.trim() : ''))
+      .map((value: any) => normalizeReadableText(value))
       .filter(Boolean);
-    const briefingText = [...itemBriefingParts, ...rawBriefingParts].join('\n\n');
+    const uniqueOrderLevelBriefing = rawBriefingParts.filter(
+      (value: string) => !itemScriptFingerprints.has(normalizeForComparison(value))
+    );
+    const briefingText = uniqueOrderLevelBriefing.join('\n\n');
     const hasRegieInstructions =
       itemBriefingParts.length > 1 ||
       (briefingText.includes('(') && briefingText.includes(')'));
