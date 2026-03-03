@@ -62,12 +62,6 @@ export class MusicDeliveryService {
       const orderRef = String(orderId);
       const trackName = (track as any).altText || (track as any).alt_text || (track as any).fileName || 'muziek';
       
-      const qualityMap: Record<string, string> = {
-        '48khz': '48kHz 24bit',
-        '8khz': '8kHz 16bit',
-        '16khz': '16kHz 16bit',
-      };
-      
       let deliveredCount = 0;
       
       // Get Dropbox access token via OAuth refresh
@@ -88,9 +82,8 @@ export class MusicDeliveryService {
       }
       
       for (const [quality, storagePath] of Object.entries(formats)) {
-        const subFolder = qualityMap[quality] || quality;
         const fileName = storagePath.split('/').pop() || `${trackName}-${quality}.wav`;
-        const dropboxPath = `/Voices.be/Projects/Exports/${orderRef}/${subFolder}/${fileName}`;
+        const dropboxPath = `/Voices.be/Projects/Exports/${orderRef}/music/${fileName}`;
         
         try {
           // Download from Supabase
