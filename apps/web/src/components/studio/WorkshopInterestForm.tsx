@@ -12,9 +12,8 @@ import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import { cn } from '@/lib/utils';
-import React, { useState, useEffect } from 'react';
-import Image from 'next/image';
-import { Info, ArrowRight, Check, AlertCircle } from 'lucide-react';
+import { AlertCircle, ArrowRight, Check, Info } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 
 const WORKSHOPS = [
   { id: '260250', title: 'Voice-over voor Beginners' },
@@ -25,6 +24,16 @@ const WORKSHOPS = [
   { id: '260272', title: 'Maak je eigen Radioshow' },
   { id: '260266', title: 'Documentaires Inspreken' },
   { id: '263913', title: 'Verwen je stem!' }
+];
+
+/** Studio Skill DNA keys — in sync met SkillDNAIsland (Berny) */
+const STUDIO_SKILLS = [
+  { key: 'stemtechniek', label: 'Stemtechniek' },
+  { key: 'uitspraak', label: 'Uitspraak' },
+  { key: 'intonatie', label: 'Intonatie' },
+  { key: 'storytelling', label: 'Storytelling' },
+  { key: 'studiotechniek', label: 'Studiotechniek' },
+  { key: 'business', label: 'Business' },
 ];
 
 export const WorkshopInterestForm: React.FC = () => {
@@ -78,6 +87,7 @@ export const WorkshopInterestForm: React.FC = () => {
   };
 
   const [step, setStep] = useState<1 | 2>(1);
+  const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
   const [formData, setFormData] = useState({
     first_name: '',
     last_name: '',
@@ -87,6 +97,12 @@ export const WorkshopInterestForm: React.FC = () => {
     experience: '',
     goal: ''
   });
+
+  const toggleSkill = (key: string) => {
+    setSelectedSkills(prev =>
+      prev.includes(key) ? prev.filter(s => s !== key) : [...prev, key]
+    );
+  };
 
   const handleNextStep = (e: React.FormEvent) => {
     e.preventDefault();
@@ -113,6 +129,7 @@ export const WorkshopInterestForm: React.FC = () => {
           last_name: formData.last_name,
           email: formData.email,
           selectedWorkshops,
+          skills_to_sharpen: selectedSkills.length > 0 ? selectedSkills : undefined,
           profession: formData.profession || undefined,
           age: formData.age || undefined,
           experience: formData.experience || undefined,
@@ -266,6 +283,7 @@ export const WorkshopInterestForm: React.FC = () => {
               </HeadingInstrument>
             </ContainerInstrument>
 
+            {/* 1. Context: wie ben je, wat is je niveau */}
             <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
               <ContainerInstrument className="space-y-2">
                 <LabelInstrument className="text-[15px] font-light text-black/50 px-1"><VoiceglotText  translationKey="common.profession" defaultText="Beroep" /></LabelInstrument>
@@ -309,6 +327,43 @@ export const WorkshopInterestForm: React.FC = () => {
                   onChange={(e) => setFormData({...formData, goal: e.target.value})}
                 />
               </ContainerInstrument>
+            </ContainerInstrument>
+
+            {/* 2. Verfijning: welke skills aanscherpen — sluit aan op workshops uit stap 1 (Studio Skill DNA) */}
+            <ContainerInstrument className="space-y-4">
+              <LabelInstrument className="text-[15px] font-light text-black/50 px-1">
+                <VoiceglotText translationKey="workshop.interest.skills_label" defaultText="Welke skills wil je aanscherpen?" />
+              </LabelInstrument>
+              <ContainerInstrument className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {STUDIO_SKILLS.map((skill) => (
+                  <button
+                    key={skill.key}
+                    type="button"
+                    onClick={() => { playClick('light'); toggleSkill(skill.key); }}
+                    className={cn(
+                      "p-4 sm:p-5 rounded-[20px] border-2 transition-all duration-100 text-left flex items-center justify-between group min-h-[56px] active:scale-[0.99]",
+                      selectedSkills.includes(skill.key)
+                        ? "bg-black border-black text-white shadow-aura scale-[1.01]"
+                        : "bg-white border-black/5 text-va-black hover:border-primary/30"
+                    )}
+                  >
+                    <TextInstrument className="font-light text-[15px] tracking-tight">
+                      <VoiceglotText translationKey={`studio.skill.${skill.key}`} defaultText={skill.label} noTranslate={true} />
+                    </TextInstrument>
+                    <ContainerInstrument className={cn(
+                      "w-6 h-6 rounded-[10px] border-2 flex items-center justify-center shrink-0 transition-all duration-100",
+                      selectedSkills.includes(skill.key)
+                        ? "bg-primary border-primary"
+                        : "border-black/10 group-hover:border-primary/30"
+                    )}>
+                      {selectedSkills.includes(skill.key) && <Check size={14} strokeWidth={3} className="text-white" />}
+                    </ContainerInstrument>
+                  </button>
+                ))}
+              </ContainerInstrument>
+              <TextInstrument className="text-[13px] text-va-black/40 font-light px-1">
+                <VoiceglotText translationKey="workshop.interest.skills_hint" defaultText="Meerdere keuzes mogelijk. Geen idee? Laat leeg." />
+              </TextInstrument>
             </ContainerInstrument>
           </ContainerInstrument>
 
