@@ -1,27 +1,22 @@
-# Voices Headless - AGENTS.md
+# Voices Headless - Agent Instructions
 
-This file is the practical operating contract for coding agents in this repository.
+## ARCHITECTURE FUNDAMENTALS (MANDATORY READING)
 
-## 1) Mandatory startup handshake (first action)
+This platform follows the **Bob-method** (architecture) and **Chris-Protocol** (discipline). Every agent MUST understand these core principles before writing any code.
 
-Before editing anything, read these files in order:
-1. `.cursorrules`
-2. `3-WETTEN/docs/1-MASTER-BLUEPRINTS/06-AGENTS-HANDSHAKE.md`
-3. `3-WETTEN/docs/1-MASTER-BLUEPRINTS/03-AGENT-ONBOARDING.md`
-4. `.cursor/rules/000-ATOMIC-TRINITY.mdc`
-5. `.cursor/rules/200-CODE-INTEGRITY.mdc`
-6. `.cursor/rules/310-LAYOUT-INSTRUMENTS.mdc`
-7. `.cursor/rules/700-PUSH-AND-VALIDATE.mdc`
-8. `.cursor/rules/800-DNA-ROUTING.mdc`
+### Mandatory Startup Handshake (PATH UPDATE)
+Before first edit, read:
+- `.cursorrules`
+- `3-WETTEN/docs/1-MASTER-BLUEPRINTS/06-AGENTS-HANDSHAKE.md`
+- `3-WETTEN/docs/1-MASTER-BLUEPRINTS/03-AGENT-ONBOARDING.md`
+- Then the key rules listed in **Key Rules Files** below.
 
-If any listed file is missing, report it and continue with the remaining files.
+### The 9 Worlds (Business Verticals)
+The platform serves 9 autonomous "Worlds" from a single Next.js app:
 
-## 2) Architecture essentials (non-negotiable)
-
-### 9 Worlds
 | ID | World | Lead | Domain/Path |
 |:---|:---|:---|:---|
-| 0 | Foyer | Mat | `/contact`, `/terms` |
+| 0 | Foyer | Mat | `/contact`, `/terms` (Global) |
 | 1 | Agency | Voicy | `voices.be`, `/agency` |
 | 2 | Studio | Berny | `voices.be/studio` |
 | 3 | Academy | Berny | `voices.academy`, `/academy` |
@@ -32,81 +27,81 @@ If any listed file is missing, report it and continue with the remaining files.
 | 10 | Johfrai | Voicy | `johfrai.be`, `/johfrai` |
 | 25 | Artist | Laya | `youssefzaki.eu`, `/artist/youssef` |
 
-### Routing and identity
-- ID-first always: resolve route slugs through `slug_registry` to `entity_id` (UUID).
-- Smart Router entrypoint: `apps/web/src/app/[...slug]/page.tsx`.
-- Use `world_id` integers for World logic; avoid string-based world checks.
+### ID-First Handshake (NON-NEGOTIABLE)
+- Every route resolves through the `slug_registry` table to an `entity_id` (UUID).
+- NEVER use hardcoded slugs for internal logic. Always resolve to entity_id first.
+- The SmartRouter (`apps/web/src/app/[...slug]/page.tsx`) is the single entry point for all dynamic pages.
+- Use `world_id` (integer) for World logic, NEVER string comparisons.
 
-### MarketManager exclusivity
-- Source of truth: `apps/web/src/lib/system/core/market-manager.ts`.
-- No hardcoded hostnames in components.
-- Use `market.market_code` and known path mappings (`/studio`, `/academy`, `/ademing`, `/johfrai`).
+### MarketManager (Source of Truth)
+- `MarketManager` (`apps/web/src/lib/system/core/market-manager.ts`) maps domains to markets to worlds.
+- Hardcoded hostnames in components are FORBIDDEN. Use `market.market_code`.
+- `localhost:3000` maps to Market 1 (voices.be) / World 1 (Agency) by default.
+- Path-based World detection: `/studio` → World 2, `/academy` → World 3, `/ademing` → World 6, `/johfrai` → World 10.
 
-### UI composition standard
-- For new UI code, use LayoutInstruments from `@/components/ui/LayoutInstruments`.
-- Avoid raw layout/typography tags in new components where an instrument exists.
+### HTML Zero (LayoutInstruments)
+No raw HTML tags (`<div>`, `<h1>`, `<p>`, `<section>`, `<main>`) in new components. Use ONLY LayoutInstruments from `@/components/ui/LayoutInstruments`:
+- `ContainerInstrument` (replaces `<div>`)
+- `HeadingInstrument level={1-6}` (replaces `<h1>`-`<h6>`)
+- `TextInstrument` (replaces `<p>`, `<span>`)
+- `SectionInstrument` (replaces `<section>`)
+- `ButtonInstrument` (replaces `<button>`)
+- `PageWrapperInstrument` (replaces `<main>`)
 
-### Data and DB discipline
-- Use `snake_case` for DB columns, payloads, and API contracts.
-- Supabase Pooler is required on port `6543`; do not switch back to `5432`.
-- For critical admin/dashboard integrity checks, prefer direct SQL where needed.
+### Database Conventions
+- ALL database columns, properties, and API payloads use `snake_case` exclusively.
+- Supabase Pooler on port **6543**, NEVER port 5432 (causes ECONNRESET).
+- Drizzle ORM schemas in `packages/database/src/schema/`.
+- Raw SQL (`db.execute(sql...)`) for critical data fetches; no ORM abstraction guessing.
 
-## 3) Repo map
+### Deployment Protocol
+- Bump version in THREE places simultaneously: `apps/web/package.json`, `apps/web/src/app/Providers.tsx`, `apps/web/src/app/api/admin/config/route.ts`.
+- ALWAYS run `npm run check:pre-vercel` before pushing.
+- Commit format: `vX.Y.Z: [Message]`.
+- Push to `main` triggers Vercel auto-deploy.
 
-- `apps/web/`: main Next.js 14 app.
-- `packages/database/`: Drizzle schemas and DB tooling.
-- `packages/config/`: shared configuration.
-- `docs/` and `3-WETTEN/docs/`: reference and operational blueprints.
+### Key Rules Files
+For detailed rules, read these files in `.cursor/rules/`:
+- `000-ATOMIC-TRINITY.mdc` — The Constitution (World/Market/Journey/Entity/Page/Instrument)
+- `800-DNA-ROUTING.mdc` — Smart routing, World architecture, Sub-Foyer strategy
+- `310-LAYOUT-INSTRUMENTS.mdc` — Full UI component catalog (HTML Zero)
+- `200-CODE-INTEGRITY.mdc` — Code discipline, ID-First Handshake, stateless architecture
+- `700-PUSH-AND-VALIDATE.mdc` — Push, build validation, forensic audit procedure
+- `300-TONE-OF-VOICE.mdc` — Anti-AI-slop, Natural Capitalization, human copy
 
-## 4) Runbook (Cursor Cloud)
+## Cursor Cloud specific instructions
 
-### Setup and runtime
-- Node.js 22+.
-- Package manager: npm (single lockfile at repo root).
-- Install dependencies once at repo root: `npm install`.
-- Dev server: `npm run dev` (root, port 3000).
+### Architecture Overview
+This is a Next.js 14 monorepo for a multi-tenant voice-over agency platform ("Voices"). It serves 9 "Worlds" (business verticals) from a single Next.js app with smart routing. The database is hosted on Supabase (cloud) — there is no local database to run.
 
-### Common commands
-- Lint: `npm run lint` (root).
-- Type check: `cd apps/web && npx tsc --noEmit`.
-- Build: `npm run build` (root).
-- Pre-flight: `npm run check:pre-vercel`.
+### Project Structure
+- `/workspace/package.json` — Root monorepo with npm workspaces (`apps/*`, `packages/*`)
+- `/workspace/apps/web/` — The Next.js 14 app (main application)
+- `/workspace/packages/database/` — `@voices/database` (Drizzle ORM schemas)
+- `/workspace/packages/config/` — `@voices/config` (MarketManager)
+- `/workspace/docs/` — Documentation and data snapshots
 
-### Environment notes
-- Required file: `apps/web/.env.local`.
-- Required secrets: `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `DATABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`.
-- Public Supabase URL: `https://vcbxyyjsxuquytcsskpj.supabase.co`.
+### Running the Application
+- **Dev server**: `npm run dev` from repo root (runs on port 3000)
+- **Lint**: `npm run lint` from repo root (runs `next lint` in `apps/web`)
+- **Type check**: `cd apps/web && npx tsc --noEmit`
+- **Build**: `npm run build` from repo root
 
-## 5) Known gotchas (do not regress)
+### Key Gotchas
+- **ESLint config**: The repo's `.gitignore` excludes `.eslintrc.json`. If `next lint` prompts interactively, create `apps/web/.eslintrc.json` with `{"extends": "next/core-web-vitals"}`.
+- **TypeScript errors**: The codebase has known TS errors. `next.config.mjs` sets `ignoreBuildErrors: true` and `ignoreDuringBuilds: true` for ESLint. The build will succeed despite type errors.
+- **Single install location**: Run `npm install` at the repo root. npm workspaces hoists all deps. There is only one `package-lock.json` at root.
+- **Environment variables**: The app requires a `.env.local` at `apps/web/.env.local`. Secrets `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `DATABASE_URL`, and `SUPABASE_SERVICE_ROLE_KEY` are injected as environment variables. Write them into `.env.local` before starting the dev server. The Supabase URL is public: `https://vcbxyyjsxuquytcsskpj.supabase.co`.
+- **No Docker needed**: The entire app is a single Next.js process connecting to cloud Supabase. No Docker, no local DB.
+- **Node.js**: Requires v22+.
+- **Package manager**: Uses npm (not pnpm/yarn/bun). Single lockfile at root.
+- **Port 3000 cleanup**: When restarting the dev server, use `netstat -tlnp | grep 3000` to find the PID and kill it by PID. `lsof -i:3000` may miss IPv6 listeners.
+- **Vercel deployments**: A `VERCEL_TOKEN` secret is available. Use `npx vercel ls --token "$VERCEL_TOKEN"` to check deployments, or push to `main` to trigger a production deploy. You can also force a redeploy with an empty commit: `git commit --allow-empty -m "Redeploy" && git push origin main`.
+- **DB connection**: The `core-internal/database/index.ts` must use the Supabase Pooler (port 6543), NOT the direct host (port 5432). The direct host gives `ECONNRESET`. If someone re-introduces pooler-to-direct rewriting, the `/studio/` page and other server-rendered routes will break.
+- **Workshop media**: Workshop cards use images (.webp/.jpg) from Supabase Storage, not videos. The `WorkshopCard` detects media type by file extension. Aftermovie videos exist separately in `studio/workshops/videos/` but are not currently linked as workshop media.
+- **Testing preference**: The project owner prefers terminal output and screenshots over screen recordings. Only record video for complex UI bug reproduction where it's truly necessary.
+- **GlobalNav journey detection**: The GlobalNav uses URL pathname first, then worldId, then market_code to determine which World navigation to show. On `voices.be/studio/`, the worldId from handshakeContext is 1 (Agency), so pathname detection (`/studio/` → `'studio'`) must take priority. Do not revert to ID-first detection order.
+- **React overrides**: Root `package.json` has `"overrides"` for `react` and `react-dom` to force a single React instance across the monorepo. Do not remove these — they prevent `styled-jsx` useContext crashes during static page generation.
 
-- Keep React override pins in root `package.json` (`react`, `react-dom`).
-- `GlobalNav` journey detection order is path-first; do not revert to ID-first fallback for `/studio`.
-- Workshop card media is image-based (`.webp/.jpg`) from Supabase Storage.
-- If `next lint` prompts for config, create `apps/web/.eslintrc.json` with:
-  `{"extends": "next/core-web-vitals"}`.
-
-## 6) Testing and validation expectations
-
-- Docs-only edits: validate with file readback and `git diff`.
-- Code edits: at minimum run targeted checks plus type-check and pre-vercel check when relevant.
-- UI edits: provide manual validation with screenshots; record video only for complex UI bugs.
-
-## 7) Versioning and deploy contract
-
-When shipping code changes:
-1. Sync version in:
-   - `apps/web/package.json`
-   - `apps/web/src/app/Providers.tsx`
-   - `apps/web/src/app/api/admin/config/route.ts`
-2. Run `npm run check:pre-vercel`.
-3. Commit format: `vX.Y.Z: [message]`.
-4. Push to `main` to trigger Vercel deploy.
-
-## 8) Quick completion checklist for agents
-
-- Handshake files read.
-- No architecture/routing violations introduced.
-- No hardcoded host/domain logic introduced.
-- Relevant tests/checks run with evidence.
-- Version sync done when required.
-- Changes committed and pushed.
+### Deploying to Production
+Push to `main` to trigger Vercel auto-deploy. Check status with `gh api repos/johfrah/voices-vercel/commits/<sha>/status` or `npx vercel ls --token "$VERCEL_TOKEN"`. Builds take ~2 minutes. If Vercel gives an internal error, retry — it's usually a transient infra issue in the `iad1` region.
