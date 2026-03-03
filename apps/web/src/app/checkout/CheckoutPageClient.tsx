@@ -11,11 +11,9 @@ import {
 } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useCheckout } from '@/contexts/CheckoutContext';
-import { useTranslation } from '@/contexts/TranslationContext';
-import Image from 'next/image';
 import { VoicesLink as Link } from '@/components/ui/VoicesLink';
 
-import { ArrowLeft, Check, ChevronRight, Loader2, Star, Edit2, ShoppingCart } from 'lucide-react';
+import { ArrowLeft, Edit2, ShoppingCart } from 'lucide-react';
 import { CheckoutForm } from '@/components/checkout/CheckoutForm';
 import { PricingSummary } from '@/components/checkout/PricingSummary';
 import { OrderStepsInstrument } from '@/components/ui/OrderStepsInstrument';
@@ -23,19 +21,11 @@ import nextDynamic from "next/dynamic";
 
 const LiquidBackground = nextDynamic(() => import('@/components/ui/LiquidBackground').then(mod => mod.LiquidBackground), { ssr: false });
 
-//  NUCLEAR LOADING MANDATE
-const ReviewsInstrument = nextDynamic(() => import("@/components/ui/ReviewsInstrument").then(mod => mod.ReviewsInstrument), { ssr: false });
-
 /**
  *  CHECKOUT PAGE (NUCLEAR 2026)
  */
 export default function CheckoutPageClient() {
-  const { t } = useTranslation();
   const { state, setJourney, isHydrated } = useCheckout();
-  const [reviews, setReviews] = React.useState<any[]>([]);
-  const [reviewStats, setReviewStats] = React.useState<{ averageRating: number, totalCount: number } | null>(null);
-  const [isReviewsLoading, setIsReviewsLoading] = React.useState(true);
-  const isLoading = false; // Tijdelijk, aangezien isLoading niet in de context zit
   
   const searchParams = useMemo(() => {
     if (typeof window === 'undefined') return null;
@@ -49,28 +39,6 @@ export default function CheckoutPageClient() {
     if (editionId && journey === 'studio') {
       setJourney('studio', parseInt(editionId));
     }
-
-    // Fetch reviews for social proof
-    const fetchReviews = async () => {
-      try {
-        setIsReviewsLoading(true);
-        // We gebruiken de interne actors API die reviews en stats bevat
-        const res = await fetch('/api/actors');
-        const data = await res.json();
-        
-        if (data.reviews) {
-          setReviews(data.reviews);
-        }
-        if (data.reviewStats) {
-          setReviewStats(data.reviewStats);
-        }
-      } catch (e) {
-        console.error('Failed to fetch reviews:', e);
-      } finally {
-        setIsReviewsLoading(false);
-      }
-    };
-    fetchReviews();
   }, [searchParams, setJourney]);
 
   if (!isHydrated) return <LoadingScreenInstrument />;
@@ -141,50 +109,6 @@ export default function CheckoutPageClient() {
                   </Link>
                 </div>
                 <PricingSummary strokeWidth={1.5} />
-
-                {/* 🛡️ CHRIS-PROTOCOL: Social Proof minimized to prevent overlap (v2.15.014) */}
-                <ContainerInstrument className="hidden lg:block animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-500">
-                  <div className="bg-va-black/[0.02] border border-va-black/5 rounded-[32px] p-8 space-y-6">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-white shadow-sm flex items-center justify-center text-primary">
-                          <Star size={20} fill="currentColor" strokeWidth={0} />
-                        </div>
-                        <div>
-                          <HeadingInstrument level={3} className="text-lg font-light tracking-tight">
-                            <VoiceglotText translationKey="checkout.trust.title" defaultText="Social Proof" />
-                          </HeadingInstrument>
-                          <TextInstrument className="text-[11px] text-va-black/40 font-bold uppercase tracking-widest">
-                            {reviewStats?.averageRating || "4.9"}/5 sterren
-                          </TextInstrument>
-                        </div>
-                      </div>
-                      <div className="flex -space-x-2">
-                        {[1,2,3].map(avatarIdx => (
-                          <div key={avatarIdx} className="w-8 h-8 rounded-full border-2 border-white bg-va-off-white overflow-hidden relative shadow-sm">
-                            <Image 
-                              src={`/assets/common/branding/founder/johfrah.png`} 
-                              fill 
-                              sizes="32px"
-                              alt="User" 
-                              className="object-cover grayscale" 
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    <ReviewsInstrument 
-                      reviews={reviews} 
-                      isLoading={isReviewsLoading} 
-                      averageRating={reviewStats?.averageRating?.toString()}
-                      totalReviews={reviewStats?.totalCount?.toString()}
-                      variant="super-minimal" 
-                      hideFilters={true}
-                      limit={1}
-                    />
-                  </div>
-                </ContainerInstrument>
               </div>
             </ContainerInstrument>
           </ContainerInstrument>
@@ -195,19 +119,6 @@ export default function CheckoutPageClient() {
             
             {/* Mobile: Show totals and CTA at the very bottom, after the form */}
             <PricingSummary strokeWidth={1.5} onlyTotals={true} className="lg:hidden mt-12" />
-
-            {/* Mobile Social Proof */}
-            <ContainerInstrument className="lg:hidden mt-16 pb-12">
-               <ReviewsInstrument 
-                  reviews={reviews} 
-                  isLoading={isReviewsLoading} 
-                  averageRating={reviewStats?.averageRating?.toString()}
-                  totalReviews={reviewStats?.totalCount?.toString()}
-                  variant="super-minimal" 
-                  hideFilters={true}
-                  limit={5}
-                />
-            </ContainerInstrument>
           </ContainerInstrument>
         </ContainerInstrument>
       </SectionInstrument>
