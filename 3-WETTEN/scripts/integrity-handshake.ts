@@ -7,7 +7,7 @@
  * Gebruik: npx tsx 3-WETTEN/scripts/integrity-handshake.ts
  */
 
-import { MarketManager } from '../../1-SITE/apps/web/src/lib/system/core/market-manager';
+import { MarketManager } from '../../apps/web/src/lib/system/core/market-manager';
 
 async function runIntegrityCheck() {
   console.log('🚀 Starting Nuclear Handshake Integrity Check...');

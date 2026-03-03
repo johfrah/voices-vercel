@@ -14,12 +14,15 @@ async function runCheck() {
   console.log(chalk.bold.blue('\n🚀 STARTING PRE-VERCEL CHECK...'));
   
   let hasErrors = false;
-  const rootDir = process.cwd();
-  // We gaan ervan uit dat we in 1-SITE/apps/web draaien als we via npm run check:pre-vercel komen
-  // maar we checken of we in de root zitten of in de app dir.
-  const webAppDir = fs.existsSync(path.join(rootDir, 'package.json')) && rootDir.endsWith('web') 
-    ? rootDir 
-    : path.join(rootDir, '1-SITE/apps/web');
+  const currentDir = process.cwd();
+  const normalizedCurrentDir = currentDir.replace(/\\/g, '/');
+  const runningFromWebApp = normalizedCurrentDir.endsWith('/apps/web');
+  const repoRoot = runningFromWebApp ? path.resolve(currentDir, '../..') : currentDir;
+  const webAppDir = runningFromWebApp
+    ? currentDir
+    : fs.existsSync(path.join(repoRoot, 'apps/web'))
+      ? path.join(repoRoot, 'apps/web')
+      : path.join(repoRoot, '1-SITE/apps/web');
 
   try {
     // 1. BUILD CHECK
@@ -41,7 +44,7 @@ async function runCheck() {
     console.log(chalk.yellow('\n🤝 Stap 1.5: Nuclear Handshake Integrity Check...'));
     try {
       execSync('npx tsx 3-WETTEN/scripts/integrity-handshake.ts', {
-        cwd: rootDir,
+        cwd: repoRoot,
         stdio: 'inherit',
         shell: true
       });
@@ -63,7 +66,7 @@ async function runCheck() {
       // We negeren layout.tsx omdat die vaak globale laders heeft in Suspense
       // We checken specifiek op next/dynamic imports
       if (content.includes('dynamic(') && content.includes('next/dynamic') && !content.includes('loading:') && !file.includes('layout.tsx')) {
-        console.log(chalk.red(`❌ ERROR: Dynamic import zonder loading fallback in: ${path.relative(rootDir, file)}`));
+        console.log(chalk.red(`❌ ERROR: Dynamic import zonder loading fallback in: ${path.relative(repoRoot, file)}`));
         hasErrors = true;
       }
 
@@ -73,7 +76,7 @@ async function runCheck() {
         if (content.includes(domain) && !content.includes('MarketManager') && 
             !file.includes('config.ts') && !file.includes('market-manager') && 
             !file.includes('MarketManager') && !file.includes('pre-vercel-check.ts')) {
-          console.log(chalk.red(`❌ ERROR: Hardcoded '${domain}' gedetecteerd in: ${path.relative(rootDir, file)}`));
+          console.log(chalk.red(`❌ ERROR: Hardcoded '${domain}' gedetecteerd in: ${path.relative(repoRoot, file)}`));
           hasErrors = true;
         }
       });
@@ -94,7 +97,7 @@ async function runCheck() {
           const newFilename = filename.replace(/[^a-zA-Z0-9.\-_]/g, '-').replace(/-+/g, '-');
           const newPath = path.join(path.dirname(asset), newFilename);
           
-          console.log(chalk.red(`❌ ERROR: Ongeldige karakters in asset naam: ${path.relative(rootDir, asset)}`));
+          console.log(chalk.red(`❌ ERROR: Ongeldige karakters in asset naam: ${path.relative(repoRoot, asset)}`));
           
           if (process.argv.includes('--fix')) {
             try {
@@ -151,7 +154,7 @@ async function runCheck() {
           });
           names.forEach(name => {
             if (name && importedNames.has(name)) {
-              console.log(chalk.red(`❌ ERROR: Duplicate import '${name}' gedetecteerd in: ${path.relative(rootDir, file)}`));
+              console.log(chalk.red(`❌ ERROR: Duplicate import '${name}' gedetecteerd in: ${path.relative(repoRoot, file)}`));
               hasErrors = true;
             }
             if (name) importedNames.add(name);

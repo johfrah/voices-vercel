@@ -30,10 +30,14 @@ async function checkIsAdmin(user: User | null): Promise<boolean> {
   const cookieStore = await cookies();
   const voicesRole = cookieStore.get('voices_role')?.value;
   const hasAccessToken = cookieStore.has('sb-access-token');
+  const allowLegacyCookieBridge = process.env.VOICES_ENABLE_LEGACY_ADMIN_BRIDGE === 'true';
 
-  if (!user && voicesRole === 'admin' && hasAccessToken) {
+  if (!user && allowLegacyCookieBridge && voicesRole === 'admin' && hasAccessToken) {
     console.log(' NUCLEAR AUTH: Admin access granted via Legacy Bridge Cookie.');
     return true;
+  }
+  if (!user && !allowLegacyCookieBridge && (voicesRole === 'admin' || hasAccessToken)) {
+    console.warn(' NUCLEAR AUTH: Legacy admin cookie bridge blocked (disabled by policy).');
   }
 
   if (!user?.email) return false;

@@ -43,6 +43,8 @@ export interface SecurityCenterSettings {
   admin_protection: {
     require_mfa_for_sensitive_actions: boolean;
     auto_login_bridge_enabled: boolean;
+    require_expiring_auto_login_link: boolean;
+    allowed_auto_login_hosts: string[];
     trusted_admin_cookie_names: string[];
   };
   session_security: {
@@ -92,7 +94,7 @@ export const DEFAULT_SECURITY_CENTER_SETTINGS: SecurityCenterSettings = {
   },
   headers: {
     enabled: true,
-    csp_mode: 'report_only',
+    csp_mode: 'enforce',
     content_security_policy:
       "default-src 'self'; img-src 'self' https: data: blob:; media-src 'self' https: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; style-src 'self' 'unsafe-inline' https:; connect-src 'self' https: wss:; frame-ancestors 'none'; base-uri 'self'; form-action 'self';",
     strict_transport_security: 'max-age=31536000; includeSubDomains; preload',
@@ -104,7 +106,9 @@ export const DEFAULT_SECURITY_CENTER_SETTINGS: SecurityCenterSettings = {
   },
   admin_protection: {
     require_mfa_for_sensitive_actions: true,
-    auto_login_bridge_enabled: true,
+    auto_login_bridge_enabled: false,
+    require_expiring_auto_login_link: true,
+    allowed_auto_login_hosts: ['localhost:3000'],
     trusted_admin_cookie_names: ['voices_role', 'sb-access-token'],
   },
   session_security: {
@@ -219,6 +223,14 @@ export function sanitize_security_settings(raw: unknown): SecurityCenterSettings
         admin_protection.auto_login_bridge_enabled,
         defaults.admin_protection.auto_login_bridge_enabled
       ),
+      require_expiring_auto_login_link: as_boolean(
+        admin_protection.require_expiring_auto_login_link,
+        defaults.admin_protection.require_expiring_auto_login_link
+      ),
+      allowed_auto_login_hosts: as_string_array(
+        admin_protection.allowed_auto_login_hosts,
+        defaults.admin_protection.allowed_auto_login_hosts
+      ),
       trusted_admin_cookie_names: as_string_array(
         admin_protection.trusted_admin_cookie_names,
         defaults.admin_protection.trusted_admin_cookie_names
@@ -314,7 +326,11 @@ export function apply_security_headers(
 
 export function run_security_audit(
   settings: SecurityCenterSettings,
-  runtime: { node_env?: string; has_supabase_service_role_key: boolean; has_admin_email: boolean }
+  runtime: { node_env?: string; has_supabase_service_role_key: boolean; has_admin_email: boolean } = {
+    node_env: process.env.NODE_ENV,
+    has_supabase_service_role_key: Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY),
+    has_admin_email: Boolean(process.env.ADMIN_EMAIL),
+  }
 ): SecurityAuditResult {
   const checks: SecurityAuditCheck[] = [];
 
@@ -375,6 +391,21 @@ export function run_security_audit(
     message: settings.admin_protection.auto_login_bridge_enabled
       ? 'Auto-login bridge is enabled; keep tightly controlled.'
       : 'Auto-login bridge is disabled.',
+  });
+
+  checks.push({
+    key: 'auto_login_bridge_expiry',
+    status:
+      !settings.admin_protection.auto_login_bridge_enabled ||
+      settings.admin_protection.require_expiring_auto_login_link
+        ? 'pass'
+        : 'warn',
+    message:
+      !settings.admin_protection.auto_login_bridge_enabled
+        ? 'Auto-login bridge is disabled.'
+        : settings.admin_protection.require_expiring_auto_login_link
+          ? 'Auto-login links require expiration.'
+          : 'Auto-login links should require expiration.',
   });
 
   checks.push({

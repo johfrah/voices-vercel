@@ -116,7 +116,7 @@ export async function GET() {
       key: SECURITY_SETTINGS_KEY,
       settings,
       audit,
-      _version: '2.28.1',
+      _version: '2.28.2',
     });
   } catch (error) {
     console.error('[Security Center GET Error]:', error);
@@ -154,7 +154,7 @@ export async function POST(request: NextRequest) {
       key: SECURITY_SETTINGS_KEY,
       settings: merged,
       audit,
-      _version: '2.28.1',
+      _version: '2.28.2',
     });
   } catch (error) {
     console.error('[Security Center POST Error]:', error);

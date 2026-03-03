@@ -20,6 +20,9 @@ export async function middleware(request: NextRequest) {
   const host = request.headers.get('host') || ''
   const request_protocol = request.nextUrl.protocol === 'http:' ? 'http:' : 'https:'
   const security_settings = DEFAULT_SECURITY_CENTER_SETTINGS
+  const cookie_secure =
+    security_settings.session_security.secure_cookie && request_protocol === 'https:'
+  const cookie_same_site = security_settings.session_security.same_site
   const secure_response = (response: NextResponse) =>
     apply_security_headers(response, security_settings, request_protocol)
 
@@ -105,7 +108,8 @@ export async function middleware(request: NextRequest) {
     response.cookies.set('voices_session_v2', 'true', { 
       path: '/', 
       maxAge: 60 * 60 * 24 * 365, // 1 jaar
-      sameSite: 'lax' 
+      sameSite: cookie_same_site,
+      secure: cookie_secure,
     })
     
     console.log(' NUCLEAR CLEANUP: Legacy session flags cleared.')
@@ -120,7 +124,11 @@ export async function middleware(request: NextRequest) {
   const isUnderConstruction = false; // Bob: Live gaan! 🚀
 
   // 1.7.5 LIGHT MODE REDIRECT (NUCLEAR)
-  const isAdmin = request.cookies.get('voices_role')?.value === 'admin' || request.cookies.get('sb-access-token') !== undefined;
+  const trusted_admin_cookie_names = security_settings.admin_protection.trusted_admin_cookie_names
+  const has_trusted_admin_cookie = trusted_admin_cookie_names.some(
+    (cookie_name) => request.cookies.get(cookie_name) !== undefined
+  )
+  const isAdmin = request.cookies.get('voices_role')?.value === 'admin' || has_trusted_admin_cookie;
   
   // 🛡️ CHRIS-PROTOCOL: Bypass voor assets en API's is al geregeld bovenin de middleware.
   // We forceren hier de redirect naar /light voor alle andere routes.
@@ -159,7 +167,32 @@ export async function middleware(request: NextRequest) {
   // 1.9 AUTO-LOGIN BRIDGE (v2.29)
   // Ondersteunt de legacy auto_login link voor Johfrah.
   const autoLogin = url.searchParams.get('auto_login');
-  if (autoLogin === 'b2dda905e581e6cea1daec513fe68bfebbefb1cfbc685f4ca8cade424fad0500') {
+  const autoLoginExpiry = Number(url.searchParams.get('exp') || '0');
+  const autoLoginToken = process.env.VOICES_AUTO_LOGIN_TOKEN || '';
+  const envAllowedBridgeHosts = (process.env.VOICES_AUTO_LOGIN_ALLOWED_HOSTS || '')
+    .split(',')
+    .map((value) => value.trim())
+    .filter(Boolean);
+  const allowedBridgeHosts = [
+    ...new Set([
+      ...security_settings.admin_protection.allowed_auto_login_hosts,
+      ...envAllowedBridgeHosts,
+    ]),
+  ];
+  const isLegacyBridgeEnabled =
+    security_settings.admin_protection.auto_login_bridge_enabled ||
+    process.env.VOICES_ENABLE_LEGACY_ADMIN_BRIDGE === 'true';
+  const isAllowedBridgeHost =
+    allowedBridgeHosts.length === 0 ||
+    allowedBridgeHosts.some((allowed_host) =>
+      host === allowed_host || host.endsWith(`.${allowed_host}`)
+    );
+  const isAutoLoginTokenValid = Boolean(autoLoginToken) && autoLogin === autoLoginToken;
+  const isAutoLoginExpiryValid = security_settings.admin_protection.require_expiring_auto_login_link
+    ? autoLoginExpiry > Math.floor(Date.now() / 1000)
+    : true;
+
+  if (autoLogin && isLegacyBridgeEnabled && isAllowedBridgeHost && isAutoLoginTokenValid && isAutoLoginExpiryValid) {
     console.log(' NUCLEAR LOGIN: Auto-login bridge triggered for Johfrah.');
     
     // 🛡️ CHRIS-PROTOCOL: Dynamic page mapping
@@ -183,11 +216,24 @@ export async function middleware(request: NextRequest) {
     const loginResponse = NextResponse.redirect(adminUrl);
     
     // Zet de admin cookies direct in de response
-    loginResponse.cookies.set('voices_role', 'admin', { path: '/', maxAge: 60 * 60 * 24 * 30, sameSite: 'lax' });
+    loginResponse.cookies.set('voices_role', 'admin', {
+      path: '/',
+      maxAge: 60 * 60 * 24 * 30,
+      sameSite: cookie_same_site,
+      secure: cookie_secure,
+    });
     // sb-access-token is nodig voor Supabase Auth helpers
-    loginResponse.cookies.set('sb-access-token', 'true', { path: '/', maxAge: 60 * 60 * 24 * 30, sameSite: 'lax' });
+    loginResponse.cookies.set('sb-access-token', 'true', {
+      path: '/',
+      maxAge: 60 * 60 * 24 * 30,
+      sameSite: cookie_same_site,
+      secure: cookie_secure,
+    });
     
     return loginResponse;
+  }
+  if (autoLogin) {
+    console.warn(' NUCLEAR LOGIN BLOCKED: Auto-login bridge request rejected by policy.');
   }
   
   // DOMAIN BYPASS: Specifieke domeinen en staging mogen ALTIJD door (Johfrah, Ademing, Youssef, Staging)
@@ -472,7 +518,8 @@ export async function middleware(request: NextRequest) {
   response.cookies.set('voices_lang', detectedLang, {
     path: '/',
     maxAge: 60 * 60 * 24 * 365,
-    sameSite: 'lax'
+    sameSite: cookie_same_site,
+    secure: cookie_secure,
   })
   
   return secure_response(response)
