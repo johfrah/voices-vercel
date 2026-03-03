@@ -32,15 +32,14 @@ export async function POST(request: NextRequest) {
     let body: any = {};
     try {
       body = await request.json();
-    } catch (jsonErr) {
-      console.warn('[RegisterAPI] Failed to parse JSON body:', jsonErr);
-      return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
+    } catch {
+      return NextResponse.json({ success: true, message: 'Empty body ignored' });
     }
     
     const { key, sourceText, context, sourceLangId } = body;
 
     if (!key || !sourceText) {
-      return NextResponse.json({ error: 'Key and sourceText required' }, { status: 400 });
+      return NextResponse.json({ success: true, message: 'Missing fields ignored' });
     }
 
     // 🛡️ CHRIS-PROTOCOL: Privacy & Internal Data Guard (v2.19.11)
