@@ -39,14 +39,14 @@ export const AgencyFilterSheet: React.FC<{
     onUpdate({ [key]: current === value ? undefined : value });
   };
 
-  //  MARKET-BASED LANGUAGE LOGIC
+  //  MARKET-BASED LANGUAGE LOGIC — 🛡️ prefer handshake.worldId so world matches page (e.g. /studio vs /agency).
   const sortedLanguages = React.useMemo(() => {
     const manager = MarketManager;
     const host = typeof window !== 'undefined' ? window.location.host : manager.getMarketDomains()['BE'].replace('https://', '');
     const market = manager.getCurrentMarket(host);
-
+    const handshake = typeof window !== 'undefined' ? (window as any).handshakeContext : null;
+    const worldId = handshake?.worldId ?? manager.getWorldId(market.market_code);
     const registry = manager.languages || [];
-    const worldId = manager.getWorldId(market.market_code);
     const worldLinks = (manager.worldLanguages || []).filter((wl) => wl.world_id === worldId);
 
     const supportedIds = (market.supported_languages || [])

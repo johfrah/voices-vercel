@@ -28,11 +28,18 @@ interface Language {
   isPopular?: boolean;
 }
 
+function getInitialLangId(market: { primary_language_id?: number } | null): number {
+  if (typeof window === 'undefined') return market?.primary_language_id || 1;
+  const handshake = (window as any).handshakeContext;
+  if (handshake?.languageId != null) return handshake.languageId;
+  return market?.primary_language_id || 1;
+}
+
 export function LanguageSwitcher({ className }: { className?: string }) {
   const [isOpen, setIsOpen] = useState(false);
   const host = typeof window !== 'undefined' ? window.location.host : (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || MarketManager.getMarketDomains()['BE'].replace('https://', ''));
   const market = MarketManager.getCurrentMarket(host);
-  const [currentLangId, setCurrentLangId] = useState<number>(market?.primary_language_id || 1);
+  const [currentLangId, setCurrentLangId] = useState<number>(() => getInitialLangId(market));
   const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
@@ -146,9 +153,14 @@ export function LanguageSwitcher({ className }: { className?: string }) {
     return Array.from(deduped.values());
   }, [market, resolveFlagDisplay]);
 
+  // 🛡️ CHRIS-PROTOCOL: Sync from handshake first so header and menu (dropdown) always show the same language.
   useEffect(() => {
+    const handshake = typeof window !== 'undefined' ? (window as any).handshakeContext : null;
+    if (handshake?.languageId != null && languages.some(l => l.id === handshake.languageId)) {
+      setCurrentLangId(handshake.languageId);
+      return;
+    }
     const langMatch = pathname.match(/^\/(nl|fr|en|de|es|it|pt)(\/|$)/);
-    
     if (langMatch) {
       const slug = langMatch[1].toLowerCase();
       const match = languages.find(l => l.shortCode === slug);
