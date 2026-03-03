@@ -29,9 +29,9 @@ export const AgencyFilterSheet: React.FC<{
   isOpen: boolean,
   onClose: () => void
 }> = ({ filters, activeParams, onUpdate, isOpen, onClose }) => {
-  const { t, language } = useTranslation();
+  const { t } = useTranslation();
   const { playClick } = useSonicDNA();
-  const { state, updateFilters } = useMasterControl();
+  const { state } = useMasterControl();
 
   const handleSelect = (key: string, value: any) => {
     playClick('soft');
@@ -41,33 +41,50 @@ export const AgencyFilterSheet: React.FC<{
 
   //  MARKET-BASED LANGUAGE LOGIC
   const sortedLanguages = React.useMemo(() => {
-    //  MARKET-AWARE FILTERING
-    // 🛡️ CHRIS-PROTOCOL: Use alias to prevent ReferenceError: MarketManager is not defined
     const manager = MarketManager;
     const host = typeof window !== 'undefined' ? window.location.host : manager.getMarketDomains()['BE'].replace('https://', '');
     const market = manager.getCurrentMarket(host);
-    
-    //  CHRIS-PROTOCOL: Toon ALTIJD alle talen die in de database zitten, 
-    // maar gebruik de market-volgorde voor de top-selectie.
-    const allAvailableLangs = [...filters.languages];
-    const marketLangs = market.supported_languages;
-    
-    return allAvailableLangs.sort((a, b) => {
-      // 1. Primary language ALTIJD op 1
-      const primaryLang = market.primary_language;
-      if (a === primaryLang) return -1;
-      if (b === primaryLang) return 1;
-      
-      // 2. Check of ze in de market-lijst staan
-      const marketLangs = market.supported_languages;
-      const indexA = marketLangs.indexOf(a);
-      const indexB = marketLangs.indexOf(b);
-      
-      if (indexA !== -1 && indexB !== -1) return indexA - indexB;
-      if (indexA !== -1) return -1;
-      if (indexB !== -1) return 1;
-      
-      // 3. De rest alfabetisch
+
+    const registry = manager.languages || [];
+    const worldId = manager.getWorldId(market.market_code);
+    const worldLinks = (manager.worldLanguages || []).filter((wl) => wl.world_id === worldId);
+
+    const supportedIds = (market.supported_languages || [])
+      .map((code) => manager.getLanguageId(code, market.primary_language))
+      .filter((id): id is number => typeof id === 'number');
+    const supportedRank = new Map<number, number>(supportedIds.map((id, index) => [id, index]));
+
+    const resolveLanguageId = (value: string): number | null => {
+      const raw = String(value || '').toLowerCase().trim();
+      const normalized = manager.getLanguageCode(raw);
+      const short = normalized.split('-')[0];
+      const byRegistry = registry.find((item) => {
+        const code = String(item.code || '').toLowerCase();
+        const label = String(item.label || '').toLowerCase();
+        return (
+          code === normalized ||
+          code === raw ||
+          code.startsWith(`${short}-`) ||
+          label === raw
+        );
+      });
+      return byRegistry?.id || manager.getLanguageId(normalized, market.primary_language);
+    };
+
+    const getPriority = (value: string): number => {
+      const langId = resolveLanguageId(value);
+      if (langId == null) return 9999;
+      const worldLink = worldLinks.find((wl) => wl.language_id === langId);
+      if (worldLink?.is_primary) return 0;
+      if (worldLink?.is_popular) return 100 + (supportedRank.get(langId) ?? 500);
+      if (supportedRank.has(langId)) return 500 + (supportedRank.get(langId) ?? 0);
+      return 900 + langId;
+    };
+
+    return [...filters.languages].sort((a, b) => {
+      const priorityA = getPriority(a);
+      const priorityB = getPriority(b);
+      if (priorityA !== priorityB) return priorityA - priorityB;
       return a.localeCompare(b);
     });
   }, [filters.languages]);
@@ -123,9 +140,9 @@ export const AgencyFilterSheet: React.FC<{
                   </ContainerInstrument>
                   <ContainerInstrument className="grid grid-cols-1 gap-2">
                     {[
-                      { id: 'telephony', label: 'Telefonie', icon: Phone },
-                      { id: 'video', label: 'Video', icon: Video },
-                      { id: 'commercial', label: 'Commercial', icon: Megaphone }
+                      { id: 'telephony', translationKey: 'journey.telephony', defaultText: 'Telefoon', icon: Phone },
+                      { id: 'video', translationKey: 'journey.video', defaultText: 'Voice-over', icon: Video },
+                      { id: 'commercial', translationKey: 'journey.commercial', defaultText: 'Commercial', icon: Megaphone }
                     ].map((j) => (
                       <ButtonInstrument
                         key={j.id}
@@ -139,7 +156,9 @@ export const AgencyFilterSheet: React.FC<{
                         )}
                       >
                         <j.icon size={18} strokeWidth={state.journey === j.id ? 2 : 1.5} />
-                        <span className="text-[15px] font-bold tracking-widest">{j.label}</span>
+                        <TextInstrument as="span" className="text-[15px] font-bold tracking-widest">
+                          <VoiceglotText translationKey={j.translationKey} defaultText={j.defaultText} />
+                        </TextInstrument>
                         {state.journey === j.id && <Check size={16} className="ml-auto text-primary" />}
                       </ButtonInstrument>
                     ))}
@@ -156,7 +175,7 @@ export const AgencyFilterSheet: React.FC<{
                   </ContainerInstrument>
                   <ContainerInstrument className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                     {sortedLanguages.map(lang => (
-                      <FilterChip strokeWidth={1.5} 
+                      <FilterChip
                         key={lang} 
                         label={t(`common.language.${lang.toLowerCase()}`, lang)} 
                         selected={activeParams.language === lang} 
@@ -174,7 +193,7 @@ export const AgencyFilterSheet: React.FC<{
                   </ContainerInstrument>
                   <ContainerInstrument className="grid grid-cols-2 gap-3">
                     {filters.genders.map(gender => (
-                      <FilterChip strokeWidth={1.5} 
+                      <FilterChip
                         key={gender} 
                         label={t(`common.gender.${gender.toLowerCase()}`, gender)} 
                         selected={activeParams.gender === gender} 
@@ -216,9 +235,9 @@ export const AgencyFilterSheet: React.FC<{
                   </ContainerInstrument>
                   <ContainerInstrument className="grid grid-cols-1 gap-2">
                     {[
-                      { id: 'popularity', label: 'Populariteit', icon: Star },
-                      { id: 'delivery', label: 'Levertijd', icon: Clock },
-                      { id: 'alphabetical_az', label: 'Naam (A-Z)', icon: Type }
+                      { id: 'popularity', translationKey: 'sort.popularity', defaultText: 'Populariteit', icon: Star },
+                      { id: 'delivery', translationKey: 'sort.delivery', defaultText: 'Levertijd', icon: Clock },
+                      { id: 'alphabetical_az', translationKey: 'sort.alphabetical_az', defaultText: 'Naam (A-Z)', icon: Type }
                     ].map((s) => (
                       <button
                         key={s.id}
@@ -229,7 +248,9 @@ export const AgencyFilterSheet: React.FC<{
                         )}
                       >
                         <s.icon size={16} />
-                        <span className="text-[14px] tracking-widest">{s.label}</span>
+                        <TextInstrument as="span" className="text-[14px] tracking-widest">
+                          <VoiceglotText translationKey={s.translationKey} defaultText={s.defaultText} />
+                        </TextInstrument>
                         {state.filters.sortBy === s.id && <Check size={14} strokeWidth={3} className="ml-auto" />}
                       </button>
                     ))}
@@ -245,7 +266,7 @@ export const AgencyFilterSheet: React.FC<{
                     </ContainerInstrument>
                     <ContainerInstrument className="grid grid-cols-2 gap-3">
                       {filters.styles.map(style => (
-                        <FilterChip strokeWidth={1.5} 
+                        <FilterChip
                           key={style} 
                           label={t(`common.style.${style.toLowerCase().replace(/\s+/g, '_')}`, style)} 
                           selected={activeParams.style?.toLowerCase() === style.toLowerCase()} 

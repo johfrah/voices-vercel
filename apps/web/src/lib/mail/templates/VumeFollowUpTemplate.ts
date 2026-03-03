@@ -21,10 +21,11 @@ export const VumeFollowUpTemplate = (props: FollowUpProps) => {
     orderId, 
     actorName,
     host,
-    language = 'nl'
+    language = 'nl-be'
   } = props;
 
-  const isNl = language === 'nl';
+  const languageShort = (language || 'nl').toLowerCase().split('-')[0];
+  const isNl = languageShort === 'nl';
 
   const content = `
     <div style="margin-bottom: 30px;">

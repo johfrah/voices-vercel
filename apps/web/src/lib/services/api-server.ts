@@ -1,5 +1,6 @@
 import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
 import { MarketDatabaseService } from "@/lib/system/market-manager-db";
+import { getLocaleFallbacks, normalizeLocale } from "@/lib/system/locale-utils";
 import { createClient } from "@supabase/supabase-js";
 import { and, asc, desc, eq, ilike, or, sql } from "drizzle-orm";
 import {
@@ -1034,32 +1035,47 @@ export async function getWorkshops(params: { limit?: number, worldId?: number, j
 }
 
 export async function getTranslationsServer(lang: string): Promise<Record<string, string>> {
-  // 💀 TERMINATION: 'nl' variant is eliminated. Force 'nl-be'.
-  const targetLang = lang === 'nl' ? 'nl-be' : lang;
+  const targetLang = normalizeLocale(lang);
   
   const cache = getGlobalCache();
-  const cached = cache.translationCache[targetLang];
-  if (cached && (Date.now() - cached.timestamp) < 3600000) return cached.data;
+  const localeCandidates = getLocaleFallbacks(targetLang);
+  for (const candidate of localeCandidates) {
+    const cached = cache.translationCache[candidate];
+    if (cached && (Date.now() - cached.timestamp) < 3600000) {
+      cache.translationCache[targetLang] = cached;
+      return cached.data;
+    }
+  }
   
   try {
-    // 🛡️ CHRIS-PROTOCOL: Use SDK for stability (v2.14.273)
-    const { data, error } = await supabase
-      .from('translations')
-      .select('translation_key, translated_text, original_text')
-      .eq('lang', targetLang)
-      .limit(1000); // 🛡️ Increased limit for full registry coverage
-
-    if (error) throw error;
-
+    let effectiveLang = targetLang;
+    let data: any[] = [];
+    for (const candidate of localeCandidates) {
+      const response = await supabase
+        .from('translations')
+        .select('translation_key, translated_text, original_text')
+        .eq('lang', candidate)
+        .limit(5000); // 🛡️ Full multilingual registry coverage
+      if (response.error) {
+        throw response.error;
+      }
+      if ((response.data?.length || 0) > 0) {
+        data = response.data || [];
+        effectiveLang = candidate;
+        break;
+      }
+    }
     const translationMap: Record<string, string> = {};
-    data?.forEach((row: any) => { 
-      const key = row.translation_key || row.translationKey;
+    data?.forEach((row: any) => {
+      const key = row.translation_key;
       if (key) {
-        translationMap[key] = row.translated_text || row.translatedText || row.original_text || row.originalText || ''; 
+        translationMap[key] = row.translated_text || row.original_text || '';
       }
     });
     
-    cache.translationCache[targetLang] = { data: translationMap, timestamp: Date.now() };
+    const payload = { data: translationMap, timestamp: Date.now() };
+    cache.translationCache[effectiveLang] = payload;
+    cache.translationCache[targetLang] = payload;
     return translationMap;
   } catch (e) { 
     const { ServerWatchdog } = await import('./server-watchdog');

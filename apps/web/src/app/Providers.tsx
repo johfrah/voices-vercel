@@ -25,7 +25,8 @@ export function Providers({
   initialTranslations = {},
   initialJourney,
   initialUsage,
-  handshakeContext
+  handshakeContext,
+  handshakeLanguages = []
 }: {
   children: ReactNode;
   lang: string;
@@ -39,6 +40,12 @@ export function Providers({
     journeyId: number | null;
     worldConfig: any;
   };
+  handshakeLanguages?: Array<{
+    id: number;
+    code: string;
+    label: string;
+    icon?: string;
+  }>;
 }) {
   // 🛡️ CHRIS-PROTOCOL: Critical Null-Safety Guard (v2.27.8)
   // Prevent catastrophic failure if market is undefined during SSR/hydration
@@ -65,7 +72,7 @@ export function Providers({
   const pathname = usePathname();
   // 🛡️ CHRIS-PROTOCOL: Version Sync Mandate (v2.27.8)
   // Major Refactor: ID-First Handshake Architecture
-  const currentVersion = '2.28.0';
+  const currentVersion = '2.28.2';
 
   // 🛡️ CHRIS-PROTOCOL: Language is now strictly passed from Server (Source of Truth)
   // to prevent Hydration Mismatch errors (#419, #425).
@@ -89,7 +96,12 @@ export function Providers({
         (MarketManager as any).worldConfigsCache[`${handshakeContext.worldId}-${handshakeContext.languageId}`] = handshakeContext.worldConfig;
       }
 
-      MarketManager.setLanguages(Object.values(initialTranslations || {}).length > 0 ? [] : []); // Placeholder for languages if needed
+      const languageRegistry = handshakeLanguages.length > 0
+        ? handshakeLanguages
+        : (Array.isArray(g.handshakeLanguages) ? g.handshakeLanguages : []);
+      if (languageRegistry.length > 0) {
+        MarketManager.setLanguages(languageRegistry);
+      }
       
       // 🛡️ CHRIS-PROTOCOL: Prime World Languages on Client
       if (g.handshakeWorldLanguages) {

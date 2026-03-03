@@ -7,6 +7,7 @@
 
 import { MarketManager, MarketConfig } from './core/market-manager';
 import { VOICES_CONFIG } from '@/lib/system/voices-config';
+import { localeToBcp47, normalizeLocale } from './locale-utils';
 
 export class MarketDatabaseService {
   private static CACHE_TTL = 1000 * 60 * 60 * 24; // 24 hours (CHRIS-PROTOCOL: Nuclear Caching for SSR Performance)
@@ -131,7 +132,11 @@ export class MarketDatabaseService {
       'nl-BE': 'https://www.voices.be',
       'nl-NL': 'https://www.voices.nl',
       'fr-FR': 'https://www.voices.fr',
-      'en-EU': 'https://www.voices.eu'
+      'en-GB': 'https://www.voices.eu',
+      'de-DE': 'https://www.voices.eu',
+      'es-ES': 'https://www.voices.es',
+      'pt-PT': 'https://www.voices.pt',
+      'it-IT': 'https://www.voices.eu',
     };
 
     try {
@@ -157,7 +162,24 @@ export class MarketDatabaseService {
 
         (allMarkets || []).forEach(m => {
           const loc = m.localization as any;
-          const locale = loc?.locale || MarketManager.getLanguageCode(m.market === 'BE' ? 'nl-BE' : m.market === 'NLNL' ? 'nl-NL' : m.market === 'FR' ? 'fr-FR' : m.market === 'ES' ? 'es-ES' : m.market === 'PT' ? 'pt-PT' : m.market === 'EU' ? 'en-GB' : 'nl-BE');
+          const locale = localeToBcp47(
+            normalizeLocale(
+              loc?.locale ||
+              (m.market === 'BE'
+                ? 'nl-be'
+                : m.market === 'NLNL'
+                  ? 'nl-nl'
+                  : m.market === 'FR'
+                    ? 'fr-fr'
+                    : m.market === 'ES'
+                      ? 'es-es'
+                      : m.market === 'PT'
+                        ? 'pt-pt'
+                        : m.market === 'EU'
+                          ? 'en-gb'
+                          : 'nl-be')
+            )
+          );
           const domain = (m as any).canonical_domain || staticDomains[m.market] || `https://www.voices.be`;
           if (locale) {
             locales[locale] = domain;

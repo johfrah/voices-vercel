@@ -569,7 +569,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
   const showFavorites = isAdmin || (navConfig?.icons?.favorites ?? (!isSpecialJourney && !isStudioJourney && !isMobile));
   const showCart = isAdmin || (navConfig?.icons?.cart ?? (!isSpecialJourney && !isStudioJourney && !isPortfolioMarket && !isMobile));
   const showNotifications = isAdmin || (navConfig?.icons?.notifications ?? (auth.isAuthenticated && notificationsCount > 0 && !isPortfolioMarket && !isMobile));
-  const showLanguage = isAdmin || (navConfig?.icons?.language ?? !isMobile);
+  const showLanguage = isAdmin || (navConfig?.icons?.language ?? true);
   const showAccount = isAdmin || (navConfig?.icons?.account ?? (!isSpecialJourney && !isStudioJourney && !isMobile));
   const showMenu = isAdmin || (navConfig?.icons?.menu ?? !isSpecialJourney);
   const showLinks = isAdmin || (((navConfig?.links || [])?.length ?? 0) > 0 && !isMobile); 
@@ -1270,6 +1270,14 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
                     <TextInstrument className="text-[11px] font-bold text-va-black/40 tracking-[0.2em] uppercase">
                       <VoiceglotText translationKey="nav.mobile_menu_label" defaultText="Menu" />
                     </TextInstrument>
+                  </ContainerInstrument>
+                  <ContainerInstrument plain className="px-3 py-2 border-b border-black/5 mb-1">
+                    <ContainerInstrument plain className="flex items-center justify-between gap-3">
+                      <TextInstrument className="text-[11px] font-bold text-va-black/40 tracking-[0.2em] uppercase">
+                        <VoiceglotText translationKey="nav.language_selection" defaultText="Language choice" />
+                      </TextInstrument>
+                      <LanguageSwitcher className="w-9 h-9 rounded-full transition-all duration-500 cursor-pointer group flex items-center justify-center relative hover:bg-va-black/5 text-va-black/40 hover:text-va-black" />
+                    </ContainerInstrument>
                   </ContainerInstrument>
                   <DropdownItem icon={Home} label={<VoiceglotText translationKey="nav.home" defaultText="Home" />} href="/" />
                   {activeLinks.map((link: any) => (

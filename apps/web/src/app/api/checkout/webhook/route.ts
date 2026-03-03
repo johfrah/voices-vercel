@@ -8,6 +8,7 @@ import { MusicDeliveryService } from '@/lib/services/music-delivery-service';
 import { YukiService } from '@/lib/services/yuki-service';
 import { VumeEngine } from '@/lib/mail/VumeEngine';
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
+import { localeToShort, normalizeLocale } from '@/lib/system/locale-utils';
 
 /**
  *  MOLLIE WEBHOOK (NUCLEAR)
@@ -62,6 +63,13 @@ export async function POST(request: NextRequest) {
     await db.transaction(async (tx) => {
       // Haal de order op om te zien wat erin zit
       const [order] = await tx.select().from(orders).where(eq(orders.id, orderId)).limit(1);
+      const orderLanguage = normalizeLocale(
+        (order?.rawMeta as any)?.language ||
+        payment.metadata?.language ||
+        market.primary_language ||
+        'nl-be'
+      );
+      const orderLanguageShort = localeToShort(orderLanguage);
       
       // Update Order status
       let finalStatus = newStatus;
@@ -85,14 +93,18 @@ export async function POST(request: NextRequest) {
             try {
               await VumeEngine.send({
                 to: donationContext.donorEmail,
-                subject: `Bedankt voor je support aan Youssef Zaki!`,
+                subject: orderLanguageShort === 'fr'
+                  ? 'Merci pour votre soutien à Youssef Zaki !'
+                  : orderLanguageShort === 'en'
+                    ? 'Thank you for supporting Youssef Zaki!'
+                    : 'Bedankt voor je support aan Youssef Zaki!',
                 template: 'donation-thank-you',
                 context: {
                   name: donationContext.donorName || 'Supporter',
                   amount: order.total,
                   artistName: 'Youssef Zaki',
                   message: donationContext.message,
-                  language: 'nl-be'
+                  language: orderLanguage
                 },
                 host: host
               });
@@ -163,7 +175,11 @@ export async function POST(request: NextRequest) {
                 try {
                   await VumeEngine.send({
                     to: user.email,
-                    subject: `Bestelling Bevestigd: #${orderId} - Voices`,
+                    subject: orderLanguageShort === 'fr'
+                      ? `Commande confirmée : #${orderId} - Voices`
+                      : orderLanguageShort === 'en'
+                        ? `Order confirmed: #${orderId} - Voices`
+                        : `Bestelling Bevestigd: #${orderId} - Voices`,
                     template: 'order-confirmation',
                     context: {
                       userName: user.first_name || 'Klant',
@@ -175,7 +191,7 @@ export async function POST(request: NextRequest) {
                         deliveryTime: (i.metaData as any)?.deliveryTime
                       })),
                       paymentMethod: payment.method || 'Online',
-                      language: 'nl'
+                      language: orderLanguage
                     },
                     host: host
                   });
