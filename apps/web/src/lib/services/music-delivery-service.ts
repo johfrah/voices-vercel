@@ -32,11 +32,18 @@ export class MusicDeliveryService {
       }
 
       // 3. Haal de track details op uit de media tabel
-      // @ts-ignore - Drizzle metadata query
-      const [track] = await db.select().from(media)
-        .where(eq(media.category, 'music'))
-        .where(sql`${media.metadata}->>'legacyId' = ${musicMeta.trackId}`)
+      // 🛡️ CHRIS-PROTOCOL: Match by media.id first (new flow), fallback to legacyId (v2.28.1)
+      let [track] = await db.select().from(media)
+        .where(eq(media.id, parseInt(musicMeta.trackId)))
         .limit(1);
+      
+      if (!track) {
+        // @ts-ignore - Drizzle metadata query (legacy fallback)
+        [track] = await db.select().from(media)
+          .where(eq(media.category, 'music'))
+          .where(sql`${media.metadata}->>'legacyId' = ${musicMeta.trackId}`)
+          .limit(1);
+      }
 
       if (!track) {
         console.error(` [MUSIC DELIVERY] Track ${musicMeta.trackId} not found in database!`);
