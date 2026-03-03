@@ -1049,22 +1049,48 @@ export async function getTranslationsServer(lang: string): Promise<Record<string
   
   try {
     let effectiveLang = targetLang;
-    let data: any[] = [];
+    let localeLocked = false;
+    const mergedRows = new Map<string, any>();
+    const getRowScore = (row: any): number => {
+      const hasTranslated = !!row.translated_text && row.translated_text !== '...';
+      const statusScore = row.status === 'active' ? 30 : 0;
+      const manualScore = row.is_manually_edited ? 40 : 0;
+      const translatedScore = hasTranslated ? 20 : 0;
+      const freshnessScore = row.updated_at ? new Date(row.updated_at).getTime() / 1e15 : 0;
+      return statusScore + manualScore + translatedScore + freshnessScore;
+    };
     for (const candidate of localeCandidates) {
       const response = await supabase
         .from('translations')
-        .select('translation_key, translated_text, original_text')
+        .select('translation_key, translated_text, original_text, is_manually_edited, status, updated_at')
         .eq('lang', candidate)
         .limit(5000); // 🛡️ Full multilingual registry coverage
       if (response.error) {
         throw response.error;
       }
       if ((response.data?.length || 0) > 0) {
-        data = response.data || [];
-        effectiveLang = candidate;
-        break;
+        if (!localeLocked) {
+          effectiveLang = candidate;
+          localeLocked = true;
+        }
+        const bestRowsForCandidate = new Map<string, any>();
+        for (const row of (response.data || [])) {
+          const key = row.translation_key;
+          if (!key) continue;
+          const existing = bestRowsForCandidate.get(key);
+          if (!existing || getRowScore(row) > getRowScore(existing)) {
+            bestRowsForCandidate.set(key, row);
+          }
+        }
+        for (const [key, row] of bestRowsForCandidate.entries()) {
+          if (!mergedRows.has(key)) {
+            // Candidate order determines priority across locales: first locale with key wins.
+            mergedRows.set(key, row);
+          }
+        }
       }
     }
+    const data = Array.from(mergedRows.values());
     const translationMap: Record<string, string> = {};
     data?.forEach((row: any) => {
       const key = row.translation_key;

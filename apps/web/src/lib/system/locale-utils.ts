@@ -71,8 +71,11 @@ export function localeToShort(input?: string | null, fallback = 'nl'): string {
 export function getLocaleFallbacks(input?: string | null): string[] {
   const normalized = normalizeLocale(input);
   const fallbackCandidates = LOCALE_FALLBACKS[normalized] || [];
-  return [normalized, ...fallbackCandidates.map((candidate) => candidate.toLowerCase().replace('_', '-'))]
-    .filter((value, index, array) => array.indexOf(value) === index);
+  const expanded = [normalized, ...fallbackCandidates.map((candidate) => candidate.toLowerCase().replace('_', '-'))];
+  const shorts = expanded
+    .map((candidate) => candidate.split('-')[0])
+    .filter(Boolean);
+  return [...expanded, ...shorts].filter((value, index, array) => array.indexOf(value) === index);
 }
 
 export function localeToBcp47(input?: string | null, fallback = 'nl-BE'): string {

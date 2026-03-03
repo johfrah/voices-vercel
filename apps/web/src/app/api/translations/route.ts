@@ -35,27 +35,59 @@ export async function GET(request: NextRequest) {
   try {
     const localeCandidates = getLocaleFallbacks(targetLang);
     let effectiveLang = targetLang;
-    let results: Array<{
+    let localeLocked = false;
+    const mergedRows = new Map<string, {
       translation_key: string;
       translated_text: string | null;
       original_text: string | null;
       is_manually_edited: boolean | null;
       lang_id: number | null;
-    }> = [];
+      status?: string | null;
+      updated_at?: string | null;
+    }>();
+
+    const getRowScore = (row: {
+      translated_text: string | null;
+      is_manually_edited: boolean | null;
+      status?: string | null;
+      updated_at?: string | null;
+    }): number => {
+      const hasTranslated = !!row.translated_text && row.translated_text !== '...';
+      const statusScore = row.status === 'active' ? 30 : 0;
+      const manualScore = row.is_manually_edited ? 40 : 0;
+      const translatedScore = hasTranslated ? 20 : 0;
+      const freshnessScore = row.updated_at ? new Date(row.updated_at).getTime() / 1e15 : 0;
+      return statusScore + manualScore + translatedScore + freshnessScore;
+    };
 
     for (const candidate of localeCandidates) {
       const { data, error } = await supabase
         .from('translations')
-        .select('translation_key, translated_text, original_text, is_manually_edited, lang_id')
-        .eq('lang', candidate);
+        .select('translation_key, translated_text, original_text, is_manually_edited, lang_id, status, updated_at')
+        .eq('lang', candidate)
+        .limit(5000);
       if (error) throw error;
-      if ((data?.length || 0) > 0) {
+      if ((data?.length || 0) > 0 && !localeLocked) {
         effectiveLang = candidate;
-        results = data || [];
-        break;
+        localeLocked = true;
+      }
+      const bestRowsForCandidate = new Map<string, any>();
+      for (const row of (data || [])) {
+        if (!row.translation_key) continue;
+        const existing = bestRowsForCandidate.get(row.translation_key);
+        if (!existing || getRowScore(row) > getRowScore(existing)) {
+          bestRowsForCandidate.set(row.translation_key, row);
+        }
+      }
+      for (const [key, row] of bestRowsForCandidate.entries()) {
+        // Candidate order determines priority across locales: first locale with key wins.
+        if (!mergedRows.has(key)) {
+          mergedRows.set(key, row);
+        }
       }
     }
 
+    const results = Array.from(mergedRows.values());
     const translationMap: Record<string, string> = {};
     results?.forEach(row => {
       const key = row.translation_key;

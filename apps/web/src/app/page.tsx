@@ -351,6 +351,14 @@ function HomeContent({
     }
   }, [masterControlState.journey, dynamicConfig, t]);
 
+  const heroTitleDefault = useMemo(() => {
+    const part1 = (journeyContent.titlePart1 || '').trim();
+    const highlight = (journeyContent.titleHighlight || '').trim();
+    const part2 = (journeyContent.titlePart2 || '').trim();
+    const suffix = part2 ? ` ${part2}` : '';
+    return `${part1} *${highlight}*${suffix}`.replace(/\s+/g, ' ').trim();
+  }, [journeyContent.titlePart1, journeyContent.titleHighlight, journeyContent.titlePart2]);
+
   const renderUspIcon = (type: string) => {
     switch (type) {
       case 'zap': return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-primary"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>;
@@ -396,15 +404,7 @@ function HomeContent({
                 <HeadingInstrument level={1} className="text-6xl md:text-8xl font-light tracking-tighter leading-[0.9] text-va-black">
                   <VoiceglotText 
                     translationKey={`home.hero.title_v4_${masterControlState.journey}_${marketCode}`} 
-                    defaultText={
-                      masterControlState.journey === 'telephony' 
-                        ? "Maak jouw *telefooncentrale* menselijk."
-                        : masterControlState.journey === 'video'
-                        ? (marketCode === 'BE' ? "De mooiste *voice-overs* van België." : marketCode === 'NLNL' ? "De mooiste *voice-overs* van Nederland." : marketCode === 'FR' ? "Les meilleures *voix-off* de France." : "De mooiste *voice-overs* voor jouw video.")
-                        : masterControlState.journey === 'commercial'
-                        ? "Scoor met *high-end* commercials."
-                        : "Vind de *stem* voor jouw verhaal."
-                    }
+                    defaultText={heroTitleDefault}
                     components={{
                       highlight: (children) => (
                         <TextInstrument as="span" className="text-primary italic font-light text-inherit">
