@@ -48,6 +48,28 @@ export const WorkshopHeroIsland: React.FC<WorkshopHeroIslandProps> = ({ workshop
       ? workshop.featured_image.file_path
       : `https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices/${workshop.featured_image.file_path.replace(/^\/+/, '')}`)
     : undefined;
+  const appendAgentLog = (payload: {
+    hypothesisId: string;
+    location: string;
+    message: string;
+    data: Record<string, unknown>;
+    timestamp?: number;
+  }) => {
+    if (typeof window === 'undefined') return;
+    try {
+      void fetch('/api/debug-log', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        keepalive: true,
+        body: JSON.stringify({
+          ...payload,
+          timestamp: payload.timestamp ?? Date.now(),
+        }),
+      });
+    } catch (_error) {
+      // no-op: debug instrumentation must never break booking flow
+    }
+  };
 
   const handleBookClick = () => {
     playClick('pro');
@@ -68,6 +90,19 @@ export const WorkshopHeroIsland: React.FC<WorkshopHeroIslandProps> = ({ workshop
           subtotal: priceValue
         }
       };
+      // #region agent log
+      appendAgentLog({
+        hypothesisId: 'B',
+        location: 'WorkshopHeroIsland.tsx:handleBookClick',
+        message: 'Workshop hero adds workshop item and sets studio journey',
+        data: {
+          workshop_id: workshop.id,
+          edition_id: nextEdition!.id,
+          price: priceValue,
+          generated_item_id: workshopItem.id,
+        },
+      });
+      // #endregion
       addItem(workshopItem);
       setJourney('studio', nextEdition!.id);
       router.push(`/studio/checkout?journey=studio&editionId=${nextEdition!.id}`);

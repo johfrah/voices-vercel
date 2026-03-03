@@ -45,6 +45,28 @@ export const PricingSummary: React.FC<{
   const [isTermsOpen, setIsTermsOpen] = useState(false);
   const [reviewStats, setReviewStats] = useState<{ averageRating: number, totalCount: number } | null>(null);
   const [workshopThumbnailMap, setWorkshopThumbnailMap] = useState<Record<string, string>>({});
+  const appendAgentLog = React.useCallback((payload: {
+    hypothesisId: string;
+    location: string;
+    message: string;
+    data: Record<string, unknown>;
+    timestamp?: number;
+  }) => {
+    if (typeof window === 'undefined') return;
+    try {
+      void fetch('/api/debug-log', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        keepalive: true,
+        body: JSON.stringify({
+          ...payload,
+          timestamp: payload.timestamp ?? Date.now(),
+        }),
+      });
+    } catch (_error) {
+      // no-op: debug instrumentation must never break checkout rendering
+    }
+  }, []);
 
   useEffect(() => {
     if (!isHydrated) return;
@@ -230,7 +252,8 @@ export const PricingSummary: React.FC<{
     }
   };
 
-  const isSubscription = state.usage === 'subscription';
+  const isSubscriptionContext = state.usage === 'subscription';
+  const shouldRenderJohfraiSubscriptionCard = isSubscriptionContext && state.journey === 'johfrai-subscription';
   const isCartPage = typeof window !== 'undefined' && window.location.pathname.includes('/cart');
   const isCheckoutPage = typeof window !== 'undefined' && window.location.pathname.includes('/checkout');
   const localePrefix = typeof window !== 'undefined'
@@ -279,7 +302,7 @@ export const PricingSummary: React.FC<{
     return `https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices/${rawSource.replace(/^\/+/, '')}`;
   };
   // 🛡️ CHRIS-PROTOCOL: Defensive guard for items array (v2.15.065)
-  const hasContextData = (state.items?.length || 0) > 0 || state.selectedActor || state.briefing || isSubscription || state.editionId;
+  const hasContextData = (state.items?.length || 0) > 0 || state.selectedActor || state.briefing || shouldRenderJohfraiSubscriptionCard || state.editionId;
   
   const discountAmount = state.customer.active_coupon 
     ? (state.customer.active_coupon.type === 'percentage' 
@@ -292,6 +315,31 @@ export const PricingSummary: React.FC<{
   const tax = subtotalAfterDiscount * vatRate;
   const total = subtotalAfterDiscount + tax;
 
+  useEffect(() => {
+    if (!isHydrated || typeof window === 'undefined') return;
+    const path = window.location.pathname;
+    const isCartOrCheckout = path.includes('/cart') || path.includes('/checkout');
+    if (!isCartOrCheckout || !isSubscriptionContext) return;
+    // #region agent log
+    appendAgentLog({
+      hypothesisId: 'A',
+      location: 'PricingSummary.tsx:subscriptionBanner',
+      message: 'Subscription context on cart/checkout',
+      data: {
+        path,
+        usage: state.usage,
+        journey: state.journey,
+        plan: state.plan,
+        should_render_johfrai_subscription_card: shouldRenderJohfraiSubscriptionCard,
+        items_count: (state.items || []).length,
+        has_workshop_item: (state.items || []).some((item: any) => item?.type === 'workshop_edition'),
+        subtotal,
+        pricing_total: state.pricing.total,
+      },
+    });
+    // #endregion
+  }, [isHydrated, isSubscriptionContext, shouldRenderJohfraiSubscriptionCard, state.usage, state.journey, state.plan, state.items, state.pricing.total, subtotal, appendAgentLog]);
+
   if (!isHydrated) return null;
 
   return (
@@ -300,7 +348,7 @@ export const PricingSummary: React.FC<{
         <ContainerInstrument className="space-y-4 w-full max-w-full">
           {/* Cart items list */}
           <ContainerInstrument className="space-y-4">
-            {isSubscription && (
+            {shouldRenderJohfraiSubscriptionCard && (
               <motion.div 
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}

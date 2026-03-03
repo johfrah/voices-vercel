@@ -56,6 +56,28 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
   const [internalIndex, setInternalIndex] = useState<number>(0);
   const [isBooking, setIsBooking] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const appendAgentLog = (payload: {
+    hypothesisId: string;
+    location: string;
+    message: string;
+    data: Record<string, unknown>;
+    timestamp?: number;
+  }) => {
+    if (typeof window === 'undefined') return;
+    try {
+      void fetch('/api/debug-log', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        keepalive: true,
+        body: JSON.stringify({
+          ...payload,
+          timestamp: payload.timestamp ?? Date.now(),
+        }),
+      });
+    } catch (_error) {
+      // no-op: debug instrumentation must never break booking flow
+    }
+  };
 
   const selectedDateIndex = controlledIndex !== undefined ? controlledIndex : internalIndex;
   const selectedDate = dates[selectedDateIndex] || null;
@@ -118,6 +140,20 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
       });
 
       // Add to cart and set journey
+      // #region agent log
+      appendAgentLog({
+        hypothesisId: 'B',
+        location: 'BookingFunnel.tsx:handleBooking',
+        message: 'Booking funnel adds workshop item and sets studio journey',
+        data: {
+          workshop_id: workshopId,
+          selected_date: selectedDate?.date_raw ?? null,
+          selected_location: selectedDate?.location ?? null,
+          price: priceExclVatValue,
+          generated_item_id: workshopItem.id,
+        },
+      });
+      // #endregion
       addItem(workshopItem);
       setJourney('studio', workshopId);
       setStep('details'); // Direct naar de details stap in de checkout
