@@ -119,13 +119,19 @@ export const VoicesMasterControlProvider: React.FC<{
     const initializeState = () => {
       const host = typeof window !== 'undefined' ? window.location.host : '';
       const market = MarketManager.getCurrentMarket(host, window.location.pathname);
-      const defaultLang = market?.primary_language || 'nl-be'; // e.g. 'nl-BE'
-      const defaultLangId = market?.primary_language_id || 1; // e.g. 1
       const localePrefixMatch = window.location.pathname.match(/^\/(nl|fr|en|de|es|it|pt)(\/|$)/i);
-      const localeFromPath = localePrefixMatch ? normalizeLocale(localePrefixMatch[1], defaultLang) : null;
+      const localeFromPath = localePrefixMatch ? normalizeLocale(localePrefixMatch[1], market?.primary_language || 'nl-be') : null;
       const localeIdFromPath = localeFromPath
-        ? (MarketManager.getLanguageId(localeFromPath, defaultLang) || defaultLangId)
+        ? (MarketManager.getLanguageId(localeFromPath, market?.primary_language || 'nl-be') || market?.primary_language_id || 1)
         : null;
+      // 🛡️ CHRIS-PROTOCOL: When no URL locale, prefer handshake so filter matches page language (e.g. cookie/header).
+      const handshake = typeof window !== 'undefined' ? (window as any).handshakeContext : null;
+      const handshakeLangId = handshake?.languageId != null ? handshake.languageId : null;
+      const handshakeLangCode = handshakeLangId != null && MarketManager.languages?.length
+        ? (MarketManager.languages.find((l: { id: number; code: string }) => l.id === handshakeLangId)?.code)
+        : null;
+      const defaultLang = localeFromPath || handshakeLangCode || market?.primary_language || 'nl-be';
+      const defaultLangId = localeIdFromPath ?? handshakeLangId ?? market?.primary_language_id ?? 1;
       
       const saved = localStorage.getItem('voices_master_control');
       let savedState: any = {};
@@ -733,13 +739,18 @@ export const VoicesMasterControlProvider: React.FC<{
     const pathnameNow = typeof window !== 'undefined' ? window.location.pathname : '';
     const market = MarketManager.getCurrentMarket(host, pathnameNow);
     const localePrefixMatch = pathnameNow.match(/^\/(nl|fr|en|de|es|it|pt)(\/|$)/i);
-    const defaultLang = localePrefixMatch
-      ? normalizeLocale(localePrefixMatch[1], market?.primary_language || 'nl-be')
-      : MarketManager.getLanguageCode(market?.primary_language || 'nl-be');
+    const localeFromPath = localePrefixMatch ? normalizeLocale(localePrefixMatch[1], market?.primary_language || 'nl-be') : null;
+    const handshake = typeof window !== 'undefined' ? (window as any).handshakeContext : null;
+    const handshakeLangId = handshake?.languageId != null ? handshake.languageId : null;
+    const handshakeLangCode = handshakeLangId != null && MarketManager.languages?.length
+      ? (MarketManager.languages.find((l: { id: number; code: string }) => l.id === handshakeLangId)?.code)
+      : null;
+    const defaultLang = localeFromPath || handshakeLangCode || MarketManager.getLanguageCode(market?.primary_language || 'nl-be');
     const defaultLangId =
-      MarketManager.getLanguageId(defaultLang, market?.primary_language || 'nl-be') ||
-      market?.primary_language_id ||
-      1;
+      (localeFromPath ? MarketManager.getLanguageId(localeFromPath, market?.primary_language || 'nl-be') : null)
+      ?? handshakeLangId
+      ?? market?.primary_language_id
+      ?? 1;
     
     const defaultFilters: Partial<MasterControlState['filters']> = {
       language: defaultLang,
