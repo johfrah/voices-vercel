@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth/api-auth';
 import {
+  canonicalizeVoiceglotTranslations,
   getVoiceglotCoverageSnapshot,
   persistVoiceglotRunHealth,
   runVoiceglotHealBatch,
@@ -28,9 +29,19 @@ export async function POST(request: NextRequest) {
     const body = await request.json().catch(() => ({}));
     const batchSize = Number(body?.batchSize || 80);
     const maxBatches = Math.max(1, Math.min(Number(body?.maxBatches || 3), 10));
+    const canonicalizeFirst = body?.canonicalizeFirst !== false;
+    const purgeAliases = body?.purgeAliases === true;
     const targetLanguages = (Array.isArray(body?.targetLanguages) && body.targetLanguages.length > 0
       ? body.targetLanguages
       : VOICEGLOT_TARGET_LANGUAGES) as readonly string[];
+
+    let canonical: any = null;
+    if (canonicalizeFirst) {
+      canonical = await canonicalizeVoiceglotTranslations({
+        purgeAliases,
+        canonicalLanguages: targetLanguages,
+      });
+    }
 
     let totalProcessed = 0;
     let totalHealed = 0;
@@ -58,6 +69,7 @@ export async function POST(request: NextRequest) {
     await persistVoiceglotRunHealth({
       source: 'admin-heal-all',
       ran_at: new Date().toISOString(),
+      canonical,
       processed_count: totalProcessed,
       healed_count: totalHealed,
       copied_count: totalCopied,
@@ -76,6 +88,7 @@ export async function POST(request: NextRequest) {
       pendingTotal: pending,
       finished,
       targetLanguages,
+      canonical,
       coverage,
       message: `Voiceglot heal uitgevoerd: ${totalHealed} vertaald, ${totalCopied} gekopieerd.`,
     });

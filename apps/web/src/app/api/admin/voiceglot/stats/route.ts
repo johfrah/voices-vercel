@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth/api-auth';
 import { createClient } from "@supabase/supabase-js";
+import { VOICEGLOT_TARGET_LANGUAGES } from '@/lib/services/voiceglot-heal-service';
 
 /**
  *  API: VOICEGLOT STATS (GODMODE CACHING 2026)
@@ -52,41 +53,30 @@ export async function GET(request: NextRequest) {
     if (totalErr) throw totalErr;
     const totalStrings = totalCount || 0;
 
-          // Haal tellingen per lang_id op
+    // Haal tellingen op per translation_key + lang (canonieke targets)
     const { data: langData, error: langErr } = await supabase
       .from('translations')
-      .select('lang_id, lang');
+      .select('translation_key, lang, status, translated_text')
+      .in('lang', [...VOICEGLOT_TARGET_LANGUAGES]);
     
     if (langErr) throw langErr;
 
-    const counts: Record<number, number> = {};
-    const codeCounts: Record<string, number> = {};
-    (langData || []).forEach((t: any) => {
-      if (t.lang_id) {
-        counts[t.lang_id] = (counts[t.lang_id] || 0) + 1;
-      }
-      if (t.lang) {
-        codeCounts[t.lang] = (codeCounts[t.lang] || 0) + 1;
-      }
+    const activeKeysByLang = new Map<string, Set<string>>();
+    (langData || []).forEach((row: any) => {
+      const lang = String(row?.lang || '').toLowerCase();
+      const key = String(row?.translation_key || '');
+      const text = String(row?.translated_text || '').trim();
+      const isActive = (row?.status || 'active') === 'active';
+      if (!lang || !key || !isActive || !text || text === '...') return;
+      const bucket = activeKeysByLang.get(lang) || new Set<string>();
+      bucket.add(key);
+      activeKeysByLang.set(lang, bucket);
     });
 
-    // Target Languages Mapping (Handshake ID Truth)
-    const targetLangs = [
-      { id: 5, code: 'en-gb' },
-      { id: 3, code: 'fr-be' },
-      { id: 4, code: 'fr-fr' },
-      { id: 7, code: 'de-de' },
-      { id: 8, code: 'es-es' },
-      { id: 12, code: 'pt-pt' },
-      { id: 9, code: 'it-it' }
-    ];
-
-    const coverage = targetLangs.map(target => {
-      // Gebruik de hoogste count (ofwel via ID of via code) voor maximale accuraatheid tijdens migratie
-      const count = Math.max(counts[target.id] || 0, codeCounts[target.code] || 0);
+    const coverage = VOICEGLOT_TARGET_LANGUAGES.map((code) => {
+      const count = activeKeysByLang.get(code)?.size || 0;
       return {
-        lang: target.code,
-        lang_id: target.id,
+        lang: code,
         count,
         percentage: totalStrings > 0 ? Math.min(100, Math.round((count / totalStrings) * 100)) : 0
       };

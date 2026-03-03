@@ -51,6 +51,16 @@ const MARKET_DEFAULT_LOCALE: Record<string, string> = {
   ARTIST: 'en-gb',
 };
 
+const CANONICAL_TRANSLATION_LOCALE: Record<string, string> = {
+  nl: 'nl-be',
+  fr: 'fr-be',
+  en: 'en-gb',
+  de: 'de-de',
+  es: 'es-es',
+  pt: 'pt-pt',
+  it: 'it-it',
+};
+
 export const SUPPORTED_LOCALE_PREFIXES = ['nl', 'fr', 'en', 'de', 'es', 'it', 'pt'] as const;
 
 export function normalizeLocale(input?: string | null, fallback: string = 'nl-be'): string {
@@ -105,6 +115,12 @@ export function getMarketDefaultLocale(marketCode?: string | null, fallback: str
   return MARKET_DEFAULT_LOCALE[normalizedCode] || normalizeLocale(fallback, 'nl-be');
 }
 
+export function getCanonicalTranslationLocale(input?: string | null, fallback: string = 'nl-be'): string {
+  const normalized = normalizeLocale(input, fallback);
+  const short = normalized.split('-')[0];
+  return CANONICAL_TRANSLATION_LOCALE[short] || normalized;
+}
+
 export function localeToShort(input?: string | null, fallback = 'nl'): string {
   const normalized = normalizeLocale(input);
   return normalized.split('-')[0] || fallback;
@@ -118,6 +134,17 @@ export function getLocaleFallbacks(input?: string | null): string[] {
     .map((candidate) => candidate.split('-')[0])
     .filter(Boolean);
   return [...expanded, ...shorts].filter((value, index, array) => array.indexOf(value) === index);
+}
+
+export function getTranslationLocaleCandidates(input?: string | null, fallback: string = 'nl-be'): string[] {
+  const normalized = normalizeLocale(input, fallback);
+  const canonical = getCanonicalTranslationLocale(normalized, fallback);
+  const fallbackCandidates = getLocaleFallbacks(normalized);
+  const canonicalFallbacks = getLocaleFallbacks(canonical);
+  return [canonical, normalized, ...canonicalFallbacks, ...fallbackCandidates]
+    .map((value) => String(value || '').toLowerCase().replace('_', '-'))
+    .filter(Boolean)
+    .filter((value, index, array) => array.indexOf(value) === index);
 }
 
 export function localeToBcp47(input?: string | null, fallback = 'nl-BE'): string {

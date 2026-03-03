@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import {
+  canonicalizeVoiceglotTranslations,
   getVoiceglotCoverageSnapshot,
   persistVoiceglotRunHealth,
   runVoiceglotHealBatch,
@@ -40,7 +41,17 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const batchSize = Math.max(1, Math.min(Number(searchParams.get('batch') || process.env.VOICEGLOT_CRON_BATCH_SIZE || '120'), 500));
     const maxBatches = Math.max(1, Math.min(Number(searchParams.get('max_batches') || process.env.VOICEGLOT_CRON_MAX_BATCHES || '4'), 12));
+    const canonicalizeFirst = (searchParams.get('canonicalize') || process.env.VOICEGLOT_CRON_CANONICALIZE || 'true') !== 'false';
+    const purgeAliases = (searchParams.get('purge_aliases') || process.env.VOICEGLOT_CRON_PURGE_ALIASES || 'false') === 'true';
     const targetLanguages = VOICEGLOT_TARGET_LANGUAGES;
+
+    let canonical: any = null;
+    if (canonicalizeFirst) {
+      canonical = await canonicalizeVoiceglotTranslations({
+        purgeAliases,
+        canonicalLanguages: targetLanguages,
+      });
+    }
 
     let totalProcessed = 0;
     let totalHealed = 0;
@@ -69,6 +80,7 @@ export async function GET(request: NextRequest) {
     const healthPayload = {
       source: 'cron-voiceglot-heal',
       ran_at: new Date().toISOString(),
+      canonical,
       batch_size: batchSize,
       max_batches: maxBatches,
       processed_count: totalProcessed,

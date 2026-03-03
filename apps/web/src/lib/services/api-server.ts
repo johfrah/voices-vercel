@@ -1,6 +1,6 @@
 import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
 import { MarketDatabaseService } from "@/lib/system/market-manager-db";
-import { getLocaleFallbacks, normalizeLocale } from "@/lib/system/locale-utils";
+import { getTranslationLocaleCandidates, normalizeLocale } from "@/lib/system/locale-utils";
 import { createClient } from "@supabase/supabase-js";
 import { and, asc, desc, eq, ilike, or, sql } from "drizzle-orm";
 import {
@@ -1038,7 +1038,7 @@ export async function getTranslationsServer(lang: string): Promise<Record<string
   const targetLang = normalizeLocale(lang);
   
   const cache = getGlobalCache();
-  const localeCandidates = getLocaleFallbacks(targetLang);
+  const localeCandidates = getTranslationLocaleCandidates(targetLang, targetLang);
   for (const candidate of localeCandidates) {
     const cached = cache.translationCache[candidate];
     if (cached && (Date.now() - cached.timestamp) < 3600000) {
