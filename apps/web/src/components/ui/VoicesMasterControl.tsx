@@ -439,15 +439,42 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
     return mappedConfig;
   }, [activeJourneyId, actors, filteredLanguagesData]);
 
+  const localizeLanguageLabel = React.useCallback((input?: string | number | null, fallbackLocale?: string | null) => {
+    if (input === undefined || input === null || input === '') return '';
+
+    const rawInput = String(input).trim();
+    const normalized = rawInput.toLowerCase();
+    const parsedId = Number(rawInput);
+    const inputId = Number.isNaN(parsedId) ? null : parsedId;
+
+    const matchedLanguage = (filteredLanguagesData || []).find((lang) => {
+      const langCode = String(lang.code || '').toLowerCase();
+      const langLabel = String(lang.label || '').toLowerCase();
+      return (inputId !== null && lang.id === inputId) || langCode === normalized || langLabel === normalized;
+    });
+
+    const fallbackLabel = (matchedLanguage?.label || MarketManager.getLanguageLabel(rawInput) || rawInput)
+      .replace(/\s*\(algemeen\)\s*/i, '')
+      .trim();
+
+    const langCode = String(matchedLanguage?.code || '').toLowerCase().trim();
+    const fallbackCode = String(fallbackLocale || '').toLowerCase().trim();
+    const shortCode = (langCode.split('-')[0] || fallbackCode.split('-')[0] || '').trim();
+    if (!shortCode) return fallbackLabel;
+
+    return t(`nav.lang_label.${shortCode}`, fallbackLabel);
+  }, [filteredLanguagesData, t]);
+
   const sortedLanguages = useMemo(() => {
     // 🛡️ CHRIS-PROTOCOL: Nuclear Safety Guard (v2.15.070)
     if (!mappedLanguages || !Array.isArray(mappedLanguages)) return [];
-    
-    const host = typeof window !== 'undefined' ? window.location.host : (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || MarketManager.getMarketDomains()['BE'].replace('https://', ''));
-    const market = MarketManager.getCurrentMarket(host);
-    
-    const popularLangs = mappedLanguages.filter(l => l.popular);
-    const otherLangs = mappedLanguages.filter(l => !l.popular);
+
+    const localizedLanguages = mappedLanguages.map((lang) => ({
+      ...lang,
+      label: localizeLanguageLabel(lang.value || lang.langCode || lang.label, lang.langCode || null) || lang.label
+    }));
+    const popularLangs = localizedLanguages.filter(l => l.popular);
+    const otherLangs = localizedLanguages.filter(l => !l.popular);
 
     // 🛡️ CHRIS-PROTOCOL: Handshake Truth Sorting (v2.14.716)
     // We trust the database display_order.
@@ -459,7 +486,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
     ];
 
     return result;
-  }, [mappedLanguages, t]);
+  }, [localizeLanguageLabel, mappedLanguages, t]);
 
   const availableFilters = useMemo(() => {
     const langs = new Set<string>();
@@ -583,7 +610,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                         <VoiceglotText translationKey="filter.mobile_trigger" defaultText="Filters & Zoeken" />
                       </TextInstrument>
                       <TextInstrument className="text-[11px] text-va-black/40 truncate w-full text-left">
-                        {state.filters.languageId ? MarketManager.getLanguageLabel(String(state.filters.languageId)) : t('filter.all_languages', 'Alle talen')} • {state.filters.genderId ? filteredGendersData.find(g => g.id === state.filters.genderId)?.label : t('gender.everyone', 'Iedereen')} • {activeJourneyId === 28 ? ((state.filters.media || []).length || 0) + ' ' + t('common.channels', 'kanalen') : (state.filters.words || 200) + ' ' + t('common.words', 'woorden')}
+                        {(state.filters.languageId || state.filters.language) ? localizeLanguageLabel(state.filters.languageId || state.filters.language, state.filters.language || null) : t('filter.all_languages', 'Alle talen')} • {state.filters.genderId ? filteredGendersData.find(g => g.id === state.filters.genderId)?.label : t('gender.everyone', 'Iedereen')} • {activeJourneyId === 28 ? ((state.filters.media || []).length || 0) + ' ' + t('common.channels', 'kanalen') : (state.filters.words || 200) + ' ' + t('common.words', 'woorden')}
                       </TextInstrument>
                     </ContainerInstrument>
                   </ButtonInstrument>
@@ -602,7 +629,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                             rounding="left"
                             options={sortedLanguages}
                             value={state.filters.languageId || state.filters.language}
-                            displayValueOverride={state.filters.languageId ? MarketManager.getLanguageLabel(String(state.filters.languageId)) : undefined}
+                            displayValueOverride={(state.filters.languageId || state.filters.language) ? localizeLanguageLabel(state.filters.languageId || state.filters.language, state.filters.language || null) : undefined}
                             selectedExtraLangs={state.filters.languageIds?.map(String) || state.filters.languages || []}
                             onExtraLangToggle={(lang) => {
                               //  CHRIS-PROTOCOL: Handle both ID and Label toggling

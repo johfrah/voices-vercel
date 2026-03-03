@@ -30,53 +30,6 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 const sdkClient = createSupabaseClient(supabaseUrl, supabaseKey);
 
-const DEFAULT_WORLD_BY_JOURNEY: Record<string, number> = {
-  agency: 1,
-  studio: 2,
-  academy: 3,
-  portfolio: 5,
-  ademing: 6,
-  freelance: 7,
-  partner: 8,
-  johfrai: 10,
-  artist: 25,
-};
-
-function normalizeJourneyCode(value: unknown): string {
-  const raw = String(value || 'agency').trim().toLowerCase();
-  if (!raw) return 'agency';
-  return raw;
-}
-
-function journeyCandidates(journeyCode: string): string[] {
-  const candidates = new Set<string>([journeyCode]);
-  if (journeyCode === 'agency') {
-    candidates.add('agency_vo');
-    candidates.add('agency_ivr');
-    candidates.add('agency_commercial');
-  }
-  if (journeyCode.startsWith('agency_')) {
-    candidates.add('agency');
-  }
-  return Array.from(candidates);
-}
-
-async function resolveLookupId(table: 'journeys' | 'order_statuses' | 'payment_methods', codes: string[]): Promise<number | null> {
-  const normalizedCodes = Array.from(
-    new Set(codes.map((code) => String(code || '').trim().toLowerCase()).filter(Boolean))
-  );
-  if (normalizedCodes.length === 0) return null;
-
-  const { data, error } = await sdkClient
-    .from(table)
-    .select('id, code')
-    .in('code', normalizedCodes)
-    .limit(1);
-
-  if (error || !data?.length) return null;
-  return Number(data[0].id);
-}
-
 export async function POST(request: Request) {
   return await ServerWatchdog.atomic('CheckoutAPI', 'SubmitOrder', {}, async () => {
     let rawBody: any = null;
@@ -105,11 +58,10 @@ export async function POST(request: Request) {
     }
 
     const data = validation.data;
-    const {
-      pricing, items, selectedActor, step, first_name, last_name, email,
-      vat_number, postal_code, city, metadata, quoteMessage, phone,
-      company, address_street, usage, plan, music, country, payment_method, language,
-      billing_po, financial_email, isQuote
+    const { 
+      pricing, items, selectedActor, step, first_name, last_name, email, 
+      vat_number, postal_code, city, metadata, quoteMessage, phone, 
+      company, address_street, usage, plan, music, country, payment_method, language
     } = data;
     const normalizedLanguage = normalizeLocale(language || marketConfig.primary_language || 'nl-be');
     const languageShort = localeToShort(normalizedLanguage);
@@ -120,36 +72,18 @@ export async function POST(request: Request) {
       ...(selectedActor?.id ? [selectedActor.id] : [])
     ])).map(id => Number(id));
 
-    const workshopIdHints = Array.from(new Set([
-      ...(items || []).flatMap((i: any) => [i.workshop_id, i.workshopId, i.id]).filter((id: any) => !isNaN(Number(id)) && Number(id) > 0)
-    ])).map(id => Number(id));
-
-    const editionIds = Array.from(new Set([
-      ...(items || []).map((i: any) => i.editionId ?? i.edition_id).filter((id: any) => !isNaN(Number(id)) && Number(id) > 0)
-    ])).map(id => Number(id));
-
-    const { data: dbActors } = actorIds.length > 0
-      ? await sdkClient.from('actors').select('*').or(`id.in.(${actorIds.join(',')}),wp_product_id.in.(${actorIds.join(',')})`)
-      : { data: [] as any[] };
-    const { data: dbEditions } = editionIds.length > 0
-      ? await sdkClient.from('workshop_editions').select('id, workshop_id, price').in('id', editionIds)
-      : { data: [] as any[] };
-
     const workshopIds = Array.from(new Set([
-      ...workshopIdHints,
-      ...((dbEditions || []).map((edition: any) => Number(edition?.workshop_id)).filter((id: number) => Number.isFinite(id) && id > 0))
-    ]));
+      ...(items || []).map((i: any) => i.id).filter((id: any) => !isNaN(Number(id)) && Number(id) > 0)
+    ])).map(id => Number(id));
 
-    const { data: dbWorkshops } = workshopIds.length > 0
-      ? await sdkClient.from('workshops').select('*').in('id', workshopIds)
-      : { data: [] as any[] };
+    const { data: dbActors } = await sdkClient.from('actors').select('*').or(`id.in.(${actorIds.join(',')}),wp_product_id.in.(${actorIds.join(',')})`);
+    const { data: dbWorkshops } = await sdkClient.from('workshops').select('*').in('id', workshopIds);
 
     const actorMap = new Map();
     (dbActors || []).forEach(a => {
       actorMap.set(Number(a.id), a);
       if (a.wp_product_id) actorMap.set(Number(a.wp_product_id), a);
     });
-    const editionMap = new Map((dbEditions || []).map((edition: any) => [Number(edition.id), edition]));
     const workshopMap = new Map((dbWorkshops || []).map(w => [Number(w.id), w]));
 
     const isVatExempt = !!vat_number && vat_number.length > 2 && !vat_number.startsWith('BE'); 
@@ -180,18 +114,8 @@ export async function POST(request: Request) {
         return { ...item, pricing: result };
       }
       if (item.type === 'workshop_edition') {
-        const edition = editionMap.get(Number(item.editionId ?? item.edition_id));
-        const workshopIdFromItem = [item.workshop_id, item.workshopId, item.id]
-          .map((id: any) => Number(id))
-          .find((id: number) => Number.isFinite(id) && id > 0);
-        const resolvedWorkshopId = Number(edition?.workshop_id || workshopIdFromItem || 0);
-        const dbWorkshop = resolvedWorkshopId > 0 ? workshopMap.get(resolvedWorkshopId) : undefined;
-
-        const editionPrice = Number(edition?.price || 0);
-        const workshopPrice = dbWorkshop ? Number(dbWorkshop.price || 0) : 0;
-        const payloadPrice = Number(item?.pricing?.subtotal ?? item?.pricing?.total ?? item?.price ?? 0);
-        const price = [editionPrice, workshopPrice, payloadPrice].find((candidate: number) => Number.isFinite(candidate) && candidate > 0) || 0;
-
+        const dbWorkshop = workshopMap.get(Number(item.id));
+        const price = dbWorkshop ? Number(dbWorkshop.price) : 0;
         serverCalculatedSubtotal += price;
         return { ...item, pricing: { total: price, subtotal: price, tax: price * taxRate } };
       }
@@ -220,30 +144,25 @@ export async function POST(request: Request) {
     const { data: maxOrder } = await sdkClient.from('orders').select('wp_order_id').order('wp_order_id', { ascending: false }).limit(1).single();
     const uniqueWpId = Math.max((maxOrder?.wp_order_id ? Number(maxOrder.wp_order_id) : 0) + 1, 310001);
 
-    const isQuoteRequest = isQuoteOnly || !!isQuote;
+    const isQuote = isQuoteOnly || (rawBody as any).isQuote;
     const { data: newOrder, error: orderErr } = await sdkClient.from('orders').insert({
       wp_order_id: uniqueWpId,
       total: amount.toString(),
       total_tax: (amount - serverCalculatedSubtotal).toString(),
-      status: isQuoteRequest ? 'quote-pending' : 'pending',
+      status: isQuote ? 'quote-pending' : 'pending',
       user_id: userId || null,
       journey: validatedItems[0]?.journey || 'agency',
       billing_vat_number: vat_number || null,
-      is_quote: !!isQuoteRequest,
+      is_quote: !!isQuote,
       quote_message: quoteMessage || null,
-      purchase_order: billing_po || null,
-      billing_email_alt: financial_email || null,
       market: marketConfig.market_code,
       ip_address: ip,
       raw_meta: {
         usage,
         plan,
-        items_count: validatedItems.length,
-        customer: { email, first_name, last_name },
         language: normalizedLanguage,
-        billing_po: billing_po || null,
-        financial_email: financial_email || null,
-        is_quote: !!isQuoteRequest
+        itemsCount: validatedItems.length,
+        customer: { email, first_name, last_name }
       }
     }).select().single();
 
@@ -270,10 +189,6 @@ export async function POST(request: Request) {
           briefing: item.briefing, 
           usage: item.usage, 
           media: item.media,
-          spots: item.spots,
-          years: item.years,
-          live_session: item.liveSession,
-          music: item.music,
           country_id: countryId || item.countryId, // 🛡️ Store the hard ID
           language_id: dbActor?.native_language_id // 🛡️ Store the hard ID
         },
@@ -284,60 +199,10 @@ export async function POST(request: Request) {
     const { error: itemsErr } = await sdkClient.from('order_items').insert(itemsToInsert);
     if (itemsErr) throw new Error(`Order items failed: ${itemsErr.message}`);
 
-    // 6.5 V2-FIRST MIRROR: garandeer directe write naar orders_v2.
-    const normalizedJourney = normalizeJourneyCode(validatedItems[0]?.journey || 'agency');
-    const worldId = DEFAULT_WORLD_BY_JOURNEY[normalizedJourney] || 1;
-    const [journeyId, statusId, paymentMethodId] = await Promise.all([
-      resolveLookupId('journeys', journeyCandidates(normalizedJourney)),
-      resolveLookupId(
-        'order_statuses',
-        isQuoteRequest ? ['quote_pending', 'quote-pending'] : ['pending', 'awaiting_payment', 'unpaid']
-      ),
-      resolveLookupId(
-        'payment_methods',
-        isQuoteRequest || payment_method === 'banktransfer'
-          ? ['manual_invoice', 'mollie_banktransfer', 'banktransfer']
-          : ['mollie', 'mollie_ideal', 'online', 'card']
-      ),
-    ]);
-
-    const { error: v2Err } = await sdkClient
-      .from('orders_v2')
-      .upsert(
-        {
-          id: uniqueWpId,
-          user_id: userId || null,
-          world_id: worldId,
-          journey_id: journeyId,
-          status_id: statusId,
-          payment_method_id: paymentMethodId,
-          amount_net: serverCalculatedSubtotal.toFixed(2),
-          amount_total: amount.toFixed(2),
-          purchase_order: billing_po || null,
-          billing_email_alt: financial_email || null,
-          created_at: newOrder.created_at || new Date().toISOString(),
-          legacy_internal_id: newOrder.id,
-        },
-        { onConflict: 'id' }
-      );
-
-    if (v2Err) {
-      throw new Error(`Orders V2 sync failed: ${v2Err.message}`);
-    }
-
-    // Compat-bridge: vul bloat entry zodat bestaande detail-weergaves niet breken.
-    await sdkClient.from('orders_legacy_bloat').upsert(
-      {
-        wp_order_id: uniqueWpId,
-        raw_meta: newOrder.raw_meta || {},
-      },
-      { onConflict: 'wp_order_id' }
-    );
-
     // 7. Payment Handshake
     const secureToken = sign({ userId, orderId: newOrder.id, email }, process.env.JWT_SECRET || 'voices-secret-2026', { expiresIn: '24h' });
 
-    if (isQuoteRequest || payment_method === 'banktransfer') {
+    if (isQuote || payment_method === 'banktransfer') {
       // Background notifications (non-blocking)
       (async () => {
         try {
@@ -345,11 +210,11 @@ export async function POST(request: Request) {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              type: isQuoteRequest ? 'quote_request' : 'banktransfer_order',
+              type: isQuote ? 'quote_request' : 'banktransfer_order',
               data: { orderId: newOrder.id, email, amount, language: normalizedLanguage }
             })
           });
-          const subject = isQuoteRequest
+          const subject = isQuote
             ? (languageShort === 'fr'
               ? `Demande de devis reçue : #${newOrder.id}`
               : languageShort === 'en'
@@ -381,7 +246,7 @@ export async function POST(request: Request) {
         } catch (e) {}
       })();
 
-      return NextResponse.json({ success: true, orderId: newOrder.id, isQuote: isQuoteRequest, token: secureToken });
+      return NextResponse.json({ success: true, orderId: newOrder.id, isQuote, token: secureToken });
     }
 
     // Mollie Flow

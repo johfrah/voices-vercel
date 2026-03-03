@@ -6,6 +6,7 @@ import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { useCheckout } from './CheckoutContext';
 import { useVoicesState } from './VoicesStateContext';
+import { normalizeLocale } from '@/lib/system/locale-utils';
 
 export type JourneyType = 'telephony' | 'video' | 'commercial' | 'agency' | 'general';
 
@@ -120,6 +121,11 @@ export const VoicesMasterControlProvider: React.FC<{
       const market = MarketManager.getCurrentMarket(host, window.location.pathname);
       const defaultLang = market?.primary_language || 'nl-be'; // e.g. 'nl-BE'
       const defaultLangId = market?.primary_language_id || 1; // e.g. 1
+      const localePrefixMatch = window.location.pathname.match(/^\/(nl|fr|en|de|es|it|pt)(\/|$)/i);
+      const localeFromPath = localePrefixMatch ? normalizeLocale(localePrefixMatch[1], defaultLang) : null;
+      const localeIdFromPath = localeFromPath
+        ? (MarketManager.getLanguageId(localeFromPath, defaultLang) || defaultLangId)
+        : null;
       
       const saved = localStorage.getItem('voices_master_control');
       let savedState: any = {};
@@ -142,15 +148,27 @@ export const VoicesMasterControlProvider: React.FC<{
       const initialLanguageIdParam = searchParams?.get('languageId');
       
       let initialLanguage = initialLanguageParam 
-        ? initialLanguageParam 
-        : (savedState.filters?.language || defaultLang);
+        ? MarketManager.getLanguageCode(initialLanguageParam)
+        : (localeFromPath || savedState.filters?.language || defaultLang);
       
       let initialLanguageId = initialLanguageIdParam 
         ? parseInt(initialLanguageIdParam) 
-        : (savedState.filters?.languageId || defaultLangId);
+        : (localeIdFromPath || savedState.filters?.languageId || defaultLangId);
         
-      const initialLanguages = searchParams?.get('languages') ? searchParams?.get('languages')?.split(',') : (savedState.filters?.languages || [initialLanguage.toLowerCase()]);
-      const initialLanguageIds = searchParams?.get('languageIds') ? searchParams?.get('languageIds')?.split(',').map(Number) : (savedState.filters?.languageIds || (initialLanguageId ? [initialLanguageId] : []));
+      const initialLanguages = searchParams?.get('languages')
+        ? searchParams?.get('languages')?.split(',')
+        : (
+          localeFromPath
+            ? [localeFromPath]
+            : (savedState.filters?.languages || [initialLanguage.toLowerCase()])
+        );
+      const initialLanguageIds = searchParams?.get('languageIds')
+        ? searchParams?.get('languageIds')?.split(',').map(Number)
+        : (
+          localeIdFromPath
+            ? [localeIdFromPath]
+            : (savedState.filters?.languageIds || (initialLanguageId ? [initialLanguageId] : []))
+        );
 
       const initialWordsParam = searchParams?.get('words');
       const initialWords = (initialWordsParam && parseInt(initialWordsParam) > 0) 
@@ -239,8 +257,11 @@ export const VoicesMasterControlProvider: React.FC<{
   }, [isClient, state.journey, state.journeyId, state.filters.media, state.filters.mediaIds, checkoutState.usage, checkoutState.usageId, checkoutState.media, checkoutState.mediaIds, updateUsage, updateMedia]);
 
   const detectStateFromUrl = useCallback((url: string) => {
-    const segments = url.split('/').filter(Boolean);
-    const isAgency = url.startsWith('/agency');
+    const localeMatch = url.match(/^\/(nl|fr|en|de|es|it|pt)(\/|$)/i);
+    const rawSegments = url.split('/').filter(Boolean);
+    const segments = localeMatch ? rawSegments.slice(1) : rawSegments;
+    const urlWithoutLocale = `/${segments.join('/')}`;
+    const isAgency = urlWithoutLocale.startsWith('/agency');
     
     let step: MasterControlState['currentStep'] = 'voice';
     let journey: JourneyType | undefined = undefined;
@@ -251,6 +272,14 @@ export const VoicesMasterControlProvider: React.FC<{
     let genderId: number | null = null;
     let media: string[] | undefined = undefined;
     let mediaIds: number[] | undefined = undefined;
+
+    if (localeMatch) {
+      const host = typeof window !== 'undefined' ? window.location.host : '';
+      const market = MarketManager.getCurrentMarket(host, url);
+      const locale = normalizeLocale(localeMatch[1], market?.primary_language || 'nl-be');
+      language = locale;
+      languageId = MarketManager.getLanguageId(locale, market?.primary_language || 'nl-be');
+    }
 
     if (url.includes('/checkout')) step = 'checkout';
     
@@ -369,6 +398,8 @@ export const VoicesMasterControlProvider: React.FC<{
               ...prev.filters,
               ...savedState.filters,
               language: urlState.language || (searchParams?.get('language') ? MarketManager.getLanguageCode(searchParams?.get('language')!) : (savedState.filters?.language || prev.filters.language)),
+              languageId: urlState.languageId || (searchParams?.get('languageId') ? parseInt(searchParams.get('languageId')!) : (savedState.filters?.languageId || prev.filters.languageId)),
+              languageIds: urlState.languageId ? [urlState.languageId] : (savedState.filters?.languageIds || prev.filters.languageIds),
               gender: urlState.gender || searchParams?.get('gender') || savedState.filters?.gender || prev.filters.gender,
               media: searchParams?.get('media') ? searchParams?.get('media')?.split(',') : (savedState.filters?.media || prev.filters.media),
             },
@@ -393,6 +424,8 @@ export const VoicesMasterControlProvider: React.FC<{
         filters: {
           ...prev.filters,
           language: urlState.language || prev.filters.language,
+          languageId: urlState.languageId || prev.filters.languageId,
+          languageIds: urlState.languageId ? [urlState.languageId] : prev.filters.languageIds,
           gender: urlState.gender || prev.filters.gender,
           media: (urlState as any).media || prev.filters.media,
           spotsDetail: (urlState as any).spotsDetail || prev.filters.spotsDetail,
@@ -408,7 +441,11 @@ export const VoicesMasterControlProvider: React.FC<{
 
   useEffect(() => {
     const urlState = detectStateFromUrl(pathname);
-    if (urlState.journey || urlState.step !== state.currentStep) {
+    const hasLocaleLanguageChange =
+      !!urlState.language &&
+      (urlState.language !== state.filters.language ||
+        urlState.languageId !== state.filters.languageId);
+    if (urlState.journey || urlState.step !== state.currentStep || hasLocaleLanguageChange) {
       const journey = urlState.journey || state.journey;
       const journeyId = MarketManager.getJourneyId(journey);
       setState(prev => ({
@@ -420,6 +457,8 @@ export const VoicesMasterControlProvider: React.FC<{
         filters: {
           ...prev.filters,
           language: urlState.language || prev.filters.language,
+          languageId: urlState.languageId || prev.filters.languageId,
+          languageIds: urlState.languageId ? [urlState.languageId] : prev.filters.languageIds,
           gender: urlState.gender || prev.filters.gender,
           media: (urlState as any).media || prev.filters.media,
           spotsDetail: (urlState as any).spotsDetail || prev.filters.spotsDetail,
@@ -428,7 +467,7 @@ export const VoicesMasterControlProvider: React.FC<{
         }
       }));
     }
-  }, [pathname, detectStateFromUrl, state.currentStep]);
+  }, [pathname, detectStateFromUrl, state.currentStep, state.filters.language, state.filters.languageId]);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -691,9 +730,16 @@ export const VoicesMasterControlProvider: React.FC<{
 
   const resetFilters = useCallback(() => {
     const host = typeof window !== 'undefined' ? window.location.host : (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || MarketManager.getMarketDomains()['BE'].replace('https://', ''));
-    const market = MarketManager.getCurrentMarket(host);
-    const defaultLang = MarketManager.getLanguageCode(market?.primary_language || 'nl-be');
-    const defaultLangId = market?.primary_language_id || 1;
+    const pathnameNow = typeof window !== 'undefined' ? window.location.pathname : '';
+    const market = MarketManager.getCurrentMarket(host, pathnameNow);
+    const localePrefixMatch = pathnameNow.match(/^\/(nl|fr|en|de|es|it|pt)(\/|$)/i);
+    const defaultLang = localePrefixMatch
+      ? normalizeLocale(localePrefixMatch[1], market?.primary_language || 'nl-be')
+      : MarketManager.getLanguageCode(market?.primary_language || 'nl-be');
+    const defaultLangId =
+      MarketManager.getLanguageId(defaultLang, market?.primary_language || 'nl-be') ||
+      market?.primary_language_id ||
+      1;
     
     const defaultFilters: Partial<MasterControlState['filters']> = {
       language: defaultLang,

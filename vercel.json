@@ -1,0 +1,9 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/voiceglot-heal",
+      "schedule": "*/5 * * * *"
+    }
+  ]
+}
+
