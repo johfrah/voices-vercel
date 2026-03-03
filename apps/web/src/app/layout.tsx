@@ -10,8 +10,6 @@ import { LiquidTransitionOverlay } from "@/components/ui/LiquidTransitionOverlay
 import { MarketManagerServer } from "@/lib/system/core/market-manager";
 import { MarketDatabaseService } from "@/lib/system/market-manager-db";
 import { createClient } from "@supabase/supabase-js";
-import { Analytics } from "@vercel/analytics/react";
-import { VercelToolbar } from "@vercel/toolbar/next";
 import type { Metadata, Viewport } from "next";
 import { Inter, Raleway, Cormorant_Garamond } from "next/font/google";
 import { headers } from "next/headers";
@@ -412,8 +410,6 @@ export default async function RootLayout({
                 <Suspense fallback={null}>
                   <VoicejarTracker />
                 </Suspense>
-                <Analytics />
-                {process.env.NODE_ENV === 'development' && <VercelToolbar />}
                 <CommandPalette />
                 <SpotlightDashboard />
                 <GlobalModalManager />
