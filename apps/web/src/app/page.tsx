@@ -429,7 +429,9 @@ function HomeContent({
             <LoadingScreenInstrument text="Youssef Zaki laden..." />
           ) : (
             <div className="min-h-screen flex items-center justify-center text-white bg-va-black">
-              <TextInstrument>Artist data not found.</TextInstrument>
+              <TextInstrument>
+                <VoiceglotText translationKey="artist.error.data_not_found" defaultText="Artist data not found." />
+              </TextInstrument>
             </div>
           )}
         </Suspense>

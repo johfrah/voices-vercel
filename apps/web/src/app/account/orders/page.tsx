@@ -191,7 +191,9 @@ export default function OrdersPage() {
                           {order.status === 'completed' ? <VoiceglotText translationKey="order.status.completed" defaultText="Voltooid" /> : <VoiceglotText translationKey="order.status.processing" defaultText="In behandeling" />}
                         </TextInstrument>
                         {order.isQuote && (
-                          <span className="bg-blue-50 text-blue-600 text-[11px] font-bold tracking-widest uppercase px-3 py-1 rounded-full border border-blue-100">Offerte</span>
+                          <span className="bg-blue-50 text-blue-600 text-[11px] font-bold tracking-widest uppercase px-3 py-1 rounded-full border border-blue-100">
+                            <VoiceglotText translationKey="order.badge.quote" defaultText="Offerte" />
+                          </span>
                         )}
                       </div>
                       <HeadingInstrument level={3} className="text-4xl font-light tracking-tighter pt-2">
@@ -246,7 +248,9 @@ export default function OrdersPage() {
                           <div className="space-y-8">
                             {/* Order Items Breakdown */}
                             <div className="space-y-4">
-                              <LabelInstrument className="text-[11px] font-bold tracking-[0.2em] text-va-black/20 uppercase">Bestelde Items</LabelInstrument>
+                              <LabelInstrument className="text-[11px] font-bold tracking-[0.2em] text-va-black/20 uppercase">
+                                <VoiceglotText translationKey="order.section.ordered_items" defaultText="Bestelde Items" />
+                              </LabelInstrument>
                               {order.orderItems?.map((item: OrderItem) => (
                                 <div key={item.id} className="p-8 bg-va-off-white/50 rounded-[24px] border border-black/[0.03] space-y-6">
                                   <div className="flex justify-between items-start">
@@ -288,7 +292,9 @@ export default function OrdersPage() {
                                   {/* 🎙️ THE SCRIPT BOX (Nuclear Restoration) */}
                                   {(item.metaData?.briefing || item.metaData?.script) && (
                                     <div className="mt-6 pt-6 border-t border-black/[0.03]">
-                                      <LabelInstrument className="text-[10px] font-bold tracking-[0.2em] text-va-black/20 uppercase mb-3 block">Jouw Script / Briefing</LabelInstrument>
+                                      <LabelInstrument className="text-[10px] font-bold tracking-[0.2em] text-va-black/20 uppercase mb-3 block">
+                                        <VoiceglotText translationKey="order.section.script_briefing" defaultText="Jouw Script / Briefing" />
+                                      </LabelInstrument>
                                       <div className="bg-white p-6 rounded-[15px] border border-black/[0.02] shadow-inner italic text-va-black/70 leading-relaxed font-light text-[15px] whitespace-pre-wrap">
                                         &quot;{item.metaData.script || item.metaData.briefing}&quot;
                                       </div>
@@ -318,7 +324,9 @@ export default function OrdersPage() {
                           <div className="space-y-8">
                             <div className="bg-va-off-white/30 p-8 rounded-[24px] border border-black/[0.02] space-y-6">
                               <div className="space-y-4">
-                                <LabelInstrument className="text-[11px] font-bold tracking-[0.2em] text-va-black/20 uppercase">Facturatie</LabelInstrument>
+                                <LabelInstrument className="text-[11px] font-bold tracking-[0.2em] text-va-black/20 uppercase">
+                                  <VoiceglotText translationKey="order.section.billing" defaultText="Facturatie" />
+                                </LabelInstrument>
                                 <div className="text-[14px] font-light text-va-black/60 leading-relaxed">
                                   {order.billingVatNumber && <div className="font-medium text-va-black mb-1">BTW: {order.billingVatNumber}</div>}
                                   {order.ipAddress && <div className="text-[11px] opacity-40 mt-2">IP: {order.ipAddress}</div>}
@@ -326,10 +334,16 @@ export default function OrdersPage() {
                               </div>
                               
                               <div className="pt-6 border-t border-black/[0.03] space-y-4">
-                                <LabelInstrument className="text-[11px] font-bold tracking-[0.2em] text-va-black/20 uppercase">Betaling</LabelInstrument>
+                                <LabelInstrument className="text-[11px] font-bold tracking-[0.2em] text-va-black/20 uppercase">
+                                  <VoiceglotText translationKey="order.section.payment" defaultText="Betaling" />
+                                </LabelInstrument>
                                 <div className="flex items-center gap-3 text-[14px] font-light text-va-black/60">
                                   <CreditCard size={16} strokeWidth={1.5} />
-                                  <span>{order.paymentMethod === 'banktransfer' ? 'Overschrijving' : 'Online betaling'}</span>
+                                  <span>
+                                    {order.paymentMethod === 'banktransfer'
+                                      ? <VoiceglotText translationKey="order.payment_method.banktransfer" defaultText="Overschrijving" />
+                                      : <VoiceglotText translationKey="order.payment_method.online" defaultText="Online betaling" />}
+                                  </span>
                                 </div>
                               </div>
                             </div>

@@ -1136,7 +1136,9 @@ export default function ConfiguratorPageClient({
   if (!isHydrated) return (
     <ContainerInstrument className="min-h-[400px] flex items-center justify-center">
       <Loader2 className="animate-spin text-primary/20" size={32} />
-      <span className="ml-3 text-va-black/20 font-light tracking-widest uppercase text-sm">Configurator laden...</span>
+      <span className="ml-3 text-va-black/20 font-light tracking-widest uppercase text-sm">
+        <VoiceglotText translationKey="checkout.configurator.loading" defaultText="Configurator laden..." />
+      </span>
     </ContainerInstrument>
   );
 
@@ -1394,7 +1396,9 @@ export default function ConfiguratorPageClient({
                   {isAutoSaving && (
                     <>
                       <div className="w-[1px] h-3 bg-va-black/10" />
-                      <span className="text-[10px] font-bold text-primary animate-pulse tracking-widest uppercase">Auto-saving...</span>
+                      <span className="text-[10px] font-bold text-primary animate-pulse tracking-widest uppercase">
+                        <VoiceglotText translationKey="checkout.configurator.autosaving" defaultText="Auto-saving..." />
+                      </span>
                     </>
                   )}
                 </div>
