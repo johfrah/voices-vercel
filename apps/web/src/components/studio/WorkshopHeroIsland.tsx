@@ -93,8 +93,9 @@ export const WorkshopHeroIsland: React.FC<WorkshopHeroIslandProps> = ({ workshop
   };
 
   return (
-    <ContainerInstrument plain className="relative pt-32 pb-24 bg-va-black text-white overflow-hidden">
-      <ContainerInstrument plain className="absolute top-0 left-1/2 -translate-x-1/2 w-[1200px] h-[1200px] bg-primary/5 rounded-full blur-[150px] -translate-y-1/2 pointer-events-none" />
+    <ContainerInstrument plain className="relative pt-32 pb-24 text-white overflow-hidden" style={{ background: 'linear-gradient(135deg, #eb3683 0%, #c134f9 100%)' }}>
+      <ContainerInstrument plain className="absolute inset-0 bg-va-black/40" />
+      <ContainerInstrument plain className="absolute top-0 left-1/2 -translate-x-1/2 w-[1200px] h-[1200px] bg-white/5 rounded-full blur-[150px] -translate-y-1/2 pointer-events-none" />
 
       <ContainerInstrument className="max-w-7xl mx-auto px-6 relative z-10">
         <ContainerInstrument plain className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
