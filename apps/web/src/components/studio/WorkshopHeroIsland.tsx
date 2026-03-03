@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { ContainerInstrument, HeadingInstrument, TextInstrument, ButtonInstrument } from "@/components/ui/LayoutInstruments";
 import { VideoPlayer } from "@/components/ui/VideoPlayer";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
@@ -8,6 +8,7 @@ import { ArrowRight, ShoppingCart, Heart } from "lucide-react";
 import { useSonicDNA } from "@/lib/engines/sonic-dna";
 import { useVoicesRouter } from "@/components/ui/VoicesLink";
 import { useCheckout } from "@/contexts/CheckoutContext";
+import { WorkshopParticipantForm } from "./WorkshopParticipantForm";
 
 interface WorkshopHeroIslandProps {
   workshop: {
@@ -37,6 +38,7 @@ export const WorkshopHeroIsland: React.FC<WorkshopHeroIslandProps> = ({ workshop
   const { playClick } = useSonicDNA();
   const router = useVoicesRouter();
   const { addItem, setJourney } = useCheckout();
+  const [showParticipantForm, setShowParticipantForm] = useState(false);
   const videoPath = workshop.video?.file_path || workshop.featured_image?.file_path;
   const hasVideo = !!workshop.video?.file_path;
   const nextEdition = workshop.upcoming_editions?.[0];
@@ -48,25 +50,34 @@ export const WorkshopHeroIsland: React.FC<WorkshopHeroIslandProps> = ({ workshop
     playClick('pro');
     
     if (hasEdition) {
-      const workshopItem = {
-        id: `workshop-${nextEdition!.id}-${Date.now()}`,
-        type: 'workshop_edition' as const,
-        name: workshop.title,
-        price: priceValue,
-        editionId: nextEdition!.id,
-        date: nextEdition!.date,
-        location: nextEdition!.location?.city || null,
-        pricing: {
-          total: priceValue,
-          subtotal: priceValue
-        }
-      };
-      addItem(workshopItem);
-      setJourney('studio', nextEdition!.id);
-      router.push('/checkout');
+      setShowParticipantForm(true);
     } else {
       router.push(`/studio/doe-je-mee?workshopId=${workshop.id}`);
     }
+  };
+
+  const handleParticipantSubmit = (participantData: {
+    firstName: string; lastName: string; email: string;
+    age: string; profession: string; experience: string;
+  }) => {
+    const workshopItem = {
+      id: `workshop-${nextEdition!.id}-${Date.now()}`,
+      type: 'workshop_edition' as const,
+      name: workshop.title,
+      price: priceValue,
+      editionId: nextEdition!.id,
+      date: nextEdition!.date,
+      location: nextEdition!.location?.city || null,
+      participant_info: participantData,
+      pricing: {
+        total: priceValue,
+        subtotal: priceValue
+      }
+    };
+    addItem(workshopItem);
+    setJourney('studio', nextEdition!.id);
+    setShowParticipantForm(false);
+    router.push('/checkout');
   };
 
   return (
@@ -164,6 +175,14 @@ export const WorkshopHeroIsland: React.FC<WorkshopHeroIslandProps> = ({ workshop
 
         </ContainerInstrument>
       </ContainerInstrument>
+
+      {showParticipantForm && (
+        <WorkshopParticipantForm
+          workshopTitle={workshop.title}
+          onSubmit={handleParticipantSubmit}
+          onCancel={() => setShowParticipantForm(false)}
+        />
+      )}
     </ContainerInstrument>
   );
 };

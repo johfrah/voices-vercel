@@ -171,6 +171,7 @@ export async function POST(request: Request) {
       return {
         order_id: newOrder.id,
         actor_id: dbActor?.id || null,
+        edition_id: item.editionId || null,
         name: item.name || 'Product',
         quantity: 1,
         price: (item.pricing?.subtotal || 0).toString(),
@@ -180,8 +181,9 @@ export async function POST(request: Request) {
           briefing: item.briefing, 
           usage: item.usage, 
           media: item.media,
-          country_id: countryId || item.countryId, // 🛡️ Store the hard ID
-          language_id: dbActor?.native_language_id // 🛡️ Store the hard ID
+          country_id: countryId || item.countryId,
+          language_id: dbActor?.native_language_id,
+          participant_info: item.participant_info || undefined
         },
         delivery_status: 'waiting'
       };
