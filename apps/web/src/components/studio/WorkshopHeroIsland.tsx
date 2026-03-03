@@ -133,9 +133,9 @@ export const WorkshopHeroIsland: React.FC<WorkshopHeroIslandProps> = ({ workshop
             </ContainerInstrument>
 
             {workshop.expert_note && (
-              <ContainerInstrument plain className="relative pl-8 before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-primary/40">
-                <TextInstrument className="text-xl md:text-2xl text-white/60 font-light italic leading-relaxed">
-                  &ldquo;{workshop.expert_note}&rdquo;
+              <ContainerInstrument plain className="relative pl-8 before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:bg-white/20">
+                <TextInstrument className="text-xl md:text-2xl text-white/70 font-light italic leading-relaxed">
+                  {workshop.expert_note.replace(/^[""\u201C\u201D]+|[""\u201C\u201D]+$/g, '')}
                 </TextInstrument>
               </ContainerInstrument>
             )}
@@ -157,7 +157,7 @@ export const WorkshopHeroIsland: React.FC<WorkshopHeroIslandProps> = ({ workshop
 
                   <ButtonInstrument
                     onClick={handleBookClick}
-                    className="inline-flex items-center gap-4 px-10 py-5 !bg-primary !text-va-black !rounded-[14px] font-bold tracking-[0.1em] hover:!bg-white transition-all duration-500 shadow-aura-lg group/cta"
+                    className="inline-flex items-center gap-4 px-10 py-5 !bg-white !text-va-black !rounded-[14px] font-bold tracking-[0.1em] hover:!bg-va-black hover:!text-white transition-all duration-500 shadow-aura-lg group/cta"
                   >
                     <ShoppingCart size={20} strokeWidth={2.5} />
                     <VoiceglotText translationKey="studio.hero.cta_book" defaultText="Reserveer plek" />
