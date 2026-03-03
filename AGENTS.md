@@ -80,6 +80,26 @@ This is a Next.js 14 monorepo for a multi-tenant voice-over agency platform ("Vo
 - **Type check**: `cd apps/web && npx tsc --noEmit`
 - **Build**: `npm run build` from repo root
 
+### Execution Lanes (Speed + Correctness)
+- **Fast Lane (default)**: Use for most tasks, especially when multiple agents work in parallel.
+  - Run targeted checks only (changed files, focused endpoint/UI smoke test).
+  - Avoid full-repo lint/type-check unless the task touches shared infra, routing core, payments, auth, or DB schema.
+  - Skip version bump and release-only audits unless user asks for a release/deploy.
+- **Release Lane (explicit)**: Use when user asks to ship/deploy/release, or when pushing production-critical changes.
+  - Run the full release protocol: version sync, full pre-flight checks, and deployment validation.
+  - Follow `.cursor/rules/700-PUSH-AND-VALIDATE.mdc` and `.cursor/rules/200-CODE-INTEGRITY.mdc` strictly.
+
+### Multi-Agent Parallel Protocol (Anti-Slowdown)
+- Use 1 coordinator + max 3 worker agents in parallel.
+- Split work into **non-overlapping scopes** (different folders/features) to prevent duplicate scans and merge conflicts.
+- Reuse existing running dev servers and environment state whenever possible.
+- Do not repeat identical commands back-to-back without new input or changed context.
+- Worker output format: findings, exact file paths, minimal patch suggestion.
+
+### Response Latency Policy
+- Send a short acknowledgement immediately, then continue with progressive updates.
+- Target near-instant first response for simple requests; for complex tasks, prioritize rapid acknowledgement and incremental delivery over long silent runs.
+
 ### Key Gotchas
 - **ESLint config**: The repo's `.gitignore` excludes `.eslintrc.json`. If `next lint` prompts interactively, create `apps/web/.eslintrc.json` with `{"extends": "next/core-web-vitals"}`.
 - **TypeScript errors**: The codebase has known TS errors. `next.config.mjs` sets `ignoreBuildErrors: true` and `ignoreDuringBuilds: true` for ESLint. The build will succeed despite type errors.
@@ -93,6 +113,7 @@ This is a Next.js 14 monorepo for a multi-tenant voice-over agency platform ("Vo
 - **DB connection**: The `core-internal/database/index.ts` must use the Supabase Pooler (port 6543), NOT the direct host (port 5432). The direct host gives `ECONNRESET`. If someone re-introduces pooler-to-direct rewriting, the `/studio/` page and other server-rendered routes will break.
 - **Workshop media**: Workshop cards use images (.webp/.jpg) from Supabase Storage, not videos. The `WorkshopCard` detects media type by file extension. Aftermovie videos exist separately in `studio/workshops/videos/` but are not currently linked as workshop media.
 - **Testing preference (strict)**: Default to terminal output and screenshots. Do **NOT** record screen by default. Record video only when it is truly essential to prove a complex UI bug/fix, or when the user explicitly asks for video evidence.
+- **Sandbox Test Safety (mandatory)**: Any test that can trigger external side effects (emails, payments, webhooks, SMS, third-party writes) MUST use sandbox/test mode or mocked endpoints. If sandbox is unavailable, use dry-run/read-only validation and explicitly report that side effects were not executed.
 - **GlobalNav journey detection**: The GlobalNav uses URL pathname first, then worldId, then market_code to determine which World navigation to show. On `voices.be/studio/`, the worldId from handshakeContext is 1 (Agency), so pathname detection (`/studio/` → `'studio'`) must take priority. Do not revert to ID-first detection order.
 - **React overrides**: Root `package.json` has `"overrides"` for `react` and `react-dom` to force a single React instance across the monorepo. Do not remove these — they prevent `styled-jsx` useContext crashes during static page generation.
 
