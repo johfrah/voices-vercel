@@ -138,6 +138,28 @@ interface CheckoutContextType {
   isHydrated: boolean;
 }
 
+const PAYMENT_ICON_FALLBACKS: Record<string, string> = {
+  bancontact: '/icon-bancontact.svg',
+  ideal: '/icon-ideal.svg',
+  creditcard: '/icon-card.svg',
+  mastercard: '/icon-mastercard.svg',
+  belfius: '/icon-belfius.svg',
+  applepay: '/icon-applepay.svg'
+};
+
+const resolvePaymentFallbackIcon = (methodId?: string, methodDescription?: string): string | undefined => {
+  const hint = `${methodId || ''} ${methodDescription || ''}`.toLowerCase();
+
+  if (hint.includes('bancontact')) return PAYMENT_ICON_FALLBACKS.bancontact;
+  if (hint.includes('ideal')) return PAYMENT_ICON_FALLBACKS.ideal;
+  if (hint.includes('mastercard')) return PAYMENT_ICON_FALLBACKS.mastercard;
+  if (hint.includes('belfius')) return PAYMENT_ICON_FALLBACKS.belfius;
+  if (hint.includes('apple')) return PAYMENT_ICON_FALLBACKS.applepay;
+  if (hint.includes('card') || hint.includes('credit')) return PAYMENT_ICON_FALLBACKS.creditcard;
+
+  return methodId ? PAYMENT_ICON_FALLBACKS[methodId] : undefined;
+};
+
 const initialState: CheckoutState = {
   step: 'briefing',
   journey: 'agency',
@@ -182,8 +204,8 @@ const initialState: CheckoutState = {
   },
   paymentMethod: 'bancontact',
   paymentMethods: [
-    { id: 'bancontact', description: 'Bancontact', image: { size2x: '/assets/common/branding/payment/bancontact.svg' } },
-    { id: 'ideal', description: 'iDEAL', image: { size2x: '/assets/common/branding/payment/ideal.svg' } },
+    { id: 'bancontact', description: 'Bancontact', image: { size2x: PAYMENT_ICON_FALLBACKS.bancontact } },
+    { id: 'ideal', description: 'iDEAL', image: { size2x: PAYMENT_ICON_FALLBACKS.ideal } },
     { id: 'banktransfer', description: 'Betalen op factuur (Offerte)', isInvoice: true, image: { size2x: '/assets/common/branding/icons/ACCOUNT.svg' } }
   ],
   taxRate: 0.21,
@@ -264,8 +286,15 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             ));
           });
 
-          // 🛡️ CHRIS-PROTOCOL: Destructure to exclude items from spread to prevent override
-          const { items: _, ...parsedWithoutItems } = parsed;
+          // 🛡️ CHRIS-PROTOCOL: Exclude runtime-only checkout config from persisted spread
+          // Older localStorage payloads may contain stale paymentMethods with broken local asset paths.
+          const {
+            items: _,
+            paymentMethods: _paymentMethods,
+            taxRate: _taxRate,
+            pricingConfig: _pricingConfig,
+            ...parsedWithoutItems
+          } = parsed;
 
           setState(prev => ({
             ...prev,
@@ -296,9 +325,6 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       try {
         const res = await fetch('/api/checkout/config');
         const data = await res.json();
-        
-        const pricingRes = await fetch('/api/pricing/config');
-        const pricingData = await pricingRes.json();
 
         if (data && data.paymentMethods) {
           const filtered = data.paymentMethods.filter((m: any) => 
@@ -307,20 +333,16 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           
           const allMethods = [
             ...filtered.map((m: any) => {
-              // 🛡️ CHRIS-PROTOCOL: Force local assets for stability (v2.14.272)
-              // API URLs (Mollie) are sometimes unstable or blocked.
-              let localPath = m.image?.size2x || m.image?.size1x;
-              
-              if (m.id === 'bancontact') localPath = '/assets/common/branding/payment/bancontact.svg';
-              if (m.id === 'ideal') localPath = '/assets/common/branding/payment/ideal.svg';
-              if (m.id === 'creditcard') localPath = '/assets/common/branding/payment/visa.svg';
-              if (m.id === 'mastercard') localPath = '/assets/common/branding/payment/mastercard.svg';
+              const iconPath =
+                resolvePaymentFallbackIcon(m.id, m.description) ||
+                m.image?.size2x ||
+                m.image?.size1x;
               
               return {
                 ...m,
                 image: {
                   ...m.image,
-                  size2x: localPath
+                  size2x: iconPath
                 }
               };
             }),
@@ -335,9 +357,20 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           setState(prev => ({
             ...prev,
             paymentMethods: allMethods,
-            taxRate: data.taxRate || 0.21,
+            taxRate: data.taxRate || 0.21
+          }));
+        }
+
+        // Fetch pricing config separately so payment methods remain stable even if pricing endpoint fails.
+        try {
+          const pricingRes = await fetch('/api/pricing/config');
+          const pricingData = await pricingRes.json();
+          setState(prev => ({
+            ...prev,
             pricingConfig: pricingData
           }));
+        } catch (pricingError) {
+          console.warn('[CheckoutContext] Failed to fetch pricing config', pricingError);
         }
       } catch (e) {
         console.warn('[CheckoutContext] Failed to fetch config', e);
