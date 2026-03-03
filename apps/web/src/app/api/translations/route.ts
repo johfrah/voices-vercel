@@ -60,13 +60,31 @@ export async function GET(request: NextRequest) {
       return statusScore + manualScore + translatedScore + freshnessScore;
     };
 
+    const fetchAllRowsForLocale = async (candidate: string) => {
+      const pageSize = 500;
+      let offset = 0;
+      const allRows: any[] = [];
+
+      while (true) {
+        const { data, error } = await supabase
+          .from('translations')
+          .select('translation_key, translated_text, original_text, is_manually_edited, lang_id, status, updated_at')
+          .eq('lang', candidate)
+          .range(offset, offset + pageSize - 1);
+
+        if (error) throw error;
+        if (!data || data.length === 0) break;
+
+        allRows.push(...data);
+        if (data.length < pageSize) break;
+        offset += pageSize;
+      }
+
+      return allRows;
+    };
+
     for (const candidate of localeCandidates) {
-      const { data, error } = await supabase
-        .from('translations')
-        .select('translation_key, translated_text, original_text, is_manually_edited, lang_id, status, updated_at')
-        .eq('lang', candidate)
-        .limit(5000);
-      if (error) throw error;
+      const data = await fetchAllRowsForLocale(candidate);
       if ((data?.length || 0) > 0 && !localeLocked) {
         effectiveLang = candidate;
         localeLocked = true;

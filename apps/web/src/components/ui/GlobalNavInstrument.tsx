@@ -473,6 +473,19 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
     return navConfig?.links || [];
   }, [navConfig]);
 
+  const resolveLinkTranslationKey = useCallback((link: any, idx: number): string => {
+    if (link?.key && String(link.key).trim()) return String(link.key).trim();
+
+    const href = String(link?.href || '').toLowerCase();
+    const name = String(link?.name || '').toLowerCase();
+
+    if (href.startsWith('/contact')) return 'nav.contact';
+    if (href.includes('#how') || name.includes('hoe het werkt') || name.includes('how it works')) return 'nav.how_it_works';
+    if (href === '/agency' || href === '/agency/' || name === 'overzicht' || name === 'overview') return 'nav.overview';
+
+    return `nav.${getJourneyKey()}.${idx}`;
+  }, [getJourneyKey]);
+
   const handleMagicLinkRequest = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!loginEmail) return;
@@ -672,7 +685,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
                 isActive ? 'text-primary' : 'text-va-black/40 hover:text-va-black'
               }`}
             >
-              <VoiceglotText  translationKey={link.key || `nav.${getJourneyKey()}.${idx}`} defaultText={link.name || ''} />
+              <VoiceglotText  translationKey={resolveLinkTranslationKey(link, idx)} defaultText={link.name || ''} />
               {hasSubmenu && <ChevronDown size={12} className="opacity-40 group-hover/link:rotate-180 transition-transform duration-500" />}
               
               {isActive && (
@@ -1280,11 +1293,11 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
                     </ContainerInstrument>
                   </ContainerInstrument>
                   <DropdownItem icon={Home} label={<VoiceglotText translationKey="nav.home" defaultText="Home" />} href="/" />
-                  {activeLinks.map((link: any) => (
+                  {activeLinks.map((link: any, idx: number) => (
                     <DropdownItem 
                       key={link.name}
                       icon={ChevronRight} 
-                      label={<VoiceglotText translationKey={link.key || `nav.${(link.name || '').toLowerCase().replace(/\s+/g, '_')}`} defaultText={link.name || ''} />} 
+                      label={<VoiceglotText translationKey={resolveLinkTranslationKey(link, idx)} defaultText={link.name || ''} />} 
                       href={link.href !== '#' ? link.href : undefined}
                       onClick={link.onClick} 
                     />
@@ -1296,10 +1309,10 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
                 </>
               )}
               
-              {!isMobile && activeLinks.map((link: any) => (
+              {!isMobile && activeLinks.map((link: any, idx: number) => (
                 <DropdownItem key={link.name}
                   icon={ChevronRight} 
-                  label={<VoiceglotText translationKey={link.key || `nav.${(link.name || '').toLowerCase().replace(/\s+/g, '_')}`} defaultText={link.name || ''} />} 
+                  label={<VoiceglotText translationKey={resolveLinkTranslationKey(link, idx)} defaultText={link.name || ''} />} 
                   href={link.href !== '#' ? link.href : undefined}
                   onClick={link.onClick} />
               ))}

@@ -96,7 +96,10 @@ export const TranslationProvider: React.FC<{
       
       setLoading(true);
       try {
-        const res = await fetch(`/api/translations/?lang=${encodeURIComponent(normalizedLang)}`);
+        const res = await fetch(
+          `/api/translations/?lang=${encodeURIComponent(normalizedLang)}&_v=2.28.5`,
+          { cache: 'no-store' }
+        );
         const data = await res.json();
         setStudioTranslations(prev => ({ ...prev, ...(data.translations || {}) }));
       } catch (e) {

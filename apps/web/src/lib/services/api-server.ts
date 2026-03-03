@@ -1059,22 +1059,43 @@ export async function getTranslationsServer(lang: string): Promise<Record<string
       const freshnessScore = row.updated_at ? new Date(row.updated_at).getTime() / 1e15 : 0;
       return statusScore + manualScore + translatedScore + freshnessScore;
     };
-    for (const candidate of localeCandidates) {
-      const response = await supabase
-        .from('translations')
-        .select('translation_key, translated_text, original_text, is_manually_edited, status, updated_at')
-        .eq('lang', candidate)
-        .limit(5000); // 🛡️ Full multilingual registry coverage
-      if (response.error) {
-        throw response.error;
+    const fetchAllRowsForLocale = async (candidate: string) => {
+      const pageSize = 500;
+      let offset = 0;
+      const allRows: any[] = [];
+
+      while (true) {
+        const response = await supabase
+          .from('translations')
+          .select('translation_key, translated_text, original_text, is_manually_edited, status, updated_at')
+          .eq('lang', candidate)
+          .range(offset, offset + pageSize - 1);
+
+        if (response.error) {
+          throw response.error;
+        }
+        if (!response.data || response.data.length === 0) {
+          break;
+        }
+
+        allRows.push(...response.data);
+        if (response.data.length < pageSize) {
+          break;
+        }
+        offset += pageSize;
       }
-      if ((response.data?.length || 0) > 0) {
+
+      return allRows;
+    };
+    for (const candidate of localeCandidates) {
+      const candidateRows = await fetchAllRowsForLocale(candidate);
+      if (candidateRows.length > 0) {
         if (!localeLocked) {
           effectiveLang = candidate;
           localeLocked = true;
         }
         const bestRowsForCandidate = new Map<string, any>();
-        for (const row of (response.data || [])) {
+        for (const row of candidateRows) {
           const key = row.translation_key;
           if (!key) continue;
           const existing = bestRowsForCandidate.get(key);
