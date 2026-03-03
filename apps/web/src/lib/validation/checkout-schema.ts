@@ -24,6 +24,12 @@ export const CheckoutPayloadSchema = z.object({
   items: z.array(z.object({
     id: z.string(),
     type: z.string(),
+    name: z.string().optional(),
+    workshop_id: z.coerce.number().optional(),
+    workshopId: z.coerce.number().optional(),
+    edition_id: z.coerce.number().optional(),
+    editionId: z.coerce.number().optional(),
+    price: z.coerce.number().optional(),
     actor: z.object({
       id: z.coerce.number(),
       display_name: z.string().optional(),
@@ -32,6 +38,7 @@ export const CheckoutPayloadSchema = z.object({
     briefing: z.string().optional(),
     pricing: z.object({
       total: z.coerce.number(),
+      subtotal: z.coerce.number().optional(),
       tax: z.coerce.number().optional(),
     }).optional(),
   })).default([]),

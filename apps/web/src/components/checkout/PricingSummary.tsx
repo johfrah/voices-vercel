@@ -17,7 +17,7 @@ import { cn } from '@/lib/utils';
 import { VOICES_CONFIG } from '@/lib/core-internal/config';
 import { normalizeLocale } from '@/lib/system/locale-utils';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircle2, Loader2, Trash2, Edit2, X, ChevronRight, Info, Star, CreditCard, FileText, Tag, Eye, Lock, AlertCircle, Send, ArrowRight, Check, Instagram } from 'lucide-react';
+import { CheckCircle2, Loader2, Trash2, Edit2, X, ChevronRight, Info, CreditCard, FileText, Tag, Eye, Lock, AlertCircle, Send, ArrowRight, Check, Instagram } from 'lucide-react';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
 import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
@@ -230,8 +230,6 @@ export const PricingSummary: React.FC<{
     }
   };
 
-  const isSubscriptionContext = state.usage === 'subscription';
-  const shouldRenderJohfraiSubscriptionCard = isSubscriptionContext && state.journey === 'johfrai-subscription';
   const isCartPage = typeof window !== 'undefined' && window.location.pathname.includes('/cart');
   const isCheckoutPage = typeof window !== 'undefined' && window.location.pathname.includes('/checkout');
   const localePrefix = typeof window !== 'undefined'
@@ -279,9 +277,6 @@ export const PricingSummary: React.FC<{
 
     return `https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices/${rawSource.replace(/^\/+/, '')}`;
   };
-  // 🛡️ CHRIS-PROTOCOL: Defensive guard for items array (v2.15.065)
-  const hasContextData = (state.items?.length || 0) > 0 || state.selectedActor || state.briefing || shouldRenderJohfraiSubscriptionCard || state.editionId;
-  
   const discountAmount = state.customer.active_coupon 
     ? (state.customer.active_coupon.type === 'percentage' 
         ? (subtotal * (state.customer.active_coupon.discount / 100)) 
@@ -301,42 +296,6 @@ export const PricingSummary: React.FC<{
         <ContainerInstrument className="space-y-4 w-full max-w-full">
           {/* Cart items list */}
           <ContainerInstrument className="space-y-4">
-            {shouldRenderJohfraiSubscriptionCard && (
-              <motion.div 
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="flex justify-between items-center p-6 bg-va-black text-white rounded-[20px] shadow-aura-lg border-b-4 border-primary relative overflow-hidden group"
-              >
-                <ContainerInstrument className="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                <ContainerInstrument className="flex items-center gap-4 relative z-10">
-                  <ContainerInstrument className="w-12 h-12 rounded-[10px] bg-primary/20 flex items-center justify-center text-primary shadow-inner">
-                    <Star size={24} strokeWidth={1.5} className="animate-pulse" />
-                  </ContainerInstrument>
-                  <ContainerInstrument>
-                    <HeadingInstrument level={4} className="font-light text-lg tracking-tight text-white">
-                      Johfrai {state.plan}
-                    </HeadingInstrument>
-                    <TextInstrument className="text-[15px] tracking-widest text-white/40 font-light ">
-                      <VoiceglotText  translationKey="checkout.summary.subscription_desc" defaultText="Jaarabonnement  Direct Actief" />
-                    </TextInstrument>
-                  </ContainerInstrument>
-                </ContainerInstrument>
-                <ContainerInstrument className="text-right relative z-10">
-                  <motion.span 
-                    key={state.pricing.total}
-                    initial={{ y: 10, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    className="block font-light text-2xl"
-                  >
-                    € {state.pricing.total.toFixed(2)}
-                  </motion.span>
-                  <TextInstrument className="text-[15px] tracking-widest text-white/20 font-light ">
-                    <VoiceglotText  translationKey="common.per_month" defaultText="per maand" />
-                  </TextInstrument>
-                </ContainerInstrument>
-              </motion.div>
-            )}
-
             {/* 🛡️ CHRIS-PROTOCOL: Defensive guard for items array (v2.15.065) */}
             {(state.items?.length || 0) > 0 && (state.items || []).map((itemObj, idx) => {
               const isWorkshopItem = itemObj.type === 'workshop_edition';

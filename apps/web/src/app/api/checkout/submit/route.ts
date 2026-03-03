@@ -72,18 +72,36 @@ export async function POST(request: Request) {
       ...(selectedActor?.id ? [selectedActor.id] : [])
     ])).map(id => Number(id));
 
-    const workshopIds = Array.from(new Set([
-      ...(items || []).map((i: any) => i.id).filter((id: any) => !isNaN(Number(id)) && Number(id) > 0)
+    const workshopIdHints = Array.from(new Set([
+      ...(items || []).flatMap((i: any) => [i.workshop_id, i.workshopId, i.id]).filter((id: any) => !isNaN(Number(id)) && Number(id) > 0)
     ])).map(id => Number(id));
 
-    const { data: dbActors } = await sdkClient.from('actors').select('*').or(`id.in.(${actorIds.join(',')}),wp_product_id.in.(${actorIds.join(',')})`);
-    const { data: dbWorkshops } = await sdkClient.from('workshops').select('*').in('id', workshopIds);
+    const editionIds = Array.from(new Set([
+      ...(items || []).map((i: any) => i.editionId ?? i.edition_id).filter((id: any) => !isNaN(Number(id)) && Number(id) > 0)
+    ])).map(id => Number(id));
+
+    const { data: dbActors } = actorIds.length > 0
+      ? await sdkClient.from('actors').select('*').or(`id.in.(${actorIds.join(',')}),wp_product_id.in.(${actorIds.join(',')})`)
+      : { data: [] as any[] };
+    const { data: dbEditions } = editionIds.length > 0
+      ? await sdkClient.from('workshop_editions').select('id, workshop_id, price').in('id', editionIds)
+      : { data: [] as any[] };
+
+    const workshopIds = Array.from(new Set([
+      ...workshopIdHints,
+      ...((dbEditions || []).map((edition: any) => Number(edition?.workshop_id)).filter((id: number) => Number.isFinite(id) && id > 0))
+    ]));
+
+    const { data: dbWorkshops } = workshopIds.length > 0
+      ? await sdkClient.from('workshops').select('*').in('id', workshopIds)
+      : { data: [] as any[] };
 
     const actorMap = new Map();
     (dbActors || []).forEach(a => {
       actorMap.set(Number(a.id), a);
       if (a.wp_product_id) actorMap.set(Number(a.wp_product_id), a);
     });
+    const editionMap = new Map((dbEditions || []).map((edition: any) => [Number(edition.id), edition]));
     const workshopMap = new Map((dbWorkshops || []).map(w => [Number(w.id), w]));
 
     const isVatExempt = !!vat_number && vat_number.length > 2 && !vat_number.startsWith('BE'); 
@@ -114,8 +132,18 @@ export async function POST(request: Request) {
         return { ...item, pricing: result };
       }
       if (item.type === 'workshop_edition') {
-        const dbWorkshop = workshopMap.get(Number(item.id));
-        const price = dbWorkshop ? Number(dbWorkshop.price) : 0;
+        const edition = editionMap.get(Number(item.editionId ?? item.edition_id));
+        const workshopIdFromItem = [item.workshop_id, item.workshopId, item.id]
+          .map((id: any) => Number(id))
+          .find((id: number) => Number.isFinite(id) && id > 0);
+        const resolvedWorkshopId = Number(edition?.workshop_id || workshopIdFromItem || 0);
+        const dbWorkshop = resolvedWorkshopId > 0 ? workshopMap.get(resolvedWorkshopId) : undefined;
+
+        const editionPrice = Number(edition?.price || 0);
+        const workshopPrice = dbWorkshop ? Number(dbWorkshop.price || 0) : 0;
+        const payloadPrice = Number(item?.pricing?.subtotal ?? item?.pricing?.total ?? item?.price ?? 0);
+        const price = [editionPrice, workshopPrice, payloadPrice].find((candidate: number) => Number.isFinite(candidate) && candidate > 0) || 0;
+
         serverCalculatedSubtotal += price;
         return { ...item, pricing: { total: price, subtotal: price, tax: price * taxRate } };
       }
