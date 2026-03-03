@@ -2,12 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import pdf from 'pdf-parse';
 import { GeminiService } from '@/lib/services/gemini-service';
 
-// Dynamische imports voor optionele libraries
-let XLSX: any;
+const XLSX_MIME = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
 let mammoth: any;
 
 try {
-  XLSX = require('xlsx');
   mammoth = require('mammoth');
 } catch (e) {
   console.warn('Optionele document parsing libraries niet geladen');
@@ -16,7 +14,7 @@ try {
 /**
  * SMART SCRIPT IMPORT API (2026)
  * 
- * Doel: Extraheert tekst uit PDF, Word, Excel en Text en gebruikt AI om er een Voices-script van te maken.
+ * Doel: Extraheert tekst uit PDF, Word en Text en gebruikt AI om er een Voices-script van te maken.
  */
 export async function POST(request: NextRequest) {
   try {
@@ -37,15 +35,11 @@ export async function POST(request: NextRequest) {
       // Word (.docx)
       const result = await mammoth.extractRawText({ buffer });
       rawText = result.value;
-    } else if ((file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || file.name.endsWith('.xlsx')) && XLSX) {
-      // Excel (.xlsx) - Slimme interpretatie
-      const workbook = XLSX.read(buffer, { type: 'buffer' });
-      const sheetName = workbook.SheetNames[0];
-      const worksheet = workbook.Sheets[sheetName];
-      
-      // We zetten de sheet om naar een JSON array van objecten om de structuur te behouden
-      const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-      rawText = JSON.stringify(jsonData);
+    } else if (file.type === XLSX_MIME || file.name.toLowerCase().endsWith('.xlsx')) {
+      return NextResponse.json(
+        { error: 'Excel-import is tijdelijk uitgeschakeld om veiligheidsredenen. Gebruik PDF, DOCX of TXT.' },
+        { status: 415 }
+      );
     } else if (file.type === 'text/plain') {
       rawText = buffer.toString('utf-8');
     } else {
@@ -66,7 +60,7 @@ export async function POST(request: NextRequest) {
       JOUW ANALYSE-STAPPEN:
       1. WAT IS DIT? Begrijp de context. Is het een IVR-keuzemenu, een radiocommercial, een e-learning module, of een verzameling losse boodschappen?
       2. IDENTIFICEER SEGMENTEN: Zoek naar natuurlijke overgangen. Zelfs als er geen titels in het document staan, moet jij logische titels bedenken op basis van de inhoud (bijv. "Introductie", "Optie 1", "Afsluiting").
-      3. TABELLEN INTERPRETEREN: Als de ruwe tekst een JSON-array van een Excel-sheet is, interpreteer dan de kolommen. Vaak is kolom A een titel/id en kolom B de tekst. Combineer dit slim tot segmenten met titels tussen haakjes.
+      3. TABELLEN INTERPRETEREN: Als de ruwe tekst kolommen of lijststructuren bevat, interpreteer die slim. Vaak is kolom A een titel/id en kolom B de tekst. Combineer dit tot segmenten met titels tussen haakjes.
       4. FILTER DE RUIS: Verwijder alles wat NIET ingesproken moet worden (paginanummers, datum, bestandsnamen, "Klant:", "Versie 2.0").
       5. BEHOUD DE KERN: De tekst die ingesproken moet worden moet 100% intact blijven. Verander geen woorden in de eigenlijke boodschap.
 

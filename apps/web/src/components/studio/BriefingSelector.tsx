@@ -385,7 +385,7 @@ export const BriefingSelector: React.FC<BriefingSelectorProps> = ({ onScriptExtr
               type="file" 
               onChange={handleFileUpload}
               className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-              accept="audio/*,video/*,.pdf,.doc,.docx,.txt,.xlsx"
+              accept="audio/*,video/*,.pdf,.doc,.docx,.txt"
             />
             <div className="p-8 border-2 border-dashed border-black/5 rounded-2xl bg-white flex flex-col items-center gap-3 text-va-black/20 hover:border-primary/20 hover:text-primary/40 transition-all">
               <Upload size={32} strokeWidth={1} />
@@ -393,7 +393,7 @@ export const BriefingSelector: React.FC<BriefingSelectorProps> = ({ onScriptExtr
                 <VoiceglotText translationKey="briefing.upload.instruction" defaultText="Sleep je tekstbestand hierheen of klik om te bladeren" />
               </span>
               <span className="text-[10px] font-bold uppercase tracking-widest opacity-50">
-                <VoiceglotText translationKey="briefing.upload.types" defaultText="PDF, Word, Excel of Tekst" />
+                <VoiceglotText translationKey="briefing.upload.types" defaultText="PDF, Word of Tekst" />
               </span>
             </div>
           </motion.div>
