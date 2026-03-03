@@ -1,9 +1,77 @@
-import { db, ordersV2, users, ordersLegacyBloat, orderStatuses, paymentMethods, journeys } from '@/lib/system/voices-config';
+import { db, ordersV2, users, ordersLegacyBloat, orderStatuses, paymentMethods, journeys, orders } from '@/lib/system/voices-config';
 import { eq, sql } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth/api-auth';
 
 export const dynamic = 'force-dynamic';
+
+const STATUS_WORKFLOW_MAP: Record<
+  string,
+  {
+    title: string;
+    adminAction: string;
+    customerImpact: string;
+  }
+> = {
+  quote_sent: {
+    title: 'Offerte klaar voor klantbevestiging',
+    adminAction: 'Wacht op akkoord, update pas naar betaal- of leverstatus na bevestiging.',
+    customerImpact: 'Klant ontvangt/raadpleegt offerte, nog geen productie.',
+  },
+  waiting_po: {
+    title: 'Wacht op PO-nummer',
+    adminAction: 'Vraag PO op en houd productie on hold tot PO intern bevestigd is.',
+    customerImpact: 'Klant moet PO bezorgen voor verdere afhandeling.',
+  },
+  awaiting_payment: {
+    title: 'Wacht op betaling',
+    adminAction: 'Volg betaling op en stuur indien nodig een betaallink.',
+    customerImpact: 'Bestelling staat klaar, levering wacht op financiële vrijgave.',
+  },
+  unpaid: {
+    title: 'Onbetaald',
+    adminAction: 'Escalatie op openstaand bedrag, controleer betaalmethode en dunningflow.',
+    customerImpact: 'Order blijft geblokkeerd tot betaling verwerkt is.',
+  },
+  completed_unpaid: {
+    title: 'Geleverd maar nog onbetaald',
+    adminAction: 'Levering is gebeurd; volg openstaande factuur strikt op.',
+    customerImpact: 'Klant ontving levering, maar betaling staat nog open.',
+  },
+  completed: {
+    title: 'Voltooid',
+    adminAction: 'Order administratief afgerond, controleer uitbetaling en archivering.',
+    customerImpact: 'Bestelling is volledig afgewerkt.',
+  },
+  completed_paid: {
+    title: 'Voltooid en betaald',
+    adminAction: 'Flow volledig rond: levering, betaling, boekhouding en payout kunnen sluiten.',
+    customerImpact: 'Alles is afgerond zonder open acties.',
+  },
+  refunded: {
+    title: 'Terugbetaald',
+    adminAction: 'Controleer refund-bewijs, noteer reden en sluit order met audit trail.',
+    customerImpact: 'Klant kreeg terugbetaling volgens afgesproken scope.',
+  },
+};
+
+const PAYMENT_METHOD_MAP: Record<string, string> = {
+  mollie_bancontact: 'Online Bancontact-flow (directe PSP-statussync).',
+  mollie_ideal: 'Online iDEAL-flow (directe PSP-statussync).',
+  mollie_banktransfer: 'Mollie overschrijving (trager, eerst betaling detecteren).',
+  manual_invoice: 'Factuurflow via PO/boekhouding (manuele opvolging vereist).',
+};
+
+const STATUS_SORT_ORDER = [
+  'quote_sent',
+  'waiting_po',
+  'awaiting_payment',
+  'unpaid',
+  'completed_unpaid',
+  'completed',
+  'completed_paid',
+  'refunded',
+];
 
 export async function GET(request: Request, { params }: { params: { id: string } }) {
   const idStr = params.id ? String(params.id).replace(/\/$/, '') : '';
@@ -22,6 +90,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
     const [order] = await db.select({
       id: ordersV2.id,
       userId: ordersV2.userId,
+      worldId: ordersV2.worldId,
       journeyId: ordersV2.journeyId,
       statusId: ordersV2.statusId,
       paymentMethodId: ordersV2.paymentMethodId,
@@ -32,6 +101,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
       createdAt: ordersV2.createdAt,
       legacyInternalId: ordersV2.legacyInternalId,
       rawMeta: ordersLegacyBloat.rawMeta,
+      legacyRawMeta: orders.rawMeta,
       statusCode: orderStatuses.code,
       statusLabel: orderStatuses.label,
       paymentCode: paymentMethods.code,
@@ -41,6 +111,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
     })
     .from(ordersV2)
     .leftJoin(ordersLegacyBloat, eq(ordersV2.id, ordersLegacyBloat.wpOrderId))
+    .leftJoin(orders, eq(orders.id, ordersV2.legacyInternalId))
     .leftJoin(orderStatuses, eq(ordersV2.statusId, orderStatuses.id))
     .leftJoin(paymentMethods, eq(ordersV2.paymentMethodId, paymentMethods.id))
     .leftJoin(journeys, eq(ordersV2.journeyId, journeys.id))
@@ -50,6 +121,23 @@ export async function GET(request: Request, { params }: { params: { id: string }
     if (!order) {
       return NextResponse.json({ error: 'Order not found' }, { status: 404 });
     }
+
+    const [statusCatalogRows, paymentCatalogRows] = await Promise.all([
+      db
+        .select({
+          id: orderStatuses.id,
+          code: orderStatuses.code,
+          label: orderStatuses.label,
+        })
+        .from(orderStatuses),
+      db
+        .select({
+          id: paymentMethods.id,
+          code: paymentMethods.code,
+          label: paymentMethods.label,
+        })
+        .from(paymentMethods),
+    ]);
 
     // 🛡️ CHRIS-PROTOCOL: Robust Type Casting
     const orderPk = Number(order.id);
@@ -90,17 +178,38 @@ export async function GET(request: Request, { params }: { params: { id: string }
 
     const recordingRowsRaw = await db.execute(sql`
       select
-        id,
-        order_id,
-        order_item_id,
-        status,
-        created_at
-      from recording_sessions
-      where order_id = ${sourceOrderId}
-      order by created_at desc
+        rs.id,
+        rs.order_id,
+        rs.order_item_id,
+        rs.status,
+        rs.conversation_id,
+        rs.settings,
+        rs.created_at,
+        (
+          select count(*)
+          from recording_scripts scr
+          where scr.session_id = rs.id
+        ) as scripts_count,
+        (
+          select count(*)
+          from recording_feedback fb
+          where fb.session_id = rs.id
+        ) as feedback_count
+      from recording_sessions rs
+      where rs.order_id = ${sourceOrderId}
+      order by rs.created_at desc
       limit 20
     `).catch(() => []);
     const recordingRows: any[] = Array.isArray(recordingRowsRaw) ? recordingRowsRaw : ((recordingRowsRaw as any)?.rows || []);
+
+    const notesRowsRaw = await db.execute(sql`
+      select id, note, is_customer_note, created_at
+      from order_notes
+      where order_id = ${sourceOrderId}
+      order by created_at desc
+      limit 50
+    `).catch(() => []);
+    const notesRows: any[] = Array.isArray(notesRowsRaw) ? notesRowsRaw : ((notesRowsRaw as any)?.rows || []);
 
     // Resolve User
     let customerInfo = null;
@@ -118,29 +227,182 @@ export async function GET(request: Request, { params }: { params: { id: string }
     }
 
     // 🤝 DE HANDDRUK (Human-Centric Mapping)
-    const rawMeta = order.rawMeta || {};
-    const parseJson = (value: any) => {
-      if (!value) return {};
-      if (typeof value === 'string') {
-        try {
-          return JSON.parse(value);
-        } catch {
-          return {};
-        }
-      }
-      return value;
-    };
-    let parsedRawMeta: any = {};
-    if (typeof rawMeta === 'string') {
+    const rawMeta = order.rawMeta || order.legacyRawMeta || {};
+    const tryParseJson = (value: string) => {
       try {
-        parsedRawMeta = JSON.parse(rawMeta || '{}');
+        return JSON.parse(value);
       } catch {
-        parsedRawMeta = {};
+        return null;
       }
-    } else {
-      parsedRawMeta = rawMeta;
-    }
+    };
+    const decodeCharMap = (value: any): string | null => {
+      if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
+      const keys = Object.keys(value);
+      if (keys.length < 20) return null;
+      const numericKeys = keys.filter((key) => /^\d+$/.test(key));
+      if (numericKeys.length < Math.ceil(keys.length * 0.9)) return null;
+      const joined = numericKeys
+        .map((key) => Number(key))
+        .sort((a, b) => a - b)
+        .map((index) => {
+          const chunk = value[String(index)];
+          return typeof chunk === 'string' ? chunk : '';
+        })
+        .join('');
+      return joined.trim() ? joined : null;
+    };
+    const parseJson = (value: any): any => {
+      if (value === null || value === undefined) return {};
+      if (typeof value === 'string') {
+        const parsed = tryParseJson(value.trim());
+        if (parsed === null) return {};
+        if (typeof parsed === 'string') {
+          const nested = tryParseJson(parsed);
+          return nested === null ? {} : parseJson(nested);
+        }
+        return parseJson(parsed);
+      }
+      if (Array.isArray(value)) return value;
+      if (typeof value === 'object') {
+        const decoded = decodeCharMap(value);
+        if (decoded) {
+          const parsedDecoded = tryParseJson(decoded);
+          if (parsedDecoded !== null) {
+            return parseJson(parsedDecoded);
+          }
+        }
+        return value;
+      }
+      return {};
+    };
+    const firstString = (...values: any[]): string => {
+      for (const value of values) {
+        if (typeof value === 'string' && value.trim()) return value.trim();
+      }
+      return '';
+    };
+    const toNumberOrNull = (value: any): number | null => {
+      const parsed = Number(value);
+      return Number.isFinite(parsed) ? parsed : null;
+    };
+    const toBooleanOrNull = (value: any): boolean | null => {
+      if (typeof value === 'boolean') return value;
+      if (typeof value === 'number') return value > 0;
+      if (typeof value === 'string') {
+        const normalized = value.trim().toLowerCase();
+        if (!normalized) return null;
+        if (['1', 'true', 'yes', 'ja', 'y'].includes(normalized)) return true;
+        if (['0', 'false', 'no', 'nee', 'n'].includes(normalized)) return false;
+      }
+      return null;
+    };
+    const toStringArray = (value: any): string[] => {
+      if (Array.isArray(value)) return value.map((entry) => String(entry || '').trim()).filter(Boolean);
+      if (typeof value === 'string') {
+        const trimmed = value.trim();
+        if (!trimmed) return [];
+        const parsed = tryParseJson(trimmed);
+        if (Array.isArray(parsed)) return parsed.map((entry) => String(entry || '').trim()).filter(Boolean);
+        if (trimmed.includes(',')) return trimmed.split(',').map((entry) => entry.trim()).filter(Boolean);
+        return [trimmed];
+      }
+      return [];
+    };
+    const normalizeLink = (value: any): string | null => {
+      if (typeof value !== 'string') return null;
+      const trimmed = value.trim();
+      if (!trimmed) return null;
+      if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) return trimmed;
+      return null;
+    };
+    const collectLinks = (...values: any[]): string[] => {
+      const links = new Set<string>();
+      const pushValue = (candidate: any) => {
+        if (Array.isArray(candidate)) {
+          candidate.forEach(pushValue);
+          return;
+        }
+        if (candidate && typeof candidate === 'object') {
+          Object.values(candidate).forEach(pushValue);
+          return;
+        }
+        const normalized = normalizeLink(candidate);
+        if (normalized) links.add(normalized);
+      };
+      values.forEach(pushValue);
+      return Array.from(links);
+    };
+    const parsedRawMeta: any = parseJson(rawMeta);
     const statusCode = (order.statusCode || '').toLowerCase();
+    const statusCatalog = [...statusCatalogRows]
+      .sort((a: any, b: any) => {
+        const aIndex = STATUS_SORT_ORDER.indexOf(String(a.code || '').toLowerCase());
+        const bIndex = STATUS_SORT_ORDER.indexOf(String(b.code || '').toLowerCase());
+        const normalizedA = aIndex === -1 ? 999 : aIndex;
+        const normalizedB = bIndex === -1 ? 999 : bIndex;
+        if (normalizedA !== normalizedB) return normalizedA - normalizedB;
+        return String(a.label || '').localeCompare(String(b.label || ''));
+      })
+      .map((row: any) => {
+        const code = String(row.code || '').toLowerCase();
+        const workflow = STATUS_WORKFLOW_MAP[code] || {
+          title: row.label || code || 'Onbekende status',
+          adminAction: 'Geen specifieke workflow geconfigureerd.',
+          customerImpact: 'Geen specifieke klantimpact geconfigureerd.',
+        };
+        return {
+          id: Number(row.id),
+          code,
+          label: row.label || code,
+          title: workflow.title,
+          adminAction: workflow.adminAction,
+          customerImpact: workflow.customerImpact,
+        };
+      });
+    const paymentMethodCatalog = paymentCatalogRows
+      .map((row: any) => {
+        const code = String(row.code || '').toLowerCase();
+        return {
+          id: Number(row.id),
+          code,
+          label: row.label || code,
+          behavior: PAYMENT_METHOD_MAP[code] || 'Geen specifieke betaalflow geconfigureerd.',
+        };
+      })
+      .sort((a: any, b: any) => a.label.localeCompare(b.label));
+    const currentStatus =
+      statusCatalog.find((entry: any) => entry.code === statusCode) ||
+      statusCatalog.find((entry: any) => entry.id === Number(order.statusId || 0)) ||
+      null;
+    const currentPaymentMethod =
+      paymentMethodCatalog.find((entry: any) => entry.id === Number(order.paymentMethodId || 0)) || null;
+    const orderBriefingFallback = firstString(
+      parsedRawMeta.briefing,
+      parsedRawMeta._billing_wo_briefing,
+      parsedRawMeta._billing_order_comments,
+      parsedRawMeta.script,
+      parsedRawMeta._billing_wo_script
+    );
+    const orderNotesFallback = firstString(
+      parsedRawMeta.instructions,
+      parsedRawMeta.notes,
+      parsedRawMeta.regie,
+      parsedRawMeta._billing_wo_notes
+    );
+    const orderAudioFallback = firstString(
+      parsedRawMeta.audiobriefing,
+      parsedRawMeta._billing_wo_audio_url,
+      parsedRawMeta.audio_briefing,
+      parsedRawMeta.audioBriefing
+    );
+    const orderAttachmentFallback = collectLinks(
+      parsedRawMeta.attachments,
+      parsedRawMeta.attachment,
+      parsedRawMeta.attachment_url,
+      parsedRawMeta.files,
+      parsedRawMeta.file,
+      parsedRawMeta._billing_wo_attachment_url
+    );
 
     // 🔍 FINANCIAL INTELLIGENCE: COG & Margin (Punt 2 Scope)
     const totalRevenue = Number(order.amountTotal || 0);
@@ -158,6 +420,56 @@ export async function GET(request: Request, { params }: { params: { id: string }
       const actorName = `${item.actor_first_name || ''} ${item.actor_last_name || ''}`.trim();
       const quantity = Number(item.quantity || 1);
       const unitPrice = Number(item.price || 0);
+      const isVoiceItem = !!item.actor_id;
+      const itemScript = firstString(
+        itemMeta?.script,
+        itemMeta?.briefing,
+        itemMeta?.copy,
+        itemMeta?.text,
+        isVoiceItem ? orderBriefingFallback : ''
+      );
+      const itemNotes = firstString(
+        itemMeta?.instructions,
+        itemMeta?.notes,
+        itemMeta?.regie,
+        itemMeta?.comment,
+        isVoiceItem ? orderNotesFallback : ''
+      );
+      const audioBriefingUrl = firstString(
+        itemMeta?.audiobriefing,
+        itemMeta?.audio_briefing,
+        itemMeta?.audio_briefing_url,
+        itemMeta?.audio_url,
+        isVoiceItem ? orderAudioFallback : ''
+      );
+      const attachments = collectLinks(
+        itemMeta?.attachments,
+        itemMeta?.attachment,
+        itemMeta?.attachment_url,
+        itemMeta?.files,
+        itemMeta?.file,
+        isVoiceItem ? orderAttachmentFallback : []
+      );
+      const mediaValues = toStringArray(itemMeta?.media || itemMeta?.media_types || itemMeta?.mediaTypes);
+      const usageValue = firstString(itemMeta?.usage, itemMeta?.usage_type, itemMeta?.usageType, parsedRawMeta?.usage);
+      const journeyValue = firstString(itemMeta?.journey, order.journeyCode);
+      const liveSessionValue =
+        toBooleanOrNull(itemMeta?.live_session ?? itemMeta?.liveSession ?? itemMeta?.live_regie ?? itemMeta?.liveRegie);
+      const scriptWordCount = itemScript
+        ? itemScript
+            .replace(/\s+/g, ' ')
+            .trim()
+            .split(' ')
+            .filter(Boolean).length
+        : 0;
+      const hasItemContext =
+        !!itemScript ||
+        !!itemNotes ||
+        !!audioBriefingUrl ||
+        attachments.length > 0 ||
+        mediaValues.length > 0 ||
+        !!usageValue ||
+        liveSessionValue !== null;
 
       return {
         id: Number(item.id),
@@ -174,6 +486,24 @@ export async function GET(request: Request, { params }: { params: { id: string }
         payoutStatus: item.payout_status || 'pending',
         deliveryFileUrl: item.delivery_file_url || null,
         invoiceFileUrl: item.invoice_file_url || null,
+        briefing: {
+          script: itemScript || null,
+          notes: itemNotes || null,
+          audioBriefingUrl: audioBriefingUrl || null,
+          attachments,
+        },
+        pricingContext: {
+          words: scriptWordCount || null,
+          usage: usageValue || null,
+          media: mediaValues,
+          spots: toNumberOrNull(itemMeta?.spots ?? itemMeta?.spot_count),
+          years: toNumberOrNull(itemMeta?.years ?? itemMeta?.usage_years),
+          journey: journeyValue || null,
+          liveSession: liveSessionValue,
+          countryId: toNumberOrNull(itemMeta?.country_id ?? itemMeta?.countryId),
+          languageId: toNumberOrNull(itemMeta?.language_id ?? itemMeta?.languageId),
+        },
+        hasItemContext,
         meta: itemMeta,
         createdAt: item.created_at || null,
       };
@@ -189,9 +519,8 @@ export async function GET(request: Request, { params }: { params: { id: string }
     // 🎭 PRODUCTIE: Script & Regie (Punt 4 Scope)
     const itemBriefingParts = formattedItems
       .flatMap((item: any) => [
-        typeof item.meta?.script === 'string' ? item.meta.script.trim() : '',
-        typeof item.meta?.briefing === 'string' ? item.meta.briefing.trim() : '',
-        typeof item.meta?.instructions === 'string' ? item.meta.instructions.trim() : '',
+        typeof item.briefing?.script === 'string' ? item.briefing.script.trim() : '',
+        typeof item.briefing?.notes === 'string' ? item.briefing.notes.trim() : '',
       ])
       .filter(Boolean);
     const rawBriefingParts = [
@@ -205,7 +534,10 @@ export async function GET(request: Request, { params }: { params: { id: string }
     const hasRegieInstructions =
       itemBriefingParts.length > 1 ||
       (briefingText.includes('(') && briefingText.includes(')'));
-    const audioBriefingLink = parsedRawMeta.audiobriefing || parsedRawMeta._billing_wo_audio_url || null;
+    const audioBriefingLink =
+      formattedItems.map((item: any) => item.briefing?.audioBriefingUrl).find(Boolean) ||
+      orderAudioFallback ||
+      null;
 
     // 🎓 BERNY-FLOW: Participant Info (Punt 5 Scope)
     const participants =
@@ -239,6 +571,10 @@ export async function GET(request: Request, { params }: { params: { id: string }
       statusCode: order.statusCode || null,
       unit: order.journeyLabel || 'Voices',
       journeyCode: order.journeyCode || null,
+      statusManager: {
+        current: currentStatus,
+        available: statusCatalog,
+      },
       
       // 🚦 ACTION-DRIVEN LOGIC (Punt 3 Scope)
       actions: {
@@ -271,7 +607,10 @@ export async function GET(request: Request, { params }: { params: { id: string }
         cost: totalCost.toFixed(2),
         margin: margin.toFixed(2),
         marginPercentage: `${marginPercentage}%`,
-        method: order.paymentLabel || 'Online betaling'
+        method: order.paymentLabel || 'Online betaling',
+        paymentMethod: currentPaymentMethod,
+        paymentMethodId: order.paymentMethodId ? Number(order.paymentMethodId) : null,
+        paymentCatalog: paymentMethodCatalog,
       },
 
       production: {
@@ -286,6 +625,24 @@ export async function GET(request: Request, { params }: { params: { id: string }
           id: Number(row.id),
           orderItemId: row.order_item_id ? Number(row.order_item_id) : null,
           status: row.status || 'active',
+          conversationId: row.conversation_id ? Number(row.conversation_id) : null,
+          scriptsCount: Number(row.scripts_count || 0),
+          feedbackCount: Number(row.feedback_count || 0),
+          hasSettings: !!parseJson(row.settings) && Object.keys(parseJson(row.settings) || {}).length > 0,
+          createdAt: row.created_at || null,
+        })),
+        recordingSummary: {
+          total: recordingRows.length,
+          withScripts: recordingRows.filter((row: any) => Number(row.scripts_count || 0) > 0).length,
+          withFeedback: recordingRows.filter((row: any) => Number(row.feedback_count || 0) > 0).length,
+        },
+      },
+
+      timeline: {
+        notes: notesRows.map((row: any) => ({
+          id: Number(row.id),
+          note: row.note || '',
+          isCustomerNote: !!row.is_customer_note,
           createdAt: row.created_at || null,
         })),
       },
@@ -294,6 +651,10 @@ export async function GET(request: Request, { params }: { params: { id: string }
         sourceId: legacyInternalId,
         sourceOrderId,
         userId: userId,
+        worldId: order.worldId ? Number(order.worldId) : null,
+        journeyId: order.journeyId ? Number(order.journeyId) : null,
+        statusId: order.statusId ? Number(order.statusId) : null,
+        paymentMethodId: order.paymentMethodId ? Number(order.paymentMethodId) : null,
         metaKeyCount: Object.keys(parsedRawMeta || {}).length,
         meta: parsedRawMeta,
       },

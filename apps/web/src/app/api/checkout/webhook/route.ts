@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db, orders, orderNotes, users, orderItems, actors } from '@/lib/system/voices-config';
+import { db, orders, orderNotes, users, orderItems, actors, ordersV2, orderStatuses } from '@/lib/system/voices-config';
 import { eq, sql, inArray } from 'drizzle-orm';
 import { MollieService } from '@/lib/payments/mollie';
 import { UCIService } from '@/lib/intelligence/uci-service';
@@ -20,6 +20,18 @@ import { localeToShort, normalizeLocale } from '@/lib/system/locale-utils';
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 const sdkClient = createSupabaseClient(supabaseUrl, supabaseKey);
+
+function v2StatusCandidates(statusCode: string): string[] {
+  const normalized = String(statusCode || '').toLowerCase();
+  if (normalized === 'completed') return ['completed', 'completed_paid', 'paid'];
+  if (normalized === 'paid') return ['paid', 'completed_paid', 'completed'];
+  if (normalized === 'pending') return ['pending', 'awaiting_payment', 'unpaid'];
+  if (normalized === 'cancelled') return ['cancelled', 'failed'];
+  if (normalized === 'expired') return ['failed', 'cancelled'];
+  if (normalized === 'failed') return ['failed', 'cancelled'];
+  if (normalized === 'in_productie') return ['in_productie', 'in_progress', 'processing', 'active'];
+  return [normalized];
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -60,7 +72,7 @@ export async function POST(request: NextRequest) {
     const market = MarketManager.getCurrentMarket(host);
     const adminEmail = process.env.ADMIN_EMAIL || market.email;
 
-    await db.transaction(async (tx) => {
+    await db.transaction(async (tx: any) => {
       // Haal de order op om te zien wat erin zit
       const [order] = await tx.select().from(orders).where(eq(orders.id, orderId)).limit(1);
       const orderLanguage = normalizeLocale(
@@ -139,6 +151,26 @@ export async function POST(request: NextRequest) {
         .set({ status: finalStatus, updatedAt: new Date() })
         .where(eq(orders.id, orderId));
 
+      // 🔁 V2 status sync: keep orders_v2 aligned with webhook transitions.
+      if (order?.wpOrderId) {
+        const candidateCodes = v2StatusCandidates(finalStatus);
+        const statusRows = await tx
+          .select({ id: orderStatuses.id, code: orderStatuses.code })
+          .from(orderStatuses)
+          .where(inArray(orderStatuses.code, candidateCodes))
+          .limit(1);
+        const matchedStatus = statusRows[0];
+        if (matchedStatus) {
+          await tx
+            .update(ordersV2)
+            .set({
+              statusId: matchedStatus.id,
+              legacyInternalId: order.id,
+            })
+            .where(eq(ordersV2.id, Number(order.wpOrderId)));
+        }
+      }
+
       // Log Note
       await tx.insert(orderNotes).values({
         orderId: orderId,
@@ -154,7 +186,9 @@ export async function POST(request: NextRequest) {
             .from(orderItems)
             .where(eq(orderItems.orderId, orderId));
           
-          const actorIds = items.map(i => i.actorId).filter((id): id is number => id !== null);
+          const actorIds = items
+            .map((i: any) => i.actorId)
+            .filter((id: number | null): id is number => id !== null);
           
           if (actorIds.length > 0) {
             await tx.update(actors)
@@ -185,7 +219,7 @@ export async function POST(request: NextRequest) {
                       userName: user.first_name || 'Klant',
                       orderId: orderId.toString(),
                       total: parseFloat(order.total || '0'),
-                      items: items.map(i => ({
+                      items: items.map((i: any) => ({
                         name: i.name,
                         price: parseFloat(i.price || '0'),
                         deliveryTime: (i.metaData as any)?.deliveryTime
