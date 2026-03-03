@@ -1,6 +1,6 @@
 import { updateSession } from '@/utils/supabase/middleware'
 import { type NextRequest, NextResponse } from 'next/server'
-import { normalizeLocale, SUPPORTED_LOCALE_PREFIXES } from '@/lib/system/locale-utils'
+import { getMarketDefaultLocale, normalizeLocale, SUPPORTED_LOCALE_PREFIXES } from '@/lib/system/locale-utils'
 
 /**
  * NUCLEAR MIDDLEWARE (GOD MODE 2026)
@@ -241,6 +241,7 @@ export async function middleware(request: NextRequest) {
       break
     }
   }
+  const marketDefaultLocale = getMarketDefaultLocale(market, 'nl-be')
 
   // 2.5 SUB-JOURNEY DETECTION (v2.30)
   // Voices /studio en /academy zijn aparte journeys met eigen branding/socials
@@ -364,7 +365,7 @@ export async function middleware(request: NextRequest) {
 
   // Intelligent Stickiness: Check cookie, then Accept-Language header
   const cookieLangRaw = request.cookies.get('voices_lang')?.value
-  let detectedLang = cookieLangRaw ? normalizeLocale(cookieLangRaw) : undefined
+  let detectedLang = cookieLangRaw ? normalizeLocale(cookieLangRaw, marketDefaultLocale) : undefined
   
   if (!detectedLang) {
     // 🛡️ CHRIS-PROTOCOL: Only fallback to browser headers if NOT on the root of a specific market
@@ -374,29 +375,24 @@ export async function middleware(request: NextRequest) {
     if (!isRoot) {
       // Fallback 1: Browser preferences
       const acceptLang = request.headers.get('accept-language') || ''
-      if (acceptLang.startsWith('fr')) detectedLang = 'fr-fr'
-      else if (acceptLang.startsWith('en')) detectedLang = 'en-gb'
-      else if (acceptLang.startsWith('de')) detectedLang = 'de-de'
-      else if (acceptLang.startsWith('es')) detectedLang = 'es-es'
-      else if (acceptLang.startsWith('it')) detectedLang = 'it-it'
-      else if (acceptLang.startsWith('pt')) detectedLang = 'pt-pt'
+      if (acceptLang.startsWith('fr')) detectedLang = normalizeLocale('fr', marketDefaultLocale)
+      else if (acceptLang.startsWith('en')) detectedLang = normalizeLocale('en', marketDefaultLocale)
+      else if (acceptLang.startsWith('de')) detectedLang = normalizeLocale('de', marketDefaultLocale)
+      else if (acceptLang.startsWith('es')) detectedLang = normalizeLocale('es', marketDefaultLocale)
+      else if (acceptLang.startsWith('it')) detectedLang = normalizeLocale('it', marketDefaultLocale)
+      else if (acceptLang.startsWith('pt')) detectedLang = normalizeLocale('pt', marketDefaultLocale)
     }
     
     // Fallback 2: Domain-based defaults
     if (!detectedLang) {
-      if (market === 'FR') detectedLang = 'fr-fr'
-      else if (market === 'ES') detectedLang = 'es-es'
-      else if (market === 'PT') detectedLang = 'pt-pt'
-      else if (market === 'EU') detectedLang = 'en-gb'
-      else if (market === 'DE') detectedLang = 'de-de'
-      else detectedLang = 'nl-be' // Default
+      detectedLang = marketDefaultLocale
     }
   }
 
   // Als de URL een taalprefix heeft, overschrijft deze alles en zetten we de cookie
   if (langMatch) {
     const urlLangShort = langMatch[1].toLowerCase()
-    detectedLang = normalizeLocale(urlLangShort);
+    detectedLang = normalizeLocale(urlLangShort, marketDefaultLocale);
 
     const pathWithoutLocale = pathname.replace(shortLocaleRegex, '/') || '/'
     

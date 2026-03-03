@@ -23,6 +23,9 @@ interface Language {
   label: string;
   native: string;
   flag: string;
+  shortCode: string;
+  isPrimary?: boolean;
+  isPopular?: boolean;
 }
 
 export function LanguageSwitcher({ className }: { className?: string }) {
@@ -92,6 +95,7 @@ export function LanguageSwitcher({ className }: { className?: string }) {
         label: l.label,
         native: MarketManager.getLanguageLabel(l.id),
         flag: resolveFlagDisplay(MarketManager.getLanguageIcon(l.id), l.code),
+        shortCode: String(l.code || '').toLowerCase().split('-')[0],
         isPrimary: worldLink?.is_primary || false,
         isPopular: worldLink?.is_popular || false
       };
@@ -108,32 +112,51 @@ export function LanguageSwitcher({ className }: { className?: string }) {
       filtered = allLangs.filter(l => fallbackIds.includes(l.id));
     }
 
-    return filtered.sort((a, b) => {
+    const ranked = filtered.sort((a, b) => {
       // 1. Huidige markt-taal (Primary) bovenaan
-      if ((a as any).isPrimary) return -1;
-      if ((b as any).isPrimary) return 1;
+      if (a.isPrimary) return -1;
+      if (b.isPrimary) return 1;
       
       // 2. Populaire talen voor deze world
-      if ((a as any).isPopular && !(b as any).isPopular) return -1;
-      if (!(a as any).isPopular && (b as any).isPopular) return 1;
+      if (a.isPopular && !b.isPopular) return -1;
+      if (!a.isPopular && b.isPopular) return 1;
       
       return 0;
     });
+
+    // Frontend language selector should be language-level (nl/fr/en),
+    // not region-level (nl-be/nl-nl), while preserving ISO under the hood.
+    const deduped = new Map<string, Language>();
+    for (const lang of ranked) {
+      const shortCode = (lang.shortCode || '').trim();
+      if (!shortCode) continue;
+      const existing = deduped.get(shortCode);
+      if (!existing) {
+        deduped.set(shortCode, lang);
+        continue;
+      }
+      if (lang.isPrimary && !existing.isPrimary) {
+        deduped.set(shortCode, lang);
+        continue;
+      }
+      if (lang.isPopular && !existing.isPopular) {
+        deduped.set(shortCode, lang);
+      }
+    }
+    return Array.from(deduped.values());
   }, [market, resolveFlagDisplay]);
 
   useEffect(() => {
     const langMatch = pathname.match(/^\/(nl|fr|en|de|es|it|pt)(\/|$)/);
-    const registry = MarketManager.languages;
     
     if (langMatch) {
-      const slug = langMatch[1];
-      // Map slug back to ID via registry
-      const match = registry.find(r => r.code.startsWith(slug));
+      const slug = langMatch[1].toLowerCase();
+      const match = languages.find(l => l.shortCode === slug);
       if (match) setCurrentLangId(match.id);
     } else {
       setCurrentLangId(market.primary_language_id || 1);
     }
-  }, [pathname, market]);
+  }, [pathname, market, languages]);
 
   const handleMouseEnter = () => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
@@ -146,7 +169,9 @@ export function LanguageSwitcher({ className }: { className?: string }) {
   };
 
   const switchLanguage = (lang: Language) => {
-    if (lang.id === currentLangId) {
+    const selectedShort = (lang.shortCode || lang.code.split('-')[0] || '').toLowerCase();
+    const activeShort = (languages.find(l => l.id === currentLangId)?.shortCode || '').toLowerCase();
+    if (selectedShort && selectedShort === activeShort) {
       setIsOpen(false);
       return;
     }
@@ -156,11 +181,11 @@ export function LanguageSwitcher({ className }: { className?: string }) {
     if (!newPath.startsWith('/')) newPath = '/' + newPath;
     
     // CHRIS-PROTOCOL: De default taal van de markt heeft geen prefix in de URL
-    const defaultLangId = market.primary_language_id || 1;
     const normalizedLangCode = (lang.code || '').toLowerCase();
-    const langSlug = lang.code.split('-')[0];
+    const langSlug = selectedShort || lang.code.split('-')[0];
+    const marketDefaultShort = String(market.primary_language || 'nl-be').toLowerCase().split('-')[0];
     
-    if (lang.id !== defaultLangId) {
+    if (langSlug !== marketDefaultShort) {
       newPath = `/${langSlug}${newPath === '/' ? '' : newPath}`;
     }
     document.cookie = `voices_lang=${normalizedLangCode}; path=/; max-age=31536000; SameSite=Lax`;
@@ -179,8 +204,8 @@ export function LanguageSwitcher({ className }: { className?: string }) {
   };
 
   // 🛡️ CHRIS-PROTOCOL: Handshake ID Truth (v2.19.5)
-  const currentLang = languages.find(l => l.id === currentLangId) || languages[0] || { id: 1, code: 'nl-be', native: 'Vlaams', flag: '🇧🇪' };
-  const switcherLabel = `${t('nav.language_selection', 'Language choice')} (${currentLang.code.split('-')[0].toUpperCase()})`;
+  const currentLang = languages.find(l => l.id === currentLangId) || languages[0] || { id: 1, code: 'nl-be', native: 'Vlaams', flag: '🇧🇪', shortCode: 'nl' };
+  const switcherLabel = `${t('nav.language_selection', 'Language choice')} (${currentLang.shortCode.toUpperCase()})`;
 
   if (!mounted) {
     return (
@@ -198,7 +223,7 @@ export function LanguageSwitcher({ className }: { className?: string }) {
           as="span"
           className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-primary text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-lg border-2 border-white leading-none z-10"
         >
-          {currentLang.code.split('-')[0]}
+          {currentLang.shortCode}
         </TextInstrument>
       </ButtonInstrument>
     );
@@ -238,7 +263,7 @@ export function LanguageSwitcher({ className }: { className?: string }) {
           animate={{ scale: 1 }}
           className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-primary text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-lg border-2 border-white leading-none z-10"
         >
-          {currentLang.code.split('-')[0]}
+          {currentLang.shortCode}
         </TextInstrument>
       </ButtonInstrument>
 
@@ -260,7 +285,7 @@ export function LanguageSwitcher({ className }: { className?: string }) {
                 </TextInstrument>
               </ContainerInstrument>
               {languages.map((lang) => {
-                const isActive = lang.id === currentLangId;
+                const isActive = lang.shortCode === currentLang.shortCode;
                 return (
                   <ButtonInstrument
                     key={lang.id}
@@ -275,12 +300,9 @@ export function LanguageSwitcher({ className }: { className?: string }) {
                   >
                     <div className="flex items-center gap-2.5">
                       <TextInstrument as="span" className="text-base leading-none">{lang.flag}</TextInstrument>
-                      <div className="flex flex-col">
-                        <TextInstrument as="span" className={`text-[15px] font-medium tracking-tight ${isActive ? 'text-white' : 'text-va-black'}`}>
-                          <VoiceglotText translationKey={`nav.lang_label.${lang.code.split('-')[0]}`} defaultText={lang.native} />
-                        </TextInstrument>
-                        <TextInstrument as="span" className={`text-[12px] mt-0.5 font-light ${isActive ? 'text-white/60' : 'text-va-black/40'}`}>{lang.native}</TextInstrument>
-                      </div>
+                      <TextInstrument as="span" className={`text-[15px] font-medium tracking-tight ${isActive ? 'text-white' : 'text-va-black'}`}>
+                        <VoiceglotText translationKey={`nav.lang_label.${lang.shortCode}`} defaultText={lang.native} />
+                      </TextInstrument>
                     </div>
                     {isActive ? (
                       <Check strokeWidth={1.5} size={14} className="text-white" />

@@ -96,5 +96,12 @@ This is a Next.js 14 monorepo for a multi-tenant voice-over agency platform ("Vo
 - **GlobalNav journey detection**: The GlobalNav uses URL pathname first, then worldId, then market_code to determine which World navigation to show. On `voices.be/studio/`, the worldId from handshakeContext is 1 (Agency), so pathname detection (`/studio/` → `'studio'`) must take priority. Do not revert to ID-first detection order.
 - **React overrides**: Root `package.json` has `"overrides"` for `react` and `react-dom` to force a single React instance across the monorepo. Do not remove these — they prevent `styled-jsx` useContext crashes during static page generation.
 
+### Locale Boundary Contract (MANDATORY)
+- **Frontend language UX (`/nl`, `/fr`, `/en`)** is language-level; do not expose region duplicates (`nl-BE` + `nl-NL`) in the topbar switcher.
+- **Translation layer (Voiceglot)** should prefer one translation per language, with fallback merge across regional variants when needed.
+- **Business/filtering layer** stays ISO-specific (`nl-be`, `nl-nl`, `fr-be`, `fr-fr`) for actor matching, market ranking, checkout locale, and compliance.
+- When resolving short prefixes, always call `normalizeLocale(short, market.primary_language)` so market context decides the regional variant.
+- Never hardcode market contact data in UI; always read from market config (`market.email`, `market.phone`, etc.) sourced from DB/static fallback.
+
 ### Deploying to Production
 Push to `main` to trigger Vercel auto-deploy. Check status with `gh api repos/johfrah/voices-vercel/commits/<sha>/status` or `npx vercel ls --token "$VERCEL_TOKEN"`. Builds take ~2 minutes. If Vercel gives an internal error, retry — it's usually a transient infra issue in the `iad1` region.

@@ -1,0 +1,26 @@
+# 🌍 LOCALE BOUNDARY CONTRACT (UI vs ISO)
+
+Dit bestand legt de vaste scheiding vast tussen frontend-taalkeuze en ISO-specifieke businesslogica.
+
+## 1) Frontend UX (Taalkeuze voor bezoekers)
+- Publieke taalkeuze is **short locale** (`/nl`, `/fr`, `/en`, ...).
+- Toon in de topbar slechts **één keuze per taal** (geen dubbele `nl-be` + `nl-nl` entries).
+- Gebruik `VoiceglotText` voor labels en vermijd hardcoded taalnamen.
+
+## 2) Voiceglot Vertalingen
+- Vertaal op **taalniveau** als standaard (NL/FR/EN/...).
+- Regionale varianten mogen als fallback/override bestaan, maar zijn niet de primaire UX-keuze.
+- Translation fetching moet regionale fallback ondersteunen zonder UI-frictie.
+
+## 3) ISO-specifieke Logica (MOET region-aware blijven)
+- `nl-be`, `nl-nl`, `fr-be`, `fr-fr`, ... blijven verplicht voor:
+  - actor-taalfiltering,
+  - market-aware ranking/sortering,
+  - checkout locale + mail locale,
+  - juridische/commerciële context per market.
+
+## 4) Implementatieregel
+- Bij resolutie van short locale altijd: `normalizeLocale(short, market.primary_language)`.
+- Hierdoor beslist de marketcontext welke regionale variant gebruikt wordt.
+
+"Eén taalkeuze voor de bezoeker, volledige ISO-precisie onder de motorkap."
