@@ -45,7 +45,7 @@ This is a Next.js 14 monorepo for a multi-tenant voice-over agency platform ("Vo
 - World prefixes (`studio`, `academy`, `ademing`, `johfrai`, `partners`, `freelance`, `casting`) are recognized as valid entry points so their sub-routes can fall through to CMS article lookup.
 
 ### Business Rules
-- **No IVR bundles**: Telephony customers order each message separately (welcome, hold, closed). This is intentional — do NOT build multi-message bundle features or suggest bundle pricing.
+- **Telephony script format**: IVR customers type ALL messages in ONE text field. They put filenames in brackets (e.g. `[welkom] Welkom bij... [wacht] Een moment geduld...`). The system detects the number of desired files from the bracket markers. This is a deliberate UX choice — do NOT split into separate text fields or build multi-message selectors.
 - **No free trial for Telephony**: The "Gratis proefopname" concept does not exist in the Telefonie journey. The CastingDock shows "Stem boeken" / "Direct bestellen" instead.
 
 ### Deploying to Production
