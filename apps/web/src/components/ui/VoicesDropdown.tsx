@@ -2,11 +2,36 @@
 
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslation } from '@/contexts/TranslationContext';
+import { MarketManagerServer as MarketManager } from '@/lib/system/core/market-manager';
 import { cn } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Check, ChevronDown, Globe, GripVertical, Minus, Plus, Search as SearchIcon } from 'lucide-react';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { ContainerInstrument, FlagBE, FlagDE, FlagDK, FlagES, FlagFR, FlagIT, FlagNL, FlagPL, FlagPT, FlagUK, FlagUS } from './LayoutInstruments';
+import {
+  ContainerInstrument,
+  FlagAR,
+  FlagBE,
+  FlagBR,
+  FlagCN,
+  FlagDE,
+  FlagDK,
+  FlagES,
+  FlagFI,
+  FlagFR,
+  FlagGR,
+  FlagIT,
+  FlagJP,
+  FlagKR,
+  FlagNL,
+  FlagNO,
+  FlagPL,
+  FlagPT,
+  FlagRU,
+  FlagSE,
+  FlagTR,
+  FlagUK,
+  FlagUS
+} from './LayoutInstruments';
 import { VoiceglotImage } from './VoiceglotImage';
 import { VoiceglotText } from './VoiceglotText';
 
