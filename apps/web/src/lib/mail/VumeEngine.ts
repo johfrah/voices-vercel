@@ -7,6 +7,7 @@ import { VumeNewAccountTemplate } from './templates/VumeNewAccountTemplate';
 import { VumeDonationThankYouTemplate } from './templates/VumeDonationThankYouTemplate';
 import { VumeOrderConfirmationTemplate } from './templates/VumeOrderConfirmationTemplate';
 import { VumeFollowUpTemplate } from './templates/VumeFollowUpTemplate';
+import { normalizeLocale } from '@/lib/system/locale-utils';
 
 /**
  *  VUME ENGINE (2026)
@@ -27,6 +28,7 @@ interface SendOptions {
 export class VumeEngine {
   static async send(options: SendOptions) {
     const { to, subject, template, context, from, host } = options;
+    const resolvedLanguage = normalizeLocale(options.language || context?.language || 'nl-be');
     
     let html = '';
     
@@ -36,7 +38,7 @@ export class VumeEngine {
           name: context.name,
           link: context.link,
           host: host,
-          language: context.language || 'nl-BE'
+          language: resolvedLanguage
         });
         break;
       
@@ -49,7 +51,7 @@ export class VumeEngine {
           location: context.location,
           headerImage: context.headerImage, // Pass specific workshop header
           host: host,
-          language: context.language || 'nl-BE',
+          language: resolvedLanguage,
           optOutToken: context.optOutToken,
           email: to
         });
@@ -61,7 +63,7 @@ export class VumeEngine {
           invoiceNumber: context.invoiceNumber,
           amount: context.amount,
           host: host,
-          language: context.language || 'nl-BE'
+          language: resolvedLanguage
         });
         break;
 
@@ -76,7 +78,7 @@ export class VumeEngine {
           briefing: context.briefing,
           deliveryTime: context.deliveryTime,
           host: host,
-          language: context.language || 'nl-BE'
+          language: resolvedLanguage
         });
         break;
 
@@ -84,7 +86,7 @@ export class VumeEngine {
         html = VumeNewAccountTemplate({
           name: context.name,
           host: host,
-          language: context.language || 'nl-BE'
+          language: resolvedLanguage
         });
         break;
 
@@ -95,7 +97,7 @@ export class VumeEngine {
           artistName: context.artistName,
           message: context.message,
           host: host,
-          language: context.language || 'nl-BE'
+          language: resolvedLanguage
         });
         break;
 
@@ -107,7 +109,7 @@ export class VumeEngine {
           items: context.items,
           paymentMethod: context.paymentMethod,
           host: host,
-          language: context.language || 'nl-BE'
+          language: resolvedLanguage
         });
         break;
 
@@ -117,7 +119,7 @@ export class VumeEngine {
           orderId: context.orderId,
           actorName: context.actorName,
           host: host,
-          language: context.language || 'nl-BE'
+          language: resolvedLanguage
         });
         break;
 

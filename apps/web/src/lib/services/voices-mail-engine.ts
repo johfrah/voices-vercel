@@ -160,9 +160,9 @@ export class VoicesMailEngine {
         buttonText: 'Log in now'
       },
       'fr-fr': {
-        subject: `Lien de connexion voor ${marketName}`,
+        subject: `Lien de connexion pour ${marketName}`,
         title: 'Bon retour.',
-        body: 'Vous avez demandé un lien de connexion voor uw account. Utilisez le bouton ci-dessous pour accéder directement à votre account.',
+        body: 'Vous avez demandé un lien de connexion pour votre compte. Utilisez le bouton ci-dessous pour accéder directement à votre espace.',
         buttonText: 'Se connecter maintenant'
       }
     };

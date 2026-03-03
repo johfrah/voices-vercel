@@ -14,6 +14,7 @@ import { CheckoutPayloadSchema } from '@/lib/validation/checkout-schema';
 import { YukiService } from '@/lib/services/yuki-service';
 import { VumeEngine } from '@/lib/mail/VumeEngine';
 import { ServerWatchdog } from '@/lib/services/server-watchdog';
+import { localeToMollie, localeToShort, normalizeLocale } from '@/lib/system/locale-utils';
 
 export const dynamic = 'force-dynamic';
 
@@ -57,12 +58,14 @@ export async function POST(request: Request) {
     }
 
     const data = validation.data;
-    const { 
-      pricing, items, selectedActor, step, first_name, last_name, email, 
-      vat_number, postal_code, city, metadata, quoteMessage, phone, 
-      company, address_street, usage, plan, music, country, payment_method,
+    const {
+      pricing, items, selectedActor, step, first_name, last_name, email,
+      vat_number, postal_code, city, metadata, quoteMessage, phone,
+      company, address_street, usage, plan, music, country, payment_method, language,
       billing_po, financial_email, isQuote
     } = data;
+    const normalizedLanguage = normalizeLocale(language || marketConfig.primary_language || 'nl-be');
+    const languageShort = localeToShort(normalizedLanguage);
 
     // 2. Fetch Data voor prijsvalidatie
     const actorIds = Array.from(new Set([
@@ -162,6 +165,7 @@ export async function POST(request: Request) {
         plan,
         items_count: validatedItems.length,
         customer: { email, first_name, last_name },
+        language: normalizedLanguage,
         billing_po: billing_po || null,
         financial_email: financial_email || null,
         is_quote: !!isQuoteRequest
@@ -215,13 +219,38 @@ export async function POST(request: Request) {
           await fetch(`${baseUrl}/api/admin/notify`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ type: isQuoteRequest ? 'quote_request' : 'banktransfer_order', data: { orderId: newOrder.id, email, amount } })
+            body: JSON.stringify({
+              type: isQuoteRequest ? 'quote_request' : 'banktransfer_order',
+              data: { orderId: newOrder.id, email, amount, language: normalizedLanguage }
+            })
           });
+          const subject = isQuoteRequest
+            ? (languageShort === 'fr'
+              ? `Demande de devis reçue : #${newOrder.id}`
+              : languageShort === 'en'
+                ? `Quote request received: #${newOrder.id}`
+                : `Offerte-aanvraag ontvangen: #${newOrder.id}`)
+            : (languageShort === 'fr'
+              ? `Commande reçue : #${newOrder.id}`
+              : languageShort === 'en'
+                ? `Order received: #${newOrder.id}`
+                : `Bestelling ontvangen: #${newOrder.id}`);
           await VumeEngine.send({
             to: email,
-            subject: isQuoteRequest ? `Offerte-aanvraag ontvangen: #${newOrder.id}` : `Bestelling ontvangen: #${newOrder.id}`,
+            subject,
             template: 'order-confirmation',
-            context: { userName: first_name, orderId: newOrder.id, total: amount },
+            context: {
+              userName: first_name,
+              orderId: newOrder.id,
+              total: amount,
+              items: validatedItems.map((item: any) => ({
+                name: item.name || item.actor?.display_name || 'Voice Over',
+                price: Number(item.pricing?.total || item.pricing?.subtotal || 0),
+                deliveryTime: item.actor?.delivery_time || item.actor?.deliveryTime
+              })),
+              paymentMethod: payment_method,
+              language: normalizedLanguage
+            },
             host
           });
         } catch (e) {}
@@ -245,8 +274,16 @@ export async function POST(request: Request) {
       billingAddress: { streetAndNumber: address_street || 'N/A', postalCode: postal_code || 'N/A', city: city || 'N/A', country: country || 'BE', givenName: first_name, familyName: last_name, email },
       redirectUrl: `${baseUrl}/api/auth/magic-login?token=${secureToken}&redirect=/account/orders?orderId=${newOrder.id}`,
       webhookUrl: `${baseUrl}/api/checkout/webhook`,
-      locale: marketConfig.primary_language.replace('-', '_') as any,
-      metadata: { orderId: newOrder.id }
+      locale: localeToMollie(normalizedLanguage) as any,
+      metadata: {
+        orderId: newOrder.id,
+        user_id: userId || null,
+        email,
+        company: company || null,
+        givenName: first_name,
+        familyName: last_name,
+        language: normalizedLanguage
+      }
     });
 
     return NextResponse.json({ success: true, orderId: newOrder.id, checkoutUrl: mollieOrder._links.checkout.href, token: secureToken });

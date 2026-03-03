@@ -73,6 +73,7 @@ export const CheckoutPayloadSchema = z.object({
   postal_code: z.string().min(1, "Postcode is verplicht"),
   city: z.string().min(1, "Stad is verplicht"),
   country: z.string().default('BE'),
+  language: z.string().regex(/^[a-z]{2}(-[a-z]{2})?$/i).default('nl-be'),
 
   // 4. Project Context
   usage: z.enum(['unpaid', 'commercial', 'telefonie', 'subscription']).default('unpaid'),

@@ -3,7 +3,6 @@
 import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Check, ChevronRight, Globe } from 'lucide-react';
-import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import React, { useEffect, useRef, useState } from 'react';
 import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
@@ -16,6 +15,7 @@ import {
 import { VoiceglotText } from './VoiceglotText';
 
 import { useAuth } from '@/contexts/AuthContext';
+import { useTranslation } from '@/contexts/TranslationContext';
 
 interface Language {
   id: number;
@@ -37,7 +37,36 @@ export function LanguageSwitcher({ className }: { className?: string }) {
   const timeoutRef = useRef<any>(null);
   const { playClick, playSwell } = useSonicDNA();
 
-  const { user, isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuth();
+  const { t } = useTranslation();
+
+  const resolveFlagDisplay = React.useCallback((iconToken: string | null | undefined, code: string) => {
+    const token = String(iconToken || '').trim();
+    const tokenMap: Record<string, string> = {
+      FlagBE: '🇧🇪',
+      FlagNL: '🇳🇱',
+      FlagFR: '🇫🇷',
+      FlagUK: '🇬🇧',
+      FlagDE: '🇩🇪',
+      FlagES: '🇪🇸',
+      FlagPT: '🇵🇹',
+      FlagIT: '🇮🇹'
+    };
+    if (tokenMap[token]) return tokenMap[token];
+    if (token && !token.startsWith('Flag')) return token;
+
+    const short = String(code || '').toLowerCase().split('-')[0];
+    const shortMap: Record<string, string> = {
+      nl: '🇳🇱',
+      fr: '🇫🇷',
+      en: '🇬🇧',
+      de: '🇩🇪',
+      es: '🇪🇸',
+      pt: '🇵🇹',
+      it: '🇮🇹'
+    };
+    return shortMap[short] || '🌐';
+  }, []);
 
   useEffect(() => {
     setMounted(true);
@@ -62,7 +91,7 @@ export function LanguageSwitcher({ className }: { className?: string }) {
         code: l.code,
         label: l.label,
         native: MarketManager.getLanguageLabel(l.id),
-        flag: MarketManager.getLanguageIcon(l.id) || '🌐',
+        flag: resolveFlagDisplay(MarketManager.getLanguageIcon(l.id), l.code),
         isPrimary: worldLink?.is_primary || false,
         isPopular: worldLink?.is_popular || false
       };
@@ -90,10 +119,10 @@ export function LanguageSwitcher({ className }: { className?: string }) {
       
       return 0;
     });
-  }, [market]);
+  }, [market, resolveFlagDisplay]);
 
   useEffect(() => {
-    const langMatch = pathname.match(/^\/(nl|fr|en|de|es|pt)(\/|$)/);
+    const langMatch = pathname.match(/^\/(nl|fr|en|de|es|it|pt)(\/|$)/);
     const registry = MarketManager.languages;
     
     if (langMatch) {
@@ -123,24 +152,25 @@ export function LanguageSwitcher({ className }: { className?: string }) {
     }
     playClick('soft');
     let newPath = pathname;
-    newPath = newPath.replace(/^\/(nl|fr|en|de|es|pt)(\/|$)/, '/');
+    newPath = newPath.replace(/^\/(nl|fr|en|de|es|it|pt)(\/|$)/, '/');
     if (!newPath.startsWith('/')) newPath = '/' + newPath;
     
     // CHRIS-PROTOCOL: De default taal van de markt heeft geen prefix in de URL
     const defaultLangId = market.primary_language_id || 1;
+    const normalizedLangCode = (lang.code || '').toLowerCase();
     const langSlug = lang.code.split('-')[0];
     
     if (lang.id !== defaultLangId) {
       newPath = `/${langSlug}${newPath === '/' ? '' : newPath}`;
     }
-    document.cookie = `voices_lang=${langSlug}; path=/; max-age=31536000; SameSite=Lax`;
+    document.cookie = `voices_lang=${normalizedLangCode}; path=/; max-age=31536000; SameSite=Lax`;
     
     // Intelligent Stickiness: Sync preference to DB if logged in
     if (isAuthenticated) {
       fetch('/api/account/preferences', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ preferences: { preferred_language_id: lang.id, preferred_language: langSlug } })
+        body: JSON.stringify({ preferences: { preferred_language_id: lang.id, preferred_language: normalizedLangCode, preferred_language_slug: langSlug } })
       }).catch(err => console.error('Failed to sync language preference:', err));
     }
 
@@ -150,12 +180,15 @@ export function LanguageSwitcher({ className }: { className?: string }) {
 
   // 🛡️ CHRIS-PROTOCOL: Handshake ID Truth (v2.19.5)
   const currentLang = languages.find(l => l.id === currentLangId) || languages[0] || { id: 1, code: 'nl-be', native: 'Vlaams', flag: '🇧🇪' };
+  const switcherLabel = `${t('nav.language_selection', 'Language choice')} (${currentLang.code.split('-')[0].toUpperCase()})`;
 
   if (!mounted) {
     return (
       <ButtonInstrument
         variant="plain"
         size="none"
+        ariaLabel={switcherLabel}
+        title={switcherLabel}
         className={className || `relative p-1 rounded-full transition-all duration-500 group flex items-center justify-center min-w-[32px] h-[32px] ${
           market.market_code === 'ARTIST' ? 'text-white' : 'text-va-black'
         }`}
@@ -183,6 +216,8 @@ export function LanguageSwitcher({ className }: { className?: string }) {
       <ButtonInstrument
         variant="plain"
         size="none"
+        ariaLabel={switcherLabel}
+        title={switcherLabel}
         onClick={(e) => {
           e.preventDefault();
           playClick('soft');

@@ -15,6 +15,7 @@ import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { cn } from '@/lib/utils';
 import { VOICES_CONFIG } from '@/lib/core-internal/config';
+import { normalizeLocale } from '@/lib/system/locale-utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle2, Loader2, Trash2, Edit2, X, ChevronRight, Info, Star, CreditCard, FileText, Tag, Eye, Lock, AlertCircle, Send, ArrowRight, Check } from 'lucide-react';
 import Image from 'next/image';
@@ -33,7 +34,7 @@ export const PricingSummary: React.FC<{
   const { state, subtotal, cartHash, removeItem, clearCart, restoreItem, isVatExempt, updateCustomer, updateIsSubmitting, updateAgreedToTerms, isHydrated } = useCheckout();
   const { updateStep } = useMasterControl();
   const { playClick } = useSonicDNA();
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   
   // CHRIS-PROTOCOL: Hydration Guard to prevent Error #419
   const [selectedItem, setSelectedItem] = useState<any>(null);
@@ -117,6 +118,7 @@ export const PricingSummary: React.FC<{
         postal_code: state.customer.postal_code,
         city: state.customer.city,
         country: state.customer.country || 'BE',
+        language: normalizeLocale(language),
         usage: state.usage,
         plan: state.plan,
         briefing: safeBriefing,

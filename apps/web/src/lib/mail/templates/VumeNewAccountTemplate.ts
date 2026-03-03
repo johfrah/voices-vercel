@@ -16,7 +16,8 @@ interface NewAccountProps {
 
 export const VumeNewAccountTemplate = (props: NewAccountProps) => {
   const { name, host, language = 'nl' } = props;
-    const isNl = language === 'nl';
+    const languageShort = (language || 'nl').toLowerCase().split('-')[0];
+    const isNl = languageShort === 'nl';
     const market = MarketManager.getCurrentMarket(host);
 
     const content = `
