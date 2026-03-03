@@ -42,6 +42,23 @@ interface DashboardOverviewFinanceEntry {
   journey: string | null;
 }
 
+interface DashboardAccessItem {
+  id: string;
+  title: string;
+  subtitle: string;
+  href: string;
+  bucket: "priority" | "quick" | "settings";
+  order: number;
+  count: number | null;
+}
+
+interface DashboardVisiblePage {
+  id: string;
+  title: string;
+  href: string;
+  bucket: "priority" | "quick" | "settings";
+}
+
 interface DashboardOverviewResponse {
   world: {
     id: number | null;
@@ -65,19 +82,19 @@ interface DashboardOverviewResponse {
     recent_entries: DashboardOverviewFinanceEntry[];
   };
   activity: DashboardOverviewActivity[];
+  access: {
+    priority_items: DashboardAccessItem[];
+    quick_items: DashboardAccessItem[];
+    settings_items: DashboardAccessItem[];
+    visible_pages: DashboardVisiblePage[];
+  };
   generated_at: string;
 }
 
 interface PriorityCard {
   title: string;
   description: string;
-  value: number;
-  href: string;
-}
-
-interface QuickLinkItem {
-  title: string;
-  subtitle: string;
+  value: number | null;
   href: string;
 }
 
@@ -100,6 +117,12 @@ const EMPTY_OVERVIEW: DashboardOverviewResponse = {
     recent_entries: [],
   },
   activity: [],
+  access: {
+    priority_items: [],
+    quick_items: [],
+    settings_items: [],
+    visible_pages: [],
+  },
   generated_at: "",
 };
 
@@ -176,61 +199,17 @@ export default function AdminDashboardContent(): JSX.Element {
   }, [fetchData]);
 
   const primaryCards = useMemo<PriorityCard[]>(() => {
-    return [
-      {
-        title: "Bestellingen",
-        description: "Nieuwe en lopende orders",
-        value: overview.actions.pending_orders + overview.actions.processing_orders,
-        href: "/admin/orders",
-      },
-      {
-        title: "Studio interesse",
-        description: "Interesseformulieren opvolgen",
-        value: overview.actions.pending_interests,
-        href: "/admin/funnel",
-      },
-      {
-        title: "Wachtende acties",
-        description: "Goedkeuringen in wachtrij",
-        value: overview.actions.pending_approvals,
-        href: "/admin/approvals",
-      },
-      {
-        title: "Mailbox",
-        description: "Nieuwe mails (24u)",
-        value: overview.actions.new_mails_24h,
-        href: "/admin/mailbox",
-      },
-      {
-        title: "Studio inschrijvingen",
-        description: "Aankomende edities",
-        value: overview.actions.upcoming_studio_editions,
-        href: "/admin/studio/inschrijvingen",
-      },
-      {
-        title: "Live stemmen",
-        description: "Publieke acteurs beschikbaar",
-        value: overview.actions.live_actors,
-        href: "/admin/voices",
-      },
-    ];
-  }, [overview.actions]);
+    return overview.access.priority_items.map((item) => ({
+      title: item.title,
+      description: item.subtitle,
+      value: item.count,
+      href: item.href,
+    }));
+  }, [overview.access.priority_items]);
 
-  const quickLinks: QuickLinkItem[] = [
-    { title: "Bestellingen", subtitle: "Order-opvolging", href: "/admin/orders" },
-    { title: "Mailbox", subtitle: "Klantcontact", href: "/admin/mailbox" },
-    { title: "Studio leads", subtitle: "Interesseformulieren", href: "/admin/funnel" },
-    { title: "Studio inschrijvingen", subtitle: "Deelnemers", href: "/admin/studio/inschrijvingen" },
-    { title: "Financiën", subtitle: "Opbrengst en kosten", href: "/admin/finance" },
-    { title: "Gebruikers", subtitle: "Accounts en toegang", href: "/admin/users" },
-  ];
-
-  const lowPriorityLinks: QuickLinkItem[] = [
-    { title: "Instellingen", subtitle: "Bedrijf en markten", href: "/admin/settings" },
-    { title: "Navigatie", subtitle: "Menu en structuur", href: "/admin/navigation" },
-    { title: "System logs", subtitle: "Foutopsporing", href: "/admin/system/logs" },
-    { title: "AI instellingen", subtitle: "Assistentconfiguratie", href: "/admin/ai-settings" },
-  ];
+  const quickLinks = useMemo(() => overview.access.quick_items, [overview.access.quick_items]);
+  const lowPriorityLinks = useMemo(() => overview.access.settings_items, [overview.access.settings_items]);
+  const visiblePages = useMemo(() => overview.access.visible_pages, [overview.access.visible_pages]);
 
   return (
     <PageWrapperInstrument className="p-8 md:p-12 space-y-10 max-w-[1500px] mx-auto">
@@ -291,6 +270,26 @@ export default function AdminDashboardContent(): JSX.Element {
             <TextInstrument className="text-[12px] text-va-black/40">Context: {overview.world.label}</TextInstrument>
           </ContainerInstrument>
         </ContainerInstrument>
+
+        <ContainerInstrument className="rounded-2xl border border-black/[0.05] bg-white p-4">
+          <TextInstrument className="text-[11px] tracking-[0.15em] uppercase text-va-black/30 font-semibold mb-3">
+            Toegangspagina&apos;s
+          </TextInstrument>
+          <ContainerInstrument className="flex flex-wrap gap-2">
+            {visiblePages.slice(0, 14).map((page) => (
+              <Link key={page.id} href={page.href} className="block">
+                <ContainerInstrument className="px-3 py-2 rounded-xl bg-va-off-white hover:bg-primary/10 transition-colors">
+                  <TextInstrument className="text-[12px] font-medium text-va-black/70">{page.title}</TextInstrument>
+                </ContainerInstrument>
+              </Link>
+            ))}
+            {visiblePages.length === 0 && (
+              <ContainerInstrument className="px-3 py-2 rounded-xl bg-va-off-white">
+                <TextInstrument className="text-[12px] text-va-black/40">Geen toegangen beschikbaar.</TextInstrument>
+              </ContainerInstrument>
+            )}
+          </ContainerInstrument>
+        </ContainerInstrument>
       </SectionInstrument>
 
       {errorMessage && (
@@ -328,7 +327,7 @@ export default function AdminDashboardContent(): JSX.Element {
                 <ContainerInstrument>
                   <TextInstrument className="text-[12px] tracking-widest uppercase text-va-black/30">{card.title}</TextInstrument>
                   <HeadingInstrument level={3} className="text-4xl font-light mt-2">
-                    {loading ? "..." : card.value}
+                    {loading ? "..." : card.value ?? "-"}
                   </HeadingInstrument>
                 </ContainerInstrument>
                 <ArrowRight size={16} className="text-va-black/30" />
@@ -436,14 +435,21 @@ export default function AdminDashboardContent(): JSX.Element {
           </HeadingInstrument>
           <ContainerInstrument className="space-y-2">
             {quickLinks.map((item) => (
-              <Link key={item.title} href={item.href} className="block">
+              <Link key={item.id} href={item.href} className="block">
                 <ContainerInstrument className="rounded-xl border border-black/[0.04] p-3 hover:border-primary/20 transition-colors">
                   <ContainerInstrument className="flex items-center justify-between gap-3">
                     <ContainerInstrument>
                       <TextInstrument className="text-[14px] font-medium text-va-black">{item.title}</TextInstrument>
                       <TextInstrument className="text-[12px] text-va-black/40">{item.subtitle}</TextInstrument>
                     </ContainerInstrument>
-                    <ArrowRight size={14} className="text-va-black/30" />
+                    <ContainerInstrument className="flex items-center gap-3">
+                      {typeof item.count === "number" && item.count > 0 && (
+                        <ContainerInstrument className="min-w-6 px-2 py-1 rounded-lg bg-primary/10">
+                          <TextInstrument className="text-[11px] text-primary font-semibold text-center">{item.count}</TextInstrument>
+                        </ContainerInstrument>
+                      )}
+                      <ArrowRight size={14} className="text-va-black/30" />
+                    </ContainerInstrument>
                   </ContainerInstrument>
                 </ContainerInstrument>
               </Link>
@@ -460,7 +466,7 @@ export default function AdminDashboardContent(): JSX.Element {
           </ContainerInstrument>
           <ContainerInstrument className="space-y-2">
             {lowPriorityLinks.map((item) => (
-              <Link key={item.title} href={item.href} className="block">
+              <Link key={item.id} href={item.href} className="block">
                 <ContainerInstrument className="rounded-xl border border-black/[0.04] p-3 hover:border-primary/20 transition-colors">
                   <ContainerInstrument className="flex items-center justify-between gap-3">
                     <ContainerInstrument>
