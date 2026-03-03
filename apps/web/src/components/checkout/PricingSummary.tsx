@@ -269,8 +269,8 @@ export const PricingSummary: React.FC<{
                 {/* Uitleg, prijs en deleteknop rechts (LAYA-MANDAAT) */}
                 <ContainerInstrument className="flex flex-1 items-center justify-between gap-4 min-w-0">
                   <ContainerInstrument className="min-w-0 flex-1">
-                    <HeadingInstrument level={4} className="font-light text-xl text-va-black truncate tracking-tight">
-                      {itemObj.actor?.display_name || itemObj.name || 'Stemopname'}
+                    <HeadingInstrument level={4} className="font-light text-xl text-va-black tracking-tight">
+                      {itemObj.actor?.display_name || itemObj.name || 'Product'}
                     </HeadingInstrument>
                     <div className="text-[13px] leading-relaxed text-va-black/40 font-light mt-1">
                       <div className="flex flex-col gap-1">

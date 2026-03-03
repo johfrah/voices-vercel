@@ -39,7 +39,7 @@ interface WorkshopHeroIslandProps {
 export const WorkshopHeroIsland: React.FC<WorkshopHeroIslandProps> = ({ workshop }) => {
   const { playClick } = useSonicDNA();
   const router = useVoicesRouter();
-  const { addItem, setJourney } = useCheckout();
+  const { addItem, setJourney, updateCustomer } = useCheckout();
   const [showParticipantForm, setShowParticipantForm] = useState(false);
   const videoPath = workshop.video?.file_path || workshop.featured_image?.file_path;
   const hasVideo = !!workshop.video?.file_path;
@@ -83,6 +83,11 @@ export const WorkshopHeroIsland: React.FC<WorkshopHeroIslandProps> = ({ workshop
     };
     addItem(workshopItem);
     setJourney('studio', nextEdition!.id);
+    updateCustomer({
+      first_name: participantData.firstName,
+      last_name: participantData.lastName,
+      email: participantData.email,
+    });
     setShowParticipantForm(false);
     router.push('/checkout');
   };
