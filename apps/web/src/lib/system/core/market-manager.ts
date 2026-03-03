@@ -201,38 +201,38 @@ export class MarketManager {
     let cleanHost = host.replace('www.', '').replace('https://', '').replace('http://', '').split('/')[0];
     const cleanPath = path || '';
 
-    let worldId = 1;
-    if (cleanHost === 'voices.be' || cleanHost === 'localhost:3000' || cleanHost === 'voices-headless.vercel.app') {
-      if (cleanPath.startsWith('/studio')) worldId = 2;
-      else if (cleanPath.startsWith('/academy')) worldId = 3;
-      else if (cleanPath.startsWith('/ademing')) worldId = 6;
-      else if (cleanPath.startsWith('/johfrai')) worldId = 10;
-    } else {
-      if (cleanHost === 'ademing.be') worldId = 6;
-      else if (cleanHost === 'johfrah.be') worldId = 7;
-      else if (cleanHost === 'christina.be') worldId = 5;
-      else if (cleanHost === 'youssefzaki.eu') worldId = 25;
-      else if (cleanHost === 'johfrai.be') worldId = 10;
-      else if (cleanHost === 'voices.academy') worldId = 3;
-    }
+    const market = this.getCurrentMarket(cleanHost, cleanPath);
 
-    let languageId = 1;
-    if (cleanHost.endsWith('.nl')) languageId = 2;
-    else if (cleanHost.endsWith('.fr')) languageId = 4;
-    else if (cleanHost.endsWith('.es')) languageId = 8;
-    else if (cleanHost.endsWith('.pt')) languageId = 12;
-    else if (cleanHost.endsWith('.eu') || cleanHost.endsWith('.com')) languageId = 5;
+    // ID-First: resolve world from market context, then let explicit path prefixes win.
+    let worldId = this.getWorldId((market.market_code || 'agency').toLowerCase());
+    if (cleanPath.startsWith('/studio')) worldId = 2;
+    else if (cleanPath.startsWith('/academy')) worldId = 3;
+    else if (cleanPath.startsWith('/ademing')) worldId = 6;
+    else if (cleanPath.startsWith('/johfrai')) worldId = 10;
+
+    // ID-First: base language always starts from market primary language.
+    let languageId =
+      market.primary_language_id ||
+      this.getLanguageId(market.primary_language || market.language || 'nl-be') ||
+      1;
 
     const localeMatch = cleanPath.match(/^\/(en|fr|de|es|pt|it|nl)(\/|$)/i);
     if (localeMatch) {
       const localeSlug = localeMatch[1].toLowerCase();
-      if (localeSlug === 'en') languageId = 5;
-      else if (localeSlug === 'fr') languageId = 4;
-      else if (localeSlug === 'de') languageId = 7;
-      else if (localeSlug === 'es') languageId = 8;
-      else if (localeSlug === 'pt') languageId = 12;
-      else if (localeSlug === 'it') languageId = 10;
-      else if (localeSlug === 'nl') languageId = 1;
+      const marketPrimary = normalizeLocale(market.primary_language || 'nl-be');
+      const marketPrimaryShort = marketPrimary.split('-')[0];
+      const normalizedLocale = normalizeLocale(localeSlug, marketPrimary);
+
+      // If locale prefix equals the market primary language short code,
+      // keep the market primary ID (important for markets like voices.nl -> nl-nl).
+      if (localeSlug === marketPrimaryShort) {
+        languageId = market.primary_language_id || this.getLanguageId(marketPrimary) || languageId;
+      } else {
+        languageId =
+          this.getLanguageId(normalizedLocale, marketPrimary) ||
+          this.getLanguageId(localeSlug, marketPrimary) ||
+          languageId;
+      }
     }
 
     let journeyId: number | null = null;
@@ -255,7 +255,7 @@ export class MarketManager {
       theme: 'voices', has_voicy: true
     },
     'voices.nl': {
-      market_code: 'NLNL', language: 'nl', primary_language: 'nl-be', primary_language_id: 1,
+      market_code: 'NLNL', language: 'nl', primary_language: 'nl-nl', primary_language_id: 2,
       supported_languages: ['nl-nl', 'nl-be', 'en-gb', 'de-de', 'fr-fr'],
       popular_languages: ['nl-nl', 'nl-be', 'en-gb', 'de-de', 'fr-fr'],
       name: 'Nederland', logo_url: VOICES_CONFIG.assets.logos.nl, theme: 'voices', has_voicy: true
@@ -440,24 +440,38 @@ export class MarketManager {
     return emergencyMap[lowInput] || null;
   }
 
-  static getLanguageId(input: string): number | null {
+  static getLanguageId(input: string, fallbackLocale: string = 'nl-be'): number | null {
     if (!input) return null;
     const lowInput = input.toLowerCase().trim();
+    const normalized = normalizeLocale(lowInput, normalizeLocale(fallbackLocale, 'nl-be'));
+    const shortInput = lowInput.split('-')[0];
+    const shortNormalized = normalized.split('-')[0];
+    const candidates = Array.from(
+      new Set([lowInput, normalized, shortInput, shortNormalized].filter(Boolean))
+    );
     const registry = this.languagesRegistry.length > 0 ? this.languagesRegistry : 
                     (typeof global !== 'undefined' && (global as any).handshakeLanguages ? (global as any).handshakeLanguages : 
                     (typeof window !== 'undefined' && (window as any).handshakeLanguages ? (window as any).handshakeLanguages : []));
 
     if (registry.length > 0) {
-      const match = registry.find((l: any) => l.code.toLowerCase() === lowInput || l.label.toLowerCase() === lowInput);
+      const match = registry.find((l: any) => {
+        const code = String(l.code || '').toLowerCase();
+        const label = String(l.label || '').toLowerCase();
+        return candidates.includes(code) || candidates.includes(label);
+      });
       if (match) return match.id;
     }
 
     const emergencyMap: Record<string, number> = {
       'nl-be': 1, 'vlaams': 1, 'nl-nl': 2, 'nederlands': 2, 'fr-be': 3, 'fr-fr': 4, 'frans': 4,
       'en-gb': 5, 'engels': 5, 'en-us': 6, 'de-de': 7, 'duits': 7, 'es-es': 8, 'spaans': 8,
-      'it-it': 10, 'italiaans': 10, 'pt-pt': 12, 'portugees': 12
+      'it-it': 10, 'italiaans': 10, 'pt-pt': 12, 'portugees': 12,
+      'nl': 1, 'fr': 4, 'en': 5, 'de': 7, 'es': 8, 'it': 10, 'pt': 12
     };
-    return emergencyMap[lowInput] || null;
+    for (const candidate of candidates) {
+      if (emergencyMap[candidate] != null) return emergencyMap[candidate];
+    }
+    return null;
   }
 
   static getCountryId(input: string): number | null {

@@ -15,6 +15,7 @@ import {
 import { VoiceglotText } from './VoiceglotText';
 
 import { useAuth } from '@/contexts/AuthContext';
+import { useTranslation } from '@/contexts/TranslationContext';
 
 interface Language {
   id: number;
@@ -37,6 +38,35 @@ export function LanguageSwitcher({ className }: { className?: string }) {
   const { playClick, playSwell } = useSonicDNA();
 
   const { isAuthenticated } = useAuth();
+  const { t } = useTranslation();
+
+  const resolveFlagDisplay = React.useCallback((iconToken: string | null | undefined, code: string) => {
+    const token = String(iconToken || '').trim();
+    const tokenMap: Record<string, string> = {
+      FlagBE: '🇧🇪',
+      FlagNL: '🇳🇱',
+      FlagFR: '🇫🇷',
+      FlagUK: '🇬🇧',
+      FlagDE: '🇩🇪',
+      FlagES: '🇪🇸',
+      FlagPT: '🇵🇹',
+      FlagIT: '🇮🇹'
+    };
+    if (tokenMap[token]) return tokenMap[token];
+    if (token && !token.startsWith('Flag')) return token;
+
+    const short = String(code || '').toLowerCase().split('-')[0];
+    const shortMap: Record<string, string> = {
+      nl: '🇳🇱',
+      fr: '🇫🇷',
+      en: '🇬🇧',
+      de: '🇩🇪',
+      es: '🇪🇸',
+      pt: '🇵🇹',
+      it: '🇮🇹'
+    };
+    return shortMap[short] || '🌐';
+  }, []);
 
   useEffect(() => {
     setMounted(true);
@@ -61,7 +91,7 @@ export function LanguageSwitcher({ className }: { className?: string }) {
         code: l.code,
         label: l.label,
         native: MarketManager.getLanguageLabel(l.id),
-        flag: MarketManager.getLanguageIcon(l.id) || '🌐',
+        flag: resolveFlagDisplay(MarketManager.getLanguageIcon(l.id), l.code),
         isPrimary: worldLink?.is_primary || false,
         isPopular: worldLink?.is_popular || false
       };
@@ -89,7 +119,7 @@ export function LanguageSwitcher({ className }: { className?: string }) {
       
       return 0;
     });
-  }, [market]);
+  }, [market, resolveFlagDisplay]);
 
   useEffect(() => {
     const langMatch = pathname.match(/^\/(nl|fr|en|de|es|it|pt)(\/|$)/);
@@ -150,7 +180,7 @@ export function LanguageSwitcher({ className }: { className?: string }) {
 
   // 🛡️ CHRIS-PROTOCOL: Handshake ID Truth (v2.19.5)
   const currentLang = languages.find(l => l.id === currentLangId) || languages[0] || { id: 1, code: 'nl-be', native: 'Vlaams', flag: '🇧🇪' };
-  const switcherLabel = `Switch language (${currentLang.code.split('-')[0].toUpperCase()})`;
+  const switcherLabel = `${t('nav.language_selection', 'Language choice')} (${currentLang.code.split('-')[0].toUpperCase()})`;
 
   if (!mounted) {
     return (
