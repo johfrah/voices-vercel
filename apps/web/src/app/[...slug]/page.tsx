@@ -335,16 +335,39 @@ function getWorldScopedPageKey(slug: string): WorldScopedPageKey | null {
 }
 
 function getCanonicalWorldScopedPath(pageKey: WorldScopedPageKey, worldId: number): string | null {
-  if (worldId === 2) {
-    if (pageKey === "contact") return "studio/contact";
-    if (pageKey === "faq") return "studio/faq";
-    return null;
-  }
+  const routesByWorld: Record<number, Partial<Record<WorldScopedPageKey, string>>> = {
+    0: {
+      contact: "agency/contact",
+      faq: "agency/faq",
+      how_it_works: "agency/zo-werkt-het"
+    },
+    1: {
+      contact: "agency/contact",
+      faq: "agency/faq",
+      how_it_works: "agency/zo-werkt-het"
+    },
+    2: {
+      contact: "studio/contact",
+      faq: "studio/faq"
+    },
+    6: {
+      contact: "ademing/contact",
+      faq: "ademing/faq"
+    },
+    10: {
+      contact: "johfrai/contact",
+      faq: "johfrai/faq"
+    },
+    25: {
+      contact: "artist/youssef/contact"
+    }
+  };
 
-  if (pageKey === "contact") return "agency/contact";
-  if (pageKey === "faq") return "agency/faq";
-  if (pageKey === "how_it_works") return "agency/zo-werkt-het";
-  return null;
+  return routesByWorld[worldId]?.[pageKey] || null;
+}
+
+function isAgencyWorldContext(worldId: number): boolean {
+  return worldId === 0 || worldId === 1;
 }
 
 function renderAgencyContactPage(market: any) {
@@ -408,6 +431,49 @@ function renderAgencyContactPage(market: any) {
                 <ContactFormInstrument />
               </Suspense>
             </ContainerInstrument>
+          </ContainerInstrument>
+        </ContainerInstrument>
+      </SectionInstrument>
+    </PageWrapperInstrument>
+  );
+}
+
+function renderAgencyFaqPage() {
+  const faqBlocks = [
+    {
+      id: "agency-faq-block",
+      type: "AccordionInstrument",
+      settings: {
+        data: {
+          title: "Veelgestelde vragen over voice-over",
+          category: "agency"
+        }
+      }
+    }
+  ];
+
+  return (
+    <PageWrapperInstrument className="bg-va-off-white min-h-screen">
+      <Suspense fallback={null}>
+        <LiquidBackground />
+      </Suspense>
+
+      <SectionInstrument className="py-24 md:py-32">
+        <ContainerInstrument className="max-w-6xl mx-auto px-6 space-y-10">
+          <ContainerInstrument className="text-center max-w-3xl mx-auto space-y-5">
+            <TextInstrument className="text-[11px] font-bold tracking-[0.24em] uppercase text-primary/70">
+              <VoiceglotText translationKey="agency.faq.label" defaultText="Veelgestelde vragen" />
+            </TextInstrument>
+            <HeadingInstrument level={1} className="text-5xl md:text-6xl font-light tracking-tighter text-va-black leading-[0.95]">
+              <VoiceglotText translationKey="agency.faq.title" defaultText="Alles helder, zonder omwegen." />
+            </HeadingInstrument>
+            <TextInstrument className="text-[17px] md:text-lg text-va-black/50 font-light">
+              <VoiceglotText translationKey="agency.faq.subtitle" defaultText="Praktische antwoorden over stemmen, prijzen en levering." />
+            </TextInstrument>
+          </ContainerInstrument>
+
+          <ContainerInstrument className="bg-white rounded-[20px] border border-black/5 shadow-aura p-8 md:p-10">
+            <InstrumentRenderer blocks={faqBlocks} />
           </ContainerInstrument>
         </ContainerInstrument>
       </SectionInstrument>
@@ -860,7 +926,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
         }
 
         const worldScopedPage = getWorldScopedPageKey(lookupSlug);
-        if (worldScopedPage === "contact" && currentWorldId !== 2) {
+        if (worldScopedPage === "contact" && isAgencyWorldContext(currentWorldId)) {
           return renderAgencyContactPage(market);
         }
         const canonicalWorldPath = worldScopedPage ? getCanonicalWorldScopedPath(worldScopedPage, currentWorldId) : null;
@@ -1086,13 +1152,16 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
     const topLevelRecoveryRoutes: Record<string, string> = {
       contact: "/agency/contact",
       "hoe-het-werkt": "/agency/zo-werkt-het",
-      "how-it-works": "/agency/zo-werkt-het",
-      faq: "/agency/faq"
+      "how-it-works": "/agency/zo-werkt-het"
     };
     const normalizedLookupSlug = lookupSlug.toLowerCase();
     const lookupTail = normalizedLookupSlug.split("/").filter(Boolean).pop() || normalizedLookupSlug;
     const recoveryRoute = topLevelRecoveryRoutes[normalizedLookupSlug] || topLevelRecoveryRoutes[lookupTail];
     const normalizedRecoveryTarget = recoveryRoute?.replace(/^\//, "");
+
+    if (!resolved && (normalizedLookupSlug === 'faq' || normalizedLookupSlug === 'agency/faq')) {
+      return renderAgencyFaqPage();
+    }
 
     if (!resolved && recoveryRoute && normalizedLookupSlug !== normalizedRecoveryTarget) {
       return redirect(recoveryRoute);
@@ -1424,12 +1493,12 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
           }
 
           const worldScopedPage = getWorldScopedPageKey(cmsSlug);
+          if (worldScopedPage === "contact" && isAgencyWorldContext(currentWorldId)) {
+            return renderAgencyContactPage(market);
+          }
           const canonicalWorldPath = worldScopedPage ? getCanonicalWorldScopedPath(worldScopedPage, currentWorldId) : null;
           if (canonicalWorldPath && lookupSlug !== canonicalWorldPath) {
             return redirect(`/${canonicalWorldPath}`);
-          }
-          if (worldScopedPage === "contact" && currentWorldId !== 2) {
-            return renderAgencyContactPage(market);
           }
           
           if (currentWorldId === 2) {

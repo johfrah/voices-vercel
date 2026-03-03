@@ -632,7 +632,11 @@ const getArticlePayloadCached = unstable_cache(
       return null;
     }
 
-    const translatedTitle = await VoiceglotBridge.t(`page.${slug}.title`, lang, true);
+    const translatedTitleRaw = await VoiceglotBridge.t(`page.${slug}.title`, lang, true);
+    const translatedTitle =
+      translatedTitleRaw && translatedTitleRaw !== `page.${slug}.title`
+        ? translatedTitleRaw
+        : article.title;
     
     const { data: blocks } = await supabase
       .from('content_blocks')

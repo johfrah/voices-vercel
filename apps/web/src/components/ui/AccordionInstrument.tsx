@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState } from 'react';
-import { ContainerInstrument, HeadingInstrument } from './LayoutInstruments';
+import React, { useEffect, useState } from 'react';
+import { ContainerInstrument, HeadingInstrument, TextInstrument } from './LayoutInstruments';
 import { ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useSonicDNA } from '@/lib/engines/sonic-dna';
@@ -20,18 +20,81 @@ interface AccordionItem {
  * - Subtiele Chevron in plaats van zware knoppen.
  * - Zijdezachte animaties via va-bezier.
  */
-export const AccordionInstrument: React.FC<{ items: AccordionItem[] }> = ({ items }) => {
+interface AccordionInstrumentProps {
+  items?: AccordionItem[];
+  category?: string;
+  title?: string;
+}
+
+export const AccordionInstrument: React.FC<AccordionInstrumentProps> = ({ items, category, title }) => {
   const [openId, setOpenId] = useState<string | null>(null);
+  const [resolvedItems, setResolvedItems] = useState<AccordionItem[]>(Array.isArray(items) ? items : []);
   const { playClick } = useSonicDNA();
+
+  useEffect(() => {
+    if (Array.isArray(items) && items.length > 0) {
+      setResolvedItems(items);
+      return;
+    }
+
+    if (!category) {
+      setResolvedItems([]);
+      return;
+    }
+
+    let cancelled = false;
+    const fetchByCategory = async () => {
+      try {
+        const res = await fetch(`/api/faq?journey=${encodeURIComponent(category)}&limit=8`);
+        if (!res.ok) {
+          if (!cancelled) setResolvedItems([]);
+          return;
+        }
+
+        const data = await res.json();
+        const mapped = Array.isArray(data)
+          ? data
+              .map((entry: any, index: number) => ({
+                id: String(entry.id ?? `${category}-${index}`),
+                title: entry.questionNl || entry.question_nl || entry.question || '',
+                content: entry.answerNl || entry.answer_nl || entry.answer || ''
+              }))
+              .filter((entry: AccordionItem) => entry.title && entry.content)
+          : [];
+
+        if (!cancelled) setResolvedItems(mapped);
+      } catch {
+        if (!cancelled) setResolvedItems([]);
+      }
+    };
+
+    fetchByCategory();
+    return () => {
+      cancelled = true;
+    };
+  }, [items, category]);
 
   const handleToggle = (id: string) => {
     setOpenId(openId === id ? null : id);
     playClick('soft');
   };
 
+  if (!resolvedItems.length) {
+    return (
+      <ContainerInstrument className="w-full rounded-[20px] border border-black/5 bg-white/50 px-8 py-7">
+        <HeadingInstrument level={3} className="text-[19px] font-light tracking-tight text-va-black mb-2">
+          {title || 'Veelgestelde vragen'}
+        </HeadingInstrument>
+        <TextInstrument className="text-[15px] font-light text-va-black/50">
+          Binnenkort voegen we hier extra antwoorden toe voor deze world.
+        </TextInstrument>
+      </ContainerInstrument>
+    );
+  }
+
   return (
     <ContainerInstrument className="w-full space-y-3">
-      {items.map((item) => (
+      {resolvedItems.map((item) => (
         <ContainerInstrument 
           key={item.id} 
           className={cn(

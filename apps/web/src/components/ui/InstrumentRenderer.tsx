@@ -2,8 +2,9 @@
 
 import React, { Suspense } from 'react';
 import nextDynamic from 'next/dynamic';
-import { ContainerInstrument, TextInstrument } from './LayoutInstruments';
+import { ContainerInstrument, HeadingInstrument, TextInstrument } from './LayoutInstruments';
 import { InstrumentSkeleton } from './InstrumentSkeletonRegistry';
+import { usePathname } from 'next/navigation';
 
 // 🛡️ NUCLEAR LOADING MANDATE: Dynamic imports for all instruments
 const HeroInstrument = nextDynamic(() => import('./HeroInstrument').then(mod => mod.HeroInstrument), { ssr: false });
@@ -19,6 +20,7 @@ const WorkshopCarousel = nextDynamic(() => import('../studio/WorkshopCarousel').
 const WorkshopCalendar = nextDynamic(() => import('../studio/WorkshopCalendar').then(mod => mod.WorkshopCalendar), { ssr: false });
 const WorkshopQuiz = nextDynamic(() => import('../studio/WorkshopQuiz').then(mod => mod.WorkshopQuiz), { ssr: false });
 const WorkshopInterestForm = nextDynamic(() => import('../studio/WorkshopInterestForm').then(mod => mod.WorkshopInterestForm), { ssr: false });
+const ContactFormInstrument = nextDynamic(() => import('./ContactFormInstrument').then(mod => mod.ContactFormInstrument), { ssr: false });
 
 // Fallback voor onbekende instrumenten
 const UnknownInstrument = ({ type }: { type: string }) => (
@@ -37,13 +39,38 @@ interface InstrumentRendererProps {
  * Vertaalt database blocks naar visuele instrumenten.
  */
 export const InstrumentRenderer = ({ blocks, extraData = {} }: InstrumentRendererProps) => {
+  const pathname = usePathname();
   if (!blocks || blocks.length === 0) return null;
+
+  const getWorldId = (): number | null => {
+    if (typeof window === 'undefined') return null;
+    const worldId = (window as any)?.handshakeContext?.worldId;
+    return typeof worldId === 'number' ? worldId : null;
+  };
+
+  const isStudioWorldContext = (): boolean => {
+    if (pathname?.startsWith('/studio')) return true;
+    return getWorldId() === 2;
+  };
 
   const withSkeleton = (blockId: number | string, type: string, element: React.ReactNode) => (
     <Suspense key={blockId} fallback={<InstrumentSkeleton type={type} />}>
       {element}
     </Suspense>
   );
+
+  const parseLegacyDeepRead = (raw: string): { title: string; body: string } => {
+    if (!raw) return { title: '', body: '' };
+    const lines = raw.split('\n');
+    const headingLine = lines.find((line) => /^(#{2,3})\s+/.test(line.trim()));
+    const title = headingLine ? headingLine.replace(/^(#{2,3})\s+/, '').trim() : '';
+    const body = lines
+      .filter((line) => line !== headingLine)
+      .join('\n')
+      .replace(/\*\*/g, '')
+      .trim();
+    return { title, body };
+  };
 
   return (
     <div className="space-y-0">
@@ -79,7 +106,15 @@ export const InstrumentRenderer = ({ blocks, extraData = {} }: InstrumentRendere
 
           case 'faq':
           case 'AccordionInstrument':
-            return withSkeleton(block.id, "faq", <AccordionInstrument {...settings.data} />);
+            return withSkeleton(
+              block.id,
+              "faq",
+              <AccordionInstrument
+                items={settings?.data?.items}
+                category={settings?.data?.category}
+                title={settings?.data?.title}
+              />
+            );
 
           case 'workshop_carousel':
           case 'WorkshopCarousel':
@@ -103,9 +138,35 @@ export const InstrumentRenderer = ({ blocks, extraData = {} }: InstrumentRendere
 
           case 'interest_form':
           case 'WorkshopInterestForm':
-            return withSkeleton(block.id, "interest_form", <WorkshopInterestForm {...settings.data} />);
+            return withSkeleton(
+              block.id,
+              "interest_form",
+              isStudioWorldContext() ? <WorkshopInterestForm {...settings.data} /> : <ContactFormInstrument />
+            );
+
+          case 'deep-read': {
+            const rawContent = typeof block.content === 'string' ? block.content : '';
+            const parsed = parseLegacyDeepRead(rawContent);
+            return withSkeleton(
+              block.id,
+              "article",
+              <ContainerInstrument className="py-14 md:py-18 border-t border-black/5">
+                {parsed.title ? (
+                  <HeadingInstrument level={3} className="text-3xl md:text-4xl font-light tracking-tight text-va-black mb-5">
+                    {parsed.title}
+                  </HeadingInstrument>
+                ) : null}
+                <TextInstrument className="text-[16px] md:text-[17px] text-va-black/60 font-light leading-relaxed whitespace-pre-line">
+                  {parsed.body || rawContent}
+                </TextInstrument>
+              </ContainerInstrument>
+            );
+          }
 
           default:
+            if (typeof type === 'string' && type.toLowerCase().includes('devtool')) {
+              return null;
+            }
             // Als het een legacy block is (zonder settings), kunnen we een fallback renderer gebruiken
             // of het negeren als we volledig over zijn op de nieuwe builder.
             console.warn(`[InstrumentRenderer] Legacy or unknown block type: ${type}`);
