@@ -74,6 +74,7 @@ export async function GET(request: NextRequest) {
     const targetLangs = [
       { id: 5, code: 'en-gb' },
       { id: 3, code: 'fr-be' },
+      { id: 4, code: 'fr-fr' },
       { id: 7, code: 'de-de' },
       { id: 8, code: 'es-es' },
       { id: 12, code: 'pt-pt' },
