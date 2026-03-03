@@ -75,7 +75,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
     
     setIsModalLoggingIn(true);
     setModalLoginError(null);
-    playClick('deep');
+    playClick('pro');
 
     try {
       // CHRIS-PROTOCOL: Gebruik onze eigen custom auth API voor 100% controle
@@ -89,7 +89,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
 
       if (!response.ok) {
         setModalLoginError(result.error || t('checkout.login.error_send', 'Versturen mislukt. Probeer het later opnieuw.'));
-        playClick('error');
+        playClick('lock');
       } else {
         playClick('success');
         setMagicLinkSent(true);
@@ -144,7 +144,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
                 valid: false,
                 message: t('checkout.vat.error_be', 'Belgische klanten moeten een BE BTW-nummer gebruiken.') 
               }));
-              playClick('error');
+              playClick('lock');
               return;
             }
 
@@ -155,7 +155,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
                 valid: false,
                 message: t('checkout.vat.error_mismatch', `BTW-nummer matcht niet met land (${selectedCountry}).`) 
               }));
-              playClick('error');
+              playClick('lock');
               return;
             }
 
@@ -238,7 +238,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
   }, [formData.email, auth.isAuthenticated, playClick, updateCustomer]);
 
   const handleChange = (field: string, value: any) => {
-    playClick('light');
+    playClick('soft');
     const newData = { ...formData, [field]: value };
     
     // Reset verification if VAT number or country changes
@@ -262,7 +262,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
     const missingField = requiredFields.find(fieldItem => !formData[fieldItem as keyof typeof formData]);
     
     if (missingField) {
-      playClick('error');
+      playClick('lock');
       
       // 🛡️ CHRIS-PROTOCOL: User-friendly validation (v2.14.317)
       // We scroll to the missing field and show a clear indicator
@@ -292,7 +292,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
       return;
     }
 
-    playClick('deep');
+    playClick('pro');
     updateIsSubmitting(true);
 
     try {
@@ -325,7 +325,10 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
         plan: state.plan,
         briefing: safeBriefing,
         quoteMessage: quoteMessage || null,
+        isQuote: !!formData.isQuote,
         payment_method: state.paymentMethod,
+        billing_po: ((formData as any).billing_po || '').trim() || undefined,
+        financial_email: ((formData as any).financial_email || '').trim() || undefined,
         metadata: {
           words: wordCount,
           prompts: state.prompts || 0,
@@ -424,10 +427,11 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
     { id: 'VA', label: t('country.VA', 'Vaticaanstad') },
   ].sort((a, b) => a.label.localeCompare(b.label));
 
-  const discountAmount = state.customer.active_coupon 
-    ? (state.customer.active_coupon.type === 'percentage' 
-        ? (subtotal * (state.customer.active_coupon.discount / 100)) 
-        : state.customer.active_coupon.discount)
+  const activeCoupon = (state.customer as any).active_coupon;
+  const discountAmount = activeCoupon 
+    ? (activeCoupon.type === 'percentage' 
+        ? (subtotal * (activeCoupon.discount / 100)) 
+        : activeCoupon.discount)
     : 0;
 
   const grandTotal = subtotal - discountAmount;
@@ -635,7 +639,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
           <button 
             type="button"
             onClick={() => {
-              playClick('light');
+              playClick('soft');
               setShowExtraDetails(!showExtraDetails);
             }}
             className="flex items-center gap-3 group"
@@ -709,7 +713,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
                 type="button"
                 variant="ghost"
                 onClick={() => {
-                  playClick('light');
+                  playClick('soft');
                   updatePaymentMethod(method.id);
                 }}
                 className={cn(
@@ -840,7 +844,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
         </ContainerInstrument>
       )}
 
-      <AcademyUpsellSection strokeWidth={1.5} />
+      <AcademyUpsellSection />
 
       <ContainerInstrument className="pt-6 border-t border-va-black/5 mt-8">
         {/* Admin Quote Toggle */}
@@ -875,7 +879,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
         )}
       </ContainerInstrument>
 
-      <EmailPreviewModal strokeWidth={1.5} 
+      <EmailPreviewModal
         isOpen={isPreviewOpen}
         onClose={() => setIsPreviewOpen(false)}
         onSend={(msg) => handleSubmit(msg)}

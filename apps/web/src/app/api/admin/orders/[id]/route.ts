@@ -1,5 +1,5 @@
-import { db, ordersV2, users, orderItems, recordingSessions, ordersLegacyBloat, systemEvents } from '@/lib/system/voices-config';
-import { eq, sql } from 'drizzle-orm';
+import { db, ordersV2, users, orderItems, ordersLegacyBloat, orderStatuses, paymentMethods, journeys } from '@/lib/system/voices-config';
+import { eq } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth/api-auth';
 
@@ -18,7 +18,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
       return auth;
     }
 
-    // 🚀 NUCLEAR DETAIL FETCH: Gebruik standaard Drizzle select voor stabiliteit
+    // 🚀 NUCLEAR DETAIL FETCH: Orders V2 + lookup tables + legacy bloat
     const [order] = await db.select({
       id: ordersV2.id,
       userId: ordersV2.userId,
@@ -31,10 +31,19 @@ export async function GET(request: Request, { params }: { params: { id: string }
       billingEmailAlt: ordersV2.billingEmailAlt,
       createdAt: ordersV2.createdAt,
       legacyInternalId: ordersV2.legacyInternalId,
-      rawMeta: ordersLegacyBloat.rawMeta
+      rawMeta: ordersLegacyBloat.rawMeta,
+      statusCode: orderStatuses.code,
+      statusLabel: orderStatuses.label,
+      paymentCode: paymentMethods.code,
+      paymentLabel: paymentMethods.label,
+      journeyCode: journeys.code,
+      journeyLabel: journeys.label,
     })
     .from(ordersV2)
     .leftJoin(ordersLegacyBloat, eq(ordersV2.id, ordersLegacyBloat.wpOrderId))
+    .leftJoin(orderStatuses, eq(ordersV2.statusId, orderStatuses.id))
+    .leftJoin(paymentMethods, eq(ordersV2.paymentMethodId, paymentMethods.id))
+    .leftJoin(journeys, eq(ordersV2.journeyId, journeys.id))
     .where(eq(ordersV2.id, id))
     .limit(1);
 
@@ -55,7 +64,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
     // Resolve User
     let customerInfo = null;
     if (userId) {
-      const dbUser = await db.select().from(users).where(eq(users.id, userId)).limit(1).then(res => res[0]).catch(() => null);
+      const dbUser = await db.select().from(users).where(eq(users.id, userId)).limit(1).then((res: any[]) => res[0]).catch(() => null);
       if (dbUser) {
         customerInfo = {
           id: dbUser.id,
@@ -69,6 +78,17 @@ export async function GET(request: Request, { params }: { params: { id: string }
 
     // 🤝 DE HANDDRUK (Human-Centric Mapping)
     const rawMeta = order.rawMeta || {};
+    let parsedRawMeta: any = {};
+    if (typeof rawMeta === 'string') {
+      try {
+        parsedRawMeta = JSON.parse(rawMeta || '{}');
+      } catch {
+        parsedRawMeta = {};
+      }
+    } else {
+      parsedRawMeta = rawMeta;
+    }
+    const statusCode = (order.statusCode || '').toLowerCase();
     
     // 🔍 FINANCIAL INTELLIGENCE: COG & Margin (Punt 2 Scope)
     const totalRevenue = Number(order.amountTotal || 0);
@@ -95,60 +115,34 @@ export async function GET(request: Request, { params }: { params: { id: string }
     const marginPercentage = totalNet > 0 ? Math.round((margin / totalNet) * 100) : 0;
 
     // 🎭 PRODUCTIE: Script & Regie (Punt 4 Scope)
-    const rawBriefing = rawMeta.briefing || rawMeta._billing_wo_briefing || "";
+    const rawBriefing = parsedRawMeta.briefing || parsedRawMeta._billing_wo_briefing || "";
     const hasRegieInstructions = rawBriefing.includes('(') && rawBriefing.includes(')');
     
     // 🎓 BERNY-FLOW: Participant Info (Punt 5 Scope)
-    const participants = rawMeta.participant_info || rawMeta._participants || null;
-
-    const journeyMap: Record<number, string> = {
-      1: 'Voices Agency',
-      2: 'Voices Studio',
-      3: 'Voices Academy',
-      4: 'Voices Artist'
-    };
-
-    const statusMap: Record<string, string> = {
-      'completed': 'Voltooid',
-      'processing': 'In productie',
-      'pending': 'Wacht op kassa',
-      'on-hold': 'Gepauzeerd',
-      'cancelled': 'Geannuleerd',
-      'refunded': 'Terugbetaald',
-      'failed': 'Mislukt',
-      'wc-completed': 'Voltooid',
-      'wc-processing': 'In productie',
-      'wc-pending': 'Wacht op kassa',
-      'waiting-po': 'Wacht op PO-nummer'
-    };
-
-    const paymentMap: Record<number, string> = {
-      1: 'Bancontact',
-      2: 'Creditcard',
-      3: 'iDEAL',
-      4: 'Factuur (PO)',
-      5: 'Handmatige overboeking'
-    };
+    const participants = parsedRawMeta.participant_info || parsedRawMeta._participants || null;
 
     return NextResponse.json({
       id: orderPk,
       orderNumber: orderPk.toString(),
       date: order.createdAt,
-      status: statusMap[order.statusId?.toString() || ''] || statusMap['completed'] || 'In behandeling',
-      unit: journeyMap[Number(order.journeyId)] || 'Voices',
+      status: order.statusLabel || 'In behandeling',
+      statusCode: order.statusCode || null,
+      unit: order.journeyLabel || 'Voices',
+      journeyCode: order.journeyCode || null,
       
       // 🚦 ACTION-DRIVEN LOGIC (Punt 3 Scope)
       actions: {
-        needsPO: order.statusId === 'waiting-po' || (!order.purchaseOrder && Number(order.journeyId) === 1),
-        canGeneratePaymentLink: ['pending', 'wc-pending', 'failed'].includes(order.statusId?.toString() || ''),
-        isYukiReady: !!order.amountTotal && order.statusId === 'completed'
+        needsPO: statusCode === 'waiting_po' || (!order.purchaseOrder && ['agency_vo', 'agency_ivr', 'agency_commercial'].includes(order.journeyCode || '')),
+        canGeneratePaymentLink: ['pending', 'unpaid', 'awaiting_payment', 'waiting_po', 'failed'].includes(statusCode),
+        isYukiReady: !!order.amountTotal && ['completed', 'completed_paid', 'paid'].includes(statusCode)
       },
 
       customer: customerInfo ? {
+        id: customerInfo.id,
         name: `${customerInfo.first_name || ''} ${customerInfo.last_name || ''}`.trim(),
         email: customerInfo.email,
         company: customerInfo.companyName,
-        vat: rawMeta._billing_vat_number || null
+        vat: parsedRawMeta._billing_vat_number || null
       } : null,
 
       billing: {
@@ -163,7 +157,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
         cost: totalCost.toFixed(2),
         margin: margin.toFixed(2),
         marginPercentage: `${marginPercentage}%`,
-        method: paymentMap[Number(order.paymentMethodId)] || 'Online betaling'
+        method: order.paymentLabel || 'Online betaling'
       },
 
       production: {
@@ -171,14 +165,15 @@ export async function GET(request: Request, { params }: { params: { id: string }
         briefing: {
           text: rawBriefing,
           hasInstructions: hasRegieInstructions,
-          audioLink: rawMeta.audiobriefing || null
+          audioLink: parsedRawMeta.audiobriefing || null
         },
         participants: participants
       },
 
       technical: {
         sourceId: legacyInternalId,
-        meta: rawMeta
+        userId: userId,
+        meta: parsedRawMeta
       }
     });
 

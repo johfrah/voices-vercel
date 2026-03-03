@@ -246,7 +246,7 @@ export default function OrderDetailPage() {
                 )}
               </div>
 
-              <ButtonInstrument as={Link} href={`/admin/users?id=${order.technical?.sourceId}`} className="w-full va-btn-pro !bg-va-off-white !text-va-black/60 hover:!text-va-black flex items-center justify-center gap-2">
+              <ButtonInstrument as={Link} href={`/admin/users?id=${order.technical?.userId || order.technical?.sourceId}`} className="w-full va-btn-pro !bg-va-off-white !text-va-black/60 hover:!text-va-black flex items-center justify-center gap-2">
                 Bekijk Klantprofiel
               </ButtonInstrument>
             </div>

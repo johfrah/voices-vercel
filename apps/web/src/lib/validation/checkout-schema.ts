@@ -24,12 +24,31 @@ export const CheckoutPayloadSchema = z.object({
   items: z.array(z.object({
     id: z.string(),
     type: z.string(),
+    name: z.string().optional(),
+    journey: z.string().optional(),
     actor: z.object({
       id: z.coerce.number(),
       display_name: z.string().optional(),
     }).optional(),
     usage: z.string().optional(),
     briefing: z.string().optional(),
+    media: z.array(z.string()).optional(),
+    country: z.string().optional(),
+    countryId: z.coerce.number().optional(),
+    spots: z.union([
+      z.coerce.number(),
+      z.record(z.string(), z.coerce.number())
+    ]).optional(),
+    years: z.union([
+      z.coerce.number(),
+      z.record(z.string(), z.coerce.number())
+    ]).optional(),
+    liveSession: z.boolean().optional(),
+    music: z.object({
+      trackId: z.string().nullable().optional(),
+      asBackground: z.boolean().optional(),
+      asHoldMusic: z.boolean().optional(),
+    }).optional(),
     pricing: z.object({
       total: z.coerce.number(),
       tax: z.coerce.number().optional(),
@@ -60,7 +79,10 @@ export const CheckoutPayloadSchema = z.object({
   plan: z.string().optional(),
   briefing: z.string().default(''),
   quoteMessage: z.string().nullable().optional(),
+  isQuote: z.boolean().optional(),
   payment_method: z.string().default('bancontact'),
+  billing_po: z.string().optional(),
+  financial_email: z.string().email().optional(),
   
   music: z.object({
     trackId: z.string().nullable().optional(),

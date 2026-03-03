@@ -1,9 +1,11 @@
-import { db } from '../../1-SITE/packages/database/src/index';
-import { orders, orderItems, journeys, orderStatuses, paymentMethods, recordingSessions } from '../../1-SITE/packages/database/src/schema';
+import { db } from '../../packages/database/src/index';
+import { orders, orderItems, journeys, orderStatuses, paymentMethods, recordingSessions } from '../../packages/database/src/schema/index';
 import { eq, and, sql } from 'drizzle-orm';
 
 async function injectDecember2025() {
   console.log('🚀 Starting Atomic Injection: December 2025...');
+  const startDate = process.env.MIGRATION_FROM || '2025-12-01';
+  const endDate = process.env.MIGRATION_TO || '2026-01-01';
 
   try {
     // 1. Fetch Master Data for Mapping
@@ -18,8 +20,8 @@ async function injectDecember2025() {
     // 2. Fetch December 2025 Orders
     const decemberOrders = await db.select().from(orders).where(
       and(
-        sql`created_at >= '2025-12-01'`,
-        sql`created_at <= '2025-12-31'`
+        sql`created_at >= ${startDate}`,
+        sql`created_at < ${endDate}`
       )
     );
 
@@ -31,10 +33,20 @@ async function injectDecember2025() {
       const rawMeta = (order.rawMeta as any) || {};
       
       // 🧬 A. Determine Journey
-      let journeyId = journeyMap['agency_vo']; // Default
-      if (order.journey === 'studio') journeyId = journeyMap['studio'];
-      else if (rawMeta.usage === 'telefonie') journeyId = journeyMap['agency_ivr'];
-      else if (rawMeta.usage === 'commercial' || rawMeta.usage === 'paid') journeyId = journeyMap['agency_commercial'];
+      const defaultJourneyId =
+        journeyMap['video'] ||
+        journeyMap['agency_vo'] ||
+        allJourneys.find(j => (j.code || '').includes('video'))?.id ||
+        null;
+
+      let journeyId = defaultJourneyId;
+      if (order.journey === 'studio') {
+        journeyId = journeyMap['studio'] || journeyId;
+      } else if (rawMeta.usage === 'telefonie') {
+        journeyId = journeyMap['telephony'] || journeyMap['agency_ivr'] || journeyId;
+      } else if (rawMeta.usage === 'commercial' || rawMeta.usage === 'paid') {
+        journeyId = journeyMap['commercial'] || journeyMap['agency_commercial'] || journeyId;
+      }
 
       // 🚦 B. Map Status (Nuclear Logic: Workflow vs Transaction)
       let statusId = statusMap['completed_paid']; // Default
@@ -54,10 +66,22 @@ async function injectDecember2025() {
 
       // 💳 C. Map Payment Method
       let paymentMethodId = null;
-      const legacyMethod = rawMeta._payment_method;
-      if (legacyMethod?.includes('bancontact')) paymentMethodId = allMethods.find(m => m.code === 'mollie_bancontact')?.id;
-      else if (legacyMethod?.includes('ideal')) paymentMethodId = allMethods.find(m => m.code === 'mollie_ideal')?.id;
-      else if (legacyMethod === 'bacs' || legacyMethod === 'Invoice') paymentMethodId = allMethods.find(m => m.code === 'manual_invoice')?.id;
+      const legacyMethod = String(rawMeta._payment_method || '').toLowerCase();
+      if (legacyMethod.includes('bancontact')) {
+        paymentMethodId = allMethods.find(m => m.code === 'mollie_bancontact')?.id || null;
+      } else if (legacyMethod.includes('ideal')) {
+        paymentMethodId = allMethods.find(m => m.code === 'mollie_ideal')?.id || null;
+      } else if (legacyMethod.includes('bank') || legacyMethod.includes('bacs') || legacyMethod.includes('invoice')) {
+        paymentMethodId = allMethods.find(m => m.code === 'manual_invoice')?.id
+          || allMethods.find(m => m.code === 'mollie_banktransfer')?.id
+          || null;
+      }
+
+      if (!paymentMethodId) {
+        paymentMethodId = allMethods.find(m => m.code === 'manual_invoice')?.id
+          || allMethods.find(m => m.code === 'mollie_banktransfer')?.id
+          || null;
+      }
 
       // 💰 D. Calculate Net Amount
       const tax = parseFloat(rawMeta._order_tax || '0');

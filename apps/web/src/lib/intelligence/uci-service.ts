@@ -1,9 +1,14 @@
 import { db, getTable } from '@/lib/system/voices-config';
 const users = getTable('users');
 const orders = getTable('orders');
+const ordersV2 = getTable('ordersV2');
+const ordersLegacyBloat = getTable('ordersLegacyBloat');
+const orderItems = getTable('orderItems');
+const orderStatuses = getTable('orderStatuses');
+const paymentMethods = getTable('paymentMethods');
+const journeys = getTable('journeys');
 const utmTouchpoints = getTable('utmTouchpoints');
-const reviews = getTable('reviews');
-import { eq, sql, desc, sum, count } from 'drizzle-orm';
+import { desc, eq, inArray } from 'drizzle-orm';
 import { createClient } from '@supabase/supabase-js';
 
 //  CHRIS-PROTOCOL: SDK fallback voor als direct-connect faalt
@@ -113,9 +118,9 @@ export class UCIService {
       let ordersList: any[] = [];
       let touchpoints: any[] = [];
 
-    // 🛡️ CHRIS-PROTOCOL: Parallel execution of heavy queries (Bob-methode)
+      // 🛡️ CHRIS-PROTOCOL: Parallel execution of heavy queries (Bob-methode)
       try {
-        const [ordersResult, utmResult] = await Promise.all([
+        const [legacyOrdersResult, utmResult] = await Promise.all([
           // Orders query - Optimized with index-ready userId filter
           db.query.orders.findMany({
             where: eq(orders.user_id, user.id),
@@ -125,7 +130,7 @@ export class UCIService {
             orderBy: [desc(orders.createdAt)],
             limit: 50
           })
-            .catch(async (err) => {
+            .catch(async (err: any) => {
               console.warn(' UCI Order stats Drizzle failed, falling back to SDK:', err.message);
               const { data } = await supabase.from('orders').select('*, order_items(*)').eq('user_id', user.id).order('created_at', { ascending: false });
               return (data || []).map(o => ({ ...o, items: o.order_items }));
@@ -137,18 +142,127 @@ export class UCIService {
             .where(eq(utmTouchpoints.user_id, user.id))
             .orderBy(desc(utmTouchpoints.createdAt))
             .limit(10)
-            .catch(async (err) => {
+            .catch(async (err: any) => {
               console.warn(' UCI UTM Drizzle failed, falling back to SDK:', err.message);
               const { data } = await supabase.from('utm_touchpoints').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(10);
               return data || [];
             })
         ]);
 
-        ordersList = ordersResult.map((o: any) => ({
+        ordersList = legacyOrdersResult.map((o: any) => ({
           ...o,
           orderItems: o.items // Map 'items' from Drizzle to 'orderItems' for frontend
         }));
         touchpoints = utmResult;
+
+        // 🔁 Mixed-mode bridge: include V2-only rows not present in legacy history.
+        if (ordersV2 && orderItems && orderStatuses && paymentMethods && journeys && ordersLegacyBloat) {
+          try {
+            const v2Rows = await db
+              .select({
+                id: ordersV2.id,
+                legacyInternalId: ordersV2.legacyInternalId,
+                amountTotal: ordersV2.amountTotal,
+                createdAt: ordersV2.createdAt,
+                statusCode: orderStatuses.code,
+                paymentCode: paymentMethods.code,
+                journeyCode: journeys.code,
+                rawMeta: ordersLegacyBloat.rawMeta,
+              })
+              .from(ordersV2)
+              .leftJoin(orderStatuses, eq(ordersV2.statusId, orderStatuses.id))
+              .leftJoin(paymentMethods, eq(ordersV2.paymentMethodId, paymentMethods.id))
+              .leftJoin(journeys, eq(ordersV2.journeyId, journeys.id))
+              .leftJoin(ordersLegacyBloat, eq(ordersV2.id, ordersLegacyBloat.wpOrderId))
+              .where(eq(ordersV2.userId, user.id))
+              .orderBy(desc(ordersV2.createdAt))
+              .limit(50);
+
+            const legacyInternalIds = v2Rows
+              .map((row: any) => (row.legacyInternalId ? Number(row.legacyInternalId) : null))
+              .filter((id: number | null): id is number => id !== null);
+
+            const v2ItemRows = legacyInternalIds.length > 0
+              ? await db.select().from(orderItems).where(inArray(orderItems.orderId, legacyInternalIds))
+              : [];
+
+            const itemsByLegacyOrderId = new Map<number, any[]>();
+            for (const item of v2ItemRows) {
+              const key = Number(item.orderId);
+              const current = itemsByLegacyOrderId.get(key) || [];
+              current.push({
+                ...item,
+                metaData: item.metaData || {},
+                deliveryStatus: item.deliveryStatus || 'waiting',
+              });
+              itemsByLegacyOrderId.set(key, current);
+            }
+
+            const existingWpOrderIds = new Set(
+              ordersList
+                .map((order: any) => Number(order.wpOrderId || order.id))
+                .filter((value: number) => Number.isFinite(value))
+            );
+
+            const mapJourneyFromCode = (journeyCode?: string | null): string => {
+              if (!journeyCode) return 'agency';
+              if (journeyCode === 'studio') return 'studio';
+              if (journeyCode === 'academy') return 'academy';
+              if (journeyCode.includes('agency')) return 'agency';
+              return 'agency';
+            };
+
+            const mapStatusFromCode = (statusCode?: string | null): string => {
+              const code = (statusCode || '').toLowerCase();
+              if (['completed', 'completed_paid', 'paid', 'wc-completed'].includes(code)) return 'completed';
+              if (['failed', 'cancelled', 'refunded', 'wc-refunded'].includes(code)) return 'failed';
+              if (['quote_sent', 'quote_pending', 'quote-pending'].includes(code)) return 'quote-pending';
+              return 'pending';
+            };
+
+            const v2OnlyOrders = v2Rows
+              .filter((row: any) => !existingWpOrderIds.has(Number(row.id)))
+              .map((row: any) => {
+                let meta: any = {};
+                if (typeof row.rawMeta === 'string') {
+                  try {
+                    meta = JSON.parse(row.rawMeta || '{}');
+                  } catch {
+                    meta = {};
+                  }
+                } else {
+                  meta = row.rawMeta || {};
+                }
+                const legacyId = row.legacyInternalId ? Number(row.legacyInternalId) : null;
+                const linkedItems = legacyId ? (itemsByLegacyOrderId.get(legacyId) || []) : [];
+                const paymentCode = String(row.paymentCode || '').toLowerCase();
+
+                return {
+                  id: legacyId || Number(row.id),
+                  wpOrderId: Number(row.id),
+                  total: row.amountTotal || '0',
+                  status: mapStatusFromCode(row.statusCode),
+                  journey: mapJourneyFromCode(row.journeyCode),
+                  createdAt: row.createdAt,
+                  isQuote: ['quote_sent', 'quote_pending', 'quote-pending'].includes(String(row.statusCode || '').toLowerCase()),
+                  paymentMethod: ['manual_invoice', 'mollie_banktransfer', 'banktransfer'].includes(paymentCode) ? 'banktransfer' : 'online',
+                  billingVatNumber: meta._billing_vat_number || meta.billing_vat_number || null,
+                  ipAddress: meta._customer_ip_address || meta.customer_ip || null,
+                  orderItems: linkedItems,
+                };
+              });
+
+            ordersList = [...ordersList, ...v2OnlyOrders];
+          } catch (v2Err) {
+            console.warn(' UCI V2 merge failed, continuing with legacy orders only:', v2Err);
+          }
+        }
+
+        ordersList = ordersList.sort((a: any, b: any) => {
+          const aDate = new Date(a.createdAt || a.created_at || 0).getTime();
+          const bDate = new Date(b.createdAt || b.created_at || 0).getTime();
+          return bDate - aDate;
+        });
 
         totalSpent = ordersList.reduce((acc, o) => acc + Number(o.total || 0), 0);
         orderCount = ordersList.length;
@@ -217,9 +331,9 @@ export class UCIService {
         customerInsights: insights,
         updatedAt: new Date() 
       })
-      .where(eq(users.id, userId))
-      .catch((err) => {
-        console.error(`[UCI Service] updateInsights failed for ${userId}:`, err);
+      .where(eq(users.id, user_id))
+      .catch((err: any) => {
+        console.error(`[UCI Service] updateInsights failed for ${user_id}:`, err);
       });
   }
 }
