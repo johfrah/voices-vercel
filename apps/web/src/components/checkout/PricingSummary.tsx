@@ -44,6 +44,7 @@ export const PricingSummary: React.FC<{
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [isTermsOpen, setIsTermsOpen] = useState(false);
   const [reviewStats, setReviewStats] = useState<{ averageRating: number, totalCount: number } | null>(null);
+  const [workshopThumbnailMap, setWorkshopThumbnailMap] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (!isHydrated) return;
@@ -59,6 +60,49 @@ export const PricingSummary: React.FC<{
     };
     fetchStats();
   }, [isHydrated]);
+
+  useEffect(() => {
+    if (!isHydrated) return;
+    const workshopItems = (state.items || []).filter((item: any) => item?.type === 'workshop_edition');
+    if (workshopItems.length === 0) return;
+
+    let cancelled = false;
+
+    const fetchWorkshopThumbnails = async () => {
+      try {
+        const res = await fetch('/api/studio/workshops', { cache: 'no-store' });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (!data?.workshops || !Array.isArray(data.workshops)) return;
+
+        const mappedThumbnails: Record<string, string> = {};
+        for (const workshop of data.workshops) {
+          const rawFilePath = workshop?.featured_image?.file_path;
+          if (!rawFilePath || typeof rawFilePath !== 'string') continue;
+
+          const normalizedUrl = rawFilePath.startsWith('http://') || rawFilePath.startsWith('https://') || rawFilePath.startsWith('/')
+            ? rawFilePath
+            : `https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices/${rawFilePath.replace(/^\/+/, '')}`;
+
+          if (workshop.id) mappedThumbnails[`id:${String(workshop.id)}`] = normalizedUrl;
+          if (workshop.slug) mappedThumbnails[`slug:${String(workshop.slug).toLowerCase()}`] = normalizedUrl;
+          if (workshop.title) mappedThumbnails[`title:${String(workshop.title).trim().toLowerCase()}`] = normalizedUrl;
+        }
+
+        if (!cancelled) {
+          setWorkshopThumbnailMap(mappedThumbnails);
+        }
+      } catch (error) {
+        console.warn('[PricingSummary] Workshop thumbnail hydration failed:', error);
+      }
+    };
+
+    fetchWorkshopThumbnails();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isHydrated, state.items]);
 
   const applyCoupon = async () => {
     const cleanCode = couponCode.trim().toUpperCase();
@@ -197,6 +241,43 @@ export const PricingSummary: React.FC<{
     || (state.items || []).some((item: any) => item?.type === 'workshop_edition');
   const studioCartPath = `${localePrefix}/studio/cart`;
   const defaultCartPath = `${localePrefix}/cart`;
+  const resolveWorkshopImageSrc = (workshopItem: any): string => {
+    const workshopIdHint = String(
+      workshopItem?.workshop_id ||
+      workshopItem?.workshopId ||
+      workshopItem?.editionId ||
+      workshopItem?.id ||
+      ''
+    );
+    const workshopIdMatch = workshopIdHint.match(/workshop-(\d+)/i) || workshopIdHint.match(/^(\d+)$/);
+    const matchedWorkshopId = workshopIdMatch?.[1];
+    const workshopTitleKey = String(workshopItem?.name || '').trim().toLowerCase();
+
+    const rawSource =
+      workshopItem?.thumbnail_url ||
+      workshopItem?.featured_image_url ||
+      workshopItem?.image_url ||
+      workshopItem?.media_url ||
+      (matchedWorkshopId ? workshopThumbnailMap[`id:${matchedWorkshopId}`] : undefined) ||
+      (workshopTitleKey ? workshopThumbnailMap[`title:${workshopTitleKey}`] : undefined) ||
+      workshopItem?.featured_image?.file_path ||
+      workshopItem?.media?.file_path ||
+      workshopItem?.media?.filePath;
+
+    if (!rawSource || typeof rawSource !== 'string') {
+      return '/icon-workshop.svg';
+    }
+
+    if (
+      rawSource.startsWith('http://') ||
+      rawSource.startsWith('https://') ||
+      rawSource.startsWith('/')
+    ) {
+      return rawSource;
+    }
+
+    return `https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices/${rawSource.replace(/^\/+/, '')}`;
+  };
   // 🛡️ CHRIS-PROTOCOL: Defensive guard for items array (v2.15.065)
   const hasContextData = (state.items?.length || 0) > 0 || state.selectedActor || state.briefing || isSubscription || state.editionId;
   
@@ -259,7 +340,7 @@ export const PricingSummary: React.FC<{
             {(state.items?.length || 0) > 0 && (state.items || []).map((itemObj, idx) => {
               const isWorkshopItem = itemObj.type === 'workshop_edition';
               const itemImage = isWorkshopItem
-                ? '/icon-workshop.svg'
+                ? resolveWorkshopImageSrc(itemObj)
                 : (itemObj.actor?.photo_url || VOICES_CONFIG.assets.placeholders.voice);
               const itemTitle = itemObj.actor?.display_name || itemObj.name || (isWorkshopItem ? 'Workshop' : 'Stemopname');
 
@@ -529,7 +610,7 @@ export const PricingSummary: React.FC<{
                   <div className="flex items-center gap-6">
                     <div className="w-24 h-24 rounded-[32px] overflow-hidden border border-va-black/5 shadow-md shrink-0 relative bg-va-off-white">
                       <Image 
-                        src={selectedItem.type === 'workshop_edition' ? '/icon-workshop.svg' : (selectedItem.actor?.photo_url || VOICES_CONFIG.assets.placeholders.voice)} 
+                        src={selectedItem.type === 'workshop_edition' ? resolveWorkshopImageSrc(selectedItem) : (selectedItem.actor?.photo_url || VOICES_CONFIG.assets.placeholders.voice)} 
                         alt={selectedItem.actor?.display_name || selectedItem.name || 'Item'} 
                         fill
                         sizes="96px"

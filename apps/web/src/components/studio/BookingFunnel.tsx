@@ -33,6 +33,7 @@ interface BookingFunnelProps {
   title: string;
   priceExclVat: number;
   dates: WorkshopDate[];
+  thumbnail_url?: string | null;
   onDateSelect?: (index: number) => void;
   selectedDateIndex?: number;
   isLoading?: boolean;
@@ -43,6 +44,7 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
   title, 
   priceExclVat, 
   dates,
+  thumbnail_url,
   onDateSelect,
   selectedDateIndex: controlledIndex,
   isLoading
@@ -97,9 +99,11 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
         id: `workshop-${workshopId}-${Date.now()}`,
         type: 'workshop_edition',
         name: title,
+        workshop_id: workshopId,
         price: priceExclVatValue,
         date: selectedDate?.date_raw,
         location: selectedDate?.location,
+        thumbnail_url: thumbnail_url || undefined,
         pricing: {
           total: priceExclVatValue,
           subtotal: priceExclVatValue

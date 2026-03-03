@@ -43,6 +43,11 @@ export const WorkshopHeroIsland: React.FC<WorkshopHeroIslandProps> = ({ workshop
   const hasEdition = !!nextEdition?.id;
   const price = nextEdition?.price || workshop.price || 0;
   const priceValue = typeof price === 'string' ? parseFloat(price) : price;
+  const workshopThumbnailUrl = workshop.featured_image?.file_path
+    ? (workshop.featured_image.file_path.startsWith('http')
+      ? workshop.featured_image.file_path
+      : `https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices/${workshop.featured_image.file_path.replace(/^\/+/, '')}`)
+    : undefined;
 
   const handleBookClick = () => {
     playClick('pro');
@@ -52,10 +57,12 @@ export const WorkshopHeroIsland: React.FC<WorkshopHeroIslandProps> = ({ workshop
         id: `workshop-${nextEdition!.id}-${Date.now()}`,
         type: 'workshop_edition' as const,
         name: workshop.title,
+        workshop_id: workshop.id,
         price: priceValue,
         editionId: nextEdition!.id,
         date: nextEdition!.date,
         location: nextEdition!.location?.city || null,
+        thumbnail_url: workshopThumbnailUrl,
         pricing: {
           total: priceValue,
           subtotal: priceValue
