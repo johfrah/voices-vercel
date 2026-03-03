@@ -977,7 +977,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
     // 🛡️ CHRIS-PROTOCOL: Registry-First Mandate (v2.15.034)
     // We only allow legacy fallbacks for very specific, known entry points.
     // This prevents the SmartRouter from "hijacking" unknown paths or system routes.
-    const isKnownEntryPoint = MarketManager.isAgencyEntryPoint(segments[0]) || ['voice', 'artist', 'portfolio'].includes(segments[0]);
+    const isKnownEntryPoint = MarketManager.isAgencyEntryPoint(segments[0]) || ['voice', 'artist', 'portfolio', 'pitch'].includes(segments[0]);
     
     // 🛡️ CHRIS-PROTOCOL: Category/Native/Language Route Protection (v2.16.103)
     const isCategoryNative = segments[0] === 'category' || segments[0] === 'native' || segments[0] === 'language';
@@ -1072,7 +1072,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
     }
 
     // 2. Pitch Link (Casting List)
-    if (lookupSlug === 'pitch' && journey) {
+    if (firstSegment === 'pitch' && journey) {
       try {
         const host = headersList.get('host') || MarketManager.getMarketDomains()['BE']?.replace('https://', '') || MarketManager.getMarketDomains()['BE']?.replace('https://', '');
         const market = MarketManager.getCurrentMarket(host);
@@ -1082,7 +1082,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
         const { data: list, error: listError } = await supabase
           .from('casting_lists')
           .select('*, items:casting_list_items(*, actor:actors(*))')
-          .eq('hash', journey)
+          .ilike('hash', journey)
           .single();
 
         if (listError || !list) return notFound();
@@ -1204,7 +1204,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
       // 🛡️ CHRIS-PROTOCOL: Registry-First Mandate (v2.15.034)
       // We only allow legacy fallbacks for very specific, known entry points.
       // This prevents the SmartRouter from "hijacking" unknown paths or system routes.
-      const isKnownEntryPoint = MarketManager.isAgencyEntryPoint(segments[0]) || ['voice', 'artist', 'portfolio'].includes(segments[0]);
+      const isKnownEntryPoint = MarketManager.isAgencyEntryPoint(segments[0]) || ['voice', 'artist', 'portfolio', 'pitch'].includes(segments[0]);
       
       if (!resolved && !isKnownEntryPoint && segments.length > 1) {
         console.error(` [SmartRouter] NUCLEAR BLOCK: Path "${lookupSlug}" not in registry and not a known entry point. Blocking.`);

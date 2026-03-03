@@ -1162,6 +1162,7 @@ export const costs = pgTable('costs', {
   amount: decimal('amount', { precision: 10, scale: 2 }).notNull(),
   type: text('type').notNull(), // 'locatie', 'instructeur', 'materiaal', 'overig'
   journey: text('journey'), // Legacy string
+  worldId: integer('world_id').references(() => worlds.id), // 🌍 World scope voor finance filters
   journeyId: integer('journey_id').references(() => journeys.id), // 🛡️ Handshake Truth
   note: text('note'),
   workshopEditionId: integer('workshop_edition_id').references(() => workshopEditions.id),
