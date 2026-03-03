@@ -895,6 +895,12 @@ export const chatConversations = pgTable('chat_conversations', {
   iapContext: jsonb('iap_context'),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
+}, (table) => {
+  return {
+    statusUpdatedAtIdx: index('chat_conversations_status_updated_at_idx').on(table.status, table.updatedAt),
+    userUpdatedAtIdx: index('chat_conversations_user_id_updated_at_idx').on(table.user_id, table.updatedAt),
+    updatedAtIdx: index('chat_conversations_updated_at_idx').on(table.updatedAt),
+  };
 });
 
 export const chatMessages = pgTable('chat_messages', {
@@ -908,6 +914,11 @@ export const chatMessages = pgTable('chat_messages', {
   isAiRecommendation: boolean('is_ai_recommendation').default(false),
   readAt: timestamp('read_at'),
   createdAt: timestamp('created_at').defaultNow(),
+}, (table) => {
+  return {
+    conversationIdIdx: index('chat_messages_conversation_id_idx').on(table.conversationId),
+    conversationIdIdIdx: index('chat_messages_conversation_id_id_idx').on(table.conversationId, table.id),
+  };
 });
 
 export const chatPushSubscriptions = pgTable('chat_push_subscriptions', {
@@ -1162,6 +1173,7 @@ export const costs = pgTable('costs', {
   amount: decimal('amount', { precision: 10, scale: 2 }).notNull(),
   type: text('type').notNull(), // 'locatie', 'instructeur', 'materiaal', 'overig'
   journey: text('journey'), // Legacy string
+  worldId: integer('world_id').references(() => worlds.id), // 🌍 World scope voor finance filters
   journeyId: integer('journey_id').references(() => journeys.id), // 🛡️ Handshake Truth
   note: text('note'),
   workshopEditionId: integer('workshop_edition_id').references(() => workshopEditions.id),

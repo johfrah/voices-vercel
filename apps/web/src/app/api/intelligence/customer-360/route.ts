@@ -3,7 +3,7 @@ import { UCIService } from '@/lib/intelligence/uci-service';
 import { createClient as createServerClient } from '@/utils/supabase/server';
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { db, users } from '@/lib/system/voices-config';
-import { eq } from 'drizzle-orm';
+import { sql, desc } from 'drizzle-orm';
 
 /**
  *  API: CUSTOMER 360 INSIGHTS
@@ -22,19 +22,55 @@ async function checkIsAdmin(email: string | undefined): Promise<boolean> {
   const adminEmail = process.env.ADMIN_EMAIL;
   if (adminEmail && email === adminEmail) return true;
 
+  const roleRank: Record<string, number> = {
+    superadmin: 5,
+    admin: 4,
+    ademing_admin: 4,
+    partner: 3,
+    customer: 2,
+    guest: 1,
+  };
+
   try {
-    const [dbUser] = await db.select({ role: users.role }).from(users).where(eq(users.email, email)).limit(1).catch(() => []);
-    return dbUser?.role === 'admin';
+    const rows = await db
+      .select({ role: users.role, lastActive: users.lastActive, createdAt: users.createdAt, id: users.id })
+      .from(users)
+      .where(sql`lower(${users.email}) = lower(${email})`)
+      .orderBy(desc(users.lastActive), desc(users.createdAt), desc(users.id))
+      .limit(5)
+      .catch(() => []);
+
+    if (rows.length > 0) {
+      const best = rows.sort((a: any, b: any) => {
+        const rankDiff = (roleRank[b.role || ''] || 0) - (roleRank[a.role || ''] || 0);
+        if (rankDiff !== 0) return rankDiff;
+        const aTs = new Date(a.lastActive || a.createdAt || 0).getTime();
+        const bTs = new Date(b.lastActive || b.createdAt || 0).getTime();
+        return bTs - aTs;
+      })[0];
+      return best?.role === 'admin' || best?.role === 'superadmin' || best?.role === 'ademing_admin';
+    }
+    return false;
   } catch (dbError) {
     console.warn(' Customer 360 Drizzle failed, falling back to SDK');
     const { data, error } = await sdkClient
       .from('users')
-      .select('role')
-      .eq('email', email)
-      .single();
+      .select('role, last_active, created_at')
+      .ilike('email', email)
+      .order('last_active', { ascending: false })
+      .limit(5);
     
-    if (error || !data) return false;
-    return data.role === 'admin';
+    if (error || !data || data.length === 0) return false;
+
+    const best = data.sort((a: any, b: any) => {
+      const rankDiff = (roleRank[b?.role || ''] || 0) - (roleRank[a?.role || ''] || 0);
+      if (rankDiff !== 0) return rankDiff;
+      const aTs = new Date(a?.last_active || a?.created_at || 0).getTime();
+      const bTs = new Date(b?.last_active || b?.created_at || 0).getTime();
+      return bTs - aTs;
+    })[0];
+
+    return best?.role === 'admin' || best?.role === 'superadmin' || best?.role === 'ademing_admin';
   }
 }
 

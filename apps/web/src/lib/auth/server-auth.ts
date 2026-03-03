@@ -60,13 +60,31 @@ export async function getServerUser(): Promise<ServerUser | null> {
     if (!sdkClient) throw new Error('Supabase SDK client not initialized');
 
     // We gebruiken een directe fetch om Drizzle/Edge serialisatie issues te vermijden in layouts
-    const { data, error } = await sdkClient
+    const { data: rows, error } = await sdkClient
       .from('users')
-      .select('id, email, role')
-      .eq('email', user.email)
-      .maybeSingle();
+      .select('id, email, role, last_active, updated_at')
+      .ilike('email', user.email)
+      .order('last_active', { ascending: false })
+      .limit(5);
     
-    if (data && !error) {
+    if (rows && rows.length > 0 && !error) {
+      const roleRank: Record<string, number> = {
+        superadmin: 5,
+        admin: 4,
+        ademing_admin: 4,
+        partner: 3,
+        customer: 2,
+        guest: 1,
+      };
+
+      const data = rows.sort((a: any, b: any) => {
+        const roleDiff = (roleRank[b?.role || ''] || 0) - (roleRank[a?.role || ''] || 0);
+        if (roleDiff !== 0) return roleDiff;
+        const aTs = new Date(a?.last_active || a?.updated_at || 0).getTime();
+        const bTs = new Date(b?.last_active || b?.updated_at || 0).getTime();
+        return bTs - aTs;
+      })[0];
+
       // 🛡️ CHRIS-PROTOCOL: Nuclear Role Logging (v2.14.462)
       // We loggen dit naar de server console voor forensische audit
       console.log(`[Auth] User ${user.email} verified with role: ${data.role}`);

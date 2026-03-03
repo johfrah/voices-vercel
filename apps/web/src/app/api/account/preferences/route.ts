@@ -1,6 +1,6 @@
 import { createClient } from '@/utils/supabase/server';
 import { db, users } from '@/lib/system/voices-config';
-import { eq } from 'drizzle-orm';
+import { sql } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 
 /**
@@ -11,6 +11,9 @@ import { NextResponse } from 'next/server';
 export async function POST(request: Request) {
   try {
     const supabase = createClient();
+    if (!supabase) {
+      return NextResponse.json({ error: 'Auth service unavailable' }, { status: 503 });
+    }
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
@@ -26,9 +29,9 @@ export async function POST(request: Request) {
     // Haal huidige preferences op
     const [existingUser] = await db.select({ preferences: users.preferences })
       .from(users)
-      .where(eq(users.email, user.email!))
+      .where(sql`lower(${users.email}) = lower(${user.email!})`)
       .limit(1)
-      .catch((err) => {
+      .catch((err: any) => {
         console.error(`[preferences] DB Select Error for ${user.email}:`, err);
         return [];
       });
@@ -42,8 +45,8 @@ export async function POST(request: Request) {
         preferences: updatedPreferences,
         updatedAt: new Date()
       })
-      .where(eq(users.email, user.email!))
-      .catch((err) => {
+      .where(sql`lower(${users.email}) = lower(${user.email!})`)
+      .catch((err: any) => {
         console.error(`[preferences] DB Update Error for ${user.email}:`, err);
       });
 

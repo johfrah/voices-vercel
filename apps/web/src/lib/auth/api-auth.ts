@@ -1,5 +1,3 @@
-import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
-
 /**
  *  API AUTH HELPER (NUCLEAR 2026)
  *
@@ -12,13 +10,65 @@ import { createClient as createServerClient } from '@/utils/supabase/server';
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/system/voices-config';
 import { users } from '@/lib/system/voices-config';
-import { eq } from 'drizzle-orm';
+import { sql, desc } from 'drizzle-orm';
 import { cookies } from 'next/headers';
 
 //  CHRIS-PROTOCOL: SDK fallback voor als direct-connect faalt
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 const sdkClient = createSupabaseClient(supabaseUrl, supabaseKey);
+
+const roleRank: Record<string, number> = {
+  superadmin: 5,
+  admin: 4,
+  ademing_admin: 4,
+  partner: 3,
+  customer: 2,
+  guest: 1,
+};
+
+async function getBestRoleByEmail(email: string): Promise<string | null> {
+  try {
+    const rows = await db
+      .select({ role: users.role, lastActive: users.lastActive, createdAt: users.createdAt, id: users.id })
+      .from(users)
+      .where(sql`lower(${users.email}) = lower(${email})`)
+      .orderBy(desc(users.lastActive), desc(users.createdAt), desc(users.id))
+      .limit(10);
+
+    if (rows.length > 0) {
+      const best = rows.sort((a: any, b: any) => {
+        const rankDiff = (roleRank[b.role || ''] || 0) - (roleRank[a.role || ''] || 0);
+        if (rankDiff !== 0) return rankDiff;
+        const aTs = new Date(a.lastActive || a.createdAt || 0).getTime();
+        const bTs = new Date(b.lastActive || b.createdAt || 0).getTime();
+        return bTs - aTs;
+      })[0];
+      return best?.role || null;
+    }
+  } catch (dbError) {
+    console.warn(' API Auth Drizzle failed, falling back to SDK');
+  }
+
+  const { data, error } = await sdkClient
+    .from('users')
+    .select('role, last_active, created_at')
+    .ilike('email', email)
+    .order('last_active', { ascending: false })
+    .limit(10);
+
+  if (error || !data || data.length === 0) return null;
+
+  const best = data.sort((a: any, b: any) => {
+    const rankDiff = (roleRank[b?.role || ''] || 0) - (roleRank[a?.role || ''] || 0);
+    if (rankDiff !== 0) return rankDiff;
+    const aTs = new Date(a?.last_active || a?.created_at || 0).getTime();
+    const bTs = new Date(b?.last_active || b?.created_at || 0).getTime();
+    return bTs - aTs;
+  })[0];
+
+  return best?.role || null;
+}
 
 /**
  * Bepaal of de gebruiker admin is. Haalt role op uit users table.
@@ -45,20 +95,8 @@ async function checkIsAdmin(user: User | null): Promise<boolean> {
   // 🛡️ CHRIS-PROTOCOL: Admin emails are strictly from ENV or DB role
   if (user.email === adminEmail) return true;
 
-  try {
-    const [dbUser] = await db.select({ role: users.role }).from(users).where(eq(users.email, user.email)).limit(1);
-    return dbUser?.role === 'admin' || dbUser?.role === 'ademing_admin';
-  } catch (dbError) {
-    console.warn(' API Auth Drizzle failed, falling back to SDK');
-    const { data, error } = await sdkClient
-      .from('users')
-      .select('role')
-      .eq('email', user.email)
-      .single();
-    
-    if (error || !data) return false;
-    return data.role === 'admin' || data.role === 'ademing_admin';
-  }
+  const role = await getBestRoleByEmail(user.email);
+  return role === 'admin' || role === 'superadmin' || role === 'ademing_admin';
 }
 
 /**
@@ -70,19 +108,8 @@ async function checkIsPartner(user: User | null): Promise<boolean> {
   // Admins zijn ook partners
   if (await checkIsAdmin(user)) return true;
 
-  try {
-    const [dbUser] = await db.select({ role: users.role }).from(users).where(eq(users.email, user.email)).limit(1);
-    return dbUser?.role === 'partner';
-  } catch (dbError) {
-    const { data, error } = await sdkClient
-      .from('users')
-      .select('role')
-      .eq('email', user.email)
-      .single();
-    
-    if (error || !data) return false;
-    return data.role === 'partner';
-  }
+  const role = await getBestRoleByEmail(user.email);
+  return role === 'partner';
 }
 
 /**
