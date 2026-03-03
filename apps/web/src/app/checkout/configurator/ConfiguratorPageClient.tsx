@@ -471,9 +471,7 @@ export default function ConfiguratorPageClient({
 
     // Check of het een ondersteund type is
     const supportedTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain'];
-    const isExcel = file.name.endsWith('.xlsx') || file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
-    
-    if (!supportedTypes.includes(file.type) && !isExcel) {
+    if (!supportedTypes.includes(file.type)) {
       return;
     }
 
@@ -1533,7 +1531,7 @@ export default function ConfiguratorPageClient({
                             <VoiceglotText translationKey="configurator.upload_text" defaultText="Of upload je tekst" />
                           </span>
                           <span className="text-[10px] text-primary/40 font-medium italic">
-                            <VoiceglotText translationKey="configurator.upload_formats" defaultText="PDF, Word of Excel" />
+                            <VoiceglotText translationKey="configurator.upload_formats" defaultText="PDF of Word" />
                           </span>
                         </div>
                       </button>
