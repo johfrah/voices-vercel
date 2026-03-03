@@ -65,7 +65,11 @@ function mapToCarouselFormat(workshop: WorkshopApiItem) {
     editions: workshop.upcoming_editions.map((e) => ({
       id: e.id,
       date: e.date,
+      start_time: e.start_time,
+      end_time: e.end_time,
+      price: e.price,
       location: e.location,
+      instructor: e.instructor,
       capacity: e.capacity,
       status: e.status,
     })),
