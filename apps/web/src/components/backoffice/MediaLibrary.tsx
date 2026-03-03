@@ -21,7 +21,7 @@ import {
     Youtube
 } from 'lucide-react';
 import Image from 'next/image';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { 
   ContainerInstrument, 
   TextInstrument,
@@ -69,6 +69,10 @@ export const MediaLibrary: React.FC = () => {
   const [filterStatus, setFilterStatus] = useState<'all' | 'orphans'>('all');
   const [selectedActorId, setSelectedActorId] = useState<number | null>(null);
   const [youtubeUrl, setYoutubeUrl] = useState<string | null>(null);
+  const mediaRequestSeqRef = useRef(0);
+  const mediaAbortRef = useRef<AbortController | null>(null);
+  const actorsRequestSeqRef = useRef(0);
+  const actorsAbortRef = useRef<AbortController | null>(null);
   const { playClick } = useSonicDNA();
 
   const buildMediaApiUrl = React.useCallback(() => {
@@ -82,13 +86,18 @@ export const MediaLibrary: React.FC = () => {
   }, [sortBy, filterJourney, filterStatus, selectedActorId, searchQuery]);
 
   const fetchMedia = React.useCallback(async () => {
+    const requestId = ++mediaRequestSeqRef.current;
     setIsLoading(true);
     setMediaError(null);
+    mediaAbortRef.current?.abort();
+    const controller = new AbortController();
+    mediaAbortRef.current = controller;
+
     try {
       const url = buildMediaApiUrl();
 
       const requestMedia = async () => {
-        const res = await fetch(url, { cache: 'no-store' });
+        const res = await fetch(url, { cache: 'no-store', signal: controller.signal });
         if (!res.ok) {
           let serverError = `HTTP ${res.status}`;
           try {
@@ -108,18 +117,37 @@ export const MediaLibrary: React.FC = () => {
       try {
         await requestMedia();
       } catch (firstError) {
-        // Retry once for transient aborted network requests in dev/hot-reload flows.
-        await requestMedia().catch(() => {
+        const isAbort =
+          firstError instanceof DOMException && firstError.name === 'AbortError';
+        if (isAbort) return;
+
+        const canRetry =
+          firstError instanceof TypeError ||
+          (firstError instanceof Error && /failed to fetch|network|abort/i.test(firstError.message));
+
+        if (canRetry) {
+          // Retry once for transient network issues in dev/hot-reload flows.
+          await requestMedia().catch(() => {
+            throw firstError;
+          });
+        } else {
           throw firstError;
-        });
+        }
       }
     } catch (e) {
+      const isAbort = e instanceof DOMException && e.name === 'AbortError';
+      if (isAbort) return;
       console.error('Failed to fetch media', e);
       const fallbackMessage = e instanceof Error ? e.message : 'Onbekende fout bij het laden van media.';
       setMediaError(fallbackMessage);
       setMedia([]);
     } finally {
-      setIsLoading(false);
+      if (mediaAbortRef.current === controller) {
+        mediaAbortRef.current = null;
+      }
+      if (requestId === mediaRequestSeqRef.current) {
+        setIsLoading(false);
+      }
     }
   }, [buildMediaApiUrl]);
 
@@ -132,9 +160,14 @@ export const MediaLibrary: React.FC = () => {
   }, [fetchMedia]);
 
   const fetchActors = async () => {
+    const requestId = ++actorsRequestSeqRef.current;
+    actorsAbortRef.current?.abort();
+    const controller = new AbortController();
+    actorsAbortRef.current = controller;
+
     try {
       const requestActors = async () => {
-        const res = await fetch('/api/backoffice/actors/', { cache: 'no-store' });
+        const res = await fetch('/api/backoffice/actors/', { cache: 'no-store', signal: controller.signal });
         if (!res.ok) {
           throw new Error(`HTTP ${res.status}`);
         }
@@ -145,13 +178,31 @@ export const MediaLibrary: React.FC = () => {
       try {
         await requestActors();
       } catch (firstError) {
-        await requestActors().catch(() => {
+        const isAbort =
+          firstError instanceof DOMException && firstError.name === 'AbortError';
+        if (isAbort) return;
+
+        const canRetry =
+          firstError instanceof TypeError ||
+          (firstError instanceof Error && /failed to fetch|network|abort/i.test(firstError.message));
+
+        if (canRetry) {
+          await requestActors().catch(() => {
+            throw firstError;
+          });
+        } else {
           throw firstError;
-        });
+        }
       }
     } catch (e) {
+      const isAbort = e instanceof DOMException && e.name === 'AbortError';
+      if (isAbort) return;
       console.error('Failed to fetch actors', e);
       setActors([]);
+    } finally {
+      if (actorsAbortRef.current === controller && requestId === actorsRequestSeqRef.current) {
+        actorsAbortRef.current = null;
+      }
     }
   };
 
@@ -290,6 +341,13 @@ export const MediaLibrary: React.FC = () => {
     if (type.startsWith('audio/')) return <Music className="text-purple-500" strokeWidth={1.5} />;
     if (type.startsWith('video/')) return <Play className="text-red-500" strokeWidth={1.5} />;
     return <FileText className="text-va-black/40" strokeWidth={1.5} />;
+  };
+
+  const getMediaSourceUrl = (filePath: string) => {
+    if (filePath.startsWith('http://') || filePath.startsWith('https://')) return filePath;
+    if (filePath.startsWith('/')) return filePath;
+    if (filePath.startsWith('assets/')) return `/${filePath}`;
+    return `/assets/${filePath}`;
   };
 
   return (
@@ -539,8 +597,12 @@ export const MediaLibrary: React.FC = () => {
               </TextInstrument>
             </ContainerInstrument>
           ) : (
-            media.map((item) => (
-              <ContainerInstrument 
+            media.map((item) => {
+              const mediaSrc = getMediaSourceUrl(item.filePath);
+              const isExternalMedia = mediaSrc.startsWith('http://') || mediaSrc.startsWith('https://');
+
+              return (
+              <ContainerInstrument
                 key={item.id}
                 className={cn(
                   "group relative bg-white rounded-[20px] shadow-aura overflow-hidden transition-all duration-500 border border-va-black/5",
@@ -561,16 +623,17 @@ export const MediaLibrary: React.FC = () => {
                 {/* Preview Area */}
                 <ContainerInstrument className="aspect-square bg-va-off-white flex items-center justify-center relative overflow-hidden">
                   {item.fileType.startsWith('image/') ? (
-                    <Image  
-                      src={`/assets/${item.filePath}`} 
+                    <Image
+                      src={mediaSrc}
                       alt={item.fileName}
                       width={400}
                       height={400}
+                      unoptimized={isExternalMedia}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                     />
                   ) : item.fileType.startsWith('video/') ? (
                     <video 
-                      src={`/assets/${item.filePath}`}
+                      src={mediaSrc}
                       className="w-full h-full object-cover"
                       muted
                       onMouseOver={(e) => e.currentTarget.play()}
@@ -625,9 +688,22 @@ export const MediaLibrary: React.FC = () => {
                       </ContainerInstrument>
                     </ContainerInstrument>
                   )}
+
+                  <ContainerInstrument className="pt-2 border-t border-va-black/5">
+                    <a
+                      href={mediaSrc}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 text-[13px] uppercase tracking-widest text-primary hover:text-primary/80 transition-colors"
+                    >
+                      <Play size={12} strokeWidth={1.5} />
+                      Open asset
+                    </a>
+                  </ContainerInstrument>
                 </ContainerInstrument>
               </ContainerInstrument>
-            ))
+              );
+            })
           )}
         </ContainerInstrument>
       </ContainerInstrument>
