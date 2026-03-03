@@ -21,6 +21,13 @@ export async function middleware(request: NextRequest) {
     pathname = pathname.slice(0, -1)
   }
 
+  // Forceer consistente entrypoints voor admin zones.
+  if (pathname === '/admin' || pathname === '/backoffice') {
+    const adminDashboardUrl = url.clone()
+    adminDashboardUrl.pathname = '/admin/dashboard/'
+    return NextResponse.redirect(adminDashboardUrl, 307)
+  }
+
   const userAgent = request.headers.get('user-agent') || ''
 
   // NUCLEAR BOT PROTECTION
@@ -255,7 +262,7 @@ export async function middleware(request: NextRequest) {
   
   //  CHRIS-PROTOCOL: Localhost Journey Protection
   if (host.includes('localhost')) {
-    const explicitJourneys = ['/agency', '/artist', '/voice', '/academy', '/ademing', '/johfrai', '/account', '/admin', '/price', '/tarieven'];
+    const explicitJourneys = ['/agency', '/artist', '/voice', '/academy', '/ademing', '/johfrai', '/account', '/admin', '/backoffice', '/price', '/tarieven'];
     const firstPart = pathname.split('/').filter(Boolean)[0];
     const topLevelSubRoutes = ['demos', 'host', 'tarieven', 'contact', 'bestellen', 'over-mij'];
     
