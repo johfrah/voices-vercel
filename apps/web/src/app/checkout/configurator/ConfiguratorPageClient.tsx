@@ -1475,7 +1475,9 @@ export default function ConfiguratorPageClient({
                   {showAiAssistant && aiSuggestion && (
                     <span className="text-va-black/20">
                       {aiSuggestion}
-                      <span className="ml-2 inline-flex items-center gap-1 px-1.5 py-0.5 bg-primary/5 text-primary text-[10px] font-bold rounded border border-primary/10 align-middle">TAB</span>
+                      <span className="ml-2 inline-flex items-center gap-1 px-1.5 py-0.5 bg-primary/5 text-primary text-[10px] font-bold rounded border border-primary/10 align-middle">
+                        <VoiceglotText translationKey="common.key_tab" defaultText="TAB" noTranslate={true} />
+                      </span>
                     </span>
                   )}
                 </div>
