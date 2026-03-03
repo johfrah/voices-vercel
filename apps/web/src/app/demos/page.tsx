@@ -8,6 +8,7 @@ import { Search, Filter, Play, FileText, ChevronRight, Globe, Zap, Shield, Phone
 import { cn } from "@/lib/utils";
 import nextDynamic from "next/dynamic";
 import { useAuth } from "@/contexts/AuthContext";
+import { useTranslation } from "@/contexts/TranslationContext";
 
 // NUCLEAR LOADING MANDATE
 const LiquidBackground = nextDynamic(() => import("@/components/ui/LiquidBackground").then(mod => mod.LiquidBackground), { 
@@ -23,6 +24,7 @@ const LiquidBackground = nextDynamic(() => import("@/components/ui/LiquidBackgro
  */
 export default function DemoDiscoveryPage() {
   const { user, isLoading: authLoading } = useAuth();
+  const { t } = useTranslation();
   const [mounted, setMounted] = useState(false);
   const [sectors, setSectors] = useState<any[]>([]);
   const [blueprints, setBlueprints] = useState<any[]>([]);
@@ -103,14 +105,21 @@ export default function DemoDiscoveryPage() {
             <Lock className="text-primary" size={40} />
           </div>
           <div className="space-y-2">
-            <h1 className="text-3xl font-light tracking-tight text-va-black">Admin Toegang Vereist</h1>
-            <p className="text-va-black/40 font-light">Deze pagina is momenteel in &apos;Masterclass&apos; ontwikkeling en alleen toegankelijk voor beheerders.</p>
+            <h1 className="text-3xl font-light tracking-tight text-va-black">
+              <VoiceglotText translationKey="demos.auth.required_title" defaultText="Admin Toegang Vereist" />
+            </h1>
+            <p className="text-va-black/40 font-light">
+              <VoiceglotText
+                translationKey="demos.auth.required_subtitle"
+                defaultText="Deze pagina is momenteel in 'Masterclass' ontwikkeling en alleen toegankelijk voor beheerders."
+              />
+            </p>
           </div>
           <button 
             onClick={() => window.location.href = '/'}
             className="px-8 py-4 bg-va-black text-white rounded-2xl font-bold uppercase tracking-widest text-[11px] hover:bg-primary transition-colors"
           >
-            Terug naar Home
+            <VoiceglotText translationKey="demos.auth.back_home" defaultText="Terug naar Home" />
           </button>
         </div>
       </div>
@@ -130,13 +139,15 @@ export default function DemoDiscoveryPage() {
           <div className="mb-16 space-y-6">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20">
               <Zap size={14} className="text-primary animate-pulse" />
-              <span className="text-[11px] font-bold uppercase tracking-widest text-primary">Sonic Intelligence Discovery</span>
+              <span className="text-[11px] font-bold uppercase tracking-widest text-primary">
+                <VoiceglotText translationKey="demos.badge.sonic_discovery" defaultText="Sonic Intelligence Discovery" />
+              </span>
             </div>
             <HeadingInstrument level={1} className="text-6xl md:text-8xl font-light tracking-tighter leading-[0.9] text-va-black max-w-4xl">
-              Ontdek de *stem* van jouw sector.
+              <VoiceglotText translationKey="demos.hero.title" defaultText="Ontdek de *stem* van jouw sector." />
             </HeadingInstrument>
             <TextInstrument className="text-xl md:text-2xl font-light text-va-black/40 leading-tight tracking-tight max-w-2xl">
-              Verken duizenden geanalyseerde demo&apos;s en blueprints, direct gekoppeld aan jouw branche.
+              <VoiceglotText translationKey="demos.hero.subtitle" defaultText="Verken duizenden geanalyseerde demo's en blueprints, direct gekoppeld aan jouw branche." />
             </TextInstrument>
           </div>
 
@@ -148,7 +159,7 @@ export default function DemoDiscoveryPage() {
               </div>
               <input 
                 type="text"
-                placeholder="Zoek op sector, keyword of acteur..."
+                placeholder={t('demos.search.placeholder', 'Zoek op sector, keyword of acteur...')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full h-20 bg-white/80 backdrop-blur-xl border border-black/5 rounded-[24px] pl-16 pr-8 text-xl font-light outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary/20 transition-all shadow-aura-sm"
@@ -160,7 +171,7 @@ export default function DemoDiscoveryPage() {
                 onChange={(e) => setSelectedSector(e.target.value || null)}
                 className="w-full h-20 bg-white/80 backdrop-blur-xl border border-black/5 rounded-[24px] px-8 text-xl font-light outline-none appearance-none cursor-pointer focus:ring-4 focus:ring-primary/5 focus:border-primary/20 transition-all shadow-aura-sm"
               >
-                <option value="">Alle Sectoren</option>
+                <option value="">{t('demos.filter.all_sectors', 'Alle Sectoren')}</option>
                 {sectors.map(s => (
                   <option key={s.id} value={s.id}>{s.name}</option>
                 ))}
@@ -172,7 +183,7 @@ export default function DemoDiscoveryPage() {
                 onChange={(e) => setSelectedSubtype(e.target.value || null)}
                 className="w-full h-20 bg-white/80 backdrop-blur-xl border border-black/5 rounded-[24px] px-8 text-xl font-light outline-none appearance-none cursor-pointer focus:ring-4 focus:ring-primary/5 focus:border-primary/20 transition-all shadow-aura-sm"
               >
-                <option value="">Type Begroeting</option>
+                <option value="">{t('demos.filter.greeting_type', 'Type Begroeting')}</option>
                 {subtypes.map(s => (
                   <option key={s.id} value={s.name}>{s.name}</option>
                 ))}
@@ -184,7 +195,7 @@ export default function DemoDiscoveryPage() {
                 onChange={(e) => setSelectedTone(e.target.value || null)}
                 className="w-full h-20 bg-white/80 backdrop-blur-xl border border-black/5 rounded-[24px] px-8 text-xl font-light outline-none appearance-none cursor-pointer focus:ring-4 focus:ring-primary/5 focus:border-primary/20 transition-all shadow-aura-sm"
               >
-                <option value="">Tone of Voice</option>
+                <option value="">{t('demos.filter.tone_of_voice', 'Tone of Voice')}</option>
                 {tones.map(t => (
                   <option key={t.id} value={t.id}>{t.label}</option>
                 ))}
@@ -196,7 +207,7 @@ export default function DemoDiscoveryPage() {
               </div>
               <input 
                 type="text"
-                placeholder="Jouw Bedrijfsnaam..."
+                placeholder={t('demos.company.placeholder', 'Jouw Bedrijfsnaam...')}
                 value={companyName}
                 onChange={(e) => setCompanyName(e.target.value)}
                 className="w-full h-20 bg-primary/5 backdrop-blur-xl border border-primary/10 rounded-[24px] pl-16 pr-8 text-xl font-medium text-primary outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary/30 transition-all shadow-aura-sm placeholder:text-primary/30"
@@ -243,26 +254,28 @@ export default function DemoDiscoveryPage() {
                     <div className="bg-va-off-white/50 rounded-2xl p-5 mb-6 relative z-10">
                       <div className="flex items-center gap-2 mb-3 text-[10px] font-bold uppercase tracking-widest text-va-black/20">
                         <FileText size={12} />
-                        <span>Transcript Blueprint</span>
+                        <span><VoiceglotText translationKey="demos.card.transcript_blueprint" defaultText="Transcript Blueprint" /></span>
                       </div>
                       <p className="text-[14px] font-light text-va-black/60 leading-relaxed line-clamp-3">
-                        {reskinTranscript(demo.transcript) || "Analyseert audio..."}
+                        {reskinTranscript(demo.transcript) || t('demos.card.analyzing_audio', 'Analyseert audio...')}
                       </p>
                     </div>
 
                     <div className="flex flex-wrap items-center gap-2 relative z-10">
                       <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-va-black/5 text-[11px] font-bold text-va-black/40">
                         <Globe size={12} />
-                        {demo.language_label || "NL"}
+                        {demo.language_label || t('demos.card.default_language', 'NL')}
                       </div>
                       <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-va-black/5 text-[11px] font-bold text-va-black/40">
                         <Phone size={12} />
-                        {demo.subtype_name || "Telefonie"}
+                        {demo.subtype_name || t('demos.card.default_subtype', 'Telefonie')}
                       </div>
                       {demo.sonic_dna && (
                         <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 text-[11px] font-bold text-primary">
                           <Zap size={12} />
-                          {demo.sonic_dna.energy === 'hoog' ? 'Energiek' : 'Warm'}
+                          {demo.sonic_dna.energy === 'hoog'
+                            ? t('demos.card.energy_high', 'Energiek')
+                            : t('demos.card.energy_warm', 'Warm')}
                         </div>
                       )}
                     </div>
@@ -276,8 +289,12 @@ export default function DemoDiscoveryPage() {
                   <div className="w-20 h-20 bg-va-off-white rounded-full flex items-center justify-center mx-auto text-va-black/10">
                     <Search size={40} strokeWidth={1} />
                   </div>
-                  <h3 className="text-2xl font-light text-va-black/40">Geen demo&apos;s gevonden voor deze filters.</h3>
-                  <button onClick={() => { setSelectedSector(null); setSearchQuery(""); }} className="text-primary font-bold uppercase tracking-widest text-[11px] hover:underline">Reset Filters</button>
+                  <h3 className="text-2xl font-light text-va-black/40">
+                    <VoiceglotText translationKey="demos.empty.title" defaultText="Geen demo's gevonden voor deze filters." />
+                  </h3>
+                  <button onClick={() => { setSelectedSector(null); setSearchQuery(""); }} className="text-primary font-bold uppercase tracking-widest text-[11px] hover:underline">
+                    <VoiceglotText translationKey="demos.empty.reset_filters" defaultText="Reset Filters" />
+                  </button>
                 </div>
               )}
             </AnimatePresence>

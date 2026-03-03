@@ -25,15 +25,17 @@ import {
 } from 'lucide-react';
 import { VoicesLink as Link } from '@/components/ui/VoicesLink';
 import { BentoGrid, BentoCard } from '@/components/ui/BentoGrid';
+import { useTranslation } from '@/contexts/TranslationContext';
 
 export default function PartnerDashboardClient() {
   const { user, isLoading } = useAuth();
+  const { t } = useTranslation();
 
   if (isLoading) return <LoadingScreenInstrument />;
 
     const stats = [
       { label: <VoiceglotText translationKey="account.partner.stats.active_projects" defaultText="Actieve Projecten" />, value: '12', icon: <Briefcase strokeWidth={1.5} size={20} />, trend: '+2' },
-      { label: <VoiceglotText translationKey="account.partner.stats.on_time" defaultText="On-time Delivery" />, value: '98%', icon: <Zap strokeWidth={1.5} size={20} />, trend: 'Stable' },
+      { label: <VoiceglotText translationKey="account.partner.stats.on_time" defaultText="On-time Delivery" />, value: '98%', icon: <Zap strokeWidth={1.5} size={20} />, trend: t('common.stable', 'Stable') },
       { label: <VoiceglotText translationKey="account.partner.stats.delivery_time" defaultText="Gem. Levertijd" />, value: '24u', icon: <Clock strokeWidth={1.5} size={20} />, trend: '-2u' },
       { label: <VoiceglotText translationKey="account.partner.stats.revenue" defaultText="Inkomsten (30d)" />, value: ' 2.450', icon: <BarChart3 strokeWidth={1.5} size={20} />, trend: '+15%' },
     ];
