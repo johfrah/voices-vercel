@@ -860,12 +860,12 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
         }
 
         const worldScopedPage = getWorldScopedPageKey(lookupSlug);
+        if (worldScopedPage === "contact" && currentWorldId !== 2) {
+          return renderAgencyContactPage(market);
+        }
         const canonicalWorldPath = worldScopedPage ? getCanonicalWorldScopedPath(worldScopedPage, currentWorldId) : null;
         if (canonicalWorldPath && lookupSlug !== canonicalWorldPath) {
           return redirect(`/${canonicalWorldPath}`);
-        }
-        if (worldScopedPage === "contact" && currentWorldId !== 2) {
-          return renderAgencyContactPage(market);
         }
 
         const article = await getArticle(lookupSlug, lang);
@@ -1472,6 +1472,11 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
 
     return notFound();
   } catch (err: any) {
+    const digest = typeof err?.digest === "string" ? err.digest : "";
+    if (digest.startsWith("NEXT_REDIRECT") || digest.startsWith("NEXT_NOT_FOUND")) {
+      throw err;
+    }
+
     console.error("[SmartRouter] FATAL ERROR:", err);
     const { ServerWatchdog } = await import('@/lib/services/server-watchdog');
     await ServerWatchdog.report({
