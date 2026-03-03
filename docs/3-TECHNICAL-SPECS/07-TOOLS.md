@@ -52,8 +52,8 @@ Beheer van workshops, cursussen en inschrijvingen.
 
 ---
 
-## 🗄️ III. LEGACY ARCHIVE (4-KELDER)
-Alle oude PHP-engines, WordPress mu-plugins en Gravity Forms logica zijn verplaatst naar de `4-KELDER/3-LEGACY-CODE/` voor historische referentie. Deze onderdelen maken geen deel meer uit van de actieve website-operatie.
+## 🗄️ III. LEGACY ARCHIVE (`docs/archive`)
+Alle oude PHP-engines, WordPress mu-plugins en Gravity Forms logica zijn verplaatst naar `docs/archive/` voor historische referentie. Deze onderdelen maken geen deel meer uit van de actieve website-operatie.
 
 ---
 *Laatst gesaneerd: 18 februari 2026 (Chris-Protocol)*

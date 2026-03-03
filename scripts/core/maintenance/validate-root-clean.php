@@ -6,7 +6,7 @@
  * Doel: Valideert dat de root directory alleen toegestane bestanden bevat
  * Cruciaal omdat: Voorkomt dat bestanden per ongeluk in root worden geplaatst
  *
- * Gebruik: php 3-WETTEN/scripts/core/maintenance/validate-root-clean.php
+ * Gebruik: php scripts/core/maintenance/validate-root-clean.php
  * Exit code: 0 = OK, 1 = Fouten gevonden
  */
 
@@ -49,24 +49,22 @@ $ignore_dirs = [
     'node_modules',
 ];
 
-// Toegestane directories in root (De 3 Pilaren)
+// Toegestane directories in root (Monorepo Source of Truth)
 $allowed_dirs = [
-    '1-SITE',
-    '3-WETTEN',
-    '4-KELDER',
-    'nuclear-content',
-    'nuclear-content-relevant',
-    'public',
-    'src',
+    'apps',
+    'packages',
+    'docs',
+    'scripts',
+    'test-results',
 ];
 
 // Verboden patterns
 $forbidden_patterns = [
-    '*.md' => 'Markdown files moeten in 3-WETTEN/docs/ staan (behalve README.md)',
-    '*.php' => 'PHP scripts moeten in 3-WETTEN/scripts/ staan',
-    '*.py' => 'Python scripts moeten in 3-WETTEN/scripts/ staan',
-    '*.sh' => 'Shell scripts moeten in 3-WETTEN/scripts/ staan',
-    '*.txt' => 'Tekstbestanden moeten in 3-WETTEN/docs/ of 4-KELDER/ staan',
+    '*.md' => 'Markdown files moeten in docs/ staan (behalve expliciete root governance files)',
+    '*.php' => 'PHP scripts moeten in scripts/ staan',
+    '*.py' => 'Python scripts moeten in scripts/ staan',
+    '*.sh' => 'Shell scripts moeten in scripts/ staan',
+    '*.txt' => 'Tekstbestanden moeten in docs/ of docs/archive/ staan',
 ];
 
 echo "🔍 Root Clean Validator (Voices Headless 2026)\n";
@@ -113,7 +111,7 @@ foreach ($files as $item) {
         $found_dirs[] = $item;
 
         if (!in_array($item, $allowed_dirs)) {
-            $errors[] = "❌ Directory {$item}/ - Niet toegestaan in root. Verplaats naar 1, 3 of 4.";
+            $errors[] = "❌ Directory {$item}/ - Niet toegestaan in root. Verplaats naar apps/, packages/, docs/ of scripts/.";
         }
     }
 }
@@ -149,9 +147,9 @@ if (!empty($warnings)) {
 
 if (!empty($errors)) {
     echo "💡 OPLOSSING:\n";
-    echo "  - Verplaats MD/TXT files naar 3-WETTEN/docs/ of 4-KELDER/\n";
-    echo "  - Verplaats scripts naar 3-WETTEN/scripts/\n";
-    echo "  - Zorg dat alle mappen onder de 3 Pilaren vallen (1, 3, 4)\n";
+    echo "  - Verplaats MD/TXT files naar docs/ of docs/archive/\n";
+    echo "  - Verplaats scripts naar scripts/\n";
+    echo "  - Zorg dat alle mappen onder apps/, packages/, docs/ of scripts/ vallen\n";
     exit(1);
 }
 

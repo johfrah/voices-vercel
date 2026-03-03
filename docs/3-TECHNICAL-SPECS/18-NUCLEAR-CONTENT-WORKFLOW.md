@@ -7,9 +7,9 @@ Dit document beschrijft de strikte stappen om content van de "Kelder" naar de "W
 
 ## 🏗️ DE DRIE PILAREN
 
-### 1. 🏭 DE FABRIEK (1-SITE)
+### 1. 🏭 DE FABRIEK (`apps/` + `scripts/`)
 **Rol:** Creatie, Opschoning en Verrijking.
-- **Input:** Ruwe Markdown-bestanden uit `4-KELDER/0-GRONDSTOFFEN-FABRIEK/`.
+- **Input:** Ruwe Markdown-bestanden uit `docs/archive/0-grondstoffen-fabriek/`.
 - **Proces:** 
     1.  **Audit:** De Eindredacteur (Jij) en de Techlead (Ik) bespreken de inhoud.
     2.  **Opschoning:** Verwijderen van AI-slop, herstellen van koppen (Natural Capitalization).
@@ -24,9 +24,9 @@ Dit document beschrijft de strikte stappen om content van de "Kelder" naar de "W
     3.  **Check:** We controleren of de pagina perfect laadt vanuit de database via de **Smart Router**.
 - **Output:** Een 100% betrouwbare ervaring op de productie-URL.
 
-### 3. 🏚️ DE KELDER (4-KELDER)
+### 3. 🏚️ DE KELDER (`docs/archive`)
 **Rol:** Archivering.
-- **Proces:** Zodra een pagina live is goedgekeurd, wordt het originele Markdown-bestand direct verplaatst naar `4-KELDER/CONTAINER/` (Dead Zone).
+- **Proces:** Zodra een pagina live is goedgekeurd, wordt het originele Markdown-bestand direct verplaatst naar `docs/archive/0-grondstoffen-fabriek/processed/` (Dead Zone).
 - **Motto:** "Zero Delete, Zero Clutter".
 
 ---

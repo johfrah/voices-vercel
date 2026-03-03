@@ -6,9 +6,6 @@ node_modules
 *.mp4
 *.zip
 *.tar.gz
-4-KELDER/
-5-DUBBELS/
-3-WETTEN/docs/
 docs/
 **/assets/
 !public/assets/common/**
