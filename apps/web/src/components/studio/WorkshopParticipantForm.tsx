@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { ContainerInstrument, HeadingInstrument, TextInstrument, ButtonInstrument, InputInstrument, LabelInstrument } from "@/components/ui/LayoutInstruments";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { useSonicDNA } from "@/lib/engines/sonic-dna";
@@ -45,6 +46,13 @@ export const WorkshopParticipantForm: React.FC<WorkshopParticipantFormProps> = (
     experience: ''
   });
   const [error, setError] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = ''; };
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -69,8 +77,10 @@ export const WorkshopParticipantForm: React.FC<WorkshopParticipantFormProps> = (
     setData(prev => ({ ...prev, [field]: value }));
   };
 
-  return (
-    <ContainerInstrument plain className="fixed inset-0 z-[300] flex items-center justify-center p-4">
+  if (!mounted) return null;
+
+  const content = (
+    <ContainerInstrument plain className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
       <ContainerInstrument plain className="absolute inset-0 bg-va-black/60 backdrop-blur-sm" onClick={onCancel} />
       
       <ContainerInstrument plain className="relative bg-white rounded-[24px] shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-8 md:p-10 space-y-8 animate-in fade-in zoom-in-95 duration-300">
@@ -204,4 +214,6 @@ export const WorkshopParticipantForm: React.FC<WorkshopParticipantFormProps> = (
       </ContainerInstrument>
     </ContainerInstrument>
   );
+
+  return createPortal(content, document.body);
 };
