@@ -255,6 +255,70 @@ function renderWorkshopDetail(workshop: WorkshopApiResponse['workshops'][number]
         </ContainerInstrument>
       )}
 
+      {/* Demo Bundle Indicator */}
+      {workshop.has_demo_bundle && (
+        <ContainerInstrument className="max-w-4xl mx-auto px-6 mt-16">
+          <ContainerInstrument className="bg-primary/5 border border-primary/10 rounded-[20px] p-6 flex items-center gap-4">
+            <TextInstrument as="span" className="text-2xl">📦</TextInstrument>
+            <ContainerInstrument plain>
+              <TextInstrument className="text-[14px] font-medium text-va-black">
+                <VoiceglotText translationKey="studio.detail.demo_bundle" defaultText="Opnames inbegrepen" />
+              </TextInstrument>
+              <TextInstrument className="text-[13px] text-va-black/40 font-light">
+                <VoiceglotText translationKey="studio.detail.demo_bundle_desc" defaultText="Je gaat naar huis met een professionele opname voor je portfolio." />
+              </TextInstrument>
+            </ContainerInstrument>
+          </ContainerInstrument>
+        </ContainerInstrument>
+      )}
+
+      {/* Feedback Snippets (Interne feedback als social proof) */}
+      {workshop.feedback_snippets && workshop.feedback_snippets.length > 0 && (
+        <ContainerInstrument className="max-w-4xl mx-auto px-6 mt-16">
+          <TextInstrument className="text-[11px] font-bold tracking-[0.3em] uppercase text-primary mb-6">
+            <VoiceglotText translationKey="studio.detail.feedback_label" defaultText="Wat deelnemers het meest waardeerden" />
+          </TextInstrument>
+          <ContainerInstrument plain className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {workshop.feedback_snippets.slice(0, 6).map((fb: { text: string; rating: number }, i: number) => (
+              <ContainerInstrument key={i} className="bg-white rounded-[16px] p-6 border border-black/[0.03] shadow-aura">
+                <TextInstrument className="text-primary text-[13px] mb-2">{'⭐'.repeat(fb.rating || 5)}</TextInstrument>
+                <TextInstrument className="text-[14px] text-va-black/60 font-light leading-relaxed italic">
+                  &ldquo;{fb.text}&rdquo;
+                </TextInstrument>
+              </ContainerInstrument>
+            ))}
+          </ContainerInstrument>
+        </ContainerInstrument>
+      )}
+
+      {/* Volgende Stappen (Related Journeys) */}
+      {workshop.next_steps && workshop.next_steps.length > 0 && (
+        <ContainerInstrument className="max-w-4xl mx-auto px-6 mt-32">
+          <ContainerInstrument plain className="text-center mb-12">
+            <TextInstrument className="text-[11px] font-bold tracking-[0.3em] uppercase text-primary mb-4">
+              <VoiceglotText translationKey="studio.detail.next_label" defaultText="Verder groeien?" />
+            </TextInstrument>
+            <HeadingInstrument level={2} className="text-3xl md:text-4xl font-light tracking-tighter text-va-black">
+              <VoiceglotText translationKey="studio.detail.next_title" defaultText="Aanbevolen vervolgworkshops" />
+            </HeadingInstrument>
+          </ContainerInstrument>
+          <ContainerInstrument plain className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {workshop.next_steps.map((step: { label: string; slug: string; title: string }, i: number) => (
+              <ContainerInstrument key={i} className="bg-white rounded-[20px] p-8 border border-black/[0.03] shadow-aura hover:shadow-aura-lg transition-all duration-500 group cursor-pointer">
+                <a href={`/studio/${step.slug}`} className="block space-y-3">
+                  <TextInstrument className="text-[11px] font-bold tracking-[0.2em] uppercase text-primary">
+                    {step.label}
+                  </TextInstrument>
+                  <HeadingInstrument level={4} className="text-xl font-light tracking-tight text-va-black group-hover:text-primary transition-colors">
+                    {step.title}
+                  </HeadingInstrument>
+                </a>
+              </ContainerInstrument>
+            ))}
+          </ContainerInstrument>
+        </ContainerInstrument>
+      )}
+
       <ContainerInstrument plain className="mt-32">
         <Suspense fallback={<ContainerInstrument className="h-96 bg-va-off-white animate-pulse" />}>
           <ReviewGrid
