@@ -57,7 +57,7 @@ const ReviewSkeleton = () => {
  * Nu met interactieve filtering en zoekfunctionaliteit.
  */
 export const ReviewsInstrument: React.FC<{ 
-  reviews: any[], 
+  reviews?: any[], 
   title?: string, 
   subtitle?: string,
   translationKeyPrefix?: string,
@@ -92,13 +92,18 @@ export const ReviewsInstrument: React.FC<{
   const { isEditMode } = useEditMode();
   const { playClick } = useSonicDNA();
   const { t } = useTranslation();
+  const safeReviews = useMemo(() => (Array.isArray(reviews) ? reviews : []), [reviews]);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
   const [selectedSector, setSelectedSector] = useState<string | null>(null);
-  const [localReviews, setLocalReviews] = useState<any[]>(reviews);
+  const [localReviews, setLocalReviews] = useState<any[]>(safeReviews);
   const [showDistribution, setShowDistribution] = useState(false);
   const [isHovered, setIsEditHovered] = useState(false);
+
+  useEffect(() => {
+    setLocalReviews(safeReviews);
+  }, [safeReviews]);
 
   // 🛡️ CHRIS-PROTOCOL: Journey-Aware Data Fetching (v2.14.801)
   useEffect(() => {
@@ -282,7 +287,7 @@ export const ReviewsInstrument: React.FC<{
     "bestRating": "5",
     "worstRating": "1",
     "ratingCount": totalReviews,
-    "review": reviews.slice(0, 20).map((reviewItem) => ({
+    "review": localReviews.slice(0, 20).map((reviewItem) => ({
       "@type": "Review",
       "author": {
         "@type": "Person",
@@ -309,7 +314,7 @@ export const ReviewsInstrument: React.FC<{
     }))
   };
 
-  if (reviews.length === 0) return null;
+  if (!isLoading && localReviews.length === 0) return null;
 
   if (variant === "wall") {
     return (
@@ -502,7 +507,7 @@ export const ReviewsInstrument: React.FC<{
           </div>
           
           <div className="flex -space-x-3 overflow-hidden">
-            {reviews.slice(0, 5).map((review, i) => (
+            {localReviews.slice(0, 5).map((review, i) => (
               <div key={i} className="relative inline-block h-8 w-8 rounded-full ring-2 ring-white overflow-hidden bg-va-off-white border border-black/5">
                 {(review.authorPhoto || review.authorPhotoUrl || review.author_photo_url || review.authorUrl || review.mediaId) ? (
                   <VoiceglotImage 
