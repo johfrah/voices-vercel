@@ -8,7 +8,7 @@ export const runtime = 'edge';
  *  NUCLEAR CERTIFICATE RENDERER (2026)
  *  VOICES OS: Genereert een visueel certificaat met Vercel OG.
  *  
- *  RECONSTRUCTED FROM LEGACY (4-KELDER):
+ *  RECONSTRUCTED FROM LEGACY ARCHIVE (docs/archive):
  *  - Font: Raleway (Bold/Regular)
  *  - Background: background.png (Legacy blueprint)
  *  - Layout: Absolute positioning based on 30-workshop-certificate-generator.php

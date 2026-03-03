@@ -93,11 +93,12 @@ export class VoiceFilterEngine {
     }
 
     // 2. STRICT NATIVE LANGUAGE MATCHING (ID-First Mandate 2026)
-    if (criteria.languageId != null) {
+    // 🛡️ CHRIS-PROTOCOL: Use languageId (singular) OR languageIds[0] (v2.28.1)
+    const effectiveLangId = criteria.languageId ?? (criteria.languageIds && criteria.languageIds.length === 1 ? criteria.languageIds[0] : null);
+    if (effectiveLangId != null) {
       result = result.filter(actor => {
         // 🛡️ CHRIS-PROTOCOL: NATIVE-ONLY LOGIC (v2.14.740)
-        const actorAny = actor as any;
-        return actor.native_lang_id === criteria.languageId || actorAny.native_language_id === criteria.languageId;
+return actor.native_lang_id === effectiveLangId || actor.native_language_id === effectiveLangId;
       });
     }
 
@@ -124,8 +125,12 @@ export class VoiceFilterEngine {
     }
 
     // 5. COUNTRY FILTERING (ID-First)
+    // 🛡️ CHRIS-PROTOCOL: Actors with null country_id are available in ALL countries (v2.28.1)
     if (criteria.countryId != null) {
-      result = result.filter(actor => (actor.country_id || (actor as any).countryId) === criteria.countryId);
+      result = result.filter(actor => {
+        const actorCountryId = actor.country_id || (actor as any).countryId;
+        return actorCountryId == null || actorCountryId === criteria.countryId;
+      });
     }
 
     // 6. GENDER (Handshake Truth v2.14.714)

@@ -34,10 +34,15 @@ const StudioWorkshopsSection = nextDynamic(
   }
 );
 
-export const metadata: Metadata = {
-  title: "Workshops | Voices Studio",
-  description: "Professionele voice-over workshops en studio-opnames. Leer van de besten.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { getWorldConfig } = await import('@/lib/services/world-config-service');
+  const config = await getWorldConfig(2);
+  return {
+    title: config?.meta_title || "Workshops | Voices Studio",
+    description: config?.meta_description || "Professionele voice-over workshops en studio-opnames.",
+    openGraph: config?.og_image_url ? { images: [config.og_image_url] } : undefined,
+  };
+}
 
 export default async function StudioPage() {
   // 🛡️ CHRIS-PROTOCOL: Nuclear Handshake (Direct DB access)

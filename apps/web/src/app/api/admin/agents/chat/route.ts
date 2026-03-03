@@ -47,7 +47,7 @@ const AGENT_GOVERNANCE: Record<string, {
     }
 };
 
-const WETTEN_PATH = path.join(process.cwd(), '../../../3-WETTEN/docs');
+const WETTEN_PATH = path.join(process.cwd(), '../../../docs');
 
 export async function POST(req: NextRequest) {
     const auth = await requireAdmin();

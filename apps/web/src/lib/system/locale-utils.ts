@@ -11,7 +11,7 @@ const SHORT_TO_ISO: Record<string, string> = {
 const ISO_ALIASES: Record<string, string> = {
   'nl-be': 'nl-be',
   'nl-nl': 'nl-nl',
-  'fr-be': 'fr-fr',
+  'fr-be': 'fr-be',
   'fr-fr': 'fr-fr',
   'en-eu': 'en-gb',
   'en-gb': 'en-gb',
@@ -35,14 +35,61 @@ const LOCALE_FALLBACKS: Record<string, string[]> = {
   'it-it': ['en-gb'],
 };
 
+const MARKET_DEFAULT_LOCALE: Record<string, string> = {
+  BE: 'nl-be',
+  NLNL: 'nl-nl',
+  FR: 'fr-fr',
+  ES: 'es-es',
+  PT: 'pt-pt',
+  EU: 'en-gb',
+  ACADEMY: 'nl-be',
+  STUDIO: 'nl-be',
+  ADEMING: 'nl-be',
+  PORTFOLIO: 'nl-be',
+  FREELANCE: 'nl-be',
+  JOHFRAI: 'nl-be',
+  ARTIST: 'en-gb',
+};
+
+const CANONICAL_TRANSLATION_LOCALE: Record<string, string> = {
+  nl: 'nl-be',
+  fr: 'fr-be',
+  en: 'en-gb',
+  de: 'de-de',
+  es: 'es-es',
+  pt: 'pt-pt',
+  it: 'it-it',
+};
+
 export const SUPPORTED_LOCALE_PREFIXES = ['nl', 'fr', 'en', 'de', 'es', 'it', 'pt'] as const;
 
 export function normalizeLocale(input?: string | null, fallback: string = 'nl-be'): string {
-  if (!input) return fallback;
+  const fallbackNormalized = (() => {
+    const rawFallback = String(fallback || 'nl-be').trim().toLowerCase().replace('_', '-');
+    if (!rawFallback) return 'nl-be';
+    if (rawFallback in ISO_ALIASES) return ISO_ALIASES[rawFallback];
+    const [lang] = rawFallback.split('-');
+    if (lang && lang in SHORT_TO_ISO) return SHORT_TO_ISO[lang];
+    return rawFallback;
+  })();
+  if (!input) return fallbackNormalized;
   const raw = String(input).trim().toLowerCase().replace('_', '-');
-  if (!raw) return fallback;
+  if (!raw) return fallbackNormalized;
 
   if (raw in SHORT_TO_ISO) {
+    const [fallbackLang, fallbackRegion] = fallbackNormalized.split('-');
+
+    // Market-aware short-code resolution:
+    // /fr on voices.be resolves to fr-be, while /fr on voices.fr resolves to fr-fr.
+    if (fallbackRegion) {
+      const marketVariant = `${raw}-${fallbackRegion}`;
+      if (marketVariant in ISO_ALIASES) {
+        return ISO_ALIASES[marketVariant];
+      }
+    }
+    if (fallbackLang === raw) {
+      return fallbackNormalized;
+    }
     return SHORT_TO_ISO[raw];
   }
 
@@ -60,7 +107,18 @@ export function normalizeLocale(input?: string | null, fallback: string = 'nl-be
     return ISO_ALIASES[key] || key;
   }
 
-  return fallback;
+  return fallbackNormalized;
+}
+
+export function getMarketDefaultLocale(marketCode?: string | null, fallback: string = 'nl-be'): string {
+  const normalizedCode = String(marketCode || '').trim().toUpperCase();
+  return MARKET_DEFAULT_LOCALE[normalizedCode] || normalizeLocale(fallback, 'nl-be');
+}
+
+export function getCanonicalTranslationLocale(input?: string | null, fallback: string = 'nl-be'): string {
+  const normalized = normalizeLocale(input, fallback);
+  const short = normalized.split('-')[0];
+  return CANONICAL_TRANSLATION_LOCALE[short] || normalized;
 }
 
 export function localeToShort(input?: string | null, fallback = 'nl'): string {
@@ -71,7 +129,21 @@ export function localeToShort(input?: string | null, fallback = 'nl'): string {
 export function getLocaleFallbacks(input?: string | null): string[] {
   const normalized = normalizeLocale(input);
   const fallbackCandidates = LOCALE_FALLBACKS[normalized] || [];
-  return [normalized, ...fallbackCandidates.map((candidate) => candidate.toLowerCase().replace('_', '-'))]
+  const expanded = [normalized, ...fallbackCandidates.map((candidate) => candidate.toLowerCase().replace('_', '-'))];
+  const shorts = expanded
+    .map((candidate) => candidate.split('-')[0])
+    .filter(Boolean);
+  return [...expanded, ...shorts].filter((value, index, array) => array.indexOf(value) === index);
+}
+
+export function getTranslationLocaleCandidates(input?: string | null, fallback: string = 'nl-be'): string[] {
+  const normalized = normalizeLocale(input, fallback);
+  const canonical = getCanonicalTranslationLocale(normalized, fallback);
+  const fallbackCandidates = getLocaleFallbacks(normalized);
+  const canonicalFallbacks = getLocaleFallbacks(canonical);
+  return [canonical, normalized, ...canonicalFallbacks, ...fallbackCandidates]
+    .map((value) => String(value || '').toLowerCase().replace('_', '-'))
+    .filter(Boolean)
     .filter((value, index, array) => array.indexOf(value) === index);
 }
 

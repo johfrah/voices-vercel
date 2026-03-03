@@ -34,7 +34,7 @@ export const WorkshopHeroIsland: React.FC<WorkshopHeroIslandProps> = ({ workshop
     // We redirect to the checkout with the specific editionId.
     // The CheckoutContext will handle the product mapping and Mollie initialization.
     if (nextEdition?.id) {
-      router.push(`/checkout?journey=studio&editionId=${nextEdition.id}`);
+      router.push(`/studio/checkout?journey=studio&editionId=${nextEdition.id}`);
     } else {
       // Fallback to interest form if no edition is available
       router.push(`/studio/doe-je-mee?workshopId=${workshop.id}`);

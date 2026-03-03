@@ -23,7 +23,7 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
     const workshopsRaw = await db.execute(sql`
       WITH workshop_data AS (
         SELECT
-          w.id, w.title, w.slug, w.description, w.price, w.status, w.media_id, w.meta, w.is_public,
+          w.id, w.title, w.slug, w.description, w.price, w.status, w.media_id, w.meta, w.is_public, w.has_demo_bundle,
           m.file_path AS media_file_path, m.alt_text AS media_alt_text,
           (SELECT label_nl FROM workshop_categories wc JOIN workshop_taxonomy_mappings wtm ON wc.id = wtm.category_id WHERE wtm.workshop_id = w.id LIMIT 1) as category_label,
           (SELECT label_nl FROM workshop_types wt JOIN workshop_taxonomy_mappings wtm ON wt.id = wtm.type_id WHERE wtm.workshop_id = w.id LIMIT 1) as type_label,
@@ -87,10 +87,31 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
     ORDER BY f.display_order ASC NULLS LAST
   `);
 
-    // 4b. Fetch Video media paths (from meta.video_id)
+    // 4b. Fetch Related Journeys (Next Steps)
+    const journeysRows = await db.execute(sql`
+      SELECT wj.from_workshop_id, wj.to_workshop_id, wj.label_nl as label, wj.priority,
+             w.title as to_title, w.slug as to_slug
+      FROM workshop_journeys wj
+      JOIN workshops w ON w.id = wj.to_workshop_id
+      WHERE wj.from_workshop_id IN (${sql.join(workshopIds.map((id) => sql`${id}`), sql`, `)})
+      ORDER BY wj.priority ASC NULLS LAST
+    `);
+
+    // 4c. Fetch Public Feedback Snippets
+    const feedbackRows = await db.execute(sql`
+      SELECT wf.workshop_id, wf.public_snippet, wf.public_rating
+      FROM workshop_feedback wf
+      WHERE wf.workshop_id IN (${sql.join(workshopIds.map((id) => sql`${id}`), sql`, `)})
+        AND wf.public_snippet IS NOT NULL
+      ORDER BY wf.public_rating DESC NULLS LAST, wf.submitted_at DESC
+    `);
+
+    // 4d. Fetch Video media paths (from meta.video_id)
     const videoIds = (workshopsList as any[])
-      .map((w) => ((w.meta as Record<string, any>) || {}).video_id)
-      .filter(Boolean);
+      .flatMap((w) => {
+        const m = (w.meta as Record<string, any>) || {};
+        return [m.video_id, m.aftermovie_video_id].filter(Boolean);
+      });
     
     let videoPathsMap: Record<number, string> = {};
     if (videoIds.length > 0) {
@@ -109,6 +130,8 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
     const reviewsData = Array.isArray(reviewsRows) ? reviewsRows : (reviewsRows as any).rows || [];
     const instructorsData = Array.isArray(instructorsRows) ? instructorsRows : (instructorsRows as any).rows || [];
     const faqsData = Array.isArray(faqsRows) ? faqsRows : (faqsRows as any).rows || [];
+    const journeysData = Array.isArray(journeysRows) ? journeysRows : (journeysRows as any).rows || [];
+    const feedbackData = Array.isArray(feedbackRows) ? feedbackRows : (feedbackRows as any).rows || [];
 
     const editionsByWorkshop = (editionsData as any[]).reduce((acc, e) => {
     const wid = String(e.workshop_id);
@@ -116,6 +139,9 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
     acc[wid].push({
       id: e.id,
       date: e.date,
+      start_time: e.start_time || null,
+      end_time: e.end_time || null,
+      price: e.edition_price || null,
       location: e.location_id ? { 
         id: e.location_id, name: e.location_name, city: e.location_city, 
         address: e.location_address, map_url: e.map_url, access_instructions: e.access_instructions 
@@ -141,6 +167,20 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
       provider: r.provider,
       author_photo_url: r.author_photo_url ? `https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices/${r.author_photo_url}` : null
     });
+    return acc;
+  }, {} as Record<string, any[]>);
+
+    const journeysByWorkshop = (journeysData as any[]).reduce((acc, j) => {
+    const wid = String(j.from_workshop_id);
+    if (!acc[wid]) acc[wid] = [];
+    acc[wid].push({ label: j.label, slug: j.to_slug, title: j.to_title });
+    return acc;
+  }, {} as Record<string, any[]>);
+
+    const feedbackByWorkshop = (feedbackData as any[]).reduce((acc, f) => {
+    const wid = String(f.workshop_id);
+    if (!acc[wid]) acc[wid] = [];
+    acc[wid].push({ text: f.public_snippet, rating: f.public_rating });
     return acc;
   }, {} as Record<string, any[]>);
 
@@ -179,13 +219,23 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
         icon: item.icon
       })),
       expert_note: w.expert_note || meta.expert_note,
+      short_description: meta.short_description || w.description || null,
+      workshop_content_detail: meta.workshop_content_detail || null,
+      aftermovie_description: meta.aftermovie_description || null,
       video: meta.video_id && videoPathsMap[meta.video_id] 
         ? { id: meta.video_id, file_path: videoPathsMap[meta.video_id] } 
         : null,
+      aftermovie_video: meta.aftermovie_video_id && videoPathsMap[meta.aftermovie_video_id]
+        ? { id: meta.aftermovie_video_id, file_path: videoPathsMap[meta.aftermovie_video_id] }
+        : null,
+      subtitle_data: meta.subtitle_data || null,
       featured_image: w.media_file_path ? { file_path: w.media_file_path, alt_text: w.media_alt_text } : null,
+      has_demo_bundle: w.has_demo_bundle || false,
       upcoming_editions: editionsByWorkshop[wid] || [],
       reviews: reviewsByWorkshop[wid] || [],
-      faqs: faqsByWorkshop[wid] || []
+      faqs: faqsByWorkshop[wid] || [],
+      next_steps: journeysByWorkshop[wid] || [],
+      feedback_snippets: feedbackByWorkshop[wid] || []
     };
   });
 

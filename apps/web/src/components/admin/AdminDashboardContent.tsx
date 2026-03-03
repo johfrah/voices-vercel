@@ -1,406 +1,522 @@
 "use client";
 
-import { BentoCard, BentoGrid } from "@/components/ui/BentoGrid";
 import {
-    ButtonInstrument,
-    ContainerInstrument,
-    HeadingInstrument,
-    PageWrapperInstrument,
-    SectionInstrument,
-    TextInstrument
+  ButtonInstrument,
+  ContainerInstrument,
+  HeadingInstrument,
+  PageWrapperInstrument,
+  SectionInstrument,
+  TextInstrument,
 } from "@/components/ui/LayoutInstruments";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
-import { useAdminTracking } from '@/hooks/useAdminTracking';
-import { useWorld } from '@/contexts/WorldContext';
+import { useAdminTracking } from "@/hooks/useAdminTracking";
+import { useWorld } from "@/contexts/WorldContext";
 import {
-    Activity,
-    ArrowRight,
-    Bell,
-    Brain,
-    Calendar,
-    Clock,
-    Database,
-    Layout,
-    Mail,
-    Mic,
-    Settings,
-    ShieldCheck,
-    Sparkles,
-    TrendingUp,
-    Users,
-    Zap,
-    Bot,
-    Music,
-    Phone,
-    Euro,
-    ShoppingBag,
-    Loader2,
-    Link as LinkIcon,
-    X,
-    Info
-} from 'lucide-react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { useEffect, useState } from 'react';
-import toast from 'react-hot-toast';
+  ArrowRight,
+  Bell,
+  Building2,
+  Calendar,
+  CheckCircle2,
+  FolderCog,
+  Loader2,
+  Sparkles,
+  Wallet,
+} from "lucide-react";
+import Link from "next/link";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
-export default function AdminDashboardContent() {
-  const [recentHeals, setRecentHeals] = useState<any[]>([]);
-  const [notifications, setNotifications] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [quickLinkNames, setQuickLinkNames] = useState('');
-  const [isGeneratingLink, setIsGeneratingLink] = useState(false);
-  const { logAction } = useAdminTracking();
-  const { activeWorld } = useWorld();
+interface DashboardOverviewActivity {
+  id: string;
+  message: string;
+  source: string;
+  level: string;
+  created_at: string;
+}
 
-  const handleQuickLink = async () => {
-    if (!quickLinkNames.trim()) return;
-    setIsGeneratingLink(true);
-    try {
-      const res = await fetch('/api/admin/casting/quick-link', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          rawNames: quickLinkNames,
-          projectName: 'Dashboard Quick Link'
-        })
-      });
-      const data = await res.json();
-      if (data.success) {
-        const fullUrl = `${window.location.origin}${data.url}`;
-        await navigator.clipboard.writeText(fullUrl);
-        toast.success('Pitch link gekopieerd naar klembord!');
-        setQuickLinkNames('');
-      } else {
-        toast.error(data.error || 'Fout bij genereren link');
-      }
-    } catch (err) {
-      toast.error('Netwerkfout');
-    } finally {
-      setIsGeneratingLink(false);
-    }
+interface DashboardOverviewFinanceEntry {
+  id: number;
+  created_at: string;
+  total: number;
+  total_cost: number | null;
+  status: string;
+  journey: string | null;
+}
+
+interface DashboardAccessItem {
+  id: string;
+  title: string;
+  subtitle: string;
+  href: string;
+  bucket: "priority" | "quick" | "settings";
+  order: number;
+  count: number | null;
+}
+
+interface DashboardVisiblePage {
+  id: string;
+  title: string;
+  href: string;
+  bucket: "priority" | "quick" | "settings";
+}
+
+interface DashboardOverviewResponse {
+  world: {
+    id: number | null;
+    code: string;
+    label: string;
   };
+  actions: {
+    pending_orders: number;
+    processing_orders: number;
+    pending_approvals: number;
+    pending_interests: number;
+    new_mails_24h: number;
+    live_actors: number;
+    upcoming_studio_editions: number;
+  };
+  finance: {
+    revenue: number;
+    costs: number;
+    net: number;
+    margin_percentage: number;
+    recent_entries: DashboardOverviewFinanceEntry[];
+  };
+  activity: DashboardOverviewActivity[];
+  access: {
+    priority_items: DashboardAccessItem[];
+    quick_items: DashboardAccessItem[];
+    settings_items: DashboardAccessItem[];
+    visible_pages: DashboardVisiblePage[];
+  };
+  generated_at: string;
+}
+
+interface PriorityCard {
+  title: string;
+  description: string;
+  value: number | null;
+  href: string;
+}
+
+const EMPTY_OVERVIEW: DashboardOverviewResponse = {
+  world: { id: null, code: "all", label: "Global View" },
+  actions: {
+    pending_orders: 0,
+    processing_orders: 0,
+    pending_approvals: 0,
+    pending_interests: 0,
+    new_mails_24h: 0,
+    live_actors: 0,
+    upcoming_studio_editions: 0,
+  },
+  finance: {
+    revenue: 0,
+    costs: 0,
+    net: 0,
+    margin_percentage: 0,
+    recent_entries: [],
+  },
+  activity: [],
+  access: {
+    priority_items: [],
+    quick_items: [],
+    settings_items: [],
+    visible_pages: [],
+  },
+  generated_at: "",
+};
+
+function formatCurrency(value: number): string {
+  return new Intl.NumberFormat("nl-BE", {
+    style: "currency",
+    currency: "EUR",
+    maximumFractionDigits: 2,
+  }).format(value);
+}
+
+function formatDateTime(value: string): string {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "--";
+
+  return date.toLocaleString("nl-BE", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+function resolveJourneyLabel(journey: string | null): string {
+  if (journey === "studio") return "Studio";
+  if (journey === "academy") return "Academy";
+  if (journey === "artist") return "Artist";
+  if (journey === "ademing") return "Ademing";
+  return "Agency";
+}
+
+function resolveActivityHref(item: DashboardOverviewActivity): string {
+  if (item.source === "mail") return "/admin/mailbox";
+  if (item.level === "error") return "/admin/system/logs?level=error";
+  return "/admin/approvals";
+}
+
+export default function AdminDashboardContent(): JSX.Element {
+  const { activeWorld, allWorlds, setWorld, isLoading: worldLoading } = useWorld();
+  const { logAction } = useAdminTracking();
+
+  const [overview, setOverview] = useState<DashboardOverviewResponse>(EMPTY_OVERVIEW);
+  const [loading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const worldCode = activeWorld?.code || "all";
+
+  const fetchData = useCallback(async () => {
+    setLoading(true);
+    setErrorMessage(null);
+
+    try {
+      const response = await fetch(`/api/admin/dashboard/overview?world=${encodeURIComponent(worldCode)}`, {
+        cache: "no-store",
+      });
+
+      if (!response.ok) {
+        throw new Error("overview_fetch_failed");
+      }
+
+      const data = (await response.json()) as DashboardOverviewResponse;
+      setOverview(data);
+    } catch {
+      setOverview(EMPTY_OVERVIEW);
+      setErrorMessage("Dashboarddata kon niet geladen worden. Probeer opnieuw.");
+    } finally {
+      setLoading(false);
+    }
+  }, [worldCode]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const healsRes = await fetch('/api/admin/godmode/heals');
-        const healsData = await healsRes.json();
-        if (healsData.success) setRecentHeals(healsData.heals);
-
-        const worldParam = activeWorld ? `&world=${activeWorld.code}` : '';
-        const notifyRes = await fetch(`/api/admin/system/logs?limit=5${worldParam}`);
-        const notifyData = await notifyRes.json();
-        
-        if (notifyData && notifyData.logs) {
-          setNotifications(notifyData.logs.slice(0, 5).map((log: any) => ({
-            id: log.id,
-            type: log.level === 'error' ? 'ai' : log.source === 'mail' ? 'mail' : 'approval',
-            title: log.message,
-            user: log.source,
-            time: (() => {
-              const dateStr = log.created_at || log.createdAt;
-              if (!dateStr) return "N/A";
-              const date = new Date(dateStr);
-              if (isNaN(date.getTime())) return "N/A";
-              return date.toLocaleTimeString('nl-BE', { hour: '2-digit', minute: '2-digit' });
-            })(),
-            icon: log.source === 'mail' ? <Mail size={14} /> : log.level === 'error' ? <Brain size={14} /> : <Bell size={14} />
-          })));
-        }
-      } catch (err) {
-        console.error('Failed to fetch dashboard data', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchData();
-  }, [activeWorld]);
+  }, [fetchData]);
 
-  const stats = [
-    { label: <VoiceglotText  translationKey="admin.stats.mails" defaultText="Nieuwe Mails" />, value: '...', icon: <Mail strokeWidth={1.5} size={20} />, trend: 'Inbox', color: 'text-blue-500', href: '/admin/mailbox' },
-    { label: <VoiceglotText  translationKey="admin.stats.live_chat" defaultText="Live Chat" />, value: 'Meekijken', icon: <Bot strokeWidth={1.5} size={20} />, trend: 'Live', color: 'text-green-500', href: '/admin/live-chat' },
-    { label: <VoiceglotText  translationKey="admin.stats.analytics" defaultText="Statistieken" />, value: 'Inzicht', icon: <TrendingUp strokeWidth={1.5} size={20} />, trend: 'Groei', color: 'text-orange-500', href: '/admin/analytics' },
-    { label: <VoiceglotText  translationKey="admin.stats.approvals" defaultText="Wachtrij" />, value: '...', icon: <Bell strokeWidth={1.5} size={20} />, trend: 'Actie nodig', color: 'text-orange-500', href: '/admin/approvals' },
-    { label: <VoiceglotText  translationKey="admin.stats.finance" defaultText="Financieel" />, value: 'Overzicht', icon: <Euro strokeWidth={1.5} size={20} />, trend: 'Kassa', color: 'text-green-500', href: '/admin/finance' },
-    { label: <VoiceglotText  translationKey="admin.stats.workshops" defaultText="Workshops" />, value: '...', icon: <Calendar strokeWidth={1.5} size={20} />, trend: 'Studio', color: 'text-purple-500', href: '/admin/studio/workshops' },
-    { label: <VoiceglotText  translationKey="admin.stats.ademing" defaultText="Ademing" />, value: '...', icon: <Zap strokeWidth={1.5} size={20} />, trend: 'Meditatie', color: 'text-green-400', href: '/admin/ademing' },
-    { label: <VoiceglotText  translationKey="admin.stats.voices" defaultText="Stemmen" />, value: '...', icon: <Mic strokeWidth={1.5} size={20} />, trend: 'Demos', color: 'text-va-black/40', href: '/admin/voices' },
-    { label: <VoiceglotText  translationKey="admin.stats.artists" defaultText="Artiesten" />, value: 'Actief', icon: <Music strokeWidth={1.5} size={20} />, trend: 'Portfolio', color: 'text-pink-500', href: '/admin/artists' },
-    { label: <VoiceglotText  translationKey="admin.stats.agents" defaultText="Assistenten" />, value: 'Actief', icon: <Bot strokeWidth={1.5} size={20} />, trend: 'Beheer', color: 'text-primary', href: '/admin/agents' },
-  ];
+  const primaryCards = useMemo<PriorityCard[]>(() => {
+    return overview.access.priority_items.map((item) => ({
+      title: item.title,
+      description: item.subtitle,
+      value: item.count,
+      href: item.href,
+    }));
+  }, [overview.access.priority_items]);
+
+  const quickLinks = useMemo(() => overview.access.quick_items, [overview.access.quick_items]);
+  const lowPriorityLinks = useMemo(() => overview.access.settings_items, [overview.access.settings_items]);
+  const visiblePages = useMemo(() => overview.access.visible_pages, [overview.access.visible_pages]);
 
   return (
-    <PageWrapperInstrument className="p-12 space-y-12 max-w-[1600px] mx-auto">
-      {/* Header */}
-      <SectionInstrument className="flex justify-between items-end">
-        <ContainerInstrument className="space-y-2">
-          <ContainerInstrument className="flex items-center gap-2 text-primary">
-            <Info size={16} strokeWidth={2} />
-            <TextInstrument as="span" className="text-[15px] font-bold tracking-[0.15em] uppercase"><VoiceglotText  translationKey="admin.badge" defaultText="Voices Admin" /></TextInstrument>
+    <PageWrapperInstrument className="p-8 md:p-12 space-y-10 max-w-[1500px] mx-auto">
+      <SectionInstrument className="space-y-4">
+        <ContainerInstrument className="flex items-center justify-between gap-4 flex-wrap">
+          <ContainerInstrument className="space-y-2">
+            <ContainerInstrument className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary">
+              <Sparkles size={14} />
+              <TextInstrument as="span" className="text-[11px] font-semibold tracking-[0.15em] uppercase">
+                <VoiceglotText translationKey="admin.focus.badge" defaultText="Vandaag eerst" />
+              </TextInstrument>
+            </ContainerInstrument>
+            <HeadingInstrument level={1} className="text-5xl md:text-6xl font-light tracking-tight">
+              <VoiceglotText translationKey="admin.focus.title" defaultText="Beheer in één oogopslag" />
+            </HeadingInstrument>
+            <TextInstrument className="text-[15px] text-va-black/50 font-medium max-w-3xl">
+              <VoiceglotText
+                translationKey="admin.focus.subtitle"
+                defaultText="Eerst opvolging en financiën. Minder prioritaire instellingen staan bewust lager."
+              />
+            </TextInstrument>
           </ContainerInstrument>
-          <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter text-va-black"><VoiceglotText  translationKey="admin.title" defaultText="Beheer-dashboard" /></HeadingInstrument>
-        </ContainerInstrument>
-        <ContainerInstrument className="flex gap-4">
-          <ButtonInstrument 
+          <ButtonInstrument
             onClick={() => {
-              logAction('create_dashboard_snapshot');
-              import('react-hot-toast').then(toast => toast.default.success('Snapshot opgeslagen!'));
+              logAction("refresh_overview_dashboard");
+              fetchData();
             }}
-            className="va-btn-nav !rounded-[10px]"
+            className="va-btn-nav !rounded-[10px] flex items-center gap-2"
           >
-            <VoiceglotText  translationKey="admin.cta.snapshot" defaultText="Snapshot maken" />
+            {loading ? <Loader2 className="animate-spin" size={14} /> : <CheckCircle2 size={14} />}
+            <VoiceglotText translationKey="admin.focus.refresh" defaultText="Vernieuwen" />
           </ButtonInstrument>
+        </ContainerInstrument>
+
+        <ContainerInstrument className="rounded-2xl border border-black/[0.05] bg-white p-4 flex flex-wrap gap-2 items-center">
+          <TextInstrument className="text-[11px] tracking-[0.15em] uppercase text-va-black/30 font-semibold mr-2">
+            Per world
+          </TextInstrument>
+          <ButtonInstrument
+            onClick={() => setWorld("all")}
+            className={`px-3 py-2 rounded-xl text-[13px] ${!activeWorld ? "bg-va-black text-white" : "bg-va-off-white text-va-black/60"}`}
+          >
+            Global
+          </ButtonInstrument>
+          {!worldLoading &&
+            allWorlds.map((world) => (
+              <ButtonInstrument
+                key={world.id}
+                onClick={() => setWorld(world.code)}
+                className={`px-3 py-2 rounded-xl text-[13px] ${
+                  activeWorld?.id === world.id ? "bg-va-black text-white" : "bg-va-off-white text-va-black/60"
+                }`}
+              >
+                {world.label}
+              </ButtonInstrument>
+            ))}
+          <ContainerInstrument className="ml-auto">
+            <TextInstrument className="text-[12px] text-va-black/40">Context: {overview.world.label}</TextInstrument>
+          </ContainerInstrument>
+        </ContainerInstrument>
+
+        <ContainerInstrument className="rounded-2xl border border-black/[0.05] bg-white p-4">
+          <TextInstrument className="text-[11px] tracking-[0.15em] uppercase text-va-black/30 font-semibold mb-3">
+            Toegangspagina&apos;s
+          </TextInstrument>
+          <ContainerInstrument className="flex flex-wrap gap-2">
+            {visiblePages.slice(0, 14).map((page) => (
+              <Link key={page.id} href={page.href} className="block">
+                <ContainerInstrument className="px-3 py-2 rounded-xl bg-va-off-white hover:bg-primary/10 transition-colors">
+                  <TextInstrument className="text-[12px] font-medium text-va-black/70">{page.title}</TextInstrument>
+                </ContainerInstrument>
+              </Link>
+            ))}
+            {visiblePages.length === 0 && (
+              <ContainerInstrument className="px-3 py-2 rounded-xl bg-va-off-white">
+                <TextInstrument className="text-[12px] text-va-black/40">Geen toegangen beschikbaar.</TextInstrument>
+              </ContainerInstrument>
+            )}
+          </ContainerInstrument>
         </ContainerInstrument>
       </SectionInstrument>
 
-      {/* Quick Stats */}
-      <ContainerInstrument className="grid grid-cols-1 md:grid-cols-4 gap-8">
-        {stats.map((stat, i) => (
-          <ContainerInstrument key={i} className="bg-white border border-black/5 p-8 rounded-[20px] shadow-sm hover:shadow-aura transition-all group relative overflow-hidden">
-            {stat.href && <Link  href={stat.href} className="absolute inset-0 z-10" />}
-            <ContainerInstrument className="flex justify-between items-start mb-6">
-              <ContainerInstrument className={`w-12 h-12 bg-va-off-white rounded-[10px] flex items-center justify-center ${stat.color} group-hover:scale-110 transition-transform`}>
-                {stat.icon}
-              </ContainerInstrument>
-              <TextInstrument as="span" className="text-[15px] font-light text-va-black/40 bg-va-black/5 px-2 py-1 rounded-[10px]">
-                {stat.trend}
-              </TextInstrument>
-            </ContainerInstrument>
-            <ContainerInstrument className="space-y-1">
-              <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/30">
-                {stat.label}
-              </TextInstrument>
-              <HeadingInstrument level={3} className="text-4xl font-light tracking-tighter text-va-black">{stat.value}</HeadingInstrument>
-            </ContainerInstrument>
+      {errorMessage && (
+        <ContainerInstrument className="flex items-center justify-between gap-4 p-4 rounded-2xl border border-amber-200 bg-amber-50">
+          <ContainerInstrument className="flex items-center gap-3 text-amber-800">
+            <Bell size={16} />
+            <TextInstrument className="text-sm font-medium">{errorMessage}</TextInstrument>
           </ContainerInstrument>
-        ))}
-      </ContainerInstrument>
+          <ButtonInstrument
+            onClick={fetchData}
+            className="px-4 py-2 rounded-xl bg-white border border-amber-200 text-amber-800 hover:bg-amber-100 transition-colors"
+          >
+            Opnieuw laden
+          </ButtonInstrument>
+        </ContainerInstrument>
+      )}
 
-      {/* Live Feed & Notifications */}
-      <SectionInstrument className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <ContainerInstrument className="lg:col-span-2 bg-white border border-black/5 rounded-[20px] p-10 shadow-sm">
-          <ContainerInstrument className="flex justify-between items-center mb-8">
-          <ContainerInstrument>
-            <ContainerInstrument className="w-10 h-10 bg-primary/10 text-primary rounded-[10px] flex items-center justify-center">
-              <Info size={20} strokeWidth={1.5} />
-            </ContainerInstrument>
-            <HeadingInstrument level={2} className="text-2xl font-light tracking-tight text-va-black mt-4"><VoiceglotText  translationKey="admin.feed.title" defaultText="Recente activiteit" /></HeadingInstrument>
-            <TextInstrument className="text-[15px] text-va-black/40 font-light"><VoiceglotText  translationKey="admin.feed.subtitle" defaultText="Meldingen uit de mailbox en van assistenten" /></TextInstrument>
-          </ContainerInstrument>
-            <ButtonInstrument as={Link} href="/admin/mailbox" className="text-[15px] font-light tracking-widest text-primary flex items-center gap-2 hover:gap-3 transition-all"><VoiceglotText  translationKey="admin.feed.full_inbox" defaultText="Volledige inbox" /><ArrowRight size={12} strokeWidth={2} /></ButtonInstrument>
-          </ContainerInstrument>
-
-      <ContainerInstrument className="space-y-4">
-        {loading ? (
-          <div className="p-20 text-center"><Loader2 className="animate-spin mx-auto text-primary/20" size={40} /></div>
-        ) : notifications.length > 0 ? (
-          notifications.map((n) => (
-            <ContainerInstrument key={n.id} className="flex items-center justify-between p-5 bg-va-off-white rounded-[24px] border border-black/[0.02] hover:border-primary/20 transition-all group cursor-pointer">
-              <ContainerInstrument className="flex items-center gap-4">
-                <ContainerInstrument className={`w-10 h-10 rounded-xl flex items-center justify-center ${
-                  n.type === 'mail' ? 'bg-blue-500/10 text-blue-500' : 
-                  n.type === 'approval' ? 'bg-orange-500/10 text-orange-500' : 
-                  'bg-purple-500/10 text-purple-500'
-                }`}>
-                  {n.icon}
-                </ContainerInstrument>
+      <SectionInstrument className="space-y-5">
+        <ContainerInstrument className="flex items-center justify-between">
+          <HeadingInstrument level={2} className="text-2xl font-light tracking-tight">
+            Prioriteiten
+          </HeadingInstrument>
+          <TextInstrument className="text-[13px] text-va-black/40 tracking-widest">
+            Eerst opvolging, dan configuratie
+          </TextInstrument>
+        </ContainerInstrument>
+        <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+          {primaryCards.map((card) => (
+            <ContainerInstrument
+              key={card.title}
+              className="relative rounded-2xl border border-black/[0.05] bg-white p-6 hover:border-primary/20 transition-colors"
+            >
+              <Link href={card.href} className="absolute inset-0 z-10" />
+              <ContainerInstrument className="flex items-start justify-between mb-4">
                 <ContainerInstrument>
-                  <TextInstrument className="text-[15px] font-black text-gray-900">{n.title}</TextInstrument>
-                  <TextInstrument className="text-[15px] text-va-black/40 font-bold tracking-widest uppercase">{n.user}</TextInstrument>
+                  <TextInstrument className="text-[12px] tracking-widest uppercase text-va-black/30">{card.title}</TextInstrument>
+                  <HeadingInstrument level={3} className="text-4xl font-light mt-2">
+                    {loading ? "..." : card.value ?? "-"}
+                  </HeadingInstrument>
                 </ContainerInstrument>
+                <ArrowRight size={16} className="text-va-black/30" />
               </ContainerInstrument>
-              <ContainerInstrument className="flex items-center gap-4">
-                <ContainerInstrument className="flex items-center gap-1.5 text-va-black/20">
-                  <Clock strokeWidth={1.5} size={12} />
-                  <TextInstrument as="span" className="text-[15px] font-bold">{n.time}</TextInstrument>
-                </ContainerInstrument>
-                <ContainerInstrument className="w-8 h-8 rounded-full bg-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-sm">
-                  <ArrowRight strokeWidth={1.5} size={14} className="text-primary" />
-                </ContainerInstrument>
-              </ContainerInstrument>
+              <TextInstrument className="text-[14px] text-va-black/50 font-medium">{card.description}</TextInstrument>
             </ContainerInstrument>
-          ))
-        ) : (
-          <div className="p-20 text-center border-2 border-dashed border-black/5 rounded-[32px]">
-            <TextInstrument className="text-va-black/20 font-bold tracking-widest uppercase">Geen recente meldingen</TextInstrument>
-          </div>
-        )}
-      </ContainerInstrument>
-    </ContainerInstrument>
-
-        <ContainerInstrument className="bg-va-black text-white rounded-[20px] p-10 relative overflow-hidden flex flex-col justify-between">
-          <ContainerInstrument className="relative z-10">
-            <ContainerInstrument className="w-12 h-12 bg-primary rounded-[10px] flex items-center justify-center mb-8 shadow-lg shadow-primary/20">
-              <Info size={24} strokeWidth={1.5} className="text-va-black" />
-            </ContainerInstrument>
-            <HeadingInstrument level={2} className="text-3xl font-light tracking-tighter mb-4 leading-tight text-white">
-              <VoiceglotText  translationKey="admin.voicy_brain.title" defaultText="De assistent denkt mee" />
-              <TextInstrument className="text-white/40 text-[15px] font-light leading-relaxed mb-8">
-                <VoiceglotText  translationKey="admin.voicy_brain.text" defaultText="Ik analyseer de mailbox om je te helpen bij het beheer van je projecten." />
-              </TextInstrument>
-            </HeadingInstrument>
-            
-            <ContainerInstrument className="space-y-3">
-              <ContainerInstrument className="flex items-center gap-3 p-3 bg-white/5 rounded-[10px] border border-white/5">
-                <ContainerInstrument className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                <TextInstrument className="text-[15px] tracking-widest text-white/60 font-light"><VoiceglotText  translationKey="admin.voicy_brain.syncing" defaultText="Syncing Gmail..." /></TextInstrument>
-              </ContainerInstrument>
-              <ContainerInstrument className="flex items-center gap-3 p-3 bg-white/5 rounded-[10px] border border-white/5">
-                <ContainerInstrument className="w-2 h-2 bg-blue-500 rounded-full" />
-                <TextInstrument className="text-[15px] tracking-widest text-white/60 font-light"><VoiceglotText  translationKey="admin.voicy_brain.analyzing" defaultText="Analyzing Trends" /></TextInstrument>
-              </ContainerInstrument>
-            </ContainerInstrument>
-          </ContainerInstrument>
-
-          <ButtonInstrument as={Link} href="/admin/mailbox?tab=insights" className="relative z-10 va-btn-pro !bg-primary w-full text-center mt-8 !rounded-[10px]"><VoiceglotText  translationKey="admin.voicy_brain.cta" defaultText="Bekijk inzichten" /></ButtonInstrument>
-
-          <ContainerInstrument className="absolute -bottom-20 -right-20 w-80 h-80 bg-primary/10 rounded-[20px] blur-[80px]" />
+          ))}
         </ContainerInstrument>
       </SectionInstrument>
 
-      {/* Main Control Grid */}
-      <BentoGrid strokeWidth={1.5} columns={3}>
-        {/* Quick Link Widget */}
-        <BentoCard span="sm" className="bg-white border border-black/5 p-8 flex flex-col justify-between h-[400px] group hover:border-primary/20 transition-all rounded-[20px]">
-          <ContainerInstrument>
-            <LinkIcon strokeWidth={1.5} className="text-primary mb-6" size={32} />
-            <HeadingInstrument level={2} className="text-2xl font-light tracking-tight mb-4 text-va-black">
-              Quick Pitch Link
+      <SectionInstrument className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+        <ContainerInstrument className="xl:col-span-2 rounded-2xl border border-black/[0.05] bg-white p-6 space-y-5">
+          <ContainerInstrument className="flex items-center justify-between">
+            <HeadingInstrument level={2} className="text-2xl font-light tracking-tight">
+              Financieel overzicht
             </HeadingInstrument>
-            <TextInstrument className="text-va-black/40 text-[13px] font-medium leading-relaxed mb-6">
-              Plak namen van stemmen (gescheiden door komma of enter) om direct een deelbare link met tarieven te maken.
-            </TextInstrument>
-            <textarea 
-              value={quickLinkNames}
-              onChange={(e) => setQuickLinkNames(e.target.value)}
-              placeholder="Bijv: Johfrah, Eveline, ..."
-              className="w-full h-24 bg-va-off-white rounded-xl p-4 text-[13px] font-medium border-none focus:ring-1 focus:ring-primary/20 resize-none"
-            />
+            <ButtonInstrument as={Link} href="/admin/finance" className="text-[13px] font-semibold tracking-widest text-primary">
+              Detail
+            </ButtonInstrument>
           </ContainerInstrument>
-          <ButtonInstrument 
-            onClick={handleQuickLink}
-            disabled={isGeneratingLink || !quickLinkNames.trim()}
-            className="va-btn-pro !bg-va-black w-full !rounded-[10px] mt-4 flex items-center justify-center gap-2"
-          >
-            {isGeneratingLink ? <Loader2 size={16} className="animate-spin" /> : <LinkIcon size={16} />}
-            <span>Genereer & Kopieer</span>
-          </ButtonInstrument>
-        </BentoCard>
-
-        {/* Database Management */}
-        <BentoCard span="sm" className="bg-va-black text-white p-10 flex flex-col justify-between h-[400px] group relative overflow-hidden rounded-[20px]">
-          <ContainerInstrument className="relative z-10">
-            <Calendar strokeWidth={1.5} className="text-primary mb-8" size={32} />
-            <HeadingInstrument level={2} className="text-2xl font-light tracking-tighter mb-4">
-              <VoiceglotText translationKey="admin.studio.dashboard_title" defaultText="Workshop Dashboard" />
-            </HeadingInstrument>
-            <TextInstrument className="text-white/40 text-[15px] font-medium leading-relaxed">
-              <VoiceglotText translationKey="admin.studio.dashboard_text" defaultText="Beheer edities, deelnemers en bezettingsgraad voor de Studio-tak." />
-            </TextInstrument>
-          </ContainerInstrument>
-          <Link href="/admin/studio/workshops" className="relative z-10 va-btn-pro !bg-primary w-fit">
-            <VoiceglotText translationKey="admin.studio.dashboard_cta" defaultText="Open Dashboard" />
-          </Link>
-          <ContainerInstrument className="absolute -bottom-20 -right-20 w-60 h-60 bg-primary/10 rounded-full blur-[60px]" />
-        </BentoCard>
-
-        {/* Systeem instellingen */}
-        <BentoCard span="sm" className="bg-white border border-black/5 p-10 flex flex-col justify-between h-[400px] group hover:border-primary/20 transition-all rounded-[20px]">
-          <ContainerInstrument>
-            <Settings strokeWidth={1.5} className="text-va-black/20 group-hover:text-primary transition-colors mb-8" size={32} />
-            <HeadingInstrument level={2} className="text-2xl font-light tracking-tight mb-4 text-va-black"><VoiceglotText  translationKey="admin.settings.title" defaultText="Systeem instellingen" /><TextInstrument className="text-va-black/40 text-[15px] font-light leading-relaxed"><VoiceglotText  translationKey="admin.settings.text" defaultText="Configureer bedrijfsinformatie, openingsuren en de globale vakantieregeling." /></TextInstrument></HeadingInstrument>
-          </ContainerInstrument>
-          <div className="flex flex-col gap-2">
-            <Link  href="/admin/settings" className="text-[15px] font-light tracking-widest text-primary flex items-center gap-2 group-hover:gap-4 transition-all">
-              <VoiceglotText  translationKey="admin.settings.cta" defaultText="Bedrijfsinstellingen" />
-              <ArrowRight strokeWidth={1.5} size={12} />
-            </Link>
-            <Link  href="/admin/telephony" className="text-[15px] font-light tracking-widest text-primary flex items-center gap-2 group-hover:gap-4 transition-all">
-              <VoiceglotText  translationKey="admin.telephony.cta" defaultText="Telefonie Tarieven" />
-              <Euro strokeWidth={1.5} size={12} />
-            </Link>
-          </div>
-        </BentoCard>
-
-        {/* Page Builder Quick Access */}
-        <BentoCard span="sm" className="bg-va-off-white p-10 flex flex-col justify-between h-[400px] border border-black/5 group hover:border-primary/20 transition-all rounded-[20px]">
-          <ContainerInstrument>
-            <Layout strokeWidth={1.5} className="text-va-black/20 group-hover:text-primary transition-colors mb-8" size={32} />
-            <HeadingInstrument level={2} className="text-2xl font-light tracking-tight mb-4 text-va-black"><VoiceglotText  translationKey="admin.architect.title" defaultText="Pagina beheer" /><TextInstrument className="text-va-black/40 text-[15px] font-light leading-relaxed"><VoiceglotText  translationKey="admin.architect.text" defaultText="Beheer de structuur van de website en maak nieuwe landingspagina's aan." /></TextInstrument></HeadingInstrument>
-          </ContainerInstrument>
-          <Link  href="/" className="text-[15px] font-light tracking-widest text-va-black/40 hover:text-va-black transition-colors"><VoiceglotText  translationKey="admin.architect.cta" defaultText="Naar website" /></Link>
-        </BentoCard>
-
-        {/* Klantprofielen */}
-        <BentoCard span="lg" className="bg-white border border-black/5 p-12 h-[400px] flex flex-col justify-between group hover:border-primary/20 transition-all rounded-[20px]">
-          <ContainerInstrument className="flex justify-between items-start">
-            <ContainerInstrument>
-              <Users strokeWidth={1.5} className="text-va-black/20 group-hover:text-primary transition-colors mb-8" size={32} />
-              <HeadingInstrument level={2} className="text-4xl font-light tracking-tighter mb-4 text-va-black"><VoiceglotText  translationKey="admin.users.title" defaultText="Klantprofielen" /><TextInstrument className="text-va-black/40 max-w-sm text-[15px] font-light leading-relaxed"><VoiceglotText  translationKey="admin.users.text" defaultText="Beheer je klanten, hun rollen en voorkeuren. Bekijk inzichten over hun gedrag op het platform." /></TextInstrument></HeadingInstrument>
+          <ContainerInstrument className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <ContainerInstrument className="rounded-xl bg-va-off-white p-4">
+              <TextInstrument className="text-[11px] tracking-[0.15em] uppercase text-va-black/30">Opbrengst</TextInstrument>
+              <HeadingInstrument level={3} className="text-2xl font-light mt-2">
+                {formatCurrency(overview.finance.revenue)}
+              </HeadingInstrument>
             </ContainerInstrument>
-            <ContainerInstrument className="flex flex-col items-end gap-2">
-              <Link  href="/admin/marketing/visitors" className="px-4 py-2 bg-green-500/10 text-green-500 rounded-[20px] text-[15px] font-light hover:bg-green-500/20 transition-all"><VoiceglotText  translationKey="admin.users.online_count" defaultText="8 online" /></Link>
+            <ContainerInstrument className="rounded-xl bg-va-off-white p-4">
+              <TextInstrument className="text-[11px] tracking-[0.15em] uppercase text-va-black/30">Kosten</TextInstrument>
+              <HeadingInstrument level={3} className="text-2xl font-light mt-2">
+                {formatCurrency(overview.finance.costs)}
+              </HeadingInstrument>
+            </ContainerInstrument>
+            <ContainerInstrument className="rounded-xl bg-va-black text-white p-4">
+              <TextInstrument className="text-[11px] tracking-[0.15em] uppercase text-white/40">Netto</TextInstrument>
+              <HeadingInstrument level={3} className="text-2xl font-light mt-2">
+                {formatCurrency(overview.finance.net)}
+              </HeadingInstrument>
+              <TextInstrument className="text-[12px] text-white/40 mt-1">
+                Marge {overview.finance.margin_percentage.toFixed(1)}%
+              </TextInstrument>
             </ContainerInstrument>
           </ContainerInstrument>
-          <ButtonInstrument as={Link} href="/admin/users" className="va-btn-pro !bg-va-black w-fit !rounded-[10px]"><VoiceglotText  translationKey="admin.users.cta" defaultText="Klanten beheren" /></ButtonInstrument>
-        </BentoCard>
-
-        {/* Assistenten Beheer */}
-        <BentoCard span="sm" className="bg-va-black text-white p-10 h-[400px] flex flex-col justify-between relative overflow-hidden group rounded-[20px]">
-          <ContainerInstrument className="relative z-10">
-            <Bot strokeWidth={1.5} className="text-primary mb-8" size={32} />
-            <HeadingInstrument level={2} className="text-2xl font-light tracking-tight mb-4 text-white">
-              <VoiceglotText translationKey="admin.agents.title" defaultText="Assistenten" />
-            </HeadingInstrument>
-            <TextInstrument className="text-white/40 text-[15px] font-light leading-relaxed">
-              <VoiceglotText translationKey="admin.agents.desc" defaultText="Beheer de instructies en kennis van de verschillende assistenten op het platform." />
+          <ContainerInstrument className="space-y-2">
+            <TextInstrument className="text-[12px] tracking-[0.15em] uppercase text-va-black/30">
+              Opbrengst en kosten op datum
             </TextInstrument>
+            {overview.finance.recent_entries.slice(0, 8).map((entry) => (
+              <ContainerInstrument
+                key={entry.id}
+                className="grid grid-cols-[1.4fr_1fr_1fr_1fr_auto] gap-3 rounded-xl border border-black/[0.04] p-3 items-center"
+              >
+                <TextInstrument className="text-[13px] text-va-black/70">{formatDateTime(entry.created_at)}</TextInstrument>
+                <TextInstrument className="text-[13px] text-va-black/50">{resolveJourneyLabel(entry.journey)}</TextInstrument>
+                <TextInstrument className="text-[13px] text-va-black">{formatCurrency(Number(entry.total || 0))}</TextInstrument>
+                <TextInstrument className="text-[13px] text-va-black/60">
+                  {entry.total_cost === null ? "-" : formatCurrency(Number(entry.total_cost))}
+                </TextInstrument>
+                <TextInstrument className="text-[11px] uppercase tracking-widest text-va-black/30">{entry.status}</TextInstrument>
+              </ContainerInstrument>
+            ))}
+            {overview.finance.recent_entries.length === 0 && (
+              <ContainerInstrument className="rounded-xl border border-dashed border-black/[0.1] p-6 text-center">
+                <TextInstrument className="text-[13px] text-va-black/40">Nog geen recente financiële entries.</TextInstrument>
+              </ContainerInstrument>
+            )}
           </ContainerInstrument>
-          
-          <Link href="/admin/agents" className="relative z-10 va-btn-pro !bg-primary w-fit !text-va-black font-bold tracking-widest text-[11px] uppercase">
-            <VoiceglotText translationKey="admin.agents.cta" defaultText="Open Beheer" />
-          </Link>
-          <ContainerInstrument className="absolute -bottom-10 -right-10 w-40 h-40 bg-primary/10 rounded-[20px] blur-[40px]" />
-        </BentoCard>
+        </ContainerInstrument>
 
-        {/* Ademing Beheer */}
-        <BentoCard span="sm" className="bg-white border border-black/5 p-10 h-[400px] flex flex-col justify-between group hover:border-primary/20 transition-all rounded-[20px]">
+        <ContainerInstrument className="rounded-2xl border border-black/[0.05] bg-white p-6 space-y-4">
+          <HeadingInstrument level={2} className="text-xl font-light tracking-tight">
+            Recente activiteit
+          </HeadingInstrument>
+          {loading ? (
+            <ContainerInstrument className="p-8 text-center">
+              <Loader2 className="animate-spin mx-auto text-primary/30" size={24} />
+            </ContainerInstrument>
+          ) : (
+            <ContainerInstrument className="space-y-2">
+              {overview.activity.slice(0, 6).map((item) => (
+                <Link key={item.id} href={resolveActivityHref(item)} className="block">
+                  <ContainerInstrument className="rounded-xl border border-black/[0.04] p-3 hover:border-primary/20 transition-colors">
+                    <ContainerInstrument className="flex items-center justify-between gap-2">
+                      <TextInstrument className="text-[13px] font-medium text-va-black">{item.message}</TextInstrument>
+                      <TextInstrument className="text-[11px] uppercase tracking-widest text-va-black/30">{item.source}</TextInstrument>
+                    </ContainerInstrument>
+                    <TextInstrument className="text-[12px] text-va-black/40 mt-1">{formatDateTime(item.created_at)}</TextInstrument>
+                  </ContainerInstrument>
+                </Link>
+              ))}
+              {overview.activity.length === 0 && (
+                <ContainerInstrument className="rounded-xl border border-dashed border-black/[0.1] p-4 text-center">
+                  <TextInstrument className="text-[13px] text-va-black/40">Geen recente activiteit.</TextInstrument>
+                </ContainerInstrument>
+              )}
+            </ContainerInstrument>
+          )}
+        </ContainerInstrument>
+      </SectionInstrument>
+
+      <SectionInstrument className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+        <ContainerInstrument className="rounded-2xl border border-black/[0.05] bg-white p-6 space-y-4">
+          <HeadingInstrument level={2} className="text-xl font-light tracking-tight">
+            Snel naar kernbeheer
+          </HeadingInstrument>
+          <ContainerInstrument className="space-y-2">
+            {quickLinks.map((item) => (
+              <Link key={item.id} href={item.href} className="block">
+                <ContainerInstrument className="rounded-xl border border-black/[0.04] p-3 hover:border-primary/20 transition-colors">
+                  <ContainerInstrument className="flex items-center justify-between gap-3">
+                    <ContainerInstrument>
+                      <TextInstrument className="text-[14px] font-medium text-va-black">{item.title}</TextInstrument>
+                      <TextInstrument className="text-[12px] text-va-black/40">{item.subtitle}</TextInstrument>
+                    </ContainerInstrument>
+                    <ContainerInstrument className="flex items-center gap-3">
+                      {typeof item.count === "number" && item.count > 0 && (
+                        <ContainerInstrument className="min-w-6 px-2 py-1 rounded-lg bg-primary/10">
+                          <TextInstrument className="text-[11px] text-primary font-semibold text-center">{item.count}</TextInstrument>
+                        </ContainerInstrument>
+                      )}
+                      <ArrowRight size={14} className="text-va-black/30" />
+                    </ContainerInstrument>
+                  </ContainerInstrument>
+                </ContainerInstrument>
+              </Link>
+            ))}
+          </ContainerInstrument>
+        </ContainerInstrument>
+
+        <ContainerInstrument className="rounded-2xl border border-black/[0.05] bg-white p-6 space-y-4">
+          <ContainerInstrument className="flex items-center gap-2">
+            <FolderCog size={16} className="text-va-black/50" />
+            <HeadingInstrument level={2} className="text-xl font-light tracking-tight">
+              Minder prioritaire instellingen
+            </HeadingInstrument>
+          </ContainerInstrument>
+          <ContainerInstrument className="space-y-2">
+            {lowPriorityLinks.map((item) => (
+              <Link key={item.id} href={item.href} className="block">
+                <ContainerInstrument className="rounded-xl border border-black/[0.04] p-3 hover:border-primary/20 transition-colors">
+                  <ContainerInstrument className="flex items-center justify-between gap-3">
+                    <ContainerInstrument>
+                      <TextInstrument className="text-[14px] font-medium text-va-black">{item.title}</TextInstrument>
+                      <TextInstrument className="text-[12px] text-va-black/40">{item.subtitle}</TextInstrument>
+                    </ContainerInstrument>
+                    <ArrowRight size={14} className="text-va-black/30" />
+                  </ContainerInstrument>
+                </ContainerInstrument>
+              </Link>
+            ))}
+          </ContainerInstrument>
+        </ContainerInstrument>
+      </SectionInstrument>
+
+      <SectionInstrument className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <ContainerInstrument className="rounded-xl border border-black/[0.05] p-4 bg-white flex items-center gap-3">
+          <Wallet size={16} className="text-primary" />
           <ContainerInstrument>
-            <Zap strokeWidth={1.5} className="text-green-400 mb-8" size={32} />
-            <HeadingInstrument level={2} className="text-2xl font-light tracking-tight mb-4 text-va-black">
-              Ademing.be
-            </HeadingInstrument>
-            <TextInstrument className="text-va-black/40 text-[15px] font-light leading-relaxed">
-              Beheer de meditaties, begeleiders en content voor het Ademing platform.
+            <TextInstrument className="text-[11px] uppercase tracking-widest text-va-black/30">Netto</TextInstrument>
+            <TextInstrument className="text-[15px] font-medium">{formatCurrency(overview.finance.net)}</TextInstrument>
+          </ContainerInstrument>
+        </ContainerInstrument>
+        <ContainerInstrument className="rounded-xl border border-black/[0.05] p-4 bg-white flex items-center gap-3">
+          <Calendar size={16} className="text-primary" />
+          <ContainerInstrument>
+            <TextInstrument className="text-[11px] uppercase tracking-widest text-va-black/30">Laatste update</TextInstrument>
+            <TextInstrument className="text-[15px] font-medium">
+              {overview.generated_at ? formatDateTime(overview.generated_at) : "--"}
             </TextInstrument>
           </ContainerInstrument>
-          <Link href="/admin/ademing" className="va-btn-pro !bg-va-black w-fit !rounded-[10px]">
-            Open Ademing Beheer
-          </Link>
-        </BentoCard>
-      </BentoGrid>
+        </ContainerInstrument>
+        <ContainerInstrument className="rounded-xl border border-black/[0.05] p-4 bg-white flex items-center gap-3">
+          <Building2 size={16} className="text-primary" />
+          <ContainerInstrument>
+            <TextInstrument className="text-[11px] uppercase tracking-widest text-va-black/30">Actieve context</TextInstrument>
+            <TextInstrument className="text-[15px] font-medium">{overview.world.label}</TextInstrument>
+          </ContainerInstrument>
+        </ContainerInstrument>
+      </SectionInstrument>
 
-      {/*  LLM CONTEXT (Compliance) */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "AdminDashboard",
-            "name": "Voices Admin",
-            "description": "Centraal beheer-dashboard voor het Voices platform.",
-            "_llm_context": {
-              "persona": "Architect",
-              "journey": "admin",
-              "intent": "system_management",
-            "capabilities": ["manage_database", "view_logs", "user_management", "page_management"],
-            "lexicon": ["Admin", "Zelfherstellend", "Klantprofiel", "Overzicht"],
-              "visual_dna": ["Bento Grid", "Liquid DNA", "Spatial Growth"]
-            }
-          })
+            name: "Voices Admin One-Glance Dashboard",
+            description: "Prioriteitsgestuurd beheer met focus op opvolging, financiën en world-context.",
+          }),
         }}
       />
     </PageWrapperInstrument>

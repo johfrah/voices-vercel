@@ -2,7 +2,6 @@ import { MarketManagerServer as MarketManager } from "../system/core/market-mana
 import { OAuth2Client } from 'google-auth-library';
 import { Mail, ShieldCheck } from 'lucide-react';
 import { Attachment, ParsedMail, simpleParser } from 'mailparser';
-import Imap from 'node-imap';
 import nodemailer from 'nodemailer';
 
 /**
@@ -46,12 +45,25 @@ export interface ImapAuthOptions {
   tls: boolean;
 }
 
+const IMAP_FEATURE_FLAG = process.env.ENABLE_IMAP_INBOX === 'true';
+const IMAP_DISABLED_MESSAGE = 'IMAP inbox features are disabled. Set ENABLE_IMAP_INBOX=true to enable.';
+
+function getImapLibrary(): any {
+  if (!IMAP_FEATURE_FLAG) {
+    throw new Error(IMAP_DISABLED_MESSAGE);
+  }
+
+  // Use runtime require to avoid bundling the package when IMAP is disabled.
+  const dynamicRequire = eval('require') as NodeJS.Require;
+  return dynamicRequire('node-imap');
+}
+
 export class DirectMailService {
-  private config: Imap.Config;
+  private config: Record<string, any>;
   private static instance: DirectMailService;
   private oauth2Client?: OAuth2Client;
 
-  constructor(customConfig?: Partial<Imap.Config>) {
+  constructor(customConfig?: Partial<Record<string, any>>) {
     this.config = {
       user: customConfig?.user || process.env.IMAP_USER || '',
       password: customConfig?.password || process.env.IMAP_PASS || '',
@@ -71,7 +83,7 @@ export class DirectMailService {
     }
   }
 
-  public static getInstance(customConfig?: Partial<Imap.Config>): DirectMailService {
+  public static getInstance(customConfig?: Partial<Record<string, any>>): DirectMailService {
     if (!DirectMailService.instance || customConfig) {
       DirectMailService.instance = new DirectMailService(customConfig);
     }
@@ -98,7 +110,7 @@ export class DirectMailService {
     return Buffer.from(authString).toString('base64');
   }
 
-  private async getImapConfig(user?: string, pass?: string, host?: string): Promise<Imap.Config> {
+  private async getImapConfig(user?: string, pass?: string, host?: string): Promise<Record<string, any>> {
     const targetUser = user || this.config.user;
     const targetPass = pass || this.config.password;
     const targetHost = host || this.config.host;
@@ -132,12 +144,12 @@ export class DirectMailService {
     // 🛡️ CHRIS-PROTOCOL: NUCLEAR TEST SAFETY (v2.15.090)
     // Voorkom dat er echte mails naar klanten of stemmen worden gestuurd tijdens de testfase.
     const isTestMode = process.env.NODE_ENV === 'development' || process.env.NUCLEAR_TEST_MODE === 'true';
-    const allowedRecipients = MarketManager.getAllowedTestRecipients();
+    const allowedRecipients = ((MarketManager as any).getAllowedTestRecipients?.() || []) as string[];
     
-    const isAllowed = allowedRecipients.some(domain => options.to.toLowerCase().includes(domain));
+    const isAllowed = allowedRecipients.some((domain: string) => options.to.toLowerCase().includes(domain));
     
     if (isTestMode && !isAllowed) {
-      const fallbackEmail = MarketManager.getFallbackTestEmail();
+      const fallbackEmail = (MarketManager as any).getFallbackTestEmail?.() || process.env.TEST_FALLBACK_EMAIL || options.to;
       console.log(`🛑 [DirectMailService] NUCLEAR SAFETY BLOCK: Redirecting mail for ${options.to} to ${fallbackEmail}`);
       options.subject = `[TEST-REDIRECT to ${options.to}] ${options.subject}`;
       options.to = fallbackEmail;
@@ -197,6 +209,11 @@ export class DirectMailService {
   }
 
   async fetchFolders(user?: string, pass?: string, host?: string): Promise<string[]> {
+    if (!IMAP_FEATURE_FLAG) {
+      throw new Error(IMAP_DISABLED_MESSAGE);
+    }
+
+    const Imap = getImapLibrary();
     const config = await this.getImapConfig(user, pass, host);
     return new Promise((resolve, reject) => {
       const imap = new Imap(config);
@@ -228,10 +245,15 @@ export class DirectMailService {
   }
 
   async fetchInbox(limit: number = 20, folder: string = 'INBOX', user?: string, pass?: string, host?: string): Promise<MailHeader[]> {
+    if (!IMAP_FEATURE_FLAG) {
+      throw new Error(IMAP_DISABLED_MESSAGE);
+    }
+
     //  CHRIS-PROTOCOL: Lucide sanity check
     const _icons = { Mail, ShieldCheck }; 
     const _strokeWidth = { strokeWidth: 1.5 }; //  CHRIS-PROTOCOL: Force strokeWidth awareness
     console.log(` DirectMailService: Fetching folder ${folder} for ${user || this.config.user}...`);
+    const Imap = getImapLibrary();
     const config = await this.getImapConfig(user, pass, host);
     
     return new Promise((resolve, reject) => {
@@ -244,7 +266,7 @@ export class DirectMailService {
         });
 
         imap.once('ready', () => {
-          imap.openBox(folder, true, (err: Error | null, box: Imap.Box) => {
+          imap.openBox(folder, true, (err: Error | null, box: any) => {
             if (err) {
               imap.end();
               return reject(err);
@@ -262,7 +284,7 @@ export class DirectMailService {
             });
 
             const mails: MailHeader[] = [];
-            f.on('message', (msg: Imap.ImapMessage) => {
+            f.on('message', (msg: any) => {
               let uid: number;
               let header: any;
               msg.on('attributes', (attrs: any) => { uid = attrs.uid; });
@@ -302,6 +324,11 @@ export class DirectMailService {
   }
 
   async fetchMessageBody(uid: number, folder: string = 'INBOX', user?: string, pass?: string, host?: string): Promise<MailFullContent> {
+    if (!IMAP_FEATURE_FLAG) {
+      throw new Error(IMAP_DISABLED_MESSAGE);
+    }
+
+    const Imap = getImapLibrary();
     const config = await this.getImapConfig(user, pass, host);
     return new Promise((resolve, reject) => {
       const imap = new Imap(config);
@@ -312,7 +339,7 @@ export class DirectMailService {
             return reject(err);
           }
           const f = imap.fetch(uid, { bodies: '' });
-          f.on('message', (msg: Imap.ImapMessage) => {
+          f.on('message', (msg: any) => {
             msg.on('body', (stream: any) => {
               simpleParser(stream, (err: Error | null, parsed: ParsedMail) => {
                 if (err) {

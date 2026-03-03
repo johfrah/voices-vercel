@@ -23,6 +23,7 @@ export const TranslationProvider: React.FC<{
 }> = ({ children, lang = 'nl-BE', market, initialTranslations = {} }) => {
   const [studioTranslations, setStudioTranslations] = useState<Record<string, string>>(initialTranslations);
   const normalizedLang = React.useMemo(() => normalizeLocale(lang), [lang]);
+  const sourceLanguageId = React.useMemo(() => market?.primary_language_id || 1, [market?.primary_language_id]);
   
   // 🛡️ CHRIS-PROTOCOL: Handshake ID Truth (v2.19.5)
   // We resolve the language ID once and use it as the primary anchor.
@@ -34,6 +35,54 @@ export const TranslationProvider: React.FC<{
 
   const [loading, setLoading] = useState(Object.keys(initialTranslations).length === 0 && !isSourceOfTruth);
   const healingKeys = React.useRef<Set<string>>(new Set());
+  const registrationQueue = React.useRef<Map<string, string>>(new Map());
+  const registeredMissingKeys = React.useRef<Set<string>>(new Set());
+  const registrationTimer = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const flushRegistrationQueue = React.useCallback(async () => {
+    if (registrationQueue.current.size === 0) return;
+    const batch = Array.from(registrationQueue.current.entries()).slice(0, 8);
+    batch.forEach(([key]) => registrationQueue.current.delete(key));
+
+    await Promise.allSettled(
+      batch.map(async ([key, sourceText]) => {
+        try {
+          await fetch('/api/admin/voiceglot/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              key,
+              sourceText,
+              context: 'translation-context-missing-key',
+              sourceLangId: sourceLanguageId
+            })
+          });
+        } catch {
+          // silent fail: key stays in registeredMissingKeys to avoid storms
+        }
+      })
+    );
+
+    if (registrationQueue.current.size > 0) {
+      registrationTimer.current = setTimeout(() => {
+        flushRegistrationQueue();
+      }, 1200);
+    } else {
+      registrationTimer.current = null;
+    }
+  }, [sourceLanguageId]);
+
+  const queueRegistration = React.useCallback((key: string, defaultText: string) => {
+    if (!key || !defaultText || key.startsWith('admin.') || key.startsWith('command.')) return;
+    if (registeredMissingKeys.current.has(key)) return;
+    registeredMissingKeys.current.add(key);
+    registrationQueue.current.set(key, defaultText);
+    if (!registrationTimer.current) {
+      registrationTimer.current = setTimeout(() => {
+        flushRegistrationQueue();
+      }, 600);
+    }
+  }, [flushRegistrationQueue]);
 
   useEffect(() => {
     // 🛡️ CHRIS-PROTOCOL: Guard against missing market during hydration
@@ -47,7 +96,10 @@ export const TranslationProvider: React.FC<{
       
       setLoading(true);
       try {
-        const res = await fetch(`/api/translations/?lang=${encodeURIComponent(normalizedLang)}`);
+        const res = await fetch(
+          `/api/translations/?lang=${encodeURIComponent(normalizedLang)}&_v=2.28.5`,
+          { cache: 'no-store' }
+        );
         const data = await res.json();
         setStudioTranslations(prev => ({ ...prev, ...(data.translations || {}) }));
       } catch (e) {
@@ -60,6 +112,12 @@ export const TranslationProvider: React.FC<{
     fetchTranslations();
   }, [normalizedLang, isSourceOfTruth, market?.market_code]);
 
+  useEffect(() => {
+    return () => {
+      if (registrationTimer.current) clearTimeout(registrationTimer.current);
+    };
+  }, []);
+
   const t = (key: string, defaultText: string, values?: Record<string, string | number>, skipPlaceholderReplacement = false): string => {
     let text = defaultText;
     
@@ -70,10 +128,12 @@ export const TranslationProvider: React.FC<{
       
       //  STABILITEIT: Gebruik SlopFilter om AI-foutmeldingen te blokkeren
       if (!translation || translation.trim() === '' || SlopFilter.isSlop(translation, normalizedLang, defaultText)) {
-        //  SELF-HEALING TRIGGER (Disabled temporarily for stability)
+        queueRegistration(key, defaultText);
       } else {
         text = translation;
       }
+    } else if (isSourceOfTruth && !key.startsWith('admin.') && !key.startsWith('command.')) {
+      queueRegistration(key, defaultText);
     }
     
     //  PLACEHOLDER REPLACEMENT (Nuclear 2026)

@@ -603,7 +603,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
           </div>
         )}
 
-        <div className={cn("absolute inset-0 flex flex-col p-2 md:p-4 transition-opacity duration-500 z-10", isCurrentlyPlaying ? "opacity-100" : "opacity-0 group-hover:opacity-100")}>
+        <div className={cn("absolute inset-0 flex flex-col p-2 md:p-4 transition-opacity duration-500 z-10", isCurrentlyPlaying ? "opacity-100" : "opacity-60 group-hover:opacity-100")}>
           <div className="flex-grow flex items-center justify-center">
             <ButtonInstrument 
               variant="pure"
@@ -860,8 +860,8 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
             </div>
 
             {!hideButton && (
-              <ButtonInstrument onClick={handleMainAction} variant={isSelected ? "default" : "outline"} size="sm" className={cn("rounded-lg md:rounded-xl font-light tracking-[0.1em] uppercase text-[9px] md:text-[12px] transition-all duration-500", isSelected ? "bg-primary text-white border-primary shadow-lg shadow-primary/20 scale-105 px-2 md:px-4 py-2 md:py-4" : "px-3 md:px-5 py-2 md:py-4 hover:bg-va-black hover:text-white hover:border-va-black", ((voice as any).allow_free_trial === false || masterControlState.journey === 'telephony') && !onSelect && "opacity-0 pointer-events-none")}>
-                {isSelected ? <Check size={14} strokeWidth={3} className="md:w-4.5 md:h-4.5 animate-in zoom-in duration-300" /> : <div className="flex flex-col items-center leading-none gap-0.5 md:gap-1"><VoiceglotText translationKey={onSelect ? "common.choose_voice" : "common.add_to_casting"} defaultText={onSelect ? "Kies stem" : "Proefopname +"} />{!onSelect && <span className="text-[7px] md:text-[8px] font-black tracking-[0.2em] opacity-50"><VoiceglotText translationKey="common.free" defaultText="GRATIS" /></span>}</div>}
+              <ButtonInstrument onClick={handleMainAction} variant={isSelected ? "default" : "outline"} size="sm" className={cn("rounded-lg md:rounded-xl font-light tracking-[0.1em] uppercase text-[9px] md:text-[12px] transition-all duration-500", isSelected ? "bg-primary text-white border-primary shadow-lg shadow-primary/20 scale-105 px-2 md:px-4 py-2 md:py-4" : "px-3 md:px-5 py-2 md:py-4 hover:bg-va-black hover:text-white hover:border-va-black", (voice as any).allow_free_trial === false && !onSelect && "opacity-0 pointer-events-none")}>
+                {isSelected ? <Check size={14} strokeWidth={3} className="md:w-4.5 md:h-4.5 animate-in zoom-in duration-300" /> : <div className="flex flex-col items-center leading-none gap-0.5 md:gap-1"><VoiceglotText translationKey={onSelect ? "common.choose_voice" : (masterControlState.journey === 'telephony' ? "common.choose_voice" : "common.add_to_casting")} defaultText={onSelect ? "Kies stem" : (masterControlState.journey === 'telephony' ? "Kies stem" : "Proefopname +")} />{!onSelect && masterControlState.journey !== 'telephony' && <span className="text-[7px] md:text-[8px] font-black tracking-[0.2em] opacity-50"><VoiceglotText translationKey="common.free" defaultText="GRATIS" /></span>}</div>}
               </ButtonInstrument>
             )}
           </div>

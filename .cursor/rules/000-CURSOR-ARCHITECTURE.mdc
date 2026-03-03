@@ -33,8 +33,8 @@ Dit document is de "Grondwet van de Machine". Het definieert de strikte hiërarc
    - **Intelligentie** (hoe we met die data omgaan) leeft uitsluitend in de `.cursor/` map.
    - **Mandaat**: Verplaats alle "instructies" uit `.md` files in `docs/` naar de juiste Rule of Agent.
 
-## 3. DE "KELDER" FILTER (CONSUELA)
-- Alle documentatie die is omgezet naar een Rule of Agent MOET direct worden verplaatst naar `4-KELDER/0-GRONDSTOFFEN-FABRIEK/`.
+## 3. DE "ARCHIVE" FILTER (CONSUELA)
+- Alle documentatie die is omgezet naar een Rule of Agent MOET direct worden verplaatst naar `docs/archive/0-grondstoffen-fabriek/`.
 - De root en `docs/` moeten vrij blijven van "instructie-slop".
 
 ## 4. ID-FIRST HANDSHAKE

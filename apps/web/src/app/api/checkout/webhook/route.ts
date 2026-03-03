@@ -241,12 +241,55 @@ export async function POST(request: NextRequest) {
           console.error(' Failed to update actor sales:', salesErr);
         }
 
-        // 2. Lever muziek uit indien aanwezig in de order
+        // 2. Creëer Dropbox Exports folder voor deze order
+        try {
+          const dropboxParams = new URLSearchParams();
+          dropboxParams.append('grant_type', 'refresh_token');
+          dropboxParams.append('refresh_token', process.env.DROPBOX_REFRESH_TOKEN || '');
+          dropboxParams.append('client_id', process.env.DROPBOX_CLIENT_ID || '');
+          dropboxParams.append('client_secret', process.env.DROPBOX_CLIENT_SECRET || '');
+          const tokenRes = await fetch('https://api.dropboxapi.com/oauth2/token', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: dropboxParams
+          });
+          const { access_token: dbxToken } = await tokenRes.json();
+          
+          if (dbxToken) {
+            const exportBase = `/Voices.be/Projects/Exports/${orderId}`;
+            // 🛡️ CHRIS-PROTOCOL: ID-First Handshake — Telephony = journey_id 26
+            const orderJourneyId = (order as any)?.journeyId ?? (order as any)?.journey_id;
+            const metaJourneyId = (order?.rawMeta as any)?.journeyId ?? (order?.rawMeta as any)?.journey_id;
+            const isTelephony = orderJourneyId === 26 || metaJourneyId === 26;
+            const subFolders = isTelephony 
+              ? ['48kHz 24bit', '8kHz 16bit', '16kHz 16bit']
+              : ['48kHz 24bit'];
+            
+            for (const sub of subFolders) {
+              await fetch('https://api.dropboxapi.com/2/files/create_folder_v2', {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${dbxToken}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ path: `${exportBase}/${sub}`, autorename: false })
+              }).catch(() => {});
+            }
+            
+            // Save Dropbox folder URL on the order
+            const dropboxUrl = `https://www.dropbox.com/home/Voices.be/Projects/Exports/${orderId}`;
+            await tx.update(orders)
+              .set({ dropboxFolderUrl: dropboxUrl })
+              .where(eq(orders.id, orderId));
+            
+            console.log(` [Dropbox] Exports folder created: ${exportBase}`);
+          }
+        } catch (dropboxErr) {
+          console.error(' Failed to create Dropbox folder:', dropboxErr);
+        }
+
+        // 3. Lever muziek uit indien aanwezig in de order
         try {
           await MusicDeliveryService.deliverMusic(orderId);
         } catch (musicErr) {
           console.error(' Failed to deliver music after payment:', musicErr);
-          // We gaan door, want de betaling is wel gelukt
         }
 
         // 🛡️ CHRIS-PROTOCOL: HITL MANDATE (v2.14.332)

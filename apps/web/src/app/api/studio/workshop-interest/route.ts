@@ -1,4 +1,5 @@
 import { db, workshopInterest, systemEvents } from '@/lib/system/voices-config';
+import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
 
 /**

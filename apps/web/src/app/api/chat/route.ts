@@ -127,14 +127,20 @@ async function handleSendMessage(params: any, request?: NextRequest) {
     
     //  CHRIS-PROTOCOL: Admin Intervention Check
     //  Als de status 'admin_active' is, mag Voicy niet antwoorden
-    const [conv] = await db.select().from(chatConversations).where(eq(chatConversations.id, conversationId));
+    let conv: any = null;
+    if (conversationId) {
+      const [existing] = await db.select().from(chatConversations).where(eq(chatConversations.id, conversationId));
+      conv = existing;
+    }
     if (conv?.status === 'admin_active' && senderType !== 'admin') {
       console.log(`[Voicy API] Admin is active on chat #${conversationId}. AI response suppressed.`);
       return NextResponse.json({ success: true, message: "Admin is handling this chat." });
     }
     let actions: any[] = [];
+    let aiContent: string = '';
 
     //  LIFECYCLE DETECTION (v2.16.029)
+    const isAuthenticated = !!(senderId || context?.userId);
     const hasOrders = (context?.customer360?.dna?.totalOrders || 0) > 0;
     const stage = !isAuthenticated ? 'presales' : (hasOrders ? 'aftersales' : 'sales');
     console.log(`[Voicy API] Lifecycle stage detected: ${stage}`);
@@ -410,9 +416,15 @@ ${workshopEditionsData.filter((ed: any) => ed.status === 'upcoming').map((ed: an
           const parsed = JSON.parse(aiContent);
           aiContent = parsed.message;
           if (parsed.suggestedAction) {
-            // Voeg de actie toe aan de bestaande actions array voor de UI
+            // 🛡️ CHRIS-PROTOCOL: Butler actions are internal — use human-friendly labels
+            const butlerLabels: Record<string, string> = {
+              'SHOW_LEAD_FORM': isEnglish ? 'Get a personal quote' : 'Persoonlijke offerte',
+              'SET_CONFIGURATOR': isEnglish ? 'Configure your project' : 'Configureer je project',
+              'BROWSE_VOICES': isEnglish ? 'Browse voices' : 'Stemmen bekijken',
+              'BOOK_SESSION': isEnglish ? 'Book a session' : 'Sessie boeken',
+            };
             actions.push({
-              label: `Butler: ${parsed.suggestedAction.type.replace('_', ' ')}`,
+              label: butlerLabels[parsed.suggestedAction.type] || parsed.suggestedAction.type.replace(/_/g, ' ').toLowerCase(),
               action: parsed.suggestedAction.type,
               params: parsed.suggestedAction.params,
               isButlerAction: true

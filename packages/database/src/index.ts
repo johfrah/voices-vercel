@@ -19,7 +19,7 @@ const getDb = () => {
     try {
       // 🛡️ CHRIS-PROTOCOL: Load env if not present (for standalone scripts)
       if (!process.env.DATABASE_URL) {
-        const envPath = path.resolve(__dirname, '../../../../1-SITE/apps/web/.env.local');
+        const envPath = path.resolve(__dirname, '../../../../apps/web/.env.local');
         dotenv.config({ path: envPath });
       }
 

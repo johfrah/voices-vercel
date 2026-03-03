@@ -3,6 +3,7 @@
 import { cn } from '@/lib/utils';
 import React from 'react';
 import { useCheckout } from '@/contexts/CheckoutContext';
+import { usePathname } from 'next/navigation';
 import { Check } from 'lucide-react';
 import { ContainerInstrument, TextInstrument } from './LayoutInstruments';
 import { VoiceglotText } from './VoiceglotText';
@@ -23,15 +24,28 @@ export const OrderStepsInstrument: React.FC<OrderStepsInstrumentProps> = ({
   className = ''
 }) => {
   const { state: checkoutState } = useCheckout();
-  
-  const steps = [
-    { id: 'voice', label: 'Kies Stem', key: 'order_steps.voice' },
-    { id: 'script', label: 'Script', key: 'order_steps.script' },
-    { id: 'cart', label: 'Overzicht', key: 'order_steps.cart' },
-    { id: 'checkout', label: 'Afrekenen', key: 'order_steps.checkout' },
-  ] as const;
+  const pathname = usePathname();
+  const hasWorkshopItems = (checkoutState.items || []).some((item: any) => item?.type === 'workshop_edition');
+  const isStudioJourney = checkoutState.journey === 'studio'
+    || !!checkoutState.editionId
+    || pathname.includes('/studio/')
+    || hasWorkshopItems;
 
-  const currentStepId = typeof window !== 'undefined' && window.location.pathname.includes('/cart') ? 'cart' : currentStep;
+  const steps = isStudioJourney
+    ? [
+        { id: 'voice', label: 'Workshop', key: 'order_steps.studio_workshop' },
+        { id: 'script', label: 'Inschrijving', key: 'order_steps.studio_registration' },
+        { id: 'cart', label: 'Overzicht', key: 'order_steps.cart' },
+        { id: 'checkout', label: 'Afrekenen', key: 'order_steps.checkout' },
+      ] as const
+    : [
+        { id: 'voice', label: 'Kies Stem', key: 'order_steps.voice' },
+        { id: 'script', label: 'Script', key: 'order_steps.script' },
+        { id: 'cart', label: 'Overzicht', key: 'order_steps.cart' },
+        { id: 'checkout', label: 'Afrekenen', key: 'order_steps.checkout' },
+      ] as const;
+
+  const currentStepId = pathname.includes('/cart') ? 'cart' : currentStep;
 
   const totalActors = ((checkoutState.items || [])).length + (checkoutState.selectedActor ? 1 : 0);
 
@@ -46,7 +60,7 @@ export const OrderStepsInstrument: React.FC<OrderStepsInstrumentProps> = ({
           // CHRIS-PROTOCOL: Dynamic step labels based on cart content
           let stepLabel = <VoiceglotText translationKey={step.key} defaultText={step.label} />;
           
-          if (isVoiceStep && (isActive || isPast)) {
+          if (!isStudioJourney && isVoiceStep && (isActive || isPast)) {
             if (totalActors > 1) {
               stepLabel = (
                 <span className="flex items-center gap-1.5">
