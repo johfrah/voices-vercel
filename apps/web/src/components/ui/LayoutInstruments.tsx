@@ -9,7 +9,7 @@
 
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
-import React, { ButtonHTMLAttributes, ElementType, FormHTMLAttributes, forwardRef, HTMLAttributes, InputHTMLAttributes, ReactNode, SelectHTMLAttributes } from 'react';
+import React, { ButtonHTMLAttributes, ElementType, FormHTMLAttributes, forwardRef, HTMLAttributes, InputHTMLAttributes, ReactNode, SelectHTMLAttributes, TextareaHTMLAttributes } from 'react';
 
 // Re-export server components
 export { 
@@ -48,6 +48,26 @@ export const InputInstrument = forwardRef<HTMLInputElement, InputHTMLAttributes<
   );
 });
 InputInstrument.displayName = 'InputInstrument';
+
+/**
+ * TEXTAREA INSTRUMENT
+ */
+export const TextareaInstrument = forwardRef<HTMLTextAreaElement, TextareaHTMLAttributes<HTMLTextAreaElement>>(({
+  className = '',
+  ...props
+}, ref) => {
+  return (
+    <textarea
+      ref={ref}
+      className={cn(
+        "bg-va-off-white border-none rounded-[10px] px-6 py-4 text-[15px] font-medium focus:ring-2 focus:ring-va-black/10 transition-all placeholder:text-va-black/40 resize-y min-h-[140px]",
+        className
+      )}
+      {...props}
+    />
+  );
+});
+TextareaInstrument.displayName = 'TextareaInstrument';
 
 /**
  * SELECT INSTRUMENT

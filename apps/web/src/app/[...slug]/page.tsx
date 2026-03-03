@@ -53,6 +53,7 @@ const JourneyCta = nextDynamic(() => import("@/components/ui/JourneyCta").then(m
 const StudioLaunchpad = nextDynamic(() => import("@/components/ui/StudioLaunchpad").then(mod => mod.StudioLaunchpad), { ssr: false });
 const WorkshopQuiz = nextDynamic(() => import("@/components/studio/WorkshopQuiz").then(mod => mod.WorkshopQuiz), { ssr: false });
 const WorkshopInterestForm = nextDynamic(() => import("@/components/studio/WorkshopInterestForm").then(mod => mod.WorkshopInterestForm), { ssr: false });
+const ContactFormInstrument = nextDynamic(() => import("@/components/ui/ContactFormInstrument").then(mod => mod.ContactFormInstrument), { ssr: false });
 
 // Ademing Components
 const AdemingBento = nextDynamic(() => import("@/components/ui/ademing/AdemingBento").then(mod => mod.AdemingBento), { ssr: false });
@@ -319,6 +320,99 @@ async function discoverAndRegisterSlug(slug: string, marketCode: string, journey
     console.error(' [SmartRouter] Lazy Discovery FAILED:', err);
   }
   return null;
+}
+
+type WorldScopedPageKey = "contact" | "faq" | "how_it_works";
+
+function getWorldScopedPageKey(slug: string): WorldScopedPageKey | null {
+  const tail = normalizeSlug(slug).split("/").filter(Boolean).pop()?.toLowerCase();
+  if (!tail) return null;
+
+  if (tail === "contact") return "contact";
+  if (tail === "faq") return "faq";
+  if (["how-it-works", "hoe-het-werkt", "zo-werkt-het"].includes(tail)) return "how_it_works";
+  return null;
+}
+
+function getCanonicalWorldScopedPath(pageKey: WorldScopedPageKey, worldId: number): string | null {
+  if (worldId === 2) {
+    if (pageKey === "contact") return "studio/contact";
+    if (pageKey === "faq") return "studio/faq";
+    return null;
+  }
+
+  if (pageKey === "contact") return "agency/contact";
+  if (pageKey === "faq") return "agency/faq";
+  if (pageKey === "how_it_works") return "agency/zo-werkt-het";
+  return null;
+}
+
+function renderAgencyContactPage(market: any) {
+  const marketPhone = market?.phone || "+32";
+  const marketEmail = market?.email || "contactkanaal";
+
+  return (
+    <PageWrapperInstrument className="bg-va-off-white min-h-screen">
+      <Suspense fallback={null}>
+        <LiquidBackground />
+      </Suspense>
+
+      <SectionInstrument className="py-24 md:py-32">
+        <ContainerInstrument className="max-w-6xl mx-auto px-6 space-y-10">
+          <ContainerInstrument className="text-center max-w-3xl mx-auto space-y-5">
+            <TextInstrument className="text-[11px] font-bold tracking-[0.24em] uppercase text-primary/70">
+              <VoiceglotText translationKey="contact.page.label" defaultText="Contact" />
+            </TextInstrument>
+            <HeadingInstrument level={1} className="text-5xl md:text-6xl font-light tracking-tighter text-va-black leading-[0.95]">
+              <VoiceglotText translationKey="contact.page.title" defaultText="Laten we je vraag meteen juist landen." />
+            </HeadingInstrument>
+            <TextInstrument className="text-[17px] md:text-lg text-va-black/50 font-light">
+              <VoiceglotText translationKey="contact.page.subtitle" defaultText="Geen omwegen. Stel je vraag en ontvang snel een helder antwoord van het juiste team." />
+            </TextInstrument>
+          </ContainerInstrument>
+
+          <ContainerInstrument className="grid grid-cols-1 lg:grid-cols-5 gap-6 lg:gap-8">
+            <ContainerInstrument className="lg:col-span-2 bg-white rounded-[20px] border border-black/5 shadow-aura p-8 md:p-10 space-y-7">
+              <ContainerInstrument className="space-y-2">
+                <TextInstrument className="text-[11px] font-bold tracking-[0.2em] uppercase text-va-black/40">
+                  <VoiceglotText translationKey="contact.reach.label" defaultText="Bereikbaarheid" />
+                </TextInstrument>
+                <HeadingInstrument level={3} className="text-3xl font-light tracking-tight text-va-black">
+                  <VoiceglotText translationKey="contact.reach.title" defaultText="Directe lijnen" />
+                </HeadingInstrument>
+              </ContainerInstrument>
+
+              <ContainerInstrument className="space-y-4">
+                <ContainerInstrument className="rounded-[10px] bg-va-off-white p-4">
+                  <TextInstrument className="text-[11px] font-bold tracking-[0.16em] uppercase text-va-black/40 mb-2">
+                    <VoiceglotText translationKey="contact.reach.email_label" defaultText="E-mail" />
+                  </TextInstrument>
+                  <TextInstrument className="text-va-black text-[15px] font-medium break-all">{marketEmail}</TextInstrument>
+                </ContainerInstrument>
+
+                <ContainerInstrument className="rounded-[10px] bg-va-off-white p-4">
+                  <TextInstrument className="text-[11px] font-bold tracking-[0.16em] uppercase text-va-black/40 mb-2">
+                    <VoiceglotText translationKey="contact.reach.phone_label" defaultText="Telefoon" />
+                  </TextInstrument>
+                  <TextInstrument className="text-va-black text-[15px] font-medium">{marketPhone}</TextInstrument>
+                </ContainerInstrument>
+              </ContainerInstrument>
+
+              <TextInstrument className="text-[13px] text-va-black/50 font-light">
+                <VoiceglotText translationKey="contact.reach.meta" defaultText="Voor offerte-, planning- of stemvragen koppelen we je meteen aan de juiste expert." />
+              </TextInstrument>
+            </ContainerInstrument>
+
+            <ContainerInstrument className="lg:col-span-3 bg-white rounded-[20px] border border-black/5 shadow-aura p-8 md:p-10">
+              <Suspense fallback={<ContainerInstrument plain className="h-[420px] rounded-[10px] bg-va-black/5 animate-pulse" />}>
+                <ContactFormInstrument />
+              </Suspense>
+            </ContainerInstrument>
+          </ContainerInstrument>
+        </ContainerInstrument>
+      </SectionInstrument>
+    </PageWrapperInstrument>
+  );
 }
 
 export const dynamic = 'force-dynamic';
@@ -752,18 +846,32 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
       }
 
       if (resolved.routing_type === 'blog' || resolved.routing_type === 'article') {
+        let currentWorldId = 1;
+        try {
+          currentWorldId = resolved.world_id || MarketManager.getWorldId(
+            resolved.journey || (
+              lookupSlug.startsWith('studio')
+                ? 'studio'
+                : (lookupSlug.startsWith('academy') ? 'academy' : 'agency')
+            )
+          );
+        } catch (e) {
+          console.error(` [SmartRouter] getWorldId failed for world-page guard:`, e);
+        }
+
+        const worldScopedPage = getWorldScopedPageKey(lookupSlug);
+        const canonicalWorldPath = worldScopedPage ? getCanonicalWorldScopedPath(worldScopedPage, currentWorldId) : null;
+        if (canonicalWorldPath && lookupSlug !== canonicalWorldPath) {
+          return redirect(`/${canonicalWorldPath}`);
+        }
+        if (worldScopedPage === "contact" && currentWorldId !== 2) {
+          return renderAgencyContactPage(market);
+        }
+
         const article = await getArticle(lookupSlug, lang);
         if (article) {
       // 🛡️ CHRIS-PROTOCOL: Dynamic Extra Data based on Journey/World (v2.16.095)
           let extraData: any = {};
-          
-          // 🛡️ NUCLEAR SAFETY: Always provide a fallback for worldId to prevent ReferenceError
-          let currentWorldId = 1;
-          try {
-            currentWorldId = resolved.world_id || MarketManager.getWorldId(resolved.journey || (lookupSlug.startsWith('studio') ? 'studio' : (lookupSlug.startsWith('academy') ? 'academy' : 'agency')));
-          } catch (e) {
-            console.error(` [SmartRouter] getWorldId failed for extraData:`, e);
-          }
           
           if (currentWorldId === 2 || resolved.journey === 'studio') {
             try {
@@ -1313,6 +1421,15 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
             currentWorldId = MarketManager.getWorldId(page.iapContext?.journey || (cmsSlug === 'studio' ? 'studio' : (cmsSlug === 'academy' ? 'academy' : (cmsSlug === 'ademing' ? 'ademing' : 'agency'))));
           } catch (e) {
             console.error(` [SmartRouter] getWorldId failed for legacy CMS extraData:`, e);
+          }
+
+          const worldScopedPage = getWorldScopedPageKey(cmsSlug);
+          const canonicalWorldPath = worldScopedPage ? getCanonicalWorldScopedPath(worldScopedPage, currentWorldId) : null;
+          if (canonicalWorldPath && lookupSlug !== canonicalWorldPath) {
+            return redirect(`/${canonicalWorldPath}`);
+          }
+          if (worldScopedPage === "contact" && currentWorldId !== 2) {
+            return renderAgencyContactPage(market);
           }
           
           if (currentWorldId === 2) {
