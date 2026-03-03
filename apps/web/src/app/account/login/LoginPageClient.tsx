@@ -94,21 +94,35 @@ export function LoginPageClient() {
     }
 
     try {
-      // CHRIS-PROTOCOL: Gebruik de canonieke URL met trailing slash om 308 redirects te voorkomen.
-      // Dit elimineert 'Failed to fetch' errors veroorzaakt door browser-beveiliging tijdens redirects.
-      
-      // NUCLEAR SAFETY: Voeg een controller toe voor een harde timeout
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 20000); // Verhoogd naar 20 seconden voor mailserver stabiliteit
+      const sendMagicLinkRequest = async (withTimeout: boolean) => {
+        const controller = withTimeout ? new AbortController() : null;
+        const timeoutId = withTimeout
+          ? setTimeout(() => controller?.abort(), 20000)
+          : null;
 
-      const response = await fetch('/api/auth/send-magic-link/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, redirect }),
-        signal: controller.signal
-      });
+        try {
+          return await fetch('/api/auth/send-magic-link/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, redirect }),
+            ...(controller ? { signal: controller.signal } : {}),
+          });
+        } finally {
+          if (timeoutId) clearTimeout(timeoutId);
+        }
+      };
 
-      clearTimeout(timeoutId);
+      let response: Response;
+      try {
+        response = await sendMagicLinkRequest(true);
+      } catch (err: any) {
+        if (err?.name === 'AbortError') {
+          console.warn('[LoginPage] Primary magic-link request timed out, retrying once without abort signal.');
+          response = await sendMagicLinkRequest(false);
+        } else {
+          throw err;
+        }
+      }
 
       const result = await response.json();
 
