@@ -60,6 +60,10 @@ export const WorkshopHeroIsland: React.FC<WorkshopHeroIslandProps> = ({ workshop
     firstName: string; lastName: string; email: string;
     age: string; profession: string; experience: string;
   }) => {
+    const imageUrl = workshop.featured_image?.file_path
+      ? `https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices/${workshop.featured_image.file_path}`
+      : null;
+
     const workshopItem = {
       id: `workshop-${nextEdition!.id}-${Date.now()}`,
       type: 'workshop_edition' as const,
@@ -68,6 +72,7 @@ export const WorkshopHeroIsland: React.FC<WorkshopHeroIslandProps> = ({ workshop
       editionId: nextEdition!.id,
       date: nextEdition!.date,
       location: nextEdition!.location?.city || null,
+      image_url: imageUrl,
       participant_info: participantData,
       pricing: {
         total: priceValue,

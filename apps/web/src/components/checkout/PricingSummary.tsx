@@ -258,8 +258,8 @@ export const PricingSummary: React.FC<{
                 {/* Afbeelding links uitgelijnd (LAYA-MANDAAT) */}
                 <ContainerInstrument className="w-16 h-16 rounded-[20px] overflow-hidden bg-va-off-white relative border border-va-black/5 shrink-0 shadow-sm">
                   <Image  
-                    src={itemObj.actor?.photo_url || VOICES_CONFIG.assets.placeholders.voice} 
-                    alt={itemObj.actor?.display_name || 'Item'} 
+                    src={itemObj.actor?.photo_url || itemObj.image_url || VOICES_CONFIG.assets.placeholders.voice} 
+                    alt={itemObj.actor?.display_name || itemObj.name || 'Item'} 
                     fill 
                     sizes="64px"
                     className="object-cover" 
@@ -467,8 +467,8 @@ export const PricingSummary: React.FC<{
                   <div className="flex items-center gap-6">
                     <div className="w-24 h-24 rounded-[32px] overflow-hidden border border-va-black/5 shadow-md shrink-0 relative bg-va-off-white">
                       <Image 
-                        src={selectedItem.actor?.photo_url || VOICES_CONFIG.assets.placeholders.voice} 
-                        alt={selectedItem.actor?.display_name || 'Item'} 
+                        src={selectedItem.actor?.photo_url || selectedItem.image_url || VOICES_CONFIG.assets.placeholders.voice} 
+                        alt={selectedItem.actor?.display_name || selectedItem.name || 'Item'} 
                         fill
                         sizes="96px"
                         className="object-cover"
