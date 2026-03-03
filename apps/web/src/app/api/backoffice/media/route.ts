@@ -2,39 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db, media, actors, actorDemos, contentArticles, ademingTracks } from '@/lib/system/voices-config';
 import { eq, desc, asc, ilike, or, and, inArray, sql } from 'drizzle-orm';
 import fs from 'fs/promises';
-import { appendFileSync } from 'fs';
 import path from 'path';
 
 /**
  *  NUCLEAR MEDIA API (2026) - INTELLIGENT VERSION
  */
 
-const DEBUG_LOG_PATH = '/opt/cursor/logs/debug.log';
-
-const writeDebugLog = (
-  hypothesisId: string,
-  location: string,
-  message: string,
-  data: Record<string, unknown>
-) => {
-  try {
-    appendFileSync(
-      DEBUG_LOG_PATH,
-      JSON.stringify({
-        hypothesisId,
-        location,
-        message,
-        data,
-        timestamp: Date.now(),
-      }) + '\n'
-    );
-  } catch {
-    // Debug logging should never block API behavior.
-  }
-};
-
 export async function GET(request: NextRequest) {
-  const requestStartTs = Date.now();
   try {
     const { searchParams } = new URL(request.url);
     const search = searchParams.get('search');
@@ -45,21 +19,8 @@ export async function GET(request: NextRequest) {
     const filterOrphans = searchParams.get('filter') === 'orphans';
     const actorId = searchParams.get('actorId');
 
-    // #region agent log
-    writeDebugLog('H5', 'api/backoffice/media/route.ts:GET:entry', 'Media GET request started', {
-      search,
-      journey,
-      category,
-      sort,
-      label,
-      filterOrphans,
-      actorId,
-    });
-    // #endregion
-
     //  ACTOR-SPECIFIC FILTERING
     if (actorId) {
-      const actorBranchStartTs = Date.now();
       const id = parseInt(actorId);
       const [actor] = await db
         .select({
@@ -111,17 +72,6 @@ export async function GET(request: NextRequest) {
         }
       });
 
-      // #region agent log
-      writeDebugLog('H3', 'api/backoffice/media/route.ts:GET:actor-branch', 'Actor branch completed', {
-        actorId: id,
-        actorDemosListCount: actorDemosList.length,
-        linkedMediaIdsCount: linkedMediaIds.size,
-        resultCount: results.length,
-        durationMs: Date.now() - actorBranchStartTs,
-        totalDurationMs: Date.now() - requestStartTs,
-      });
-      // #endregion
-
       return NextResponse.json({
         results: results.map(item => ({
           ...item,
@@ -162,7 +112,6 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const mediaQueryStartTs = Date.now();
     let finalQuery = db.select().from(media) as any;
     if (conditions.length > 0) {
       finalQuery = finalQuery.where(and(...conditions));
@@ -180,26 +129,11 @@ export async function GET(request: NextRequest) {
 
     const results = await (finalQuery as any).limit(100);
 
-    // #region agent log
-    writeDebugLog('H2', 'api/backoffice/media/route.ts:GET:media-query', 'Media query completed', {
-      durationMs: Date.now() - mediaQueryStartTs,
-      conditionsCount: conditions.length,
-      resultCount: results.length,
-      sort,
-    });
-    // #endregion
-
     if (results.length === 0) {
-      // #region agent log
-      writeDebugLog('H4', 'api/backoffice/media/route.ts:GET:enrich-exit', 'Media response is empty', {
-        totalDurationMs: Date.now() - requestStartTs,
-      });
-      // #endregion
       return NextResponse.json({ results: [] });
     }
 
     const mediaIds = results.map((item: any) => item.id);
-    const relationLookupStartTs = Date.now();
     const [actorsData, demosData, articlesData, ademingData] = await Promise.all([
       db
         .select({ name: actors.first_name, photo_id: actors.photo_id, logo_id: actors.logo_id })
@@ -218,17 +152,6 @@ export async function GET(request: NextRequest) {
         .from(ademingTracks)
         .where(inArray(ademingTracks.mediaId, mediaIds)),
     ]);
-
-    // #region agent log
-    writeDebugLog('H1', 'api/backoffice/media/route.ts:GET:relation-lookup', 'Targeted relation lookup completed', {
-      durationMs: Date.now() - relationLookupStartTs,
-      mediaIdsCount: mediaIds.length,
-      actorsCount: actorsData.length,
-      demosCount: demosData.length,
-      articlesCount: articlesData.length,
-      ademingCount: ademingData.length,
-    });
-    // #endregion
 
     const relationsMap: Record<number, { type: string, name: string }[]> = {};
     actorsData.forEach((a) => {
@@ -259,31 +182,14 @@ export async function GET(request: NextRequest) {
         relationsMap[track.mediaId].push({ type: 'Ademing Track', name: track.title });
       }
     });
-
-    const enrichStartTs = Date.now();
     const enrichedResults = results.map((item: any) => ({
       ...item,
       relations: relationsMap[item.id] || [],
       isOrphan: !relationsMap[item.id] || relationsMap[item.id].length === 0
     }));
-
-    // #region agent log
-    writeDebugLog('H4', 'api/backoffice/media/route.ts:GET:enrich-exit', 'Media enrichment and response completed', {
-      enrichDurationMs: Date.now() - enrichStartTs,
-      totalDurationMs: Date.now() - requestStartTs,
-      responseCount: enrichedResults.length,
-    });
-    // #endregion
     
     return NextResponse.json({ results: enrichedResults });
   } catch (error) {
-    // #region agent log
-    writeDebugLog('H5', 'api/backoffice/media/route.ts:GET:error', 'Media GET failed', {
-      totalDurationMs: Date.now() - requestStartTs,
-      errorMessage: error instanceof Error ? error.message : String(error),
-      errorStackTop: error instanceof Error ? error.stack?.split('\n').slice(0, 2).join(' | ') : null,
-    });
-    // #endregion
     console.error('Media Fetch Error:', error);
     return NextResponse.json({ error: 'Kon media niet ophalen' }, { status: 500 });
   }
