@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
     const possiblePaths = [
       filePath,
       path.join('./TRANSFER', filePath),
-      path.join('./4-KELDER', filePath),
+      path.join('./docs/archive', filePath),
       filePath.replace('./_STORAGE_LEGACY_/', './TRANSFER/_STORAGE_LEGACY_/')
     ].filter(Boolean);
 

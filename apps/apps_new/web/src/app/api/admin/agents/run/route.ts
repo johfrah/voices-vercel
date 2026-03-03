@@ -4,14 +4,14 @@ import path from 'path';
 
 //  SECURITY: Only allow specific agents
 const ALLOWED_AGENTS: Record<string, string> = {
-  'bob': 'npx ts-node 3-WETTEN/scripts/orchestrator.ts live',
-  'chris': 'npx ts-node 3-WETTEN/scripts/watchdog.ts audit 1-SITE/apps/web/src',
-  'mark': 'npx ts-node 3-WETTEN/scripts/voiceglot-fixer.ts 1-SITE/apps/web/src/components/ui',
-  'anna': 'cd 1-SITE/apps/web && npm run lint',
-  'felix': 'rm -rf 1-SITE/apps/web/.next',
-  'moby': 'grep -r "md:" 1-SITE/apps/web/src/components/ui | wc -l',
-  'laya': 'grep -r "rounded-\\[20px\\]" 1-SITE/apps/web/src | wc -l',
-  'berny': 'ls 1-SITE/apps/web/src/app/studio/page.tsx'
+  'bob': 'npx ts-node scripts/orchestrator.ts live',
+  'chris': 'npx ts-node scripts/watchdog.ts audit apps/web/src',
+  'mark': 'npx ts-node scripts/voiceglot-fixer.ts apps/web/src/components/ui',
+  'anna': 'cd apps/web && npm run lint',
+  'felix': 'rm -rf apps/web/.next',
+  'moby': 'grep -r "md:" apps/web/src/components/ui | wc -l',
+  'laya': 'grep -r "rounded-\\[20px\\]" apps/web/src | wc -l',
+  'berny': 'ls apps/web/src/app/studio/page.tsx'
 };
 
 export async function POST(req: NextRequest) {
@@ -75,8 +75,7 @@ export async function POST(req: NextRequest) {
       let command = ALLOWED_AGENTS[agent];
       let cwd = currentDir;
 
-    // If we are running inside 1-SITE/apps/web (dev server), we need to go up 3 levels to reach root
-    // But wait, the 'command' strings assume we are at ROOT (e.g. "3-WETTEN/scripts/...").
+    // Commands verwachten root-cwd; als we in apps/web draaien moeten we naar root.
     // So we need to execute from the Workspace Root.
     
     if (currentDir.endsWith('apps/web') || currentDir.endsWith('apps/web/')) {
