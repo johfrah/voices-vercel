@@ -24,6 +24,7 @@ import {
   ExternalLink,
   FileText,
   Loader2,
+  Mic,
   Plus,
   RefreshCw,
   Search,
@@ -129,6 +130,24 @@ export default function OrdersPage() {
       default:
         return <TextInstrument as="span" className="px-2.5 py-1 rounded-full bg-gray-50 text-gray-500 text-[11px] font-medium tracking-widest uppercase">{status}</TextInstrument>;
     }
+  };
+
+  const renderTaggedText = (text: string, keyPrefix: string) => {
+    return text.split(/(\(.*?\))/g).map((part, index) =>
+      part.startsWith('(') && part.endsWith(')') ? (
+        <TextInstrument as="span" key={`${keyPrefix}-tag-${index}`} className="text-primary font-semibold bg-primary/5 px-1 rounded">
+          {part}
+        </TextInstrument>
+      ) : (
+        <TextInstrument as="span" key={`${keyPrefix}-txt-${index}`}>{part}</TextInstrument>
+      )
+    );
+  };
+
+  const scriptSnippet = (value: string, maxLength = 380) => {
+    const clean = String(value || '').replace(/\s+/g, ' ').trim();
+    if (!clean) return '';
+    return clean.length > maxLength ? `${clean.slice(0, maxLength)}…` : clean;
   };
 
   if (isLoading) {
@@ -300,60 +319,98 @@ export default function OrdersPage() {
                                     <Loader2 className="animate-spin" size={14} /> Intelligence laden...
                                   </ContainerInstrument>
                                 ) : expandedOrderData ? (
-                                  <ContainerInstrument className="grid grid-cols-1 md:grid-cols-3 gap-12">
-                                    <ContainerInstrument className="space-y-4">
-                                      <HeadingInstrument level={4} className="text-[11px] font-black tracking-[0.2em] uppercase text-va-black/30">Financieel Overzicht</HeadingInstrument>
-                                      <ContainerInstrument className="space-y-2">
-                                        <ContainerInstrument className="flex justify-between text-[14px]">
-                                          <TextInstrument className="text-va-black/40">Netto Omzet</TextInstrument>
-                                          <TextInstrument className="font-medium">€{expandedOrderData.finance?.net}</TextInstrument>
+                                  <ContainerInstrument className="space-y-8">
+                                    <ContainerInstrument className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                                      <ContainerInstrument className="lg:col-span-4 space-y-4">
+                                        <HeadingInstrument level={4} className="text-[11px] font-black tracking-[0.2em] uppercase text-va-black/30">Financieel Overzicht</HeadingInstrument>
+                                        <ContainerInstrument className="bg-white rounded-2xl border border-black/5 shadow-sm p-5 space-y-2">
+                                          <ContainerInstrument className="flex justify-between text-[14px]">
+                                            <TextInstrument className="text-va-black/40">Netto</TextInstrument>
+                                            <TextInstrument className="font-medium">€{expandedOrderData.finance?.net}</TextInstrument>
+                                          </ContainerInstrument>
+                                          <ContainerInstrument className="flex justify-between text-[14px]">
+                                            <TextInstrument className="text-va-black/40">Inkoop</TextInstrument>
+                                            <TextInstrument className="font-medium">€{expandedOrderData.finance?.cost}</TextInstrument>
+                                          </ContainerInstrument>
+                                          <ContainerInstrument className="flex justify-between text-[14px] pt-2 border-t border-black/5">
+                                            <TextInstrument className="font-bold">Marge</TextInstrument>
+                                            <TextInstrument className="font-bold text-primary">€{expandedOrderData.finance?.margin} ({expandedOrderData.finance?.marginPercentage})</TextInstrument>
+                                          </ContainerInstrument>
+                                          <ContainerInstrument className="pt-3 border-t border-black/5 text-[12px] font-light text-va-black/50 space-y-1">
+                                            <TextInstrument>Items: {expandedOrderData.production?.items?.length || 0}</TextInstrument>
+                                            <TextInstrument>Status: {expandedOrderData.status || '-'}</TextInstrument>
+                                          </ContainerInstrument>
                                         </ContainerInstrument>
-                                        <ContainerInstrument className="flex justify-between text-[14px]">
-                                          <TextInstrument className="text-va-black/40">Inkoop (COG)</TextInstrument>
-                                          <TextInstrument className="font-medium">€{expandedOrderData.finance?.cost}</TextInstrument>
-                                        </ContainerInstrument>
-                                        <ContainerInstrument className="flex justify-between text-[14px] pt-2 border-t border-black/5">
-                                          <TextInstrument className="font-bold">Marge</TextInstrument>
-                                          <TextInstrument className="font-bold text-primary">€{expandedOrderData.finance?.margin} ({expandedOrderData.finance?.marginPercentage})</TextInstrument>
+                                      </ContainerInstrument>
+
+                                      <ContainerInstrument className="lg:col-span-8 space-y-4">
+                                        <HeadingInstrument level={4} className="text-[11px] font-black tracking-[0.2em] uppercase text-va-black/30">Bestelling Inhoud (Snelle Check)</HeadingInstrument>
+                                        <ContainerInstrument className="bg-white p-6 rounded-2xl border border-black/5 shadow-sm space-y-5">
+                                          {(expandedOrderData.production?.items || []).length > 0 ? (
+                                            <ContainerInstrument className="space-y-4">
+                                              {expandedOrderData.production.items.map((item: any, index: number) => {
+                                                const itemScript = scriptSnippet(item?.briefing?.script || '');
+                                                const itemNotes = scriptSnippet(item?.briefing?.notes || '', 220);
+                                                return (
+                                                  <ContainerInstrument key={`quick-item-${item.id}-${index}`} className="rounded-xl border border-black/5 p-4 space-y-3">
+                                                    <ContainerInstrument className="flex items-start justify-between gap-4">
+                                                      <ContainerInstrument className="space-y-1">
+                                                        <ContainerInstrument className="flex items-center gap-2">
+                                                          <Mic size={14} className="text-primary" />
+                                                          <TextInstrument className="text-[14px] font-semibold text-va-black">{item?.name || 'Onbekend item'}</TextInstrument>
+                                                        </ContainerInstrument>
+                                                        <TextInstrument className="text-[12px] text-va-black/45 font-light">
+                                                          Stem: {item?.actorName || 'Geen stem gekoppeld'} • Aantal: {item?.quantity || 1} • Subtotaal: €{item?.subtotal || item?.price || '0.00'}
+                                                        </TextInstrument>
+                                                      </ContainerInstrument>
+                                                      <TextInstrument className="text-[10px] uppercase tracking-widest text-va-black/30">
+                                                        Item #{item?.id || '-'}
+                                                      </TextInstrument>
+                                                    </ContainerInstrument>
+
+                                                    {itemScript ? (
+                                                      <ContainerInstrument className="text-[13px] font-light text-va-black/75 leading-relaxed whitespace-pre-wrap">
+                                                        {renderTaggedText(itemScript, `item-${item.id}-script`)}
+                                                      </ContainerInstrument>
+                                                    ) : (
+                                                      <TextInstrument className="text-[12px] italic text-va-black/30">Geen script op dit item.</TextInstrument>
+                                                    )}
+
+                                                    {itemNotes ? (
+                                                      <ContainerInstrument className="text-[12px] font-light text-va-black/55 whitespace-pre-wrap">
+                                                        <TextInstrument as="span" className="font-medium text-va-black/70">Notities: </TextInstrument>
+                                                        {renderTaggedText(itemNotes, `item-${item.id}-notes`)}
+                                                      </ContainerInstrument>
+                                                    ) : null}
+                                                  </ContainerInstrument>
+                                                );
+                                              })}
+                                            </ContainerInstrument>
+                                          ) : (
+                                            <TextInstrument className="text-[13px] text-va-black/30 italic">Geen bestelde items gevonden voor deze order.</TextInstrument>
+                                          )}
+
+                                          {expandedOrderData.production?.briefing?.text ? (
+                                            <ContainerInstrument className="rounded-xl border border-black/5 p-4 bg-va-off-white/30 space-y-2">
+                                              <TextInstrument className="text-[10px] uppercase tracking-[0.2em] text-va-black/30">Orderniveau notitie</TextInstrument>
+                                              <TextInstrument className="text-[13px] font-light text-va-black/65 whitespace-pre-wrap leading-relaxed">
+                                                {renderTaggedText(scriptSnippet(expandedOrderData.production.briefing.text), `order-${order.id}-briefing`)}
+                                              </TextInstrument>
+                                            </ContainerInstrument>
+                                          ) : null}
                                         </ContainerInstrument>
                                       </ContainerInstrument>
                                     </ContainerInstrument>
 
-                                    <ContainerInstrument className="space-y-4 col-span-2">
-                                      <HeadingInstrument level={4} className="text-[11px] font-black tracking-[0.2em] uppercase text-va-black/30">Productie & Script</HeadingInstrument>
-                                      <ContainerInstrument className="bg-white p-6 rounded-2xl border border-black/5 shadow-sm space-y-4">
-                                        {expandedOrderData.production?.briefing?.text ? (
-                                          <TextInstrument className="text-[14px] leading-relaxed text-va-black/70 whitespace-pre-wrap italic">
-                                            {expandedOrderData.production.briefing.text.split(/(\(.*?\))/g).map((part: string, i: number) => 
-                                              part.startsWith('(') && part.endsWith(')') ? 
-                                                <TextInstrument as="span" key={i} className="text-primary font-bold bg-primary/5 px-1 rounded not-italic">{part}</TextInstrument> : part
-                                            )}
-                                          </TextInstrument>
-                                        ) : (
-                                          <TextInstrument className="text-[13px] text-va-black/20 italic">Geen briefing beschikbaar.</TextInstrument>
-                                        )}
-                                        
-                                        <ContainerInstrument className="flex flex-wrap gap-3 pt-4 border-t border-black/5">
-                                          {expandedOrderData.actions?.needsPO && (
-                                            <ButtonInstrument variant="pure" size="none" className="px-4 py-2 bg-yellow-50 text-yellow-600 text-[11px] font-bold rounded-full uppercase tracking-widest hover:bg-yellow-100 transition-colors">
-                                              Vraag PO-nummer aan
-                                            </ButtonInstrument>
-                                          )}
-                                          {expandedOrderData.actions?.canGeneratePaymentLink && (
-                                            <ButtonInstrument variant="pure" size="none" className="px-4 py-2 bg-primary/10 text-primary text-[11px] font-bold rounded-full uppercase tracking-widest hover:bg-primary/20 transition-all">
-                                              Betaallink Genereren
-                                            </ButtonInstrument>
-                                          )}
-                                          <ButtonInstrument variant="pure" size="none">
-                                            <Link 
-                                              href={`/admin/orders/${order.id}`}
-                                              className="px-4 py-2 bg-va-black text-white text-[11px] font-bold rounded-full uppercase tracking-widest hover:bg-va-black/80 transition-all"
-                                            >
-                                              Volledig Dossier
-                                            </Link>
-                                          </ButtonInstrument>
-                                        </ContainerInstrument>
-                                      </ContainerInstrument>
+                                    <ContainerInstrument className="flex flex-wrap gap-3">
+                                      <ButtonInstrument variant="pure" size="none">
+                                        <Link
+                                          href={`/admin/orders/${order.id}`}
+                                          className="px-4 py-2 bg-va-black text-white text-[11px] font-bold rounded-full uppercase tracking-widest hover:bg-va-black/80 transition-all"
+                                        >
+                                          Volledig Dossier
+                                        </Link>
+                                      </ButtonInstrument>
                                     </ContainerInstrument>
                                   </ContainerInstrument>
                                 ) : (
