@@ -305,6 +305,14 @@ export async function GET(request: Request, { params }: { params: { id: string }
         .replace(/\s+/g, ' ')
         .trim()
         .toLowerCase();
+    const formatTrackLabel = (trackId: string): string => {
+      const normalized = String(trackId || '').trim();
+      if (!normalized) return '';
+      return normalized
+        .split(/[-_]+/g)
+        .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+        .join(' ');
+    };
     const toNumberOrNull = (value: any): number | null => {
       const parsed = Number(value);
       return Number.isFinite(parsed) ? parsed : null;
@@ -445,34 +453,70 @@ export async function GET(request: Request, { params }: { params: { id: string }
       const quantity = Number(item.quantity || 1);
       const unitPrice = Number(item.price || 0);
       const isVoiceItem = !!item.actor_id;
+      const rawMusicChoice = itemMeta?.music_choice || itemMeta?.music || {};
+      const musicTrackId = firstString(
+        rawMusicChoice?.track_id,
+        rawMusicChoice?.trackId,
+        itemMeta?.music_track_id,
+        itemMeta?.musicTrackId
+      );
+      const musicTrackLabel = firstString(
+        rawMusicChoice?.track_label,
+        rawMusicChoice?.trackLabel,
+        itemMeta?.music_track_label,
+        itemMeta?.musicTrackLabel,
+        formatTrackLabel(musicTrackId)
+      );
+      const musicAsBackground = toBooleanOrNull(
+        rawMusicChoice?.as_background ??
+          rawMusicChoice?.asBackground ??
+          itemMeta?.music_as_background ??
+          itemMeta?.musicAsBackground
+      );
+      const musicAsHold = toBooleanOrNull(
+        rawMusicChoice?.as_hold_music ??
+          rawMusicChoice?.asHoldMusic ??
+          itemMeta?.music_as_hold_music ??
+          itemMeta?.musicAsHoldMusic
+      );
+      const isMusicItem =
+        String(itemMeta?.item_type || '').toLowerCase() === 'music' ||
+        (!isVoiceItem &&
+          (!!musicTrackId ||
+            !!musicTrackLabel ||
+            typeof rawMusicChoice?.as_background === 'boolean' ||
+            typeof rawMusicChoice?.asBackground === 'boolean' ||
+            typeof rawMusicChoice?.as_hold_music === 'boolean' ||
+            typeof rawMusicChoice?.asHoldMusic === 'boolean'));
+      const itemType = isMusicItem ? 'music' : isVoiceItem ? 'voice' : 'other';
       const itemScript = firstReadableText(
-        itemMeta?.script,
-        itemMeta?.briefing,
-        itemMeta?.copy,
-        itemMeta?.text,
-        isVoiceItem ? orderBriefingFallback : ''
+        isMusicItem ? '' : itemMeta?.script,
+        isMusicItem ? '' : itemMeta?.briefing,
+        isMusicItem ? '' : itemMeta?.copy,
+        isMusicItem ? '' : itemMeta?.text,
+        isVoiceItem && !isMusicItem ? orderBriefingFallback : ''
       );
       const itemNotes = firstReadableText(
-        itemMeta?.instructions,
-        itemMeta?.notes,
-        itemMeta?.regie,
-        itemMeta?.comment,
-        isVoiceItem ? orderNotesFallback : ''
+        isMusicItem ? itemMeta?.music_notes : itemMeta?.instructions,
+        isMusicItem ? '' : itemMeta?.notes,
+        isMusicItem ? '' : itemMeta?.regie,
+        isMusicItem ? '' : itemMeta?.comment,
+        isVoiceItem && !isMusicItem ? orderNotesFallback : ''
       );
       const audioBriefingUrl = firstString(
-        itemMeta?.audiobriefing,
-        itemMeta?.audio_briefing,
-        itemMeta?.audio_briefing_url,
-        itemMeta?.audio_url,
-        isVoiceItem ? orderAudioFallback : ''
+        isMusicItem ? '' : itemMeta?.audiobriefing,
+        isMusicItem ? '' : itemMeta?.audio_briefing,
+        isMusicItem ? '' : itemMeta?.audio_briefing_url,
+        isMusicItem ? '' : itemMeta?.audio_url,
+        isVoiceItem && !isMusicItem ? orderAudioFallback : ''
       );
       const attachments = collectLinks(
-        itemMeta?.attachments,
-        itemMeta?.attachment,
-        itemMeta?.attachment_url,
-        itemMeta?.files,
-        itemMeta?.file,
-        isVoiceItem ? orderAttachmentFallback : []
+        isMusicItem ? [] : itemMeta?.attachments,
+        isMusicItem ? [] : itemMeta?.attachment,
+        isMusicItem ? [] : itemMeta?.attachment_url,
+        isMusicItem ? [] : itemMeta?.files,
+        isMusicItem ? [] : itemMeta?.file,
+        isVoiceItem && !isMusicItem ? orderAttachmentFallback : []
       );
       const mediaValues = toStringArray(itemMeta?.media || itemMeta?.media_types || itemMeta?.mediaTypes);
       const usageValue = firstString(itemMeta?.usage, itemMeta?.usage_type, itemMeta?.usageType, parsedRawMeta?.usage);
@@ -493,10 +537,12 @@ export async function GET(request: Request, { params }: { params: { id: string }
         attachments.length > 0 ||
         mediaValues.length > 0 ||
         !!usageValue ||
-        liveSessionValue !== null;
+        liveSessionValue !== null ||
+        isMusicItem;
 
       return {
         id: Number(item.id),
+        itemType,
         actorId: item.actor_id ? Number(item.actor_id) : null,
         actorName: actorName || null,
         actorEmail: item.actor_email || null,
@@ -510,6 +556,18 @@ export async function GET(request: Request, { params }: { params: { id: string }
         payoutStatus: item.payout_status || 'pending',
         deliveryFileUrl: item.delivery_file_url || null,
         invoiceFileUrl: item.invoice_file_url || null,
+        music: isMusicItem
+          ? {
+              trackId: musicTrackId || null,
+              trackLabel: musicTrackLabel || item.name || null,
+              asBackground: musicAsBackground === true,
+              asHoldMusic: musicAsHold === true,
+              modeLabels: [
+                musicAsBackground === true ? 'Achtergrondmuziek' : null,
+                musicAsHold === true ? 'Wachtmuziek' : null,
+              ].filter(Boolean),
+            }
+          : null,
         briefing: {
           script: itemScript || null,
           notes: itemNotes || null,

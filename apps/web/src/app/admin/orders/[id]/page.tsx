@@ -415,6 +415,7 @@ export default function OrderDetailPage() {
                 <HeadingInstrument level={3} className="text-[13px] font-light tracking-[0.2em] text-va-black/20 uppercase">Bestelde Items</HeadingInstrument>
                 <div className="space-y-4">
                   {order.production?.items?.map((item: any) => {
+                    const isMusicItem = item.itemType === 'music';
                     const draft = itemDrafts[item.id] || {
                       deliveryStatus: item.deliveryStatus || 'waiting',
                       payoutStatus: item.payoutStatus || 'pending',
@@ -431,7 +432,9 @@ export default function OrderDetailPage() {
                             <div>
                               <div className="text-[16px] font-light tracking-tight">{item.name}</div>
                               <div className="text-[12px] font-light text-va-black/30 tracking-tight">
-                                {item.actorName ? `Stem: ${item.actorName} • ` : ''}Aantal: {item.quantity} • Inkoop: €{item.cost}
+                                {isMusicItem
+                                  ? `Muziekitem • Aantal: ${item.quantity} • Inkoop: €${item.cost}`
+                                  : `${item.actorName ? `Stem: ${item.actorName} • ` : ''}Aantal: ${item.quantity} • Inkoop: €${item.cost}`}
                               </div>
                             </div>
                           </div>
@@ -442,53 +445,77 @@ export default function OrderDetailPage() {
                         </div>
 
                         <div className="rounded-[12px] border border-black/[0.04] bg-white p-4 space-y-3">
-                          <div className="text-[11px] uppercase tracking-[0.2em] text-va-black/30">Script & Briefing (itemniveau)</div>
-                          {item.briefing?.script ? (
-                            <div className="whitespace-pre-wrap text-[13px] font-light text-va-black/80 leading-relaxed">
-                              {String(item.briefing.script || '')
-                                .split(/(\(.*?\))/g)
-                                .map((part: string, index: number) =>
-                                  part.startsWith('(') && part.endsWith(')') ? (
-                                    <span key={`script-tag-${item.id}-${index}`} className="text-primary font-medium bg-primary/5 px-1 rounded">
-                                      {part}
-                                    </span>
-                                  ) : (
-                                    <span key={`script-text-${item.id}-${index}`}>{part}</span>
-                                  )
-                                )}
+                          <div className="text-[11px] uppercase tracking-[0.2em] text-va-black/30">
+                            {isMusicItem ? 'Muziekkeuze (itemniveau)' : 'Script & Briefing (itemniveau)'}
+                          </div>
+
+                          {isMusicItem ? (
+                            <div className="space-y-3 text-[12px] font-light text-va-black/65">
+                              <div>
+                                <span className="font-medium text-va-black/75">Track:</span>{' '}
+                                {item.music?.trackLabel || item.name || '-'}
+                                {item.music?.trackId ? ` (${item.music.trackId})` : ''}
+                              </div>
+                              <div>
+                                <span className="font-medium text-va-black/75">Gebruik:</span>{' '}
+                                {(item.music?.modeLabels || []).length > 0 ? item.music.modeLabels.join(' • ') : 'Los muziekitem'}
+                              </div>
+                              {item.briefing?.notes && (
+                                <div>
+                                  <span className="font-medium text-va-black/75">Notities:</span> {item.briefing.notes}
+                                </div>
+                              )}
                             </div>
                           ) : (
-                            <div className="text-[12px] italic text-va-black/35">Geen script op dit item gevonden.</div>
-                          )}
-                          {item.briefing?.notes && (
-                            <div className="text-[12px] font-light text-va-black/60">
-                              <span className="font-medium text-va-black/70">Notities:</span> {item.briefing.notes}
-                            </div>
-                          )}
-                          {(item.briefing?.audioBriefingUrl || (item.briefing?.attachments || []).length > 0) && (
-                            <div className="flex flex-wrap items-center gap-3">
-                              {item.briefing?.audioBriefingUrl && (
-                                <a href={item.briefing.audioBriefingUrl} target="_blank" className="text-[11px] text-primary hover:underline">
-                                  Audiobriefing
-                                </a>
+                            <>
+                              {item.briefing?.script ? (
+                                <div className="whitespace-pre-wrap text-[13px] font-light text-va-black/80 leading-relaxed">
+                                  {String(item.briefing.script || '')
+                                    .split(/(\(.*?\))/g)
+                                    .map((part: string, index: number) =>
+                                      part.startsWith('(') && part.endsWith(')') ? (
+                                        <span key={`script-tag-${item.id}-${index}`} className="text-primary font-medium bg-primary/5 px-1 rounded">
+                                          {part}
+                                        </span>
+                                      ) : (
+                                        <span key={`script-text-${item.id}-${index}`}>{part}</span>
+                                      )
+                                    )}
+                                </div>
+                              ) : (
+                                <div className="text-[12px] italic text-va-black/35">Geen script op dit item gevonden.</div>
                               )}
-                              {(item.briefing?.attachments || []).map((attachment: string, index: number) => (
-                                <a key={`${item.id}-attachment-${index}`} href={attachment} target="_blank" className="text-[11px] text-primary hover:underline">
-                                  Bijlage {index + 1}
-                                </a>
-                              ))}
-                            </div>
+                              {item.briefing?.notes && (
+                                <div className="text-[12px] font-light text-va-black/60">
+                                  <span className="font-medium text-va-black/70">Notities:</span> {item.briefing.notes}
+                                </div>
+                              )}
+                              {(item.briefing?.audioBriefingUrl || (item.briefing?.attachments || []).length > 0) && (
+                                <div className="flex flex-wrap items-center gap-3">
+                                  {item.briefing?.audioBriefingUrl && (
+                                    <a href={item.briefing.audioBriefingUrl} target="_blank" className="text-[11px] text-primary hover:underline">
+                                      Audiobriefing
+                                    </a>
+                                  )}
+                                  {(item.briefing?.attachments || []).map((attachment: string, index: number) => (
+                                    <a key={`${item.id}-attachment-${index}`} href={attachment} target="_blank" className="text-[11px] text-primary hover:underline">
+                                      Bijlage {index + 1}
+                                    </a>
+                                  ))}
+                                </div>
+                              )}
+                              <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-[11px] font-light text-va-black/55">
+                                <div>Woorden: {item.pricingContext?.words ?? '-'}</div>
+                                <div>Journey: {item.pricingContext?.journey || '-'}</div>
+                                <div>Usage: {item.pricingContext?.usage || '-'}</div>
+                                <div>Media: {(item.pricingContext?.media || []).length > 0 ? item.pricingContext.media.join(', ') : '-'}</div>
+                                <div>Spots: {item.pricingContext?.spots ?? '-'}</div>
+                                <div>Jaren: {item.pricingContext?.years ?? '-'}</div>
+                                <div>Live sessie: {typeof item.pricingContext?.liveSession === 'boolean' ? (item.pricingContext.liveSession ? 'Ja' : 'Nee') : '-'}</div>
+                                <div>Land/Taal IDs: {item.pricingContext?.countryId ?? '-'} / {item.pricingContext?.languageId ?? '-'}</div>
+                              </div>
+                            </>
                           )}
-                          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-[11px] font-light text-va-black/55">
-                            <div>Woorden: {item.pricingContext?.words ?? '-'}</div>
-                            <div>Journey: {item.pricingContext?.journey || '-'}</div>
-                            <div>Usage: {item.pricingContext?.usage || '-'}</div>
-                            <div>Media: {(item.pricingContext?.media || []).length > 0 ? item.pricingContext.media.join(', ') : '-'}</div>
-                            <div>Spots: {item.pricingContext?.spots ?? '-'}</div>
-                            <div>Jaren: {item.pricingContext?.years ?? '-'}</div>
-                            <div>Live sessie: {typeof item.pricingContext?.liveSession === 'boolean' ? (item.pricingContext.liveSession ? 'Ja' : 'Nee') : '-'}</div>
-                            <div>Land/Taal IDs: {item.pricingContext?.countryId ?? '-'} / {item.pricingContext?.languageId ?? '-'}</div>
-                          </div>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">

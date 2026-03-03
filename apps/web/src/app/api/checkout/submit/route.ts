@@ -77,6 +77,15 @@ async function resolveLookupId(table: 'journeys' | 'order_statuses' | 'payment_m
   return Number(data[0].id);
 }
 
+function formatMusicTrackLabel(trackId: unknown): string {
+  const normalized = String(trackId || '').trim();
+  if (!normalized) return '';
+  return normalized
+    .split(/[-_]+/g)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ');
+}
+
 export async function POST(request: Request) {
   return await ServerWatchdog.atomic('CheckoutAPI', 'SubmitOrder', {}, async () => {
     let rawBody: any = null;
@@ -222,35 +231,90 @@ export async function POST(request: Request) {
     if (orderErr) throw new Error(`Order creation failed: ${orderErr.message}`);
 
     // 6. Order Items
-    const itemsToInsert = validatedItems.map((item: any) => {
+    const itemsToInsert = validatedItems.flatMap((item: any) => {
       const dbActor = actorMap.get(Number(item.actor?.id));
       
       // 🛡️ CHRIS-PROTOCOL: Handshake Truth (ID-First)
       // We resolve the country code to its official database ID for the meta_data.
       const countryId = MarketManager.getCountryLabel(item.country) ? 
                         (global as any).handshakeCountries?.find((c: any) => c.code === item.country || c.label === item.country)?.id : null;
+      const itemSubtotal = Number(item.pricing?.subtotal || 0);
+      const musicSurchargeRaw = Number(item.pricing?.musicSurcharge || 0);
+      const musicTrackId = String(item.music?.trackId || '').trim();
+      const musicAsBackground = !!item.music?.asBackground;
+      const musicAsHoldMusic = !!item.music?.asHoldMusic;
+      const hasMusicChoice = !!musicTrackId && (musicAsBackground || musicAsHoldMusic);
+      const splitMusicLine = hasMusicChoice && musicSurchargeRaw > 0;
+      const musicSurcharge = splitMusicLine ? Math.min(itemSubtotal, Math.max(0, musicSurchargeRaw)) : 0;
+      const voiceSubtotal = Math.max(0, itemSubtotal - musicSurcharge);
+      const voiceTax = Math.round(voiceSubtotal * taxRate * 100) / 100;
+      const musicTax = Math.round(musicSurcharge * taxRate * 100) / 100;
 
-      return {
+      const voiceRow = {
         order_id: newOrder.id,
         actor_id: dbActor?.id || null,
         name: item.name || 'Product',
         quantity: 1,
-        price: (item.pricing?.subtotal || 0).toString(),
-        tax: (item.pricing?.tax || 0).toString(),
+        price: voiceSubtotal.toFixed(2),
+        tax: voiceTax.toFixed(2),
         meta_data: { 
           ...item.pricing, 
+          item_type: 'voice',
           briefing: item.briefing, 
           usage: item.usage, 
           media: item.media,
           spots: item.spots,
           years: item.years,
           live_session: item.liveSession,
-          music: item.music,
+          music: splitMusicLine ? null : item.music,
+          selected_music: hasMusicChoice
+            ? {
+                track_id: musicTrackId,
+                track_label: formatMusicTrackLabel(musicTrackId) || musicTrackId,
+                as_background: musicAsBackground,
+                as_hold_music: musicAsHoldMusic,
+              }
+            : null,
           country_id: countryId || item.countryId, // 🛡️ Store the hard ID
           language_id: dbActor?.native_language_id // 🛡️ Store the hard ID
         },
         delivery_status: 'waiting'
       };
+      if (!splitMusicLine) {
+        return [voiceRow];
+      }
+
+      const musicTrackLabel = formatMusicTrackLabel(musicTrackId) || musicTrackId;
+      const musicRow = {
+        order_id: newOrder.id,
+        actor_id: null,
+        name: `Muziek • ${musicTrackLabel}`,
+        quantity: 1,
+        price: musicSurcharge.toFixed(2),
+        tax: musicTax.toFixed(2),
+        meta_data: {
+          item_type: 'music',
+          music_choice: {
+            track_id: musicTrackId,
+            track_label: musicTrackLabel,
+            as_background: musicAsBackground,
+            as_hold_music: musicAsHoldMusic,
+            source_actor_id: dbActor?.id || null,
+            source_item_name: item.name || 'voice_over',
+          },
+          usage: item.usage || null,
+          media: item.media || [],
+          journey: item.journey || null,
+          country_id: countryId || item.countryId || null,
+        },
+        delivery_status: 'waiting'
+      };
+
+      if (voiceSubtotal <= 0) {
+        return [musicRow];
+      }
+
+      return [voiceRow, musicRow];
     });
 
     const { error: itemsErr } = await sdkClient.from('order_items').insert(itemsToInsert);

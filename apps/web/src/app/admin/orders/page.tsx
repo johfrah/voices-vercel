@@ -349,6 +349,7 @@ export default function OrdersPage() {
                                           {(expandedOrderData.production?.items || []).length > 0 ? (
                                             <ContainerInstrument className="space-y-4">
                                               {expandedOrderData.production.items.map((item: any, index: number) => {
+                                                const isMusicItem = item?.itemType === 'music';
                                                 const itemScript = scriptSnippet(item?.briefing?.script || '');
                                                 const itemNotes = scriptSnippet(item?.briefing?.notes || '', 220);
                                                 return (
@@ -360,7 +361,9 @@ export default function OrdersPage() {
                                                           <TextInstrument className="text-[14px] font-semibold text-va-black">{item?.name || 'Onbekend item'}</TextInstrument>
                                                         </ContainerInstrument>
                                                         <TextInstrument className="text-[12px] text-va-black/45 font-light">
-                                                          Stem: {item?.actorName || 'Geen stem gekoppeld'} • Aantal: {item?.quantity || 1} • Subtotaal: €{item?.subtotal || item?.price || '0.00'}
+                                                          {isMusicItem
+                                                            ? `Muziekitem • Aantal: ${item?.quantity || 1} • Subtotaal: €${item?.subtotal || item?.price || '0.00'}`
+                                                            : `Stem: ${item?.actorName || 'Geen stem gekoppeld'} • Aantal: ${item?.quantity || 1} • Subtotaal: €${item?.subtotal || item?.price || '0.00'}`}
                                                         </TextInstrument>
                                                       </ContainerInstrument>
                                                       <TextInstrument className="text-[10px] uppercase tracking-widest text-va-black/30">
@@ -368,7 +371,19 @@ export default function OrdersPage() {
                                                       </TextInstrument>
                                                     </ContainerInstrument>
 
-                                                    {itemScript ? (
+                                                    {isMusicItem ? (
+                                                      <ContainerInstrument className="text-[12px] font-light text-va-black/65 whitespace-pre-wrap space-y-1">
+                                                        <TextInstrument>
+                                                          <TextInstrument as="span" className="font-medium text-va-black/75">Muziek: </TextInstrument>
+                                                          {item?.music?.trackLabel || item?.name || '-'}
+                                                          {item?.music?.trackId ? ` (${item.music.trackId})` : ''}
+                                                        </TextInstrument>
+                                                        <TextInstrument>
+                                                          <TextInstrument as="span" className="font-medium text-va-black/75">Keuze: </TextInstrument>
+                                                          {(item?.music?.modeLabels || []).length > 0 ? item.music.modeLabels.join(' • ') : 'Los muziekitem'}
+                                                        </TextInstrument>
+                                                      </ContainerInstrument>
+                                                    ) : itemScript ? (
                                                       <ContainerInstrument className="text-[13px] font-light text-va-black/75 leading-relaxed whitespace-pre-wrap">
                                                         {renderTaggedText(itemScript, `item-${item.id}-script`)}
                                                       </ContainerInstrument>
