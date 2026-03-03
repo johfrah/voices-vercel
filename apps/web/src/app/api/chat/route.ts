@@ -2,7 +2,7 @@ import { GeminiService } from '@/lib/services/gemini-service';
 import { KnowledgeService } from '@/lib/services/knowledge-service';
 import { db } from '@/lib/system/voices-config';
 import { chatConversations, chatMessages, faq, workshopEditions, workshops } from '@/lib/system/voices-config';
-import { desc, eq, ilike, or, and, sql } from 'drizzle-orm';
+import { desc, eq, ilike, or, and, sql, inArray } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
@@ -11,6 +11,44 @@ import { createClient } from '@supabase/supabase-js';
  */
 const CONVERSATION_CACHE_TTL_MS = 5000;
 const conversationsCache = new Map<string, { ts: number; data: any[] }>();
+
+const buildConversationSnapshots = async (conversationIds: number[]) => {
+  const snapshots = new Map<number, { message_count: number; lastMessage: string; latest_message_id: number }>();
+  if (!conversationIds.length) return snapshots;
+
+  const messageRows = await db
+    .select({
+      conversation_id: chatMessages.conversationId,
+      id: chatMessages.id,
+      message: chatMessages.message,
+    })
+    .from(chatMessages)
+    .where(inArray(chatMessages.conversationId, conversationIds));
+
+  for (const row of messageRows as Array<{ conversation_id: number; id: number; message: string }>) {
+    const conversationId = Number(row.conversation_id);
+    const messageId = Number(row.id);
+    if (!Number.isFinite(conversationId) || !Number.isFinite(messageId)) continue;
+
+    const existing = snapshots.get(conversationId);
+    if (!existing) {
+      snapshots.set(conversationId, {
+        message_count: 1,
+        lastMessage: String(row.message || ''),
+        latest_message_id: messageId,
+      });
+      continue;
+    }
+
+    existing.message_count += 1;
+    if (messageId > existing.latest_message_id) {
+      existing.latest_message_id = messageId;
+      existing.lastMessage = String(row.message || '');
+    }
+  }
+
+  return snapshots;
+};
 
 export async function POST(request: NextRequest) {
   try {
@@ -80,18 +118,6 @@ export async function POST(request: NextRequest) {
             user_id: chatConversations.user_id,
             guest_name: chatConversations.guestName,
             guest_email: chatConversations.guestEmail,
-            lastMessage: sql<string>`(
-              SELECT cm.message
-              FROM chat_messages cm
-              WHERE cm.conversation_id = ${chatConversations.id}
-              ORDER BY cm.id DESC
-              LIMIT 1
-            )`,
-            message_count: sql<number>`(
-              SELECT count(*)::int
-              FROM chat_messages cm
-              WHERE cm.conversation_id = ${chatConversations.id}
-            )`,
           })
           .from(chatConversations)
           .where(and(...conditions))
@@ -99,11 +125,13 @@ export async function POST(request: NextRequest) {
           .limit(safeLimit);
 
         let results: any[] = [];
+        let needsSnapshotHydration = false;
         try {
           results = await Promise.race<any[]>([
             drizzleQuery as unknown as Promise<any[]>,
             new Promise<any[]>((_, reject) => setTimeout(() => reject(new Error('DRIZZLE_TIMEOUT')), 3500)),
           ]);
+          needsSnapshotHydration = true;
         } catch (drizzleError: any) {
           console.warn('[Voicy API] Drizzle conversations timeout/failure, using Supabase SDK fallback:', drizzleError?.message || drizzleError);
           const supabase = createClient(
@@ -171,6 +199,24 @@ export async function POST(request: NextRequest) {
           } else {
             results = [];
           }
+        }
+
+        if (needsSnapshotHydration) {
+          const conversationIds = results
+            .map((conversation: any) => Number(conversation.id))
+            .filter((id: number) => Number.isFinite(id));
+
+          const snapshots = await buildConversationSnapshots(conversationIds);
+          results = results
+            .map((conversation: any) => {
+              const snapshot = snapshots.get(Number(conversation.id));
+              return {
+                ...conversation,
+                lastMessage: snapshot?.lastMessage || '',
+                message_count: snapshot?.message_count || 0,
+              };
+            })
+            .filter((conversation: any) => conversation.message_count > 0);
         }
 
         conversationsCache.set(cacheKey, { ts: Date.now(), data: results });
