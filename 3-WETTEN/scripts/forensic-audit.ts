@@ -15,9 +15,11 @@ if (!fs.existsSync(REPORTS_DIR)) {
   fs.mkdirSync(REPORTS_DIR, { recursive: true });
 }
 
-const WEB_APP_DIR = fs.existsSync(path.join(ROOT_DIR, 'src')) 
+const WEB_APP_DIR = fs.existsSync(path.join(ROOT_DIR, 'src'))
   ? path.join(ROOT_DIR, 'src')
-  : path.join(ROOT_DIR, '1-SITE/apps/web/src');
+  : fs.existsSync(path.join(ROOT_DIR, 'apps/web/src'))
+    ? path.join(ROOT_DIR, 'apps/web/src')
+    : path.join(ROOT_DIR, '1-SITE/apps/web/src');
 
 interface AuditIssue {
   file: string;
@@ -29,8 +31,16 @@ interface AuditIssue {
 
 const issues: AuditIssue[] = [];
 
+interface ForbiddenPattern {
+  regex: RegExp;
+  message: string;
+  type: 'error' | 'warning';
+  exclude?: RegExp[];
+  test?: (match: string, line: string) => boolean;
+}
+
 // 1. VERBODEN PATRONEN (REGEX)
-const FORBIDDEN_PATTERNS = [
+const FORBIDDEN_PATTERNS: ForbiddenPattern[] = [
   {
     regex: /voices\.be|johfrah\.be|04[0-9]{8}|info@/gi,
     message: 'Hardcoded contactgegevens gedetecteerd. Gebruik MarketManager.',
@@ -143,7 +153,7 @@ function auditFile(filePath: string) {
       const matches = line.match(regex);
       if (matches) {
         matches.forEach(match => {
-          if (!test || (test as any)(match, line)) {
+          if (!test || test(match, line)) {
             issues.push({
               file: path.relative(ROOT_DIR, filePath),
               line: index + 1,

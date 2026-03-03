@@ -1,5 +1,9 @@
 import { updateSession } from '@/utils/supabase/middleware'
 import { type NextRequest, NextResponse } from 'next/server'
+import {
+  DEFAULT_SECURITY_CENTER_SETTINGS,
+  apply_security_headers,
+} from '@/lib/system/security/security-center'
 
 /**
  * NUCLEAR MIDDLEWARE (GOD MODE 2026)
@@ -13,6 +17,11 @@ import { type NextRequest, NextResponse } from 'next/server'
 export async function middleware(request: NextRequest) {
   const url = request.nextUrl.clone()
   let pathname = url.pathname
+  const host = request.headers.get('host') || ''
+  const request_protocol = request.nextUrl.protocol === 'http:' ? 'http:' : 'https:'
+  const security_settings = DEFAULT_SECURITY_CENTER_SETTINGS
+  const secure_response = (response: NextResponse) =>
+    apply_security_headers(response, security_settings, request_protocol)
 
   // 🛡️ CHRIS-PROTOCOL: Normaliseer trailing slash voor consistente routing (v2.14.608)
   // We zorgen dat alle interne vergelijkingen gebaseerd zijn op een pad ZONDER trailing slash.
@@ -24,23 +33,24 @@ export async function middleware(request: NextRequest) {
   const userAgent = request.headers.get('user-agent') || ''
 
   // NUCLEAR BOT PROTECTION
-  const aiBots = [
-    'gptbot', 'chatgpt-user', 'google-extended', 'ccbot', 'anthropicai', 
-    'claude-web', 'omgili', 'facebookbot', 'diffbot', 'bytespider', 
-    'imagesiftbot', 'perplexitybot', 'youbot', 'claudebot', 'cohere-ai',
-    'proximic', 'meta-externalagent', 'amazonbot', 'duckduckbot', 'mojeekbot'
-  ]
+  const aiBots = security_settings.bot_protection.blocked_user_agents
   
-  if (aiBots.some(bot => userAgent.toLowerCase().includes(bot))) {
+  if (
+    security_settings.bot_protection.enabled &&
+    security_settings.bot_protection.block_ai_scrapers &&
+    aiBots.some(bot => userAgent.toLowerCase().includes(bot))
+  ) {
     console.warn(` NUCLEAR BLOCK: AI Bot detected [${userAgent}] at ${pathname}`)
-    return new NextResponse('AI Training and Scraping is strictly prohibited.', { status: 403 })
+    return secure_response(
+      new NextResponse('AI Training and Scraping is strictly prohibited.', { status: 403 })
+    )
   }
 
   // 1. SECURITY & ASSET BYPASS
   // 🛡️ CHRIS-PROTOCOL: Absolute API Isolation (v2.15.084)
   // API requests moeten NOOIT door i18n of market redirects gaan.
   if (pathname.startsWith('/api') || pathname.startsWith('/wp-content') || pathname.startsWith('/wp-includes')) {
-    return NextResponse.next()
+    return secure_response(NextResponse.next())
   }
 
   // Laat statische assets direct door (matcher doet dit ook, maar extra veiligheid)
@@ -51,17 +61,24 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith('/favicon.ico') ||
     pathname.match(/\.(svg|png|jpg|jpeg|gif|webp|ico|wav|mp3|mp4|css|js|woff2?)$/)
   ) {
-    return NextResponse.next()
+    return secure_response(NextResponse.next())
   }
 
   // HOTLINKING PROTECTION FOR ASSETS
   const referer = request.headers.get('referer')
-  const isAsset = pathname.startsWith('/assets/agency/voices')
-  const host = request.headers.get('host') || ''
+  const isAsset = security_settings.hotlink_protection.protected_asset_prefixes.some((prefix) =>
+    pathname.startsWith(prefix)
+  )
+  const is_allowed_referer =
+    !referer ||
+    referer.includes(host) ||
+    security_settings.hotlink_protection.allowed_referer_hosts.some((allowed_host) =>
+      referer.includes(allowed_host)
+    )
   
-  if (isAsset && referer && !referer.includes(host) && !referer.includes('localhost')) {
+  if (security_settings.hotlink_protection.enabled && isAsset && referer && !is_allowed_referer) {
     console.warn(` HOTLINK BLOCK: Asset requested from external domain [${referer}]`)
-    return new NextResponse('Unauthorized asset request.', { status: 403 })
+    return secure_response(new NextResponse('Unauthorized asset request.', { status: 403 }))
   }
 
   let response: NextResponse
@@ -458,7 +475,7 @@ export async function middleware(request: NextRequest) {
     sameSite: 'lax'
   })
   
-  return response
+  return secure_response(response)
 }
 
 export const config = {
