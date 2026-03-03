@@ -400,17 +400,14 @@ export default async function RootLayout({
   const isSpecialJourney = ['ADEMING', 'PORTFOLIO', 'ARTIST'].includes(market.market_code);
   const isStudioJourney = ['STUDIO', 'ACADEMY'].includes(market.market_code);
   
-  const isUnderConstruction = headersList.get('x-voices-under-construction') === 'true' || 
-    pathname === '/under-construction' ||
-    pathname === '/under-construction/';
-  
   const isYoussefJourney = pathname.includes('/artist/youssef') || market.market_code === 'ARTIST';
   
   const isArtistJourney = market.market_code === 'ARTIST' || pathname.includes('/artist/') || pathname.includes('/voice/');
 
-  const showVoicy = !isArtistJourney && !isUnderConstruction && market.market_code !== 'ADEMING';
-  const showTopBar = !isArtistJourney && !isUnderConstruction && market.market_code !== 'ADEMING' && market.market_code !== 'PORTFOLIO';
-  const showGlobalNav = !isUnderConstruction && market.market_code !== 'ADEMING' && market.market_code !== 'PORTFOLIO';
+  // Chat zichtbaar: overal behalve Artist, Ademing. Bij open DevTools rechts kan het bolletje bedekt zijn (fixed right).
+  const showVoicy = !isArtistJourney && market.market_code !== 'ADEMING';
+  const showTopBar = !isArtistJourney && market.market_code !== 'ADEMING' && market.market_code !== 'PORTFOLIO';
+  const showGlobalNav = market.market_code !== 'ADEMING' && market.market_code !== 'PORTFOLIO';
   const schemaLanguages = Array.from(
     new Set((market.supported_languages || [market.primary_language]).map((l: string) => localeToBcp47(l)))
   );
@@ -429,32 +426,6 @@ export default async function RootLayout({
       "availableLanguage": schemaLanguages
     }
   };
-
-  // UNDER CONSTRUCTION MODE: Minimalistische layout zonder navigatie/footer/voicy
-  if (isUnderConstruction) {
-    return (
-      <html lang={htmlLang} className={htmlClass} suppressHydrationWarning>
-      <body className={bodyClass}>
-        <Providers 
-          lang={lang} 
-          market={market} 
-          initialTranslations={studioTranslations} 
-          initialJourney={initialJourney} 
-          initialUsage={initialUsage}
-          handshakeContext={handshakeContext}
-          handshakeLanguages={handshakeLanguages}
-        >
-          <Suspense fallback={null}>
-            <SonicDNAHandler />
-          </Suspense>
-          <PageWrapperInstrument>
-            {children}
-          </PageWrapperInstrument>
-        </Providers>
-      </body>
-    </html>
-    );
-  }
 
   return (
     <html lang={htmlLang} className={htmlClass} suppressHydrationWarning>
