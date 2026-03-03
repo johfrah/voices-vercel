@@ -2,7 +2,8 @@
 
 import React, { Suspense } from 'react';
 import nextDynamic from 'next/dynamic';
-import { ContainerInstrument } from './LayoutInstruments';
+import { ContainerInstrument, TextInstrument } from './LayoutInstruments';
+import { InstrumentSkeleton } from './InstrumentSkeletonRegistry';
 
 // 🛡️ NUCLEAR LOADING MANDATE: Dynamic imports for all instruments
 const HeroInstrument = nextDynamic(() => import('./HeroInstrument').then(mod => mod.HeroInstrument), { ssr: false });
@@ -22,7 +23,7 @@ const WorkshopInterestForm = nextDynamic(() => import('../studio/WorkshopInteres
 // Fallback voor onbekende instrumenten
 const UnknownInstrument = ({ type }: { type: string }) => (
   <ContainerInstrument className="py-20 bg-red-50 border border-red-100 rounded-2xl text-center">
-    <p className="text-red-500 font-medium">Onbekend instrument type: {type}</p>
+    <TextInstrument className="text-red-500 font-medium">Onbekend instrument type: {type}</TextInstrument>
   </ContainerInstrument>
 );
 
@@ -38,9 +39,15 @@ interface InstrumentRendererProps {
 export const InstrumentRenderer = ({ blocks, extraData = {} }: InstrumentRendererProps) => {
   if (!blocks || blocks.length === 0) return null;
 
+  const withSkeleton = (blockId: number | string, type: string, element: React.ReactNode) => (
+    <Suspense key={blockId} fallback={<InstrumentSkeleton type={type} />}>
+      {element}
+    </Suspense>
+  );
+
   return (
     <div className="space-y-0">
-      {blocks.map((block, index) => {
+      {blocks.map((block) => {
         const settings = block.settings || {};
         const type = block.type;
 
@@ -48,91 +55,55 @@ export const InstrumentRenderer = ({ blocks, extraData = {} }: InstrumentRendere
         switch (type) {
           case 'hero':
           case 'HeroInstrument':
-            return (
-              <Suspense key={block.id} fallback={<div className="h-[600px] bg-va-black/5 animate-pulse" />}>
-                <HeroInstrument {...settings.data} />
-              </Suspense>
-            );
+            return withSkeleton(block.id, "hero", <HeroInstrument {...settings.data} />);
 
           case 'pricing':
           case 'PricingInstrument':
-            return (
-              <Suspense key={block.id} fallback={<div className="h-96 bg-va-black/5 animate-pulse" />}>
-                <PricingInstrument {...settings.data} />
-              </Suspense>
-            );
+            return withSkeleton(block.id, "pricing", <PricingInstrument {...settings.data} />);
 
           case 'cta':
           case 'CTAInstrument':
-            return (
-              <Suspense key={block.id} fallback={<div className="h-48 bg-va-black/5 animate-pulse" />}>
-                <CTAInstrument {...settings.data} />
-              </Suspense>
-            );
+            return withSkeleton(block.id, "cta", <CTAInstrument {...settings.data} />);
 
           case 'reviews':
           case 'ReviewsInstrument':
-            return (
-              <Suspense key={block.id} fallback={<div className="h-96 bg-va-black/5 animate-pulse" />}>
-                <ReviewsInstrument {...settings.data} />
-              </Suspense>
-            );
+            return withSkeleton(block.id, "reviews", <ReviewsInstrument {...settings.data} />);
 
           case 'how_it_works':
           case 'HowItWorksInstrument':
-            return (
-              <Suspense key={block.id} fallback={<div className="h-96 bg-va-black/5 animate-pulse" />}>
-                <HowItWorksInstrument {...settings.data} />
-              </Suspense>
-            );
+            return withSkeleton(block.id, "how_it_works", <HowItWorksInstrument {...settings.data} />);
 
           case 'bento':
           case 'BentoShowcase':
-            return (
-              <Suspense key={block.id} fallback={<div className="h-[600px] bg-va-black/5 animate-pulse" />}>
-                <BentoShowcase {...settings.data} />
-              </Suspense>
-            );
+            return withSkeleton(block.id, "bento", <BentoShowcase {...settings.data} />);
 
           case 'faq':
           case 'AccordionInstrument':
-            return (
-              <Suspense key={block.id} fallback={<div className="h-64 bg-va-black/5 animate-pulse" />}>
-                <AccordionInstrument {...settings.data} />
-              </Suspense>
-            );
+            return withSkeleton(block.id, "faq", <AccordionInstrument {...settings.data} />);
 
           case 'workshop_carousel':
           case 'WorkshopCarousel':
-            return (
-              <Suspense key={block.id} fallback={<div className="h-96 bg-va-black/5 animate-pulse" />}>
-                <WorkshopCarousel workshops={extraData.workshops || []} {...settings.data} />
-              </Suspense>
+            return withSkeleton(
+              block.id,
+              "workshop_carousel",
+              <WorkshopCarousel workshops={extraData.workshops || []} {...settings.data} />
             );
 
           case 'workshop_calendar':
           case 'WorkshopCalendar':
-            return (
-              <Suspense key={block.id} fallback={<div className="h-96 bg-va-black/5 animate-pulse" />}>
-                <WorkshopCalendar workshops={extraData.workshops || []} {...settings.data} />
-              </Suspense>
+            return withSkeleton(
+              block.id,
+              "workshop_calendar",
+              <WorkshopCalendar workshops={extraData.workshops || []} {...settings.data} />
             );
 
           case 'workshop_quiz':
           case 'WorkshopQuiz':
-            return (
-              <Suspense key={block.id} fallback={<div className="h-96 bg-va-black/5 animate-pulse" />}>
-                <WorkshopQuiz {...settings.data} />
-              </Suspense>
-            );
+            return withSkeleton(block.id, "workshop_quiz", <WorkshopQuiz {...settings.data} />);
 
           case 'interest_form':
           case 'WorkshopInterestForm':
-            return (
-              <Suspense key={block.id} fallback={<div className="h-96 bg-va-black/5 animate-pulse" />}>
-                <WorkshopInterestForm {...settings.data} />
-              </Suspense>
-            );
+            return withSkeleton(block.id, "interest_form", <WorkshopInterestForm {...settings.data} />);
 
           default:
             // Als het een legacy block is (zonder settings), kunnen we een fallback renderer gebruiken

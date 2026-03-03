@@ -10,7 +10,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { notFound, redirect } from 'next/navigation';
 import { Suspense } from "react";
-import { getActor, getArtist, getActors, getWorkshops, getArticle } from "@/lib/services/api-server";
+import { getActor, getArtist, getActors, getWorkshops, getArticle, getAdemingTracksPublic } from "@/lib/services/api-server";
 import { WorkshopApiResponse } from "@/app/api/studio/workshops/route";
 import { MarketManager } from "@/lib/system/core/market-manager";
 import { headers } from "next/headers";
@@ -127,6 +127,29 @@ function generateArtistSchema(artist: any, host: string = '') {
       artist.tiktokUrl
     ].filter(Boolean)
   };
+}
+
+function logSmartRouterStart(details: { segments: string[]; lang: string; cleanSlug: string; cleanSegments: string[]; normalizedSlug: string }) {
+  // Non-blocking forensic logging: never delay route rendering.
+  void (async () => {
+    try {
+      const { db: directDb, systemEvents } = await import('@/lib/system/voices-config');
+      if (!directDb || !systemEvents) return;
+      await directDb.insert(systemEvents).values({
+        level: 'info',
+        source: 'SmartRouter',
+        message: `[SmartRouter] SmartRouteContent START for: ${details.normalizedSlug}`,
+        details: {
+          segments: details.segments,
+          lang: details.lang,
+          cleanSlug: details.cleanSlug,
+          cleanSegments: details.cleanSegments
+        },
+      });
+    } catch {
+      // Intentionally silent: logging must not impact response path.
+    }
+  })();
 }
 
 /**
@@ -524,22 +547,8 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
   const cleanSlug = stripLanguagePrefix(normalizedSlug);
   const cleanSegments = cleanSlug.split('/').filter(Boolean);
 
-  // 🛡️ CHRIS-PROTOCOL: Log to database for forensic audit (v2.14.552)
-  try {
-    const { db: directDb, systemEvents } = await import('@/lib/system/voices-config');
-    if (directDb && systemEvents) {
-      await directDb.insert(systemEvents).values({
-        level: 'info',
-        source: 'SmartRouter',
-        message: `[SmartRouter] SmartRouteContent START for: ${normalizedSlug}`,
-        details: { segments, lang, cleanSlug, cleanSegments },
-      });
-    }
-  } catch (e: any) {
-    console.error(` [SmartRouter] DB logging failed: ${e.message}`);
-  }
-
-  console.error(` [SmartRouter] SmartRouteContent START for: ${segments.join('/')}`);
+  // 🛡️ CHRIS-PROTOCOL: Fire-and-forget forensic logging (non-blocking)
+  logSmartRouterStart({ segments, lang, cleanSlug, cleanSegments, normalizedSlug });
   try {
     // 🛡️ NUCLEAR HANDSHAKE: Resolve via Slug Registry
     const host = headersList.get('host') || '';
@@ -550,18 +559,9 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
     if (market.market_code === 'ADEMING' && cleanSegments.length === 0) {
       let tracks = [];
       try {
-        const tracksRes = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/api/ademing?action=tracks`, {
-          next: { revalidate: 60 } // Cache for 1 minute
-        });
-        
-        if (tracksRes.ok) {
-          const data = await tracksRes.json();
-          if (Array.isArray(data)) {
-            tracks = data;
-          }
-        }
+        tracks = await getAdemingTracksPublic();
       } catch (err) {
-        console.error("[SmartRouter] Ademing tracks fetch failed:", err);
+        console.error("[SmartRouter] Ademing tracks direct fetch failed:", err);
       }
       
       return (

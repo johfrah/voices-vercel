@@ -1,25 +1,19 @@
-import { CodyPreviewBanner } from "@/components/admin/CodyPreviewBanner";
-import { GhostModeBar } from "@/components/admin/GhostModeBar";
 import { EditModeOverlay } from "@/components/admin/EditModeOverlay";
-import { CommandPalette } from "@/components/ui/CommandPalette";
-import { SpotlightDashboard } from "@/components/ui/SpotlightDashboard";
 import { LoadingScreenInstrument, PageWrapperInstrument, ContainerInstrument, HeadingInstrument, TextInstrument } from "@/components/ui/LayoutInstruments";
 import { CookieBanner } from "@/components/ui/Legal/CookieBanner";
-import { GlobalModalManager } from "@/components/ui/GlobalModalManager";
-import { LiquidTransitionOverlay } from "@/components/ui/LiquidTransitionOverlay";
 import { NavigationSkeletonOverlayInstrument } from "@/components/ui/NavigationSkeletonOverlayInstrument";
 import { MarketManagerServer } from "@/lib/system/core/market-manager";
 import { MarketDatabaseService } from "@/lib/system/market-manager-db";
 import { createClient } from "@supabase/supabase-js";
 import { Analytics } from "@vercel/analytics/react";
 import { VercelToolbar } from "@vercel/toolbar/next";
+import { unstable_cache } from "next/cache";
 import type { Metadata, Viewport } from "next";
 import { Inter, Raleway, Cormorant_Garamond } from "next/font/google";
 import { headers } from "next/headers";
 import Link from "next/link";
 import { Suspense } from "react";
 import dynamic from "next/dynamic";
-import { Toaster } from 'react-hot-toast';
 import "../styles/globals.css";
 import { Providers } from "./Providers";
 import { getTranslationsServer } from "@/lib/services/api-server";
@@ -31,6 +25,12 @@ import { ConfigBridge } from "@/lib/utils/config-bridge";
 const JohfrahActionDock = dynamic(() => import("@/components/portfolio/JohfrahActionDock").then(mod => mod.JohfrahActionDock), { ssr: false, loading: () => null });
 const JohfrahConfiguratorSPA = dynamic(() => import("@/components/portfolio/JohfrahConfiguratorSPA").then(mod => mod.JohfrahConfiguratorSPA), { ssr: false, loading: () => null });
 const CastingDock = dynamic(() => import("@/components/ui/CastingDock").then(mod => mod.CastingDock), { ssr: false, loading: () => null });
+const GhostModeBar = dynamic(() => import("@/components/admin/GhostModeBar").then(mod => mod.GhostModeBar), { ssr: false, loading: () => null });
+const CodyPreviewBanner = dynamic(() => import("@/components/admin/CodyPreviewBanner").then(mod => mod.CodyPreviewBanner), { ssr: false, loading: () => null });
+const LiquidTransitionOverlay = dynamic(() => import("@/components/ui/LiquidTransitionOverlay").then(mod => mod.LiquidTransitionOverlay), { ssr: false, loading: () => null });
+const CommandPalette = dynamic(() => import("@/components/ui/CommandPalette").then(mod => mod.CommandPalette), { ssr: false, loading: () => null });
+const SpotlightDashboard = dynamic(() => import("@/components/ui/SpotlightDashboard").then(mod => mod.SpotlightDashboard), { ssr: false, loading: () => null });
+const GlobalModalManager = dynamic(() => import("@/components/ui/GlobalModalManager").then(mod => mod.GlobalModalManager), { ssr: false, loading: () => null });
 const SonicDNAHandler = dynamic(() => import("@/components/ui/SonicDNA").then(mod => mod.SonicDNAHandler), { ssr: false, loading: () => null });
 const GlobalAudioOrchestrator = dynamic(() => import("@/components/ui/GlobalAudioOrchestrator").then(mod => mod.GlobalAudioOrchestrator), { ssr: false, loading: () => null });
 const TopBar = dynamic(() => import("@/components/ui/TopBar").then(mod => mod.TopBar), { ssr: false, loading: () => <div className="h-[80px] bg-va-off-white/50 backdrop-blur-md" /> });
@@ -68,6 +68,74 @@ async function getMarketSafe(host: string) {
     return MarketManagerServer.getCurrentMarket(fallbackHost);
   }
 }
+
+const getMarketSafeCached = unstable_cache(
+  async (lookupHost: string) => getMarketSafe(lookupHost),
+  ["layout-market-safe-v1"],
+  { revalidate: 120 }
+);
+
+const getWorldConfigCached = unstable_cache(
+  async (worldId: number, languageId: number) => {
+    try {
+      return await ConfigBridge.getWorldConfig(worldId, languageId);
+    } catch (err) {
+      console.error(" getWorldConfigCached: Failed to load world config:", err);
+      return null;
+    }
+  },
+  ["layout-world-config-v1"],
+  { revalidate: 300 }
+);
+
+const getTranslationsCached = unstable_cache(
+  async (langCode: string) => {
+    try {
+      return await getTranslationsServer(langCode || "nl");
+    } catch (err) {
+      console.error(" getTranslationsCached: Failed to load translations:", err);
+      return {};
+    }
+  },
+  ["layout-translations-v1"],
+  { revalidate: 120 }
+);
+
+const getLocalesCached = unstable_cache(
+  async () => {
+    try {
+      return await MarketDatabaseService.getAllLocalesAsync();
+    } catch (err) {
+      console.error(" getLocalesCached: Failed to load locales:", err);
+      const staticDomains = MarketManagerServer.getMarketDomains();
+      return {
+        "nl-BE": staticDomains["BE"],
+        "nl-NL": staticDomains["NLNL"],
+        "fr-FR": staticDomains["FR"],
+        "en-EU": staticDomains["EU"]
+      };
+    }
+  },
+  ["layout-locales-v1"],
+  { revalidate: 300 }
+);
+
+const getWorldLanguagesCached = unstable_cache(
+  async () => {
+    try {
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+      const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+      const supabase = createClient(supabaseUrl, supabaseKey);
+      const { data } = await supabase.from("world_languages").select("*");
+      return data || [];
+    } catch (err) {
+      console.error(" getWorldLanguagesCached: Failed to load world languages:", err);
+      return [];
+    }
+  },
+  ["layout-world-languages-v1"],
+  { revalidate: 300 }
+);
 const raleway = Raleway({ subsets: ["latin"], variable: '--font-raleway' });
 const cormorant = Cormorant_Garamond({ 
   subsets: ["latin"], 
@@ -86,7 +154,6 @@ export const viewport: Viewport = {
 export async function generateMetadata(): Promise<Metadata> {
   const headersList = headers();
   const langHeader = headersList.get('x-voices-lang');
-  const domains = MarketManagerServer.getMarketDomains();
   const pathname = headersList.get('x-voices-pathname') || '';
   const host = headersList.get("x-voices-host") || headersList.get("host") || process.env.NEXT_PUBLIC_SITE_URL || MarketManagerServer.getMarketDomains()['BE'].replace('https://', '');
   const cleanHost = host.replace(/^https?:\/\//, '');
@@ -99,41 +166,12 @@ export async function generateMetadata(): Promise<Metadata> {
   // 🛡️ CHRIS-PROTOCOL: ID-First Context Resolution (v3.0.0)
   const { worldId, languageId, journeyId } = MarketManagerServer.resolveContext(cleanHost, pathname);
 
-  // 🛡️ CHRIS-PROTOCOL: Parallel Pulse Fetching (v2.14.798)
-  // We fetch market, locales and translations in parallel to minimize TTFB
+  // 🛡️ CHRIS-PROTOCOL: Parallel Pulse Fetching with shared cache
   const [market, worldConfig, alternateLanguages, studioTranslations] = await Promise.all([
-    getMarketSafe(lookupHost),
-    ConfigBridge.getWorldConfig(worldId, languageId),
-    (async () => {
-      try {
-        const localesPromise = MarketDatabaseService.getAllLocalesAsync();
-        const timeoutPromise = new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Locales Timeout')), 2500)
-        );
-        return await Promise.race([localesPromise, timeoutPromise]) as any;
-      } catch (err) {
-        console.error(' generateMetadata: Failed to load locales:', err);
-        const staticDomains = MarketManagerServer.getMarketDomains();
-        return {
-          'nl-BE': staticDomains['BE'],
-          'nl-NL': staticDomains['NLNL'],
-          'fr-FR': staticDomains['FR'],
-          'en-EU': staticDomains['EU']
-        };
-      }
-    })(),
-    (async () => {
-      try {
-        const translationPromise = getTranslationsServer(langHeader || 'nl');
-        const timeoutPromise = new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Translation Timeout')), 2500)
-        );
-        return await Promise.race([translationPromise, timeoutPromise]) as any;
-      } catch (err) {
-        console.error(' generateMetadata: Failed to load translations:', err);
-        return {};
-      }
-    })()
+    getMarketSafeCached(lookupHost),
+    getWorldConfigCached(worldId, languageId),
+    getLocalesCached(),
+    getTranslationsCached(langHeader || "nl")
   ]);
 
   if (!market) {
@@ -220,7 +258,6 @@ export default async function RootLayout({
 }) {
   const headersList = headers();
   const langHeader = headersList.get('x-voices-lang');
-  const domains = MarketManagerServer.getMarketDomains();
   const pathname = headersList.get('x-voices-pathname') || '';
   const host = headersList.get("x-voices-host") || headersList.get("host") || process.env.NEXT_PUBLIC_SITE_URL || MarketManagerServer.getMarketDomains()['BE'].replace('https://', '');
   const cleanHost = host.replace(/^https?:\/\//, '');
@@ -233,51 +270,33 @@ export default async function RootLayout({
   // 🛡️ CHRIS-PROTOCOL: ID-First Context Resolution (v3.0.0)
   const { worldId, languageId, journeyId } = MarketManagerServer.resolveContext(cleanHost, pathname);
 
-  //  CHRIS-PROTOCOL: Parallel Pulse Fetching (v2.14.798)
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-  const supabase = createClient(supabaseUrl, supabaseKey);
-
-  const [market, studioTranslations, worldLanguages, worldConfig] = await Promise.all([
-    getMarketSafe(lookupHost),
-    (async () => {
-      try {
-        const translationPromise = getTranslationsServer(langHeader || 'nl');
-        const timeoutPromise = new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Translation Timeout')), 2500)
-        );
-        return await Promise.race([translationPromise, timeoutPromise]) as any;
-      } catch (err) {
-        console.error(' RootLayout: Failed to load translations:', err);
-        return {};
-      }
-    })(),
-    (async () => {
-      try {
-        const { data } = await supabase.from('world_languages').select('*');
-        return data || [];
-      } catch (err) {
-        console.error(' RootLayout: Failed to load world languages:', err);
-        return [];
-      }
-    })(),
-    ConfigBridge.getWorldConfig(worldId, languageId)
+  //  CHRIS-PROTOCOL: Parallel Pulse Fetching (cached hot-path)
+  const worldLanguagesPromise = getWorldLanguagesCached();
+  const [market, studioTranslations, worldConfig] = await Promise.all([
+    getMarketSafeCached(lookupHost),
+    getTranslationsCached(langHeader || "nl"),
+    getWorldConfigCached(worldId, languageId)
   ]);
 
   if (!market) {
     throw new Error('Market configuration could not be resolved.');
   }
   
-  // 🛡️ CHRIS-PROTOCOL: Prime MarketManager with World Languages
-  MarketManagerServer.setWorldLanguages(worldLanguages);
+  // 🛡️ CHRIS-PROTOCOL: Prime MarketManager asynchronously (non-blocking)
+  void worldLanguagesPromise
+    .then((worldLanguages) => {
+      if (Array.isArray(worldLanguages) && worldLanguages.length > 0) {
+        MarketManagerServer.setWorldLanguages(worldLanguages);
+      }
+    })
+    .catch((err) => {
+      console.error(" RootLayout: Failed to prime world languages:", err);
+    });
   
   // 🛡️ CHRIS-PROTOCOL: World Detection for Provider Injection (v2.25.1)
   const isStudioPage = pathname.startsWith('/studio/') || pathname === '/studio' || pathname === '/workshops' || pathname === '/voorwaarden-studio' || pathname.includes('/studio');
   const isAcademyPage = pathname.startsWith('/academy/') || pathname === '/academy' || pathname.includes('/academy');
   
-  const journeyKey = isStudioPage ? 'studio' : (isAcademyPage ? 'academy' : (market.market_code === 'ADEMING' ? 'ademing' : (market.market_code === 'PORTFOLIO' ? 'portfolio' : (market.market_code === 'ARTIST' ? 'artist' : 'agency'))));
-  const navConfig = await ConfigBridge.getNavConfig(journeyKey, langHeader || 'nl');
-
   const initialJourney = isStudioPage ? 'studio' : (isAcademyPage ? 'academy' : (market.market_code === 'ADEMING' ? 'ademing' : (market.market_code === 'PORTFOLIO' ? 'portfolio' : (market.market_code === 'ARTIST' ? 'artist' : 'agency'))));
   const initialUsage = isStudioPage || isAcademyPage ? 'subscription' : (market.market_code === 'ADEMING' ? 'subscription' : 'unpaid');
 
@@ -459,7 +478,7 @@ export default async function RootLayout({
                 <SafeErrorGuard name="GlobalNav" fallback={<ContainerInstrument plain className="h-[60px] bg-white/80 backdrop-blur-md border-b border-black/5 flex items-center px-6"><ContainerInstrument plain className="h-8 w-32 bg-va-black/10 animate-pulse rounded-md" /></ContainerInstrument>}>
                   <Suspense fallback={<ContainerInstrument plain className="h-10 bg-va-off-white/50 animate-pulse" />}>
                     {showTopBar && <TopBar />}
-                    {showGlobalNav && <GlobalNav initialNavConfig={navConfig || undefined} />}
+                    {showGlobalNav && <GlobalNav />}
                   </Suspense>
                 </SafeErrorGuard>
               </ContainerInstrument>

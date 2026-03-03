@@ -1,7 +1,9 @@
 import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
 import { MarketDatabaseService } from "@/lib/system/market-manager-db";
+import { db, ademingTracks } from "@/lib/system/voices-config";
 import { createClient } from "@supabase/supabase-js";
 import { and, asc, desc, eq, ilike, or, sql } from "drizzle-orm";
+import { unstable_cache } from "next/cache";
 import {
     Actor,
     SearchResults,
@@ -613,33 +615,59 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
 }
 
 export async function getArticle(slug: string, lang: string = 'nl-BE'): Promise<any> {
-  // 🛡️ CHRIS-PROTOCOL: Use SDK for stability (v2.14.273)
-  const { data: article, error } = await supabase
-    .from('content_articles')
-    .select('*')
-    .eq('slug', slug)
-    .single();
+  return getArticlePayloadCached(slug, lang);
+}
 
-  if (error || !article) {
-    console.warn(`[api-server] Article not found for slug: ${slug}`, error);
-    return null;
-  }
+const getArticlePayloadCached = unstable_cache(
+  async (slug: string, lang: string) => {
+    // 🛡️ CHRIS-PROTOCOL: Use SDK for stability (v2.14.273)
+    const { data: article, error } = await supabase
+      .from('content_articles')
+      .select('*')
+      .eq('slug', slug)
+      .single();
 
-  const translatedTitle = await VoiceglotBridge.t(`page.${slug}.title`, lang, true);
-  
-  // Fetch blocks via SDK
-  const { data: blocks } = await supabase
-    .from('content_blocks')
-    .select('*')
-    .eq('article_id', article.id)
-    .order('display_order', { ascending: true });
+    if (error || !article) {
+      console.warn(`[api-server] Article not found for slug: ${slug}`, error);
+      return null;
+    }
 
-  return { 
-    ...article, 
-    id: article.id,
-    title: translatedTitle, 
-    blocks: blocks || [] 
-  };
+    const translatedTitle = await VoiceglotBridge.t(`page.${slug}.title`, lang, true);
+    
+    const { data: blocks } = await supabase
+      .from('content_blocks')
+      .select('*')
+      .eq('article_id', article.id)
+      .order('display_order', { ascending: true });
+
+    return {
+      ...article,
+      id: article.id,
+      title: translatedTitle,
+      blocks: blocks || []
+    };
+  },
+  ["api-server-article-payload-v1"],
+  { revalidate: 120, tags: ["content-articles", "content-blocks"] }
+);
+
+const getPublicAdemingTracksCached = unstable_cache(
+  async () => {
+    try {
+      if (!db || !ademingTracks) return [];
+      const tracks = await db.select().from(ademingTracks).where(eq(ademingTracks.is_public, true));
+      return tracks || [];
+    } catch (error) {
+      console.error("[api-server] getAdemingTracksPublic failed:", error);
+      return [];
+    }
+  },
+  ["api-server-ademing-public-tracks-v1"],
+  { revalidate: 60, tags: ["ademing-tracks"] }
+);
+
+export async function getAdemingTracksPublic(): Promise<any[]> {
+  return getPublicAdemingTracksCached();
 }
 
 export async function getActor(slug: string, lang: string = 'nl-BE'): Promise<Actor> {
