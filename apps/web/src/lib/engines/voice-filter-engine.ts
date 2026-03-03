@@ -124,8 +124,12 @@ export class VoiceFilterEngine {
     }
 
     // 5. COUNTRY FILTERING (ID-First)
+    // 🛡️ CHRIS-PROTOCOL: Actors with null country_id are available in ALL countries (v2.28.1)
     if (criteria.countryId != null) {
-      result = result.filter(actor => (actor.country_id || (actor as any).countryId) === criteria.countryId);
+      result = result.filter(actor => {
+        const actorCountryId = actor.country_id || (actor as any).countryId;
+        return actorCountryId == null || actorCountryId === criteria.countryId;
+      });
     }
 
     // 6. GENDER (Handshake Truth v2.14.714)
