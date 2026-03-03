@@ -57,21 +57,21 @@ export const SkillDNAIsland: React.FC<SkillDNAIslandProps> = ({ workshop }) => {
 
           <div className="p-8 bg-white rounded-[24px] shadow-aura border border-black/[0.02] flex items-center gap-6 group hover:shadow-aura-lg transition-all duration-500">
             <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0 group-hover:scale-110 transition-transform duration-500">
-              <span className="text-2xl font-light tracking-tighter">
-                {level === 'Starter' ? 'S' : 'B'}
-              </span>
+              <TextInstrument as="span" className="text-2xl font-light tracking-tighter">
+                {(level === 'Starter' || level === 'Junior') ? 'S' : 'B'}
+              </TextInstrument>
             </div>
-            <div>
+            <ContainerInstrument plain>
               <TextInstrument className="text-[11px] font-bold tracking-[0.2em] uppercase text-va-black/30 mb-1">
                 <VoiceglotText translationKey="studio.skill_dna.level_label" defaultText="Instapniveau" />
               </TextInstrument>
               <TextInstrument className="text-xl font-light tracking-tight text-va-black">
-                {level === 'Starter' 
+                {(level === 'Starter' || level === 'Junior')
                   ? <VoiceglotText translationKey="studio.skill_dna.level_starter" defaultText="Geen ervaring vereist" />
                   : <VoiceglotText translationKey="studio.skill_dna.level_basis" defaultText="Basiservaring vereist" />
                 }
               </TextInstrument>
-            </div>
+            </ContainerInstrument>
           </div>
         </div>
 
