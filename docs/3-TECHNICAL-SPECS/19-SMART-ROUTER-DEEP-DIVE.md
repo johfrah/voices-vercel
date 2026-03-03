@@ -12,7 +12,7 @@
 }
 ```
 
-De **Smart Router** (`1-SITE/apps/web/src/app/[...slug]/page.tsx`) is de centrale verkeerstoren van Voices.be. In plaats van statische mappen voor elke pagina, gebruikt Voices een dynamisch systeem dat routes koppelt aan database-entiteiten.
+De **Smart Router** (`apps/web/src/app/[...slug]/page.tsx`) is de centrale verkeerstoren van Voices.be. In plaats van statische mappen voor elke pagina, gebruikt Voices een dynamisch systeem dat routes koppelt aan database-entiteiten.
 
 ---
 

@@ -39,7 +39,7 @@
 ---
 
 ## 📜 LAATSTE NUCLEAIRE UPDATES
-- **v2.28.0**: OpenAI proxy volledig verwijderd. Documentatie in `3-WETTEN` gezuiverd van alle WordPress/PHP slop.
+- **v2.28.0**: OpenAI proxy volledig verwijderd. Documentatie gezuiverd en gealigneerd op `docs/` + `scripts/`.
 - **v2.28.1**: SWOT-analyse en Cursor Evolution Plan geïntegreerd.
 
 ---

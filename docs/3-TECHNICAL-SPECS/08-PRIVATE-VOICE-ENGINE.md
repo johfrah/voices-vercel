@@ -11,9 +11,9 @@ Dit document beschrijft de volledige opzet van de eigen 'Johfrah Voice Engine' o
 
 ## 📂 Fase 1: Dataset Voorbereiding (Training Data)
 
-De volgende bestanden zijn geïdentificeerd in de `4-KELDER` als hoogwaardig trainingsmateriaal:
+De volgende bestanden zijn geïdentificeerd in `docs/archive` als hoogwaardig trainingsmateriaal:
 
-| Project | Kwaliteit | Pad (Relatief aan 4-KELDER/4-DATA-AND-DUMPS/07-historical-exports/) |
+| Project | Kwaliteit | Pad (Relatief aan `docs/archive/4-data-and-dumps/07-historical-exports/`) |
 | :--- | :--- | :--- |
 | **Cook-n-Style** | 48kHz/24bit | `2019-04-23_41076_ilse_delaere/Cook-n-Style-Johfrah-48khz-24bit.wav` |
 | **Colruyt** | High | `2021-09-21_224488_eva_peleman/BE2301-Colruyt-Johfrah.zip` |
@@ -21,7 +21,7 @@ De volgende bestanden zijn geïdentificeerd in de `4-KELDER` als hoogwaardig tra
 | **NMBS** | High | `2021-09-20_224258_pieter_ver_elst/BE-2300-Johfrah-NMBS-Cyclu` |
 
 ### Actie:
-- Kopieer deze bestanden naar `4-KELDER/assets_backup/stem-training/raw/`.
+- Kopieer deze bestanden naar `docs/archive/assets-backup/stem-training/raw/`.
 - Gebruik `ffmpeg` om ze te normaliseren naar mono, 22050Hz of 44100Hz (afhankelijk van model-eis).
 
 ## 💻 Fase 2: Mac Mini Setup (The Engine)
@@ -58,7 +58,7 @@ async def generate(text: str, speaker_wav: str = "johfrah_reference.wav"):
 
 ## 🌉 Fase 3: De Bridge (Vercel Connectie)
 
-We maken een nieuwe file: `1-SITE/apps/web/src/services/PrivateVoiceService.ts`.
+We maken een nieuwe file: `apps/web/src/services/PrivateVoiceService.ts`.
 Deze file wordt door NIETS anders aangeroepen in de huidige site.
 
 ```typescript

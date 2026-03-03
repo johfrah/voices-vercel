@@ -40,7 +40,7 @@ Dit document bevat 100 realistische commando's die een admin via Telegram aan **
 
 ## 📂 Content & Nuclear Workflow (Mark & Consuela)
 31. "Haal het artikel 'Stemmen in 2026' uit de kelder en injecteer het in Supabase."
-32. "Schoon de `4-KELDER/0-GRONDSTOFFEN-FABRIEK/` map op (Consuela)."
+32. "Schoon de `docs/archive/0-grondstoffen-fabriek/` map op (Consuela)."
 33. "Update de 'Over Ons' tekst met de nieuwe versie uit de Bijbel-Strategie."
 34. "Check op 'AI Slop' in de laatste 5 blogposts."
 35. "Vervang de hero-video op de homepage door `public/assets/hero-v2.mp4`."
