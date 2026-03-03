@@ -120,8 +120,7 @@ export async function POST(request: NextRequest) {
         // We halen de actieve talen uit de database in plaats van een hardcoded lijst.
         const { data: activeLanguages, error: langError } = await supabase
           .from('languages')
-          .select('id, code')
-          .eq('status', 'active');
+          .select('id, code');
 
         if (langError || !activeLanguages) {
           console.error('[RegisterAPI] Failed to fetch active languages for healing:', langError);
