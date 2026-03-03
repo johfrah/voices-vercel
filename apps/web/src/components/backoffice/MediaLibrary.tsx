@@ -39,7 +39,7 @@ interface MediaItem {
   fileName: string;
   filePath: string;
   fileType: string;
-  fileSize: number;
+  fileSize: number | null;
   journey: string;
   category: string;
   labels: string[] | null;
@@ -55,11 +55,14 @@ interface Actor {
   last_name: string;
 }
 
+const SUPABASE_PUBLIC_STORAGE_BASE = `${(process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://vcbxyyjsxuquytcsskpj.supabase.co').replace(/\/$/, '')}/storage/v1/object/public/voices`;
+
 export const MediaLibrary: React.FC = () => {
   const [media, setMedia] = useState<MediaItem[]>([]);
   const [actors, setActors] = useState<Actor[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [mediaError, setMediaError] = useState<string | null>(null);
+  const [brokenMediaIds, setBrokenMediaIds] = useState<number[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [isConverting, setIsConverting] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -111,6 +114,7 @@ export const MediaLibrary: React.FC = () => {
 
         const data = await res.json();
         setMedia(Array.isArray(data?.results) ? data.results : []);
+        setBrokenMediaIds([]);
         setYoutubeUrl(typeof data?.youtubeUrl === 'string' ? data.youtubeUrl : null);
       };
 
@@ -141,6 +145,7 @@ export const MediaLibrary: React.FC = () => {
       const fallbackMessage = e instanceof Error ? e.message : 'Onbekende fout bij het laden van media.';
       setMediaError(fallbackMessage);
       setMedia([]);
+      setBrokenMediaIds([]);
     } finally {
       if (mediaAbortRef.current === controller) {
         mediaAbortRef.current = null;
@@ -298,7 +303,7 @@ export const MediaLibrary: React.FC = () => {
         body: formData,
       });
       if (res.ok) {
-        setMedia(media.map(m => selectedIds.includes(m.id) ? { ...m, isPublic } : m));
+        setMedia(media.map(m => selectedIds.includes(m.id) ? { ...m, is_public } : m));
         setSelectedIds([]);
       }
     } catch (e) {
@@ -344,10 +349,36 @@ export const MediaLibrary: React.FC = () => {
   };
 
   const getMediaSourceUrl = (filePath: string) => {
-    if (filePath.startsWith('http://') || filePath.startsWith('https://')) return filePath;
-    if (filePath.startsWith('/')) return filePath;
-    if (filePath.startsWith('assets/')) return `/${filePath}`;
-    return `/assets/${filePath}`;
+    const normalizedPath = (filePath || '').trim().replace(/\\/g, '/').replace(/^\.?\//, '');
+    if (!normalizedPath) return '';
+    if (normalizedPath.startsWith('http://') || normalizedPath.startsWith('https://')) return normalizedPath;
+
+    let storagePath = normalizedPath;
+    if (storagePath.startsWith('images/workshops/')) {
+      storagePath = storagePath.replace('images/workshops/', 'assets/studio/workshops/images/');
+    } else if (storagePath.startsWith('assets/images/workshops/')) {
+      storagePath = storagePath.replace('assets/images/workshops/', 'assets/studio/workshops/images/');
+    } else if (!storagePath.startsWith('assets/') && storagePath.split('/')[0] === 'images') {
+      storagePath = `assets/${storagePath}`;
+    }
+
+    const encodedPath = storagePath
+      .split('/')
+      .filter(Boolean)
+      .map((segment) => encodeURIComponent(segment))
+      .join('/');
+
+    return `${SUPABASE_PUBLIC_STORAGE_BASE}/${encodedPath}`;
+  };
+
+  const formatFileSize = (fileSize?: number | null) => {
+    if (!fileSize || fileSize <= 0) return '—';
+    if (fileSize < 1024 * 1024) return `${Math.max(1, Math.round(fileSize / 1024))} KB`;
+    return `${(fileSize / (1024 * 1024)).toFixed(1)} MB`;
+  };
+
+  const markMediaAsBroken = (id: number) => {
+    setBrokenMediaIds((prev) => (prev.includes(id) ? prev : [...prev, id]));
   };
 
   return (
@@ -600,6 +631,7 @@ export const MediaLibrary: React.FC = () => {
             media.map((item) => {
               const mediaSrc = getMediaSourceUrl(item.filePath);
               const isExternalMedia = mediaSrc.startsWith('http://') || mediaSrc.startsWith('https://');
+              const isMissingInStorage = brokenMediaIds.includes(item.id);
 
               return (
               <ContainerInstrument
@@ -629,6 +661,7 @@ export const MediaLibrary: React.FC = () => {
                       width={400}
                       height={400}
                       unoptimized={isExternalMedia}
+                      onError={() => markMediaAsBroken(item.id)}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                     />
                   ) : item.fileType.startsWith('video/') ? (
@@ -636,6 +669,7 @@ export const MediaLibrary: React.FC = () => {
                       src={mediaSrc}
                       className="w-full h-full object-cover"
                       muted
+                      onError={() => markMediaAsBroken(item.id)}
                       onMouseOver={(e) => e.currentTarget.play()}
                       onMouseOut={(e) => e.currentTarget.pause()}
                     />
@@ -670,7 +704,7 @@ export const MediaLibrary: React.FC = () => {
                   <ContainerInstrument className="space-y-1">
                     <HeadingInstrument level={4} className="text-[15px] font-medium truncate tracking-tight text-va-black">{item.fileName}</HeadingInstrument>
                     <ContainerInstrument className="flex items-center gap-2 text-[15px] font-light text-va-black/30 tracking-widest ">
-                      <TextInstrument>{(item.fileSize / 1024).toFixed(0)} KB</TextInstrument>
+                      <TextInstrument>{formatFileSize(item.fileSize)}</TextInstrument>
                       <ContainerInstrument className="w-1 h-1 rounded-full bg-va-black/10" />
                       <TextInstrument>{new Date(item.createdAt).toLocaleDateString('nl-BE')}</TextInstrument>
                     </ContainerInstrument>
@@ -690,15 +724,22 @@ export const MediaLibrary: React.FC = () => {
                   )}
 
                   <ContainerInstrument className="pt-2 border-t border-va-black/5">
-                    <a
-                      href={mediaSrc}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 text-[13px] uppercase tracking-widest text-primary hover:text-primary/80 transition-colors"
-                    >
-                      <Play size={12} strokeWidth={1.5} />
-                      Open asset
-                    </a>
+                    {isMissingInStorage ? (
+                      <TextInstrument className="inline-flex items-center gap-2 text-[12px] uppercase tracking-widest text-red-600/80">
+                        <AlertCircle size={12} strokeWidth={1.5} />
+                        Asset ontbreekt in storage
+                      </TextInstrument>
+                    ) : (
+                      <a
+                        href={mediaSrc}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 text-[13px] uppercase tracking-widest text-primary hover:text-primary/80 transition-colors"
+                      >
+                        <Play size={12} strokeWidth={1.5} />
+                        Open asset
+                      </a>
+                    )}
                   </ContainerInstrument>
                 </ContainerInstrument>
               </ContainerInstrument>
