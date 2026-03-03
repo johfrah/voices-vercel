@@ -41,13 +41,48 @@ import {
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 
+type DashboardNotificationType = 'mail' | 'approval' | 'ai';
+
+interface DashboardNotification {
+  id: string;
+  type: DashboardNotificationType;
+  title: string;
+  user: string;
+  time: string;
+  href: string;
+}
+
+interface DashboardKpis {
+  mails: number;
+  approvals: number;
+  workshops: number;
+  ademing: number;
+  voices: number;
+}
+
+interface SystemLogRecord {
+  id?: string | number;
+  source?: string;
+  level?: string;
+  message?: string;
+  created_at?: string;
+  createdAt?: string;
+}
+
 export default function AdminDashboardContent() {
-  const [recentHeals, setRecentHeals] = useState<any[]>([]);
-  const [notifications, setNotifications] = useState<any[]>([]);
+  const [notifications, setNotifications] = useState<DashboardNotification[]>([]);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
+  const [kpis, setKpis] = useState<DashboardKpis>({
+    mails: 0,
+    approvals: 0,
+    workshops: 0,
+    ademing: 0,
+    voices: 0,
+  });
   const [quickLinkNames, setQuickLinkNames] = useState('');
   const [isGeneratingLink, setIsGeneratingLink] = useState(false);
   const { logAction } = useAdminTracking();
@@ -81,53 +116,105 @@ export default function AdminDashboardContent() {
     }
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const healsRes = await fetch('/api/admin/godmode/heals');
-        const healsData = await healsRes.json();
-        if (healsData.success) setRecentHeals(healsData.heals);
+  const fetchData = useCallback(async () => {
+    setLoading(true);
+    setFetchError(null);
 
-        const worldParam = activeWorld ? `&world=${activeWorld.code}` : '';
-        const notifyRes = await fetch(`/api/admin/system/logs?limit=5${worldParam}`);
-        const notifyData = await notifyRes.json();
-        
-        if (notifyData && notifyData.logs) {
-          setNotifications(notifyData.logs.slice(0, 5).map((log: any) => ({
-            id: log.id,
-            type: log.level === 'error' ? 'ai' : log.source === 'mail' ? 'mail' : 'approval',
-            title: log.message,
-            user: log.source,
-            time: (() => {
-              const dateStr = log.created_at || log.createdAt;
-              if (!dateStr) return "N/A";
-              const date = new Date(dateStr);
-              if (isNaN(date.getTime())) return "N/A";
-              return date.toLocaleTimeString('nl-BE', { hour: '2-digit', minute: '2-digit' });
-            })(),
-            icon: log.source === 'mail' ? <Mail size={14} /> : log.level === 'error' ? <Brain size={14} /> : <Bell size={14} />
-          })));
-        }
-      } catch (err) {
-        console.error('Failed to fetch dashboard data', err);
-      } finally {
-        setLoading(false);
+    try {
+      const worldParam = activeWorld ? `&world=${activeWorld.code}` : '';
+      const [notifyResult, approvalsResult, actorsResult, workshopsResult, liveResult] = await Promise.allSettled([
+        fetch(`/api/admin/system/logs?limit=20${worldParam}`, { cache: 'no-store' }).then((res) => res.json()),
+        fetch('/api/admin/approvals', { cache: 'no-store' }).then((res) => res.ok ? res.json() : []),
+        fetch(`/api/admin/actors${activeWorld ? `?world=${activeWorld.code}` : ''}`, { cache: 'no-store' }).then((res) => res.ok ? res.json() : { actors: [] }),
+        fetch('/api/studio/workshops', { cache: 'no-store' }).then((res) => res.ok ? res.json() : { workshops: [] }),
+        fetch('/api/admin/marketing/live', { cache: 'no-store' }).then((res) => res.ok ? res.json() : { visitors: [] }),
+      ]);
+
+      const logsPayload = notifyResult.status === 'fulfilled' ? notifyResult.value : null;
+      const approvalsPayload = approvalsResult.status === 'fulfilled' ? approvalsResult.value : [];
+      const actorsPayload = actorsResult.status === 'fulfilled' ? actorsResult.value : { actors: [] };
+      const workshopsPayload = workshopsResult.status === 'fulfilled' ? workshopsResult.value : { workshops: [] };
+      const livePayload = liveResult.status === 'fulfilled' ? liveResult.value : { visitors: [] };
+
+      const logs = Array.isArray(logsPayload?.logs) ? (logsPayload.logs as SystemLogRecord[]) : [];
+
+      const mappedNotifications: DashboardNotification[] = logs.slice(0, 5).map((log) => {
+        const type: DashboardNotificationType = log.source === 'mail'
+          ? 'mail'
+          : log.level === 'error'
+            ? 'ai'
+            : 'approval';
+
+        const dateStr = log.created_at || log.createdAt;
+        const date = dateStr ? new Date(dateStr) : null;
+        const time = date && !Number.isNaN(date.getTime())
+          ? date.toLocaleTimeString('nl-BE', { hour: '2-digit', minute: '2-digit' })
+          : '--:--';
+
+        const href = type === 'mail'
+          ? '/admin/mailbox'
+          : type === 'approval'
+            ? '/admin/approvals'
+            : '/admin/system/logs?level=error';
+
+        return {
+          id: String(log.id ?? `${log.source}-${time}`),
+          type,
+          title: String(log.message || 'Nieuwe melding'),
+          user: String(log.source || 'system'),
+          time,
+          href,
+        };
+      });
+
+      setNotifications(mappedNotifications);
+
+      const mailsCount = logs.filter((log) => log?.source === 'mail').length;
+      const approvalsCount = Array.isArray(approvalsPayload) ? approvalsPayload.length : 0;
+      const workshopCount = Array.isArray(workshopsPayload?.workshops) ? workshopsPayload.workshops.length : 0;
+      const ademingVisitors = Array.isArray(livePayload?.visitors) ? livePayload.visitors.length : 0;
+      const voicesCount = Array.isArray(actorsPayload?.actors) ? actorsPayload.actors.length : 0;
+
+      setKpis({
+        mails: mailsCount,
+        approvals: approvalsCount,
+        workshops: workshopCount,
+        ademing: ademingVisitors,
+        voices: voicesCount,
+      });
+
+      const hasAnyData =
+        logs.length > 0 ||
+        approvalsCount > 0 ||
+        workshopCount > 0 ||
+        ademingVisitors > 0 ||
+        voicesCount > 0;
+
+      if (!hasAnyData) {
+        setFetchError('Dashboarddata is tijdelijk beperkt. Vernieuw over enkele seconden.');
       }
-    };
-
-    fetchData();
+    } catch {
+      setFetchError('Dashboarddata kon niet geladen worden. Probeer opnieuw.');
+      setNotifications([]);
+      setKpis({ mails: 0, approvals: 0, workshops: 0, ademing: 0, voices: 0 });
+    } finally {
+      setLoading(false);
+    }
   }, [activeWorld]);
 
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
   const stats = [
-    { label: <VoiceglotText  translationKey="admin.stats.mails" defaultText="Nieuwe Mails" />, value: '...', icon: <Mail strokeWidth={1.5} size={20} />, trend: 'Inbox', color: 'text-blue-500', href: '/admin/mailbox' },
+    { label: <VoiceglotText  translationKey="admin.stats.mails" defaultText="Nieuwe Mails" />, value: loading ? '...' : String(kpis.mails), icon: <Mail strokeWidth={1.5} size={20} />, trend: 'Inbox', color: 'text-blue-500', href: '/admin/mailbox' },
     { label: <VoiceglotText  translationKey="admin.stats.live_chat" defaultText="Live Chat" />, value: 'Meekijken', icon: <Bot strokeWidth={1.5} size={20} />, trend: 'Live', color: 'text-green-500', href: '/admin/live-chat' },
     { label: <VoiceglotText  translationKey="admin.stats.analytics" defaultText="Statistieken" />, value: 'Inzicht', icon: <TrendingUp strokeWidth={1.5} size={20} />, trend: 'Groei', color: 'text-orange-500', href: '/admin/analytics' },
-    { label: <VoiceglotText  translationKey="admin.stats.approvals" defaultText="Wachtrij" />, value: '...', icon: <Bell strokeWidth={1.5} size={20} />, trend: 'Actie nodig', color: 'text-orange-500', href: '/admin/approvals' },
+    { label: <VoiceglotText  translationKey="admin.stats.approvals" defaultText="Wachtrij" />, value: loading ? '...' : String(kpis.approvals), icon: <Bell strokeWidth={1.5} size={20} />, trend: 'Actie nodig', color: 'text-orange-500', href: '/admin/approvals' },
     { label: <VoiceglotText  translationKey="admin.stats.finance" defaultText="Financieel" />, value: 'Overzicht', icon: <Euro strokeWidth={1.5} size={20} />, trend: 'Kassa', color: 'text-green-500', href: '/admin/finance' },
-    { label: <VoiceglotText  translationKey="admin.stats.workshops" defaultText="Workshops" />, value: '...', icon: <Calendar strokeWidth={1.5} size={20} />, trend: 'Studio', color: 'text-purple-500', href: '/admin/studio/workshops' },
-    { label: <VoiceglotText  translationKey="admin.stats.ademing" defaultText="Ademing" />, value: '...', icon: <Zap strokeWidth={1.5} size={20} />, trend: 'Meditatie', color: 'text-green-400', href: '/admin/ademing' },
-    { label: <VoiceglotText  translationKey="admin.stats.voices" defaultText="Stemmen" />, value: '...', icon: <Mic strokeWidth={1.5} size={20} />, trend: 'Demos', color: 'text-va-black/40', href: '/admin/voices' },
+    { label: <VoiceglotText  translationKey="admin.stats.workshops" defaultText="Workshops" />, value: loading ? '...' : String(kpis.workshops), icon: <Calendar strokeWidth={1.5} size={20} />, trend: 'Studio', color: 'text-purple-500', href: '/admin/studio/workshops' },
+    { label: <VoiceglotText  translationKey="admin.stats.ademing" defaultText="Ademing" />, value: loading ? '...' : String(kpis.ademing), icon: <Zap strokeWidth={1.5} size={20} />, trend: 'Meditatie', color: 'text-green-400', href: '/admin/ademing' },
+    { label: <VoiceglotText  translationKey="admin.stats.voices" defaultText="Stemmen" />, value: loading ? '...' : String(kpis.voices), icon: <Mic strokeWidth={1.5} size={20} />, trend: 'Demos', color: 'text-va-black/40', href: '/admin/voices' },
     { label: <VoiceglotText  translationKey="admin.stats.artists" defaultText="Artiesten" />, value: 'Actief', icon: <Music strokeWidth={1.5} size={20} />, trend: 'Portfolio', color: 'text-pink-500', href: '/admin/artists' },
     { label: <VoiceglotText  translationKey="admin.stats.agents" defaultText="Assistenten" />, value: 'Actief', icon: <Bot strokeWidth={1.5} size={20} />, trend: 'Beheer', color: 'text-primary', href: '/admin/agents' },
   ];
@@ -155,6 +242,21 @@ export default function AdminDashboardContent() {
           </ButtonInstrument>
         </ContainerInstrument>
       </SectionInstrument>
+
+      {fetchError && (
+        <ContainerInstrument className="flex items-center justify-between gap-4 p-4 rounded-2xl border border-amber-200 bg-amber-50">
+          <ContainerInstrument className="flex items-center gap-3 text-amber-800">
+            <Info size={16} />
+            <TextInstrument className="text-sm font-medium">{fetchError}</TextInstrument>
+          </ContainerInstrument>
+          <ButtonInstrument
+            onClick={fetchData}
+            className="px-4 py-2 rounded-xl bg-white border border-amber-200 text-amber-800 hover:bg-amber-100 transition-colors"
+          >
+            Opnieuw laden
+          </ButtonInstrument>
+        </ContainerInstrument>
+      )}
 
       {/* Quick Stats */}
       <ContainerInstrument className="grid grid-cols-1 md:grid-cols-4 gap-8">
@@ -195,38 +297,42 @@ export default function AdminDashboardContent() {
 
       <ContainerInstrument className="space-y-4">
         {loading ? (
-          <div className="p-20 text-center"><Loader2 className="animate-spin mx-auto text-primary/20" size={40} /></div>
+          <ContainerInstrument className="p-20 text-center">
+            <Loader2 className="animate-spin mx-auto text-primary/20" size={40} />
+          </ContainerInstrument>
         ) : notifications.length > 0 ? (
           notifications.map((n) => (
-            <ContainerInstrument key={n.id} className="flex items-center justify-between p-5 bg-va-off-white rounded-[24px] border border-black/[0.02] hover:border-primary/20 transition-all group cursor-pointer">
-              <ContainerInstrument className="flex items-center gap-4">
-                <ContainerInstrument className={`w-10 h-10 rounded-xl flex items-center justify-center ${
-                  n.type === 'mail' ? 'bg-blue-500/10 text-blue-500' : 
-                  n.type === 'approval' ? 'bg-orange-500/10 text-orange-500' : 
-                  'bg-purple-500/10 text-purple-500'
-                }`}>
-                  {n.icon}
+            <Link key={n.id} href={n.href} className="block">
+              <ContainerInstrument className="flex items-center justify-between p-5 bg-va-off-white rounded-[24px] border border-black/[0.02] hover:border-primary/20 transition-all group cursor-pointer">
+                <ContainerInstrument className="flex items-center gap-4">
+                  <ContainerInstrument className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                    n.type === 'mail' ? 'bg-blue-500/10 text-blue-500' :
+                    n.type === 'approval' ? 'bg-orange-500/10 text-orange-500' :
+                    'bg-purple-500/10 text-purple-500'
+                  }`}>
+                    {n.type === 'mail' ? <Mail size={14} /> : n.type === 'approval' ? <Bell size={14} /> : <Brain size={14} />}
+                  </ContainerInstrument>
+                  <ContainerInstrument>
+                    <TextInstrument className="text-[15px] font-black text-gray-900">{n.title}</TextInstrument>
+                    <TextInstrument className="text-[15px] text-va-black/40 font-bold tracking-widest uppercase">{n.user}</TextInstrument>
+                  </ContainerInstrument>
                 </ContainerInstrument>
-                <ContainerInstrument>
-                  <TextInstrument className="text-[15px] font-black text-gray-900">{n.title}</TextInstrument>
-                  <TextInstrument className="text-[15px] text-va-black/40 font-bold tracking-widest uppercase">{n.user}</TextInstrument>
+                <ContainerInstrument className="flex items-center gap-4">
+                  <ContainerInstrument className="flex items-center gap-1.5 text-va-black/20">
+                    <Clock strokeWidth={1.5} size={12} />
+                    <TextInstrument as="span" className="text-[15px] font-bold">{n.time}</TextInstrument>
+                  </ContainerInstrument>
+                  <ContainerInstrument className="w-8 h-8 rounded-full bg-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-sm">
+                    <ArrowRight strokeWidth={1.5} size={14} className="text-primary" />
+                  </ContainerInstrument>
                 </ContainerInstrument>
               </ContainerInstrument>
-              <ContainerInstrument className="flex items-center gap-4">
-                <ContainerInstrument className="flex items-center gap-1.5 text-va-black/20">
-                  <Clock strokeWidth={1.5} size={12} />
-                  <TextInstrument as="span" className="text-[15px] font-bold">{n.time}</TextInstrument>
-                </ContainerInstrument>
-                <ContainerInstrument className="w-8 h-8 rounded-full bg-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-sm">
-                  <ArrowRight strokeWidth={1.5} size={14} className="text-primary" />
-                </ContainerInstrument>
-              </ContainerInstrument>
-            </ContainerInstrument>
+            </Link>
           ))
         ) : (
-          <div className="p-20 text-center border-2 border-dashed border-black/5 rounded-[32px]">
+          <ContainerInstrument className="p-20 text-center border-2 border-dashed border-black/5 rounded-[32px]">
             <TextInstrument className="text-va-black/20 font-bold tracking-widest uppercase">Geen recente meldingen</TextInstrument>
-          </div>
+          </ContainerInstrument>
         )}
       </ContainerInstrument>
     </ContainerInstrument>

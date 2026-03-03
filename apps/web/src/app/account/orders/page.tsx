@@ -20,34 +20,90 @@ const LiquidBackground = nextDynamic(() => import('@/components/ui/LiquidBackgro
 
 export const dynamic = 'force-dynamic';
 
+interface OrderItemMetaData {
+  usage?: string;
+  mediaTypes?: string[];
+  deliveryTime?: string;
+  briefing?: string;
+  script?: string;
+}
+
+interface OrderItem {
+  id: number | string;
+  name: string;
+  price: string | number;
+  metaData?: OrderItemMetaData;
+  deliveryStatus?: 'waiting' | 'uploaded' | 'ready' | 'approved' | string;
+  deliveryFileUrl?: string;
+}
+
+interface OrderRecord {
+  id: number;
+  wpOrderId?: number | string;
+  status?: string;
+  journey?: string;
+  isQuote?: boolean;
+  paymentMethod?: string;
+  billingVatNumber?: string;
+  ipAddress?: string;
+  invoiceUrl?: string;
+  invoice_url?: string;
+  invoicePdfUrl?: string;
+  invoice_pdf_url?: string;
+  orderItems?: OrderItem[];
+}
+
 export default function OrdersPage() {
   const { user, isAuthenticated } = useAuth();
   const { t } = useTranslation();
   const searchParams = useSearchParams();
   const highlightedOrderId = searchParams?.get('orderId');
-  const [ordersList, setOrdersList] = useState<any[]>([]);
+  const [ordersList, setOrdersList] = useState<OrderRecord[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [expandedOrders, setExpandedOrders] = useState<Record<number, boolean>>({});
 
   const toggleExpand = (id: number) => {
     setExpandedOrders(prev => ({ ...prev, [id]: !prev[id] }));
   };
 
+  const resolveInvoiceUrl = (order: OrderRecord): string | null => {
+    return order.invoiceUrl || order.invoice_url || order.invoicePdfUrl || order.invoice_pdf_url || null;
+  };
+
+  const resolveHelpPath = (order: OrderRecord): string => {
+    const journey = order.journey || '';
+    if (journey === 'academy') return '/academy/contact';
+    if (journey === 'studio') return '/studio/contact';
+    if (journey === 'ademing') return '/ademing/contact';
+    if (journey === 'artist') return '/contact';
+    return '/agency/contact';
+  };
+
   useEffect(() => {
     if (isAuthenticated && user?.email) {
+      setErrorMessage(null);
       const forceRefresh = !!highlightedOrderId;
       fetch(`/api/intelligence/customer-360?email=${user.email}${forceRefresh ? '&forceRefresh=true' : ''}`)
-        .then(res => res.json())
+        .then(async (res) => {
+          if (!res.ok) {
+            throw new Error('orders_fetch_failed');
+          }
+          return res.json();
+        })
         .then(data => {
           setOrdersList(data.orders || []);
           setIsLoading(false);
           // Auto-expand highlighted order
           if (highlightedOrderId) {
-            setExpandedOrders(prev => ({ ...prev, [parseInt(highlightedOrderId)]: true }));
+            const parsedOrderId = Number(highlightedOrderId);
+            if (!Number.isNaN(parsedOrderId)) {
+              setExpandedOrders(prev => ({ ...prev, [parsedOrderId]: true }));
+            }
           }
         })
-        .catch(err => {
-          console.error('Orders Fetch Error:', err);
+        .catch(() => {
+          setErrorMessage('Bestellingen konden niet geladen worden. Probeer opnieuw.');
           setIsLoading(false);
         });
     }
@@ -93,11 +149,27 @@ export default function OrdersPage() {
           </ContainerInstrument>
         </SectionInstrument>
 
+        {errorMessage && (
+          <ContainerInstrument className="mb-8 p-4 rounded-2xl border border-amber-200 bg-amber-50 flex items-center justify-between gap-4">
+            <TextInstrument className="text-sm text-amber-800 font-medium">
+              {errorMessage}
+            </TextInstrument>
+            <ButtonInstrument
+              onClick={() => window.location.reload()}
+              className="px-4 py-2 rounded-xl bg-white border border-amber-200 text-amber-800 hover:bg-amber-100 transition-colors"
+            >
+              Opnieuw laden
+            </ButtonInstrument>
+          </ContainerInstrument>
+        )}
+
         <BentoGrid>
           {ordersList.length > 0 ? (
-            ordersList.map((order: any) => {
+            ordersList.map((order: OrderRecord) => {
               const isHighlighted = highlightedOrderId === order.id.toString();
               const isExpanded = !!expandedOrders[order.id];
+              const invoiceUrl = resolveInvoiceUrl(order);
+              const helpPath = resolveHelpPath(order);
               
               return (
                 <BentoCard 
@@ -137,10 +209,27 @@ export default function OrdersPage() {
                         {isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
                         <span className="text-[13px] font-bold tracking-widest uppercase">{isExpanded ? 'Verberg Details' : 'Toon Details'}</span>
                       </ButtonInstrument>
-                      <ButtonInstrument className="flex items-center gap-2 px-6 py-4 rounded-2xl bg-va-off-white border border-black/[0.03] hover:bg-va-black hover:text-white transition-all group shadow-sm">
-                        <FileText strokeWidth={1.5} size={18} className="opacity-40 group-hover:opacity-100" />
-                        <span className="text-[13px] font-bold tracking-widest uppercase"><VoiceglotText translationKey="account.orders.invoice" defaultText="Factuur" /></span>
-                      </ButtonInstrument>
+                      {invoiceUrl ? (
+                        <ButtonInstrument
+                          as="a"
+                          href={invoiceUrl}
+                          target="_blank"
+                          className="flex items-center gap-2 px-6 py-4 rounded-2xl bg-va-off-white border border-black/[0.03] hover:bg-va-black hover:text-white transition-all group shadow-sm"
+                        >
+                          <FileText strokeWidth={1.5} size={18} className="opacity-40 group-hover:opacity-100" />
+                          <span className="text-[13px] font-bold tracking-widest uppercase"><VoiceglotText translationKey="account.orders.invoice" defaultText="Factuur" /></span>
+                        </ButtonInstrument>
+                      ) : (
+                        <ButtonInstrument
+                          disabled
+                          className="flex items-center gap-2 px-6 py-4 rounded-2xl bg-va-off-white/80 border border-black/[0.03] text-va-black/30 cursor-not-allowed shadow-sm"
+                        >
+                          <FileText strokeWidth={1.5} size={18} className="opacity-40" />
+                          <span className="text-[13px] font-bold tracking-widest uppercase">
+                            <VoiceglotText translationKey="account.orders.invoice_pending" defaultText="Factuur volgt" />
+                          </span>
+                        </ButtonInstrument>
+                      )}
                     </ContainerInstrument>
                   </ContainerInstrument>
 
@@ -158,7 +247,7 @@ export default function OrdersPage() {
                             {/* Order Items Breakdown */}
                             <div className="space-y-4">
                               <LabelInstrument className="text-[11px] font-bold tracking-[0.2em] text-va-black/20 uppercase">Bestelde Items</LabelInstrument>
-                              {order.orderItems?.map((item: any) => (
+                              {order.orderItems?.map((item: OrderItem) => (
                                 <div key={item.id} className="p-8 bg-va-off-white/50 rounded-[24px] border border-black/[0.03] space-y-6">
                                   <div className="flex justify-between items-start">
                                     <div className="flex items-center gap-4">
@@ -192,7 +281,7 @@ export default function OrdersPage() {
                                       </div>
                                     </div>
                                     <div className="text-right">
-                                      <TextInstrument className="text-[20px] font-light text-va-black">{SlimmeKassa.format(parseFloat(item.price))}</TextInstrument>
+                                      <TextInstrument className="text-[20px] font-light text-va-black">{SlimmeKassa.format(Number(item.price) || 0)}</TextInstrument>
                                     </div>
                                   </div>
 
@@ -296,7 +385,7 @@ export default function OrdersPage() {
                       </TextInstrument>
                     </ContainerInstrument>
                     <ContainerInstrument className="flex items-center gap-6">
-                      <ButtonInstrument className="va-btn-pro !bg-va-off-white !text-va-black/60 hover:!text-va-black border border-black/[0.03]">
+                      <ButtonInstrument as={Link} href={helpPath} className="va-btn-pro !bg-va-off-white !text-va-black/60 hover:!text-va-black border border-black/[0.03]">
                         <VoiceglotText translationKey="common.need_help" defaultText="Hulp nodig?" />
                       </ButtonInstrument>
                     </ContainerInstrument>

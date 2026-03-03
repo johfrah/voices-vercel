@@ -5,8 +5,6 @@ const nextConfig = {
     return [
       { source: '/mailbox', destination: '/admin/mailbox/', permanent: true },
       { source: '/mailbox/', destination: '/admin/mailbox/', permanent: true },
-      { source: '/account/mailbox', destination: '/admin/mailbox/', permanent: true },
-      { source: '/account/mailbox/', destination: '/admin/mailbox/', permanent: true },
       { source: '/admin/studio/beheer', destination: '/studio/inschrijvingen/', permanent: true },
       { source: '/admin/studio/beheer/', destination: '/studio/inschrijvingen/', permanent: true },
       { source: '/studio/beheer', destination: '/studio/inschrijvingen/', permanent: true },

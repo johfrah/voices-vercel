@@ -45,20 +45,52 @@ import { useTranslation } from '@/contexts/TranslationContext';
 import { SlimmeKassa } from '@/lib/engines/pricing-engine';
 import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
 
+interface CustomerDna {
+  stats?: {
+    orderCount?: number;
+  };
+  intelligence?: {
+    leadVibe?: string;
+  };
+  dna?: {
+    topJourneys?: string[];
+    preferredLanguages?: string[];
+  };
+}
+
+interface AccountNotification {
+  id: string;
+  title: string;
+  message: string;
+  unread?: boolean;
+  time?: string;
+}
+
+interface PerformanceStat {
+  label: string;
+  value: string;
+  trend: string;
+  icon: JSX.Element;
+}
+
 export default function AccountDashboardClient() {
   const { user, isAdmin, isLoading, isAuthenticated, logout } = useAuth();
   const { t } = useTranslation();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [customerDNA, setCustomerDNA] = useState<any>(null);
+  const [customerDNA, setCustomerDNA] = useState<CustomerDna | null>(null);
   const [isPartner, setIsPartner] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   useEffect(() => {
     if (user) {
-      setIsPartner((user as any)?.role === 'partner');
+      const role = typeof user === 'object' && user && 'role' in user
+        ? (user as { role?: string }).role
+        : undefined;
+      setIsPartner(role === 'partner');
     }
   }, [user]);
-  const [notifications, setNotifications] = useState<any[]>([]);
+  const [notifications, setNotifications] = useState<AccountNotification[]>([]);
 
   useEffect(() => {
     if (searchParams?.get('auth') === 'success') {
@@ -75,16 +107,34 @@ export default function AccountDashboardClient() {
 
   useEffect(() => {
     if (isAuthenticated && user?.email) {
+      setLoadError(null);
+
       fetch(`/api/intelligence/customer-360?email=${user.email}`)
-        .then(res => res.json())
+        .then(async (res) => {
+          if (!res.ok) {
+            throw new Error('dna_fetch_failed');
+          }
+          return res.json();
+        })
         .then(data => setCustomerDNA(data))
-        .catch(err => console.error('DNA Fetch Error:', err));
+        .catch(() => {
+          setLoadError('Klantinzichten zijn tijdelijk niet beschikbaar.');
+          setCustomerDNA(null);
+        });
 
       // Fetch notifications
       fetch('/api/account/notifications')
-        .then(res => res.json())
+        .then(async (res) => {
+          if (!res.ok) {
+            throw new Error('notifications_fetch_failed');
+          }
+          return res.json();
+        })
         .then(data => setNotifications(data.notifications || []))
-        .catch(err => console.error('Notifications Fetch Error:', err));
+        .catch(() => {
+          setLoadError('Meldingen konden niet worden geladen.');
+          setNotifications([]);
+        });
     }
   }, [isAuthenticated, user]);
 
@@ -103,10 +153,11 @@ export default function AccountDashboardClient() {
   }
 
   // Performance stats (Data-Driven)
-  const performanceStats: any[] = [];
+  const performanceStats: PerformanceStat[] = [];
 
   // Notifications (Data-Driven)
   const activeNotifications = notifications;
+  const mailboxPath = isAdmin ? '/admin/mailbox' : '/account/mailbox';
 
   const isNewCustomer = !isPartner && !isAdmin && (!customerDNA?.stats?.orderCount || customerDNA.stats.orderCount === 0);
 
@@ -122,6 +173,22 @@ export default function AccountDashboardClient() {
           userEmail={user?.email || `user@${isAdmin ? MarketManager.getCurrentMarket().market_code.toLowerCase() + '.be' : (typeof window !== 'undefined' ? window.location.hostname : 'voices.be')}`} 
           onLogout={logout}
         />
+
+        {loadError && (
+          <ContainerInstrument className="mx-auto mt-6 max-w-6xl px-6">
+            <ContainerInstrument className="rounded-2xl border border-amber-200 bg-amber-50 p-4 flex items-center justify-between gap-4">
+              <TextInstrument className="text-sm text-amber-800 font-medium">
+                {loadError}
+              </TextInstrument>
+              <ButtonInstrument
+                onClick={() => window.location.reload()}
+                className="px-4 py-2 rounded-xl bg-white border border-amber-200 text-amber-800 hover:bg-amber-100 transition-colors"
+              >
+                Opnieuw laden
+              </ButtonInstrument>
+            </ContainerInstrument>
+          </ContainerInstrument>
+        )}
 
         <SectionInstrument className="va-section-grid">
           <ContainerInstrument className="va-container">
@@ -333,7 +400,7 @@ export default function AccountDashboardClient() {
                 <BentoCard 
                   span="sm" 
                   className="bg-va-off-white p-10 rounded-[32px] border border-black/[0.03] flex flex-col justify-between va-interactive group"
-                  onClick={() => router.push(isAdmin ? '/admin/mailbox' : '/account/mailbox')}
+                  onClick={() => router.push(mailboxPath)}
                 >
                   <div>
                     <div className="flex justify-between items-start mb-6">
