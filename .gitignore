@@ -34,9 +34,6 @@ next-env.d.ts
 
 # --- VOICES SPECIFIC ---
 
-# Archief (extern op Desktop)
-4-KELDER/
-
 # Assets (Media) - Staan al in Supabase Storage
 **/assets/
 !apps/web/public/assets/common/**
@@ -71,13 +68,6 @@ next-env.d.ts
 # Backups & Dubbels
 5-DUBBELS/
 assets_backup/
-1-SITE/
-3-WETTEN/
-4-KELDER/
-apps/web/1-SITE/
-apps/web/3-WETTEN/
-apps/apps_new/web/1-SITE/
-apps/apps_new/web/3-WETTEN/
 
 # Webhosting
 .webhosting/

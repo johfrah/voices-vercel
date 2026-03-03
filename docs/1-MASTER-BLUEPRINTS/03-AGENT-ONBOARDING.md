@@ -16,13 +16,14 @@ Welkom bij Voices.be. Je bent hier niet om "code te schrijven", je bent hier om 
 
 ---
 
-## 🏗️ STAP 1: DE DRIE-EENHEID (Architectuur)
-Voices draait op de **Atomic Architectural Trinity**:
-1.  **1-SITE**: De motor (Next.js, Supabase, Drizzle).
-2.  **3-WETTEN**: De controlekamer (Wetten, Scripts, Docs).
-3.  **4-KELDER**: Het archief (Legacy, Grondstoffen).
+## 🏗️ STAP 1: DE HUIDIGE MONOREPO-STRUCTUUR (Architectuur)
+Voices draait op de huidige monorepo-structuur:
+1.  **`apps/`**: de actieve applicaties (Next.js etalage).
+2.  **`packages/`**: gedeelde packages (config/database).
+3.  **`docs/` + `scripts/`**: documentatie, audits en onderhoud.
+4.  **`docs/archive/`**: legacy en grondstoffen.
 
-**WET:** Gebruik NOOIT mappen met underscores (`_`) in de root. Gebruik uitsluitend genummerde mappen met koppeltekens.
+**WET:** Gebruik NOOIT mappen met underscores (`_`) in de root. Gebruik uitsluitend kebab-case mapnamen.
 
 ---
 
@@ -46,15 +47,15 @@ De Smart Router (`[...slug]/page.tsx`) is het hart van de site.
 Je mag pas pushen als:
 1.  `npm run check:pre-vercel` succesvol is.
 2.  De versie is verhoogd in `package.json` en `Providers.tsx`.
-3.  `npx tsx 3-WETTEN/scripts/forensic-audit.ts` volledig groen is.
+3.  `php scripts/core/maintenance/validate-root-clean.php` geen structurele fouten geeft.
 
 ---
 
 ## 📚 ESSENTIËLE DOCUMENTATIE
 Lees deze bestanden VOORDAT je je eerste edit doet:
 1.  `.cursorrules`: Je operationele wetten.
-2.  `3-WETTEN/docs/1-MASTER-BLUEPRINTS/01-MASTER-BLUEPRINT-2026.md`: De visie.
-3.  `3-WETTEN/docs/3-TECHNICAL-SPECS/310-LAYOUT-INSTRUMENTS.mdc`: Je UI-gereedschapskist.
+2.  `docs/1-MASTER-BLUEPRINTS/01-MASTER-BLUEPRINT-2026.md`: De visie.
+3.  `.cursor/rules/310-LAYOUT-INSTRUMENTS.mdc`: Je UI-gereedschapskist.
 
 ---
 

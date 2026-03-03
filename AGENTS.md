@@ -7,8 +7,8 @@ This platform follows the **Bob-method** (architecture) and **Chris-Protocol** (
 ### Mandatory Startup Handshake (PATH UPDATE)
 Before first edit, read:
 - `.cursorrules`
-- `3-WETTEN/docs/1-MASTER-BLUEPRINTS/06-AGENTS-HANDSHAKE.md`
-- `3-WETTEN/docs/1-MASTER-BLUEPRINTS/03-AGENT-ONBOARDING.md`
+- `docs/1-MASTER-BLUEPRINTS/06-AGENTS-HANDSHAKE.md`
+- `docs/1-MASTER-BLUEPRINTS/03-AGENT-ONBOARDING.md`
 - Then the key rules listed in **Key Rules Files** below.
 
 ### The 9 Worlds (Business Verticals)

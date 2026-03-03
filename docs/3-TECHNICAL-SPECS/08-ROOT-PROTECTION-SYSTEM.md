@@ -13,9 +13,9 @@ Dit systeem voorkomt dat bestanden per ongeluk in de root directory worden gepla
 - **Doel**: Voorkomt dat verboden bestanden worden gecommit.
 - **Bestand**: `.gitignore` in root.
 
-### 3. Forensic Audit (`3-WETTEN/scripts/forensic-audit.ts`)
+### 3. Root Clean Validator (`scripts/core/maintenance/validate-root-clean.php`)
 - **Doel**: Controleert proactief op "slop" en foutieve mappenstructuren.
-- **Werking**: Wordt gedraaid vóór elke push.
+- **Werking**: Draai vóór pushes en bij root-structuur wijzigingen.
 
 ## Toegestane Bestanden in Root
 Uitsluitend configuratiebestanden voor de monorepo:
@@ -27,15 +27,16 @@ Uitsluitend configuratiebestanden voor de monorepo:
 - `vercel.json`
 
 ## Verboden Bestanden in Root
-- ❌ `*.md` → Moet in `3-WETTEN/docs/`
-- ❌ `*.ts`, `*.sh` → Moet in `3-WETTEN/scripts/`
-- ❌ `*.sql`, `*.csv` → Moet in `4-KELDER/`
-- ❌ `apps/`, `packages/`, `assets/` → Moeten in `1-SITE/` staan.
+- ❌ `*.md` → Moet in `docs/` (behalve expliciete root-governance files).
+- ❌ `*.ts`, `*.sh`, `*.php`, `*.py` → Moet in `scripts/`.
+- ❌ `*.sql`, `*.csv` → Moet in `docs/archive/` of een data-submap in `docs/`.
+- ❌ Niet-geautoriseerde root-mappen buiten de monorepo-structuur.
 
-## Mappenstructuur (De Gouden Drie-Eenheid)
-1. **`1-SITE/`**: De actieve etalage en motor (Next.js, Drizzle, Assets).
-2. **`3-WETTEN/`**: De controlekamer (Scripts, Docs, Wetten).
-3. **`4-KELDER/`**: Het archief (Legacy code, Grondstoffen).
+## Mappenstructuur (Monorepo Source of Truth)
+1. **`apps/`**: de actieve applicatielaag.
+2. **`packages/`**: gedeelde packages en schema's.
+3. **`docs/`**: documentatie, rapporten en archief.
+4. **`scripts/`**: onderhoud, validatie en tooling.
 
 ---
 
