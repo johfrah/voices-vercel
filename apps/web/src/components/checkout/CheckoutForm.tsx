@@ -39,6 +39,13 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
   const market = React.useMemo(() => {
     return MarketManager.getCurrentMarket();
   }, []);
+  const localePrefix = typeof window !== 'undefined'
+    ? (window.location.pathname.match(/^\/(fr|en|nl|de|es|it|pt)(?=\/|$)/i)?.[0] || '')
+    : '';
+  const isStudioJourney = state.journey === 'studio'
+    || !!state.editionId
+    || (state.items || []).some((item: any) => item?.type === 'workshop_edition');
+  const authRedirectPath = isStudioJourney ? `${localePrefix}/studio/checkout` : `${localePrefix}/checkout`;
 
   const [formData, setFormData] = useState({
     ...state.customer,
@@ -83,7 +90,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
       const response = await fetch('/api/auth/send-magic-link/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: modalEmail, redirect: '/checkout', language: normalizeLocale(language) }),
+        body: JSON.stringify({ email: modalEmail, redirect: authRedirectPath, language: normalizeLocale(language) }),
       });
 
       const result = await response.json();
@@ -709,7 +716,9 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
           </ContainerInstrument>
 
           <ContainerInstrument className="space-y-2">
-            {state.paymentMethods.map((method) => (
+            {state.paymentMethods.map((method) => {
+              const iconSrc = method.image?.size2x || method.image?.size1x;
+              return (
               <ButtonInstrument
                 key={method.id}
                 type="button"
@@ -728,18 +737,18 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
                 <div className="flex items-center gap-4">
                   <div className={cn(
                     "w-10 h-8 flex items-center justify-center transition-all duration-500",
-                    state.paymentMethod === method.id ? "scale-105" : "grayscale opacity-30 group-hover:grayscale-0 group-hover:opacity-100"
+                    state.paymentMethod === method.id ? "scale-105" : "opacity-70 group-hover:opacity-100"
                   )}>
-                    {method.id === 'banktransfer' ? (
-                      <FileText size={20} strokeWidth={1.2} className={state.paymentMethod === method.id ? "text-primary" : "text-va-black/40"} />
-                    ) : (
+                    {iconSrc ? (
                       <Image  
-                        src={method.image.size2x} 
+                        src={iconSrc} 
                         alt={method.description} 
                         width={40} 
                         height={20} 
                         className="h-5 object-contain"
                       />
+                    ) : (
+                      <ContainerInstrument className="w-10 h-5" />
                     )}
                   </div>
                   <div className="text-left">
@@ -767,7 +776,8 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
                   )}
                 </div>
               </ButtonInstrument>
-            ))}
+              );
+            })}
 
             {/* Bank Transfer Info Box */}
             <AnimatePresence>

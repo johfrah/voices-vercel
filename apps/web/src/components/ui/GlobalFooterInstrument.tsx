@@ -214,9 +214,9 @@ export default function GlobalFooter() {
                   ))
                 ) : (
                   <>
-                    <Image src="/assets/common/branding/payment/bancontact.svg" alt="Bancontact" width={30} height={20} className="h-5 w-auto" />
-                    <Image src="/assets/common/branding/payment/visa.svg" alt="Visa" width={40} height={20} className="h-3 w-auto" />
-                    <Image src="/assets/common/branding/payment/mastercard.svg" alt="Mastercard" width={30} height={20} className="h-5 w-auto" />
+                    <Image src="/payment-methods/mollie/bancontact.png" alt="Bancontact" width={30} height={20} className="h-5 w-auto object-contain" />
+                    <Image src="/payment-methods/mollie/ideal.png" alt="iDEAL" width={34} height={20} className="h-5 w-auto object-contain" />
+                    <Image src="/payment-methods/mollie/creditcard.png" alt="Creditcard" width={40} height={20} className="h-4 w-auto object-contain" />
                   </>
                 )}
               </ContainerInstrument>
