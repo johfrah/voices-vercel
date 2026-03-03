@@ -207,7 +207,13 @@ export async function POST(request: NextRequest) {
           
           if (dbxToken) {
             const exportBase = `/Voices.be/Projects/Exports/${orderId}`;
-            const subFolders = ['48kHz 24bit', '8kHz 16bit', '16kHz 16bit'];
+            // 🛡️ CHRIS-PROTOCOL: ID-First Handshake — Telephony = journey_id 26
+            const orderJourneyId = (order as any)?.journeyId ?? (order as any)?.journey_id;
+            const metaJourneyId = (order?.rawMeta as any)?.journeyId ?? (order?.rawMeta as any)?.journey_id;
+            const isTelephony = orderJourneyId === 26 || metaJourneyId === 26;
+            const subFolders = isTelephony 
+              ? ['48kHz 24bit', '8kHz 16bit', '16kHz 16bit']
+              : ['48kHz 24bit'];
             
             for (const sub of subFolders) {
               await fetch('https://api.dropboxapi.com/2/files/create_folder_v2', {
