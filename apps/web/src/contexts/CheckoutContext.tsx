@@ -217,28 +217,6 @@ const CheckoutContext = createContext<CheckoutContextType | undefined>(undefined
 export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isHydrated, setIsHydrated] = useState(false);
   const [state, setState] = useState<CheckoutState>(initialState);
-  const appendAgentLog = useCallback((payload: {
-    hypothesisId: string;
-    location: string;
-    message: string;
-    data: Record<string, unknown>;
-    timestamp?: number;
-  }) => {
-    if (typeof window === 'undefined') return;
-    try {
-      void fetch('/api/debug-log', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        keepalive: true,
-        body: JSON.stringify({
-          ...payload,
-          timestamp: payload.timestamp ?? Date.now(),
-        }),
-      });
-    } catch (_error) {
-      // no-op: debug instrumentation must never break checkout flow
-    }
-  }, []);
 
   //  CHRIS-PROTOCOL: Hydration & Persistence Layer
   useEffect(() => {
@@ -248,22 +226,6 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         try {
           const parsed = JSON.parse(saved);
           console.log(`[CheckoutContext] Restoring state from localStorage: ${parsed.items?.length || 0} items`);
-          // #region agent log
-          appendAgentLog({
-            hypothesisId: 'E',
-            location: 'CheckoutContext.tsx:hydrate',
-            message: 'Loaded persisted checkout payload',
-            data: {
-              path: window.location.pathname,
-              parsed_journey: parsed?.journey ?? null,
-              parsed_usage: parsed?.usage ?? null,
-              parsed_plan: parsed?.plan ?? null,
-              parsed_step: parsed?.step ?? null,
-              parsed_items_count: Array.isArray(parsed?.items) ? parsed.items.length : 0,
-              has_selected_actor: !!parsed?.selectedActor,
-            },
-          });
-          // #endregion
           
           // 🛡️ CHRIS-PROTOCOL: World Isolation (v2.16.134)
           // If the saved journey doesn't match the current world context, we reset it.
@@ -299,22 +261,7 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
                 item?.editionId ||
                 item?.date
               );
-              const keepWorkshopItem = workshopPrice > 0 && hasSelectionSignal;
-              // #region agent log
-              appendAgentLog({
-                hypothesisId: 'B',
-                location: 'CheckoutContext.tsx:hydrate-cleanItems',
-                message: 'Workshop hydration item validation',
-                data: {
-                  item_id: item?.id ?? null,
-                  item_type: item?.type ?? null,
-                  workshop_price: workshopPrice,
-                  has_selection_signal: hasSelectionSignal,
-                  keep_workshop_item: keepWorkshopItem,
-                },
-              });
-              // #endregion
-              return keepWorkshopItem;
+              return workshopPrice > 0 && hasSelectionSignal;
             }
             const price = item.pricing?.total ?? item.pricing?.subtotal ?? 0;
             if (price <= 0) return false;
@@ -361,7 +308,7 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         setIsHydrated(true);
       }, 0);
     }
-  }, [appendAgentLog]);
+  }, []);
 
   //  CHRIS-PROTOCOL: Centralized Config Fetching - ONLY AFTER HYDRATION
   useEffect(() => {
@@ -454,27 +401,6 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const setJourney = useCallback((journey: CheckoutState['journey'], courseId?: number) => {
     const journeyId = (journey === 'agency') ? 27 : (journey === 'studio' ? 1 : (journey === 'academy' ? 30 : undefined));
     setState(prev => {
-      const hasPricedWorkshop = !!prev.items.some(i => i.type === 'workshop_edition' && (i.pricing?.total ?? 0) > 0);
-      const shouldInjectPlaceholder = !!(journey === 'studio' && courseId && !hasPricedWorkshop);
-      // #region agent log
-      appendAgentLog({
-        hypothesisId: 'B',
-        location: 'CheckoutContext.tsx:setJourney',
-        message: 'setJourney mutation decision',
-        data: {
-          incoming_journey: journey,
-          incoming_course_id: courseId ?? null,
-          next_journey_id: journeyId ?? null,
-          prev_journey: prev.journey,
-          prev_usage: prev.usage,
-          prev_items_count: prev.items.length,
-          has_priced_workshop_item: hasPricedWorkshop,
-          should_inject_placeholder_item: shouldInjectPlaceholder,
-          placeholder_injection_blocked: shouldInjectPlaceholder,
-        },
-      });
-      // #endregion
-
       return {
         ...prev,
         journey,
@@ -487,7 +413,7 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         items: prev.items
       };
     });
-  }, [appendAgentLog]);
+  }, []);
 
   const toggleUpsell = useCallback((upsell: keyof CheckoutState['upsells']) =>
     setState(prev =>
@@ -575,31 +501,12 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       existing.music?.trackId === item.music?.trackId
     );
 
-    const action = itemPrice <= 0
-      ? 'blocked_zero_price'
-      : (isDuplicate ? 'blocked_duplicate' : 'added');
-    // #region agent log
-    appendAgentLog({
-      hypothesisId: 'B',
-      location: 'CheckoutContext.tsx:addItem',
-      message: 'addItem decision',
-      data: {
-        action,
-        item_id: item?.id ?? null,
-        item_type: item?.type ?? null,
-        item_price: itemPrice,
-        prev_items_count: prev.items.length,
-        item_id_type: typeof item?.id,
-      },
-    });
-    // #endregion
-
-    if (action === 'blocked_zero_price') {
+    if (itemPrice <= 0) {
       console.warn('[CheckoutContext] Attempted to add item with 0 price. Blocked.', item);
       return prev;
     }
 
-    if (action === 'blocked_duplicate') {
+    if (isDuplicate) {
       console.warn('[CheckoutContext] Attempted to add duplicate item. Blocked.');
       return prev;
     }
@@ -608,7 +515,7 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       ...prev,
       items: [...prev.items, item]
     };
-  }), [appendAgentLog]);
+  }), []);
 
   const clearCart = useCallback(() => {
     console.log('[CheckoutContext] Clearing cart items and resetting selection');
@@ -635,25 +542,11 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const removeItem = useCallback((itemId: string) => setState(prev => {
     const newItems = prev.items.filter((i: { id?: string }) => i.id !== itemId);
     console.log(`[CheckoutContext] Removing item: ${itemId}. Remaining items: ${newItems.length}`);
-    // #region agent log
-    appendAgentLog({
-      hypothesisId: 'D',
-      location: 'CheckoutContext.tsx:removeItem',
-      message: 'removeItem mutation',
-      data: {
-        item_id: itemId ?? null,
-        item_id_type: typeof itemId,
-        before_count: prev.items.length,
-        after_count: newItems.length,
-        before_ids: prev.items.map((i: any) => ({ id: i?.id ?? null, type: i?.type ?? null })).slice(0, 10),
-      },
-    });
-    // #endregion
     return {
       ...prev,
       items: newItems
     };
-  }), [appendAgentLog]);
+  }), []);
 
   const restoreItem = useCallback((item: any) => {
     console.log('[CheckoutContext] Restoring item for editing:', item.id, item);
@@ -873,29 +766,6 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     const cartTotal = state.items.reduce((sum, item) => sum + (item.pricing?.total ?? item.pricing?.subtotal ?? 0), 0);
     return cartTotal;
   }, [state.items]);
-
-  useEffect(() => {
-    if (!isHydrated || typeof window === 'undefined') return;
-    const path = window.location.pathname;
-    if (!path.includes('/cart') && !path.includes('/checkout')) return;
-    const cartTotal = state.items.reduce((sum, item) => sum + (item.pricing?.total ?? item.pricing?.subtotal ?? 0), 0);
-    // #region agent log
-    appendAgentLog({
-      hypothesisId: 'C',
-      location: 'CheckoutContext.tsx:subtotal',
-      message: 'Subtotal composition on cart/checkout',
-      data: {
-        path,
-        cart_total: cartTotal,
-        current_selection_total: 0,
-        explicit_items_only: true,
-        selected_actor_id: state.selectedActor?.id ?? null,
-        step: state.step,
-        items_count: state.items.length,
-      },
-    });
-    // #endregion
-  }, [isHydrated, state.items, state.selectedActor, state.step, appendAgentLog]);
 
   const cartHash = React.useMemo(() => {
     return generateCartHash(state.items, state.selectedActor, state.step);

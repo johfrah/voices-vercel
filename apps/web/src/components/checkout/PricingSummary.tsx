@@ -45,28 +45,6 @@ export const PricingSummary: React.FC<{
   const [isTermsOpen, setIsTermsOpen] = useState(false);
   const [reviewStats, setReviewStats] = useState<{ averageRating: number, totalCount: number } | null>(null);
   const [workshopThumbnailMap, setWorkshopThumbnailMap] = useState<Record<string, string>>({});
-  const appendAgentLog = React.useCallback((payload: {
-    hypothesisId: string;
-    location: string;
-    message: string;
-    data: Record<string, unknown>;
-    timestamp?: number;
-  }) => {
-    if (typeof window === 'undefined') return;
-    try {
-      void fetch('/api/debug-log', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        keepalive: true,
-        body: JSON.stringify({
-          ...payload,
-          timestamp: payload.timestamp ?? Date.now(),
-        }),
-      });
-    } catch (_error) {
-      // no-op: debug instrumentation must never break checkout rendering
-    }
-  }, []);
 
   useEffect(() => {
     if (!isHydrated) return;
@@ -314,31 +292,6 @@ export const PricingSummary: React.FC<{
   const vatRate = isVatExempt ? 0 : 0.21;
   const tax = subtotalAfterDiscount * vatRate;
   const total = subtotalAfterDiscount + tax;
-
-  useEffect(() => {
-    if (!isHydrated || typeof window === 'undefined') return;
-    const path = window.location.pathname;
-    const isCartOrCheckout = path.includes('/cart') || path.includes('/checkout');
-    if (!isCartOrCheckout || !isSubscriptionContext) return;
-    // #region agent log
-    appendAgentLog({
-      hypothesisId: 'A',
-      location: 'PricingSummary.tsx:subscriptionBanner',
-      message: 'Subscription context on cart/checkout',
-      data: {
-        path,
-        usage: state.usage,
-        journey: state.journey,
-        plan: state.plan,
-        should_render_johfrai_subscription_card: shouldRenderJohfraiSubscriptionCard,
-        items_count: (state.items || []).length,
-        has_workshop_item: (state.items || []).some((item: any) => item?.type === 'workshop_edition'),
-        subtotal,
-        pricing_total: state.pricing.total,
-      },
-    });
-    // #endregion
-  }, [isHydrated, isSubscriptionContext, shouldRenderJohfraiSubscriptionCard, state.usage, state.journey, state.plan, state.items, state.pricing.total, subtotal, appendAgentLog]);
 
   if (!isHydrated) return null;
 
