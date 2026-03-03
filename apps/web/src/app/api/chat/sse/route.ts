@@ -1,5 +1,6 @@
 import { db, chatMessages } from '@/lib/system/voices-config';
 import { and, asc, eq, gt } from 'drizzle-orm';
+import { recordChatSseMetric } from '@/lib/system/chat-observability';
 
 /**
  *  REAL-TIME CHAT SSE (2026)
@@ -12,6 +13,8 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const conversationId = parseInt(searchParams.get('conversationId') || '0');
   let lastMessageId = parseInt(searchParams.get('lastMessageId') || '0');
+  const pollMs = Math.min(Math.max(parseInt(searchParams.get('pollMs') || '1500', 10) || 1500, 900), 5000);
+  const heartbeatMs = 15000;
   
   //  CHRIS-PROTOCOL: Prevent Postgres integer out-of-range error
   if (isNaN(lastMessageId) || lastMessageId > 2147483647) {
@@ -27,6 +30,7 @@ export async function GET(request: Request) {
       const encoder = new TextEncoder();
       let isClosed = false;
       let interval: ReturnType<typeof setInterval> | null = null;
+      let lastHeartbeatAt = Date.now();
 
       const safeClose = () => {
         if (isClosed) return;
@@ -55,7 +59,7 @@ export async function GET(request: Request) {
       sendEvent({ type: 'connected', conversationId });
 
       // Poll loop (simulating real-time with database checks)
-      // In a full production environment, this would use Postgres NOTIFY/LISTEN or a PubSub
+      // Faster-than-before polling for admin follow-up, with sparse heartbeat frames.
       interval = setInterval(async () => {
         if (isClosed || request.signal.aborted) {
           safeClose();
@@ -63,6 +67,7 @@ export async function GET(request: Request) {
         }
 
         try {
+          const pollStartedAt = Date.now();
           const newMessages = await db.select()
             .from(chatMessages)
             .where(
@@ -71,7 +76,10 @@ export async function GET(request: Request) {
                 gt(chatMessages.id, lastMessageId)
               )
             )
-            .orderBy(asc(chatMessages.id));
+            .orderBy(asc(chatMessages.id))
+            .limit(50);
+
+          recordChatSseMetric('poll', Date.now() - pollStartedAt, true);
 
           if (newMessages.length > 0) {
             lastMessageId = Math.max(...newMessages.map((m: any) => m.id));
@@ -81,14 +89,17 @@ export async function GET(request: Request) {
             });
           }
 
-          // Heartbeat
-          sendEvent({ type: 'heartbeat' });
+          if (Date.now() - lastHeartbeatAt >= heartbeatMs) {
+            sendEvent({ type: 'heartbeat' });
+            lastHeartbeatAt = Date.now();
+          }
         } catch (error) {
           console.error('SSE Error:', error);
+          recordChatSseMetric('poll', 0, false);
           //  CHRIS-PROTOCOL: Stop bij fatale DB errors om serverload te beperken
           safeClose();
         }
-      }, 3000); // Check every 3 seconds
+      }, pollMs);
 
       // Cleanup on close
       request.signal.addEventListener('abort', () => {

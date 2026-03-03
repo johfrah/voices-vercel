@@ -23,7 +23,12 @@ import {
   RefreshCw,
   Archive,
   RotateCcw,
-  Search
+  Search,
+  Flame,
+  CheckSquare2,
+  Square,
+  ArrowUpDown,
+  Keyboard
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
@@ -54,6 +59,29 @@ interface Message {
   attachments?: any;
 }
 
+interface ObservabilitySummary {
+  total: number;
+  errors: number;
+  error_rate_pct: number;
+  avg_ms: number;
+  p50_ms: number;
+  p95_ms: number;
+  p99_ms: number;
+  slow_over_100ms: number;
+}
+
+interface ChatObservabilitySnapshot {
+  generated_at: string;
+  api: {
+    last_1m: ObservabilitySummary;
+    last_5m: ObservabilitySummary;
+  };
+  sse: {
+    last_1m: ObservabilitySummary;
+    last_5m: ObservabilitySummary;
+  };
+}
+
 const normalizeConversation = (item: any): Conversation => ({
   id: Number(item?.id),
   status: String(item?.status || "open"),
@@ -74,6 +102,20 @@ const normalizeMessage = (item: any): Message => ({
   metadata: item?.metadata || {},
   attachments: item?.attachments,
 });
+
+const getMinutesSinceUpdate = (updatedAt?: string) => {
+  if (!updatedAt) return 9999;
+  const parsed = new Date(updatedAt).getTime();
+  if (Number.isNaN(parsed)) return 9999;
+  return Math.max(0, Math.floor((Date.now() - parsed) / 60000));
+};
+
+const getHotScore = (conversation: Conversation) => {
+  const statusScore = conversation.status === 'admin_active' ? 50 : conversation.status === 'open' ? 35 : 5;
+  const messageScore = Math.min(conversation.message_count || 0, 25) * 2;
+  const recencyScore = Math.max(0, 60 - getMinutesSinceUpdate(conversation.updated_at));
+  return statusScore + messageScore + recencyScore;
+};
 
 // Helper voor Base64 naar Uint8Array (nodig voor VAPID key)
 function urlBase64ToUint8Array(base64String: string) {
@@ -106,8 +148,13 @@ export const LiveChatWatcher = () => {
   const [replyDraft, setReplyDraft] = useState('');
   const [sendingReply, setSendingReply] = useState(false);
   const [statusUpdatingId, setStatusUpdatingId] = useState<number | null>(null);
+  const [sortMode, setSortMode] = useState<'latest' | 'hot'>('hot');
+  const [bulkSelectedIds, setBulkSelectedIds] = useState<number[]>([]);
+  const [metrics, setMetrics] = useState<ChatObservabilitySnapshot | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const sseRef = useRef<EventSource | null>(null);
+  const searchInputRef = useRef<HTMLInputElement | null>(null);
+  const replyInputRef = useRef<HTMLInputElement | null>(null);
 
   // Check Push Status op mount
   useEffect(() => {
@@ -192,8 +239,9 @@ export const LiveChatWatcher = () => {
 
   const visibleConversations = useMemo(() => {
     const needle = searchQuery.trim().toLowerCase();
-    if (!needle) return conversations;
-    return conversations.filter((conversation) => {
+    const filtered = !needle
+      ? conversations
+      : conversations.filter((conversation) => {
       const haystack = [
         conversation.id,
         conversation.guest_name || '',
@@ -205,7 +253,19 @@ export const LiveChatWatcher = () => {
         .toLowerCase();
       return haystack.includes(needle);
     });
-  }, [conversations, searchQuery]);
+
+    const sorted = [...filtered].sort((a, b) => {
+      if (sortMode === 'hot') {
+        const hotDiff = getHotScore(b) - getHotScore(a);
+        if (hotDiff !== 0) return hotDiff;
+      }
+      const aTs = new Date(a.updated_at || 0).getTime();
+      const bTs = new Date(b.updated_at || 0).getTime();
+      return bTs - aTs;
+    });
+
+    return sorted;
+  }, [conversations, searchQuery, sortMode]);
 
   const conversationCounters = useMemo(() => {
     return conversations.reduce(
@@ -342,13 +402,152 @@ export const LiveChatWatcher = () => {
     [fetchConversations, replyDraft, selectedId]
   );
 
+  const fetchMetrics = useCallback(async () => {
+    try {
+      const res = await fetch('/api/chat/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'metrics' }),
+      });
+      if (!res.ok) return;
+      const data = await res.json();
+      setMetrics(data);
+    } catch {
+      // Observability is non-blocking for operator workflow.
+    }
+  }, []);
+
+  const bulkUpdateStatus = useCallback(
+    async (status: 'open' | 'admin_active' | 'archived') => {
+      if (!bulkSelectedIds.length) return;
+      try {
+        const res = await fetch('/api/chat/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'bulk_update_status',
+            conversationIds: bulkSelectedIds,
+            status,
+          }),
+        });
+        if (!res.ok) throw new Error(`Bulk status HTTP ${res.status}`);
+        if (status === 'archived' && selectedId && bulkSelectedIds.includes(selectedId) && listFilter === 'active') {
+          setSelectedId(null);
+          setMessages([]);
+        }
+        setBulkSelectedIds([]);
+        await fetchConversations({ silent: true });
+      } catch (error) {
+        console.error('[LiveChatWatcher] Bulk status update failed', error);
+        alert('Bulk-update mislukt. Probeer opnieuw.');
+      }
+    },
+    [bulkSelectedIds, fetchConversations, listFilter, selectedId]
+  );
+
+  const toggleBulkSelection = useCallback((conversationId: number) => {
+    setBulkSelectedIds((prev) =>
+      prev.includes(conversationId)
+        ? prev.filter((id) => id !== conversationId)
+        : [...prev, conversationId]
+    );
+  }, []);
+
+  const toggleSelectAllVisible = useCallback(() => {
+    const visibleIds = visibleConversations.map((conversation) => conversation.id);
+    setBulkSelectedIds((prev) => {
+      const allVisibleSelected = visibleIds.length > 0 && visibleIds.every((id) => prev.includes(id));
+      if (allVisibleSelected) {
+        return prev.filter((id) => !visibleIds.includes(id));
+      }
+      return Array.from(new Set([...prev, ...visibleIds]));
+    });
+  }, [visibleConversations]);
+
+  useEffect(() => {
+    const validIds = new Set(conversations.map((conversation) => conversation.id));
+    setBulkSelectedIds((prev) => prev.filter((id) => validIds.has(id)));
+  }, [conversations]);
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      const target = event.target as HTMLElement | null;
+      const isTextField = !!target && (
+        target.tagName === 'INPUT' ||
+        target.tagName === 'TEXTAREA' ||
+        target.getAttribute('contenteditable') === 'true'
+      );
+
+      if (event.key === '/' && !isTextField) {
+        event.preventDefault();
+        searchInputRef.current?.focus();
+        return;
+      }
+
+      if (isTextField) return;
+      if (visibleConversations.length === 0) return;
+
+      const currentIndex = selectedId
+        ? visibleConversations.findIndex((conversation) => conversation.id === selectedId)
+        : -1;
+
+      if (event.key.toLowerCase() === 'j') {
+        event.preventDefault();
+        const nextIndex = Math.min(visibleConversations.length - 1, currentIndex + 1);
+        setSelectedId(visibleConversations[nextIndex].id);
+        return;
+      }
+
+      if (event.key.toLowerCase() === 'k') {
+        event.preventDefault();
+        const prevIndex = Math.max(0, currentIndex === -1 ? 0 : currentIndex - 1);
+        setSelectedId(visibleConversations[prevIndex].id);
+        return;
+      }
+
+      if (event.key.toLowerCase() === 'x' && selectedId) {
+        event.preventDefault();
+        updateConversationStatus(selectedId, 'archived');
+        return;
+      }
+
+      if (event.key.toLowerCase() === 'r' && selectedId) {
+        event.preventDefault();
+        updateConversationStatus(selectedId, 'open');
+        return;
+      }
+
+      if (event.key.toLowerCase() === 'a' && selectedId) {
+        event.preventDefault();
+        updateConversationStatus(selectedId, 'admin_active');
+        return;
+      }
+
+      if (event.key === 'Enter' && selectedId) {
+        event.preventDefault();
+        replyInputRef.current?.focus();
+        return;
+      }
+    };
+
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [selectedId, updateConversationStatus, visibleConversations]);
+
   useEffect(() => {
     fetchConversations();
+    fetchMetrics();
     const interval = setInterval(() => {
       fetchConversations({ silent: true });
-    }, 10000);
-    return () => clearInterval(interval);
-  }, [fetchConversations]);
+    }, 7000);
+    const metricsInterval = setInterval(() => {
+      fetchMetrics();
+    }, 15000);
+    return () => {
+      clearInterval(interval);
+      clearInterval(metricsInterval);
+    };
+  }, [fetchConversations, fetchMetrics]);
 
   // Fetch messages for selected conversation
   useEffect(() => {
@@ -374,7 +573,7 @@ export const LiveChatWatcher = () => {
             : 0;
 
         sseRef.current?.close();
-        const eventSource = new EventSource(`/api/chat/sse/?conversationId=${selectedId}&lastMessageId=${lastId}`);
+        const eventSource = new EventSource(`/api/chat/sse/?conversationId=${selectedId}&lastMessageId=${lastId}&pollMs=1200`);
         sseRef.current = eventSource;
 
         eventSource.onmessage = (event) => {
@@ -511,6 +710,7 @@ export const LiveChatWatcher = () => {
               <ContainerInstrument className="relative flex-1">
                 <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-va-black/30" />
                 <input
+                  ref={searchInputRef}
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
@@ -519,6 +719,19 @@ export const LiveChatWatcher = () => {
                 />
               </ContainerInstrument>
               <button
+                onClick={() => setSortMode((prev) => (prev === 'hot' ? 'latest' : 'hot'))}
+                className={cn(
+                  "h-8 px-2 rounded-full transition-all flex items-center gap-1 text-[10px] uppercase tracking-widest font-bold",
+                  sortMode === 'hot'
+                    ? "bg-orange-500/10 text-orange-600"
+                    : "bg-va-off-white text-va-black/50"
+                )}
+                title="Sorteer op hot score of recent"
+              >
+                {sortMode === 'hot' ? <Flame size={12} /> : <ArrowUpDown size={12} />}
+                {sortMode === 'hot' ? 'Hot' : 'Recent'}
+              </button>
+              <button
                 onClick={() => fetchConversations({ silent: true })}
                 className="w-8 h-8 rounded-full bg-va-off-white hover:bg-va-black hover:text-white transition-all flex items-center justify-center"
                 title="Ververs gesprekken"
@@ -526,6 +739,68 @@ export const LiveChatWatcher = () => {
                 <RefreshCw size={13} className={cn(isRefreshing && "animate-spin")} />
               </button>
             </ContainerInstrument>
+
+            {metrics && (
+              <ContainerInstrument className="flex items-center gap-2 flex-wrap">
+                <span className="text-[9px] px-2 py-1 rounded-full bg-emerald-500/10 text-emerald-600 font-bold uppercase tracking-wider">
+                  API p95 {Math.round(metrics.api.last_5m.p95_ms)}ms
+                </span>
+                <span className="text-[9px] px-2 py-1 rounded-full bg-blue-500/10 text-blue-600 font-bold uppercase tracking-wider">
+                  SSE p95 {Math.round(metrics.sse.last_5m.p95_ms)}ms
+                </span>
+                <span className="text-[9px] px-2 py-1 rounded-full bg-va-black/5 text-va-black/60 font-bold uppercase tracking-wider">
+                  Error {metrics.api.last_5m.error_rate_pct}%
+                </span>
+              </ContainerInstrument>
+            )}
+
+            <ContainerInstrument className="flex items-center justify-between gap-2 flex-wrap">
+              <ContainerInstrument className="flex items-center gap-2 flex-wrap">
+                <button
+                  onClick={toggleSelectAllVisible}
+                  className="text-[9px] uppercase tracking-widest font-bold px-2 py-1 rounded-full bg-va-off-white text-va-black/60"
+                >
+                  {visibleConversations.length > 0 && visibleConversations.every((conversation) => bulkSelectedIds.includes(conversation.id))
+                    ? 'Deselecteer zichtbaar'
+                    : 'Selecteer zichtbaar'}
+                </button>
+                {bulkSelectedIds.length > 0 && (
+                  <button
+                    onClick={() => setBulkSelectedIds([])}
+                    className="text-[9px] uppercase tracking-widest font-bold px-2 py-1 rounded-full bg-va-black text-white"
+                  >
+                    Wis selectie ({bulkSelectedIds.length})
+                  </button>
+                )}
+              </ContainerInstrument>
+              <TextInstrument className="text-[9px] uppercase tracking-widest text-va-black/40 inline-flex items-center gap-1">
+                <Keyboard size={11} />
+                / zoeken · j/k navigeren · a/x/r status
+              </TextInstrument>
+            </ContainerInstrument>
+
+            {bulkSelectedIds.length > 0 && (
+              <ContainerInstrument className="flex items-center gap-2 flex-wrap">
+                <button
+                  onClick={() => bulkUpdateStatus('admin_active')}
+                  className="text-[9px] uppercase tracking-widest font-bold px-2 py-1 rounded-full bg-primary/10 text-primary"
+                >
+                  Overnemen
+                </button>
+                <button
+                  onClick={() => bulkUpdateStatus('archived')}
+                  className="text-[9px] uppercase tracking-widest font-bold px-2 py-1 rounded-full bg-orange-500/10 text-orange-600"
+                >
+                  Sluiten
+                </button>
+                <button
+                  onClick={() => bulkUpdateStatus('open')}
+                  className="text-[9px] uppercase tracking-widest font-bold px-2 py-1 rounded-full bg-green-500/10 text-green-700"
+                >
+                  Heropenen
+                </button>
+              </ContainerInstrument>
+            )}
 
             {listError && (
               <TextInstrument className="text-[10px] text-red-500 font-semibold tracking-wide">
@@ -541,16 +816,40 @@ export const LiveChatWatcher = () => {
             </div>
           ) : (
             visibleConversations.map((conv) => (
-              <button
+              <ContainerInstrument
                 key={conv.id}
                 onClick={() => setSelectedId(conv.id)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    setSelectedId(conv.id);
+                  }
+                }}
                 className={cn(
-                  "w-full p-4 border-b border-black/5 text-left hover:bg-va-off-white transition-all flex flex-col gap-2",
+                  "w-full p-4 border-b border-black/5 text-left hover:bg-va-off-white transition-all flex flex-col gap-2 cursor-pointer",
                   selectedId === conv.id && "bg-va-off-white border-l-4 border-l-primary"
                 )}
               >
                 <div className="flex justify-between items-start gap-2">
                   <div className="flex items-center gap-2 min-w-0">
+                    <button
+                      type="button"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        toggleBulkSelection(conv.id);
+                      }}
+                      className={cn(
+                        "w-6 h-6 rounded-full flex items-center justify-center transition-colors",
+                        bulkSelectedIds.includes(conv.id)
+                          ? "bg-primary/10 text-primary"
+                          : "bg-va-black/5 text-va-black/40"
+                      )}
+                      aria-label={bulkSelectedIds.includes(conv.id) ? "Deselecteer gesprek" : "Selecteer gesprek"}
+                    >
+                      {bulkSelectedIds.includes(conv.id) ? <CheckSquare2 size={12} /> : <Square size={12} />}
+                    </button>
                     <ContainerInstrument className="w-8 h-8 rounded-full bg-va-black/5 flex items-center justify-center shrink-0">
                       <User size={14} className="text-va-black/40" />
                     </ContainerInstrument>
@@ -596,6 +895,12 @@ export const LiveChatWatcher = () => {
                       {conv.iap_context.journey}
                     </span>
                   )}
+                  {sortMode === 'hot' && getHotScore(conv) >= 70 && (
+                    <span className="text-[9px] px-2 py-0.5 bg-orange-500/10 text-orange-600 rounded-full font-bold uppercase tracking-wider inline-flex items-center gap-1">
+                      <Flame size={10} />
+                      Hot
+                    </span>
+                  )}
                 </ContainerInstrument>
 
                 {conv.lastMessage && (
@@ -603,7 +908,7 @@ export const LiveChatWatcher = () => {
                     {conv.lastMessage}
                   </TextInstrument>
                 )}
-              </button>
+              </ContainerInstrument>
             ))
           )}
         </ContainerInstrument>
@@ -720,6 +1025,7 @@ export const LiveChatWatcher = () => {
                   className="flex gap-2"
                 >
                   <input 
+                    ref={replyInputRef}
                     name="reply"
                     type="text" 
                     value={replyDraft}

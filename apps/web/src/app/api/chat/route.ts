@@ -2,15 +2,18 @@ import { GeminiService } from '@/lib/services/gemini-service';
 import { KnowledgeService } from '@/lib/services/knowledge-service';
 import { db } from '@/lib/system/voices-config';
 import { chatConversations, chatMessages, faq, workshopEditions, workshops } from '@/lib/system/voices-config';
-import { desc, eq, ilike, or, and, sql, inArray } from 'drizzle-orm';
+import { desc, eq, ilike, or, and, sql, inArray, asc } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { getChatObservabilitySnapshot, recordChatApiMetric } from '@/lib/system/chat-observability';
 
 /**
  *  CHAT & VOICY API (2026) - CORE EDITION
  */
 const CONVERSATION_CACHE_TTL_MS = 5000;
 const conversationsCache = new Map<string, { ts: number; data: any[] }>();
+const HISTORY_CACHE_TTL_MS = 3000;
+const historyCache = new Map<number, { ts: number; data: any[] }>();
 
 const buildConversationSnapshots = async (conversationIds: number[]) => {
   const snapshots = new Map<number, { message_count: number; lastMessage: string; latest_message_id: number }>();
@@ -50,15 +53,37 @@ const buildConversationSnapshots = async (conversationIds: number[]) => {
   return snapshots;
 };
 
+const readHistoryCache = (conversationId: number) => {
+  const cached = historyCache.get(conversationId);
+  if (!cached) return null;
+  if (Date.now() - cached.ts > HISTORY_CACHE_TTL_MS) {
+    historyCache.delete(conversationId);
+    return null;
+  }
+  return cached.data;
+};
+
+const writeHistoryCache = (conversationId: number, messages: any[]) => {
+  historyCache.set(conversationId, { ts: Date.now(), data: messages });
+};
+
 export async function POST(request: NextRequest) {
+  const requestStartedAt = Date.now();
+  let action = 'unknown';
+  const finalize = (actionName: string, response: Response | NextResponse) => {
+    recordChatApiMetric(actionName, Date.now() - requestStartedAt, response.ok);
+    return response;
+  };
+
   try {
     const body = await request.json();
     console.log('[Voicy API] Incoming request:', { action: body.action, message: body.message });
-    const { action, ...params } = body;
+    const { action: incomingAction, ...params } = body;
+    action = String(incomingAction || 'unknown');
 
     switch (action) {
       case 'send':
-        return handleSendMessage(params, request);
+        return finalize('send', await handleSendMessage(params, request));
       case 'conversations': {
         const { userId, filter = 'active', search = '', limit = 180 } = params;
         const safeFilter: 'active' | 'archived' | 'all' =
@@ -69,7 +94,7 @@ export async function POST(request: NextRequest) {
         const cached = conversationsCache.get(cacheKey);
 
         if (cached && Date.now() - cached.ts < CONVERSATION_CACHE_TTL_MS) {
-          return NextResponse.json(cached.data);
+          return finalize('conversations', NextResponse.json(cached.data));
         }
 
         // 🛡️ CHRIS-PROTOCOL: Filter Empty Chats (v2.16.059)
@@ -79,7 +104,7 @@ export async function POST(request: NextRequest) {
         ];
 
         if (userId !== 'all') {
-          if (!userId) return NextResponse.json({ error: 'Missing userId' }, { status: 400 });
+          if (!userId) return finalize('conversations', NextResponse.json({ error: 'Missing userId' }, { status: 400 }));
           conditions.push(eq(chatConversations.user_id, userId));
         }
 
@@ -221,32 +246,43 @@ export async function POST(request: NextRequest) {
 
         conversationsCache.set(cacheKey, { ts: Date.now(), data: results });
         console.log(`[Voicy API] Fetched ${results.length} conversations (filter=${safeFilter}, limit=${safeLimit}) for userId: ${userId}`);
-        return NextResponse.json(results);
+        return finalize('conversations', NextResponse.json(results));
       }
-      case 'history':
+      case 'history': {
         const { conversationId: histId } = params;
-        if (!histId) return NextResponse.json({ error: 'Missing conversationId' }, { status: 400 });
-        const { asc } = await import('drizzle-orm');
+        const conversationId = Number(histId);
+        if (!conversationId) return finalize('history', NextResponse.json({ error: 'Missing conversationId' }, { status: 400 }));
+
+        const cached = readHistoryCache(conversationId);
+        if (cached) {
+          return finalize('history', NextResponse.json({ success: true, messages: cached }));
+        }
+
         const histResults = await db
           .select()
           .from(chatMessages)
-          .where(eq(chatMessages.conversationId, histId))
+          .where(eq(chatMessages.conversationId, conversationId))
           .orderBy(asc(chatMessages.id));
-        return NextResponse.json({
+
+        const mappedMessages = histResults.map((m: any) => ({
+          id: m.id.toString(),
+          sender_type: m.senderType,
+          message: m.message,
+          created_at: m.createdAt,
+          role: m.senderType === 'ai' ? 'assistant' : m.senderType,
+          content: m.message,
+          timestamp: m.createdAt
+        }));
+        writeHistoryCache(conversationId, mappedMessages);
+
+        return finalize('history', NextResponse.json({
           success: true,
-          messages: histResults.map((m: any) => ({
-            id: m.id.toString(),
-            sender_type: m.senderType,
-            message: m.message,
-            created_at: m.createdAt,
-            role: m.senderType === 'ai' ? 'assistant' : m.senderType,
-            content: m.message,
-            timestamp: m.createdAt
-          }))
-        });
+          messages: mappedMessages
+        }));
+      }
       case 'sensor_update':
         const { conversationId: sensorConvId, sensorData } = params;
-        if (!sensorConvId || !sensorData) return NextResponse.json({ error: 'Missing params' }, { status: 400 });
+        if (!sensorConvId || !sensorData) return finalize('sensor_update', NextResponse.json({ error: 'Missing params' }, { status: 400 }));
         
         // Update IAP Context met sensor data (current_page, scroll_depth, etc)
         const [existingConv] = await db.select().from(chatConversations).where(eq(chatConversations.id, sensorConvId));
@@ -264,24 +300,54 @@ export async function POST(request: NextRequest) {
           .where(eq(chatConversations.id, sensorConvId));
         conversationsCache.clear();
           
-        return NextResponse.json({ success: true });
+        return finalize('sensor_update', NextResponse.json({ success: true }));
       case 'update_status':
         const { conversationId, status } = params;
-        if (!conversationId || !status) return NextResponse.json({ error: 'Missing params' }, { status: 400 });
+        if (!conversationId || !status) return finalize('update_status', NextResponse.json({ error: 'Missing params' }, { status: 400 }));
         if (!['open', 'admin_active', 'archived'].includes(status)) {
-          return NextResponse.json({ error: 'Invalid status' }, { status: 400 });
+          return finalize('update_status', NextResponse.json({ error: 'Invalid status' }, { status: 400 }));
         }
         await db
           .update(chatConversations)
           .set({ status, updatedAt: new Date() })
           .where(eq(chatConversations.id, conversationId));
         conversationsCache.clear();
-        return NextResponse.json({ success: true });
+        return finalize('update_status', NextResponse.json({ success: true }));
+      case 'bulk_update_status': {
+        const { conversationIds, status } = params;
+        if (!Array.isArray(conversationIds) || !conversationIds.length || !status) {
+          return finalize('bulk_update_status', NextResponse.json({ error: 'Missing params' }, { status: 400 }));
+        }
+        if (!['open', 'admin_active', 'archived'].includes(status)) {
+          return finalize('bulk_update_status', NextResponse.json({ error: 'Invalid status' }, { status: 400 }));
+        }
+
+        const ids = Array.from(new Set(
+          conversationIds
+            .map((id: any) => Number(id))
+            .filter((id: number) => Number.isFinite(id))
+        )).slice(0, 250);
+        if (!ids.length) {
+          return finalize('bulk_update_status', NextResponse.json({ error: 'No valid conversationIds' }, { status: 400 }));
+        }
+
+        await db
+          .update(chatConversations)
+          .set({ status, updatedAt: new Date() })
+          .where(inArray(chatConversations.id, ids));
+        conversationsCache.clear();
+        for (const id of ids) historyCache.delete(id);
+
+        return finalize('bulk_update_status', NextResponse.json({ success: true, updated: ids.length, status }));
+      }
+      case 'metrics':
+        return finalize('metrics', NextResponse.json(getChatObservabilitySnapshot()));
       default:
-        return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
+        return finalize('invalid_action', NextResponse.json({ error: 'Invalid action' }, { status: 400 }));
     }
   } catch (error: any) {
     console.error('[Voicy API Error]:', error);
+    recordChatApiMetric(action, Date.now() - requestStartedAt, false);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
@@ -340,6 +406,7 @@ async function handleSendMessage(params: any, request?: NextRequest) {
         });
 
         conversationsCache.clear();
+        historyCache.delete(Number(conversationId));
         return NextResponse.json({
           success: true,
           content: '',
@@ -381,6 +448,7 @@ async function handleSendMessage(params: any, request?: NextRequest) {
           .eq('id', conversationId);
 
         conversationsCache.clear();
+        historyCache.delete(Number(conversationId));
         return NextResponse.json({
           success: true,
           content: '',
@@ -983,6 +1051,7 @@ ${workshopEditionsData.filter((ed: any) => ed.status === 'upcoming').map((ed: an
     }
 
     conversationsCache.clear();
+    if (saveResult?.conversationId) historyCache.delete(Number(saveResult.conversationId));
 
     return NextResponse.json({
       success: true,
