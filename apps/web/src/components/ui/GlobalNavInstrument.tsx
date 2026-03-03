@@ -919,29 +919,55 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
                       className="flex items-center gap-3 p-2 rounded-xl hover:bg-va-black/5 transition-all group border border-transparent hover:border-black/5"
                     >
                       <ContainerInstrument plain className="w-12 h-12 rounded-xl bg-va-off-white flex items-center justify-center shrink-0 border border-black/5 overflow-hidden relative shadow-sm">
-                        {item.actor?.photo_url && item.actor.photo_url !== 'NULL' || item.actor?.image_url && item.actor.image_url !== 'NULL' ? (
-                          <Image src={item.actor.photo_url || item.actor.image_url} alt={item.actor.name || item.actor.display_name} fill sizes="48px" className="object-cover" />
+                        {item.actor?.photo_url && item.actor.photo_url !== 'NULL' ? (
+                          <Image src={item.actor.photo_url} alt={item.actor.display_name || 'Voice'} fill sizes="48px" className="object-cover" />
+                        ) : item.image_url ? (
+                          <Image src={item.image_url} alt={item.name || 'Workshop'} fill sizes="48px" className="object-cover" />
+                        ) : item.type === 'workshop_edition' ? (
+                          <GraduationCap size={18} className="text-primary/40" />
                         ) : (
                           <Mic2 size={18} className="text-va-black/20" />
                         )}
                       </ContainerInstrument>
                       <ContainerInstrument plain className="flex-1 min-w-0">
                         <TextInstrument className="text-[14px] font-medium text-va-black truncate">
-                          {item.actor?.display_name || item.actor?.name || 'Stemopname'}
+                          {item.type === 'workshop_edition' ? (item.name || 'Workshop') : (item.actor?.display_name || item.actor?.name || 'Stemopname')}
                         </TextInstrument>
-                        <div className="flex items-center gap-1.5 mt-0.5">
-                          <TextInstrument className="text-[11px] text-va-black/40 font-light truncate tracking-widest">
-                            {item.usage === 'commercial' ? t('common.commercial', 'Commercial') : item.usage === 'telefonie' ? t('common.telephony', 'Telefonie') : t('common.corporate', 'Corporate')}
-                          </TextInstrument>
-                          {item.country && (
+                        <ContainerInstrument plain className="flex items-center gap-1.5 mt-0.5">
+                          {item.type === 'workshop_edition' ? (
                             <>
-                              <span className="w-0.5 h-0.5 rounded-full bg-va-black/10" />
-                              <TextInstrument className="text-[11px] text-va-black/40 font-light tracking-widest">
-                                {Array.isArray(item.country) ? item.country[0] : item.country}
+                              <TextInstrument className="text-[11px] text-primary font-bold tracking-widest uppercase">Studio</TextInstrument>
+                              {item.date && (
+                                <>
+                                  <ContainerInstrument plain className="w-0.5 h-0.5 rounded-full bg-va-black/10" />
+                                  <TextInstrument className="text-[11px] text-va-black/40 font-light tracking-widest">
+                                    {new Date(item.date).toLocaleDateString('nl-BE', { day: 'numeric', month: 'short' })}
+                                  </TextInstrument>
+                                </>
+                              )}
+                              {item.location && (
+                                <>
+                                  <ContainerInstrument plain className="w-0.5 h-0.5 rounded-full bg-va-black/10" />
+                                  <TextInstrument className="text-[11px] text-va-black/40 font-light tracking-widest">{item.location}</TextInstrument>
+                                </>
+                              )}
+                            </>
+                          ) : (
+                            <>
+                              <TextInstrument className="text-[11px] text-va-black/40 font-light truncate tracking-widest">
+                                {item.usage === 'commercial' ? t('common.commercial', 'Commercial') : item.usage === 'telefonie' ? t('common.telephony', 'Telefonie') : t('common.corporate', 'Corporate')}
                               </TextInstrument>
+                              {item.country && (
+                                <>
+                                  <ContainerInstrument plain className="w-0.5 h-0.5 rounded-full bg-va-black/10" />
+                                  <TextInstrument className="text-[11px] text-va-black/40 font-light tracking-widest">
+                                    {Array.isArray(item.country) ? item.country[0] : item.country}
+                                  </TextInstrument>
+                                </>
+                              )}
                             </>
                           )}
-                        </div>
+                        </ContainerInstrument>
                       </ContainerInstrument>
                       <div className="flex flex-col items-end gap-1">
                         <div className="flex items-center gap-2">
