@@ -285,8 +285,11 @@ export async function POST(request: Request) {
     const { 
       pricing, items, selectedActor, step, first_name, last_name, email, 
       vat_number, postal_code, city, metadata, quoteMessage, phone, 
-      company, address_street, usage, plan, music, country, payment_method, language
+      company, address_street, usage, plan, music, country, payment_method, language,
+      billing_po, purchase_order, financial_email, billing_email_alt
     } = data;
+    const resolvedPurchaseOrder = String(billing_po || purchase_order || '').trim() || null;
+    const resolvedBillingEmailAlt = String(financial_email || billing_email_alt || '').trim().toLowerCase() || null;
     const normalizedLanguage = normalizeLocale(language || marketConfig.primary_language || 'nl-be');
     const languageShort = localeToShort(normalizedLanguage);
     if (!items || items.length === 0) {
@@ -525,6 +528,8 @@ export async function POST(request: Request) {
       status: isQuote ? 'quote-pending' : 'pending',
       user_id: userId || null,
       journey: validatedItems[0]?.journey || 'agency',
+      purchase_order: resolvedPurchaseOrder,
+      billing_email_alt: resolvedBillingEmailAlt,
       billing_vat_number: vat_number || null,
       is_quote: !!isQuote,
       quote_message: quoteMessage || null,
@@ -535,7 +540,13 @@ export async function POST(request: Request) {
         plan,
         language: normalizedLanguage,
         itemsCount: validatedItems.length,
-        customer: { email, first_name, last_name },
+        customer: {
+          email,
+          financial_email: resolvedBillingEmailAlt,
+          purchase_order: resolvedPurchaseOrder,
+          first_name,
+          last_name,
+        },
         items: validatedItems,
       }
     }).select().single();
@@ -584,6 +595,10 @@ export async function POST(request: Request) {
           item_type: 'voice',
           briefing: item.briefing, 
           usage: item.usage, 
+          purchase_order: resolvedPurchaseOrder,
+          billing_email_alt: resolvedBillingEmailAlt,
+          billing_vat_number: vat_number || null,
+          company_name: company || null,
           media: item.media,
           spots: item.spots,
           years: item.years,
@@ -619,6 +634,10 @@ export async function POST(request: Request) {
         tax: musicTax.toFixed(2),
         meta_data: {
           item_type: 'music',
+          purchase_order: resolvedPurchaseOrder,
+          billing_email_alt: resolvedBillingEmailAlt,
+          billing_vat_number: vat_number || null,
+          company_name: company || null,
           email_item_snapshot: {
             description: `Music track: ${musicTrackLabel}`,
             thumbnail_url: null,

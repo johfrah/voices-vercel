@@ -59,6 +59,8 @@ interface CheckoutState {
     phone: string;
     company: string;
     vat_number: string;
+    billing_po: string;
+    financial_email: string;
     address: string;
     address_street: string;
     city: string;
@@ -179,6 +181,8 @@ const initialState: CheckoutState = {
     phone: '',
     company: '',
     vat_number: '',
+    billing_po: '',
+    financial_email: '',
     address: '',
     address_street: '',
     city: '',
