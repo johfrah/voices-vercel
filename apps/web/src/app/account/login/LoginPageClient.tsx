@@ -1,12 +1,12 @@
 "use client";
 
 import { BentoCard } from '@/components/ui/BentoGrid';
-import { ButtonInstrument, ContainerInstrument, FormInstrument, HeadingInstrument, InputInstrument, TextInstrument, LabelInstrument } from '@/components/ui/LayoutInstruments';
+import { ButtonInstrument, ContainerInstrument, FormInstrument, HeadingInstrument, InputInstrument, TextInstrument } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { createClient } from '@/utils/supabase/client';
-import { ArrowRight, Loader2, Lock, Mail, ShieldCheck, Star } from 'lucide-react';
+import { ArrowRight, Loader2, Mail, Star } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 
@@ -19,13 +19,10 @@ import React, { useEffect, useState } from 'react';
  * - TEXT ZERO: Geen hardcoded strings.
  */
 export function LoginPageClient() {
-  const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
-  const { resetPassword } = useAuth();
   const { t } = useTranslation();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -168,16 +165,9 @@ export function LoginPageClient() {
       </ContainerInstrument>
 
       <ContainerInstrument className="w-full max-w-md relative z-10">
-        <ContainerInstrument className="text-center mb-12 space-y-8">
-          <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-white/50 backdrop-blur-sm rounded-full text-[13px] font-bold tracking-[0.2em] uppercase shadow-sm border border-gray-100/50 text-va-black/40">
-            <ShieldCheck strokeWidth={1.5} size={12} className="text-primary" /> <VoiceglotText  translationKey="auth.login.secure_access" defaultText="Secure Access" />
-          </ContainerInstrument>
-          <HeadingInstrument level={1} className="text-6xl md:text-8xl font-light tracking-tighter leading-[0.9] text-va-black">
-            <VoiceglotText  translationKey="auth.login.title_prefix" defaultText="Toegang tot" />
-            <br />
-            <span className="text-primary italic">
-              <VoiceglotText  translationKey="common.voices" defaultText="Voices" />
-            </span>
+        <ContainerInstrument className="text-center mb-12 space-y-6">
+          <HeadingInstrument level={1} className="text-5xl md:text-6xl font-light tracking-tighter leading-[0.95] text-va-black">
+            <VoiceglotText translationKey="auth.login.title_simple" defaultText="Inloggen" />
           </HeadingInstrument>
           <TextInstrument className="text-xl md:text-2xl font-light text-va-black/40 leading-tight tracking-tight mx-auto max-w-2xl">
             <VoiceglotText

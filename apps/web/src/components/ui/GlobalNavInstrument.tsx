@@ -1214,7 +1214,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
                 </ContainerInstrument>
                 <ContainerInstrument plain className="px-3">
                   <HeadingInstrument level={4} className="text-base font-light tracking-tight mb-0.5 ">
-                    <VoiceglotText  translationKey="nav.welcome_title" defaultText="Welkom bij Voices" />
+                    <VoiceglotText translationKey="nav.login.title_simple" defaultText="Inloggen" />
                   </HeadingInstrument>
                   <TextInstrument className="text-[11px] text-va-black/40 font-light leading-snug">
                     <VoiceglotText
