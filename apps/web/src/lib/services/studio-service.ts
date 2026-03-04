@@ -1,10 +1,35 @@
 import { db } from '@/lib/system/voices-config';
 import { sql } from 'drizzle-orm';
+import { createClient } from '@supabase/supabase-js';
 
 /** Media ID voor Studio hero video (workshop-beginners-aftermovie). Override via env STUDIO_HERO_VIDEO_MEDIA_ID. */
 const STUDIO_HERO_VIDEO_MEDIA_ID = process.env.STUDIO_HERO_VIDEO_MEDIA_ID
   ? parseInt(process.env.STUDIO_HERO_VIDEO_MEDIA_ID, 10)
   : null;
+
+const STORAGE_BASE_URL = `${(process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://vcbxyyjsxuquytcsskpj.supabase.co').replace(/\/$/, '')}/storage/v1/object/public/voices`;
+
+const toPublicStorageUrl = (filePath: string | null | undefined): string | null => {
+  if (!filePath) return null;
+  if (filePath.startsWith('http://') || filePath.startsWith('https://')) return filePath;
+  const normalized = filePath.replace(/^\/+/, '');
+  return `${STORAGE_BASE_URL}/${normalized}`;
+};
+
+const languageLabelFromCode = (code: string | null | undefined): string => {
+  const normalized = String(code || 'nl-BE').toLowerCase();
+  const short = normalized.split('-')[0];
+  const map: Record<string, string> = {
+    nl: 'Nederlands',
+    fr: 'Frans',
+    en: 'Engels',
+    de: 'Duits',
+    es: 'Spaans',
+    it: 'Italiaans',
+    pt: 'Portugees'
+  };
+  return map[short] || code || 'Nederlands';
+};
 
 async function getStudioHeroVideo(): Promise<{ heroVideoPath: string | null; heroVideoMediaId: number | null }> {
   if (!db) return { heroVideoPath: null, heroVideoMediaId: null };
@@ -33,6 +58,123 @@ async function getStudioHeroVideo(): Promise<{ heroVideoPath: string | null; her
   return { heroVideoPath, heroVideoMediaId };
 }
 
+async function getStudioWorkshopsFallback(): Promise<WorkshopApiResponse> {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  const hero = await getStudioHeroVideo();
+
+  if (!supabaseUrl || !serviceRoleKey) {
+    return {
+      workshops: [],
+      instructors: [],
+      faqs: [],
+      ...hero,
+      _meta: { count: 0, fetched_at: new Date().toISOString() }
+    };
+  }
+
+  const supabase = createClient(supabaseUrl, serviceRoleKey);
+
+  const { data: workshopsData, error: workshopsError } = await supabase
+    .from('workshops')
+    .select(`
+      *,
+      media:media_id(file_path, alt_text)
+    `)
+    .eq('status', 'live')
+    .eq('world_id', 2)
+    .order('title');
+
+  if (workshopsError) throw workshopsError;
+
+  const workshopIds = (workshopsData || []).map((workshop: any) => workshop.id);
+  const { data: editionsData, error: editionsError } = workshopIds.length > 0
+    ? await supabase
+        .from('workshop_editions')
+        .select('*, locations(*), instructors(*)')
+        .in('workshop_id', workshopIds)
+        .gte('date', new Date().toISOString())
+        .neq('status', 'cancelled')
+        .order('date')
+    : { data: [], error: null as any };
+
+  if (editionsError) throw editionsError;
+
+  const editionsByWorkshop = (editionsData || []).reduce((acc: Record<string, any[]>, edition: any) => {
+    const workshopId = String(edition.workshop_id);
+    if (!acc[workshopId]) acc[workshopId] = [];
+    acc[workshopId].push({
+      id: edition.id,
+      date: edition.date,
+      start_time: edition.start_time || null,
+      end_time: edition.end_time || null,
+      price: edition.price || null,
+      location: edition.locations || null,
+      instructor: edition.instructors || null,
+      capacity: edition.capacity ?? 8,
+      status: edition.status
+    });
+    return acc;
+  }, {});
+
+  const workshops = (workshopsData || []).map((workshop: any) => {
+    const workshopMeta = workshop.meta || {};
+    return {
+      id: workshop.id,
+      title: workshop.title,
+      slug: workshop.slug,
+      description: workshop.description,
+      price: workshop.price,
+      status: workshop.status,
+      is_public: true,
+      taxonomy: {
+        category: workshopMeta.category || 'Voice-over',
+        type: workshopMeta.type || 'Gastworkshop'
+      },
+      level: workshopMeta.level || 'Starter',
+      lucide_icon: workshopMeta.lucide_icon || null,
+      skill_dna: workshopMeta.skill_dna || {},
+      day_schedule: (workshopMeta.day_schedule?.items || []).map((item: any) => ({
+        time: item.time,
+        title: item.label,
+        description: item.description || '',
+        icon: item.icon
+      })),
+      expert_note: workshop.expert_note || workshopMeta.expert_note,
+      short_description: workshopMeta.short_description || workshop.description || null,
+      workshop_content_detail: workshopMeta.workshop_content_detail || null,
+      aftermovie_description: workshopMeta.aftermovie_description || null,
+      video: null,
+      aftermovie_video: null,
+      subtitle_tracks: [],
+      aftermovie_subtitle_tracks: [],
+      subtitle_coverage: {
+        video: { total: 0, ready: 0, missing: 0 },
+        aftermovie: { total: 0, ready: 0, missing: 0 }
+      },
+      subtitle_data: null,
+      featured_image: workshop.media?.file_path
+        ? { file_path: workshop.media.file_path, alt_text: workshop.media.alt_text || null }
+        : null,
+      has_demo_bundle: false,
+      upcoming_editions: editionsByWorkshop[String(workshop.id)] || [],
+      reviews: [],
+      faqs: [],
+      next_steps: [],
+      feedback_snippets: []
+    };
+  });
+
+  return {
+    workshops,
+    instructors: [],
+    faqs: [],
+    ...hero,
+    _meta: { count: workshops.length, fetched_at: new Date().toISOString() }
+  };
+}
+
 export interface WorkshopApiResponse {
   workshops: any[];
   instructors: any[];
@@ -59,10 +201,7 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
       WITH workshop_data AS (
         SELECT
           w.id, w.title, w.slug, w.description, w.price, w.status, w.media_id, w.meta,
-          m.file_path AS media_file_path, m.alt_text AS media_alt_text,
-          (SELECT label_nl FROM workshop_categories wc JOIN workshop_taxonomy_mappings wtm ON wc.id = wtm.category_id WHERE wtm.workshop_id = w.id LIMIT 1) as category_label,
-          (SELECT label_nl FROM workshop_types wt JOIN workshop_taxonomy_mappings wtm ON wt.id = wtm.type_id WHERE wtm.workshop_id = w.id LIMIT 1) as type_label,
-          (SELECT label FROM experience_levels el JOIN workshop_level_mappings wlm ON el.id = wlm.level_id WHERE wlm.workshop_id = w.id LIMIT 1) as level_label
+          m.file_path AS media_file_path, m.alt_text AS media_alt_text
         FROM workshops w
         LEFT JOIN media m ON m.id = w.media_id
         WHERE w.status IN ('publish', 'live') AND w.world_id = 2
@@ -327,7 +466,7 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
     const aftermovieVideoId = meta.aftermovie_video_id ? Number(meta.aftermovie_video_id) : null;
     const videoSubtitleTracks = videoId ? (subtitleTracksByKey[`${w.id}:${videoId}:video`] || []) : [];
     const aftermovieSubtitleTracks = aftermovieVideoId ? (subtitleTracksByKey[`${w.id}:${aftermovieVideoId}:aftermovie`] || []) : [];
-    const primaryVideoTrack = videoSubtitleTracks.find((track) => track.is_default) || videoSubtitleTracks[0];
+    const primaryVideoTrack = videoSubtitleTracks.find((track: any) => track.is_default) || videoSubtitleTracks[0];
     const resolvedSubtitleData = primaryVideoTrack?.data
       ? {
           lang: primaryVideoTrack.src_lang,
@@ -357,7 +496,7 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
         description: item.description || '',
         icon: item.icon
       })),
-      expert_note: w.expert_note || meta.expert_note,
+      expert_note: meta.expert_note || null,
       short_description: meta.short_description || w.description || null,
       workshop_content_detail: meta.workshop_content_detail || null,
       aftermovie_description: meta.aftermovie_description || null,
@@ -402,6 +541,10 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
     };
   } catch (error: any) {
     console.error('[getStudioWorkshopsData] Database Error:', error);
-    throw new Error(`Database query failed: ${error.message || 'Unknown error'}`);
+    try {
+      return await getStudioWorkshopsFallback();
+    } catch (fallbackError: any) {
+      throw new Error(`Database query failed: ${fallbackError?.message || error?.message || 'Unknown error'}`);
+    }
   }
 }
