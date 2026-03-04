@@ -1661,7 +1661,6 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
     switch (block.type) {
       case 'workshop_hero':
         const videoUrl = body.match(/video:\s*([^\n]+)/)?.[1]?.trim();
-        const posterUrl = body.match(/poster:\s*([^\n]+)/)?.[1]?.trim();
         const subtitleUrl = body.match(/subtitles:\s*([^\n]+)/)?.[1]?.trim();
         const subtitleTracks = subtitleUrl
           ? [{ srcLang: 'nl', label: 'Nederlands', src: subtitleUrl }]
@@ -1676,7 +1675,6 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
                     {videoUrl ? (
                       <VideoPlayerIsland
                         src={videoUrl}
-                        poster={posterUrl}
                         subtitles={subtitleTracks}
                         aspectRatio="video"
                         className="shadow-aura-lg border-none w-full h-full"

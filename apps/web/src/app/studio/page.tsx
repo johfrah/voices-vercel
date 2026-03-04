@@ -87,10 +87,6 @@ export default async function StudioPage() {
   ) || heroWorkshop;
 
   const heroVideoUrl = toStorageUrl(heroWorkshop?.video?.file_path);
-  const heroPosterUrl = toStorageUrl(
-    heroWorkshop?.featured_image?.file_path ||
-    workshops.find((workshop: any) => workshop?.featured_image?.file_path)?.featured_image?.file_path
-  );
   const heroSubtitles = normalizeSubtitleTracks(subtitleWorkshop?.subtitle_data);
 
   return (
@@ -110,7 +106,6 @@ export default async function StudioPage() {
               {heroVideoUrl ? (
                 <VideoPlayer 
                   src={heroVideoUrl}
-                  poster={heroPosterUrl || undefined}
                   subtitles={heroSubtitles}
                   className="w-full aspect-video rounded-[20px] shadow-aura-lg border border-white/20 relative z-10"
                   autoPlay={false}

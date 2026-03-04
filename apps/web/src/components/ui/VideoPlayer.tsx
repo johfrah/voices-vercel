@@ -75,7 +75,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(autoPlay);
   const [isMuted, setIsMuted] = useState(muted);
-  const [isFrameReady, setIsFrameReady] = useState(Boolean(poster));
+  const [isFrameReady, setIsFrameReady] = useState(false);
   const [progress, setProgress] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
   const [showControls, setShowControls] = useState(false);
@@ -84,8 +84,9 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
   const [resolvedSubtitles, setResolvedSubtitles] = useState<SubtitleTrack[]>(subtitles);
 
   useEffect(() => {
-    setIsFrameReady(Boolean(poster));
-  }, [poster, src]);
+    // Enforce video-first frame policy: never rely on image posters.
+    setIsFrameReady(false);
+  }, [src, poster]);
 
   useEffect(() => {
     const generatedObjectUrls: string[] = [];
@@ -218,7 +219,6 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
       <video
         ref={videoRef}
         src={src}
-        poster={poster}
         className={cn(
           "w-full h-full object-cover transition-opacity duration-300",
           isFrameReady ? "opacity-100" : "opacity-0"
@@ -228,6 +228,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
         muted={muted}
         preload="metadata"
         onTimeUpdate={handleProgress}
+        onLoadedMetadata={() => setIsFrameReady(true)}
         onLoadedData={() => setIsFrameReady(true)}
         onCanPlay={() => setIsFrameReady(true)}
         onClick={togglePlay}

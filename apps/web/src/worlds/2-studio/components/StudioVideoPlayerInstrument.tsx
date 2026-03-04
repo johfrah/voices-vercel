@@ -42,6 +42,11 @@ export const StudioVideoPlayer: React.FC<StudioVideoPlayerProps> = ({
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const { playClick } = useSonicDNA();
 
+  useEffect(() => {
+    // Enforce video-first frame policy.
+    setIsLoaded(false);
+  }, [url, poster]);
+
   // Update active subtitle based on array data
   useEffect(() => {
     if (subtitleData) {
@@ -143,7 +148,6 @@ export const StudioVideoPlayer: React.FC<StudioVideoPlayerProps> = ({
       <video
         ref={videoRef}
         key={url}
-        poster={poster}
         autoPlay
         muted={isMuted}
         loop
@@ -156,22 +160,10 @@ export const StudioVideoPlayer: React.FC<StudioVideoPlayerProps> = ({
         onTimeUpdate={handleTimeUpdate}
         onPlay={() => setIsPlaying(true)}
         onPause={() => setIsPlaying(false)}
-        onLoadedData={() => {
-          console.log(" Video data loaded:", url);
-          setIsLoaded(true);
-        }}
-        onCanPlay={() => {
-          console.log(" Video can play:", url);
-          setIsLoaded(true);
-        }}
-        onLoadedMetadata={() => {
-          console.log(" Video metadata loaded:", url);
-          setIsLoaded(true);
-        }}
-        onError={(e) => {
-          console.error(" Video failed to load:", url, e);
-          setIsLoaded(true);
-        }}
+        onLoadedData={() => setIsLoaded(true)}
+        onCanPlay={() => setIsLoaded(true)}
+        onLoadedMetadata={() => setIsLoaded(true)}
+        onError={() => setIsLoaded(true)}
         onClick={togglePlay}
         crossOrigin="anonymous"
         src={url}
