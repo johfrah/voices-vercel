@@ -90,6 +90,7 @@ export const VumeDonationThankYouTemplate = (props: DonationThankYouProps) => {
     previewText: isNl ? `Beste ${name}, je donatie is goed ontvangen.` : `Dear ${name}, your donation has been received.`,
     journey: 'artist',
     host,
-    market: market.market_code
+    market: market.market_code,
+    language,
   });
 };

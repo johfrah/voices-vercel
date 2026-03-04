@@ -45,6 +45,15 @@ export interface ImapAuthOptions {
   tls: boolean;
 }
 
+export interface SendMailResult {
+  message_id: string | null;
+  recipient: string;
+  original_recipient: string;
+  redirected: boolean;
+  accepted: string[];
+  rejected: string[];
+}
+
 const IMAP_FEATURE_FLAG = process.env.ENABLE_IMAP_INBOX === 'true';
 const IMAP_DISABLED_MESSAGE = 'IMAP inbox features are disabled. Set ENABLE_IMAP_INBOX=true to enable.';
 
@@ -140,11 +149,12 @@ export class DirectMailService {
   /**
    * Verstuurt een e-mail via SMTP
    */
-  async sendMail(options: { to: string, subject: string, text?: string, html?: string, from?: string, replyTo?: string, attachments?: any[], host?: string }): Promise<void> {
+  async sendMail(options: { to: string, subject: string, text?: string, html?: string, from?: string, replyTo?: string, attachments?: any[], host?: string }): Promise<SendMailResult> {
     // 🛡️ CHRIS-PROTOCOL: NUCLEAR TEST SAFETY (v2.15.090)
     // Voorkom dat er echte mails naar klanten of stemmen worden gestuurd tijdens de testfase.
     const isTestMode = process.env.NODE_ENV === 'development' || process.env.NUCLEAR_TEST_MODE === 'true';
     const allowedRecipients = ((MarketManager as any).getAllowedTestRecipients?.() || []) as string[];
+    const originalRecipient = options.to;
     
     const isAllowed = allowedRecipients.some((domain: string) => options.to.toLowerCase().includes(domain));
     
@@ -194,7 +204,7 @@ export class DirectMailService {
     // 🛡️ CHRIS-PROTOCOL: Forceer de market name als afzender voor professionele uitstraling
     const senderDisplayName = (from.includes('voices.') || from.includes(host)) ? market.name : market.company_name;
 
-    await transporter.sendMail({
+    const deliveryInfo = await transporter.sendMail({
       from: `"${senderDisplayName}" <${from}>`,
       to: options.to,
       bcc: `catch@${canonicalHost.replace('www.', '')}`,
@@ -206,6 +216,15 @@ export class DirectMailService {
     });
 
     console.log(` Mail succesvol verzonden naar ${options.to} via ${from} (${market.market_code})`);
+
+    return {
+      message_id: deliveryInfo.messageId || null,
+      recipient: options.to,
+      original_recipient: originalRecipient,
+      redirected: originalRecipient !== options.to,
+      accepted: Array.isArray(deliveryInfo.accepted) ? deliveryInfo.accepted.map((entry) => String(entry)) : [],
+      rejected: Array.isArray(deliveryInfo.rejected) ? deliveryInfo.rejected.map((entry) => String(entry)) : [],
+    };
   }
 
   async fetchFolders(user?: string, pass?: string, host?: string): Promise<string[]> {

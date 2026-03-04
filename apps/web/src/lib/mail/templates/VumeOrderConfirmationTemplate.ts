@@ -1,5 +1,6 @@
 import { BaseTemplate } from './VumeMasterWrapper';
 import { formatCurrency } from '@/lib/utils/format-utils';
+import { localeToBcp47, normalizeLocale } from '@/lib/system/locale-utils';
 
 /**
  * 🛒 ORDER CONFIRMATION TEMPLATE (2026)
@@ -11,93 +12,172 @@ interface OrderConfirmationProps {
   userName: string;
   orderId: string;
   total: number;
+  subtotal?: number;
+  tax?: number;
   items: Array<{
     name: string;
     price: number;
+    quantity?: number;
+    unitPrice?: number;
     deliveryTime?: string;
+    description?: string;
+    thumbnailUrl?: string;
+    projectCode?: string;
   }>;
   paymentMethod: string;
+  ctaUrl?: string;
   host?: string;
   language?: string;
 }
 
 export const VumeOrderConfirmationTemplate = (props: OrderConfirmationProps) => {
-  const { 
-    userName, 
-    orderId, 
+  const {
+    userName,
+    orderId,
     total,
+    subtotal,
+    tax,
     items,
     paymentMethod,
+    ctaUrl,
     host,
-    language = 'nl-be'
+    language = 'nl-be',
   } = props;
 
-  const languageShort = (language || 'nl').toLowerCase().split('-')[0];
+  const normalizedLanguage = normalizeLocale(language || 'nl-be');
+  const languageShort = normalizedLanguage.split('-')[0];
+  const formatLocale = localeToBcp47(normalizedLanguage);
   const isNl = languageShort === 'nl';
   const isFr = languageShort === 'fr';
   const safeItems = Array.isArray(items) ? items : [];
   const txt = (nl: string, fr: string, en: string) => (isFr ? fr : isNl ? nl : en);
+  const ctaHref = ctaUrl || `https://${host || 'www.voices.be'}/account/orders?orderId=${encodeURIComponent(orderId)}`;
+  const safeSubtotal = typeof subtotal === 'number'
+    ? subtotal
+    : safeItems.reduce((sum, item) => sum + Number(item.price || 0), 0);
+  const safeTax = typeof tax === 'number' ? tax : Math.max(0, Number(total || 0) - safeSubtotal);
+  const safeTotal = Number(total || safeSubtotal + safeTax);
+  const escapeHtml = (value: string) =>
+    String(value || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
 
-  const itemsHtml = safeItems.map(item => `
-    <div style="padding: 15px; background: #f9f9f9; border-radius: 12px; margin-bottom: 10px; border: 1px solid #eee;">
-      <div style="font-weight: bold; color: #1a1a1a;">${item.name}</div>
-      <div style="font-size: 13px; color: #666; margin-top: 4px;">
-        ${item.deliveryTime ? `${txt('Levering:', 'Livraison :', 'Delivery:')} ${item.deliveryTime}` : ''}
-        <span style="float: right; font-weight: bold;">${formatCurrency(item.price)}</span>
+  const renderThumbnail = (item: OrderConfirmationProps['items'][number]) => {
+    if (item.thumbnailUrl) {
+      return `
+        <img src="${item.thumbnailUrl}" alt="${escapeHtml(item.name)}" width="52" height="52" style="display: block; width: 52px; height: 52px; border-radius: 999px; object-fit: cover; border: 1px solid #E5E7EB;" />
+      `;
+    }
+
+    const initials = (item.name || 'P')
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((part) => part[0]?.toUpperCase() || '')
+      .join('');
+    return `
+      <div style="width: 52px; height: 52px; border-radius: 999px; border: 1px solid #E5E7EB; background: #F9FAFB; text-align: center; line-height: 52px; font-family: 'Raleway', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 15px; color: #4B5563; font-weight: 600;">
+        ${escapeHtml(initials || 'P')}
       </div>
-    </div>
-  `).join('');
+    `;
+  };
+
+  const itemsHtml = safeItems
+    .map((item, index) => {
+      const quantity = Math.max(1, Number(item.quantity || 1));
+      const linePrice = Number(item.price || 0);
+      const unitPrice = Number(item.unitPrice || linePrice / quantity);
+      const detailParts = [
+        item.description ? escapeHtml(item.description) : '',
+        item.projectCode ? `${txt('Project', 'Projet', 'Project')}: ${escapeHtml(item.projectCode)}` : '',
+        item.deliveryTime ? `${txt('Levering', 'Livraison', 'Delivery')}: ${escapeHtml(item.deliveryTime)}` : '',
+      ].filter(Boolean);
+      return `
+        <tr>
+          <td style="padding: 16px 8px 16px 0; border-bottom: ${index === safeItems.length - 1 ? 'none' : '1px solid #F3F4F6'};">
+            ${renderThumbnail(item)}
+          </td>
+          <td style="padding: 16px 8px; border-bottom: ${index === safeItems.length - 1 ? 'none' : '1px solid #F3F4F6'}; vertical-align: top;">
+            <div style="font-size: 15px; color: #111827; font-weight: 600;">${escapeHtml(item.name || txt('Product', 'Produit', 'Product'))}</div>
+            <div style="font-size: 13px; color: #6B7280; margin-top: 4px;">${txt('Aantal', 'Quantité', 'Quantity')}: ${quantity} &bull; ${txt('Stukprijs', 'Prix unitaire', 'Unit price')}: ${formatCurrency(unitPrice, formatLocale)}</div>
+            ${detailParts.length > 0 ? `<div style="font-size: 13px; color: #6B7280; margin-top: 6px; line-height: 1.5;">${detailParts.join('<br />')}</div>` : ''}
+          </td>
+          <td style="padding: 16px 0 16px 8px; border-bottom: ${index === safeItems.length - 1 ? 'none' : '1px solid #F3F4F6'}; text-align: right; vertical-align: top; white-space: nowrap; font-size: 15px; color: #111827; font-weight: 700;">
+            ${formatCurrency(linePrice, formatLocale)}
+          </td>
+        </tr>
+      `;
+    })
+    .join('');
 
   const content = `
-    <div style="margin-bottom: 30px;">
-      <p style="font-size: 18px; color: #1a1a1a;">${txt('Beste', 'Cher/Chère', 'Dear')} ${userName},</p>
-      <p style="font-size: 16px; line-height: 1.6; color: #666;">
+    <div style="margin-bottom: 24px;">
+      <p style="margin: 0 0 10px 0; font-size: 18px; color: #111827;">${txt('Beste', 'Bonjour', 'Dear')} ${escapeHtml(userName || txt('klant', 'client', 'customer'))},</p>
+      <p style="margin: 0; font-size: 15px; line-height: 1.7; color: #4B5563; text-align: left;">
         ${txt(
-          `Bedankt voor je bestelling bij <strong>${host || 'Voices'}</strong>! We zijn direct voor je aan de slag gegaan. Hieronder vind je een overzicht van je project.`,
-          `Merci pour votre commande chez <strong>${host || 'Voices'}</strong> ! Nous avons déjà lancé votre projet. Voici un aperçu de votre commande.`,
-          `Thank you for your order at <strong>${host || 'Voices'}</strong>! We have started working on it immediately. Below you will find an overview of your project.`
+          `Bedankt voor je bestelling bij <strong>${escapeHtml(host || 'Voices')}</strong>. Hieronder vind je je overzicht.`,
+          `Merci pour votre commande chez <strong>${escapeHtml(host || 'Voices')}</strong>. Voici votre aperçu.`,
+          `Thank you for your order at <strong>${escapeHtml(host || 'Voices')}</strong>. Here is your overview.`
         )}
       </p>
     </div>
 
-    <div style="background: #fcfaf7; border-radius: 20px; padding: 25px; border: 1px solid #eee; margin-bottom: 30px;">
-      <div style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; color: #bbbbbb; margin-bottom: 15px;">${txt('Jouw project', 'Votre projet', 'Your project')}</div>
-      <div style="margin-bottom: 20px;">
-        ${itemsHtml}
-      </div>
-      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="border-top: 1px solid #eee; pt-15px;">
+    <div style="border: 1px solid #E5E7EB; border-radius: 16px; padding: 20px; margin-bottom: 24px; background: #FFFFFF;">
+      <div style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; color: #9CA3AF; margin-bottom: 10px;">${txt('Besteloverzicht', 'Récapitulatif', 'Order summary')}</div>
+      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom: 10px;">
         <tr>
-          <td style="padding-top: 15px; font-size: 16px; color: #1a1a1a; font-weight: bold;">${txt('Totaal (incl. BTW)', 'Total (TVA incluse)', 'Total (incl. VAT)')}:</td>
-          <td style="padding-top: 15px; font-size: 18px; color: #ff4f00; font-weight: bold; text-align: right;">${formatCurrency(total)}</td>
+          <td style="width: 60px; padding-bottom: 8px; font-size: 12px; color: #9CA3AF;">&nbsp;</td>
+          <td style="padding-bottom: 8px; font-size: 12px; color: #9CA3AF; text-transform: uppercase; letter-spacing: 0.07em;">${txt('Info', 'Info', 'Info')}</td>
+          <td style="padding-bottom: 8px; text-align: right; font-size: 12px; color: #9CA3AF; text-transform: uppercase; letter-spacing: 0.07em;">${txt('Prijs', 'Prix', 'Price')}</td>
+        </tr>
+        ${itemsHtml}
+      </table>
+      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="border-top: 1px solid #E5E7EB; margin-top: 6px;">
+        <tr>
+          <td style="padding-top: 14px; font-size: 14px; color: #4B5563;">${txt('Subtotaal', 'Sous-total', 'Subtotal')}</td>
+          <td style="padding-top: 14px; text-align: right; font-size: 14px; color: #111827;">${formatCurrency(safeSubtotal, formatLocale)}</td>
+        </tr>
+        <tr>
+          <td style="padding-top: 8px; font-size: 14px; color: #4B5563;">${txt('BTW', 'TVA', 'VAT')}</td>
+          <td style="padding-top: 8px; text-align: right; font-size: 14px; color: #111827;">${formatCurrency(safeTax, formatLocale)}</td>
+        </tr>
+        <tr>
+          <td style="padding-top: 12px; font-size: 16px; color: #111827; font-weight: 700;">${txt('Totaal', 'Total', 'Total')}</td>
+          <td style="padding-top: 12px; text-align: right; font-size: 18px; color: #111827; font-weight: 700;">${formatCurrency(safeTotal, formatLocale)}</td>
         </tr>
       </table>
     </div>
 
-    <div style="margin-bottom: 30px;">
-      <div style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; color: #bbbbbb; margin-bottom: 10px;">${txt('Hoe gaan we verder?', 'Et maintenant ?', 'What happens next?')}</div>
-      <div style="font-size: 15px; line-height: 1.6; color: #666;">
-        <ul style="padding-left: 20px;">
-          <li style="margin-bottom: 10px;">${txt('We hebben de stem gebriefd en de opname wordt ingepland.', "Le/la comédien(ne) voix a été briefé(e) et l'enregistrement est planifié.", 'The voice actor has been notified and is scheduling the recording.')}</li>
-          <li style="margin-bottom: 10px;">${txt('Zodra de opname klaar is, ontvang je een e-mail met een download-link.', "Dès que l'enregistrement est prêt, vous recevrez un e-mail avec un lien de téléchargement.", 'As soon as the recording is ready, you will receive an email with a download link.')}</li>
-          <li style="margin-bottom: 10px;">${txt('Je kunt de status van je project op elk moment volgen in je overzicht.', 'Vous pouvez suivre le statut de votre projet à tout moment dans votre tableau de bord.', 'You can track the status of your project at any time in your overview.')}</li>
-        </ul>
-      </div>
+    <div style="margin-bottom: 20px;">
+      <div style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; color: #9CA3AF; margin-bottom: 10px;">${txt('Betalingsinfo', 'Paiement', 'Payment')}</div>
+      <p style="margin: 0; font-size: 14px; line-height: 1.6; color: #4B5563;">
+        ${txt('Methode', 'Méthode', 'Method')}: <strong style="color: #111827;">${escapeHtml(paymentMethod || txt('Online betaling', 'Paiement en ligne', 'Online payment'))}</strong>
+      </p>
     </div>
 
-    <div style="background: #fff5f0; padding: 20px; border-radius: 15px; border: 1px solid rgba(255, 79, 0, 0.1); margin-bottom: 30px; text-align: center;">
-      <p style="margin: 0; font-size: 14px; color: #666; line-height: 1.5;">
+    <div style="background: #F9FAFB; padding: 16px; border-radius: 12px; border: 1px solid #E5E7EB; margin-bottom: 6px; text-align: left;">
+      <p style="margin: 0; font-size: 14px; color: #4B5563; line-height: 1.6;">
         ${txt(
-          'Heb je vragen? Reageer direct op deze e-mail of neem contact op via onze chat.',
-          'Une question ? Répondez directement à cet e-mail ou contactez-nous via le chat.',
-          'Questions? Reply directly to this email or contact us via our chat.'
+          'Vragen over je project? Antwoord op deze mail. We helpen je meteen.',
+          'Une question sur votre projet ? Répondez à cet e-mail. Nous vous aidons rapidement.',
+          'Questions about your project? Reply to this email. We will help you quickly.'
         )}
       </p>
     </div>
   `;
 
   return BaseTemplate({
-    title: txt('Je opdracht is goed ontvangen', 'Votre commande est confirmée', 'Order confirmed'),
+    title: txt('Bestelling ontvangen', 'Commande reçue', 'Order received'),
     journey: 'agency',
-    children: content
+    host,
+    language: normalizedLanguage,
+    cta: {
+      label: txt('Volg je project', 'Suivre le projet', 'Track your project'),
+      url: ctaHref,
+    },
+    children: content,
   });
 };

@@ -62,6 +62,8 @@ export const VumeNewAccountTemplate = (props: NewAccountProps) => {
     title: isNl ? `Welkom bij ${market.name}` : `Welcome to ${market.name}`,
     journey: 'agency',
     market: market.market_code,
+    host,
+    language,
     children: content
   });
 };

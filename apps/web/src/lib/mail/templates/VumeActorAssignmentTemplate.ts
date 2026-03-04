@@ -98,6 +98,7 @@ export const VumeActorAssignmentTemplate = (props: ActorAssignmentProps) => {
     title: isNl ? `Nieuwe opname voor ${clientName}` : 'New Assignment',
     journey: 'agency',
     host,
+    language,
     children: content
   });
 };

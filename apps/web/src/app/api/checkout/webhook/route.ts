@@ -33,6 +33,41 @@ function v2StatusCandidates(statusCode: string): string[] {
   return [normalized];
 }
 
+function toSafeNumber(value: unknown): number {
+  const numeric = Number(value);
+  return Number.isFinite(numeric) ? numeric : 0;
+}
+
+function buildWebhookOrderEmailItems(items: any[]): Array<{
+  name: string;
+  price: number;
+  quantity: number;
+  unitPrice: number;
+  deliveryTime?: string;
+  description?: string;
+  thumbnailUrl?: string;
+  projectCode?: string;
+}> {
+  return (items || []).map((item: any) => {
+    const metaData = (item?.metaData as Record<string, any>) || {};
+    const snapshot = (metaData.email_item_snapshot as Record<string, any>) || {};
+    const quantity = Math.max(1, toSafeNumber(snapshot.quantity || item?.quantity || 1));
+    const basePrice = toSafeNumber(item?.price);
+    const taxPrice = toSafeNumber(item?.tax);
+    const lineTotal = basePrice + taxPrice;
+    return {
+      name: item?.name || 'Voice-over',
+      price: lineTotal,
+      quantity,
+      unitPrice: quantity > 0 ? lineTotal / quantity : lineTotal,
+      deliveryTime: snapshot.delivery_time || metaData.deliveryTime || undefined,
+      description: snapshot.description || metaData.usage || undefined,
+      thumbnailUrl: snapshot.thumbnail_url || undefined,
+      projectCode: snapshot.project_code || undefined,
+    };
+  });
+}
+
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
@@ -71,6 +106,8 @@ export async function POST(request: NextRequest) {
     const host = request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || MarketManager.getMarketDomains()['BE']?.replace('https://', ''));
     const market = MarketManager.getCurrentMarket(host);
     const adminEmail = process.env.ADMIN_EMAIL || market.email;
+    const marketDomains = MarketManager.getMarketDomains();
+    const baseUrl = marketDomains[market.market_code] || `https://${marketDomains['BE']?.replace('https://', '') || 'www.voices.be'}`;
 
     await db.transaction(async (tx: any) => {
       // Haal de order op om te zien wat erin zit
@@ -219,13 +256,12 @@ export async function POST(request: NextRequest) {
                       userName: user.first_name || 'Klant',
                       orderId: orderId.toString(),
                       total: parseFloat(order.total || '0'),
-                      items: items.map((i: any) => ({
-                        name: i.name,
-                        price: parseFloat(i.price || '0'),
-                        deliveryTime: (i.metaData as any)?.deliveryTime
-                      })),
+                      subtotal: items.reduce((sum: number, i: any) => sum + toSafeNumber(i.price), 0),
+                      tax: items.reduce((sum: number, i: any) => sum + toSafeNumber(i.tax), 0),
+                      items: buildWebhookOrderEmailItems(items),
                       paymentMethod: payment.method || 'Online',
-                      language: orderLanguage
+                      language: orderLanguage,
+                      ctaUrl: `${baseUrl}/account/orders?orderId=${encodeURIComponent(orderId)}`,
                     },
                     host: host
                   });

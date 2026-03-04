@@ -176,11 +176,6 @@ export function VumeStudioTemplate(options: StudioExperienceOptions) {
         <a href="https://${host}/account/orders" style="display: inline-block; background: #000000; color: #ffffff; text-align: center; padding: 15px 30px; border-radius: 10px; font-size: 16px; font-weight: 600; text-transform: uppercase; text-decoration: none;">${content.button}</a>
       </div>
 
-      <!-- SIGNATURE -->
-      <p style="margin: 0; font-size: 16px; line-height: 1.6; color: #111;">
-          ${content.footer}<br />
-          <a href="https://${host}/studio/" style="color: #111; font-weight: bold; text-decoration: underline;">${host}/studio/</a>
-        </p>
     </div>
   `;
 
@@ -189,6 +184,7 @@ export function VumeStudioTemplate(options: StudioExperienceOptions) {
     previewText: workshopName,
     journey: 'studio',
     host,
+    language,
     headerImage: headerImage || `https://${host}/api/proxy?path=${encodeURIComponent('/assets/studio/common/branding/VSTUDIO.webp')}`,
     optOutUrl
   });

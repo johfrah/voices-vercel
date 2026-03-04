@@ -1,4 +1,5 @@
 import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
+import { localeToBcp47, normalizeLocale } from '@/lib/system/locale-utils';
 
 /**
  *  VUME MASTER WRAPPER (2026) - MARK & LAYA EDITION
@@ -13,14 +14,50 @@ interface WrapperOptions {
   journey?: 'agency' | 'artist' | 'portfolio' | 'studio' | 'auth';
   market?: string;
   host?: string;
+  language?: string;
   showSignature?: boolean;
   headerImage?: string;
   optOutUrl?: string;
+  cta?: {
+    label: string;
+    url: string;
+  };
 }
 
 export function VumeMasterWrapper(content: string, options: WrapperOptions) {
-  const { title, previewText, journey = 'agency', host = (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'www.voices.be'), showSignature = true, headerImage, optOutUrl } = options;
+  const {
+    title,
+    previewText,
+    journey = 'agency',
+    host = (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'www.voices.be'),
+    showSignature = true,
+    language,
+    headerImage,
+    optOutUrl,
+    cta,
+  } = options;
   const market = MarketManager.getCurrentMarket(host);
+  const resolvedLanguage = normalizeLocale(language || market.primary_language || 'nl-be');
+  const languageShort = resolvedLanguage.split('-')[0];
+  const i18n = (
+    languageShort === 'fr'
+      ? {
+          unsubscribe: 'Se désinscrire',
+          forMarketing: 'des e-mails marketing',
+          websiteCta: 'Voir le site',
+        }
+      : languageShort === 'en'
+        ? {
+            unsubscribe: 'Unsubscribe',
+            forMarketing: 'from marketing emails',
+            websiteCta: 'Visit website',
+          }
+        : {
+            unsubscribe: 'Uitschrijven',
+            forMarketing: 'voor marketing-mails',
+            websiteCta: 'Bekijk website',
+          }
+  );
   
   //  Laya's Refined Gradients (Voices 2.0 - Liquid DNA)
   const gradients = {
@@ -34,6 +71,64 @@ export function VumeMasterWrapper(content: string, options: WrapperOptions) {
   const primaryGradient = gradients[journey] || gradients.agency;
   const isDark = journey === 'artist';
   const isAgency20 = journey === 'agency' || journey === 'auth';
+
+  const signatureByJourney: Record<
+    NonNullable<WrapperOptions['journey']>,
+    {
+      profilePath: string;
+      line1: { nl: string; fr: string; en: string };
+      line2: { nl: string; fr: string; en: string };
+    }
+  > = {
+    agency: {
+      profilePath: '/',
+      line1: { nl: 'Johfrah Lefebvre', fr: 'Johfrah Lefebvre', en: 'Johfrah Lefebvre' },
+      line2: {
+        nl: 'Agency World',
+        fr: 'Agency World',
+        en: 'Agency World',
+      },
+    },
+    auth: {
+      profilePath: '/account',
+      line1: { nl: 'Team Voices', fr: 'Équipe Voices', en: 'Voices Team' },
+      line2: {
+        nl: 'Account & Support',
+        fr: 'Compte et support',
+        en: 'Account and support',
+      },
+    },
+    studio: {
+      profilePath: '/studio',
+      line1: { nl: 'Team Voices Studio', fr: 'Équipe Voices Studio', en: 'Voices Studio Team' },
+      line2: {
+        nl: 'Studio World',
+        fr: 'Studio World',
+        en: 'Studio World',
+      },
+    },
+    portfolio: {
+      profilePath: '/portfolio',
+      line1: { nl: 'Johfrah Portfolio', fr: 'Johfrah Portfolio', en: 'Johfrah Portfolio' },
+      line2: {
+        nl: 'Portfolio World',
+        fr: 'Portfolio World',
+        en: 'Portfolio World',
+      },
+    },
+    artist: {
+      profilePath: '/artist',
+      line1: { nl: 'Team Artist', fr: 'Équipe Artist', en: 'Artist Team' },
+      line2: {
+        nl: 'Artist World',
+        fr: 'Artist World',
+        en: 'Artist World',
+      },
+    },
+  };
+  const signatureProfile = signatureByJourney[journey] || signatureByJourney.agency;
+  const signatureName = signatureProfile.line1[languageShort as 'nl' | 'fr' | 'en'] || signatureProfile.line1.nl;
+  const signatureRole = signatureProfile.line2[languageShort as 'nl' | 'fr' | 'en'] || signatureProfile.line2.nl;
 
   // Replace {{host}} in content
   const processedContent = content.replace(/\{\{host\}\}/g, host);
@@ -67,26 +162,39 @@ export function VumeMasterWrapper(content: string, options: WrapperOptions) {
     <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-top: 40px; border-top: 1px solid #F0F0F0; padding-top: 30px;">
       <tr>
         <td width="100" style="vertical-align: middle; text-align: center;">
-          <a href="https://${host}/?utm_source=E-mail&utm_medium=be-mail" style="text-decoration: none;">
+          <a href="https://${host}${signatureProfile.profilePath}?utm_source=email&utm_medium=transactional" style="text-decoration: none;">
             <img src="https://${host}/api/proxy?path=${encodeURIComponent('/assets/common/branding/founder/johfrah.png')}&v=20260213" alt="Johfrah" width="100" style="display: block; border: 0; margin: auto;" />
           </a>
         </td>
         <td style="vertical-align: middle; padding-left: 31px; font-family: 'Raleway', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 1.5; color: #333333;">
-          <span style="font-weight: 700; color: ${isDark ? '#FFFFFF' : '#1A1A1A'};">Johfrah Lefebvre</span><br />
+          <span style="font-weight: 700; color: ${isDark ? '#FFFFFF' : '#1A1A1A'};">${signatureName}</span><br />
+          <span style="color: ${isDark ? '#999' : '#666'};">${signatureRole}</span><br />
           <a href="mailto:${market.email}" style="color: ${isDark ? '#999' : '#666'}; text-decoration: none;">${market.email}</a><br />
           <a href="tel:${market.phone.replace(/\s+/g, '')}" style="color: ${isDark ? '#999' : '#666'}; text-decoration: none;">${market.phone}</a><br />
-          <a href="https://${host}/?utm_source=E-mail&utm_medium=be-mail" style="color: #1155CC; text-decoration: none; font-weight: 500;">${host}</a>
+          <a href="https://${host}${signatureProfile.profilePath}?utm_source=email&utm_medium=transactional" style="color: #1155CC; text-decoration: none; font-weight: 500;">${i18n.websiteCta}</a>
         </td>
       </tr>
     </table>
   ` : '';
+
+  const ctaHtml = cta?.label && cta?.url
+    ? `
+      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-top: 24px; margin-bottom: 8px;">
+        <tr>
+          <td align="left">
+            <a href="${cta.url}" style="display: inline-block; padding: 14px 26px; border-radius: 12px; background: #111111; color: #FFFFFF; text-decoration: none; font-family: 'Raleway', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 14px; font-weight: 600; letter-spacing: 0.02em;">${cta.label}</a>
+          </td>
+        </tr>
+      </table>
+    `
+    : '';
 
   const footerHtml = `
     <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-top: 40px; text-align: center; color: #999999; font-family: 'Raleway', sans-serif; font-size: 12px; line-height: 1.5;">
       <tr>
         <td style="padding-bottom: 20px;">
           &copy; 2026 ${market.company_name} &bull; ${market.name}<br />
-          ${optOutUrl ? `<a href="${optOutUrl}" style="color: #999999; text-decoration: underline;">Uitschrijven</a> voor marketing-mails` : ''}
+          ${optOutUrl ? `<a href="${optOutUrl}" style="color: #999999; text-decoration: underline;">${i18n.unsubscribe}</a> ${i18n.forMarketing}` : ''}
         </td>
       </tr>
     </table>
@@ -94,7 +202,7 @@ export function VumeMasterWrapper(content: string, options: WrapperOptions) {
 
   return `
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-    <html xmlns="http://www.w3.org/1999/xhtml" lang="nl">
+    <html xmlns="http://www.w3.org/1999/xhtml" lang="${localeToBcp47(resolvedLanguage)}">
     <head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -120,6 +228,7 @@ export function VumeMasterWrapper(content: string, options: WrapperOptions) {
                     <tr>
                       <td style="padding: 50px; color: #333333; font-family: 'Raleway', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 1.6; font-weight: 400;">
                         ${processedContent}
+                        ${ctaHtml}
                         ${signatureHtml}
                       </td>
                     </tr>
@@ -141,9 +250,16 @@ export type BaseTemplateProps = {
   previewText?: string;
   journey?: 'agency' | 'artist' | 'portfolio' | 'studio' | 'auth';
   market?: string;
+  host?: string;
+  language?: string;
   children: string;
   headerImage?: string;
   optOutUrl?: string;
+  showSignature?: boolean;
+  cta?: {
+    label: string;
+    url: string;
+  };
 };
 
 export function BaseTemplate(props: BaseTemplateProps) {
@@ -152,7 +268,11 @@ export function BaseTemplate(props: BaseTemplateProps) {
     previewText: props.previewText,
     journey: props.journey,
     market: props.market,
+    host: props.host,
+    language: props.language,
+    showSignature: props.showSignature,
     headerImage: props.headerImage,
-    optOutUrl: props.optOutUrl
+    optOutUrl: props.optOutUrl,
+    cta: props.cta,
   });
 }
