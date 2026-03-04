@@ -85,6 +85,7 @@ function formatMusicTrackLabel(trackId: unknown): string {
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
     .join(' ');
 }
+
 export async function POST(request: Request) {
   return await ServerWatchdog.atomic('CheckoutAPI', 'SubmitOrder', {}, async () => {
     let rawBody: any = null;
@@ -127,12 +128,39 @@ export async function POST(request: Request) {
       ...(selectedActor?.id ? [selectedActor.id] : [])
     ])).map(id => Number(id));
 
-    const workshopIds = Array.from(new Set([
-      ...(items || []).map((i: any) => i.id).filter((id: any) => !isNaN(Number(id)) && Number(id) > 0)
-    ])).map(id => Number(id));
+    const editionIds = Array.from(new Set(
+      (items || [])
+        .map((i: any) => Number(i.editionId ?? i.edition_id))
+        .filter((id: number) => Number.isFinite(id) && id > 0)
+    ));
 
-    const { data: dbActors } = await sdkClient.from('actors').select('*').or(`id.in.(${actorIds.join(',')}),wp_product_id.in.(${actorIds.join(',')})`);
-    const { data: dbWorkshops } = await sdkClient.from('workshops').select('*').in('id', workshopIds);
+    const { data: dbEditions } = editionIds.length
+      ? await sdkClient
+          .from('workshop_editions')
+          .select('id, workshop_id, price')
+          .in('id', editionIds)
+      : { data: [] as any[] };
+
+    const editionWorkshopIds = (dbEditions || [])
+      .map((edition: any) => Number(edition.workshop_id))
+      .filter((id: number) => Number.isFinite(id) && id > 0);
+
+    const workshopIds = Array.from(new Set([
+      ...(items || [])
+        .map((i: any) => Number(i.workshop_id ?? i.workshopId ?? i.id))
+        .filter((id: number) => Number.isFinite(id) && id > 0),
+      ...editionWorkshopIds,
+    ]));
+
+    const { data: dbActors } = actorIds.length
+      ? await sdkClient
+          .from('actors')
+          .select('*')
+          .or(`id.in.(${actorIds.join(',')}),wp_product_id.in.(${actorIds.join(',')})`)
+      : { data: [] as any[] };
+    const { data: dbWorkshops } = workshopIds.length
+      ? await sdkClient.from('workshops').select('*').in('id', workshopIds)
+      : { data: [] as any[] };
 
     const actorMap = new Map();
     (dbActors || []).forEach(a => {
@@ -140,6 +168,7 @@ export async function POST(request: Request) {
       if (a.wp_product_id) actorMap.set(Number(a.wp_product_id), a);
     });
     const workshopMap = new Map((dbWorkshops || []).map(w => [Number(w.id), w]));
+    const editionMap = new Map((dbEditions || []).map((edition: any) => [Number(edition.id), edition]));
 
     const isVatExempt = !!vat_number && vat_number.length > 2 && !vat_number.startsWith('BE'); 
     const taxRate = isVatExempt ? 0 : 0.21;
@@ -169,10 +198,35 @@ export async function POST(request: Request) {
         return { ...item, pricing: result };
       }
       if (item.type === 'workshop_edition') {
-        const dbWorkshop = workshopMap.get(Number(item.id));
-        const price = dbWorkshop ? Number(dbWorkshop.price) : 0;
-        serverCalculatedSubtotal += price;
-        return { ...item, pricing: { total: price, subtotal: price, tax: price * taxRate } };
+        const editionId = Number(item.editionId ?? item.edition_id);
+        const dbEdition = Number.isFinite(editionId) && editionId > 0 ? editionMap.get(editionId) : null;
+
+        const workshopIdCandidate = Number(
+          item.workshop_id ?? item.workshopId ?? dbEdition?.workshop_id ?? item.id
+        );
+        const workshopId = Number.isFinite(workshopIdCandidate) && workshopIdCandidate > 0
+          ? workshopIdCandidate
+          : null;
+        const dbWorkshop = workshopId ? workshopMap.get(workshopId) : null;
+
+        const priceCandidates = [
+          Number(dbEdition?.price),
+          Number(dbWorkshop?.price),
+          Number(item.price),
+          Number(item.pricing?.subtotal),
+          Number(item.pricing?.total),
+        ];
+        const resolvedSubtotal = priceCandidates.find((value) => Number.isFinite(value) && value > 0) ?? 0;
+        const resolvedTax = Math.round(resolvedSubtotal * taxRate * 100) / 100;
+        const resolvedTotal = Math.round((resolvedSubtotal + resolvedTax) * 100) / 100;
+
+        serverCalculatedSubtotal += resolvedSubtotal;
+        return {
+          ...item,
+          workshop_id: workshopId ?? item.workshop_id ?? item.workshopId ?? null,
+          editionId: Number.isFinite(editionId) && editionId > 0 ? editionId : item.editionId,
+          pricing: { total: resolvedTotal, subtotal: resolvedSubtotal, tax: resolvedTax },
+        };
       }
       return item;
     });
