@@ -36,20 +36,26 @@ export class ServerWatchdog {
         const systemEvents = getTable('systemEvents');
         
         if (db && systemEvents) {
-          await db.insert(systemEvents).values({
-            level: options.level || 'error',
-            source: options.component || 'ServerWatchdog',
-            message: options.error,
-            details: {
-              stack: options.stack,
-              url: options.url || 'Server-Side',
-              payload: scrubbedPayload,
-              schema: options.schema,
-              extra: options.details,
-              timestamp: new Date()
-            },
-            createdAt: new Date()
-          }).catch((e: any) => console.warn('[ServerWatchdog] Direct DB logging failed:', e.message));
+          // Never block request flow on telemetry persistence.
+          void Promise.race([
+            db.insert(systemEvents).values({
+              level: options.level || 'error',
+              source: options.component || 'ServerWatchdog',
+              message: options.error,
+              details: {
+                stack: options.stack,
+                url: options.url || 'Server-Side',
+                payload: scrubbedPayload,
+                schema: options.schema,
+                extra: options.details,
+                timestamp: new Date()
+              },
+              createdAt: new Date()
+            }),
+            new Promise((_, reject) =>
+              setTimeout(() => reject(new Error('Watchdog DB logging timeout')), 1500)
+            )
+          ]).catch((e: any) => console.warn('[ServerWatchdog] Direct DB logging failed:', e.message));
         }
       } catch (dbErr) {
         // Silent fail for DB, fetch will try next

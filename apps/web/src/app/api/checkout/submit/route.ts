@@ -370,14 +370,25 @@ export async function POST(request: Request) {
     const mollieOrder = await MollieService.createOrder({
       amount: { currency: 'EUR', value: amount.toFixed(2) },
       orderNumber: newOrder.id.toString(),
-      lines: validatedItems.map((i: any) => ({
-        name: i.name || 'Voice Over',
-        quantity: 1,
-        unitPrice: { currency: 'EUR', value: (i.pricing?.total || 0).toFixed(2) },
-        totalAmount: { currency: 'EUR', value: (i.pricing?.total || 0).toFixed(2) },
-        vatRate: isVatExempt ? '0' : '21',
-        vatAmount: { currency: 'EUR', value: (i.pricing?.tax || 0).toFixed(2) }
-      })),
+      lines: validatedItems.map((i: any) => {
+        const lineTotal = Number(i.pricing?.total ?? i.pricing?.subtotal ?? 0);
+        const explicitVat = Number(i.pricing?.vat ?? i.pricing?.tax ?? 0);
+        const vatFromDiff = Number.isFinite(lineTotal) && Number.isFinite(Number(i.pricing?.subtotal))
+          ? Math.max(0, lineTotal - Number(i.pricing?.subtotal || 0))
+          : 0;
+        const safeVat = isVatExempt
+          ? 0
+          : (explicitVat > 0 ? explicitVat : vatFromDiff);
+
+        return {
+          name: i.name || 'Voice Over',
+          quantity: 1,
+          unitPrice: { currency: 'EUR', value: lineTotal.toFixed(2) },
+          totalAmount: { currency: 'EUR', value: lineTotal.toFixed(2) },
+          vatRate: isVatExempt ? '0' : '21',
+          vatAmount: { currency: 'EUR', value: safeVat.toFixed(2) }
+        };
+      }),
       billingAddress: { streetAndNumber: address_street || 'N/A', postalCode: postal_code || 'N/A', city: city || 'N/A', country: country || 'BE', givenName: first_name, familyName: last_name, email },
       redirectUrl: `${baseUrl}/api/auth/magic-login?token=${secureToken}&redirect=/account/orders?orderId=${newOrder.id}`,
       webhookUrl: `${baseUrl}/api/checkout/webhook`,
