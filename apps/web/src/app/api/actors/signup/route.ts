@@ -42,6 +42,8 @@ export async function POST(request: NextRequest) {
       video_url,
       video_name,
       studio_specs,
+      is_enrichment,
+      userId
     } = body;
 
     if (!first_name?.trim() || !last_name?.trim() || !email?.trim()) {
@@ -49,6 +51,58 @@ export async function POST(request: NextRequest) {
         { error: 'Voornaam, familienaam en e-mail zijn verplicht.' },
         { status: 400 }
       );
+    }
+
+    // 🛡️ CHRIS-PROTOCOL: Enrichment Logic (v2.28.48)
+    if (is_enrichment && userId) {
+      const actorIdResult = await db.select({ id: actors.id }).from(actors).where(eq(actors.userId, userId)).limit(1);
+      const actorId = actorIdResult[0]?.id;
+
+      if (actorId) {
+        const updatePayload: any = {
+          first_name: first_name.trim(),
+          last_name: last_name?.trim() || null,
+          gender: gender || null,
+          countryId: country_id ? parseInt(String(country_id), 10) : null,
+          nativeLanguageId: native_lang_id ? parseInt(String(native_lang_id), 10) : null,
+          delivery_days_min: delivery_days_min != null ? parseInt(String(delivery_days_min), 10) : 1,
+          delivery_days_max: delivery_days_max != null ? parseInt(String(delivery_days_max), 10) : 3,
+          cutoff_time: cutoff_time || '18:00',
+          allow_free_trial: allow_free_trial !== false,
+          tagline: tagline?.trim() || null,
+          bio: bio?.trim() || null,
+          why_voices: why_voices?.trim() || null,
+          studio_specs: studio_specs || null,
+          updatedAt: new Date()
+        };
+
+        await db.update(actors).set(updatePayload).where(eq(actors.id, actorId));
+
+        // Sync relations (delete and re-insert for simplicity/integrity)
+        if (actorLanguages) {
+          await db.delete(actorLanguages).where(eq(actorLanguages.actorId, actorId));
+          if (native_lang_id) {
+            await db.insert(actorLanguages).values({ actorId, languageId: parseInt(String(native_lang_id)), isNative: true });
+          }
+          if (Array.isArray(extra_lang_ids)) {
+            for (const langId of extra_lang_ids) {
+              await db.insert(actorLanguages).values({ actorId, languageId: parseInt(String(langId)), isNative: false }).catch(() => {});
+            }
+          }
+        }
+
+        if (actorTones && Array.isArray(tone_ids)) {
+          await db.delete(actorTones).where(eq(actorTones.actorId, actorId));
+          for (const toneId of tone_ids) {
+            await db.insert(actorTones).values({ actorId, toneId: parseInt(String(toneId)) }).catch(() => {});
+          }
+        }
+
+        return NextResponse.json({
+          success: true,
+          message: 'Je profiel is succesvol bijgewerkt naar de 2026 standaard!',
+        });
+      }
     }
 
     const baseSlug = generateSlug(`${first_name.trim()} ${(last_name || '').trim()}`.trim()) || `actor-${Date.now()}`;

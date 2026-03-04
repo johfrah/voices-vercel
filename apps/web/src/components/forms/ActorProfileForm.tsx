@@ -91,6 +91,15 @@ export const ActorProfileForm = ({ initialData, mode, onSave }: ActorProfileForm
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
+  const handleSave = async () => {
+    const payload = {
+      ...formData,
+      is_enrichment: mode === 'settings' || formData.is_enrichment,
+      userId: formData.userId
+    };
+    await onSave(payload);
+  };
+
   const toggleSelection = (field: 'extraLangIds' | 'toneIds', id: number) => {
     setFormData(prev => {
       const current = prev[field] as number[];
@@ -439,7 +448,7 @@ export const ActorProfileForm = ({ initialData, mode, onSave }: ActorProfileForm
                 <ChevronLeft size={18} className="mr-2" />
                 <VoiceglotText translationKey="common.previous" defaultText="Vorige" />
               </ButtonInstrument>
-              <ButtonInstrument onClick={() => onSave(formData)} className="va-btn-pro group">
+              <ButtonInstrument onClick={handleSave} className="va-btn-pro group">
                 <VoiceglotText translationKey="common.save_profile" defaultText="Profiel Opslaan" />
                 <Check size={18} className="ml-2" />
               </ButtonInstrument>
