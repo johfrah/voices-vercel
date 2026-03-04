@@ -30,6 +30,7 @@ export async function POST(req: NextRequest) {
 
     // 🛡️ CHRIS-PROTOCOL: Parse actorId to integer to avoid DB crash (v2.14.408)
     const id = typeof actorId === 'string' ? parseInt(actorId) : actorId;
+    let actorInfo = '';
     
     if (!isNaN(id)) {
       try {
