@@ -163,18 +163,20 @@ export default function CartPageClient() {
                   <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
                 </ButtonInstrument>
 
-                <div className="flex flex-col items-center gap-3 text-center pt-4">
-                  <div className="flex items-center gap-2 text-green-600/60">
-                    <div className="flex -space-x-0.5">
-                      {[1,2,3,4,5].map(i => (
-                        <Star key={i} size={12} fill="currentColor" strokeWidth={0} />
-                      ))}
+                {reviewStats && (
+                  <div className="flex flex-col items-center gap-3 text-center pt-4">
+                    <div className="flex items-center gap-2 text-green-600/60">
+                      <div className="flex -space-x-0.5">
+                        {[1,2,3,4,5].map(i => (
+                          <Star key={i} size={12} fill="currentColor" strokeWidth={0} />
+                        ))}
+                      </div>
+                      <TextInstrument className="text-[11px] font-bold tracking-[0.2em] uppercase">
+                        {reviewStats.averageRating}/5 sterren
+                      </TextInstrument>
                     </div>
-                    <TextInstrument className="text-[11px] font-bold tracking-[0.2em] uppercase">
-                      {reviewStats?.averageRating || "4.9"}/5 sterren
-                    </TextInstrument>
                   </div>
-                </div>
+                )}
               </div>
 
               {/* Security Nudge */}

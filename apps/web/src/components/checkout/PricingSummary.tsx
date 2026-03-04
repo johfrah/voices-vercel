@@ -287,15 +287,17 @@ export const PricingSummary: React.FC<{
     return null;
   };
 
-  const resolveUsageLabel = (item: Record<string, unknown>): string => {
+  const resolveUsageLabel = (item: Record<string, unknown>): string | null => {
     const usageCandidate = item.usageId ?? item.usage_id ?? item.usage ?? item.journeyId ?? item.journey_id;
     if (typeof usageCandidate === 'number') {
-      return MarketManager.getUsageLabel(usageCandidate);
+      const mapped = MarketManager.getUsageLabel(usageCandidate);
+      return typeof mapped === 'string' && mapped.trim().length > 0 ? mapped : String(usageCandidate);
     }
     if (typeof usageCandidate === 'string' && usageCandidate.trim()) {
-      return MarketManager.getUsageLabel(usageCandidate);
+      const mapped = MarketManager.getUsageLabel(usageCandidate);
+      return typeof mapped === 'string' && mapped.trim().length > 0 ? mapped : usageCandidate.trim();
     }
-    return t('cart.detail.not_specified', 'Niet opgegeven');
+    return null;
   };
 
   const resolveMediaLabels = (item: Record<string, unknown>): string[] => {
@@ -399,6 +401,20 @@ export const PricingSummary: React.FC<{
     selectedItem?.type === 'workshop_edition'
       ? formatWorkshopLocationLabel(selectedItem as Record<string, unknown>)
       : null;
+  const selectedUsageLabel =
+    selectedItem
+      ? (selectedItem.type === 'workshop_edition'
+          ? (typeof selectedItem.type === 'string' && selectedItem.type.trim().length > 0 ? selectedItem.type : null)
+          : resolveUsageLabel(selectedItem as Record<string, unknown>))
+      : null;
+  const selectedMediaLabels =
+    selectedItem && selectedItem.type !== 'workshop_edition'
+      ? resolveMediaLabels(selectedItem as Record<string, unknown>)
+      : [];
+  const selectedCountryLabels =
+    selectedItem && selectedItem.type !== 'workshop_edition'
+      ? resolveCountryLabels(selectedItem as Record<string, unknown>)
+      : [];
 
   if (!isHydrated) return null;
 
@@ -415,8 +431,15 @@ export const PricingSummary: React.FC<{
               const itemImage = isWorkshopItem
                 ? resolveWorkshopImageSrc(itemObj)
                 : (itemObj.actor?.photo_url || VOICES_CONFIG.assets.placeholders.voice);
-              const itemTitle = itemObj.actor?.display_name || itemObj.name || (isWorkshopItem ? 'Workshop' : 'Stemopname');
-              const usageLabel = isWorkshopItem ? t('cart.workshop.label', 'Studio workshop') : resolveUsageLabel(itemData);
+              const itemTitle =
+                itemObj.actor?.display_name ||
+                itemObj.actor?.name ||
+                itemObj.name ||
+                itemObj.id ||
+                null;
+              const usageLabel = isWorkshopItem
+                ? (typeof itemObj.type === 'string' && itemObj.type.trim().length > 0 ? itemObj.type : null)
+                : resolveUsageLabel(itemData);
               const mediaLabels = isWorkshopItem ? [] : resolveMediaLabels(itemData);
               const countryLabels = isWorkshopItem ? [] : resolveCountryLabels(itemData);
               const spotsDetails = isWorkshopItem
@@ -453,13 +476,15 @@ export const PricingSummary: React.FC<{
                   <ContainerInstrument className="flex flex-1 items-start justify-between gap-4 min-w-0">
                     <ContainerInstrument className="min-w-0 flex-1">
                       <HeadingInstrument level={4} className="font-light text-xl text-va-black truncate tracking-tight">
-                        {itemTitle}
+                        {itemTitle || '—'}
                       </HeadingInstrument>
                       <ContainerInstrument className="mt-2 flex flex-wrap items-center gap-2 text-[11px] text-va-black/45">
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-va-off-white border border-va-black/[0.04] font-medium text-va-black/65">
-                          <RadioTower size={12} strokeWidth={1.8} />
-                          {usageLabel}
-                        </span>
+                        {usageLabel && (
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-va-off-white border border-va-black/[0.04] font-medium text-va-black/65">
+                            <RadioTower size={12} strokeWidth={1.8} />
+                            {usageLabel}
+                          </span>
+                        )}
 
                         {isWorkshopItem ? (
                           <>
@@ -558,13 +583,15 @@ export const PricingSummary: React.FC<{
                                     <VoiceglotText translationKey="cart.usage_and_rights.label" defaultText="Gebruik & rechten" />
                                   </LabelInstrument>
                                   <div className="space-y-3 text-[13px] text-va-black/60">
-                                    <div className="space-y-0.5">
-                                      <span className="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-widest text-va-black/35">
-                                        <RadioTower size={12} strokeWidth={1.8} className="text-va-black/40" />
-                                        <VoiceglotText translationKey="cart.usage.label" defaultText="Gebruikstype" />
-                                      </span>
-                                      <span className="block font-medium text-va-black/70">{usageLabel}</span>
-                                    </div>
+                                    {usageLabel && (
+                                      <div className="space-y-0.5">
+                                        <span className="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-widest text-va-black/35">
+                                          <RadioTower size={12} strokeWidth={1.8} className="text-va-black/40" />
+                                          <VoiceglotText translationKey="cart.usage.label" defaultText="Gebruikstype" />
+                                        </span>
+                                        <span className="block font-medium text-va-black/70">{usageLabel}</span>
+                                      </div>
+                                    )}
                                     {mediaLabels.length > 0 && (
                                       <div className="space-y-0.5">
                                         <span className="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-widest text-va-black/35">
@@ -607,26 +634,19 @@ export const PricingSummary: React.FC<{
                                 {/* Delivery & Pricing */}
                                 <div className="space-y-5 pt-4 border-t border-va-black/[0.03]">
                                   {/* Delivery Date */}
-                                  <div className="space-y-2">
-                                    <LabelInstrument className="text-[10px] uppercase tracking-widest text-va-black/30 font-bold ml-0">
-                                      Levering
-                                    </LabelInstrument>
-                                    {deliveryLabel ? (
+                                  {deliveryLabel && (
+                                    <div className="space-y-2">
+                                      <LabelInstrument className="text-[10px] uppercase tracking-widest text-va-black/30 font-bold ml-0">
+                                        Levering
+                                      </LabelInstrument>
                                       <div className="inline-flex items-center gap-2 px-3 py-2 bg-green-500/5 border border-green-500/10 rounded-xl w-fit">
                                         <Clock3 size={13} strokeWidth={1.8} className="text-green-600/80" />
                                         <span className="text-[12px] font-bold text-green-600/80 uppercase tracking-wider">
                                           {deliveryLabel}
                                         </span>
                                       </div>
-                                    ) : (
-                                      <div className="inline-flex items-center gap-2 px-3 py-2 bg-amber-500/5 border border-amber-500/20 rounded-xl w-fit">
-                                        <Clock3 size={13} strokeWidth={1.8} className="text-amber-700/80" />
-                                        <span className="text-[12px] font-bold text-amber-700/80 uppercase tracking-wider">
-                                          <VoiceglotText translationKey="cart.delivery.pending" defaultText="Nog niet bevestigd" />
-                                        </span>
-                                      </div>
-                                    )}
-                                  </div>
+                                    </div>
+                                  )}
 
                                   {/* Price Breakdown */}
                                   {itemObj.pricing && (
@@ -635,10 +655,12 @@ export const PricingSummary: React.FC<{
                                         Prijsopbouw (excl. BTW)
                                       </LabelInstrument>
                                       <div className="space-y-2">
-                                        <div className="space-y-0.5 text-[13px] text-va-black/60">
-                                          <span className="text-[10px] uppercase tracking-widest text-va-black/35">Basistarief</span>
-                                          <span className="block font-medium text-va-black/70">€ {(itemObj.pricing.base ?? 0).toFixed(2)}</span>
-                                        </div>
+                                        {toNumberOrNull(itemObj.pricing.base) !== null && (
+                                          <div className="space-y-0.5 text-[13px] text-va-black/60">
+                                            <span className="text-[10px] uppercase tracking-widest text-va-black/35">Basistarief</span>
+                                            <span className="block font-medium text-va-black/70">€ {toNumberOrNull(itemObj.pricing.base)!.toFixed(2)}</span>
+                                          </div>
+                                        )}
                                         {(itemObj.pricing.wordSurcharge ?? 0) > 0 && (
                                           <div className="space-y-0.5 text-[13px] text-va-black/60">
                                             <span className="text-[10px] uppercase tracking-widest text-va-black/35">Extra woorden/verwerking</span>
@@ -672,14 +694,18 @@ export const PricingSummary: React.FC<{
                       <div className="flex flex-col items-end min-w-[120px]">
                         {state.customer.active_coupon && (
                           <TextInstrument className="text-[12px] text-va-black/20 line-through font-light">
-                            €{(itemObj.pricing?.subtotal ?? itemObj.pricing?.total ?? 0).toFixed(2)}
+                            {toNumberOrNull(itemObj.pricing?.subtotal ?? itemObj.pricing?.total ?? itemObj.price) !== null
+                              ? `€${toNumberOrNull(itemObj.pricing?.subtotal ?? itemObj.pricing?.total ?? itemObj.price)!.toFixed(2)}`
+                              : '—'}
                           </TextInstrument>
                         )}
                         <TextInstrument className={cn(
                           "font-light text-2xl tracking-tight",
                           "text-va-black"
                         )}>
-                          €{(itemObj.pricing?.subtotal ?? itemObj.pricing?.total ?? 0).toFixed(2)}
+                          {toNumberOrNull(itemObj.pricing?.subtotal ?? itemObj.pricing?.total ?? itemObj.price) !== null
+                            ? `€${toNumberOrNull(itemObj.pricing?.subtotal ?? itemObj.pricing?.total ?? itemObj.price)!.toFixed(2)}`
+                            : '—'}
                         </TextInstrument>
                         <TextInstrument className="text-[10px] text-va-black/20 font-light uppercase tracking-widest mt-0.5">
                           Excl. BTW
@@ -783,7 +809,7 @@ export const PricingSummary: React.FC<{
                         {selectedItem.actor?.display_name || selectedItem.name}
                       </HeadingInstrument>
                       <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] font-bold tracking-[0.1em] uppercase text-va-black/40">
-                        <span>{selectedItem.type === 'workshop_edition' ? 'Studio workshop' : MarketManager.getUsageLabel(selectedItem.usage)}</span>
+                        {selectedUsageLabel && <span>{selectedUsageLabel}</span>}
                         {selectedItem.type === 'workshop_edition' ? (
                           <>
                             {selectedItem.date && (
@@ -806,18 +832,26 @@ export const PricingSummary: React.FC<{
                           </>
                         ) : (
                           <>
-                            <span className="w-1 h-1 rounded-full bg-va-black/10" />
-                            <span>
-                              {Array.isArray(selectedItem.media) 
-                                ? selectedItem.media.map((m: string) => MarketManager.getMediaLabel(m)).join(', ') 
-                                : MarketManager.getMediaLabel(selectedItem.media || 'online')}
-                            </span>
-                            <span className="w-1 h-1 rounded-full bg-va-black/10" />
-                            <span>{MarketManager.getCountryLabel(selectedItem.country) || t('common.country.be', 'België')}</span>
+                            {selectedMediaLabels.length > 0 && (
+                              <>
+                                <span className="w-1 h-1 rounded-full bg-va-black/10" />
+                                <span>{selectedMediaLabels.join(', ')}</span>
+                              </>
+                            )}
+                            {selectedCountryLabels.length > 0 && (
+                              <>
+                                <span className="w-1 h-1 rounded-full bg-va-black/10" />
+                                <span>{selectedCountryLabels.join(', ')}</span>
+                              </>
+                            )}
                           </>
                         )}
                         <span className="w-1 h-1 rounded-full bg-va-black/10" />
-                        <span className="text-va-black">€ {(selectedItem.pricing?.subtotal ?? selectedItem.pricing?.total ?? 0).toFixed(2)}</span>
+                        <span className="text-va-black">
+                          {toNumberOrNull(selectedItem.pricing?.subtotal ?? selectedItem.pricing?.total ?? selectedItem.price) !== null
+                            ? `€ ${toNumberOrNull(selectedItem.pricing?.subtotal ?? selectedItem.pricing?.total ?? selectedItem.price)!.toFixed(2)}`
+                            : '—'}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -850,12 +884,14 @@ export const PricingSummary: React.FC<{
                         <VoiceglotText translationKey="pricing.breakdown_excl_vat" defaultText="Prijsopbouw (excl. BTW)" />
                       </LabelInstrument>
                       <div className="space-y-3">
-                        <div className="flex justify-between text-[15px]">
-                          <span className="text-va-black/60 font-light">
-                            {selectedItem.usage === 'telefonie' ? t('pricing.base_telephony', 'Basistarief (Telefoon)') : t('pricing.base', 'Basistarief')}
-                          </span>
-                          <span className="font-medium text-va-black">€ {(selectedItem.pricing.base ?? 0).toFixed(2)}</span>
-                        </div>
+                        {toNumberOrNull(selectedItem.pricing.base) !== null && (
+                          <div className="flex justify-between text-[15px]">
+                            <span className="text-va-black/60 font-light">
+                              {selectedItem.usage === 'telefonie' ? t('pricing.base_telephony', 'Basistarief (Telefoon)') : t('pricing.base', 'Basistarief')}
+                            </span>
+                            <span className="font-medium text-va-black">€ {toNumberOrNull(selectedItem.pricing.base)!.toFixed(2)}</span>
+                          </div>
+                        )}
                         {(selectedItem.pricing.wordSurcharge ?? 0) > 0 && (
                           <div className="flex justify-between text-[15px]">
                             <span className="text-va-black/60 font-light">
@@ -1148,18 +1184,20 @@ const CTASection: React.FC<any> = ({ handleSubmit, setIsPreviewOpen, setIsTermsO
             <VoiceglotText translationKey="checkout.trust.heading" defaultText="Bedankt voor het vertrouwen" />
           </TextInstrument>
 
-          <ContainerInstrument className="flex items-center gap-2 text-green-600/60">
-            <ContainerInstrument className="flex -space-x-0.5">
-              {[1,2,3,4,5].map(i => (
-                <svg key={i} className="w-3 h-3 fill-current" viewBox="0 0 20 20">
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                </svg>
-              ))}
+          {reviewStats && (
+            <ContainerInstrument className="flex items-center gap-2 text-green-600/60">
+              <ContainerInstrument className="flex -space-x-0.5">
+                {[1,2,3,4,5].map(i => (
+                  <svg key={i} className="w-3 h-3 fill-current" viewBox="0 0 20 20">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                  </svg>
+                ))}
+              </ContainerInstrument>
+              <TextInstrument className="text-[11px] font-bold tracking-[0.2em] uppercase">
+                <VoiceglotText translationKey="checkout.trust.rating_line" defaultText={`${reviewStats.averageRating}/5 sterren op ${reviewStats.totalCount} reviews`} />
+              </TextInstrument>
             </ContainerInstrument>
-            <TextInstrument className="text-[11px] font-bold tracking-[0.2em] uppercase">
-              <VoiceglotText translationKey="checkout.trust.rating_line" defaultText={`${reviewStats?.averageRating || "4.9"}/5 sterren op ${reviewStats?.totalCount || "395"}+ reviews`} />
-            </TextInstrument>
-          </ContainerInstrument>
+          )}
 
           <ContainerInstrument className="flex items-center gap-2">
             <ContainerInstrument
