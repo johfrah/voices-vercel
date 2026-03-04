@@ -28,6 +28,9 @@ async function withTimeoutFallback<T>(executor: () => Promise<T>, timeoutMs: num
 
   try {
     return await Promise.race([executor(), timeoutPromise]);
+  } catch (error) {
+    console.warn('[studio/page] withTimeoutFallback triggered fallback after error:', error);
+    return fallbackValue;
   } finally {
     if (timeoutHandle) clearTimeout(timeoutHandle);
   }
