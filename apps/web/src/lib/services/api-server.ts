@@ -3,7 +3,7 @@ import { MarketDatabaseService } from "@/lib/system/market-manager-db";
 import { getTranslationLocaleCandidates, normalizeLocale } from "@/lib/system/locale-utils";
 import { db, ademingTracks } from "@/lib/system/voices-config";
 import { createClient } from "@supabase/supabase-js";
-import { and, asc, desc, eq, ilike, or, sql } from "drizzle-orm";
+import { and, asc, desc, eq, or, sql } from "drizzle-orm";
 import { unstable_cache } from "next/cache";
 import {
     Actor,
@@ -678,7 +678,6 @@ export async function getAdemingTracksPublic(): Promise<any[]> {
 export async function getActor(slug: string, lang: string = 'nl-BE'): Promise<Actor> {
   const cleanSlug = slug?.trim().toLowerCase();
   const isNumericId = /^\d+$/.test(cleanSlug);
-  
   console.error(` [api-server] getActor lookup START: "${cleanSlug}" (isId: ${isNumericId}, lang: ${lang})`);
   
   if (!cleanSlug) throw new Error("Slug is required");
@@ -687,72 +686,43 @@ export async function getActor(slug: string, lang: string = 'nl-BE'): Promise<Ac
   const isJohfrah = cleanSlug === 'johfrah' || cleanSlug === 'johfrah-lefebvre';
 
   try {
-    // 1. Primary lookup - DRIZZLE FIRST (Atomic Pulse)
-    const { db: directDb, actors: actorsTable } = await import('@/lib/system/voices-config');
-    
-    if (directDb) {
-      let results;
-      if (isNumericId) {
-        console.error(` [api-server] Executing Drizzle query for ID: ${cleanSlug}`);
-        results = await directDb.select().from(actorsTable).where(eq(actorsTable.id, parseInt(cleanSlug))).limit(1);
-      } else {
-        console.error(` [api-server] Executing Drizzle query for slug: ${cleanSlug}`);
-        results = await directDb.select().from(actorsTable).where(eq(actorsTable.slug, cleanSlug)).limit(1);
-      }
-      
-      const actor = results[0];
+    // 1) Primary lookup via Supabase SDK.
+    //    This avoids schema-drift failures in Drizzle when legacy columns are dropped.
+    console.error(` [api-server] Executing Supabase SDK lookup for ${isNumericId ? 'ID' : 'slug'}: ${cleanSlug}`);
+    let sdkActor: any = null;
 
-      if (actor) {
-        console.error(` [api-server] SUCCESS: Found actor ${actor.first_name} by ${isNumericId ? 'ID' : 'slug'} (Drizzle).`);
-        return processActorData(actor, cleanSlug);
-      }
-
-      // 2. Fallback by first_name (Only if not numeric)
-      if (!isNumericId) {
-        console.warn(` [api-server] Slug match failed, trying first_name fallback (Drizzle)...`);
-        const fallbackResults = await directDb.select().from(actorsTable).where(ilike(actorsTable.first_name, cleanSlug)).limit(1);
-        const fallbackActor = fallbackResults[0];
-        
-        if (fallbackActor) {
-          console.error(` [api-server] SUCCESS: Found actor ${fallbackActor.first_name} by first_name (Drizzle).`);
-          return processActorData(fallbackActor, cleanSlug);
-        }
-      }
-
-      // 3. Last resort: Johfrah ID match
-      if (isJohfrah) {
-        console.error(` [api-server] NUCLEAR FALLBACK: Fetching Johfrah by ID 1760 (Drizzle)`);
-        const finalResults = await directDb.select().from(actorsTable).where(eq(actorsTable.id, 1760)).limit(1);
-        const finalActor = finalResults[0];
-        
-        if (finalActor) {
-          return processActorData(finalActor, cleanSlug);
-        }
-      }
-    }
-  } catch (err: any) {
-    console.error(` [api-server] Drizzle failed, falling back to Supabase SDK:`, err.message);
-  }
-
-  // SDK Fallback (v2.14.546)
-  try {
-    console.error(` [api-server] Executing Supabase SDK fallback for ${isNumericId ? 'ID' : 'slug'}: ${cleanSlug}`);
-    const query = supabase.from('actors').select('*');
-    
     if (isNumericId) {
-      query.eq('id', parseInt(cleanSlug));
+      const { data } = await supabase.from('actors').select('*').eq('id', parseInt(cleanSlug, 10)).maybeSingle();
+      sdkActor = data;
     } else {
-      query.eq('slug', cleanSlug);
+      const bySlug = await supabase.from('actors').select('*').eq('slug', cleanSlug).maybeSingle();
+      sdkActor = bySlug.data;
+
+      if (!sdkActor) {
+        console.warn(` [api-server] Slug match failed, trying first_name fallback (SDK)...`);
+        const byFirstName = await supabase
+          .from('actors')
+          .select('*')
+          .ilike('first_name', cleanSlug)
+          .limit(1)
+          .maybeSingle();
+        sdkActor = byFirstName.data;
+      }
     }
-    
-    const { data: sdkActor } = await query.maybeSingle();
-    
+
+    // 2) Last resort: Johfrah ID match
+    if (!sdkActor && isJohfrah) {
+      console.error(` [api-server] NUCLEAR FALLBACK: Fetching Johfrah by ID 1760 (SDK)`);
+      const byId = await supabase.from('actors').select('*').eq('id', 1760).maybeSingle();
+      sdkActor = byId.data;
+    }
+
     if (sdkActor) {
       console.error(` [api-server] SUCCESS: Found actor ${sdkActor.first_name} by ${isNumericId ? 'ID' : 'slug'} (SDK).`);
       return processActorData(sdkActor, cleanSlug);
     }
   } catch (sdkErr: any) {
-    console.error(` [api-server] Supabase SDK fallback failed:`, sdkErr.message);
+    console.error(` [api-server] Supabase SDK lookup failed:`, sdkErr.message);
   }
 
   console.error(` [api-server] Actor NOT FOUND for ${isNumericId ? 'ID' : 'slug'}: "${cleanSlug}"`);
@@ -1092,17 +1062,37 @@ export async function getTranslationsServer(lang: string): Promise<Record<string
   try {
     let effectiveLang = targetLang;
     let data: any[] = [];
-    for (const candidate of localeCandidates) {
-      const response = await supabase
-        .from('translations')
-        .select('translation_key, translated_text, original_text')
-        .eq('lang', candidate)
-        .limit(5000); // 🛡️ Full multilingual registry coverage
-      if (response.error) {
-        throw response.error;
+    const fetchAllRowsForLocale = async (candidate: string) => {
+      const rows: any[] = [];
+      const pageSize = 1000;
+      let offset = 0;
+
+      while (true) {
+        const response = await supabase
+          .from('translations')
+          .select('translation_key, translated_text, original_text')
+          .eq('lang', candidate)
+          .range(offset, offset + pageSize - 1);
+
+        if (response.error) {
+          throw response.error;
+        }
+
+        const batch = response.data || [];
+        if (batch.length === 0) break;
+        rows.push(...batch);
+
+        if (batch.length < pageSize) break;
+        offset += pageSize;
       }
-      if ((response.data?.length || 0) > 0) {
-        data = response.data || [];
+
+      return rows;
+    };
+
+    for (const candidate of localeCandidates) {
+      const rows = await fetchAllRowsForLocale(candidate);
+      if (rows.length > 0) {
+        data = rows;
         effectiveLang = candidate;
         break;
       }

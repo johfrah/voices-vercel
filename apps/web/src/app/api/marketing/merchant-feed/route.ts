@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { db, actors, workshops, courses } from '@/lib/system/voices-config';
+import { buildCanonicalActorPath } from '@/lib/system/slug';
 import { eq, and, asc } from "drizzle-orm";
 
 /**
@@ -58,13 +59,14 @@ export async function GET() {
       const tones = actor.actorTones?.map(at => at.tone?.label).join(', ');
       const title = `Stemacteur: ${actor.first_name} (${nativeLang})`;
       const description = actor.tagline || actor.bio || `Professionele stemacteur voor al uw projecten.`;
+      const actorPath = buildCanonicalActorPath(actor.slug, actor.display_name || actor.first_name);
       
       xml += `
     <item>
       <g:id>actor_${actor.id}</g:id>
       <g:title>${escapeXml(title)}</g:title>
       <g:description>${escapeXml(description)}</g:description>
-      <g:link>${baseUrl}/voice/${actor.slug}</g:link>
+      <g:link>${baseUrl}${actorPath}</g:link>
       <g:image_link>${actor.photo_id ? `${baseUrl}/api/proxy?path=media/${actor.photo_id}` : ''}</g:image_link>
       <g:condition>new</g:condition>
       <g:availability>in stock</g:availability>

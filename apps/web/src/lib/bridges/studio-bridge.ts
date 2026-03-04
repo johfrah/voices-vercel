@@ -572,7 +572,7 @@ export class StudioDataBridge {
           *,
           workshop:workshops(*),
           location:locations(*),
-          instructor:instructors(*)
+          instructor:instructors!workshop_editions_instructor_id_instructors_id_fk(*)
         `)
         .eq('id', id)
         .maybeSingle();
@@ -602,29 +602,56 @@ export class StudioDataBridge {
   static async getParticipantsByEdition(editionId: number) {
     try {
       console.log(` [StudioBridge] Fetching participants for edition ${editionId} via SDK...`);
-      const { data, error } = await supabase
+      const { data: items, error: itemsError } = await supabase
         .from('order_items')
-        .select(`
-          *,
-          order:orders(
-            *,
-            user:users(*)
-          )
-        `)
+        .select('*')
         .eq('edition_id', editionId);
 
-      if (error) throw error;
+      if (itemsError) throw itemsError;
 
-      return (data || []).map(item => {
-        const orderData = Array.isArray(item.order) ? item.order[0] : (item.order || null);
-        if (orderData && Array.isArray(orderData.user)) {
-          orderData.user = orderData.user[0] || null;
+      const orderIds = Array.from(
+        new Set<number>((items || []).map((item: any) => Number(item.order_id)).filter((id: number) => Number.isFinite(id)))
+      );
+
+      let ordersById = new Map<number, any>();
+
+      if (orderIds.length > 0) {
+        const { data: ordersData, error: ordersError } = await supabase
+          .from('orders')
+          .select('*')
+          .in('id', orderIds);
+
+        if (ordersError) throw ordersError;
+
+        const userIds = Array.from(
+          new Set<number>((ordersData || []).map((order: any) => Number(order.user_id)).filter((id: number) => Number.isFinite(id)))
+        );
+
+        let usersById = new Map<number, any>();
+        if (userIds.length > 0) {
+          const { data: usersData, error: usersError } = await supabase
+            .from('users')
+            .select('*')
+            .in('id', userIds);
+          if (usersError) throw usersError;
+          usersById = new Map((usersData || []).map((user: any) => [Number(user.id), user]));
         }
-        return {
-          ...item,
-          order: orderData
-        };
-      });
+
+        ordersById = new Map(
+          (ordersData || []).map((order: any) => [
+            Number(order.id),
+            {
+              ...order,
+              user: order.user_id ? usersById.get(Number(order.user_id)) || null : null,
+            },
+          ])
+        );
+      }
+
+      return (items || []).map((item: any) => ({
+        ...item,
+        order: item.order_id ? ordersById.get(Number(item.order_id)) || null : null,
+      }));
     } catch (error) {
       console.error('Error fetching participants by edition:', error);
       return [];
@@ -650,7 +677,7 @@ export class StudioDataBridge {
           instructor_id,
           workshop:workshops(id, title),
           location:locations(id, name),
-          instructor:instructors(id, name)
+          instructor:instructors!workshop_editions_instructor_id_instructors_id_fk(id, name)
         `)
         .order('date', { ascending: false });
 
@@ -676,13 +703,32 @@ export class StudioDataBridge {
    */
   static async getCostsByEditionId(editionId: number) {
     try {
-      return await db.query.costs.findMany({
-        where: and(
-          eq(costs.workshopEditionId, editionId),
-          eq(costs.worldId, 5) // 🌳 World-Aware: Studio World (ID 5)
-        ),
-        orderBy: [desc(costs.createdAt)]
-      });
+      return await db
+        .select({
+          id: costs.id,
+          amount: costs.amount,
+          type: costs.type,
+          journey: costs.journey,
+          worldId: costs.worldId,
+          note: costs.note,
+          workshopEditionId: costs.workshopEditionId,
+          locationId: costs.locationId,
+          instructorId: costs.instructorId,
+          orderItemId: costs.orderItemId,
+          date: costs.date,
+          isPartnerPayout: costs.isPartnerPayout,
+          status: costs.status,
+          createdAt: costs.createdAt,
+          updatedAt: costs.updatedAt,
+        })
+        .from(costs)
+        .where(
+          and(
+            eq(costs.workshopEditionId, editionId),
+            eq(costs.worldId, 5) // 🌳 World-Aware: Studio World (ID 5)
+          )
+        )
+        .orderBy(desc(costs.createdAt));
     } catch (error) {
       console.error('Error fetching costs by editionId:', error);
       return [];
@@ -709,7 +755,10 @@ export class StudioDataBridge {
       ));
       
       // 2. Haal alle kosten op voor deze journey
-      const journeyCosts = await db.select().from(costs).where(eq(costs.worldId, worldId));
+      const journeyCosts = await db
+        .select({ amount: costs.amount })
+        .from(costs)
+        .where(eq(costs.worldId, worldId));
 
       const totalRevenue = journeyOrders.reduce((acc, o) => {
         const total = parseFloat(o.total || '0');
@@ -900,13 +949,42 @@ export class StudioDataBridge {
   static async getEditionParticipants(editionId: number) {
     try {
       const { data, error } = await supabase
-        .from('workshop_participants')
+        .from('view_workshop_participants')
         .select('*')
         .eq('edition_id', editionId)
-        .order('created_at', { ascending: false });
+        .order('registration_date', { ascending: false });
 
       if (error) throw error;
-      return data || [];
+      return (data || []).map((row: any) => {
+        const fullName = (row.participant_name || '').trim();
+        const nameParts = fullName.split(/\s+/).filter(Boolean);
+        const firstName = nameParts[0] || fullName || 'Onbekend';
+        const lastName = nameParts.slice(1).join(' ');
+        const statusCode = String(row.order_status || '').toLowerCase();
+
+        let paymentStatus: string | null = null;
+        if (['wc-completed', 'completed', 'paid'].includes(statusCode)) {
+          paymentStatus = 'paid';
+        } else if (['pending', 'wc-pending', 'processing', 'wc-processing', 'on-hold'].includes(statusCode)) {
+          paymentStatus = 'pending';
+        } else if (statusCode) {
+          paymentStatus = statusCode;
+        }
+
+        return {
+          id: Number(row.order_item_id),
+          first_name: firstName,
+          last_name: lastName,
+          email: row.participant_email || row.buyer_email || null,
+          phone: row.participant_phone || null,
+          age: row.participant_age || null,
+          profession: row.participant_profession || null,
+          payment_status: paymentStatus,
+          order_status: row.order_status || null,
+          order_id: Number(row.order_id || 0),
+          registration_date: row.registration_date || null,
+        };
+      });
     } catch (error) {
       console.error(`Error fetching participants for edition ${editionId}:`, error);
       return [];

@@ -14,6 +14,73 @@ export const dynamic = 'force-dynamic';
 
 const CACHE_KEY = 'voiceglot_stats_cache';
 const CACHE_TTL = 30 * 1000; // 30 seconden cache voor stats tijdens healing
+const PAGE_SIZE = 1000;
+
+async function fetchRegistryKeySet(supabase: any): Promise<Set<string>> {
+  const registryKeys = new Set<string>();
+  let offset = 0;
+
+  while (true) {
+    const { data, error } = await supabase
+      .from('translation_registry')
+      .select('id, string_hash')
+      .order('id', { ascending: true })
+      .range(offset, offset + PAGE_SIZE - 1);
+
+    if (error) throw error;
+    if (!data || data.length === 0) break;
+
+    for (const row of (data || []) as any[]) {
+      const key = String(row?.string_hash || '');
+      if (!key) continue;
+      registryKeys.add(key);
+    }
+
+    if (data.length < PAGE_SIZE) break;
+    offset += PAGE_SIZE;
+  }
+
+  return registryKeys;
+}
+
+async function fetchActiveKeysByLang(
+  supabase: any,
+  targetLanguages: readonly string[],
+  registryKeys: Set<string>,
+): Promise<Map<string, Set<string>>> {
+  const activeKeysByLang = new Map<string, Set<string>>();
+  let offset = 0;
+
+  while (true) {
+    const { data, error } = await supabase
+      .from('translations')
+      .select('id, translation_key, lang, status, translated_text')
+      .in('lang', [...targetLanguages])
+      .order('id', { ascending: true })
+      .range(offset, offset + PAGE_SIZE - 1);
+
+    if (error) throw error;
+    if (!data || data.length === 0) break;
+
+    for (const row of (data || []) as any[]) {
+      const lang = String(row?.lang || '').toLowerCase();
+      const key = String(row?.translation_key || '');
+      const text = String(row?.translated_text || '').trim();
+      const isActive = (row?.status || 'active') === 'active';
+
+      if (!lang || !key || !registryKeys.has(key) || !isActive || !text || text === '...') continue;
+
+      const bucket = activeKeysByLang.get(lang) || new Set<string>();
+      bucket.add(key);
+      activeKeysByLang.set(lang, bucket);
+    }
+
+    if (data.length < PAGE_SIZE) break;
+    offset += PAGE_SIZE;
+  }
+
+  return activeKeysByLang;
+}
 
 export async function GET(request: NextRequest) {
   try {
@@ -45,33 +112,10 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // 2. Fetch Fresh Data (ID-Centric)
-    const { count: totalCount, error: totalErr } = await supabase
-      .from('translation_registry')
-      .select('*', { count: 'exact', head: true });
-
-    if (totalErr) throw totalErr;
-    const totalStrings = totalCount || 0;
-
-    // Haal tellingen op per translation_key + lang (canonieke targets)
-    const { data: langData, error: langErr } = await supabase
-      .from('translations')
-      .select('translation_key, lang, status, translated_text')
-      .in('lang', [...VOICEGLOT_TARGET_LANGUAGES]);
-    
-    if (langErr) throw langErr;
-
-    const activeKeysByLang = new Map<string, Set<string>>();
-    (langData || []).forEach((row: any) => {
-      const lang = String(row?.lang || '').toLowerCase();
-      const key = String(row?.translation_key || '');
-      const text = String(row?.translated_text || '').trim();
-      const isActive = (row?.status || 'active') === 'active';
-      if (!lang || !key || !isActive || !text || text === '...') return;
-      const bucket = activeKeysByLang.get(lang) || new Set<string>();
-      bucket.add(key);
-      activeKeysByLang.set(lang, bucket);
-    });
+    // 2. Fetch Fresh Data (ID-Centric, paginated to avoid Supabase row caps)
+    const registryKeys = await fetchRegistryKeySet(supabase);
+    const totalStrings = registryKeys.size;
+    const activeKeysByLang = await fetchActiveKeysByLang(supabase, VOICEGLOT_TARGET_LANGUAGES, registryKeys);
 
     const coverage = VOICEGLOT_TARGET_LANGUAGES.map((code) => {
       const count = activeKeysByLang.get(code)?.size || 0;

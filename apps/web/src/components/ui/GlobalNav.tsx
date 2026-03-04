@@ -1,57 +1,60 @@
 "use client";
 
 import { useAuth } from '@/contexts/AuthContext';
-import { useTranslation } from '@/contexts/TranslationContext';
-import { useEditMode } from '@/contexts/EditModeContext';
-import { useVoicesState } from '@/contexts/VoicesStateContext';
 import { useCheckout } from '@/contexts/CheckoutContext';
+import { useEditMode } from '@/contexts/EditModeContext';
 import { useNotifications } from '@/contexts/NotificationContext';
+import { useTranslation } from '@/contexts/TranslationContext';
+import { useVoicesState } from '@/contexts/VoicesStateContext';
 import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
-import { AnimatePresence, motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { 
-  Bell, 
-  Building2, 
-  ChevronRight, 
-  ChevronDown, 
-  Globe, 
-  Heart, 
-  LayoutDashboard, 
-  LogOut, 
-  Mail, 
-  Menu, 
-  Mic2, 
-  Monitor, 
-  Phone, 
-  Radio, 
-  ShoppingBag, 
-  ShoppingCart, 
-  User, 
-  Info, 
-  Settings, 
-  Home, 
-  Euro, 
-  GraduationCap, 
-  Quote, 
-  Users 
-} from 'lucide-react';
-import { VoicesLink, useVoicesRouter } from './VoicesLink';
-import { 
-  ButtonInstrument, 
-  ContainerInstrument,
-  HeadingInstrument,
-  TextInstrument,
-  InputInstrument
-} from './LayoutInstruments';
-import { VoiceglotImage } from './VoiceglotImage';
-import { VoiceglotText } from './VoiceglotText';
 import { NavConfig } from '@/lib/utils/config-bridge';
-import { Plus, Trash2, Link as LinkIcon, Search as SearchIcon, X, Check, ArrowRight, Loader2 } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
+import {
+    ArrowRight,
+    Bell,
+    Building2,
+    Check,
+    ChevronDown,
+    ChevronRight,
+    Euro,
+    Globe,
+    Heart,
+    Home,
+    Info,
+    LayoutDashboard,
+    Link as LinkIcon,
+    Loader2,
+    LogOut,
+    Mail,
+    Menu,
+    Mic2,
+    Monitor,
+    Phone,
+    Plus,
+    Quote,
+    Radio,
+    Settings,
+    ShoppingBag,
+    ShoppingCart,
+    Trash2,
+    User
+} from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+    ButtonInstrument,
+    ContainerInstrument,
+    HeadingInstrument,
+    InputInstrument,
+    TextInstrument
+} from './LayoutInstruments';
+import { VoiceglotImage } from './VoiceglotImage';
+import { VoiceglotText } from './VoiceglotText';
+import { VoicesLink, useVoicesRouter } from './VoicesLink';
 
 import { LanguageSwitcher } from './LanguageSwitcher';
 
@@ -505,7 +508,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
       const data = await res.json();
       if (res.ok) {
         setLoginStatus('success');
-        setLoginMessage(t('nav.login.check_inbox', 'Check je inbox!'));
+        setLoginMessage(t('nav.login.check_mailbox_simple', 'Check je mailbox.'));
         playClick('success');
       } else {
         setLoginStatus('error');
@@ -672,6 +675,13 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
               variant="plain"
               size="none"
               onClick={(e) => {
+                const isContact = link.href?.toLowerCase().replace(/\/$/, '').endsWith('/contact');
+                if (isContact) {
+                  e.preventDefault();
+                  playClick('soft');
+                  window.dispatchEvent(new CustomEvent('voicy:open', { detail: { tab: 'mail' } }));
+                  return;
+                }
                 if (link.onClick) {
                   e.preventDefault();
                   link.onClick();
@@ -921,61 +931,79 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
             <ContainerInstrument plain className="max-h-[320px] overflow-y-auto no-scrollbar px-1">
               {(checkoutState.items || []).length > 0 ? (
                 <ContainerInstrument plain className="space-y-1">
-                  {(checkoutState.items || []).map((item: any, idx: number) => (
-                    <ContainerInstrument
-                      key={item.id || idx}
-                      plain
-                      className="flex items-center gap-3 p-2 rounded-xl hover:bg-va-black/5 transition-all group border border-transparent hover:border-black/5"
-                    >
-                      <ContainerInstrument plain className="w-12 h-12 rounded-xl bg-va-off-white flex items-center justify-center shrink-0 border border-black/5 overflow-hidden relative shadow-sm">
-                        {item.actor?.photo_url && item.actor.photo_url !== 'NULL' || item.actor?.image_url && item.actor.image_url !== 'NULL' ? (
-                          <Image src={item.actor.photo_url || item.actor.image_url} alt={item.actor.name || item.actor.display_name} fill sizes="48px" className="object-cover" />
-                        ) : (
-                          <Mic2 size={18} className="text-va-black/20" />
-                        )}
-                      </ContainerInstrument>
-                      <ContainerInstrument plain className="flex-1 min-w-0">
-                        <TextInstrument className="text-[14px] font-medium text-va-black truncate">
-                          {item.actor?.display_name || item.actor?.name || 'Stemopname'}
-                        </TextInstrument>
-                        <div className="flex items-center gap-1.5 mt-0.5">
-                          <TextInstrument className="text-[11px] text-va-black/40 font-light truncate tracking-widest">
-                            {item.usage === 'commercial' ? t('common.commercial', 'Commercial') : item.usage === 'telefonie' ? t('common.telephony', 'Telefonie') : t('common.corporate', 'Corporate')}
-                          </TextInstrument>
-                          {item.country && (
-                            <>
-                              <span className="w-0.5 h-0.5 rounded-full bg-va-black/10" />
-                              <TextInstrument className="text-[11px] text-va-black/40 font-light tracking-widest">
-                                {Array.isArray(item.country) ? item.country[0] : item.country}
-                              </TextInstrument>
-                            </>
+                  {(checkoutState.items || []).map((item: any, idx: number) => {
+                    const itemTitle = item.type === 'workshop_edition'
+                      ? (item.name || t('cart.workshop.label', 'Studio workshop'))
+                      : (item.actor?.display_name || item.actor?.name || 'Stemopname');
+                    const usageInput = item.usageId ?? item.usage_id ?? item.usage;
+                    const usageLabel = item.type === 'workshop_edition'
+                      ? t('cart.workshop.label', 'Studio workshop')
+                      : MarketManager.getUsageLabel(usageInput || item.usage || '');
+                    const mediaValues = Array.isArray(item.mediaIds) && item.mediaIds.length > 0
+                      ? item.mediaIds
+                      : (Array.isArray(item.media) ? item.media : (item.media ? [item.media] : []));
+                    const mediaLabel = mediaValues
+                      .map((entry: string | number) => MarketManager.getMediaLabel(entry))
+                      .filter((label: string) => !!label)
+                      .join(' • ');
+                    const countryValues = Array.isArray(item.country)
+                      ? item.country
+                      : (item.country ? [item.country] : (item.countryId ? [item.countryId] : []));
+                    const countryLabel = countryValues
+                      .map((entry: string | number) => MarketManager.getCountryLabel(entry))
+                      .filter((label: string) => !!label)
+                      .join(', ');
+
+                    const detailLine = item.type === 'workshop_edition'
+                      ? [item.date, item.location].filter(Boolean).join(' • ')
+                      : [usageLabel, mediaLabel, countryLabel].filter(Boolean).join(' • ');
+
+                    return (
+                      <ContainerInstrument
+                        key={item.id || idx}
+                        plain
+                        className="flex items-center gap-3 p-2 rounded-xl hover:bg-va-black/5 transition-all group border border-transparent hover:border-black/5"
+                      >
+                        <ContainerInstrument plain className="w-12 h-12 rounded-xl bg-va-off-white flex items-center justify-center shrink-0 border border-black/5 overflow-hidden relative shadow-sm">
+                          {item.actor?.photo_url && item.actor.photo_url !== 'NULL' || item.actor?.image_url && item.actor.image_url !== 'NULL' ? (
+                            <Image src={item.actor.photo_url || item.actor.image_url} alt={itemTitle} fill sizes="48px" className="object-cover" />
+                          ) : (
+                            <Mic2 size={18} className="text-va-black/20" />
                           )}
+                        </ContainerInstrument>
+                        <ContainerInstrument plain className="flex-1 min-w-0">
+                          <TextInstrument className="text-[14px] font-medium text-va-black truncate">
+                            {itemTitle}
+                          </TextInstrument>
+                          <TextInstrument className="text-[11px] text-va-black/40 font-light truncate tracking-widest mt-0.5">
+                            {detailLine || t('cart.detail.not_specified', 'Niet opgegeven')}
+                          </TextInstrument>
+                        </ContainerInstrument>
+                        <div className="flex flex-col items-end gap-1">
+                          <div className="flex items-center gap-2">
+                            <TextInstrument className="text-[14px] font-medium text-va-black">
+                              €{item.pricing?.total || item.pricing?.subtotal || 0}
+                            </TextInstrument>
+                            <button 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                removeItem(item.id);
+                                playClick('light');
+                              }}
+                              className="p-1.5 text-va-black/20 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                              title={t('common.remove', 'Verwijderen')}
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          </div>
+                          <TextInstrument className="text-[10px] text-va-black/20 font-light tracking-tighter">
+                            <VoiceglotText translationKey="common.excl_vat" defaultText="Excl. BTW" />
+                          </TextInstrument>
                         </div>
                       </ContainerInstrument>
-                      <div className="flex flex-col items-end gap-1">
-                        <div className="flex items-center gap-2">
-                          <TextInstrument className="text-[14px] font-medium text-va-black">
-                            €{item.pricing?.total || item.pricing?.subtotal || 0}
-                          </TextInstrument>
-                          <button 
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              e.preventDefault();
-                              removeItem(item.id);
-                              playClick('light');
-                            }}
-                            className="p-1.5 text-va-black/20 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
-                            title={t('common.remove', 'Verwijderen')}
-                          >
-                            <Trash2 size={14} />
-                          </button>
-                        </div>
-                        <TextInstrument className="text-[10px] text-va-black/20 font-light tracking-tighter">
-                          <VoiceglotText translationKey="common.excl_vat" defaultText="Excl. BTW" />
-                        </TextInstrument>
-                      </div>
-                    </ContainerInstrument>
-                  ))}
+                    );
+                  })}
                 </ContainerInstrument>
               ) : (
                 <ContainerInstrument plain className="p-8 text-center">
@@ -1184,10 +1212,13 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
                 </ContainerInstrument>
                 <ContainerInstrument plain className="px-3">
                   <HeadingInstrument level={4} className="text-base font-light tracking-tight mb-0.5 ">
-                    <VoiceglotText  translationKey="nav.welcome_title" defaultText="Welkom bij Voices" />
+                    <VoiceglotText translationKey="nav.login.title_simple" defaultText="Inloggen" />
                   </HeadingInstrument>
                   <TextInstrument className="text-[11px] text-va-black/40 font-light leading-snug">
-                    <VoiceglotText  translationKey="nav.welcome_text" defaultText="Log in om je favoriete stemmen op te slaan en bestellingen te beheren." />
+                    <VoiceglotText
+                      translationKey="nav.login.simple_intro"
+                      defaultText="Inloggen? Vul je e-mailadres in en klik op Verstuur."
+                    />
                   </TextInstrument>
                 </ContainerInstrument>
                 
@@ -1199,10 +1230,9 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
                         {loginMessage}
                       </TextInstrument>
                       <TextInstrument className="text-[10px] text-green-600/60 mt-1">
-                        <VoiceglotText 
-                          translationKey="nav.login.link_sent_to_v2" 
-                          defaultText="Link verstuurd naar {email}" 
-                          values={{ email: loginEmail }}
+                        <VoiceglotText
+                          translationKey="nav.login.mailbox_instruction_simple"
+                          defaultText="Je ontvangt een link om automatisch in te loggen. Klik op die link."
                         />
                       </TextInstrument>
                     </ContainerInstrument>
@@ -1237,7 +1267,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
                           <Loader2 size={18} className="animate-spin" />
                         ) : (
                           <>
-                            <VoiceglotText translationKey="nav.login_magic_cta" defaultText="Stuur Magic Link" />
+                            <VoiceglotText translationKey="nav.login.send_simple" defaultText="Verstuur" />
                             <ArrowRight size={18} strokeWidth={2} />
                           </>
                         )}
@@ -1289,15 +1319,18 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
                     </ContainerInstrument>
                   </ContainerInstrument>
                   <DropdownItem icon={Home} label={<VoiceglotText translationKey="nav.home" defaultText="Home" />} href="/" />
-                  {activeLinks.map((link: any, idx: number) => (
-                    <DropdownItem 
-                      key={link.name}
-                      icon={ChevronRight} 
-                      label={<VoiceglotText translationKey={resolveLinkTranslationKey(link, idx)} defaultText={link.name || ''} />} 
-                      href={link.href !== '#' ? link.href : undefined}
-                      onClick={link.onClick} 
-                    />
-                  ))}
+                  {activeLinks.map((link: any, idx: number) => {
+                    const isContact = link.href?.toLowerCase().replace(/\/$/, '').endsWith('/contact');
+                    return (
+                      <DropdownItem
+                        key={link.name}
+                        icon={ChevronRight}
+                        label={<VoiceglotText translationKey={resolveLinkTranslationKey(link, idx)} defaultText={link.name || ''} />}
+                        href={isContact ? undefined : (link.href !== '#' ? link.href : undefined)}
+                        onClick={isContact ? () => { playClick('soft'); window.dispatchEvent(new CustomEvent('voicy:open', { detail: { tab: 'mail' } })); } : link.onClick}
+                      />
+                    );
+                  })}
                   <DropdownItem icon={Heart} label={<VoiceglotText translationKey="nav.favorites" defaultText="Favorieten" />} href="/account/favorites/" badge={favoritesCount > 0 ? favoritesCount : undefined} />
                   {!isPortfolioMarket && <DropdownItem icon={ShoppingCart} label={<VoiceglotText translationKey="nav.cart" defaultText="Winkelmandje" />} href="/checkout/" badge={cartCount > 0 ? cartCount : undefined} />}
                   <DropdownItem icon={User} label={<VoiceglotText translationKey="nav.account" defaultText={auth.isAuthenticated ? "Mijn Account" : "Inloggen"} />} href="/account/" />
@@ -1305,13 +1338,18 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
                 </>
               )}
               
-              {!isMobile && activeLinks.map((link: any, idx: number) => (
-                <DropdownItem key={link.name}
-                  icon={ChevronRight} 
-                  label={<VoiceglotText translationKey={resolveLinkTranslationKey(link, idx)} defaultText={link.name || ''} />} 
-                  href={link.href !== '#' ? link.href : undefined}
-                  onClick={link.onClick} />
-              ))}
+              {!isMobile && activeLinks.map((link: any, idx: number) => {
+                const isContact = link.href?.toLowerCase().replace(/\/$/, '').endsWith('/contact');
+                return (
+                  <DropdownItem
+                    key={link.name}
+                    icon={ChevronRight}
+                    label={<VoiceglotText translationKey={resolveLinkTranslationKey(link, idx)} defaultText={link.name || ''} />}
+                    href={isContact ? undefined : (link.href !== '#' ? link.href : undefined)}
+                    onClick={isContact ? () => { playClick('soft'); window.dispatchEvent(new CustomEvent('voicy:open', { detail: { tab: 'mail' } })); } : link.onClick}
+                  />
+                );
+              })}
 
               {/* Footer Links Integration (Nuclear Sync) */}
               {!isSpecialJourney && (
@@ -1374,9 +1412,11 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
               </ContainerInstrument>
 
           <ContainerInstrument plain className="mt-2 pt-2 border-t border-black/5">
-            <DropdownItem icon={Mail} 
-              label={<VoiceglotText  translationKey="nav.support" defaultText="Support" />} 
-              href="/contact/" 
+            <DropdownItem
+              icon={Mail}
+              label={<VoiceglotText translationKey="nav.support" defaultText="Support" />}
+              href={undefined}
+              onClick={() => { playClick('soft'); window.dispatchEvent(new CustomEvent('voicy:open', { detail: { tab: 'mail' } })); }}
             />
           </ContainerInstrument>
             </ContainerInstrument>

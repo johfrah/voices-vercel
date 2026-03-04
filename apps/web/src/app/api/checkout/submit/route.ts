@@ -7,7 +7,7 @@ import { headers } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
 import { MollieService } from '@/lib/payments/mollie';
-import { SlimmeKassa } from '@/lib/engines/pricing-engine';
+import { SlimmeKassa, type CommercialMediaType } from '@/lib/engines/pricing-engine';
 import { generateCartHash } from '@/lib/utils/cart-utils';
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { CheckoutPayloadSchema } from '@/lib/validation/checkout-schema';
@@ -86,53 +86,102 @@ function formatMusicTrackLabel(trackId: unknown): string {
     .join(' ');
 }
 
-async function fireAdminNotify(baseUrl: string, type: string, data: Record<string, any>) {
-  try {
-    await fetch(`${baseUrl}/api/admin/notify`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ type, data })
-    });
-  } catch (notifyErr: any) {
-    console.warn(`[CheckoutAPI] Failed to send admin notify (${type}):`, notifyErr?.message || notifyErr);
+function toStringArray(value: unknown): string[] {
+  if (Array.isArray(value)) {
+    return value
+      .map((entry) => String(entry || '').trim())
+      .filter(Boolean);
   }
+  const single = String(value || '').trim();
+  return single ? [single] : [];
+}
+
+const COMMERCIAL_MEDIA_TYPES = new Set<CommercialMediaType>([
+  'online',
+  'tv_national',
+  'radio_national',
+  'podcast',
+  'tv_regional',
+  'tv_local',
+  'radio_regional',
+  'radio_local',
+]);
+
+function toCommercialMediaTypes(value: unknown): CommercialMediaType[] {
+  return toStringArray(value).filter((media): media is CommercialMediaType =>
+    COMMERCIAL_MEDIA_TYPES.has(media as CommercialMediaType),
+  );
+}
+
+function normalizeCommercialFactor(
+  value: unknown,
+  mediaTypes: string[],
+): Record<string, number> | undefined {
+  if (typeof value === 'number' && Number.isFinite(value) && value > 0) {
+    const normalized = Math.max(1, Math.round(value));
+    const targetMedia = mediaTypes.length > 0 ? mediaTypes : ['online'];
+    return targetMedia.reduce<Record<string, number>>((acc, mediaType) => {
+      acc[mediaType] = normalized;
+      return acc;
+    }, {});
+  }
+
+  if (value && typeof value === 'object' && !Array.isArray(value)) {
+    const mapped = Object.entries(value as Record<string, unknown>).reduce<Record<string, number>>((acc, [key, raw]) => {
+      const parsed = Number(raw);
+      if (Number.isFinite(parsed) && parsed > 0) {
+        acc[key] = Math.max(1, Math.round(parsed));
+      }
+      return acc;
+    }, {});
+    return Object.keys(mapped).length > 0 ? mapped : undefined;
+  }
+
+  return undefined;
+}
+
+function extractWorkshopId(item: Record<string, unknown>): number | null {
+  const candidates = [item.workshop_id, item.workshopId, item.edition_id, item.editionId, item.id];
+  for (const candidate of candidates) {
+    if (typeof candidate === 'number' && Number.isFinite(candidate) && candidate > 0) {
+      return Math.round(candidate);
+    }
+    if (typeof candidate === 'string') {
+      const trimmed = candidate.trim();
+      if (!trimmed) continue;
+      const direct = Number(trimmed);
+      if (Number.isFinite(direct) && direct > 0) {
+        return Math.round(direct);
+      }
+      const match = trimmed.match(/(\d+)$/);
+      if (match) {
+        const fromSuffix = Number(match[1]);
+        if (Number.isFinite(fromSuffix) && fromSuffix > 0) {
+          return Math.round(fromSuffix);
+        }
+      }
+    }
+  }
+  return null;
 }
 export async function POST(request: Request) {
-  const headersList = headers();
-  const host = headersList.get('host') || MarketManager.getMarketDomains()['BE']?.replace('https://', '');
-  const marketConfig = MarketManager.getCurrentMarket(host);
-  const marketBaseUrl =
-    MarketManager.getMarketDomains()[marketConfig.market_code] ||
-    `https://${host || MarketManager.getMarketDomains()['BE']?.replace('https://', '') || 'www.voices.be'}`;
-  const isLocalHost = host.includes('localhost') || host.includes('127.0.0.1');
-  const baseUrl = isLocalHost ? `http://${host}` : marketBaseUrl;
-  const webhookBaseUrl = marketBaseUrl;
-  const ip = headersList.get('x-forwarded-for') || 'unknown';
-
-  const alertContext: Record<string, any> = {
-    source: 'CheckoutAPI',
-    host,
-    ip
-  };
-
-  try {
-    return await ServerWatchdog.atomic('CheckoutAPI', 'SubmitOrder', {}, async () => {
+  return await ServerWatchdog.atomic('CheckoutAPI', 'SubmitOrder', {}, async () => {
     let rawBody: any = null;
+    const headersList = headers();
+    const host = headersList.get('host') || MarketManager.getMarketDomains()['BE']?.replace('https://', '');
+    const marketConfig = MarketManager.getCurrentMarket(host);
+    const marketBaseUrl =
+      MarketManager.getMarketDomains()[marketConfig.market_code] ||
+      `https://${host || MarketManager.getMarketDomains()['BE']?.replace('https://', '') || 'www.voices.be'}`;
+    const isLocalHost = host.includes('localhost') || host.includes('127.0.0.1');
+    const baseUrl = isLocalHost ? `http://${host}` : marketBaseUrl;
+    const webhookBaseUrl = marketBaseUrl;
+    const ip = headersList.get('x-forwarded-for') || 'unknown';
 
     // 1. Validatie van de payload
     try {
       rawBody = await request.json();
-      alertContext.email = rawBody?.email || null;
-      alertContext.company = rawBody?.company || null;
-      alertContext.paymentMethod = rawBody?.payment_method || null;
-      alertContext.usage = rawBody?.usage || null;
-      alertContext.itemsCount = Array.isArray(rawBody?.items) ? rawBody.items.length : 0;
     } catch (e: any) {
-      await fireAdminNotify(baseUrl, 'checkout_error', {
-        ...alertContext,
-        error: `JSON Parse Error: ${e.message}`,
-        step: 'request_json_parse'
-      });
       throw new Error(`JSON Parse Error: ${e.message}`);
     }
     
@@ -143,12 +192,6 @@ export async function POST(request: Request) {
         component: 'CheckoutAPI',
         error: 'Gegevens onvolledig',
         payload: { errors: validation.error.format(), rawBody }
-      });
-      await fireAdminNotify(baseUrl, 'checkout_error', {
-        ...alertContext,
-        error: 'Checkout payload validation failed',
-        step: 'payload_validation',
-        validationErrors: validation.error.flatten()
       });
       return NextResponse.json({ error: 'Ongeldige bestelgegevens', details: validation.error.format() }, { status: 400 });
     }
@@ -161,19 +204,48 @@ export async function POST(request: Request) {
     } = data;
     const normalizedLanguage = normalizeLocale(language || marketConfig.primary_language || 'nl-be');
     const languageShort = localeToShort(normalizedLanguage);
+    if (!items || items.length === 0) {
+      return NextResponse.json({ error: 'Leeg mandje. Voeg eerst een voice-over toe.' }, { status: 400 });
+    }
 
     // 2. Fetch Data voor prijsvalidatie
     const actorIds = Array.from(new Set([
-      ...(items || []).map((i: any) => i.actor?.id).filter(Boolean),
+      ...(items || []).map((i: any) => i.actor?.id).filter((id: unknown) => Number.isFinite(Number(id))),
       ...(selectedActor?.id ? [selectedActor.id] : [])
     ])).map(id => Number(id));
 
+    const editionIds = Array.from(new Set(
+      (items || [])
+        .map((i: any) => Number(i.editionId ?? i.edition_id))
+        .filter((id: number) => Number.isFinite(id) && id > 0)
+    ));
+
+    const { data: dbEditions } = editionIds.length
+      ? await sdkClient
+          .from('workshop_editions')
+          .select('id, workshop_id, price')
+          .in('id', editionIds)
+      : { data: [] as any[] };
+
+    const editionWorkshopIds = (dbEditions || [])
+      .map((edition: any) => Number(edition.workshop_id))
+      .filter((id: number) => Number.isFinite(id) && id > 0);
+
     const workshopIds = Array.from(new Set([
-      ...(items || []).map((i: any) => i.id).filter((id: any) => !isNaN(Number(id)) && Number(id) > 0)
+      ...(items || [])
+        .map((i: any) => extractWorkshopId(i as Record<string, unknown>))
+        .filter((id: number | null): id is number => id !== null),
+      ...editionWorkshopIds,
     ])).map(id => Number(id));
 
-    const { data: dbActors } = await sdkClient.from('actors').select('*').or(`id.in.(${actorIds.join(',')}),wp_product_id.in.(${actorIds.join(',')})`);
-    const { data: dbWorkshops } = await sdkClient.from('workshops').select('*').in('id', workshopIds);
+    const dbActors =
+      actorIds.length > 0
+        ? (await sdkClient.from('actors').select('*').or(`id.in.(${actorIds.join(',')}),wp_product_id.in.(${actorIds.join(',')})`)).data || []
+        : [];
+    const dbWorkshops =
+      workshopIds.length > 0
+        ? (await sdkClient.from('workshops').select('*').in('id', workshopIds)).data || []
+        : [];
 
     const actorMap = new Map();
     (dbActors || []).forEach(a => {
@@ -181,6 +253,7 @@ export async function POST(request: Request) {
       if (a.wp_product_id) actorMap.set(Number(a.wp_product_id), a);
     });
     const workshopMap = new Map((dbWorkshops || []).map(w => [Number(w.id), w]));
+    const editionMap = new Map((dbEditions || []).map((edition: any) => [Number(edition.id), edition]));
 
     const isVatExempt = !!vat_number && vat_number.length > 2 && !vat_number.startsWith('BE'); 
     const taxRate = isVatExempt ? 0 : 0.21;
@@ -188,37 +261,141 @@ export async function POST(request: Request) {
     // 3. Prijs Validatie
     let serverCalculatedSubtotal = 0;
     let isQuoteOnly = false;
+    const itemValidationErrors: Array<{ item_id: string; item_type: string; reason: string }> = [];
+    const validatedItems = (items || []).flatMap((item: any, index: number) => {
+      const itemId = String(item.id || `idx_${index}`);
+      const itemType = String(item.type || '');
 
-    const validatedItems = (items || []).map((item: any) => {
-      if (item.type === 'voice_over') {
-        const dbActor = actorMap.get(Number(item.actor?.id));
-        if (!dbActor) return item;
+      if (itemType === 'voice_over') {
+        const actorId = Number(item.actor?.id);
+        if (!Number.isFinite(actorId) || actorId <= 0) {
+          itemValidationErrors.push({
+            item_id: itemId,
+            item_type: itemType,
+            reason: 'Voice-over item mist een geldige actor_id',
+          });
+          return [];
+        }
+
+        const dbActor = actorMap.get(actorId);
+        if (!dbActor) {
+          itemValidationErrors.push({
+            item_id: itemId,
+            item_type: itemType,
+            reason: `Voice-over actor ${actorId} niet gevonden`,
+          });
+          return [];
+        }
+
+        const scriptText = String(item.briefing || item.script || '').trim();
+        if (!scriptText) {
+          itemValidationErrors.push({
+            item_id: itemId,
+            item_type: itemType,
+            reason: 'Voice-over item mist briefing/script',
+          });
+          return [];
+        }
+
+        const mediaTypes = toCommercialMediaTypes(item.media);
+        const countries = toStringArray(item.country);
+        const primaryCountry = countries[0] || 'BE';
+        const spotsByMedia = normalizeCommercialFactor(item.spots, mediaTypes);
+        const yearsByMedia = normalizeCommercialFactor(item.years, mediaTypes);
         const result = SlimmeKassa.calculate({
           usage: item.usage,
-          words: item.briefing?.trim().split(/\s+/).filter(Boolean).length || 0,
-          mediaTypes: item.media,
-          country: item.country,
-          spots: item.spots,
-          years: item.years,
+          words: scriptText.split(/\s+/).filter(Boolean).length || 0,
+          mediaTypes,
+          countries,
+          country: primaryCountry,
+          spots: spotsByMedia,
+          years: yearsByMedia,
           liveSession: item.liveSession,
           actorRates: dbActor,
           music: item.music,
-          isVatExempt
+          isVatExempt,
         });
         if (result.isQuoteOnly) isQuoteOnly = true;
         serverCalculatedSubtotal += result.subtotal;
-        return { ...item, pricing: result };
+        return [{ ...item, pricing: result }];
       }
-      if (item.type === 'workshop_edition') {
-        const dbWorkshop = workshopMap.get(Number(item.id));
-        const price = dbWorkshop ? Number(dbWorkshop.price) : 0;
-        serverCalculatedSubtotal += price;
-        return { ...item, pricing: { total: price, subtotal: price, tax: price * taxRate } };
+      if (itemType === 'workshop_edition') {
+        const editionId = Number(item.editionId ?? item.edition_id);
+        const dbEdition = Number.isFinite(editionId) && editionId > 0 ? editionMap.get(editionId) : null;
+        const extractedWorkshopId = extractWorkshopId(item as Record<string, unknown>);
+        const workshopIdFromEdition = Number(dbEdition?.workshop_id || 0);
+        const workshopId = extractedWorkshopId ?? (
+          Number.isFinite(workshopIdFromEdition) && workshopIdFromEdition > 0
+            ? workshopIdFromEdition
+            : null
+        );
+        const dbWorkshop = workshopId && Number.isFinite(workshopId) ? workshopMap.get(Number(workshopId)) : null;
+
+        if (!workshopId || !dbWorkshop) {
+          itemValidationErrors.push({
+            item_id: itemId,
+            item_type: itemType,
+            reason: 'Workshop item mist een geldige workshop_id',
+          });
+          return [];
+        }
+
+        const priceCandidates = [
+          Number(dbEdition?.price),
+          Number(dbWorkshop.price),
+          Number(item.price),
+          Number(item.pricing?.subtotal),
+          Number(item.pricing?.total),
+        ];
+        const resolvedSubtotal = priceCandidates.find((value) => Number.isFinite(value) && value > 0) ?? 0;
+        if (resolvedSubtotal <= 0) {
+          itemValidationErrors.push({
+            item_id: itemId,
+            item_type: itemType,
+            reason: `Workshop ${workshopId} heeft geen geldige prijs`,
+          });
+          return [];
+        }
+        const resolvedTax = Math.round(resolvedSubtotal * taxRate * 100) / 100;
+        const resolvedTotal = Math.round((resolvedSubtotal + resolvedTax) * 100) / 100;
+
+        serverCalculatedSubtotal += resolvedSubtotal;
+        return [{
+          ...item,
+          workshop_id: workshopId ?? item.workshop_id ?? item.workshopId ?? null,
+          editionId: Number.isFinite(editionId) && editionId > 0 ? editionId : item.editionId,
+          pricing: { total: resolvedTotal, subtotal: resolvedSubtotal, tax: resolvedTax },
+        }];
       }
-      return item;
+
+      itemValidationErrors.push({
+        item_id: itemId,
+        item_type: itemType || 'unknown',
+        reason: `Onbekend item type '${itemType || 'unknown'}'`,
+      });
+      return [];
     });
 
+    if (itemValidationErrors.length > 0) {
+      return NextResponse.json(
+        {
+          error: 'Een of meer orderregels zijn ongeldig',
+          details: itemValidationErrors,
+        },
+        { status: 422 },
+      );
+    }
+
+    if (validatedItems.length === 0) {
+      return NextResponse.json({ error: 'Leeg mandje. Voeg eerst een voice-over toe.' }, { status: 400 });
+    }
+
+    const requestedQuote = Boolean((rawBody as { isQuote?: unknown })?.isQuote);
+    const isQuote = isQuoteOnly || requestedQuote;
     const amount = Math.round(serverCalculatedSubtotal * (1 + taxRate) * 100) / 100;
+    if (!isQuote && amount <= 0) {
+      return NextResponse.json({ error: 'Kon geen geldige prijs berekenen voor deze bestelling.' }, { status: 400 });
+    }
 
     // 4. User Management
     let userId = metadata?.user_id ? Number(metadata.user_id) : null;
@@ -267,7 +444,6 @@ export async function POST(request: Request) {
     const { data: maxOrder } = await sdkClient.from('orders').select('wp_order_id').order('wp_order_id', { ascending: false }).limit(1).single();
     const uniqueWpId = Math.max((maxOrder?.wp_order_id ? Number(maxOrder.wp_order_id) : 0) + 1, 310001);
 
-    const isQuote = isQuoteOnly || (rawBody as any).isQuote;
     const { data: newOrder, error: orderErr } = await sdkClient.from('orders').insert({
       wp_order_id: uniqueWpId,
       total: amount.toString(),
@@ -285,23 +461,22 @@ export async function POST(request: Request) {
         plan,
         language: normalizedLanguage,
         itemsCount: validatedItems.length,
-        customer: { email, first_name, last_name }
+        customer: { email, first_name, last_name },
+        items: validatedItems,
       }
     }).select().single();
 
     if (orderErr) throw new Error(`Order creation failed: ${orderErr.message}`);
-    alertContext.orderId = newOrder.id;
-    alertContext.amount = amount;
-    alertContext.journey = validatedItems[0]?.journey || 'agency';
 
     // 6. Order Items
     const itemsToInsert = validatedItems.flatMap((item: any) => {
       const dbActor = actorMap.get(Number(item.actor?.id));
+      const primaryCountry = toStringArray(item.country)[0] || '';
       
       // 🛡️ CHRIS-PROTOCOL: Handshake Truth (ID-First)
       // We resolve the country code to its official database ID for the meta_data.
-      const countryId = MarketManager.getCountryLabel(item.country) ? 
-                        (global as any).handshakeCountries?.find((c: any) => c.code === item.country || c.label === item.country)?.id : null;
+      const countryId = MarketManager.getCountryLabel(primaryCountry) ? 
+                        (global as any).handshakeCountries?.find((c: any) => c.code === primaryCountry || c.label === primaryCountry)?.id : null;
       const itemSubtotal = Number(item.pricing?.subtotal || 0);
       const musicSurchargeRaw = Number(item.pricing?.musicSurcharge || 0);
       const musicTrackId = String(item.music?.trackId || '').trim();
@@ -317,7 +492,7 @@ export async function POST(request: Request) {
       const voiceRow = {
         order_id: newOrder.id,
         actor_id: dbActor?.id || null,
-        edition_id: item.editionId || null,
+        edition_id: item.editionId || item.edition_id || null,
         name: item.name || 'Product',
         quantity: 1,
         price: voiceSubtotal.toFixed(2),
@@ -341,7 +516,7 @@ export async function POST(request: Request) {
               }
             : null,
           // 🛡️ Store hard IDs and participant context for analytics
-          country_id: countryId || item.countryId,
+          country_id: countryId || item.countryId || item.country_id,
           language_id: dbActor?.native_language_id,
           participant_info: item.participant_info || undefined
         },
@@ -372,7 +547,7 @@ export async function POST(request: Request) {
           usage: item.usage || null,
           media: item.media || [],
           journey: item.journey || null,
-          country_id: countryId || item.countryId || null,
+          country_id: countryId || item.countryId || item.country_id || null,
         },
         delivery_status: 'waiting'
       };
@@ -383,22 +558,12 @@ export async function POST(request: Request) {
 
       return [voiceRow, musicRow];
     });
+    if (itemsToInsert.length === 0) {
+      return NextResponse.json({ error: 'Geen geldige orderregels gevonden.' }, { status: 400 });
+    }
 
     const { error: itemsErr } = await sdkClient.from('order_items').insert(itemsToInsert);
     if (itemsErr) throw new Error(`Order items failed: ${itemsErr.message}`);
-
-    await fireAdminNotify(baseUrl, 'checkout_submitted', {
-      orderId: newOrder.id,
-      email,
-      company: company || null,
-      amount,
-      paymentMethod: payment_method || 'mollie',
-      usage: usage || validatedItems[0]?.usage || null,
-      journey: validatedItems[0]?.journey || 'agency',
-      itemsCount: validatedItems.length,
-      ip,
-      language: normalizedLanguage
-    });
 
     // 7. Payment Handshake
     const secureToken = sign({ userId, orderId: newOrder.id, email }, process.env.JWT_SECRET || 'voices-secret-2026', { expiresIn: '24h' });
@@ -454,25 +619,14 @@ export async function POST(request: Request) {
     const mollieOrder = await MollieService.createOrder({
       amount: { currency: 'EUR', value: amount.toFixed(2) },
       orderNumber: newOrder.id.toString(),
-      lines: validatedItems.map((i: any) => {
-        const lineTotal = Number(i.pricing?.total ?? i.pricing?.subtotal ?? 0);
-        const explicitVat = Number(i.pricing?.vat ?? i.pricing?.tax ?? 0);
-        const vatFromDiff = Number.isFinite(lineTotal) && Number.isFinite(Number(i.pricing?.subtotal))
-          ? Math.max(0, lineTotal - Number(i.pricing?.subtotal || 0))
-          : 0;
-        const safeVat = isVatExempt
-          ? 0
-          : (explicitVat > 0 ? explicitVat : vatFromDiff);
-
-        return {
-          name: i.name || 'Voice Over',
-          quantity: 1,
-          unitPrice: { currency: 'EUR', value: lineTotal.toFixed(2) },
-          totalAmount: { currency: 'EUR', value: lineTotal.toFixed(2) },
-          vatRate: isVatExempt ? '0' : '21',
-          vatAmount: { currency: 'EUR', value: safeVat.toFixed(2) }
-        };
-      }),
+      lines: validatedItems.map((i: any) => ({
+        name: i.name || 'Voice Over',
+        quantity: 1,
+        unitPrice: { currency: 'EUR', value: (i.pricing?.total || 0).toFixed(2) },
+        totalAmount: { currency: 'EUR', value: (i.pricing?.total || 0).toFixed(2) },
+        vatRate: isVatExempt ? '0' : '21',
+        vatAmount: { currency: 'EUR', value: (i.pricing?.tax || 0).toFixed(2) }
+      })),
       billingAddress: { streetAndNumber: address_street || 'N/A', postalCode: postal_code || 'N/A', city: city || 'N/A', country: country || 'BE', givenName: first_name, familyName: last_name, email },
       redirectUrl: `${baseUrl}/api/auth/magic-login?token=${secureToken}&redirect=/account/orders?orderId=${newOrder.id}&email=${encodeURIComponent(email)}`,
       webhookUrl: `${webhookBaseUrl}/api/checkout/webhook`,
@@ -523,16 +677,4 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ success: true, orderId: newOrder.id, checkoutUrl: mollieOrder._links.checkout.href, token: secureToken });
   });
-  } catch (error: any) {
-    await fireAdminNotify(baseUrl, 'checkout_error', {
-      ...alertContext,
-      error: error?.message || 'Unknown checkout error',
-      step: 'checkout_submit_crash'
-    });
-
-    return NextResponse.json({
-      error: 'Checkout flow failed',
-      details: process.env.NODE_ENV !== 'production' ? error?.message : undefined
-    }, { status: 500 });
-  }
 }

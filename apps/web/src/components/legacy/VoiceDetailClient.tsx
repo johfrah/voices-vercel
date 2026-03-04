@@ -12,6 +12,7 @@ import { useTranslation } from "@/contexts/TranslationContext";
 import { useMasterControl } from "@/contexts/VoicesMasterControlContext";
 import { VoiceCard } from "@/components/ui/VoiceCard";
 import { VoicesMasterControl } from "@/components/ui/VoicesMasterControl";
+import { buildCanonicalActorPath } from "@/lib/system/slug";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, Suspense, useState } from 'react';
@@ -60,6 +61,7 @@ export function VoiceDetailClient({
   const { selectActor, updateUsage, updateMedia, updateBriefing } = useCheckout();
   const { updateJourney } = useMasterControl();
   const router = useRouter();
+  const canonicalActorPath = buildCanonicalActorPath(actor?.slug, actor?.display_name || actor?.first_name);
 
   // Sync with checkout context on mount and when actor changes
   useEffect(() => {
@@ -195,13 +197,13 @@ export function VoiceDetailClient({
             {
               "@context": "https://schema.org",
               "@type": "Person",
-              "@id": `/voice/${actor.slug}#person`,
+              "@id": `${canonicalActorPath}#person`,
               "name": actor.display_name,
               "description": actor.bio || actor.description,
               "image": actor.photo_url || undefined,
               "jobTitle": t('common.job_title.voice_actor', "Voice-over Artist"),
               "gender": actor.gender,
-              "url": `/voice/${actor.slug}`,
+              "url": canonicalActorPath,
               "knowsAbout": actor.languages?.map((l: any) => l.name) || actor.native_lang ? [actor.native_lang] : [t('common.language.dutch', "Nederlands")],
               "aggregateRating": actor.voice_score ? {
                 "@type": "AggregateRating",
@@ -235,7 +237,7 @@ export function VoiceDetailClient({
                   "@type": "ListItem",
                   "position": 3,
                   "name": actor.display_name,
-                  "item": `/voice/${actor.slug}`
+                  "item": canonicalActorPath
                 }
               ]
             }

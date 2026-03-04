@@ -15,6 +15,7 @@ import { and, count, eq, inArray, sql } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth/api-auth';
 import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
+import { YukiService } from '@/lib/services/yuki-service';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -95,40 +96,170 @@ function journeyLookupCandidates(journeyCode: string): string[] {
   return Array.from(candidates);
 }
 
+function parseRawMeta(rawMeta: unknown): Record<string, any> {
+  if (!rawMeta) return {};
+  if (typeof rawMeta === 'string') {
+    try {
+      const parsed = JSON.parse(rawMeta);
+      return parsed && typeof parsed === 'object' ? parsed : {};
+    } catch {
+      return {};
+    }
+  }
+  if (typeof rawMeta === 'object') return rawMeta as Record<string, any>;
+  return {};
+}
+
+function inferCountryCode(vatNumber: string | null | undefined): string {
+  const normalized = String(vatNumber || '').trim().toUpperCase();
+  if (normalized.length >= 2 && /^[A-Z]{2}/.test(normalized)) {
+    return normalized.slice(0, 2);
+  }
+  return 'BE';
+}
+
+function toNumber(value: unknown, fallback = 0): number {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : fallback;
+}
+
 async function resolveYukiSync(orderId: number) {
-  const orderRow = await db
-    .select({
-      id: orders.id,
-      wpOrderId: orders.wpOrderId,
-      total: orders.total,
-    })
-    .from(orders)
-    .where(eq(orders.id, orderId))
-    .limit(1)
-    .then((rows: any[]) => rows[0]);
+  const orderRow = await db.query.orders.findFirst({
+    where: eq(orders.id, orderId),
+    with: { user: true },
+  });
 
   if (!orderRow) {
-    return { success: false, message: 'Order niet gevonden voor Yuki sync' };
+    return { success: false, message: 'Order niet gevonden voor Yuki sync.' };
   }
 
-  const yukiId = `YUK-${orderRow.wpOrderId || orderRow.id}`;
+  const itemRows = await db
+    .select({
+      name: orderItems.name,
+      quantity: orderItems.quantity,
+      price: orderItems.price,
+      tax: orderItems.tax,
+    })
+    .from(orderItems)
+    .where(eq(orderItems.orderId, orderId));
+
+  if (!itemRows.length) {
+    return { success: false, message: 'Geen orderregels gevonden voor Yuki sync.' };
+  }
+
+  const rawMeta = parseRawMeta(orderRow.rawMeta);
+  const billingMeta = parseRawMeta(rawMeta.billing);
+  const userFirstName = String(orderRow.user?.first_name || billingMeta.first_name || '').trim();
+  const userLastName = String(orderRow.user?.last_name || billingMeta.last_name || '').trim();
+  const customerEmail = String(
+    orderRow.user?.email ||
+      orderRow.billingEmailAlt ||
+      billingMeta.email ||
+      rawMeta._billing_email ||
+      ''
+  ).trim();
+
+  if (!customerEmail) {
+    return { success: false, message: 'Geen klant e-mail gevonden voor Yuki sync.' };
+  }
+
+  const vatNumber = String(
+    orderRow.billingVatNumber ||
+      orderRow.user?.vatNumber ||
+      billingMeta.vat_number ||
+      rawMeta._billing_vat_number ||
+      ''
+  )
+    .trim()
+    .toUpperCase();
+
+  const payload = {
+    orderId: String(orderRow.wpOrderId || orderRow.id),
+    customer: {
+      first_name: userFirstName || 'Klant',
+      last_name: userLastName || 'Onbekend',
+      email: customerEmail,
+      companyName: String(
+        orderRow.user?.companyName ||
+          billingMeta.company ||
+          rawMeta._billing_company ||
+          ''
+      ).trim() || undefined,
+      vatNumber: vatNumber || undefined,
+      address: String(
+        billingMeta.address ||
+          rawMeta._billing_address_1 ||
+          ''
+      ).trim() || undefined,
+      city: String(
+        billingMeta.city ||
+          rawMeta._billing_city ||
+          ''
+      ).trim() || undefined,
+      zipCode: String(
+        billingMeta.postcode ||
+          rawMeta._billing_postcode ||
+          ''
+      ).trim() || undefined,
+      countryCode: inferCountryCode(vatNumber),
+      phone: String(orderRow.user?.phone || billingMeta.phone || rawMeta._billing_phone || '').trim() || undefined,
+      billing_po: String(orderRow.purchaseOrder || '').trim() || undefined,
+      financial_email: String(orderRow.billingEmailAlt || '').trim() || undefined,
+    },
+    lines: itemRows.map((item: { name: string | null; quantity: number | null; price: string | null; tax: string | null }) => {
+      const itemTax = toNumber(item.tax, 0);
+      const vatType = itemTax > 0 ? 1 : 0;
+      return {
+        description: String(item.name || 'Orderregel').trim(),
+        quantity: Math.max(1, toNumber(item.quantity, 1)),
+        price: toNumber(item.price, 0),
+        vatType,
+        vatPercentage: vatType === 1 ? 21 : 0,
+      };
+    }),
+    paymentMethod: 'banktransfer',
+    poNumber: String(orderRow.purchaseOrder || '').trim() || undefined,
+  };
+
+  const yukiResult = await YukiService.createInvoice(payload);
+
+  if (!yukiResult.success) {
+    await db.insert(orderNotes).values({
+      orderId,
+      note: `Yuki sync mislukt: ${yukiResult.error || 'onbekende fout'}`,
+      isCustomerNote: false,
+    });
+    return {
+      success: false,
+      message: yukiResult.error || 'Yuki sync niet bevestigd.',
+    };
+  }
 
   await db
     .update(orders)
-    .set({ yukiInvoiceId: yukiId })
+    .set({
+      yukiInvoiceId: String(yukiResult.invoiceId || ''),
+      rawMeta: {
+        ...rawMeta,
+        yuki_pushed: true,
+        yuki_invoice_number: yukiResult.invoiceNumber || null,
+        yuki_synced_at: new Date().toISOString(),
+      },
+    })
     .where(eq(orders.id, orderId));
 
   await db.insert(orderNotes).values({
     orderId,
-    note: `Yuki sync gekoppeld: ${yukiId}`,
+    note: `Yuki sync bevestigd: ${yukiResult.invoiceId || 'zonder invoice id'}`,
     isCustomerNote: false,
   });
 
   return {
     success: true,
-    yukiId,
+    yukiId: yukiResult.invoiceId,
+    invoiceNumber: yukiResult.invoiceNumber,
     amount: orderRow.total || '0',
-    message: 'Order gekoppeld voor Yuki verwerking.',
+    message: 'Yuki sync bevestigd.',
   };
 }
 

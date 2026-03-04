@@ -21,7 +21,7 @@ import {
     Youtube
 } from 'lucide-react';
 import Image from 'next/image';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { 
   ContainerInstrument, 
   TextInstrument,
@@ -33,14 +33,13 @@ import {
 } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '../ui/VoiceglotText';
 import { cn } from '@/lib/utils';
-import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
 
 interface MediaItem {
   id: number;
   fileName: string;
   filePath: string;
   fileType: string;
-  fileSize: number;
+  fileSize: number | null;
   journey: string;
   category: string;
   labels: string[] | null;
@@ -56,10 +55,14 @@ interface Actor {
   last_name: string;
 }
 
+const SUPABASE_PUBLIC_STORAGE_BASE = `${(process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://vcbxyyjsxuquytcsskpj.supabase.co').replace(/\/$/, '')}/storage/v1/object/public/voices`;
+
 export const MediaLibrary: React.FC = () => {
   const [media, setMedia] = useState<MediaItem[]>([]);
   const [actors, setActors] = useState<Actor[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [mediaError, setMediaError] = useState<string | null>(null);
+  const [brokenMediaIds, setBrokenMediaIds] = useState<number[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [isConverting, setIsConverting] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -69,29 +72,89 @@ export const MediaLibrary: React.FC = () => {
   const [filterStatus, setFilterStatus] = useState<'all' | 'orphans'>('all');
   const [selectedActorId, setSelectedActorId] = useState<number | null>(null);
   const [youtubeUrl, setYoutubeUrl] = useState<string | null>(null);
+  const mediaRequestSeqRef = useRef(0);
+  const mediaAbortRef = useRef<AbortController | null>(null);
+  const actorsRequestSeqRef = useRef(0);
+  const actorsAbortRef = useRef<AbortController | null>(null);
   const { playClick } = useSonicDNA();
 
+  const buildMediaApiUrl = React.useCallback(() => {
+    const params = new URLSearchParams();
+    params.set('sort', sortBy);
+    if (filterJourney !== 'all') params.set('journey', filterJourney);
+    if (filterStatus === 'orphans') params.set('filter', 'orphans');
+    if (selectedActorId) params.set('actorId', String(selectedActorId));
+    if (searchQuery) params.set('search', searchQuery);
+    return `/api/backoffice/media/?${params.toString()}`;
+  }, [sortBy, filterJourney, filterStatus, selectedActorId, searchQuery]);
+
   const fetchMedia = React.useCallback(async () => {
+    const requestId = ++mediaRequestSeqRef.current;
     setIsLoading(true);
+    setMediaError(null);
+    mediaAbortRef.current?.abort();
+    const controller = new AbortController();
+    mediaAbortRef.current = controller;
+
     try {
-      let url = `/api/backoffice/media?sort=${sortBy}`;
-      if (filterJourney !== 'all') url += `&journey=${filterJourney}`;
-      if (filterStatus === 'orphans') url += `&filter=orphans`;
-      if (selectedActorId) url += `&actorId=${selectedActorId}`;
-      if (searchQuery) url += `&search=${encodeURIComponent(searchQuery)}`;
-      
-      const res = await fetch(url);
-      if (res.ok) {
+      const url = buildMediaApiUrl();
+
+      const requestMedia = async () => {
+        const res = await fetch(url, { cache: 'no-store', signal: controller.signal });
+        if (!res.ok) {
+          let serverError = `HTTP ${res.status}`;
+          try {
+            const payload = await res.json();
+            if (payload?.error) serverError = payload.error;
+          } catch {
+            // keep generic server error
+          }
+          throw new Error(serverError);
+        }
+
         const data = await res.json();
-        setMedia(data.results || []);
-        setYoutubeUrl(data.youtubeUrl || null);
+        setMedia(Array.isArray(data?.results) ? data.results : []);
+        setBrokenMediaIds([]);
+        setYoutubeUrl(typeof data?.youtubeUrl === 'string' ? data.youtubeUrl : null);
+      };
+
+      try {
+        await requestMedia();
+      } catch (firstError) {
+        const isAbort =
+          firstError instanceof DOMException && firstError.name === 'AbortError';
+        if (isAbort) return;
+
+        const canRetry =
+          firstError instanceof TypeError ||
+          (firstError instanceof Error && /failed to fetch|network|abort/i.test(firstError.message));
+
+        if (canRetry) {
+          // Retry once for transient network issues in dev/hot-reload flows.
+          await requestMedia().catch(() => {
+            throw firstError;
+          });
+        } else {
+          throw firstError;
+        }
       }
     } catch (e) {
+      const isAbort = e instanceof DOMException && e.name === 'AbortError';
+      if (isAbort) return;
       console.error('Failed to fetch media', e);
+      const fallbackMessage = e instanceof Error ? e.message : 'Onbekende fout bij het laden van media.';
+      setMediaError(fallbackMessage);
+      setMedia([]);
+      setBrokenMediaIds([]);
     } finally {
-      setIsLoading(false);
+      if (mediaAbortRef.current === controller) {
+        mediaAbortRef.current = null;
+      }
+      if (requestId === mediaRequestSeqRef.current) {
+        setIsLoading(false);
+      }
     }
-  }, [sortBy, filterJourney, filterStatus, selectedActorId, searchQuery]);
+  }, [buildMediaApiUrl]);
 
   useEffect(() => {
     fetchActors();
@@ -102,14 +165,49 @@ export const MediaLibrary: React.FC = () => {
   }, [fetchMedia]);
 
   const fetchActors = async () => {
+    const requestId = ++actorsRequestSeqRef.current;
+    actorsAbortRef.current?.abort();
+    const controller = new AbortController();
+    actorsAbortRef.current = controller;
+
     try {
-      const res = await fetch('/api/backoffice/actors');
-      if (res.ok) {
+      const requestActors = async () => {
+        const res = await fetch('/api/backoffice/actors/', { cache: 'no-store', signal: controller.signal });
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}`);
+        }
         const data = await res.json();
-        setActors(data);
+        setActors(Array.isArray(data) ? data : []);
+      };
+
+      try {
+        await requestActors();
+      } catch (firstError) {
+        const isAbort =
+          firstError instanceof DOMException && firstError.name === 'AbortError';
+        if (isAbort) return;
+
+        const canRetry =
+          firstError instanceof TypeError ||
+          (firstError instanceof Error && /failed to fetch|network|abort/i.test(firstError.message));
+
+        if (canRetry) {
+          await requestActors().catch(() => {
+            throw firstError;
+          });
+        } else {
+          throw firstError;
+        }
       }
     } catch (e) {
+      const isAbort = e instanceof DOMException && e.name === 'AbortError';
+      if (isAbort) return;
       console.error('Failed to fetch actors', e);
+      setActors([]);
+    } finally {
+      if (actorsAbortRef.current === controller && requestId === actorsRequestSeqRef.current) {
+        actorsAbortRef.current = null;
+      }
     }
   };
 
@@ -205,7 +303,7 @@ export const MediaLibrary: React.FC = () => {
         body: formData,
       });
       if (res.ok) {
-        setMedia(media.map(m => selectedIds.includes(m.id) ? { ...m, isPublic } : m));
+        setMedia(media.map(m => selectedIds.includes(m.id) ? { ...m, is_public } : m));
         setSelectedIds([]);
       }
     } catch (e) {
@@ -248,6 +346,39 @@ export const MediaLibrary: React.FC = () => {
     if (type.startsWith('audio/')) return <Music className="text-purple-500" strokeWidth={1.5} />;
     if (type.startsWith('video/')) return <Play className="text-red-500" strokeWidth={1.5} />;
     return <FileText className="text-va-black/40" strokeWidth={1.5} />;
+  };
+
+  const getMediaSourceUrl = (filePath: string) => {
+    const normalizedPath = (filePath || '').trim().replace(/\\/g, '/').replace(/^\.?\//, '');
+    if (!normalizedPath) return '';
+    if (normalizedPath.startsWith('http://') || normalizedPath.startsWith('https://')) return normalizedPath;
+
+    let storagePath = normalizedPath;
+    if (storagePath.startsWith('images/workshops/')) {
+      storagePath = storagePath.replace('images/workshops/', 'assets/studio/workshops/images/');
+    } else if (storagePath.startsWith('assets/images/workshops/')) {
+      storagePath = storagePath.replace('assets/images/workshops/', 'assets/studio/workshops/images/');
+    } else if (!storagePath.startsWith('assets/') && storagePath.split('/')[0] === 'images') {
+      storagePath = `assets/${storagePath}`;
+    }
+
+    const encodedPath = storagePath
+      .split('/')
+      .filter(Boolean)
+      .map((segment) => encodeURIComponent(segment))
+      .join('/');
+
+    return `${SUPABASE_PUBLIC_STORAGE_BASE}/${encodedPath}`;
+  };
+
+  const formatFileSize = (fileSize?: number | null) => {
+    if (!fileSize || fileSize <= 0) return '—';
+    if (fileSize < 1024 * 1024) return `${Math.max(1, Math.round(fileSize / 1024))} KB`;
+    return `${(fileSize / (1024 * 1024)).toFixed(1)} MB`;
+  };
+
+  const markMediaAsBroken = (id: number) => {
+    setBrokenMediaIds((prev) => (prev.includes(id) ? prev : [...prev, id]));
   };
 
   return (
@@ -454,6 +585,36 @@ export const MediaLibrary: React.FC = () => {
             Array.from({ length: 8 }).map((_, i) => (
               <ContainerInstrument key={i} className="aspect-square bg-white/50 animate-pulse rounded-[20px] border border-va-black/5" />
             ))
+          ) : mediaError ? (
+            <ContainerInstrument className="col-span-full py-20 text-center bg-white rounded-[20px] shadow-aura border border-red-500/15">
+              <ContainerInstrument className="w-24 h-24 bg-red-500/5 rounded-full flex items-center justify-center mx-auto mb-6">
+                <AlertCircle className="text-red-500/70" size={40} strokeWidth={1.5} />
+              </ContainerInstrument>
+              <HeadingInstrument level={3} className="text-2xl font-light tracking-tight">
+                <VoiceglotText translationKey="media.load_failed" defaultText="Media kon niet geladen worden" />
+              </HeadingInstrument>
+              <TextInstrument className="text-va-black/40 font-light mt-2 max-w-xl mx-auto">
+                <VoiceglotText
+                  translationKey="media.load_failed_desc"
+                  defaultText="Controleer je verbinding of serverstatus en probeer opnieuw. Als dit blijft gebeuren, open de systeemlogs in de backoffice."
+                />
+              </TextInstrument>
+              <ContainerInstrument className="mt-6">
+                <ButtonInstrument
+                  onClick={() => {
+                    playClick('light');
+                    fetchMedia();
+                  }}
+                  className="px-6 py-3 rounded-[10px] bg-va-black text-white text-[15px] font-light tracking-widest hover:opacity-90 transition-opacity"
+                >
+                  <RefreshCw size={14} strokeWidth={1.5} className="inline mr-2" />
+                  Opnieuw proberen
+                </ButtonInstrument>
+              </ContainerInstrument>
+              <TextInstrument className="text-[12px] text-va-black/30 font-light mt-4">
+                Debug: {mediaError}
+              </TextInstrument>
+            </ContainerInstrument>
           ) : media.length === 0 ? (
             <ContainerInstrument className="col-span-full py-32 text-center bg-white rounded-[20px] shadow-aura border-2 border-dashed border-va-black/5">
               <ContainerInstrument className="w-24 h-24 bg-va-off-white rounded-full flex items-center justify-center mx-auto mb-6">
@@ -467,8 +628,13 @@ export const MediaLibrary: React.FC = () => {
               </TextInstrument>
             </ContainerInstrument>
           ) : (
-            media.map((item) => (
-              <ContainerInstrument 
+            media.map((item) => {
+              const mediaSrc = getMediaSourceUrl(item.filePath);
+              const isExternalMedia = mediaSrc.startsWith('http://') || mediaSrc.startsWith('https://');
+              const isMissingInStorage = brokenMediaIds.includes(item.id);
+
+              return (
+              <ContainerInstrument
                 key={item.id}
                 className={cn(
                   "group relative bg-white rounded-[20px] shadow-aura overflow-hidden transition-all duration-500 border border-va-black/5",
@@ -489,18 +655,21 @@ export const MediaLibrary: React.FC = () => {
                 {/* Preview Area */}
                 <ContainerInstrument className="aspect-square bg-va-off-white flex items-center justify-center relative overflow-hidden">
                   {item.fileType.startsWith('image/') ? (
-                    <Image  
-                      src={`/assets/${item.filePath}`} 
+                    <Image
+                      src={mediaSrc}
                       alt={item.fileName}
                       width={400}
                       height={400}
+                      unoptimized={isExternalMedia}
+                      onError={() => markMediaAsBroken(item.id)}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                     />
                   ) : item.fileType.startsWith('video/') ? (
                     <video 
-                      src={`/assets/${item.filePath}`}
+                      src={mediaSrc}
                       className="w-full h-full object-cover"
                       muted
+                      onError={() => markMediaAsBroken(item.id)}
                       onMouseOver={(e) => e.currentTarget.play()}
                       onMouseOut={(e) => e.currentTarget.pause()}
                     />
@@ -535,7 +704,7 @@ export const MediaLibrary: React.FC = () => {
                   <ContainerInstrument className="space-y-1">
                     <HeadingInstrument level={4} className="text-[15px] font-medium truncate tracking-tight text-va-black">{item.fileName}</HeadingInstrument>
                     <ContainerInstrument className="flex items-center gap-2 text-[15px] font-light text-va-black/30 tracking-widest ">
-                      <TextInstrument>{(item.fileSize / 1024).toFixed(0)} KB</TextInstrument>
+                      <TextInstrument>{formatFileSize(item.fileSize)}</TextInstrument>
                       <ContainerInstrument className="w-1 h-1 rounded-full bg-va-black/10" />
                       <TextInstrument>{new Date(item.createdAt).toLocaleDateString('nl-BE')}</TextInstrument>
                     </ContainerInstrument>
@@ -553,9 +722,29 @@ export const MediaLibrary: React.FC = () => {
                       </ContainerInstrument>
                     </ContainerInstrument>
                   )}
+
+                  <ContainerInstrument className="pt-2 border-t border-va-black/5">
+                    {isMissingInStorage ? (
+                      <TextInstrument className="inline-flex items-center gap-2 text-[12px] uppercase tracking-widest text-red-600/80">
+                        <AlertCircle size={12} strokeWidth={1.5} />
+                        Asset ontbreekt in storage
+                      </TextInstrument>
+                    ) : (
+                      <a
+                        href={mediaSrc}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 text-[13px] uppercase tracking-widest text-primary hover:text-primary/80 transition-colors"
+                      >
+                        <Play size={12} strokeWidth={1.5} />
+                        Open asset
+                      </a>
+                    )}
+                  </ContainerInstrument>
                 </ContainerInstrument>
               </ContainerInstrument>
-            ))
+              );
+            })
           )}
         </ContainerInstrument>
       </ContainerInstrument>

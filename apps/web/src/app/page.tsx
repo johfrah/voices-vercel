@@ -17,6 +17,7 @@ import { SlimmeKassa } from '@/lib/engines/pricing-engine';
 import { VoiceFilterEngine } from "@/lib/engines/voice-filter-engine";
 import { Actor } from "@/types";
 import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
+import { buildCanonicalActorPath } from "@/lib/system/slug";
 import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import nextDynamic from "next/dynamic";
 
@@ -69,7 +70,7 @@ function HomeContent({
 }) {
   const { user, isAuthenticated } = useAuth();
   const { t, language } = useTranslation();
-  const { state: masterControlState, updateStep, resetFilters } = useMasterControl();
+  const { state: masterControlState } = useMasterControl();
   const { selectActor, state: checkoutState } = useCheckout();
   const { playClick } = useSonicDNA();
   const router = useVoicesRouter();
@@ -77,7 +78,6 @@ function HomeContent({
   const { openEditModal } = useEditMode();
   const [customerDNA, setCustomerDNA] = useState<any>(null);
   const [actors, setActors] = useState<Actor[]>(initialActors);
-  const prevLangRef = useRef<number | undefined>(undefined);
 
   const [marketCode, setMarketCode] = useState('BE');
 
@@ -130,38 +130,8 @@ function HomeContent({
     setActors(initialActors);
   }, [initialActors]);
 
-  // 🛡️ CHRIS-PROTOCOL: Re-fetch actors on language change (v2.28.1)
-  const masterStateRef = useRef(masterControlState);
-  masterStateRef.current = masterControlState;
-  useEffect(() => {
-    const checkLang = () => {
-      const st = masterStateRef.current;
-      const langIds = st?.filters?.languageIds;
-      const langId = langIds?.length === 1 ? langIds[0] : (st?.filters?.languageId || 1);
-      if (langId === prevLangRef.current || !langId) return;
-      prevLangRef.current = langId;
-      if (langId === 1) { setActors(initialActors); return; }
-      console.log(`[LANG-POLL] Fetching actors for langId=${langId}`);
-      fetch(`/api/actors?languageId=${langId}`)
-        .then(r => r.json())
-        .then(d => {
-          console.log(`[LANG-POLL] Got ${d.results?.length || 0} actors`);
-          if (d.results?.length > 0) {
-            setActors(d.results.map((a: any) => ({
-              ...a,
-              photo_url: a.photo_url && !a.photo_url.startsWith('http') && !a.photo_url.startsWith('/api/proxy')
-                ? `/api/proxy/?path=${encodeURIComponent(a.photo_url)}` : a.photo_url,
-            })));
-          }
-        })
-        .catch(() => {});
-    };
-    const interval = setInterval(checkLang, 500);
-    return () => clearInterval(interval);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // Language re-fetch is handled by polling interval above
+  // 🛡️ CHRIS-PROTOCOL: Keep full actor pool in memory.
+  // Language switching is handled by VoiceFilterEngine, not by replacing the dataset.
 
   useEffect(() => {
     if (isAuthenticated && user?.email) {
@@ -355,9 +325,9 @@ function HomeContent({
         };
       case 'video':
         return {
-          titlePart1: t('home.hero.video.title_part1', "Geef jouw"),
-          titleHighlight: t('home.hero.video.title_highlight', "voice-over"),
-          titlePart2: t('home.hero.video.title_part2', "een eigen stem."),
+          titlePart1: t('home.hero.video.title_part1', "De mooiste"),
+          titleHighlight: t('home.hero.video.title_highlight', "voice-overs"),
+          titlePart2: t('home.hero.video.title_part2', "voor jouw project."),
           subtitle: t('home.hero.video.subtitle', "Bedrijfsfilms, explanimations of documentaires. Vind de perfecte match voor jouw visuele verhaal."),
           usps: [
             { key: 'video.timing', text: t('home.usp.video.timing', 'perfecte timing & flow'), icon: 'clock' },
@@ -429,7 +399,9 @@ function HomeContent({
             <LoadingScreenInstrument text="Youssef Zaki laden..." />
           ) : (
             <div className="min-h-screen flex items-center justify-center text-white bg-va-black">
-              <TextInstrument>Artist data not found.</TextInstrument>
+              <TextInstrument>
+                <VoiceglotText translationKey="artist.error.data_not_found" defaultText="Artist data not found." />
+              </TextInstrument>
             </div>
           )}
         </Suspense>
@@ -516,23 +488,14 @@ function HomeContent({
                             }))} 
                             featured={false} 
                             onSelect={(actor) => {
-                              //  CHRIS-PROTOCOL: The "Ultimate SPA" Way
-                              // We stay on the homepage and just switch the step!
-                              console.log(`[Home] Initiating in-page SPA transition for: ${actor.display_name}`);
                               playClick('success');
                               
-                              // 1. Set the actor in global checkout context
+                              // Keep checkout context in sync for the next route render.
                               selectActor(actor);
                               
-                              // 2. Set the step to script
-                              updateStep('script');
-                              
-                              // 3. Update URL for Smart Routing
-                              const newUrl = `/${actor.slug}/${masterControlState.journey}`;
-                              window.history.pushState(null, '', newUrl);
-                              
-                              // 4. Scroll to top of the section
-                              window.scrollTo({ top: 0, behavior: 'smooth' });
+                              // Force real route navigation so SPA click and direct URL
+                              // always render the same actor detail layout tree.
+                              router.push(buildCanonicalActorPath(actor.slug, actor.display_name || actor.first_name));
                             }}
                           />
                         </NuclearErrorBoundary>

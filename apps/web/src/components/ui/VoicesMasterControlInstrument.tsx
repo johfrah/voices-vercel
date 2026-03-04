@@ -786,6 +786,7 @@ export const VoicesMasterControlContext: React.FC<VoicesMasterControlContextProp
                                     id: fmt.id,
                                     label: fmt.label,
                                     value: fmt.id, //  CHRIS-PROTOCOL: Use ID for Handshake Truth
+                                    code: fmt.code, // Used by dropdown event payload normalization
                                     icon: baseIcons[baseId] || Globe,
                                     subLabel: fmt.description,
                                     hasRegions: fmt.has_regions

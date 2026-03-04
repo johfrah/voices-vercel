@@ -1,6 +1,7 @@
 "use client";
 
 import { ContainerInstrument, HeadingInstrument, TextInstrument } from "@/components/ui/LayoutInstruments";
+import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
 import { Suspense } from "react";
 import { motion } from "framer-motion";
@@ -30,16 +31,16 @@ export default function UnderConstructionPage() {
           <div className="inline-flex items-center gap-3 px-4 py-1.5 bg-primary/10 rounded-full mb-4">
             <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
             <TextInstrument className="text-[11px] font-bold tracking-[0.2em] text-primary uppercase">
-              Coming Soon
+              <VoiceglotText translationKey="under_construction.badge" defaultText="Coming Soon" />
             </TextInstrument>
           </div>
           
           <HeadingInstrument level={1} className="text-6xl md:text-8xl font-light tracking-tighter leading-[0.9] text-va-black">
-            We bouwen aan de <span className="text-primary italic">toekomst</span> van stemmen.
+            <VoiceglotText translationKey="under_construction.title_prefix" defaultText="We bouwen aan de" /> <span className="text-primary italic"><VoiceglotText translationKey="under_construction.title_highlight" defaultText="toekomst" /></span> <VoiceglotText translationKey="under_construction.title_suffix" defaultText="van stemmen." />
           </HeadingInstrument>
           
           <TextInstrument className="text-xl md:text-2xl font-light text-va-black/40 max-w-2xl mx-auto leading-relaxed">
-            Onze nieuwe site is bijna klaar. Tot die tijd kun je alvast onze stemmen bekijken via onze light-versie.
+            <VoiceglotText translationKey="under_construction.subtitle" defaultText="Onze nieuwe site is bijna klaar. Tot die tijd kun je alvast onze stemmen bekijken via onze light-versie." />
           </TextInstrument>
         </motion.div>
 
@@ -53,7 +54,7 @@ export default function UnderConstructionPage() {
             href="/light"
             className="group bg-va-black text-white px-10 py-5 rounded-full font-bold tracking-widest uppercase text-sm flex items-center gap-3 hover:scale-105 transition-all shadow-2xl"
           >
-            Bekijk stemmen (Light)
+            <VoiceglotText translationKey="under_construction.cta_light" defaultText="Bekijk stemmen (Light)" />
             <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
           </VoicesLink>
 

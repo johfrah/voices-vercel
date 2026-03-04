@@ -4,6 +4,7 @@ import { EditModeOverlay } from "@/components/admin/EditModeOverlay";
 import { CommandPalette } from "@/components/ui/CommandPalette";
 import { SpotlightDashboard } from "@/components/ui/SpotlightDashboard";
 import { LoadingScreenInstrument, PageWrapperInstrument, ContainerInstrument, HeadingInstrument, TextInstrument } from "@/components/ui/LayoutInstruments";
+import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { CookieBanner } from "@/components/ui/Legal/CookieBanner";
 import { GlobalModalManager } from "@/components/ui/GlobalModalManager";
 import { LiquidTransitionOverlay } from "@/components/ui/LiquidTransitionOverlay";
@@ -131,10 +132,15 @@ const cormorant = Cormorant_Garamond({
 });
 
 export const viewport: Viewport = {
-  themeColor: "#000000",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#faf8f5" },
+    { media: "(prefers-color-scheme: dark)", color: "#101015" },
+  ],
+  colorScheme: "dark light",
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
+  viewportFit: "cover",
 };
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -193,6 +199,11 @@ export async function generateMetadata(): Promise<Metadata> {
   if (!market) {
     throw new Error('Market configuration could not be resolved.');
   }
+  const metadataTranslations = (studioTranslations || {}) as Record<string, string>;
+  const mt = (key: string, fallback: string) => {
+    const translated = metadataTranslations[key];
+    return typeof translated === 'string' && translated.trim().length > 0 ? translated : fallback;
+  };
 
   const alternateMap = buildAlternatesForPath(pathname || '/', alternateLanguages);
   const canonicalUrl = alternateMap[localeToBcp47(activeLocale)] || buildLocaleUrl(activeLocale, pathname || '/', normalizeLocaleDomainMap(alternateLanguages));
@@ -202,18 +213,18 @@ export async function generateMetadata(): Promise<Metadata> {
   const isArtist = market.market_code === 'ARTIST';
 
   const title = isAdeming 
-    ? "Ademing | Kom tot rust" 
+    ? mt('meta.title.ademing', "Ademing | Kom tot rust")
     : isJohfrah 
-    ? "Johfrah Lefebvre | Vlaamse Voice-over & Regisseur" 
+    ? mt('meta.title.portfolio', "Johfrah Lefebvre | Vlaamse Voice-over & Regisseur")
     : isArtist
-    ? "Voices Artist | Premium Voice-over Talent"
-    : "Voices | Het Vriendelijkste Stemmenbureau";
+    ? mt('meta.title.artist', "Voices Artist | Premium Voice-over Talent")
+    : mt('meta.title.default', "Voices | Het Vriendelijkste Stemmenbureau");
 
   const description = isAdeming 
-    ? "Adem in. Kom tot rust. Luister en verbind met de stilte in jezelf." 
+    ? mt('meta.description.ademing', "Adem in. Kom tot rust. Luister en verbind met de stilte in jezelf.")
     : isJohfrah
-    ? "De stem achter het verhaal. Warme, natuurlijke Vlaamse voice-over & host voor nationale TV-spots en corporate video's."
-    : "Een warm en vertrouwd geluid voor elk project. Wij helpen je de perfecte stem te vinden.";
+    ? mt('meta.description.portfolio', "De stem achter het verhaal. Warme, natuurlijke Vlaamse voice-over & host voor nationale TV-spots en corporate video's.")
+    : mt('meta.description.default', "Een warm en vertrouwd geluid voor elk project. Wij helpen je de perfecte stem te vinden.");
 
   const icons = isAdeming ? {
     icon: '/favicon.svg',
@@ -354,7 +365,7 @@ export default async function RootLayout({
   
   const htmlClass = `${isAdeming ? cormorant.className : raleway.className} ${inter.className} ${cormorant.variable} theme-${isAdeming ? 'ademing' : market.theme} ${raleway.variable}`;
   const bodyClass = cn(
-    "pb-24 md:pb-0 touch-manipulation va-main-layout",
+    "pb-[calc(6rem+env(safe-area-inset-bottom))] md:pb-0 touch-manipulation va-main-layout overflow-x-hidden",
     !isAdeming && "pt-[80px] md:pt-[110px]",
     isAdeming && "bg-background text-foreground"
   );
@@ -400,17 +411,14 @@ export default async function RootLayout({
   const isSpecialJourney = ['ADEMING', 'PORTFOLIO', 'ARTIST'].includes(market.market_code);
   const isStudioJourney = ['STUDIO', 'ACADEMY'].includes(market.market_code);
   
-  const isUnderConstruction = headersList.get('x-voices-under-construction') === 'true' || 
-    pathname === '/under-construction' ||
-    pathname === '/under-construction/';
-  
   const isYoussefJourney = pathname.includes('/artist/youssef') || market.market_code === 'ARTIST';
   
   const isArtistJourney = market.market_code === 'ARTIST' || pathname.includes('/artist/') || pathname.includes('/voice/');
 
-  const showVoicy = !isArtistJourney && !isUnderConstruction && market.market_code !== 'ADEMING';
-  const showTopBar = !isArtistJourney && !isUnderConstruction && market.market_code !== 'ADEMING' && market.market_code !== 'PORTFOLIO';
-  const showGlobalNav = !isUnderConstruction && market.market_code !== 'ADEMING' && market.market_code !== 'PORTFOLIO';
+  // Chat zichtbaar: overal behalve Artist, Ademing. Bij open DevTools rechts kan het bolletje bedekt zijn (fixed right).
+  const showVoicy = !isArtistJourney && market.market_code !== 'ADEMING';
+  const showTopBar = !isArtistJourney && market.market_code !== 'ADEMING' && market.market_code !== 'PORTFOLIO';
+  const showGlobalNav = market.market_code !== 'ADEMING' && market.market_code !== 'PORTFOLIO';
   const schemaLanguages = Array.from(
     new Set((market.supported_languages || [market.primary_language]).map((l: string) => localeToBcp47(l)))
   );
@@ -429,32 +437,6 @@ export default async function RootLayout({
       "availableLanguage": schemaLanguages
     }
   };
-
-  // UNDER CONSTRUCTION MODE: Minimalistische layout zonder navigatie/footer/voicy
-  if (isUnderConstruction) {
-    return (
-      <html lang={htmlLang} className={htmlClass} suppressHydrationWarning>
-      <body className={bodyClass}>
-        <Providers 
-          lang={lang} 
-          market={market} 
-          initialTranslations={studioTranslations} 
-          initialJourney={initialJourney} 
-          initialUsage={initialUsage}
-          handshakeContext={handshakeContext}
-          handshakeLanguages={handshakeLanguages}
-        >
-          <Suspense fallback={null}>
-            <SonicDNAHandler />
-          </Suspense>
-          <PageWrapperInstrument>
-            {children}
-          </PageWrapperInstrument>
-        </Providers>
-      </body>
-    </html>
-    );
-  }
 
   return (
     <html lang={htmlLang} className={htmlClass} suppressHydrationWarning>
@@ -516,9 +498,15 @@ export default async function RootLayout({
                       JOHFRAH<span className="text-primary">.</span>
                     </Link>
                     <div className="flex gap-8 items-center text-[13px] font-bold tracking-[0.2em] uppercase text-va-black/40">
-                      <Link href="/portfolio" className="hover:text-primary transition-colors">Portfolio</Link>
-                      <Link href="/tarieven" className="hover:text-primary transition-colors">Tarieven</Link>
-                      <Link href="/contact" className="hover:text-primary transition-colors">Contact</Link>
+                      <Link href="/portfolio" className="hover:text-primary transition-colors">
+                        <VoiceglotText translationKey="nav.portfolio.link_portfolio" defaultText="Portfolio" />
+                      </Link>
+                      <Link href="/tarieven" className="hover:text-primary transition-colors">
+                        <VoiceglotText translationKey="nav.portfolio.link_rates" defaultText="Tarieven" />
+                      </Link>
+                      <Link href="/contact" className="hover:text-primary transition-colors">
+                        <VoiceglotText translationKey="nav.portfolio.link_contact" defaultText="Contact" />
+                      </Link>
                     </div>
                   </ContainerInstrument>
                 </ContainerInstrument>
@@ -533,7 +521,14 @@ export default async function RootLayout({
                 </SafeErrorGuard>
               </ContainerInstrument>
               <CookieBanner />
-              <SafeErrorGuard name="Footer" fallback={<div className="py-12 bg-va-off-white border-t border-black/5 text-center text-[11px] text-va-black/20 uppercase tracking-widest">Voices Footer Safe-Mode</div>}>
+              <SafeErrorGuard
+                name="Footer"
+                fallback={
+                  <div className="py-12 bg-va-off-white border-t border-black/5 text-center text-[11px] text-va-black/20 uppercase tracking-widest">
+                    <VoiceglotText translationKey="footer.safe_mode" defaultText="Voices Footer Safe-Mode" />
+                  </div>
+                }
+              >
                 {market.market_code !== 'ADEMING' && market.market_code !== 'PORTFOLIO' && <FooterWrapper />}
                 
                 {/* 🎭 PORTFOLIO WORLD: Custom Footer */}
@@ -544,9 +539,15 @@ export default async function RootLayout({
                         JOHFRAH<span className="text-primary">.</span>
                       </div>
                       <div className="flex gap-12 text-[11px] font-bold tracking-[0.3em] uppercase text-white/40">
-                        <Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link>
-                        <Link href="/terms" className="hover:text-white transition-colors">Terms</Link>
-                        <Link href="/contact" className="hover:text-white transition-colors">Contact</Link>
+                        <Link href="/privacy" className="hover:text-white transition-colors">
+                          <VoiceglotText translationKey="footer.portfolio.privacy" defaultText="Privacy" />
+                        </Link>
+                        <Link href="/terms" className="hover:text-white transition-colors">
+                          <VoiceglotText translationKey="footer.portfolio.terms" defaultText="Terms" />
+                        </Link>
+                        <Link href="/contact" className="hover:text-white transition-colors">
+                          <VoiceglotText translationKey="footer.portfolio.contact" defaultText="Contact" />
+                        </Link>
                       </div>
                       <div className="text-[11px] font-bold tracking-[0.3em] uppercase text-white/20">
                         © 2026 Pure Excellence

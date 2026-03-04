@@ -503,7 +503,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
       const data = await res.json();
       if (res.ok) {
         setLoginStatus('success');
-        setLoginMessage(t('nav.login.check_inbox', 'Check je inbox!'));
+        setLoginMessage(t('nav.login.check_mailbox_simple', 'Check je mailbox.'));
         playClick('success');
       } else {
         setLoginStatus('error');
@@ -1214,10 +1214,13 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
                 </ContainerInstrument>
                 <ContainerInstrument plain className="px-3">
                   <HeadingInstrument level={4} className="text-base font-light tracking-tight mb-0.5 ">
-                    <VoiceglotText  translationKey="nav.welcome_title" defaultText="Welkom bij Voices" />
+                    <VoiceglotText translationKey="nav.login.title_simple" defaultText="Inloggen" />
                   </HeadingInstrument>
                   <TextInstrument className="text-[11px] text-va-black/40 font-light leading-snug">
-                    <VoiceglotText  translationKey="nav.welcome_text" defaultText="Log in om je favoriete stemmen op te slaan en bestellingen te beheren." />
+                    <VoiceglotText
+                      translationKey="nav.login.simple_intro"
+                      defaultText="Inloggen? Vul je e-mailadres in en klik op Verstuur."
+                    />
                   </TextInstrument>
                 </ContainerInstrument>
                 
@@ -1229,10 +1232,9 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
                         {loginMessage}
                       </TextInstrument>
                       <TextInstrument className="text-[10px] text-green-600/60 mt-1">
-                        <VoiceglotText 
-                          translationKey="nav.login.link_sent_to_v2" 
-                          defaultText="Link verstuurd naar {email}" 
-                          values={{ email: loginEmail }}
+                        <VoiceglotText
+                          translationKey="nav.login.mailbox_instruction_simple"
+                          defaultText="Je ontvangt een link om automatisch in te loggen. Klik op die link."
                         />
                       </TextInstrument>
                     </ContainerInstrument>
@@ -1267,7 +1269,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
                           <Loader2 size={18} className="animate-spin" />
                         ) : (
                           <>
-                            <VoiceglotText translationKey="nav.login_magic_cta" defaultText="Stuur Magic Link" />
+                            <VoiceglotText translationKey="nav.login.send_simple" defaultText="Verstuur" />
                             <ArrowRight size={18} strokeWidth={2} />
                           </>
                         )}

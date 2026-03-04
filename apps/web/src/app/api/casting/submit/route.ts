@@ -18,6 +18,9 @@ import { nanoid } from 'nanoid';
 export async function POST(request: NextRequest) {
   try {
     const supabase = createClient();
+    if (!supabase) {
+      return NextResponse.json({ success: false, error: 'Supabase client unavailable' }, { status: 503 });
+    }
     const body = await request.json();
     const { 
       projectName, 
@@ -66,7 +69,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 2. Maak een unieke sessie hash aan voor de Pitch/Casting sessie
-    const sessionHash = nanoid(12);
+    const sessionHash = nanoid(12).toLowerCase();
 
     // 3. Dropbox Map aanmaken (Chris-Protocol: Automatisatie)
     const dropbox = DropboxService.getInstance();
@@ -170,7 +173,7 @@ export async function POST(request: NextRequest) {
         </div>
       `,
       buttonText: 'Open Collaborative Studio',
-      buttonUrl: `${siteUrl}/pitch/${sessionHash}`,
+      buttonUrl: `${siteUrl}/proefopname/${sessionHash}`,
       host: host
     });
 

@@ -1,9 +1,9 @@
 import { db } from '@/lib/system/voices-config';
-import { castingLists, castingListItems, actors } from '@/lib/system/voices-config';
+import { castingLists, castingListItems, actors, users } from '@/lib/system/voices-config';
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth/api-auth';
 import { nanoid } from 'nanoid';
-import { or, ilike, inArray } from 'drizzle-orm';
+import { or, ilike, eq } from 'drizzle-orm';
 
 /**
  * 🚀 ADMIN QUICK LINK API (2026)
@@ -27,7 +27,9 @@ export async function POST(request: NextRequest) {
           where: or(...names.map(n => ilike(actors.first_name, `%${n}%`))),
           columns: { id: true }
         });
-        finalActorIds = [...new Set([...finalActorIds, ...foundActors.map(a => a.id)])];
+        finalActorIds = Array.from(
+          new Set<number>([...finalActorIds, ...foundActors.map((actor: { id: number }) => actor.id)])
+        );
       }
     }
 
@@ -35,18 +37,30 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No actors found or selected' }, { status: 400 });
     }
 
-    const sessionHash = nanoid(12);
+    const sessionHash = nanoid(12).toLowerCase();
+    const adminEmail = auth.user?.email || null;
+
+    let adminUserId: number | null = null;
+    if (adminEmail) {
+      const [adminUser] = await db
+        .select({ id: users.id })
+        .from(users)
+        .where(eq(users.email, adminEmail))
+        .limit(1);
+      adminUserId = adminUser?.id ?? null;
+    }
 
     // 1. Maak de lijst aan
     const [newList] = await db.insert(castingLists).values({
+      user_id: adminUserId,
       name: `${projectName} - ${new Date().toLocaleDateString('nl-BE')}`,
       hash: sessionHash,
       is_public: true, // Admin links zijn direct deelbaar
       settings: {
         isAdminGenerated: true,
-        createdAt: new Date()
-      },
-      createdAt: new Date()
+        createdAt: new Date().toISOString(),
+        createdBy: adminEmail
+      }
     }).returning();
 
     // 2. Koppel de stemmen

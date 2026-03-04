@@ -254,8 +254,8 @@ export default function CartPageClient() {
                     translationKey={isStudioJourney ? "cart.studio.info.desc" : "cart.info.desc"}
                     defaultText={
                       isStudioJourney
-                        ? "Na afronden ontvang je direct de praktische workshopinfo en bevestiging per e-mail."
-                        : "Zodra je de bestelling afrondt, ontvangen de stemacteurs direct je briefing. De meeste opnames worden binnen 24 uur geleverd."
+                        ? "Per workshop-item zie je hier deelnemer, editie, datum en locatie voordat je afrekent."
+                        : "Per stem-item zie je hier de exacte leverdatum, rechten en mediagebruik op basis van die specifieke stem."
                     }
                   />
                 </p>

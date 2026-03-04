@@ -18,6 +18,13 @@ interface WorkshopHeroIslandProps {
     expert_note?: string;
     featured_image?: { file_path: string; alt_text?: string } | null;
     video?: { id: number; file_path: string } | null;
+    subtitle_tracks?: Array<{
+      src_lang?: string;
+      srcLang?: string;
+      label?: string;
+      src?: string | null;
+      data?: Array<{ start: number; end: number; text: string }> | null;
+    }> | null;
     subtitle_data?: { lang: string; label: string; items: Array<{ start: number; end: number; text: string }> } | null;
     taxonomy?: { type?: string; category?: string };
     upcoming_editions?: Array<{
@@ -41,12 +48,30 @@ export const WorkshopHeroIsland: React.FC<WorkshopHeroIslandProps> = ({ workshop
   const router = useVoicesRouter();
   const { addItem, setJourney, updateCustomer } = useCheckout();
   const [showParticipantForm, setShowParticipantForm] = useState(false);
-  const videoPath = workshop.video?.file_path || workshop.featured_image?.file_path;
-  const hasVideo = !!workshop.video?.file_path;
+  const storageBase = "https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices";
+  const videoPath = workshop.video?.file_path || null;
+  const videoUrl = videoPath ? `${storageBase}/${videoPath}` : null;
+  const hasVideo = Boolean(videoUrl);
   const nextEdition = workshop.upcoming_editions?.[0];
   const hasEdition = !!nextEdition?.id;
   const price = nextEdition?.price || workshop.price || 0;
   const priceValue = typeof price === 'string' ? parseFloat(price) : price;
+  const subtitleTracks = Array.isArray(workshop.subtitle_tracks) && workshop.subtitle_tracks.length > 0
+    ? workshop.subtitle_tracks
+        .map((track) => ({
+          srcLang: track.src_lang || track.srcLang || 'nl-BE',
+          label: track.label || 'Nederlands',
+          src: track.src || undefined,
+          data: Array.isArray(track.data) ? track.data : undefined
+        }))
+        .filter((track) => Boolean(track.src) || (Array.isArray(track.data) && track.data.length > 0))
+    : (workshop.subtitle_data
+        ? [{
+            srcLang: workshop.subtitle_data.lang || 'nl-BE',
+            label: workshop.subtitle_data.label || 'Nederlands',
+            data: workshop.subtitle_data.items || []
+          }]
+        : []);
 
   const handleBookClick = () => {
     playClick('pro');
@@ -63,7 +88,7 @@ export const WorkshopHeroIsland: React.FC<WorkshopHeroIslandProps> = ({ workshop
     age: string; profession: string; experience: string;
   }) => {
     const imageUrl = workshop.featured_image?.file_path
-      ? `https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices/${workshop.featured_image.file_path}`
+      ? `${storageBase}/${workshop.featured_image.file_path}`
       : null;
 
     const workshopItem = {
@@ -103,17 +128,19 @@ export const WorkshopHeroIsland: React.FC<WorkshopHeroIslandProps> = ({ workshop
           <ContainerInstrument plain className="lg:col-span-5 relative group flex justify-center">
             <ContainerInstrument plain className="absolute -inset-4 bg-primary/10 rounded-[30px] blur-2xl opacity-0 group-hover:opacity-100 transition-all duration-1000" />
             <ContainerInstrument plain className="relative z-10 w-full max-w-[360px] aspect-[9/16]">
-              <VideoPlayer 
-                src={`https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices/${videoPath}`}
-                className="w-full h-full object-cover rounded-[24px] shadow-2xl border border-white/10"
-                autoPlay={true}
-                muted={true}
-                subtitles={workshop.subtitle_data ? [{
-                  srcLang: workshop.subtitle_data.lang || 'nl',
-                  label: workshop.subtitle_data.label || 'Nederlands',
-                  data: workshop.subtitle_data.items || []
-                }] : []}
-              />
+              {hasVideo ? (
+                <VideoPlayer 
+                  src={videoUrl}
+                  className="w-full h-full object-cover rounded-[24px] shadow-2xl border border-white/10"
+                  autoPlay={true}
+                  muted={true}
+                  subtitles={subtitleTracks}
+                />
+              ) : (
+                <ContainerInstrument plain className="w-full h-full rounded-[24px] border border-white/10 bg-white/10 backdrop-blur-sm flex items-center justify-center">
+                  <TextInstrument as="span" className="text-white/80 text-xs tracking-wide">Workshopvideo niet beschikbaar</TextInstrument>
+                </ContainerInstrument>
+              )}
             </ContainerInstrument>
           </ContainerInstrument>
 

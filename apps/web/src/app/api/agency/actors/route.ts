@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { AgencyDataBridge } from '@/lib/bridges/agency-bridge';
+import { getActors } from '@/lib/services/api-server';
 
 export const runtime = 'nodejs';
 
@@ -10,9 +10,10 @@ export async function GET(request: NextRequest) {
   searchParams.forEach((value, key) => {
     params[key] = value;
   });
+  const lang = params.lang || 'nl-BE';
 
   try {
-    const results = await AgencyDataBridge.getActors(params);
+    const results = await getActors(params, lang);
     
     //  EMERGENCY CLEANUP: Als de user vraagt om Kirsten, en er zijn duplicaten, fix ze in de DB
     if (params.search && params.search.toLowerCase().includes('kirsten')) {

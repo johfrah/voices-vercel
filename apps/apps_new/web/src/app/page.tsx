@@ -314,9 +314,9 @@ function HomeContent({
         };
       case 'video':
         return {
-          titlePart1: t('home.hero.video.title_part1', "Geef jouw"),
-          titleHighlight: t('home.hero.video.title_highlight', "voice-over"),
-          titlePart2: t('home.hero.video.title_part2', "een eigen stem."),
+          titlePart1: t('home.hero.video.title_part1', "De mooiste"),
+          titleHighlight: t('home.hero.video.title_highlight', "voice-overs"),
+          titlePart2: t('home.hero.video.title_part2', "voor jouw project."),
           subtitle: t('home.hero.video.subtitle', "Bedrijfsfilms, explanimations of documentaires. Vind de perfecte match voor jouw visuele verhaal."),
           usps: [
             { key: 'video.timing', text: t('home.usp.video.timing', 'perfecte timing & flow'), icon: 'clock' },

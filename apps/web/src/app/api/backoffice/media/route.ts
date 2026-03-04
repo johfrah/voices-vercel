@@ -19,63 +19,59 @@ export async function GET(request: NextRequest) {
     const filterOrphans = searchParams.get('filter') === 'orphans';
     const actorId = searchParams.get('actorId');
 
-    //  RELATION TRACKING LOGIC
-    const [actorsData, demosData, articlesData, ademingData] = await Promise.all([
-      db.select({ id: actors.id, name: actors.first_name, photo_id: actors.photo_id, logo_id: actors.logo_id, youtubeUrl: actors.youtubeUrl }).from(actors),
-      db.select({ id: actorDemos.id, name: actorDemos.name, mediaId: actorDemos.mediaId, actorId: actorDemos.actorId }).from(actorDemos),
-      db.select({ id: contentArticles.id, title: contentArticles.title, featuredImageId: contentArticles.featuredImageId }).from(contentArticles),
-      db.select({ id: ademingTracks.id, title: ademingTracks.title, mediaId: ademingTracks.mediaId }).from(ademingTracks)
-    ]);
-
-    const relationsMap: Record<number, { type: string, name: string }[]> = {};
-
-    actorsData.forEach(a => {
-      if (a.photo_id) {
-        if (!relationsMap[a.photo_id]) relationsMap[a.photo_id] = [];
-        relationsMap[a.photo_id].push({ type: 'Actor Photo', name: a.name });
-      }
-      if (a.logo_id) {
-        if (!relationsMap[a.logo_id]) relationsMap[a.logo_id] = [];
-        relationsMap[a.logo_id].push({ type: 'Actor Logo', name: a.name });
-      }
-    });
-
-    demosData.forEach(d => {
-      if (d.mediaId) {
-        if (!relationsMap[d.mediaId]) relationsMap[d.mediaId] = [];
-        relationsMap[d.mediaId].push({ type: 'Voice Demo', name: d.name });
-      }
-    });
-
-    articlesData.forEach(art => {
-      if (art.featuredImageId) {
-        if (!relationsMap[art.featuredImageId]) relationsMap[art.featuredImageId] = [];
-        relationsMap[art.featuredImageId].push({ type: 'Article Image', name: art.title });
-      }
-    });
-
-    ademingData.forEach(track => {
-      if (track.mediaId) {
-        if (!relationsMap[track.mediaId]) relationsMap[track.mediaId] = [];
-        relationsMap[track.mediaId].push({ type: 'Ademing Track', name: track.title });
-      }
-    });
-
     //  ACTOR-SPECIFIC FILTERING
     if (actorId) {
       const id = parseInt(actorId);
-      const actor = actorsData.find(a => a.id === id);
-      const actorDemosList = demosData.filter(d => d.mediaId && demosData.find(dd => dd.id === d.id && dd.actorId === id));
+      const [actor] = await db
+        .select({
+          id: actors.id,
+          name: actors.first_name,
+          photo_id: actors.photo_id,
+          logo_id: actors.logo_id,
+          youtubeUrl: actors.youtubeUrl,
+        })
+        .from(actors)
+        .where(eq(actors.id, id))
+        .limit(1);
+
+      const actorDemosList = await db
+        .select({ name: actorDemos.name, mediaId: actorDemos.mediaId })
+        .from(actorDemos)
+        .where(and(eq(actorDemos.actorId, id), sql`${actorDemos.mediaId} IS NOT NULL`));
       
       // We halen alle media IDs op die bij deze acteur horen
       const linkedMediaIds = new Set<number>();
       if (actor?.photo_id) linkedMediaIds.add(actor.photo_id);
       if (actor?.logo_id) linkedMediaIds.add(actor.logo_id);
-      demosData.filter(d => d.actorId === id && d.mediaId).forEach(d => linkedMediaIds.add(d.mediaId!));
+      actorDemosList.forEach(d => {
+        if (d.mediaId) linkedMediaIds.add(d.mediaId);
+      });
 
       if (linkedMediaIds.size === 0) return NextResponse.json({ results: [], youtubeUrl: actor?.youtubeUrl });
 
-      const results = await db.select().from(media).where(inArray(media.id, Array.from(linkedMediaIds)));
+      const results = await db
+        .select()
+        .from(media)
+        .where(inArray(media.id, Array.from(linkedMediaIds)))
+        .orderBy(desc(media.createdAt))
+        .limit(100);
+
+      const relationsMap: Record<number, { type: string, name: string }[]> = {};
+      if (actor?.photo_id) {
+        if (!relationsMap[actor.photo_id]) relationsMap[actor.photo_id] = [];
+        relationsMap[actor.photo_id].push({ type: 'Actor Photo', name: actor.name });
+      }
+      if (actor?.logo_id) {
+        if (!relationsMap[actor.logo_id]) relationsMap[actor.logo_id] = [];
+        relationsMap[actor.logo_id].push({ type: 'Actor Logo', name: actor.name });
+      }
+      actorDemosList.forEach((d) => {
+        if (d.mediaId) {
+          if (!relationsMap[d.mediaId]) relationsMap[d.mediaId] = [];
+          relationsMap[d.mediaId].push({ type: 'Voice Demo', name: d.name });
+        }
+      });
+
       return NextResponse.json({
         results: results.map(item => ({
           ...item,
@@ -86,8 +82,7 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    let query = db.select().from(media);
-    const conditions = [];
+    const conditions = [] as any[];
 
     if (search) {
       conditions.push(or(
@@ -103,13 +98,24 @@ export async function GET(request: NextRequest) {
     }
 
     if (filterOrphans) {
-      const usedIds = Object.keys(relationsMap).map(id => parseInt(id));
-      if (usedIds.length > 0) {
-        conditions.push(sql`${media.id} NOT IN (${sql.join(usedIds, sql`, `)})`);
-      }
+      conditions.push(
+        sql`NOT EXISTS (SELECT 1 FROM actors a WHERE a.photo_id = ${media.id} OR a.logo_id = ${media.id})`
+      );
+      conditions.push(
+        sql`NOT EXISTS (SELECT 1 FROM actor_demos d WHERE d.media_id = ${media.id})`
+      );
+      conditions.push(
+        sql`NOT EXISTS (SELECT 1 FROM content_articles ca WHERE ca.featured_image_id = ${media.id})`
+      );
+      conditions.push(
+        sql`NOT EXISTS (SELECT 1 FROM ademing_tracks at WHERE at.media_id = ${media.id})`
+      );
     }
 
-    let finalQuery = query.where(and(...(conditions as any[])));
+    let finalQuery = db.select().from(media) as any;
+    if (conditions.length > 0) {
+      finalQuery = finalQuery.where(and(...conditions));
+    }
 
     if (sort === 'oldest') {
       finalQuery = finalQuery.orderBy(asc(media.createdAt)) as any;
@@ -122,7 +128,60 @@ export async function GET(request: NextRequest) {
     }
 
     const results = await (finalQuery as any).limit(100);
-    
+
+    if (results.length === 0) {
+      return NextResponse.json({ results: [] });
+    }
+
+    const mediaIds = results.map((item: any) => item.id);
+    const [actorsData, demosData, articlesData, ademingData] = await Promise.all([
+      db
+        .select({ name: actors.first_name, photo_id: actors.photo_id, logo_id: actors.logo_id })
+        .from(actors)
+        .where(or(inArray(actors.photo_id, mediaIds), inArray(actors.logo_id, mediaIds))),
+      db
+        .select({ name: actorDemos.name, mediaId: actorDemos.mediaId })
+        .from(actorDemos)
+        .where(inArray(actorDemos.mediaId, mediaIds)),
+      db
+        .select({ title: contentArticles.title, featuredImageId: contentArticles.featuredImageId })
+        .from(contentArticles)
+        .where(inArray(contentArticles.featuredImageId, mediaIds)),
+      db
+        .select({ title: ademingTracks.title, mediaId: ademingTracks.mediaId })
+        .from(ademingTracks)
+        .where(inArray(ademingTracks.mediaId, mediaIds)),
+    ]);
+
+    const relationsMap: Record<number, { type: string, name: string }[]> = {};
+    actorsData.forEach((a) => {
+      if (a.photo_id) {
+        if (!relationsMap[a.photo_id]) relationsMap[a.photo_id] = [];
+        relationsMap[a.photo_id].push({ type: 'Actor Photo', name: a.name });
+      }
+      if (a.logo_id) {
+        if (!relationsMap[a.logo_id]) relationsMap[a.logo_id] = [];
+        relationsMap[a.logo_id].push({ type: 'Actor Logo', name: a.name });
+      }
+    });
+    demosData.forEach((d) => {
+      if (d.mediaId) {
+        if (!relationsMap[d.mediaId]) relationsMap[d.mediaId] = [];
+        relationsMap[d.mediaId].push({ type: 'Voice Demo', name: d.name });
+      }
+    });
+    articlesData.forEach((article) => {
+      if (article.featuredImageId) {
+        if (!relationsMap[article.featuredImageId]) relationsMap[article.featuredImageId] = [];
+        relationsMap[article.featuredImageId].push({ type: 'Article Image', name: article.title });
+      }
+    });
+    ademingData.forEach((track) => {
+      if (track.mediaId) {
+        if (!relationsMap[track.mediaId]) relationsMap[track.mediaId] = [];
+        relationsMap[track.mediaId].push({ type: 'Ademing Track', name: track.title });
+      }
+    });
     const enrichedResults = results.map((item: any) => ({
       ...item,
       relations: relationsMap[item.id] || [],

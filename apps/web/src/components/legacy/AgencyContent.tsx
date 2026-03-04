@@ -17,6 +17,7 @@ import { ChevronRight } from 'lucide-react';
 import { Suspense, useEffect, useMemo, useState } from 'react';
 import { SlimmeKassa } from '@/lib/engines/pricing-engine';
 import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
+import { buildCanonicalActorPath } from "@/lib/system/slug";
 import { useRouter } from 'next/navigation';
 import { calculateDeliveryDate } from '@/lib/utils/delivery-logic';
 import { VoiceFilterEngine } from '@/lib/engines/voice-filter-engine';
@@ -137,16 +138,12 @@ export function AgencyContent({ mappedActors, filters }: { mappedActors: any[], 
   // ... rest of the file ...
   useEffect(() => {
     if (state.currentStep === 'script' && checkoutState.selectedActor) {
-      const slug = checkoutState.selectedActor.slug || checkoutState.selectedActor.first_name?.toLowerCase();
-      const journeyMap: Record<string, string> = {
-        'telefonie': 'telefoon',
-        'unpaid': 'video',
-        'commercial': 'commercial'
-      };
-      const journey = journeyMap[checkoutState.usage] || 'video';
+      const targetPath = buildCanonicalActorPath(
+        checkoutState.selectedActor.slug || checkoutState.selectedActor.first_name,
+        checkoutState.selectedActor.display_name || checkoutState.selectedActor.first_name
+      );
       
       const currentPath = typeof window !== 'undefined' ? window.location.pathname : '';
-      const targetPath = `/${slug}/${journey}`;
       
       if (currentPath !== targetPath && !currentPath.includes('/checkout')) {
         //  CHRIS-PROTOCOL: Only replace if different to avoid redundant history entries
@@ -171,17 +168,13 @@ export function AgencyContent({ mappedActors, filters }: { mappedActors: any[], 
     //  BOB-METHODE: SPA-navigatie met URL-update
     // We gebruiken shallow: true (indien mogelijk) of we bouwen de URL handmatig 
     // om de snelheid van een SPA te behouden terwijl de URL wel verandert.
-    const journeyMap: Record<string, string> = {
-      'telefonie': 'telefoon',
-      'unpaid': 'video',
-      'commercial': 'commercial'
-    };
-    const journey = journeyMap[checkoutState.usage] || 'video';
-    const slug = actor.slug || actor.first_name?.toLowerCase();
+    const actorPath = buildCanonicalActorPath(
+      actor.slug || actor.first_name,
+      actor.display_name || actor.first_name
+    );
     
-    // We navigeren naar de nieuwe URL, maar Next.js handelt dit af als een SPA transitie
-    // CHRIS-PROTOCOL: Ensure we use the correct hierarchy /[slug]/[journey]
-    router.push(`/${slug}/${journey}`, { scroll: false });
+    // We navigeren naar de canonieke actor-URL zodat klik en directe URL identiek renderen.
+    router.push(actorPath, { scroll: false });
     
     // Scroll naar boven van de sectie voor de focus
     setTimeout(() => {

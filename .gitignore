@@ -45,6 +45,7 @@ next-env.d.ts
 !apps/**/*.tsx
 !packages/**/*.ts
 !packages/**/*.tsx
+!scripts/pre-vercel-check.ts
 *.json
 !package.json
 !package-lock.json

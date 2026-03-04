@@ -569,7 +569,8 @@ export const orders = pgTable('orders', {
   internal_notes: text('internal_notes'), // Privé admin notities over de order
   isPrivate: boolean('is_private').default(false), // Voor gevoelige of handmatige orders
   is_manually_edited: boolean('is_manually_edited').default(false), // 🛡️ NUCLEAR LOCK MANDATE
-  
+  proefopname_hash: text('proefopname_hash').unique(), // 🎙️ Link /proefopname/{hash} (doc 23)
+
   // 🛡️ KELLY'S INTEGRITY (B2B & Fraud)
   viesValidatedAt: timestamp('vies_validated_at'),
   viesCountryCode: text('vies_country_code'),
@@ -903,6 +904,12 @@ export const chatConversations = pgTable('chat_conversations', {
   iapContext: jsonb('iap_context'),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
+}, (table) => {
+  return {
+    statusUpdatedAtIdx: index('chat_conversations_status_updated_at_idx').on(table.status, table.updatedAt),
+    userUpdatedAtIdx: index('chat_conversations_user_id_updated_at_idx').on(table.user_id, table.updatedAt),
+    updatedAtIdx: index('chat_conversations_updated_at_idx').on(table.updatedAt),
+  };
 });
 
 export const chatMessages = pgTable('chat_messages', {
@@ -916,6 +923,11 @@ export const chatMessages = pgTable('chat_messages', {
   isAiRecommendation: boolean('is_ai_recommendation').default(false),
   readAt: timestamp('read_at'),
   createdAt: timestamp('created_at').defaultNow(),
+}, (table) => {
+  return {
+    conversationIdIdx: index('chat_messages_conversation_id_idx').on(table.conversationId),
+    conversationIdIdIdx: index('chat_messages_conversation_id_id_idx').on(table.conversationId, table.id),
+  };
 });
 
 export const chatPushSubscriptions = pgTable('chat_push_subscriptions', {

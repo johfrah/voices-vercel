@@ -1,12 +1,12 @@
 "use client";
 
 import { BentoCard } from '@/components/ui/BentoGrid';
-import { ButtonInstrument, ContainerInstrument, FormInstrument, HeadingInstrument, InputInstrument, TextInstrument, LabelInstrument } from '@/components/ui/LayoutInstruments';
+import { ButtonInstrument, ContainerInstrument, FormInstrument, HeadingInstrument, InputInstrument, TextInstrument } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { createClient } from '@/utils/supabase/client';
-import { ArrowRight, Loader2, Lock, Mail, ShieldCheck, Star } from 'lucide-react';
+import { ArrowRight, Loader2, Mail, Star } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 
@@ -19,13 +19,10 @@ import React, { useEffect, useState } from 'react';
  * - TEXT ZERO: Geen hardcoded strings.
  */
 export function LoginPageClient() {
-  const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
-  const { resetPassword } = useAuth();
   const { t } = useTranslation();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -94,21 +91,35 @@ export function LoginPageClient() {
     }
 
     try {
-      // CHRIS-PROTOCOL: Gebruik de canonieke URL met trailing slash om 308 redirects te voorkomen.
-      // Dit elimineert 'Failed to fetch' errors veroorzaakt door browser-beveiliging tijdens redirects.
-      
-      // NUCLEAR SAFETY: Voeg een controller toe voor een harde timeout
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 20000); // Verhoogd naar 20 seconden voor mailserver stabiliteit
+      const sendMagicLinkRequest = async (withTimeout: boolean) => {
+        const controller = withTimeout ? new AbortController() : null;
+        const timeoutId = withTimeout
+          ? setTimeout(() => controller?.abort(), 20000)
+          : null;
 
-      const response = await fetch('/api/auth/send-magic-link/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, redirect }),
-        signal: controller.signal
-      });
+        try {
+          return await fetch('/api/auth/send-magic-link/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, redirect }),
+            ...(controller ? { signal: controller.signal } : {}),
+          });
+        } finally {
+          if (timeoutId) clearTimeout(timeoutId);
+        }
+      };
 
-      clearTimeout(timeoutId);
+      let response: Response;
+      try {
+        response = await sendMagicLinkRequest(true);
+      } catch (err: any) {
+        if (err?.name === 'AbortError') {
+          console.warn('[LoginPage] Primary magic-link request timed out, retrying once without abort signal.');
+          response = await sendMagicLinkRequest(false);
+        } else {
+          throw err;
+        }
+      }
 
       const result = await response.json();
 
@@ -124,7 +135,12 @@ export function LoginPageClient() {
         }
       } else {
         document.cookie = `voices_remembered_email=${encodeURIComponent(email)}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`;
-        setMessage(t('auth.login.success_message', 'Check je inbox! We hebben een magische inloglink gestuurd.'));
+        setMessage(
+          t(
+            'auth.login.success_message_simple',
+            'Check je mailbox. Je ontvangt een link om automatisch in te loggen. Klik op die link.'
+          )
+        );
       }
     } catch (err: any) {
       console.error('[LoginPage] Custom auth failed:', err);
@@ -149,19 +165,15 @@ export function LoginPageClient() {
       </ContainerInstrument>
 
       <ContainerInstrument className="w-full max-w-md relative z-10">
-        <ContainerInstrument className="text-center mb-12 space-y-8">
-          <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-white/50 backdrop-blur-sm rounded-full text-[13px] font-bold tracking-[0.2em] uppercase shadow-sm border border-gray-100/50 text-va-black/40">
-            <ShieldCheck strokeWidth={1.5} size={12} className="text-primary" /> <VoiceglotText  translationKey="auth.login.secure_access" defaultText="Secure Access" />
-          </ContainerInstrument>
-          <HeadingInstrument level={1} className="text-6xl md:text-8xl font-light tracking-tighter leading-[0.9] text-va-black">
-            <VoiceglotText  translationKey="auth.login.title_prefix" defaultText="Toegang tot" />
-            <br />
-            <span className="text-primary italic">
-              <VoiceglotText  translationKey="common.voices" defaultText="Voices" />
-            </span>
+        <ContainerInstrument className="text-center mb-12 space-y-6">
+          <HeadingInstrument level={1} className="text-5xl md:text-6xl font-light tracking-tighter leading-[0.95] text-va-black">
+            <VoiceglotText translationKey="auth.login.title_simple" defaultText="Inloggen" />
           </HeadingInstrument>
           <TextInstrument className="text-xl md:text-2xl font-light text-va-black/40 leading-tight tracking-tight mx-auto max-w-2xl">
-            <VoiceglotText  translationKey="auth.login.subtitle" defaultText="Vul je e-mailadres in voor een magische inloglink." />
+            <VoiceglotText
+              translationKey="auth.login.subtitle_simple"
+              defaultText="Inloggen? Vul je e-mailadres in en klik op Verstuur."
+            />
           </TextInstrument>
         </ContainerInstrument>
 
@@ -173,12 +185,12 @@ export function LoginPageClient() {
               </ContainerInstrument>
               <ContainerInstrument className="space-y-2">
                 <HeadingInstrument level={2} className="text-3xl font-light tracking-tighter">
-                  <VoiceglotText translationKey="auth.login.success.title" defaultText="Check je inbox!" />
+                  <VoiceglotText translationKey="auth.login.success.title_simple" defaultText="Check je mailbox." />
                 </HeadingInstrument>
                 <TextInstrument className="text-[15px] text-va-black/40 font-light leading-relaxed">
-                  <VoiceglotText 
-                    translationKey="auth.login.success.text" 
-                    defaultText={`${t('auth.login.success.text_prefix', "We hebben een magische inloglink gestuurd naar")} ${email}. ${t('auth.login.success.text_suffix', "Klik op de link in de e-mail om direct toegang te krijgen.")}`}
+                  <VoiceglotText
+                    translationKey="auth.login.success.text_simple"
+                    defaultText="Je ontvangt een link om automatisch in te loggen. Klik op die link in je mailbox."
                   />
                 </TextInstrument>
               </ContainerInstrument>
@@ -236,7 +248,7 @@ export function LoginPageClient() {
                   <>
                     <ContainerInstrument className="flex items-center gap-3">
                       <span className="text-lg font-light tracking-widest uppercase">
-                        <VoiceglotText translationKey="auth.login.send_link" defaultText="Stuur Magische Link" />
+                        <VoiceglotText translationKey="auth.login.send_simple" defaultText="Verstuur" />
                       </span>
                       <ArrowRight strokeWidth={1.5} size={20} className="group-hover:translate-x-1 transition-transform" />
                     </ContainerInstrument>
@@ -246,7 +258,7 @@ export function LoginPageClient() {
               
               {!isLoading && (
                 <TextInstrument className="text-[12px] text-va-black/30 text-center font-light leading-relaxed px-4">
-                  <VoiceglotText  translationKey="auto.loginpageclient.je_ontvangt_een_eenm.b03532" defaultText="Je ontvangt binnen enkele seconden een eenmalige inloglink per e-mail." />
+                  <VoiceglotText translationKey="auth.login.no_password_needed" defaultText="Geen wachtwoord nodig." />
                 </TextInstrument>
               )}
             </ContainerInstrument>

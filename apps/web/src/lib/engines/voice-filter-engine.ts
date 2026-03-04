@@ -14,7 +14,6 @@
 
 import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
 import { Actor } from '@/types';
-import { SlimmeKassa, CommercialMediaType } from './pricing-engine';
 
 export interface FilterCriteria {
   journey?: 'telephony' | 'video' | 'commercial';
@@ -66,29 +65,16 @@ export class VoiceFilterEngine {
         });
       }
 
-      const mediaArray = Array.from(selectedMediaCodes) as CommercialMediaType[];
-      const country = criteria.country || 'BE';
-
       result = result.filter(actor => {
         // CHRIS-PROTOCOL: Behoud de geselecteerde acteur in de script-stap
         if (criteria.selectedActorId === actor.id && criteria.currentStep === 'script') {
           return true;
         }
 
-        // 🛡️ CHRIS-PROTOCOL: Strict Availability Filter (v2.14.740)
-        // We filteren stemmen weg die GEEN tarieven hebben voor de geselecteerde media.
-        // Als er geen media geselecteerd zijn, tonen we alle stemmen die 'online' (BSF) hebben.
-        const effectiveMedia = mediaArray.length > 0 ? mediaArray : ['online' as CommercialMediaType];
-        
-        // 🛡️ CHRIS-PROTOCOL: Force availability for specific actors if needed (v2.15.089)
-        // Sommige acteurs hebben hun tarieven in legacy velden staan die SlimmeKassa niet altijd pakt.
-        const status = SlimmeKassa.getAvailabilityStatus(actor, effectiveMedia, country);
-        
-        if (status === 'unavailable') {
-          console.log(`[VoiceFilter] Actor ${actor.id} (${actor.display_name}) is unavailable for:`, { effectiveMedia, country });
-        }
-
-        return status === 'available';
+        // 🛡️ CHRIS-PROTOCOL: Quote-First Commercial Visibility (v2.28.10)
+        // Commercial country/media keuze bepaalt pricing, niet zichtbaarheid in de grid.
+        // Als een stem geen direct tarief heeft, blijft die zichtbaar en valt checkout terug op quote-only.
+        return true;
       });
     }
 
@@ -125,8 +111,9 @@ return actor.native_lang_id === effectiveLangId || actor.native_language_id === 
     }
 
     // 5. COUNTRY FILTERING (ID-First)
-    // 🛡️ CHRIS-PROTOCOL: Actors with null country_id are available in ALL countries (v2.28.1)
-    if (criteria.countryId != null) {
+    // 🛡️ COMMERCIAL-MANDATE: In commercial flow, country impacts pricing only (not visibility).
+    // Non-commercial flows keep strict country filtering.
+    if (criteria.countryId != null && criteria.journey !== 'commercial') {
       result = result.filter(actor => {
         const actorCountryId = actor.country_id || (actor as any).countryId;
         return actorCountryId == null || actorCountryId === criteria.countryId;

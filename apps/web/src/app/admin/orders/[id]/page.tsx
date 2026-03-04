@@ -23,13 +23,19 @@ import {
   CreditCard,
   Zap,
   Play,
-  ExternalLink
+  ExternalLink,
+  LayoutGrid,
+  ListChecks,
+  BarChart3,
+  History
 } from 'lucide-react';
 import Link from 'next/link';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import { format } from 'date-fns';
 import { nl } from 'date-fns/locale';
 import { useParams } from 'next/navigation';
+
+type DetailTab = 'overview' | 'production' | 'items' | 'finance' | 'timeline';
 
 export default function OrderDetailPage() {
   const { id } = useParams();
@@ -40,9 +46,14 @@ export default function OrderDetailPage() {
   const [actionBusy, setActionBusy] = useState<string | null>(null);
   const [actionMessage, setActionMessage] = useState<string | null>(null);
   const [itemBusyId, setItemBusyId] = useState<number | null>(null);
+  const [isBulkSaving, setIsBulkSaving] = useState(false);
   const [itemDrafts, setItemDrafts] = useState<
     Record<number, { deliveryStatus: string; payoutStatus: string; deliveryFileUrl: string; invoiceFileUrl: string }>
   >({});
+  const [selectedItems, setSelectedItems] = useState<Record<number, boolean>>({});
+  const [bulkDeliveryStatus, setBulkDeliveryStatus] = useState<string>('waiting');
+  const [bulkPayoutStatus, setBulkPayoutStatus] = useState<string>('pending');
+  const [activeTab, setActiveTab] = useState<DetailTab>('overview');
   const [selectedStatusCode, setSelectedStatusCode] = useState<string>('awaiting_payment');
   const statusCatalog = Array.isArray(order?.statusManager?.available) ? order.statusManager.available : [];
   const statusOptionsWithCurrent = statusCatalog.some((option: any) => option.code === selectedStatusCode)
@@ -98,6 +109,12 @@ export default function OrderDetailPage() {
       };
     });
     setItemDrafts(nextDrafts);
+
+    const nextSelections: Record<number, boolean> = {};
+    items.forEach((item: any) => {
+      nextSelections[item.id] = false;
+    });
+    setSelectedItems(nextSelections);
   }, [order]);
 
   useEffect(() => {
@@ -174,6 +191,26 @@ export default function OrderDetailPage() {
     }));
   };
 
+  const patchOrderItem = async (
+    itemId: number,
+    draft: { deliveryStatus: string; payoutStatus: string; deliveryFileUrl: string; invoiceFileUrl: string }
+  ) => {
+    const res = await fetch(`/api/admin/orders/${id}/items/${itemId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        delivery_status: draft.deliveryStatus,
+        payout_status: draft.payoutStatus,
+        delivery_file_url: draft.deliveryFileUrl || null,
+        invoice_file_url: draft.invoiceFileUrl || null,
+      }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error(data.error || `Item #${itemId} kon niet geüpdatet worden.`);
+    }
+  };
+
   const saveItem = async (itemId: number) => {
     const draft = itemDrafts[itemId];
     if (!draft) return;
@@ -181,21 +218,7 @@ export default function OrderDetailPage() {
     setItemBusyId(itemId);
     setActionMessage(null);
     try {
-      const res = await fetch(`/api/admin/orders/${id}/items/${itemId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          delivery_status: draft.deliveryStatus,
-          payout_status: draft.payoutStatus,
-          delivery_file_url: draft.deliveryFileUrl || null,
-          invoice_file_url: draft.invoiceFileUrl || null,
-        }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setActionMessage(data.error || `Item #${itemId} kon niet geüpdatet worden.`);
-        return;
-      }
+      await patchOrderItem(itemId, draft);
       logAction('order_item_update', { id, itemId });
       setActionMessage(`Item #${itemId} bijgewerkt.`);
       await fetchOrder();
@@ -207,6 +230,113 @@ export default function OrderDetailPage() {
       setIsUpdating(false);
     }
   };
+
+  const orderItems = useMemo(() => order?.production?.items || [], [order?.production?.items]);
+  const selectedItemIds = useMemo(
+    () => Object.entries(selectedItems).filter(([, isSelected]) => isSelected).map(([itemId]) => Number(itemId)),
+    [selectedItems]
+  );
+  const allItemsSelected = orderItems.length > 0 && selectedItemIds.length === orderItems.length;
+
+  const itemStats = useMemo(() => {
+    return orderItems.reduce(
+      (acc: { waiting: number; inReview: number; approved: number; delivered: number }, item: any) => {
+        const status = item.deliveryStatus || 'waiting';
+        if (status === 'in_review') acc.inReview += 1;
+        else if (status === 'approved') acc.approved += 1;
+        else if (status === 'delivered' || status === 'ready' || status === 'uploaded') acc.delivered += 1;
+        else acc.waiting += 1;
+        return acc;
+      },
+      { waiting: 0, inReview: 0, approved: 0, delivered: 0 }
+    );
+  }, [orderItems]);
+
+  const toggleItemSelection = (itemId: number) => {
+    setSelectedItems((prev) => ({ ...prev, [itemId]: !prev[itemId] }));
+  };
+
+  const toggleAllItemSelection = () => {
+    const shouldSelectAll = !allItemsSelected;
+    const next: Record<number, boolean> = {};
+    orderItems.forEach((item: any) => {
+      next[item.id] = shouldSelectAll;
+    });
+    setSelectedItems(next);
+  };
+
+  const applyBulkToDrafts = () => {
+    if (selectedItemIds.length === 0) {
+      setActionMessage('Selecteer eerst minstens één item.');
+      return;
+    }
+
+    setItemDrafts((prev) => {
+      const next = { ...prev };
+      selectedItemIds.forEach((itemId) => {
+        const current = next[itemId] || {
+          deliveryStatus: 'waiting',
+          payoutStatus: 'pending',
+          deliveryFileUrl: '',
+          invoiceFileUrl: '',
+        };
+        next[itemId] = {
+          ...current,
+          deliveryStatus: bulkDeliveryStatus,
+          payoutStatus: bulkPayoutStatus,
+        };
+      });
+      return next;
+    });
+
+    setActionMessage(`Bulk draft toegepast op ${selectedItemIds.length} item(s).`);
+  };
+
+  const saveBulkItems = async () => {
+    if (selectedItemIds.length === 0) {
+      setActionMessage('Selecteer eerst minstens één item.');
+      return;
+    }
+
+    setIsBulkSaving(true);
+    setIsUpdating(true);
+    setActionMessage(null);
+
+    const failedItemIds: number[] = [];
+
+    for (const itemId of selectedItemIds) {
+      const draft = itemDrafts[itemId];
+      if (!draft) {
+        failedItemIds.push(itemId);
+        continue;
+      }
+      try {
+        await patchOrderItem(itemId, draft);
+      } catch {
+        failedItemIds.push(itemId);
+      }
+    }
+
+    logAction('order_items_bulk_update', { id, count: selectedItemIds.length });
+
+    if (failedItemIds.length === 0) {
+      setActionMessage(`Alle ${selectedItemIds.length} item(s) succesvol bijgewerkt.`);
+    } else {
+      setActionMessage(`Gedeeltelijk bijgewerkt. Mislukt voor item(s): ${failedItemIds.join(', ')}`);
+    }
+
+    await fetchOrder();
+    setIsBulkSaving(false);
+    setIsUpdating(false);
+  };
+
+  const detailTabs: Array<{ id: DetailTab; label: string; icon: any }> = [
+    { id: 'overview', label: 'Overzicht', icon: LayoutGrid },
+    { id: 'production', label: 'Productie', icon: Mic },
+    { id: 'items', label: 'Items', icon: ListChecks },
+    { id: 'finance', label: 'Financieel', icon: BarChart3 },
+    { id: 'timeline', label: 'Timeline', icon: History },
+  ];
 
   if (isLoading) return <LoadingScreenInstrument text="Order details laden..." />;
   if (!order) return <div className="p-20 text-center">Order niet gevonden.</div>;
@@ -255,128 +385,100 @@ export default function OrderDetailPage() {
 
               <div className="h-[1px] bg-black/[0.03]" />
 
-              {/* Operationele status */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {/* KPI strip */}
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
                 <div className="rounded-[14px] border border-black/[0.05] bg-va-off-white/30 p-4">
-                  <div className="text-[10px] uppercase tracking-[0.2em] text-va-black/30 mb-1">PO vereist</div>
+                  <div className="text-[10px] uppercase tracking-[0.2em] text-va-black/30 mb-1">Blockers</div>
                   <div className={`text-[13px] font-medium ${order.actions?.needsPO ? 'text-primary' : 'text-green-600'}`}>
-                    {order.actions?.needsPO ? 'Ja' : 'Nee'}
+                    {order.actions?.needsPO ? 'PO vereist' : 'Geen blocker'}
+                  </div>
+                  <div className="text-[11px] text-va-black/45 mt-1">
+                    {order.actions?.canGeneratePaymentLink ? 'Betaallink mogelijk' : 'Geen betaallink actie'}
                   </div>
                 </div>
                 <div className="rounded-[14px] border border-black/[0.05] bg-va-off-white/30 p-4">
-                  <div className="text-[10px] uppercase tracking-[0.2em] text-va-black/30 mb-1">Betaallink mogelijk</div>
-                  <div className={`text-[13px] font-medium ${order.actions?.canGeneratePaymentLink ? 'text-primary' : 'text-va-black/50'}`}>
-                    {order.actions?.canGeneratePaymentLink ? 'Ja' : 'Nee'}
+                  <div className="text-[10px] uppercase tracking-[0.2em] text-va-black/30 mb-1">Items</div>
+                  <div className="text-[13px] font-medium text-va-black/80">
+                    {orderItems.length} totaal • {itemStats.waiting} waiting
+                  </div>
+                  <div className="text-[11px] text-va-black/45 mt-1">
+                    {itemStats.inReview} in review • {itemStats.delivered + itemStats.approved} klaar
                   </div>
                 </div>
                 <div className="rounded-[14px] border border-black/[0.05] bg-va-off-white/30 p-4">
-                  <div className="text-[10px] uppercase tracking-[0.2em] text-va-black/30 mb-1">Yuki-ready</div>
-                  <div className={`text-[13px] font-medium ${order.actions?.isYukiReady ? 'text-green-600' : 'text-va-black/50'}`}>
-                    {order.actions?.isYukiReady ? 'Ja' : 'Nee'}
+                  <div className="text-[10px] uppercase tracking-[0.2em] text-va-black/30 mb-1">Productie</div>
+                  <div className="text-[13px] font-medium text-va-black/80">
+                    {recordingSessions.length} sessie(s)
+                  </div>
+                  <div className="text-[11px] text-va-black/45 mt-1">
+                    Met scripts: {order.production?.recordingSummary?.withScripts ?? 0}
+                  </div>
+                </div>
+                <div className="rounded-[14px] border border-black/[0.05] bg-va-off-white/30 p-4">
+                  <div className="text-[10px] uppercase tracking-[0.2em] text-va-black/30 mb-1">Financieel</div>
+                  <div className="text-[13px] font-medium text-va-black/80">
+                    Netto €{order.finance?.net} • BTW €{order.finance?.vat}
+                  </div>
+                  <div className="text-[11px] text-primary mt-1">
+                    Marge {order.finance?.marginPercentage} (€{order.finance?.margin})
                   </div>
                 </div>
               </div>
 
-              {/* Statusbeheer */}
-              <div className="bg-va-off-white/50 rounded-[20px] p-8 border border-primary/10 space-y-6">
-                <div className="flex items-center gap-3 text-primary">
-                  <Zap size={20} strokeWidth={1.5} />
-                  <HeadingInstrument level={3} className="text-[13px] font-light tracking-[0.2em] uppercase">Statusbeheer</HeadingInstrument>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-4 items-end">
-                  <label className="text-[11px] font-light text-va-black/50 space-y-2">
-                    <span className="block uppercase tracking-widest text-[10px]">Orderstatus</span>
-                    <select
-                      value={selectedStatusCode}
-                      onChange={(e) => setSelectedStatusCode(e.target.value)}
-                      className="w-full rounded-[14px] border border-primary/20 bg-white px-4 py-3 text-[14px] font-light tracking-tight text-va-black shadow-[0_8px_24px_-16px_rgba(219,39,119,0.45)] outline-none transition-all focus:border-primary/50 focus:ring-2 focus:ring-primary/15"
+              {/* Tab navigation */}
+              <div className="flex flex-wrap gap-2 rounded-[16px] border border-black/[0.04] bg-va-off-white/30 p-2">
+                {detailTabs.map((tab) => {
+                  const Icon = tab.icon;
+                  const active = activeTab === tab.id;
+                  return (
+                    <button
+                      key={tab.id}
+                      onClick={() => setActiveTab(tab.id)}
+                      className={`inline-flex items-center gap-2 px-4 py-2 rounded-[10px] text-[12px] tracking-wide transition-all ${
+                        active
+                          ? 'bg-white border border-primary/20 text-primary shadow-sm'
+                          : 'text-va-black/50 hover:text-va-black/75'
+                      }`}
                     >
-                      {statusOptionsWithCurrent.map((option: any) => (
-                        <option key={`${option.id ?? 'x'}-${option.code}`} value={option.code}>
-                          {option.label}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-                  <button
-                    onClick={saveOrderStatus}
-                    disabled={isUpdating}
-                    className="inline-flex items-center gap-2 px-5 py-3 rounded-[12px] border border-black/[0.1] bg-white text-[13px] font-medium tracking-wide hover:border-primary/40 disabled:opacity-60"
-                  >
-                    {isUpdating ? <Loader2 size={14} className="animate-spin" /> : null}
-                    Status opslaan
-                  </button>
-                </div>
-
-                {selectedStatusInfo && (
-                  <div className="rounded-[14px] border border-black/[0.05] bg-white px-5 py-4 space-y-2">
-                    <div className="text-[10px] uppercase tracking-[0.2em] text-va-black/35">Status effect</div>
-                    <div className="text-[14px] font-light text-va-black/85">{selectedStatusInfo.title}</div>
-                    <div className="text-[12px] font-light text-va-black/55">
-                      <span className="font-medium text-va-black/70">Admin:</span> {selectedStatusInfo.adminAction}
-                    </div>
-                    <div className="text-[12px] font-light text-va-black/55">
-                      <span className="font-medium text-va-black/70">Klant:</span> {selectedStatusInfo.customerImpact}
-                    </div>
-                  </div>
-                )}
-
-                {statusOptionsWithCurrent.length > 0 && (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    {statusOptionsWithCurrent.map((status: any) => (
-                      <div key={`status-map-${status.id ?? status.code}`} className="rounded-[12px] border border-black/[0.04] bg-white/90 px-4 py-3 space-y-1">
-                        <div className="text-[11px] uppercase tracking-[0.18em] text-va-black/35">
-                          {status.label} {status.id ? `(ID ${status.id})` : ''}
-                        </div>
-                        <div className="text-[12px] font-light text-va-black/70">{status.adminAction}</div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <button
-                    onClick={() => runOrderAction('request_po')}
-                    disabled={!!actionBusy || isUpdating}
-                    className="flex items-center justify-between p-5 bg-white rounded-[14px] border border-black/[0.03] hover:border-yellow-500/30 transition-all group disabled:opacity-60"
-                  >
-                    <div className="flex items-center gap-3 text-left">
-                      <FileText size={16} strokeWidth={1.5} className="text-yellow-600" />
-                      <div>
-                        <div className="text-[14px] font-light tracking-tight">Vraag PO op</div>
-                        <div className="text-[11px] font-light text-va-black/40">Status + notitie</div>
-                      </div>
-                    </div>
-                    {actionBusy === 'request_po' ? <Loader2 size={13} className="text-yellow-600 animate-spin" /> : <Play size={13} className="text-va-black/15" />}
-                  </button>
-                </div>
-
-                {order.actions?.canGeneratePaymentLink && (
-                  <button
-                    onClick={() => runOrderAction('generate_payment_link')}
-                    disabled={!!actionBusy || isUpdating}
-                    className="w-full flex items-center justify-between p-5 bg-white rounded-[14px] border border-black/[0.03] hover:border-primary/30 transition-all group disabled:opacity-60"
-                  >
-                    <div className="flex items-center gap-3 text-left">
-                      <CircleDollarSign size={16} strokeWidth={1.5} className="text-primary" />
-                      <div>
-                        <div className="text-[14px] font-light tracking-tight">Genereer betaallink</div>
-                        <div className="text-[11px] font-light text-va-black/40">Opent Mollie checkout voor de klant</div>
-                      </div>
-                    </div>
-                    {actionBusy === 'generate_payment_link' ? <Loader2 size={13} className="text-primary animate-spin" /> : <Play size={13} className="text-va-black/15" />}
-                  </button>
-                )}
-
-                {actionMessage && (
-                  <div className="text-[12px] font-light text-va-black/50 bg-white border border-black/[0.04] rounded-[12px] px-4 py-3">
-                    {actionMessage}
-                  </div>
-                )}
+                      <Icon size={14} strokeWidth={1.5} />
+                      {tab.label}
+                    </button>
+                  );
+                })}
               </div>
+
+              {actionMessage && (
+                <div className="text-[12px] font-light text-va-black/50 bg-white border border-black/[0.04] rounded-[12px] px-4 py-3">
+                  {actionMessage}
+                </div>
+              )}
+
+              {activeTab === 'overview' && (
+                <div className="rounded-[16px] border border-black/[0.04] bg-va-off-white/20 p-6 space-y-4">
+                  <HeadingInstrument level={3} className="text-[13px] font-light tracking-[0.18em] uppercase text-va-black/35">
+                    Operationeel overzicht
+                  </HeadingInstrument>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-[12px] font-light text-va-black/65">
+                    <div className="rounded-[12px] border border-black/[0.03] bg-white p-4">
+                      <div className="uppercase tracking-widest text-[10px] text-va-black/30 mb-2">Huidige status</div>
+                      <div className="text-[14px] text-va-black/80">{currentOrderStatusCode}</div>
+                      <div className="text-[11px] text-va-black/45 mt-1">Yuki-ready: {order.actions?.isYukiReady ? 'Ja' : 'Nee'}</div>
+                    </div>
+                    <div className="rounded-[12px] border border-black/[0.03] bg-white p-4">
+                      <div className="uppercase tracking-widest text-[10px] text-va-black/30 mb-2">Volgende prioriteit</div>
+                      <div className="text-[14px] text-va-black/80">
+                        {order.actions?.needsPO ? 'PO opvragen en status syncen' : 'Productieflow opvolgen'}
+                      </div>
+                      <div className="text-[11px] text-va-black/45 mt-1">
+                        Gebruik het action dock rechts voor snelle statusupdates.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Productie & Script */}
+              {activeTab === 'production' && (
               <div className="space-y-6">
                 <HeadingInstrument level={3} className="text-[13px] font-light tracking-[0.2em] text-va-black/20 uppercase">Productie & Script</HeadingInstrument>
                 <div className="bg-va-off-white/20 p-8 rounded-[20px] border border-black/[0.02] space-y-6">
@@ -409,10 +511,65 @@ export default function OrderDetailPage() {
                   )}
                 </div>
               </div>
+              )}
 
               {/* Order Items */}
+              {activeTab === 'items' && (
               <div className="space-y-6">
                 <HeadingInstrument level={3} className="text-[13px] font-light tracking-[0.2em] text-va-black/20 uppercase">Bestelde Items</HeadingInstrument>
+                <div className="rounded-[14px] border border-black/[0.04] bg-va-off-white/30 p-4 space-y-3">
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <label className="inline-flex items-center gap-2 text-[12px] font-light text-va-black/70">
+                      <input type="checkbox" checked={allItemsSelected} onChange={toggleAllItemSelection} />
+                      Selecteer alle items ({orderItems.length})
+                    </label>
+                    <div className="text-[11px] text-va-black/45">{selectedItemIds.length} geselecteerd</div>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <label className="text-[11px] font-light text-va-black/50 space-y-1">
+                      <span className="block uppercase tracking-widest text-[10px]">Bulk delivery status</span>
+                      <select
+                        value={bulkDeliveryStatus}
+                        onChange={(e) => setBulkDeliveryStatus(e.target.value)}
+                        className="w-full rounded-[10px] border border-black/[0.06] bg-white px-3 py-2 text-[13px] font-light outline-none"
+                      >
+                        <option value="waiting">waiting</option>
+                        <option value="in_review">in_review</option>
+                        <option value="approved">approved</option>
+                        <option value="delivered">delivered</option>
+                      </select>
+                    </label>
+                    <label className="text-[11px] font-light text-va-black/50 space-y-1">
+                      <span className="block uppercase tracking-widest text-[10px]">Bulk payout status</span>
+                      <select
+                        value={bulkPayoutStatus}
+                        onChange={(e) => setBulkPayoutStatus(e.target.value)}
+                        className="w-full rounded-[10px] border border-black/[0.06] bg-white px-3 py-2 text-[13px] font-light outline-none"
+                      >
+                        <option value="pending">pending</option>
+                        <option value="approved">approved</option>
+                        <option value="paid">paid</option>
+                        <option value="cancelled">cancelled</option>
+                      </select>
+                    </label>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      onClick={applyBulkToDrafts}
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-[10px] border border-black/[0.08] bg-white text-[12px] font-medium tracking-wide hover:border-primary/40"
+                    >
+                      Draft toepassen
+                    </button>
+                    <button
+                      onClick={saveBulkItems}
+                      disabled={isBulkSaving || selectedItemIds.length === 0}
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-[10px] border border-primary/20 bg-primary/5 text-[12px] font-medium tracking-wide text-primary hover:bg-primary/10 disabled:opacity-60"
+                    >
+                      {isBulkSaving ? <Loader2 size={13} className="animate-spin" /> : null}
+                      Geselecteerde items opslaan
+                    </button>
+                  </div>
+                </div>
                 <div className="space-y-4">
                   {order.production?.items?.map((item: any) => {
                     const isMusicItem = item.itemType === 'music';
@@ -426,6 +583,12 @@ export default function OrderDetailPage() {
                       <div key={item.id} className="p-6 rounded-[15px] border border-black/[0.02] bg-va-off-white/10 space-y-4">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-4">
+                            <input
+                              type="checkbox"
+                              checked={!!selectedItems[item.id]}
+                              onChange={() => toggleItemSelection(item.id)}
+                              aria-label={`Selecteer item ${item.id}`}
+                            />
                             <div className="w-12 h-12 rounded-[10px] bg-white flex items-center justify-center text-va-black/20 shadow-sm">
                               <Mic size={20} />
                             </div>
@@ -594,9 +757,37 @@ export default function OrderDetailPage() {
                   })}
                 </div>
               </div>
+              )}
+
+              {/* Financieel detail */}
+              {activeTab === 'finance' && (
+                <div className="space-y-6">
+                  <HeadingInstrument level={3} className="text-[13px] font-light tracking-[0.2em] text-va-black/20 uppercase">
+                    Financieel detail
+                  </HeadingInstrument>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="rounded-[14px] border border-black/[0.04] bg-white p-5 space-y-2">
+                      <div className="text-[11px] uppercase tracking-[0.2em] text-va-black/35">Orderbedragen</div>
+                      <div className="text-[13px] text-va-black/70">Netto: €{order.finance?.net}</div>
+                      <div className="text-[13px] text-va-black/70">BTW: €{order.finance?.vat}</div>
+                      <div className="text-[13px] text-va-black/70">Kost: €{order.finance?.cost}</div>
+                      <div className="text-[13px] text-va-black/70">Marge: {order.finance?.marginPercentage} (€{order.finance?.margin})</div>
+                      <div className="pt-2 text-[16px] font-medium text-va-black">Totaal: €{order.finance?.total}</div>
+                    </div>
+                    <div className="rounded-[14px] border border-black/[0.04] bg-white p-5 space-y-2">
+                      <div className="text-[11px] uppercase tracking-[0.2em] text-va-black/35">Facturatiecontext</div>
+                      <div className="text-[13px] text-va-black/70">Facturatie e-mail: {order.billing?.email || '-'}</div>
+                      <div className="text-[13px] text-va-black/70">PO: {order.billing?.purchaseOrder || '-'}</div>
+                      <div className="text-[13px] text-va-black/70">Factuurnr: {order.billing?.invoiceNumber || '-'}</div>
+                      <div className="text-[13px] text-va-black/70 break-all">Transactie: {order.billing?.transactionId || '-'}</div>
+                      <div className="text-[12px] text-va-black/45 pt-2">Betaalmethode: {order.finance?.method || '-'}</div>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Recording sessies */}
-              {recordingSessions.length > 0 && (
+              {activeTab === 'production' && recordingSessions.length > 0 && (
                 <div className="space-y-6">
                   <HeadingInstrument level={3} className="text-[13px] font-light tracking-[0.2em] text-va-black/20 uppercase">
                     Opnamesessies
@@ -634,6 +825,7 @@ export default function OrderDetailPage() {
               )}
 
               {/* Tijdlijn / order notes */}
+              {activeTab === 'timeline' && (
               <div className="space-y-6">
                 <HeadingInstrument level={3} className="text-[13px] font-light tracking-[0.2em] text-va-black/20 uppercase">
                   Order Tijdlijn
@@ -655,11 +847,71 @@ export default function OrderDetailPage() {
                   <div className="text-[13px] font-light text-va-black/35 italic">Nog geen ordernotities gevonden.</div>
                 )}
               </div>
+              )}
             </div>
           </div>
 
           {/* Sidebar Info */}
-          <div className="space-y-8">
+          <div className="space-y-8 lg:sticky lg:top-24">
+            {/* Action Dock */}
+            <div className="bg-white rounded-[20px] p-6 border border-primary/10 shadow-sm space-y-5">
+              <div className="flex items-center gap-3 text-primary">
+                <Zap size={18} strokeWidth={1.5} />
+                <HeadingInstrument level={3} className="text-[11px] font-medium tracking-[0.2em] uppercase">Action Dock</HeadingInstrument>
+              </div>
+
+              <label className="text-[11px] font-light text-va-black/50 space-y-2 block">
+                <span className="block uppercase tracking-widest text-[10px]">Orderstatus</span>
+                <select
+                  value={selectedStatusCode}
+                  onChange={(e) => setSelectedStatusCode(e.target.value)}
+                  className="w-full rounded-[12px] border border-primary/20 bg-white px-3 py-2 text-[13px] font-light tracking-tight text-va-black outline-none focus:border-primary/50"
+                >
+                  {statusOptionsWithCurrent.map((option: any) => (
+                    <option key={`${option.id ?? 'x'}-${option.code}`} value={option.code}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <button
+                onClick={saveOrderStatus}
+                disabled={isUpdating}
+                className="w-full inline-flex items-center justify-center gap-2 px-4 py-2 rounded-[10px] border border-black/[0.1] bg-white text-[12px] font-medium tracking-wide hover:border-primary/40 disabled:opacity-60"
+              >
+                {isUpdating ? <Loader2 size={13} className="animate-spin" /> : null}
+                Status opslaan
+              </button>
+
+              {selectedStatusInfo && (
+                <div className="rounded-[12px] border border-black/[0.05] bg-va-off-white/20 px-4 py-3 space-y-1">
+                  <div className="text-[10px] uppercase tracking-[0.2em] text-va-black/35">Status effect</div>
+                  <div className="text-[12px] font-light text-va-black/80">{selectedStatusInfo.title}</div>
+                </div>
+              )}
+
+              <button
+                onClick={() => runOrderAction('request_po')}
+                disabled={!!actionBusy || isUpdating}
+                className="w-full flex items-center justify-between px-4 py-3 bg-white rounded-[12px] border border-black/[0.04] hover:border-yellow-500/30 disabled:opacity-60"
+              >
+                <span className="text-[12px] font-light">Vraag PO op</span>
+                {actionBusy === 'request_po' ? <Loader2 size={13} className="text-yellow-600 animate-spin" /> : <Play size={13} className="text-va-black/20" />}
+              </button>
+
+              {order.actions?.canGeneratePaymentLink && (
+                <button
+                  onClick={() => runOrderAction('generate_payment_link')}
+                  disabled={!!actionBusy || isUpdating}
+                  className="w-full flex items-center justify-between px-4 py-3 bg-white rounded-[12px] border border-black/[0.04] hover:border-primary/30 disabled:opacity-60"
+                >
+                  <span className="text-[12px] font-light">Genereer betaallink</span>
+                  {actionBusy === 'generate_payment_link' ? <Loader2 size={13} className="text-primary animate-spin" /> : <Play size={13} className="text-va-black/20" />}
+                </button>
+              )}
+            </div>
+
             {/* Customer Card */}
             <div className="bg-white rounded-[20px] p-8 border border-black/[0.03] shadow-sm space-y-6">
               <HeadingInstrument level={3} className="text-[11px] font-medium tracking-[0.2em] text-va-black/20 uppercase">Klant Gegevens</HeadingInstrument>

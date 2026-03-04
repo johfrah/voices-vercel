@@ -95,7 +95,7 @@ export class ServerWatchdog {
     const startTime = Date.now();
     
     // 1. Log Start
-    await this.report({
+    void this.report({
       level: 'info',
       component,
       error: `ATOMIC START: ${operation}`,
@@ -107,7 +107,7 @@ export class ServerWatchdog {
       const result = await fn();
       
       // 3. Log Success
-      await this.report({
+      void this.report({
         level: 'info',
         component,
         error: `ATOMIC SUCCESS: ${operation}`,
@@ -117,7 +117,7 @@ export class ServerWatchdog {
       return result;
     } catch (error: any) {
       // 4. Log Failure (Forensic)
-      await this.report({
+      void this.report({
         level: 'critical',
         component,
         error: `ATOMIC CRASH: ${operation} - ${error.message}`,

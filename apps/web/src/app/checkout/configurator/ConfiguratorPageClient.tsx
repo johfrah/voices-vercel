@@ -893,9 +893,14 @@ export default function ConfiguratorPageClient({
       script: localBriefing,
       pronunciation: state.pronunciation,
       usage: state.usage,
+      usageId: state.usageId,
+      journeyId: state.journeyId,
       media: state.media,
+      mediaIds: state.mediaIds,
       country: state.country,
+      countryId: state.countryId,
       secondaryLanguages: state.secondaryLanguages,
+      secondaryLanguageIds: state.secondaryLanguageIds,
       spots: state.spotsDetail || state.spots,
       years: state.yearsDetail || state.years,
       liveSession: state.liveSession,
@@ -1136,7 +1141,9 @@ export default function ConfiguratorPageClient({
   if (!isHydrated) return (
     <ContainerInstrument className="min-h-[400px] flex items-center justify-center">
       <Loader2 className="animate-spin text-primary/20" size={32} />
-      <span className="ml-3 text-va-black/20 font-light tracking-widest uppercase text-sm">Configurator laden...</span>
+      <span className="ml-3 text-va-black/20 font-light tracking-widest uppercase text-sm">
+        <VoiceglotText translationKey="checkout.configurator.loading" defaultText="Configurator laden..." />
+      </span>
     </ContainerInstrument>
   );
 
@@ -1394,7 +1401,9 @@ export default function ConfiguratorPageClient({
                   {isAutoSaving && (
                     <>
                       <div className="w-[1px] h-3 bg-va-black/10" />
-                      <span className="text-[10px] font-bold text-primary animate-pulse tracking-widest uppercase">Auto-saving...</span>
+                      <span className="text-[10px] font-bold text-primary animate-pulse tracking-widest uppercase">
+                        <VoiceglotText translationKey="checkout.configurator.autosaving" defaultText="Auto-saving..." />
+                      </span>
                     </>
                   )}
                 </div>
@@ -1471,7 +1480,9 @@ export default function ConfiguratorPageClient({
                   {showAiAssistant && aiSuggestion && (
                     <span className="text-va-black/20">
                       {aiSuggestion}
-                      <span className="ml-2 inline-flex items-center gap-1 px-1.5 py-0.5 bg-primary/5 text-primary text-[10px] font-bold rounded border border-primary/10 align-middle">TAB</span>
+                      <span className="ml-2 inline-flex items-center gap-1 px-1.5 py-0.5 bg-primary/5 text-primary text-[10px] font-bold rounded border border-primary/10 align-middle">
+                        <VoiceglotText translationKey="common.key_tab" defaultText="TAB" noTranslate={true} />
+                      </span>
                     </span>
                   )}
                 </div>

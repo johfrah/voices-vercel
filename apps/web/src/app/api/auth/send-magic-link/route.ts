@@ -1,11 +1,210 @@
-import { createAdminClient } from '@/utils/supabase/server';
 import { VoicesMailEngine } from '@/lib/services/voices-mail-engine';
-import { NextResponse } from 'next/server';
 import { ServerWatchdog } from '@/lib/services/server-watchdog';
 import { normalizeLocale } from '@/lib/system/locale-utils';
+import { MarketManagerServer as MarketManager } from '@/lib/system/core/market-manager';
+import { createAdminClient } from '@/utils/supabase/server';
+import { NextResponse } from 'next/server';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
+
+type MagicLinkRequestPayload = {
+  request_id: string;
+  email: string;
+  redirect_path: string;
+  requested_language?: string;
+  request_url: string;
+  cookie_header?: string | null;
+  accept_language?: string | null;
+  voices_language_header?: string | null;
+};
+
+function isValidEmail(email: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+function launchMagicLinkPipeline(payload: MagicLinkRequestPayload) {
+  setTimeout(() => {
+    void processMagicLinkRequest(payload).catch(async (error: any) => {
+      console.error(`[Auth API] [${payload.request_id}] Background pipeline crash:`, error);
+      await ServerWatchdog.report({
+        error: `Magic link background crash: ${error?.message || 'Unknown error'}`,
+        stack: error?.stack,
+        component: 'AuthAPI',
+        url: payload.request_url,
+        level: 'critical',
+        payload: {
+          request_id: payload.request_id,
+          email: payload.email,
+        },
+      });
+    });
+  }, 0);
+}
+
+async function processMagicLinkRequest(payload: MagicLinkRequestPayload) {
+  const {
+    request_id,
+    email,
+    redirect_path,
+    requested_language,
+    request_url,
+    cookie_header,
+    accept_language,
+    voices_language_header,
+  } = payload;
+
+  console.log(`[Auth API] [${request_id}] Background processing started for: ${email}`);
+
+  const supabase = createAdminClient();
+  if (!supabase) {
+    await ServerWatchdog.report({
+      error: 'Auth service niet beschikbaar (Service role key missing)',
+      component: 'AuthAPI',
+      url: request_url,
+      level: 'critical',
+      payload: { request_id, email },
+    });
+    return;
+  }
+
+  const origin_url = new URL(request_url).origin;
+  const supabase_redirect_to = `${origin_url}/account/confirm`;
+
+  let { data, error } = await supabase.auth.admin.generateLink({
+    type: 'magiclink',
+    email,
+    options: { redirectTo: supabase_redirect_to },
+  });
+
+  if (error && (error.message.includes('User not found') || error.status === 422)) {
+    console.log(`[Auth API] [${request_id}] User not found, creating signup link for ${email}`);
+    const signup_result = await supabase.auth.admin.generateLink({
+      type: 'signup',
+      email,
+      options: { redirectTo: supabase_redirect_to },
+    });
+
+    if (signup_result.error) {
+      await ServerWatchdog.report({
+        error: `Signup link generation failed: ${signup_result.error.message}`,
+        component: 'AuthAPI',
+        url: request_url,
+        level: 'error',
+        payload: {
+          request_id,
+          email,
+          error: signup_result.error,
+        },
+      });
+      return;
+    }
+
+    data = signup_result.data;
+    error = null;
+  }
+
+  if (error || !data) {
+    await ServerWatchdog.report({
+      error: `Supabase generateLink error: ${error?.message || 'Unknown error'}`,
+      component: 'AuthAPI',
+      url: request_url,
+      level: 'error',
+      payload: { request_id, email, error },
+    });
+    return;
+  }
+
+  const supabase_link = new URL(data.properties.action_link);
+  const token = supabase_link.searchParams.get('token');
+  const type = supabase_link.searchParams.get('type') || 'magiclink';
+
+  if (!token) {
+    await ServerWatchdog.report({
+      error: 'No token found in action link',
+      component: 'AuthAPI',
+      url: request_url,
+      level: 'critical',
+      payload: {
+        request_id,
+        action_link: data.properties.action_link,
+      },
+    });
+    return;
+  }
+
+  const host = new URL(request_url).host;
+  const market = MarketManager.getCurrentMarket(host);
+  const site_url =
+    MarketManager.getMarketDomains()[market.market_code] ||
+    `https://${MarketManager.getMarketDomains().BE?.replace('https://', '') || 'www.voices.be'}`;
+  const origin = host.includes('localhost') ? `http://${host}` : site_url;
+  const voices_link = `${origin}/account/confirm?token=${token}&type=${type}&redirect=${encodeURIComponent(redirect_path)}`;
+
+  void ServerWatchdog.report({
+    error: `Magic link generated for ${email}`,
+    component: 'AuthAPI',
+    url: request_url,
+    level: 'info',
+    payload: { request_id, email, link: voices_link },
+  });
+
+  const mail_engine = VoicesMailEngine.getInstance();
+  const cookie_lang = cookie_header
+    ?.split('; ')
+    .find((part) => part.startsWith('voices_lang='))
+    ?.split('=')[1];
+  const lang = normalizeLocale(
+    requested_language ||
+      cookie_lang ||
+      voices_language_header ||
+      accept_language?.split(',')[0] ||
+      market.primary_language ||
+      'nl-be'
+  );
+
+  try {
+    await Promise.race([
+      mail_engine.sendMagicLink(email, voices_link, lang, host),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('Mailserver Timeout')), 5000)),
+    ]);
+    console.log(`[Auth API] [${request_id}] Mail successfully sent to: ${email}`);
+    return;
+  } catch (mail_error: any) {
+    console.warn(
+      `[Auth API] [${request_id}] Primary mail failed/timed out, trying fallback:`,
+      mail_error?.message || mail_error
+    );
+  }
+
+  const fallback_redirect = `${origin_url}/account/confirm?redirect=${encodeURIComponent(redirect_path)}`;
+  const fallback = await supabase.auth.signInWithOtp({
+    email,
+    options: {
+      emailRedirectTo: fallback_redirect,
+    },
+  });
+
+  if (fallback.error) {
+    const is_rate_limit =
+      fallback.error.message.includes('rate limit') || fallback.error.message.includes('security purposes');
+    await ServerWatchdog.report({
+      error: `Magic link failed (Custom & Fallback): ${fallback.error.message} (Status: ${fallback.error.status})`,
+      component: 'AuthAPI',
+      url: request_url,
+      level: is_rate_limit ? 'info' : 'critical',
+      payload: {
+        request_id,
+        email,
+        fallback_error: fallback.error.message,
+        fallback_status: fallback.error.status,
+      },
+    });
+    return;
+  }
+
+  console.log(`[Auth API] [${request_id}] Fallback magic link sent successfully to: ${email}`);
+}
 
 /**
  * CUSTOM AUTH API (BOB-METHOD 2026)
@@ -14,195 +213,58 @@ export const revalidate = 0;
  * De link wijst nu DIRECT naar de juiste market voor maximale betrouwbaarheid.
  */
 export async function POST(req: Request) {
+  const started_at = Date.now();
   console.log('🚀 [Auth API] Magic Link request started');
   try {
-    const { email, redirect: redirectPath = '/account', language: requestedLanguage } = await req.json();
-    console.log(`🚀 [Auth API] Request for: ${email}, redirect: ${redirectPath}`);
+    const body = await req.json();
+    const email = typeof body?.email === 'string' ? body.email.trim().toLowerCase() : '';
+    const redirect_path = typeof body?.redirect === 'string' ? body.redirect : '/account';
+    const requested_language = typeof body?.language === 'string' ? body.language : undefined;
 
-    const supabase = createAdminClient();
-    if (!supabase) {
+    if (!email || !isValidEmail(email)) {
+      return NextResponse.json({ error: 'Geef een geldig e-mailadres op.' }, { status: 400 });
+    }
+
+    // Fast preflight check: fail direct if admin client cannot be created.
+    if (!createAdminClient()) {
       await ServerWatchdog.report({
         error: 'Auth service niet beschikbaar (Service role key missing)',
         component: 'AuthAPI',
         url: req.url,
-        level: 'critical'
+        level: 'critical',
       });
       return NextResponse.json({ error: 'Auth service niet beschikbaar (Service role key missing)' }, { status: 500 });
     }
 
-    console.log(`[Auth API] Processing request for: ${email}`);
-
-    // 🛡️ CHRIS-PROTOCOL: Force absolute URL for redirect to avoid relative path issues in Supabase
-    const originUrl = new URL(req.url).origin;
-    const finalRedirect = redirectPath.startsWith('http') ? redirectPath : `${originUrl}${redirectPath}`;
-
-    // 🛡️ CHRIS-PROTOCOL: Simpler redirectTo to avoid Supabase parsing errors
-    // We use /account/confirm as the base and pass the final redirect as a param
-    const supabaseRedirectTo = `${originUrl}/account/confirm`;
-
-    // 1. Probeer een magiclink te genereren
-    let { data, error } = await supabase.auth.admin.generateLink({
-      type: 'magiclink',
-      email: email,
-      options: {
-        redirectTo: supabaseRedirectTo,
-      }
+    const request_id = crypto.randomUUID();
+    launchMagicLinkPipeline({
+      request_id,
+      email,
+      redirect_path,
+      requested_language,
+      request_url: req.url,
+      cookie_header: req.headers.get('cookie'),
+      accept_language: req.headers.get('accept-language'),
+      voices_language_header: req.headers.get('x-voices-lang'),
     });
 
-    // 2. Als de gebruiker niet bestaat (of andere 422 error), maak de gebruiker aan
-    if (error && (error.message.includes('User not found') || error.status === 422)) {
-      console.log(`[Auth API] User not found or signup needed, creating user: ${email}`);
-      
-      const { data: signupData, error: signupError } = await supabase.auth.admin.generateLink({
-        type: 'signup',
-        email: email,
-        options: {
-          redirectTo: supabaseRedirectTo,
-        }
-      });
+    const queued_in_ms = Date.now() - started_at;
+    console.log(`[Auth API] [${request_id}] Request queued in ${queued_in_ms}ms for ${email}`);
 
-      if (signupError) {
-        console.error('[Auth API] Signup link generation failed:', signupError);
-        await ServerWatchdog.report({
-          error: `Signup link generation failed: ${signupError.message}`,
-          component: 'AuthAPI',
-          url: req.url,
-          level: 'error',
-          payload: { email, error: signupError }
-        });
-        return NextResponse.json({ error: signupError.message }, { status: 400 });
+    return NextResponse.json(
+      {
+        success: true,
+        queued: true,
+        request_id,
+        queued_in_ms,
+      },
+      {
+        status: 202,
+        headers: {
+          'Cache-Control': 'no-store',
+        },
       }
-
-      data = signupData;
-      error = null;
-    }
-
-    if (error || !data) {
-      console.error('[Auth API] Supabase error:', error);
-      await ServerWatchdog.report({
-        error: `Supabase generateLink error: ${error?.message || 'Unknown error'}`,
-        component: 'AuthAPI',
-        url: req.url,
-        level: 'error',
-        payload: { email, error }
-      });
-      return NextResponse.json({ error: error?.message || 'Kon geen link genereren' }, { status: 400 });
-    }
-
-    // 3. Bouw de Voices link
-    const supabaseLink = new URL(data.properties.action_link);
-    const token = supabaseLink.searchParams.get('token');
-    const type = supabaseLink.searchParams.get('type') || 'magiclink';
-    
-    if (!token) {
-      console.error('[Auth API] No token found in action link:', data.properties.action_link);
-      await ServerWatchdog.report({
-        error: 'No token found in action link',
-        component: 'AuthAPI',
-        url: req.url,
-        level: 'critical',
-        payload: { action_link: data.properties.action_link }
-      });
-      return NextResponse.json({ error: 'Interne fout: Geen token gegenereerd' }, { status: 500 });
-    }
-
-    // ONZE BETROUWBARE LINK (Forceer https op productie)
-    const { MarketManagerServer: MarketManager } = await import('@/lib/system/core/market-manager');
-    const host = new URL(req.url).host;
-    
-    // 🛡️ CHRIS-PROTOCOL: Use MarketManagerServer directly for static config to avoid DB timeout in Auth flow
-    const market = MarketManager.getCurrentMarket(host);
-    const siteUrl = MarketManager.getMarketDomains()[market.market_code] || `https://${MarketManager.getMarketDomains()['BE']?.replace('https://', '') || 'www.voices.be'}`;
-    
-    const origin = host.includes('localhost') ? `http://${host}` : siteUrl;
-    // We voegen de redirectPath hier toe aan ONZE link, niet aan de Supabase link
-    const voicesLink = `${origin}/account/confirm?token=${token}&type=${type}&redirect=${encodeURIComponent(redirectPath)}`;
-    
-    console.log(`[Auth API] Voices link created: ${voicesLink}`);
-
-    // 🛡️ CHRIS-PROTOCOL: Log the link to the Watchdog for automated Trinity Validation
-    // We wrap this in a try-catch to ensure the mail is ALWAYS sent even if logging fails
-    try {
-      await ServerWatchdog.report({
-        error: `Magic link generated for ${email}`,
-        component: 'AuthAPI',
-        url: req.url,
-        level: 'info',
-        payload: { email, link: voicesLink }
-      });
-    } catch (logErr) {
-      console.warn('[Auth API] Watchdog logging failed, continuing with mail:', logErr);
-    }
-
-    // 4. Verstuur de mail via onze eigen VoicesMailEngine
-    // 🛡️ CHRIS-PROTOCOL: Nuclear Speed Guarantee (v2.14.221)
-    // We proberen de mail te versturen, maar we wachten maximaal 5 seconden.
-    // Als het langer duurt, schakelen we DIRECT over naar de fallback of 
-    // we laten de server het op de achtergrond afhandelen zodat de gebruiker niet wacht.
-    const { VoicesMailEngine } = await import('@/lib/services/voices-mail-engine');
-    const mailEngine = VoicesMailEngine.getInstance();
-    
-    const cookieLang = req.headers
-      .get('cookie')
-      ?.split('; ')
-      .find((part) => part.startsWith('voices_lang='))
-      ?.split('=')[1];
-    const acceptLang = req.headers.get('accept-language')?.split(',')[0];
-    const lang = normalizeLocale(requestedLanguage || cookieLang || req.headers.get('x-voices-lang') || acceptLang || market.primary_language || 'nl-be');
-
-    // We gebruiken een Promise.race om de snelheid te garanderen
-    try {
-      await Promise.race([
-        mailEngine.sendMagicLink(email, voicesLink, lang, host),
-        new Promise((_, reject) => setTimeout(() => reject(new Error('Mailserver Timeout')), 5000))
-      ]);
-      console.log(`[Auth API] Mail successfully sent to: ${email}`);
-      return NextResponse.json({ success: true });
-    } catch (mailErr: any) {
-      console.warn('[Auth API] Primary mail failed or timed out, triggering Nuclear Fallback:', mailErr.message);
-      
-      // 🛡️ CHRIS-PROTOCOL: Immediate Fallback to Supabase (Reserve-motor)
-      // IMPORTANT: We point the fallback redirect to our OWN confirm route to ensure session stability.
-      const fallbackRedirect = `${originUrl}/account/confirm?redirect=${encodeURIComponent(redirectPath)}`;
-      
-      console.log(`[Auth API] Triggering Supabase fallback with redirect: ${fallbackRedirect}`);
-
-      const { error: fallbackError } = await supabase.auth.signInWithOtp({
-        email,
-        options: {
-          emailRedirectTo: fallbackRedirect,
-        }
-      });
-
-      if (fallbackError) {
-        // ... bestaande error handling ...
-        console.error('[Auth API] Fallback Supabase mail also failed:', fallbackError.message, fallbackError.status);
-        const isRateLimit = fallbackError.message.includes('rate limit') || fallbackError.message.includes('security purposes');
-        
-        await ServerWatchdog.report({
-          error: `Magic link failed (Custom & Fallback): ${fallbackError.message} (Status: ${fallbackError.status})`,
-          component: 'AuthAPI',
-          url: req.url,
-          level: isRateLimit ? 'info' : 'critical',
-          payload: { 
-            email, 
-            customError: mailErr.message, 
-            fallbackError: fallbackError.message,
-            fallbackStatus: fallbackError.status,
-            fallbackCode: (fallbackError as any).code
-          }
-        });
-        return NextResponse.json(
-          { error: `Inloglink kon niet worden verzonden: ${fallbackError.message}` }, 
-          { status: isRateLimit ? 429 : 500 }
-        );
-      }
-
-      console.log(`[Auth API] Fallback magic link sent successfully to: ${email}`);
-      return NextResponse.json({ success: true, fallback: true });
-    }
-
-    return NextResponse.json({ success: true });
+    );
   } catch (err: any) {
     console.error('[Auth API] Unexpected error:', err);
     await ServerWatchdog.report({

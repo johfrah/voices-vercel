@@ -8,7 +8,7 @@ import { ArrowRight, CreditCard, Info, ShieldCheck, Star, Zap, Play, Instagram, 
 import { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
-import { notFound, redirect } from 'next/navigation';
+import { notFound, permanentRedirect, redirect } from 'next/navigation';
 import { Suspense } from "react";
 import { getActor, getArtist, getActors, getWorkshops, getArticle } from "@/lib/services/api-server";
 import { WorkshopApiResponse } from "@/app/api/studio/workshops/route";
@@ -22,7 +22,7 @@ import { AgencyHeroInstrument } from "@/components/ui/AgencyHeroInstrument";
 import { InstrumentRenderer } from "@/components/ui/InstrumentRenderer";
 import nextDynamic from "next/dynamic";
 import { JourneyType } from '@/contexts/VoicesMasterControlContext';
-import { normalizeSlug, stripLanguagePrefix } from '@/lib/system/slug';
+import { buildCanonicalActorPath, normalizeSlug, stripLanguagePrefix } from '@/lib/system/slug';
 import { localeToBcp47, normalizeLocale, stripLocalePrefix, withLocalePrefix } from '@/lib/system/locale-utils';
 import { BentoGrid, BentoCard } from '@/components/ui/BentoGrid';
 import { createClient } from "@supabase/supabase-js";
@@ -50,7 +50,7 @@ const AgencyCalculator = nextDynamic(() => import("@/components/ui/AgencyCalcula
 // Workshop Components
 const WorkshopCarousel = nextDynamic(() => import("@/components/studio/WorkshopCarousel").then(mod => mod.WorkshopCarousel), { ssr: false });
 const WorkshopCalendar = nextDynamic(() => import("@/components/studio/WorkshopCalendar").then(mod => mod.WorkshopCalendar), { ssr: false });
-const StudioVideoPlayer = nextDynamic(() => import("@/components/ui/StudioVideoPlayer").then(mod => mod.StudioVideoPlayer), { ssr: false });
+const VideoPlayerIsland = nextDynamic(() => import("@/components/ui/VideoPlayer").then(mod => mod.VideoPlayer), { ssr: false });
 const JourneyCta = nextDynamic(() => import("@/components/ui/JourneyCta").then(mod => mod.JourneyCta), { ssr: false });
 const StudioLaunchpad = nextDynamic(() => import("@/components/ui/StudioLaunchpad").then(mod => mod.StudioLaunchpad), { ssr: false });
 const WorkshopQuiz = nextDynamic(() => import("@/components/studio/WorkshopQuiz").then(mod => mod.WorkshopQuiz), { ssr: false });
@@ -448,6 +448,35 @@ async function discoverAndRegisterSlug(slug: string, marketCode: string, journey
       
       if (newEntry) return { entity_id: artist.id, routing_type: 'artist', journey: 'artist' };
     }
+
+    // 6. Pitch (Casting List) — ID-First: slug = pitch/{hash}, entity_id = casting_lists.id
+    if (slug.startsWith('pitch/')) {
+      const hashPart = slug.replace('pitch/', '').trim();
+      if (hashPart) {
+        const { data: list } = await supabase
+          .from('casting_lists')
+          .select('id')
+          .eq('hash', hashPart)
+          .maybeSingle();
+        if (list) {
+          const { data: newEntry } = await supabase
+            .from('slug_registry')
+            .insert({
+              slug: slug.toLowerCase(),
+              entity_id: list.id,
+              entity_type_id: 6,
+              market_code: 'ALL',
+              journey: 'agency',
+              is_active: true,
+              created_at: new Date(),
+              updated_at: new Date(),
+            })
+            .select('entity_id, journey')
+            .single();
+          if (newEntry) return { entity_id: list.id, routing_type: 'casting_list', journey: 'agency' };
+        }
+      }
+    }
   } catch (err) {
     console.error(' [SmartRouter] Lazy Discovery FAILED:', err);
   }
@@ -480,7 +509,7 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
   // 🛡️ CHRIS-PROTOCOL: System Route Protection (v2.15.034)
   const reserved = [
     'admin', 'backoffice', 'account', 'api', 'auth', 'checkout', 'cart', 
-    'demos', 'light', 'under-construction', 'favicon.ico', 'robots.txt', 
+    'demos', 'favicon.ico', 'robots.txt', 
     'sitemap.xml', 'sitemap', 'static', 'assets', '_next'
   ];
   
@@ -695,7 +724,7 @@ export default async function SmartRoutePage({ params }: { params: SmartRoutePar
   // 🛡️ CHRIS-PROTOCOL: System Route Protection (v2.16.090)
   const reserved = [
     'admin', 'backoffice', 'account', 'api', 'auth', 'checkout', 'cart',
-    'demos', 'light', 'under-construction', 'favicon.ico', 'robots.txt',
+    'demos', 'favicon.ico', 'robots.txt',
     'sitemap.xml', 'sitemap', 'static', 'assets', '_next',
     'wp-content', 'wp-includes'
   ];
@@ -825,8 +854,12 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
           <Suspense fallback={null}><LiquidBackground /></Suspense>
           <ContainerInstrument className="py-32 max-w-4xl mx-auto">
             <header className="mb-16 text-center">
-              <HeadingInstrument level={1} className="text-5xl font-light tracking-tighter mb-4">Doe je mee?</HeadingInstrument>
-              <TextInstrument className="text-va-black/40 font-light">Laat ons weten welke workshop je interesseert.</TextInstrument>
+              <HeadingInstrument level={1} className="text-5xl font-light tracking-tighter mb-4">
+                <VoiceglotText translationKey="studio.workshop_interest.title" defaultText="Doe je mee?" />
+              </HeadingInstrument>
+              <TextInstrument className="text-va-black/40 font-light">
+                <VoiceglotText translationKey="studio.workshop_interest.subtitle" defaultText="Laat ons weten welke workshop je interesseert." />
+              </TextInstrument>
             </header>
             <WorkshopInterestForm />
           </ContainerInstrument>
@@ -869,11 +902,17 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
       }
 
       // 🛡️ CHRIS-PROTOCOL: Handle Redirects (Canonical Handshake)
-      if (resolved.canonical_slug && resolved.canonical_slug !== lookupSlug) {
-        const canonicalPath = withLocalePrefix(`/${resolved.canonical_slug}`, lang, market.primary_language);
+      // Preserve any suffix (journey/medium) when canonical slug changes.
+      const matchedSlug = resolved.slug || lookupSlug;
+      if (resolved.canonical_slug && resolved.canonical_slug !== matchedSlug) {
+        const canonicalPathRaw = buildLocalizedRoutePath(
+          cleanSlug,
+          matchedSlug,
+          resolved.canonical_slug
+        );
+        const canonicalPath = withLocalePrefix(canonicalPathRaw, lang, market.primary_language);
         console.error(` [SmartRouter] Redirecting legacy slug "${lookupSlug}" to canonical: "${canonicalPath}"`);
-        // 🛡️ NUCLEAR SEO: Use 301 Permanent Redirect for canonical handshake
-        return redirect(canonicalPath);
+        return permanentRedirect(canonicalPath);
       }
 
     // 🛡️ CHRIS-PROTOCOL: World-Aware Handshake (v2.24.4)
@@ -917,7 +956,93 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
         console.error(` [SmartRouter] DB logging failed: ${e.message}`);
       }
 
-      // Route based on type
+      // Route based on type (ID-First Handshake)
+      if (resolved.routing_type === 'casting_list') {
+        const { data: list, error: listError } = await supabase
+          .from('casting_lists')
+          .select('*, items:casting_list_items(*, actor:actors(*))')
+          .eq('id', resolved.entity_id)
+          .single();
+        if (!listError && list) {
+          const host = headersList.get('host') || MarketManager.getMarketDomains()['BE']?.replace('https://', '') || '';
+          const pitchMarket = MarketManager.getCurrentMarket(host);
+          const sortedItems = (list.items || []).sort((a: any, b: any) => (a.display_order || 0) - (b.display_order || 0));
+          const listSettings = list.settings as any;
+          const showRates = listSettings?.isAdminGenerated === true;
+          const schema = {
+            '@context': 'https://schema.org',
+            '@type': 'ItemList',
+            'name': list.name,
+            'numberOfItems': sortedItems.length,
+            'itemListElement': sortedItems.map((item: any, i: number) => ({
+              '@type': 'ListItem',
+              'position': i + 1,
+              'item': { '@type': 'Service', 'name': item.actor?.first_name || item.actor?.display_name, 'provider': { '@type': 'LocalBusiness', 'name': pitchMarket.name } }
+            }))
+          };
+          return (
+            <PageWrapperInstrument className="bg-va-off-white">
+              <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+              <Suspense fallback={null}><LiquidBackground /></Suspense>
+              <ContainerInstrument className="py-48 max-w-5xl mx-auto">
+                <header className="mb-20 text-center">
+                  <TextInstrument className="text-[15px] font-medium tracking-[0.4em] text-primary/60 mb-6 block uppercase">
+                    <VoiceglotText translationKey="casting.selection_title" defaultText="Casting Selectie" />
+                  </TextInstrument>
+                  <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter mb-8 text-va-black">{list.name}</HeadingInstrument>
+                  <ContainerInstrument className="w-24 h-1 bg-primary/20 rounded-full mx-auto" />
+                </header>
+                <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {sortedItems.map((item: any, i: number) => (
+                    <ContainerInstrument key={i} className="bg-white p-8 rounded-[20px] shadow-aura border border-black/5 flex flex-col gap-6">
+                      <ContainerInstrument className="flex items-center gap-4">
+                        <ContainerInstrument className="w-16 h-16 bg-va-off-white rounded-full flex items-center justify-center text-2xl font-light text-va-black/20 overflow-hidden relative">
+                          {item.actor?.photo_id ? (
+                            <Image src={`/api/proxy/?path=${encodeURIComponent(item.actor?.dropbox_url || '')}`} alt={item.actor?.first_name || item.actor?.display_name || ''} fill className="object-cover" />
+                          ) : (item.actor?.first_name || item.actor?.display_name || '?')[0]}
+                        </ContainerInstrument>
+                        <ContainerInstrument>
+                          <HeadingInstrument level={3} className="text-2xl font-light">{item.actor?.first_name || item.actor?.display_name}</HeadingInstrument>
+                          <ContainerInstrument className="flex items-center justify-between mt-1">
+                            <TextInstrument className="text-[15px] text-va-black/40">
+                              <VoiceglotText translationKey={`common.language.${(item.actor?.native_lang || 'nl')?.toLowerCase()}`} defaultText={MarketManager.getLanguageLabel(item.actor?.native_lang || 'nl')} />
+                            </TextInstrument>
+                            {showRates && <TextInstrument className="text-[15px] font-bold text-primary">€{parseFloat(item.actor?.price_unpaid || '0').toFixed(2)}</TextInstrument>}
+                          </ContainerInstrument>
+                        </ContainerInstrument>
+                      </ContainerInstrument>
+                      <ContainerInstrument className="h-12 bg-va-off-white rounded-[10px] flex items-center px-4 gap-2">
+                        <ContainerInstrument className="w-8 h-8 bg-va-black rounded-full flex items-center justify-center text-white"><ArrowRight size={14} /></ContainerInstrument>
+                        <TextInstrument className="text-[13px] font-medium tracking-widest text-va-black/40 uppercase">
+                          <VoiceglotText translationKey="action.view_profile" defaultText="Bekijk Profiel" />
+                        </TextInstrument>
+                      </ContainerInstrument>
+                      <VoicesLink
+                        href={buildCanonicalActorPath(item.actor?.slug, item.actor?.display_name || item.actor?.first_name)}
+                        className="w-full bg-va-black text-white py-4 rounded-[10px] font-medium tracking-widest text-[13px] uppercase hover:bg-primary transition-all text-center"
+                      >
+                        <VoiceglotText translationKey="action.select_voice" defaultText="Selecteer deze stem" />
+                      </VoicesLink>
+                    </ContainerInstrument>
+                  ))}
+                </ContainerInstrument>
+                <footer className="mt-32 text-center">
+                  <ContainerInstrument className="bg-va-black text-white p-16 rounded-[20px] shadow-aura-lg relative overflow-hidden group">
+                    <HeadingInstrument level={2} className="text-4xl font-light mb-8">
+                      <VoiceglotText translationKey="casting.no_match_title" defaultText="Niet de juiste match?" />
+                    </HeadingInstrument>
+                    <VoicesLink href="/agency" className="va-btn-pro inline-flex items-center gap-2">
+                      <VoiceglotText translationKey="action.view_all_voices" defaultText="Bekijk alle stemmen" /> <ArrowRight size={18} />
+                    </VoicesLink>
+                  </ContainerInstrument>
+                </footer>
+              </ContainerInstrument>
+            </PageWrapperInstrument>
+          );
+        }
+        return notFound();
+      }
+
       if (resolved.routing_type === 'actor') {
         const actor = await getActor(resolved.entity_id.toString(), lang);
         if (actor) {
@@ -1014,7 +1139,26 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
       }
 
       if (resolved.routing_type === 'blog' || resolved.routing_type === 'article') {
-        const article = await getArticle(lookupSlug, lang);
+        const articleLookupSlug = resolved.slug || lookupSlug;
+        let article: any = null;
+        if (resolved.entity_id) {
+          const { data: articleById } = await supabase
+            .from('content_articles')
+            .select('*')
+            .eq('id', resolved.entity_id)
+            .maybeSingle();
+          if (articleById) {
+            const { data: blocks } = await supabase
+              .from('content_blocks')
+              .select('*')
+              .eq('article_id', articleById.id)
+              .order('display_order', { ascending: true });
+            article = { ...articleById, blocks: blocks || [] };
+          }
+        }
+        if (!article) {
+          article = await getArticle(articleLookupSlug, lang);
+        }
         if (article) {
       // 🛡️ CHRIS-PROTOCOL: Dynamic Extra Data based on Journey/World (v2.16.095)
           let extraData: any = {};
@@ -1049,7 +1193,8 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
               
               // 🎓 CHRIS-PROTOCOL: Academy Entry Handshake (v2.16.101)
               // If we are on the main /academy page, we force the LessonGrid
-              if (lookupSlug === 'academy') {
+              const isAcademyRoot = lookupSlug === 'academy' || lookupSlug === 'academy/academy' || articleLookupSlug === 'academy';
+              if (isAcademyRoot) {
                 return (
                   <PageWrapperInstrument className="bg-va-off-white min-h-screen">
                     <Suspense fallback={null}><LiquidBackground /></Suspense>
@@ -1075,8 +1220,12 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
                             className="group p-10 bg-white hover:bg-va-black transition-all duration-700 rounded-[20px] shadow-aura hover:shadow-aura-lg border border-black/5"
                           >
                             <ContainerInstrument className="flex justify-between items-start mb-12">
-                              <ContainerInstrument className="bg-va-black/5 group-hover:bg-white/10 text-va-black group-hover:text-white text-[11px] font-bold px-3 py-1 rounded-full tracking-[0.2em] uppercase transition-colors ">ACADEMY</ContainerInstrument>
-                              <TextInstrument className="text-[11px] font-bold text-va-black/30 group-hover:text-white/30 tracking-[0.2em] uppercase transition-colors ">Les {lesson.display_order || lesson.id}</TextInstrument>
+                              <ContainerInstrument className="bg-va-black/5 group-hover:bg-white/10 text-va-black group-hover:text-white text-[11px] font-bold px-3 py-1 rounded-full tracking-[0.2em] uppercase transition-colors ">
+                                <VoiceglotText translationKey="academy.label.badge" defaultText="ACADEMY" />
+                              </ContainerInstrument>
+                              <TextInstrument className="text-[11px] font-bold text-va-black/30 group-hover:text-white/30 tracking-[0.2em] uppercase transition-colors ">
+                                <VoiceglotText translationKey="academy.lesson.label_prefix" defaultText="Les" /> {lesson.display_order || lesson.id}
+                              </TextInstrument>
                             </ContainerInstrument>
                             <HeadingInstrument level={3} className="text-4xl font-light tracking-tighter leading-[0.9] mb-8 text-va-black group-hover:text-white transition-colors">{lesson.title}</HeadingInstrument>
                             <TextInstrument className="text-va-black/40 group-hover:text-white/40 text-[15px] mb-8 font-light leading-relaxed">{lesson.description}</TextInstrument>
@@ -1136,7 +1285,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
             }
           }
 
-          return <CmsPageContent page={article} slug={lookupSlug} extraData={extraData} />;
+          return <CmsPageContent page={article} slug={articleLookupSlug} extraData={extraData} />;
         }
       }
 
@@ -1158,8 +1307,12 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
             <Suspense fallback={null}><LiquidBackground /></Suspense>
             <ContainerInstrument className="py-32 max-w-4xl mx-auto">
               <header className="mb-16 text-center">
-                <HeadingInstrument level={1} className="text-5xl font-light tracking-tighter mb-4">Doe je mee?</HeadingInstrument>
-                <TextInstrument className="text-va-black/40 font-light">Laat ons weten welke workshop je interesseert.</TextInstrument>
+                <HeadingInstrument level={1} className="text-5xl font-light tracking-tighter mb-4">
+                  <VoiceglotText translationKey="studio.workshop_interest.title" defaultText="Doe je mee?" />
+                </HeadingInstrument>
+                <TextInstrument className="text-va-black/40 font-light">
+                  <VoiceglotText translationKey="studio.workshop_interest.subtitle" defaultText="Laat ons weten welke workshop je interesseert." />
+                </TextInstrument>
               </header>
               <WorkshopInterestForm />
             </ContainerInstrument>
@@ -1210,10 +1363,10 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
               <ContainerInstrument className="max-w-7xl mx-auto px-6 py-32 space-y-32">
                 <header className="text-center space-y-8">
                   <ContainerInstrument className="inline-block bg-primary/20 text-primary text-[13px] font-bold px-4 py-1.5 rounded-full tracking-[0.2em] uppercase border border-primary/20">
-                    Johfrai AI World
+                    <VoiceglotText translationKey="johfrai.hero.badge" defaultText="Johfrai AI World" />
                   </ContainerInstrument>
                   <HeadingInstrument level={1} className="text-7xl md:text-9xl font-light tracking-tighter leading-none text-white">
-                    The Future of <span className="text-primary italic">Voice</span>
+                    <VoiceglotText translationKey="johfrai.hero.title_prefix" defaultText="The Future of" /> <span className="text-primary italic"><VoiceglotText translationKey="johfrai.hero.title_voice" defaultText="Voice" /></span>
                   </HeadingInstrument>
                 </header>
                 
@@ -1254,7 +1407,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
     }
 
     // Legacy Fallbacks (Agency, Casting, etc.)
-    if (MarketManager.isAgencySegment(lookupSlug)) {
+    if (MarketManager.isAgencySegment(segments[0])) {
       const filters: Record<string, string> = {};
       
       //  CHRIS-PROTOCOL: Map translated journey segments to internal journey types via MarketManager
@@ -1333,8 +1486,8 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
       );
     }
 
-    // 2. Pitch Link (Casting List)
-    if (lookupSlug === 'pitch' && journey) {
+    // 2. Pitch Link (Casting List) — firstSegment i.p.v. lookupSlug (lookupSlug is 'pitch/hash' na join)
+    if (firstSegment === 'pitch' && journey) {
       try {
         const host = headersList.get('host') || MarketManager.getMarketDomains()['BE']?.replace('https://', '') || MarketManager.getMarketDomains()['BE']?.replace('https://', '');
         const market = MarketManager.getCurrentMarket(host);
@@ -1434,7 +1587,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
                       </TextInstrument>
                     </ContainerInstrument>
                     <VoicesLink 
-                      href={`/${item.actor.slug}`}
+                      href={buildCanonicalActorPath(item.actor.slug, item.actor.display_name || item.actor.first_name)}
                       className="w-full bg-va-black text-white py-4 rounded-[10px] font-medium tracking-widest text-[13px] uppercase hover:bg-primary transition-all text-center"
                     >
                       <VoiceglotText translationKey="action.select_voice" defaultText="Selecteer deze stem" />
@@ -1641,8 +1794,10 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
     switch (block.type) {
       case 'workshop_hero':
         const videoUrl = body.match(/video:\s*([^\n]+)/)?.[1]?.trim();
-        const posterUrl = body.match(/poster:\s*([^\n]+)/)?.[1]?.trim();
         const subtitleUrl = body.match(/subtitles:\s*([^\n]+)/)?.[1]?.trim();
+        const subtitleTracks = subtitleUrl
+          ? [{ srcLang: 'nl', label: 'Nederlands', src: subtitleUrl }]
+          : [];
         
         return (
           <section key={block.id} className="voices-hero">
@@ -1650,13 +1805,20 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
               <ContainerInstrument plain className="voices-hero-right group lg:order-1">
                 <ContainerInstrument plain className="voices-hero-visual-container">
                   <Suspense fallback={<div className="w-full h-full bg-va-black/5 animate-pulse rounded-[32px]" />}>
-                    <StudioVideoPlayer 
-                      url={videoUrl || "/assets/studio/workshops/videos/workshop_studio_teaser.mp4"} 
-                      subtitles={subtitleUrl || "/assets/studio/workshops/subtitles/workshop_studio_teaser-nl.vtt"}
-                      poster={posterUrl || "/assets/visuals/branding/branding-branding-photo-horizontal-1.webp"}
-                      aspect="portrait"
-                      className="shadow-aura-lg border-none w-full h-full"
-                    />
+                    {videoUrl ? (
+                      <VideoPlayerIsland
+                        src={videoUrl}
+                        subtitles={subtitleTracks}
+                        aspectRatio="video"
+                        className="shadow-aura-lg border-none w-full h-full"
+                        autoPlay={false}
+                        muted={false}
+                      />
+                    ) : (
+                      <ContainerInstrument className="w-full h-full rounded-[32px] bg-va-off-white border border-black/5 flex items-center justify-center">
+                        <TextInstrument className="text-va-black/40 text-sm tracking-wide">Workshopvideo ontbreekt in CMS-block</TextInstrument>
+                      </ContainerInstrument>
+                    )}
                   </Suspense>
                 </ContainerInstrument>
                 <ContainerInstrument plain className="absolute -top-10 -right-10 w-40 h-40 bg-primary/10 rounded-full blur-[80px] -z-10 animate-pulse" />
@@ -1771,15 +1933,23 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
                     className="group p-10 bg-white hover:bg-va-black transition-all duration-700 rounded-[20px] shadow-aura hover:shadow-aura-lg border border-black/5"
                   >
                     <ContainerInstrument className="flex justify-between items-start mb-12">
-                      <ContainerInstrument className="bg-va-black/5 group-hover:bg-white/10 text-va-black group-hover:text-white text-[11px] font-bold px-3 py-1 rounded-full tracking-[0.2em] uppercase transition-colors ">ACADEMY</ContainerInstrument>
-                      <TextInstrument className="text-[11px] font-bold text-va-black/30 group-hover:text-white/30 tracking-[0.2em] uppercase transition-colors ">Les {lesson.display_order || lesson.id}</TextInstrument>
+                      <ContainerInstrument className="bg-va-black/5 group-hover:bg-white/10 text-va-black group-hover:text-white text-[11px] font-bold px-3 py-1 rounded-full tracking-[0.2em] uppercase transition-colors ">
+                        <VoiceglotText translationKey="academy.label.badge" defaultText="ACADEMY" />
+                      </ContainerInstrument>
+                      <TextInstrument className="text-[11px] font-bold text-va-black/30 group-hover:text-white/30 tracking-[0.2em] uppercase transition-colors ">
+                        <VoiceglotText translationKey="academy.lesson.label_prefix" defaultText="Les" /> {lesson.display_order || lesson.id}
+                      </TextInstrument>
                     </ContainerInstrument>
                     <HeadingInstrument level={3} className="text-4xl font-light tracking-tighter leading-[0.9] mb-8 text-va-black group-hover:text-white transition-colors">{lesson.title}</HeadingInstrument>
                     <TextInstrument className="text-va-black/40 group-hover:text-white/40 text-[15px] mb-8 font-light leading-relaxed">{lesson.description}</TextInstrument>
                     <Link href={`/academy/lesson/${lesson.display_order || lesson.id}`} className="mt-auto flex justify-between items-end">
                       <ContainerInstrument>
-                        <TextInstrument className="text-[11px] text-va-black/40 group-hover:text-white/40 font-bold tracking-[0.2em] uppercase mb-1 transition-colors ">Start nu</TextInstrument>
-                        <TextInstrument as="span" className="text-2xl font-light tracking-tighter text-va-black group-hover:text-white transition-colors">Bekijk les</TextInstrument>
+                        <TextInstrument className="text-[11px] text-va-black/40 group-hover:text-white/40 font-bold tracking-[0.2em] uppercase mb-1 transition-colors ">
+                          <VoiceglotText translationKey="action.start_now" defaultText="Start nu" />
+                        </TextInstrument>
+                        <TextInstrument as="span" className="text-2xl font-light tracking-tighter text-va-black group-hover:text-white transition-colors">
+                          <VoiceglotText translationKey="action.view_lesson" defaultText="Bekijk les" />
+                        </TextInstrument>
                       </ContainerInstrument>
                       <ButtonInstrument className="!bg-va-black group-hover:!bg-white group-hover:!text-va-black !rounded-[10px] !px-6 transition-all">
                         <Play strokeWidth={1.5} size={16} fill="currentColor" />
@@ -1834,7 +2004,9 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
                 </ContainerInstrument>
                 <ContainerInstrument className="flex flex-col items-center gap-4">
                   <TextInstrument className="text-8xl font-extralight tracking-tighter text-va-black leading-none">{price}</TextInstrument>
-                  <TextInstrument className="text-[11px] font-bold text-va-black/30 uppercase tracking-[0.2em]">Eenmalige investering (excl. BTW)</TextInstrument>
+                  <TextInstrument className="text-[11px] font-bold text-va-black/30 uppercase tracking-[0.2em]">
+                    <VoiceglotText translationKey="academy.pricing.one_time_investment" defaultText="Eenmalige investering (excl. BTW)" />
+                  </TextInstrument>
                 </ContainerInstrument>
                 <ContainerInstrument className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-12 border-t border-black/[0.03]">
                   {features.map((feature, i) => (
@@ -1847,7 +2019,9 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
                   ))}
                 </ContainerInstrument>
                 <ContainerInstrument className="pt-12">
-                  <ButtonInstrument as={Link} href="/checkout?journey=academy" className="va-btn-pro !rounded-[10px] px-20 py-8 text-xl shadow-aura-lg hover:scale-105 transition-transform duration-500 uppercase">Nu inschrijven</ButtonInstrument>
+                  <ButtonInstrument as={Link} href="/checkout?journey=academy" className="va-btn-pro !rounded-[10px] px-20 py-8 text-xl shadow-aura-lg hover:scale-105 transition-transform duration-500 uppercase">
+                    <VoiceglotText translationKey="academy.cta.enroll_now" defaultText="Nu inschrijven" />
+                  </ButtonInstrument>
                 </ContainerInstrument>
               </BentoCard>
             </ContainerInstrument>
@@ -1867,7 +2041,9 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
                 <ContainerInstrument className="lg:col-span-4 space-y-6">
                   <ContainerInstrument className="inline-flex items-center gap-3 px-4 py-1.5 bg-va-black/5 rounded-full">
                     <Info strokeWidth={1.5} size={16} className="text-va-black/40" />
-                    <TextInstrument className="text-[11px] font-bold tracking-[0.2em] text-va-black/40 uppercase">Support</TextInstrument>
+                    <TextInstrument className="text-[11px] font-bold tracking-[0.2em] text-va-black/40 uppercase">
+                      <VoiceglotText translationKey="common.support" defaultText="Support" />
+                    </TextInstrument>
                   </ContainerInstrument>
                   {title && <HeadingInstrument level={2} className="text-5xl font-light tracking-tighter leading-none text-va-black">{title}</HeadingInstrument>}
                 </ContainerInstrument>

@@ -7,43 +7,82 @@
 :root {
   --va-primary: #FF0084;
   --va-primary-dark: #D63CFF;
-  --va-background: hsl(35, 25%, 98%);
-  --va-dark: #1A1A1A;
-  --va-dark-soft: #2D2D2D;
-  --va-bezier: cubic-bezier(0.165, 0.84, 0.44, 1);
-}
-
-/* 🎨 THEME SYSTEM */
-:root {
-  /* Base colors - Voices Light (Default) */
   --background: 35 25% 98%;
   --foreground: 28 12% 10%;
-  
   --va-surface: 35 25% 98%;
   --va-card: 0 0% 100%;
   --va-text: 28 12% 10%;
   --va-text-muted: 28 12% 10% / 0.4;
   --va-border: 0 0% 0% / 0.1;
   --va-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+  --va-black: 28 12% 10%;
+  --va-off-white: 35 25% 98%;
+  --va-background: hsl(var(--background));
+  --va-dark: hsl(var(--va-black));
+  --va-dark-soft: #2D2D2D;
+  --va-bezier: cubic-bezier(0.165, 0.84, 0.44, 1);
+  color-scheme: light;
+}
+
+/* 🎨 THEME SYSTEM: automatic light/dark from user OS */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: 240 10% 6%;
+    --foreground: 0 0% 96%;
+    --va-surface: 240 10% 6%;
+    --va-card: 240 10% 10%;
+    --va-text: 0 0% 96%;
+    --va-text-muted: 0 0% 96% / 0.45;
+    --va-border: 0 0% 100% / 0.12;
+    --va-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
+    --va-black: 0 0% 96%;
+    --va-off-white: 240 10% 10%;
+    --va-background: hsl(var(--background));
+    --va-dark: hsl(var(--va-black));
+    color-scheme: dark;
+  }
 }
 
 .dark {
-  /* Base colors - Voices Dark (Future-ready) */
-  --background: 240 10% 4%;
-  --foreground: 0 0% 98%;
-  
-  --va-surface: 240 10% 4%;
-  --va-card: 240 10% 7%;
-  --va-text: 0 0% 98%;
-  --va-text-muted: 0 0% 98% / 0.4;
-  --va-border: 255 255% 255% / 0.1;
-  --va-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  --background: 240 10% 6%;
+  --foreground: 0 0% 96%;
+  --va-surface: 240 10% 6%;
+  --va-card: 240 10% 10%;
+  --va-text: 0 0% 96%;
+  --va-text-muted: 0 0% 96% / 0.45;
+  --va-border: 0 0% 100% / 0.12;
+  --va-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
+  --va-black: 0 0% 96%;
+  --va-off-white: 240 10% 10%;
+  --va-background: hsl(var(--background));
+  --va-dark: hsl(var(--va-black));
+  color-scheme: dark;
+}
+
+.light {
+  --background: 35 25% 98%;
+  --foreground: 28 12% 10%;
+  --va-surface: 35 25% 98%;
+  --va-card: 0 0% 100%;
+  --va-text: 28 12% 10%;
+  --va-text-muted: 28 12% 10% / 0.4;
+  --va-border: 0 0% 0% / 0.1;
+  --va-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+  --va-black: 28 12% 10%;
+  --va-off-white: 35 25% 98%;
+  --va-background: hsl(var(--background));
+  --va-dark: hsl(var(--va-black));
+  color-scheme: light;
 }
 
 .theme-ademing {
   /* Base colors - extra warm, rustgevend */
   --background: 35 25% 98%;
   --foreground: 28 12% 25%;
+  --va-black: 28 12% 25%;
+  --va-off-white: 35 25% 98%;
+  --va-background: hsl(var(--background));
+  --va-dark: hsl(var(--va-black));
 
   /* Card system - zachter, meer diepte */
   --card: 0 0% 100%;
@@ -77,6 +116,22 @@
   --shadow-medium: 0 4px 20px hsla(28, 12%, 25%, 0.09);
 }
 
+@media (prefers-color-scheme: dark) {
+  .theme-ademing {
+    --background: 160 20% 9%;
+    --foreground: 35 32% 90%;
+    --va-black: 35 32% 90%;
+    --va-off-white: 160 16% 14%;
+    --va-surface: 160 20% 9%;
+    --va-card: 160 18% 12%;
+    --va-text: 35 32% 90%;
+    --va-text-muted: 35 32% 90% / 0.55;
+    --va-border: 160 18% 25% / 0.45;
+    --va-background: hsl(var(--background));
+    --va-dark: hsl(var(--va-black));
+  }
+}
+
 .theme-ademing h1, 
 .theme-ademing h2, 
 .theme-ademing h3, 
@@ -87,14 +142,23 @@
 
 .theme-youssef {
   --va-primary: #1A1A1A; /* Luxe Black */
-  --va-background: hsl(35, 25%, 98%); /* Voices Off-White */
+  --background: 35 25% 98%;
+  --foreground: 28 12% 10%;
+  --va-black: 28 12% 10%;
+  --va-off-white: 35 25% 98%;
+  --va-background: hsl(var(--background)); /* Voices Off-White */
+  --va-dark: hsl(var(--va-black));
   --va-accent: #E91E63; /* Subtle Pink accent for Heart/Donation */
 }
 
 .theme-johfrai {
   --va-primary: #9333ea;
-  --va-background: #000000;
-  --va-dark: #FFFFFF;
+  --background: 0 0% 0%;
+  --foreground: 0 0% 100%;
+  --va-black: 0 0% 100%;
+  --va-off-white: 0 0% 8%;
+  --va-background: hsl(var(--background));
+  --va-dark: hsl(var(--va-black));
 }
 
 /* 🧪 PROJECT ADEMHALING: Globale Interactie Wetten */
@@ -120,27 +184,38 @@
 }
 
 body {
-  background-color: var(--va-background);
-  color: var(--va-dark);
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
   font-family: 'Inter', system-ui, sans-serif;
   font-size: 15px;
   font-weight: 300; /* Default to light, but not extralight */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
   scroll-behavior: smooth;
+  min-height: 100dvh;
+  overflow-x: hidden;
 }
 
 /* 🖋️ CONTRAST & READABILITY MANDATE (2026) */
-.text-va-black\/20 { color: rgba(26, 26, 26, 0.45) !important; } /* Was too light, now readable metadata */
-.text-va-black\/30 { color: rgba(26, 26, 26, 0.55) !important; }
-.text-va-black\/40 { color: rgba(26, 26, 26, 0.65) !important; } /* Was standard metadata, now solid */
-.text-va-black\/50 { color: rgba(26, 26, 26, 0.75) !important; }
-.text-va-black\/60 { color: rgba(26, 26, 26, 0.85) !important; }
+.text-va-black\/20 { color: hsl(var(--va-black) / 0.45) !important; } /* Was too light, now readable metadata */
+.text-va-black\/30 { color: hsl(var(--va-black) / 0.55) !important; }
+.text-va-black\/40 { color: hsl(var(--va-black) / 0.65) !important; } /* Was standard metadata, now solid */
+.text-va-black\/50 { color: hsl(var(--va-black) / 0.75) !important; }
+.text-va-black\/60 { color: hsl(var(--va-black) / 0.85) !important; }
 
 /* 🖋️ PLACEHOLDER MANDATE (2026) */
 ::placeholder {
-  color: rgba(26, 26, 26, 0.45) !important;
+  color: hsl(var(--va-black) / 0.45) !important;
   opacity: 1; /* Firefox fix */
+}
+
+@media (max-width: 768px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
 }
 
 .tracking-widest {
