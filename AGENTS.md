@@ -13,6 +13,7 @@ Before your first edit in a session:
    - `000-ATOMIC-TRINITY.mdc`
    - `800-DNA-ROUTING.mdc`
    - `310-LAYOUT-INSTRUMENTS.mdc`
+   - `320-THEME-PARITY.mdc`
    - `200-CODE-INTEGRITY.mdc`
    - `700-PUSH-AND-VALIDATE.mdc`
    - `300-TONE-OF-VOICE.mdc`
@@ -136,6 +137,7 @@ No raw `<div>`, `<h1>`, `<p>`, `<section>`, `<main>` in new components.
 
 - Default evidence mode: terminal output + screenshots.
 - Record video only for complex UI proof or explicit user request.
+- For any UI change, verify readability in both light and dark mode (no white-on-white / black-on-black states) on affected pages and navigation overlays.
 - Never run side-effectful tests (email/payments/webhooks/SMS) outside sandbox/mock mode.
 - If sandbox is unavailable, use read-only or dry-run validation and report limits.
 

@@ -23,6 +23,7 @@ Dit is de wet voor technische discipline en integriteit binnen het ecosysteem. G
 *   **Snake Case Exclusivity**: Alle DB-objecten en API payloads MOETEN `snake_case` gebruiken.
 *   **Nuclear Speed**: Garandeer 100ms LCP. Gebruik `next/dynamic` met `ssr: false` voor zware instrumenten.
 *   **Anti-Drift**: Gebruik `db.execute(sql...)` bij twijfel over ORM-caching (Pooler 6543).
+*   **Theme Parity**: UI is pas correct als light en dark allebei leesbaar zijn (zie `320-THEME-PARITY.mdc`).
 
 ## 🚀 DE PUSH-PROCEDURE
 

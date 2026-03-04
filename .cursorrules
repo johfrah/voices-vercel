@@ -131,6 +131,10 @@ Rapporteer vóór uitvoering:
     - **Geen Herhaling**: Voer nooit twee keer achter elkaar exact hetzelfde commando uit met identieke parameters.
     - **Escalatie**: Als `git log -n 1` geen antwoord geeft, schaal direct op naar `-n 20` of `-n 50`.
     - **Breedte-onderzoek**: Als code-historie niet direct uitsluitsel geeft, schakel direct over naar database-inspectie (SQL) of gerelateerde configuratiebestanden.
+13b. **DUAL THEME PARITY MANDATE**:
+    - Elke UI-aanpassing moet in zowel **light** als **dark** mode leesbaar en esthetisch correct zijn.
+    - Wit-op-wit, zwart-op-zwart of laag-contrast states in menu's, selectors, forms en cards zijn STRIKT VERBODEN.
+    - Validatie is verplicht met visueel bewijs (screenshots/video) op de betrokken routes.
 
 ## 📊 De Dashboard Architectuur (De Verdiepingen)
 
