@@ -1,6 +1,7 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
+  darkMode: "media",
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -16,12 +17,12 @@ const config: Config = {
         "va-card": "hsl(var(--va-card))",
         "va-text": "hsl(var(--va-text))",
         "va-border": "hsl(var(--va-border))",
-        "va-dark": "#1A1A1A",
+        "va-dark": "hsl(var(--va-black))",
         "va-dark-soft": "#2D2D2D",
         // Legacy support
         primary: "#E91E63",
-        "va-black": "#1A1A1A",
-        "va-off-white": "hsl(35, 25%, 98%)",
+        "va-black": "hsl(var(--va-black))",
+        "va-off-white": "hsl(var(--va-off-white))",
       },
       fontFamily: {
         display: ["Raleway", "sans-serif"],
