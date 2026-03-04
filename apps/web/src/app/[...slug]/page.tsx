@@ -22,7 +22,7 @@ import { AgencyHeroInstrument } from "@/components/ui/AgencyHeroInstrument";
 import { InstrumentRenderer } from "@/components/ui/InstrumentRenderer";
 import nextDynamic from "next/dynamic";
 import { JourneyType } from '@/contexts/VoicesMasterControlContext';
-import { normalizeSlug, stripLanguagePrefix } from '@/lib/system/slug';
+import { buildCanonicalActorPath, normalizeSlug, stripLanguagePrefix } from '@/lib/system/slug';
 import { localeToBcp47, normalizeLocale, stripLocalePrefix, withLocalePrefix } from '@/lib/system/locale-utils';
 import { BentoGrid, BentoCard } from '@/components/ui/BentoGrid';
 import { createClient } from "@supabase/supabase-js";
@@ -1446,7 +1446,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
                       </TextInstrument>
                     </ContainerInstrument>
                     <VoicesLink 
-                      href={`/${item.actor.slug}`}
+                      href={buildCanonicalActorPath(item.actor.slug, item.actor.display_name || item.actor.first_name)}
                       className="w-full bg-va-black text-white py-4 rounded-[10px] font-medium tracking-widest text-[13px] uppercase hover:bg-primary transition-all text-center"
                     >
                       <VoiceglotText translationKey="action.select_voice" defaultText="Selecteer deze stem" />

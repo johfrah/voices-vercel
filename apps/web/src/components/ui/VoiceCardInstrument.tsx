@@ -13,6 +13,7 @@ import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import { cn } from '@/lib/utils';
 import { Actor } from '@/types';
 import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
+import { buildCanonicalActorPath } from "@/lib/system/slug";
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, Check, ChevronDown, Clock, Edit3, Globe, MapPin, Mic, Pause, Play, Plus, Search as SearchIcon, Settings, ShieldCheck, Zap, X, Star } from 'lucide-react';
 import { useVoicesRouter } from '@/components/ui/VoicesLinkInstrument';
@@ -157,7 +158,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
     if (!voice || onSelect) return;
     e.stopPropagation();
     playClick('soft');
-    router.push(`/${voice.slug}`);
+    router.push(buildCanonicalActorPath(voice.slug, voice.display_name || voice.first_name));
   };
 
   const handleMouseEnter = () => {
