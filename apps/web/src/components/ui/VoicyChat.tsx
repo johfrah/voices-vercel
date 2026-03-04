@@ -3,6 +3,7 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { useCheckout } from '@/contexts/CheckoutContext';
 import { useEditMode } from '@/contexts/EditModeContext';
+import { useVoicesState } from '@/contexts/VoicesStateContext';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { useConsent } from '@/hooks/useConsent';
 import { useSonicDNA } from '@/lib/engines/sonic-dna';
@@ -42,6 +43,13 @@ interface ChatFaqItem {
   id: number;
   question: string;
   answer: string;
+}
+
+export function shouldElevateVoicyChatForCastingDock(
+  selectedActorsCount: number,
+  isCastingDockExcludedPage: boolean
+): boolean {
+  return selectedActorsCount > 0 && !isCastingDockExcludedPage;
 }
 
 export const VoicyChatV2: React.FC = () => {
@@ -91,6 +99,7 @@ export const VoicyChatV2: React.FC = () => {
     resetSelection,
     updateMusic
   } = useCheckout();
+  const { state: voicesState } = useVoicesState();
   const { playClick: playSonicClick } = useSonicDNA();
   const playClick = (type: "pop" | "pro" | "success" | "soft" | "lock" | "unlock" | undefined) => {
     try {
@@ -105,6 +114,11 @@ export const VoicyChatV2: React.FC = () => {
   const market = MarketManager.getCurrentMarket();
   const isPortfolioJourney = market.market_code === 'PORTFOLIO';
   const isArtistPage = market.market_code === 'ARTIST' || pathname?.startsWith('/voice/');
+  const isCastingDockExcludedPage = ['ARTIST', 'PORTFOLIO', 'ADEMING'].includes(market.market_code) || pathname?.startsWith('/casting/launchpad');
+  const isCastingDockVisible = shouldElevateVoicyChatForCastingDock(
+    (voicesState.selected_actors || []).length,
+    Boolean(isCastingDockExcludedPage)
+  );
   
   // Determine Journey
   const isAcademyJourney = pathname?.includes('/academy');
@@ -195,6 +209,14 @@ export const VoicyChatV2: React.FC = () => {
   }, [conversationId, isAdmin, hasConsent]);
 
   const isJohfrah = persona === 'johfrah';
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    window.dispatchEvent(new CustomEvent('voicy:state', { detail: { isOpen } }));
+    return () => {
+      window.dispatchEvent(new CustomEvent('voicy:state', { detail: { isOpen: false } }));
+    };
+  }, [isOpen]);
 
   useEffect(() => {
     const handlePersonaChange = (e: any) => {
@@ -1068,8 +1090,9 @@ export const VoicyChatV2: React.FC = () => {
   return (
     <ContainerInstrument 
       className={cn(
-        "fixed z-[150] touch-manipulation",
-        "bottom-[max(2rem,env(safe-area-inset-bottom))] right-[max(2rem,env(safe-area-inset-right))]",
+        "fixed z-[150] touch-manipulation transition-[bottom] duration-300",
+        isCastingDockVisible ? "bottom-[calc(8.25rem+env(safe-area-inset-bottom))] md:bottom-8" : "bottom-[max(2rem,env(safe-area-inset-bottom))]",
+        "right-[max(2rem,env(safe-area-inset-right))]",
         "max-[420px]:right-auto max-[420px]:left-[max(2rem,env(safe-area-inset-left))]",
         isOpen && "z-[250]"
       )}
