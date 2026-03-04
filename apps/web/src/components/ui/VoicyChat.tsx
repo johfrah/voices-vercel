@@ -37,6 +37,13 @@ import { flushSync } from 'react-dom';
 import { ButtonInstrument, ContainerInstrument, FormInstrument, HeadingInstrument, InputInstrument, LabelInstrument, TextInstrument, TextareaInstrument } from './LayoutInstruments';
 import { VoiceglotText } from './VoiceglotText';
 
+/** FAQ item for chat tab (snake_case API handshake) */
+interface ChatFaqItem {
+  id: number;
+  question: string;
+  answer: string;
+}
+
 export const VoicyChatV2: React.FC = () => {
   // 🛡️ CHRIS-PROTOCOL: All State at the top to prevent TDZ errors
   const [conversationId, setConversationId] = useState<number | null>(null);
@@ -68,7 +75,7 @@ export const VoicyChatV2: React.FC = () => {
     scrollDepth: 0,
     lastInteraction: new Date().toISOString()
   });
-  const [chatFaqs, setChatFaqs] = useState<Array<{ id: number; question: string; answer: string }>>([]);
+  const [chatFaqs, setChatFaqs] = useState<ChatFaqItem[]>([]);
   const [chatFaqsLoading, setChatFaqsLoading] = useState(false);
 
   const { 
@@ -121,13 +128,13 @@ export const VoicyChatV2: React.FC = () => {
     setChatFaqsLoading(true);
     fetch(`/api/faq?journey=${encodeURIComponent(faqJourneyParam)}&limit=10`)
       .then((res) => (res.ok ? res.json() : []))
-      .then((data: any[]) => {
+      .then((data: { id: number; question_nl?: string | null; question_en?: string | null; answer_nl?: string | null; answer_en?: string | null }[]) => {
         const langEn = (language || 'nl-BE').toLowerCase().startsWith('en');
-        setChatFaqs((Array.isArray(data) ? data : []).map((f: any) => {
-          const q = langEn ? (f.question_en ?? f.questionEn) : (f.question_nl ?? f.questionNl);
-          const a = langEn ? (f.answer_en ?? f.answerEn) : (f.answer_nl ?? f.answerNl);
-          return { id: f.id, question: q || (f.question_nl ?? f.questionNl) || '', answer: a || (f.answer_nl ?? f.answerNl) || '' };
-        }).filter((f) => f.question));
+        setChatFaqs((Array.isArray(data) ? data : []).map((f) => {
+          const q = langEn ? (f.question_en ?? f.question_nl) : (f.question_nl ?? f.question_en);
+          const a = langEn ? (f.answer_en ?? f.answer_nl) : (f.answer_nl ?? f.answer_en);
+          return { id: f.id, question: q ?? '', answer: a ?? '' };
+        }).filter((f): f is ChatFaqItem => Boolean(f.question)));
       })
       .catch(() => setChatFaqs([]))
       .finally(() => setChatFaqsLoading(false));
