@@ -74,7 +74,10 @@ export function resolveActorSlugSegment(rawSlug?: string | null, fallbackName?: 
   if (segments.length === 1) {
     candidate = segments[0];
   } else if (segments.length > 1) {
-    const knownPrefixes = new Set(['voice', 'stem', 'voix', 'stimme', 'agency', 'voices']);
+    const knownPrefixes = new Set([
+      'voice', 'stem', 'voix', 'stimme', 'agency', 'voices',
+      'studio', 'academy', 'ademing', 'johfrai', 'partners', 'freelance', 'casting', 'artist', 'portfolio'
+    ]);
     candidate = knownPrefixes.has(segments[0]) ? segments[1] : segments[0];
   }
 
@@ -82,7 +85,7 @@ export function resolveActorSlugSegment(rawSlug?: string | null, fallbackName?: 
   if (cleanedCandidate) return cleanedCandidate;
 
   const generatedFallback = generateSlug(fallbackName || '');
-  return generatedFallback || 'voice';
+  return generatedFallback || 'actor-profile';
 }
 
 /**

@@ -104,6 +104,27 @@ export async function middleware(request: NextRequest) {
 
   // 1.8 LEGACY REDIRECTS (v2.24)
   // Vang oude URL-structuren op en stuur ze naar de nieuwe canonieke paden.
+  const shortLocalePattern = SUPPORTED_LOCALE_PREFIXES.join('|')
+  const localizedVoiceRegex = new RegExp(`^/(${shortLocalePattern})/voice(?:/(.+))?$`, 'i')
+  const legacyVoiceRegex = /^\/voice(?:\/(.+))?$/i
+  const localizedVoiceMatch = pathname.match(localizedVoiceRegex)
+  const legacyVoiceMatch = pathname.match(legacyVoiceRegex)
+
+  if (localizedVoiceMatch) {
+    const locale = localizedVoiceMatch[1].toLowerCase()
+    const suffix = (localizedVoiceMatch[2] || '').replace(/\/+$/, '')
+    const redirectUrl = url.clone()
+    redirectUrl.pathname = suffix ? `/${locale}/${suffix}` : `/${locale}/agency`
+    return NextResponse.redirect(redirectUrl, 308)
+  }
+
+  if (legacyVoiceMatch) {
+    const suffix = (legacyVoiceMatch[1] || '').replace(/\/+$/, '')
+    const redirectUrl = url.clone()
+    redirectUrl.pathname = suffix ? `/${suffix}` : '/agency'
+    return NextResponse.redirect(redirectUrl, 308)
+  }
+
   const isLegacyAgencyPath = pathname.startsWith('/agency/video') || 
                              pathname.startsWith('/agency/telephony') || 
                              pathname.startsWith('/agency/commercial');
@@ -316,7 +337,6 @@ export async function middleware(request: NextRequest) {
     return ademingResponse
   }
 
-  const shortLocalePattern = SUPPORTED_LOCALE_PREFIXES.join('|')
   const shortLocaleRegex = new RegExp(`^/(${shortLocalePattern})(/|$)`, 'i')
   const isoLocaleRegex = /^\/(fr-fr|en-gb|nl-be|de-de|es-es|it-it|pt-pt)(\/|$)/i
 

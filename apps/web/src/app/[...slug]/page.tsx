@@ -8,7 +8,7 @@ import { ArrowRight, CreditCard, Info, ShieldCheck, Star, Zap, Play, Instagram, 
 import { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
-import { notFound, redirect } from 'next/navigation';
+import { notFound, permanentRedirect, redirect } from 'next/navigation';
 import { Suspense } from "react";
 import { getActor, getArtist, getActors, getWorkshops, getArticle } from "@/lib/services/api-server";
 import { WorkshopApiResponse } from "@/app/api/studio/workshops/route";
@@ -902,11 +902,17 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
       }
 
       // 🛡️ CHRIS-PROTOCOL: Handle Redirects (Canonical Handshake)
-      if (resolved.canonical_slug && resolved.canonical_slug !== lookupSlug) {
-        const canonicalPath = withLocalePrefix(`/${resolved.canonical_slug}`, lang, market.primary_language);
+      // Preserve any suffix (journey/medium) when canonical slug changes.
+      const matchedSlug = resolved.slug || lookupSlug;
+      if (resolved.canonical_slug && resolved.canonical_slug !== matchedSlug) {
+        const canonicalPathRaw = buildLocalizedRoutePath(
+          cleanSlug,
+          matchedSlug,
+          resolved.canonical_slug
+        );
+        const canonicalPath = withLocalePrefix(canonicalPathRaw, lang, market.primary_language);
         console.error(` [SmartRouter] Redirecting legacy slug "${lookupSlug}" to canonical: "${canonicalPath}"`);
-        // 🛡️ NUCLEAR SEO: Use 301 Permanent Redirect for canonical handshake
-        return redirect(canonicalPath);
+        return permanentRedirect(canonicalPath);
       }
 
     // 🛡️ CHRIS-PROTOCOL: World-Aware Handshake (v2.24.4)
@@ -1011,7 +1017,10 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
                           <VoiceglotText translationKey="action.view_profile" defaultText="Bekijk Profiel" />
                         </TextInstrument>
                       </ContainerInstrument>
-                      <VoicesLink href={`/${item.actor?.slug}`} className="w-full bg-va-black text-white py-4 rounded-[10px] font-medium tracking-widest text-[13px] uppercase hover:bg-primary transition-all text-center">
+                      <VoicesLink
+                        href={buildCanonicalActorPath(item.actor?.slug, item.actor?.display_name || item.actor?.first_name)}
+                        className="w-full bg-va-black text-white py-4 rounded-[10px] font-medium tracking-widest text-[13px] uppercase hover:bg-primary transition-all text-center"
+                      >
                         <VoiceglotText translationKey="action.select_voice" defaultText="Selecteer deze stem" />
                       </VoicesLink>
                     </ContainerInstrument>

@@ -1,4 +1,5 @@
 import { db, getTable } from '@/lib/system/voices-config';
+import { buildCanonicalActorPath } from '@/lib/system/slug';
 
 const faq = getTable('faq');
 const actors = getTable('actors');
@@ -93,7 +94,11 @@ export class SEOEngineService {
     // Add Actors
     const liveActors = await db.select().from(actors).where(eq(actors.status, 'live'));
     liveActors.forEach(a => {
-      entries.push({ url: `/voice/${a.first_name.toLowerCase()}`, lastMod: a.updatedAt || new Date(), priority: 0.6 });
+      entries.push({
+        url: buildCanonicalActorPath(a.slug || '', a.display_name || a.first_name),
+        lastMod: a.updatedAt || new Date(),
+        priority: 0.6
+      });
     });
 
     return entries;
