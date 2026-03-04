@@ -162,11 +162,17 @@ export async function POST(request: NextRequest) {
               `;
 
               const translatedText = await GeminiService.generateText(prompt, { lang: lang });
+              if (translatedText.includes('Voicy is momenteel offline')) {
+                console.warn('[RegisterAPI] Gemini unavailable (quota or key), skipping remaining languages for this key.');
+                await notifyAdminGeminiQuotaExceeded();
+                break;
+              }
               let cleanTranslation = translatedText.trim().replace(/^"|"$/g, '');
 
               //  CHRIS-PROTOCOL: Slop Filter
               // Als de AI een foutmelding of conversatie teruggeeft, negeren we deze.
               const isSlop = (
+                cleanTranslation.includes('Voicy is momenteel offline') ||
                 cleanTranslation.includes('Het lijkt erop dat') ||
                 cleanTranslation.includes('Zou je de tekst') ||
                 cleanTranslation.includes('niet compleet is') ||

@@ -285,7 +285,8 @@ export default function TarievenPage() {
         <ContainerInstrument className="mt-12 p-6 bg-primary/5 rounded-[20px] border border-primary/10">
           <TextInstrument className="text-[13px] text-primary/60 font-medium leading-relaxed">
             <strong>Let op:</strong> Deze prijzen zijn de globale defaults voor de Slimme Kassa. 
-            Indien een stemacteur specifieke tarieven heeft ingesteld in hun profiel, zullen die tarieven voorrang krijgen op deze globale instellingen voor die specifieke acteur.
+            Indien een stemacteur specifieke tarieven heeft ingesteld in hun profiel, zullen die tarieven voorrang krijgen op deze globale instellingen voor die specifieke acteur. 
+            Per-acteur mediatarieven beheer je onder Stemmen → [acteur] → Tarieven. Cinema en POS bestaan alleen in de prijsengine en staan niet in dat formulier.
           </TextInstrument>
         </ContainerInstrument>
 

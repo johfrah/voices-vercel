@@ -1336,62 +1336,20 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
               >
                 {/*  CHRIS-PROTOCOL: The "One Truth" Banner (2026) */}
                 <div className="space-y-6">
-                  <div className="bg-va-black p-6 rounded-[24px] shadow-aura-lg relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full -mr-32 -mt-32 blur-3xl group-hover:bg-primary/20 transition-all duration-1000" />
+                  <div className="bg-va-black p-6 rounded-[24px] shadow-aura-lg relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full -mr-32 -mt-32 blur-3xl" />
                     <div className="relative z-10 flex items-start gap-5">
                       <div className="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center shrink-0 border border-white/10">
                         <Sparkles size={24} className="text-primary" />
                       </div>
                       <div className="space-y-1.5">
                         <HeadingInstrument level={4} className="text-lg font-bold text-white tracking-tight">
-                          Belangrijk over jouw tarieven
+                          Jouw tarieven
                         </HeadingInstrument>
-                        <p className="text-[13px] text-white/60 leading-relaxed max-w-md">
-                          Voor 
-                          <span className="group/tip relative inline-block mx-1">
-                            <span className="text-white font-bold cursor-help">Telefonie (€89)</span>
-                            <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-3 bg-white text-va-black text-[11px] rounded-xl shadow-2xl opacity-0 group-hover/tip:opacity-100 transition-all pointer-events-none z-50 border border-black/5 font-medium leading-tight">
-                              Wachtmuziek, IVR-menu&apos;s en voicemailberichten.
-                            </span>
-                          </span>
-                          en 
-                          <span className="group/tip relative inline-block mx-1">
-                            <span className="text-white font-bold cursor-help">Corporate Video (€249)</span>
-                            <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-3 bg-white text-va-black text-[11px] rounded-xl shadow-2xl opacity-0 group-hover/tip:opacity-100 transition-all pointer-events-none z-50 border border-black/5 font-medium leading-tight">
-                              Bedrijfsvideo&apos;s, e-learnings en interne presentaties (niet-betaalde media).
-                            </span>
-                          </span>
-                          hanteren we vaste tarieven. 
-                          Voor 
-                          <span className="group/tip relative inline-block mx-1">
-                            <span className="text-white font-bold cursor-help">Paid Media</span>
-                            <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-3 bg-white text-va-black text-[11px] rounded-xl shadow-2xl opacity-0 group-hover/tip:opacity-100 transition-all pointer-events-none z-50 border border-black/5 font-medium leading-tight">
-                              TV, Radio, Online Ads en Social Media campagnes (betaalde media).
-                            </span>
-                          </span>
-                          voer je hieronder de gewenste extra buyout in. 
-                          Voices hanteert een vaste platformfee van 
-                          <span className="group/tip relative inline-block mx-1">
-                            <span className="text-primary font-black cursor-help">25%</span>
-                            <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-3 bg-white text-va-black text-[11px] rounded-xl shadow-2xl opacity-0 group-hover/tip:opacity-100 transition-all pointer-events-none z-50 border border-black/5 font-medium leading-tight">
-                              Inclusief marketing, hosting en administratie.
-                            </span>
-                          </span>
-                          op het totaalbedrag.
-                        </p>
+                        <TextInstrument className="text-[13px] text-white/60 leading-relaxed max-w-md" as="p">
+                          Stel hier je mediatarieven in. Optioneel per land.
+                        </TextInstrument>
                       </div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-4 p-4 bg-va-black/5 rounded-2xl border border-va-black/5">
-                    <div className="w-8 h-8 rounded-full bg-va-black/10 flex items-center justify-center shrink-0">
-                      <Sparkles size={16} className="text-primary" />
-                    </div>
-                    <div className="space-y-1">
-                      <TextInstrument className="text-[13px] font-bold text-va-black/80">Eenvoudige Prijsopbouw</TextInstrument>
-                      <TextInstrument className="text-[12px] text-va-black/40 leading-relaxed">
-                        Voices hanteert een transparante prijs per spot. Elke extra spot of kanaal wordt eenvoudig opgeteld, zodat je precies weet waar je aan toe bent.
-                      </TextInstrument>
                     </div>
                   </div>
                 </div>
@@ -1484,11 +1442,12 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
                           <span className="text-[10px] text-va-black/20 italic">Landelijk (incl. 1 jaar buyout)</span>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                           {[
                             { id: 'tv_national', label: 'TV Nationaal', icon: Tv },
                             { id: 'radio_national', label: 'Radio Nationaal', icon: Radio },
-                            { id: 'online', label: 'Online Commercial', icon: Globe }
+                            { id: 'online', label: 'Online Commercial', icon: Globe },
+                            { id: 'social_media', label: 'Social Media', icon: Share2 }
                           ].map(field => {
                             const isAllIn = false;
                             const storedValue = formData.rates?.[selectedMarket]?.[field.id];
