@@ -150,19 +150,12 @@ export async function generateMetadata(): Promise<Metadata> {
   const pathname = headersList.get('x-voices-pathname') || '';
   const host = headersList.get("x-voices-host") || headersList.get("host") || process.env.NEXT_PUBLIC_SITE_URL || MarketManagerServer.getMarketDomains()['BE'].replace('https://', '');
   const cleanHost = host.replace(/^https?:\/\//, '');
-  
-  // 🛡️ CHRIS-PROTOCOL: Pass pathname to market manager for sub-journey detection (e.g. /studio, /academy)
-  let lookupHost = cleanHost;
-  if (pathname.startsWith('/studio')) lookupHost = `${cleanHost}/studio`;
-  else if (pathname.startsWith('/academy')) lookupHost = `${cleanHost}/academy`;
-  
-  // 🛡️ CHRIS-PROTOCOL: ID-First Context Resolution (v3.0.0)
+  const marketHost = cleanHost.split('/')[0];
   const { worldId, languageId, journeyId } = MarketManagerServer.resolveContext(cleanHost, pathname);
 
   // 🛡️ CHRIS-PROTOCOL: Parallel Pulse Fetching (v2.14.798)
-  // We fetch market, locales and translations in parallel to minimize TTFB
   const [market, worldConfig, alternateLanguages, studioTranslations] = await Promise.all([
-    getMarketSafe(lookupHost),
+    getMarketSafe(marketHost),
     ConfigBridge.getWorldConfig(worldId, languageId),
     (async () => {
       try {
@@ -290,12 +283,9 @@ export default async function RootLayout({
   const host = headersList.get("x-voices-host") || headersList.get("host") || process.env.NEXT_PUBLIC_SITE_URL || MarketManagerServer.getMarketDomains()['BE'].replace('https://', '');
   const cleanHost = host.replace(/^https?:\/\//, '');
   
-  // 🛡️ CHRIS-PROTOCOL: Pass pathname to market manager for sub-journey detection (e.g. /studio, /academy)
-  let lookupHost = cleanHost;
-  if (pathname.startsWith('/studio')) lookupHost = `${cleanHost}/studio`;
-  else if (pathname.startsWith('/academy')) lookupHost = `${cleanHost}/academy`;
-
-  // 🛡️ CHRIS-PROTOCOL: ID-First Context Resolution (v3.0.0)
+  // 🛡️ CHRIS-PROTOCOL: Market altijd op domein resolven (geen path in host). Studio/Academy zijn journeys op hetzelfde domein (BE).
+  const marketHost = cleanHost.split('/')[0];
+  // 🛡️ ID-First Context Resolution: pathname voor worldId/journeyId (Studio=2, Academy=3)
   const { worldId, languageId, journeyId } = MarketManagerServer.resolveContext(cleanHost, pathname);
 
   //  CHRIS-PROTOCOL: Parallel Pulse Fetching (v2.14.798)
@@ -304,7 +294,7 @@ export default async function RootLayout({
   const supabase = createClient(supabaseUrl, supabaseKey);
 
   const [market, studioTranslations, worldLanguages, handshakeLanguages, worldConfig] = await Promise.all([
-    getMarketSafe(lookupHost),
+    getMarketSafe(marketHost),
     (async () => {
       try {
         const translationPromise = getTranslationsServer(normalizeLocale(langHeader || 'nl-be'));
@@ -383,7 +373,8 @@ export default async function RootLayout({
     worldConfig
   };
 
-  if (isAdminRoute || isStudioPage || (isAdeming && isOffline && !isAdmin)) {
+  // Minimal layout alleen voor Admin en Ademing offline. Studio/Academy krijgen volle layout (menu + taalswitcher).
+  if (isAdminRoute || (isAdeming && isOffline && !isAdmin)) {
     return (
       <html lang={htmlLang} className={htmlClass} suppressHydrationWarning>
         <body className={bodyClass} suppressHydrationWarning>

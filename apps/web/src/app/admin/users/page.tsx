@@ -14,7 +14,7 @@ import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useAdminTracking } from '@/hooks/useAdminTracking';
 import { useAuth } from '@/contexts/AuthContext';
 import { useWorld } from '@/contexts/WorldContext';
-import { ArrowLeft, Edit3, Loader2, Mail, MoreHorizontal, Search as SearchIcon, Shield, UserPlus, Users, RefreshCw, Ghost } from 'lucide-react';
+import { ArrowLeft, Edit3, Loader2, Mail, MoreHorizontal, Search as SearchIcon, Shield, UserPlus, Users, RefreshCw, Ghost, Eye, DollarSign, ShoppingBag } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState, useCallback } from 'react';
 import { toast } from 'react-hot-toast';
@@ -33,6 +33,7 @@ export default function AdminUsersPage() {
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [sortBy, setSortBy] = useState<'newest' | 'ltv'>('newest');
 
   const fetchUsers = useCallback(async () => {
     setLoading(true);
@@ -62,7 +63,12 @@ export default function AdminUsersPage() {
   const filteredUsers = users.filter(u => 
     u.name?.toLowerCase().includes(searchQuery.toLowerCase()) || 
     u.email?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  ).sort((a, b) => {
+      if (sortBy === 'ltv') {
+          return (b.stats?.totalSpent || 0) - (a.stats?.totalSpent || 0);
+      }
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+  });
 
   if (loading) return (
     <ContainerInstrument className="min-h-screen flex items-center justify-center">
@@ -123,6 +129,22 @@ export default function AdminUsersPage() {
         </BentoCard>
       </BentoGrid>
 
+      {/* Filter Tabs */}
+      <ContainerInstrument className="flex gap-4 border-b border-black/5 pb-4">
+          <button 
+            onClick={() => setSortBy('newest')}
+            className={`text-[13px] font-bold tracking-widest uppercase pb-2 transition-colors ${sortBy === 'newest' ? 'text-primary border-b-2 border-primary' : 'text-va-black/30 hover:text-va-black'}`}
+          >
+              Nieuwste
+          </button>
+          <button 
+            onClick={() => setSortBy('ltv')}
+            className={`text-[13px] font-bold tracking-widest uppercase pb-2 transition-colors ${sortBy === 'ltv' ? 'text-primary border-b-2 border-primary' : 'text-va-black/30 hover:text-va-black'}`}
+          >
+              Top Klanten (LTV)
+          </button>
+      </ContainerInstrument>
+
       {/* User Table - Desktop */}
       <ContainerInstrument className="hidden md:block bg-white border border-black/5 rounded-[20px] overflow-hidden">
         <table className="w-full text-left border-collapse">
@@ -130,6 +152,7 @@ export default function AdminUsersPage() {
             <tr className="bg-va-off-white/50 border-b border-black/5">
               <th className="p-6 text-[15px] font-light tracking-widest text-va-black/30"><VoiceglotText  translationKey="auto.page.gebruiker.460471" defaultText="Gebruiker" /></th>
               <th className="p-6 text-[15px] font-light tracking-widest text-va-black/30">Rol</th>
+              <th className="p-6 text-[15px] font-light tracking-widest text-va-black/30">LTV</th>
               <th className="p-6 text-[15px] font-light tracking-widest text-va-black/30"><VoiceglotText  translationKey="auto.page.status.ec53a8" defaultText="Status" /></th>
               <th className="p-6 text-[15px] font-light tracking-widest text-va-black/30"><VoiceglotText  translationKey="auto.page.laatst_actief.81b333" defaultText="Laatst Actief" /></th>
               <th className="p-6 text-[15px] font-light tracking-widest text-va-black/30"><VoiceglotText  translationKey="auto.page.acties.691fa4" defaultText="Acties" /></th>
@@ -139,15 +162,17 @@ export default function AdminUsersPage() {
             {filteredUsers.map((user) => (
               <tr key={user.id} className="border-b border-black/5 hover:bg-va-off-white/20 transition-colors group">
                 <td className="p-6">
-                  <ContainerInstrument className="flex items-center gap-4">
-                    <ContainerInstrument className="w-10 h-10 bg-va-off-white rounded-full flex items-center justify-center font-light text-va-black/20 ">
-                      {user.name?.charAt(0) || user.email?.charAt(0)}
+                  <Link href={`/admin/users/${user.id}`}>
+                    <ContainerInstrument className="flex items-center gap-4 cursor-pointer">
+                        <ContainerInstrument className="w-10 h-10 bg-va-off-white rounded-full flex items-center justify-center font-light text-va-black/20 ">
+                        {user.name?.charAt(0) || user.email?.charAt(0)}
+                        </ContainerInstrument>
+                        <ContainerInstrument>
+                        <TextInstrument className="font-light text-va-black tracking-tight group-hover:text-primary transition-colors">{user.name || 'Onbekend'}</TextInstrument>
+                        <TextInstrument className="text-[15px] text-va-black/40 font-light">{user.email}</TextInstrument>
+                        </ContainerInstrument>
                     </ContainerInstrument>
-                    <ContainerInstrument>
-                      <TextInstrument className="font-light text-va-black tracking-tight">{user.name || 'Onbekend'}</TextInstrument>
-                      <TextInstrument className="text-[15px] text-va-black/40 font-light">{user.email}</TextInstrument>
-                    </ContainerInstrument>
-                  </ContainerInstrument>
+                  </Link>
                 </td>
                 <td className="p-6">
                   <ContainerInstrument className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-[15px] font-light tracking-widest ${
@@ -158,6 +183,12 @@ export default function AdminUsersPage() {
                   </ContainerInstrument>
                 </td>
                 <td className="p-6">
+                    <div className="flex flex-col">
+                        <span className="font-medium text-primary">€{user.stats?.totalSpent?.toFixed(2) || '0.00'}</span>
+                        <span className="text-[12px] text-va-black/30">{user.stats?.orders || 0} orders</span>
+                    </div>
+                </td>
+                <td className="p-6">
                   <ContainerInstrument className="flex items-center gap-2">
                     <ContainerInstrument className="w-1.5 h-1.5 rounded-full bg-green-500" />
                     <TextInstrument className="text-[15px] font-light tracking-widest"><VoiceglotText  translationKey="auto.page.actief.63cc56" defaultText="Actief" /></TextInstrument>
@@ -165,11 +196,14 @@ export default function AdminUsersPage() {
                 </td>
                 <td className="p-6">
                   <TextInstrument className="text-[15px] font-light text-va-black/40">
-                    {user.lastLogin ? new Date(user.lastLogin).toLocaleDateString('nl-BE') : 'Nooit'}
+                    {user.lastActive ? new Date(user.lastActive).toLocaleDateString('nl-BE') : (user.lastLogin ? new Date(user.lastLogin).toLocaleDateString('nl-BE') : 'Nooit')}
                   </TextInstrument>
                 </td>
                 <td className="p-6">
                   <ContainerInstrument className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Link href={`/admin/users/${user.id}`} className="p-2 hover:bg-va-off-white rounded-[10px] transition-colors text-va-black/40 hover:text-primary" title="Bekijk Profiel">
+                        <Eye strokeWidth={1.5} size={14} />
+                    </Link>
                     <button 
                       onClick={async () => {
                         logAction('users_impersonate', { user_id: user.id });
@@ -186,9 +220,6 @@ export default function AdminUsersPage() {
                     </button>
                     <button onClick={() => logAction('users_mail', { user_id: user.id })} className="p-2 hover:bg-va-off-white rounded-[10px] transition-colors text-va-black/40 hover:text-primary">
                       <Mail strokeWidth={1.5} size={14} />
-                    </button>
-                    <button className="p-2 hover:bg-va-off-white rounded-[10px] transition-colors text-va-black/40 hover:text-primary">
-                      <MoreHorizontal strokeWidth={1.5} size={14} />
                     </button>
                   </ContainerInstrument>
                 </td>
@@ -220,11 +251,14 @@ export default function AdminUsersPage() {
             </div>
             
             <div className="flex items-center justify-between pt-4 border-t border-black/[0.02]">
+                <div className="flex flex-col">
+                    <span className="text-xs text-va-black/30 uppercase tracking-widest">LTV</span>
+                    <span className="font-bold text-primary">€{user.stats?.totalSpent?.toFixed(2) || '0.00'}</span>
+                </div>
               <div className="flex items-center gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
-                <TextInstrument className="text-sm font-light text-va-black/60">Actief</TextInstrument>
-              </div>
-              <div className="flex items-center gap-2">
+                <Link href={`/admin/users/${user.id}`} className="p-3 bg-va-off-white rounded-full text-va-black/40 active:bg-primary active:text-white transition-all">
+                    <Eye strokeWidth={1.5} size={18} />
+                </Link>
                 <button 
                   onClick={async () => {
                     logAction('users_impersonate', { user_id: user.id });
@@ -237,9 +271,6 @@ export default function AdminUsersPage() {
                 </button>
                 <button className="p-3 bg-va-off-white rounded-full text-va-black/40 active:bg-primary active:text-white transition-all">
                   <Edit3 strokeWidth={1.5} size={18} />
-                </button>
-                <button className="p-3 bg-va-off-white rounded-full text-va-black/40 active:bg-primary active:text-white transition-all">
-                  <Mail strokeWidth={1.5} size={18} />
                 </button>
               </div>
             </div>

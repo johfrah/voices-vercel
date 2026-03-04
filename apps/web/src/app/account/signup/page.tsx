@@ -1,7 +1,6 @@
-import React from 'react';
-import { PageWrapperInstrument, SectionInstrument, ContainerInstrument, HeadingInstrument, TextInstrument } from '@/components/ui/LayoutInstruments';
-import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { ActorProfileForm } from '@/components/forms/ActorProfileForm';
+import { ContainerInstrument, HeadingInstrument, PageWrapperInstrument, SectionInstrument, TextInstrument } from '@/components/ui/LayoutInstruments';
+import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { Sparkles } from 'lucide-react';
 
 export default function ActorSignupPage() {

@@ -195,7 +195,7 @@ export async function POST(request: Request) {
     const { 
       pricing, items, selectedActor, step, first_name, last_name, email, 
       vat_number, postal_code, city, metadata, quoteMessage, phone, 
-      company, address_street, usage, plan, music, country, payment_method, language
+      company, address_street, usage, plan, music, ownMusicFile, country, payment_method, language
     } = data;
     const normalizedLanguage = normalizeLocale(language || marketConfig.primary_language || 'nl-be');
     const languageShort = localeToShort(normalizedLanguage);
@@ -447,6 +447,7 @@ export async function POST(request: Request) {
         itemsCount: validatedItems.length,
         customer: { email, first_name, last_name },
         items: validatedItems,
+        own_music_file: ownMusicFile || null,
       }
     }).select().single();
 
@@ -502,7 +503,8 @@ export async function POST(request: Request) {
           // 🛡️ Store hard IDs and participant context for analytics
           country_id: countryId || item.countryId || item.country_id,
           language_id: dbActor?.native_language_id,
-          participant_info: item.participant_info || undefined
+          participant_info: item.participant_info || undefined,
+          own_music_file: ownMusicFile || null,
         },
         delivery_status: 'waiting'
       };

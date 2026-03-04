@@ -78,16 +78,11 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function StudioPage() {
-  // 🛡️ CHRIS-PROTOCOL: Nuclear Handshake (Direct DB access)
-  const { workshops, instructors, faqs } = await getStudioWorkshopsData();
-  const heroWorkshop = workshops.find((workshop: any) => workshop?.video?.id === 722) || workshops.find((workshop: any) => workshop?.video?.file_path);
-  const subtitleWorkshop = (normalizeSubtitleTracks(heroWorkshop?.subtitle_data).length > 0
-    ? heroWorkshop
-    : workshops.find((workshop: any) => normalizeSubtitleTracks(workshop?.subtitle_data).length > 0)
-  ) || heroWorkshop;
-
-  const heroVideoUrl = toStorageUrl(heroWorkshop?.video?.file_path);
-  const heroSubtitles = normalizeSubtitleTracks(subtitleWorkshop?.subtitle_data);
+  const { workshops, instructors, faqs, heroVideoPath } = await getStudioWorkshopsData();
+  // Hero: workshop-beginners-aftermovie, gekoppeld via media ID (studio-service)
+  const heroVideoUrl = toStorageUrl(heroVideoPath);
+  const subtitleWorkshop = workshops.find((w: any) => normalizeSubtitleTracks(w?.subtitle_data).length > 0);
+  const heroSubtitles = normalizeSubtitleTracks(subtitleWorkshop?.subtitle_data ?? null);
 
   return (
     <PageWrapperInstrument className="bg-va-off-white min-h-screen" data-world="studio">
@@ -100,20 +95,20 @@ export default async function StudioPage() {
         <ContainerInstrument className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             
-            {/* Left: Video Player Island */}
+            {/* Left: Video Player Island (verticaal 9:16) */}
             <div className="relative group animate-in fade-in slide-in-from-left-8 duration-1000">
               <div className="absolute -inset-4 bg-primary/5 rounded-[30px] blur-2xl group-hover:bg-primary/10 transition-all duration-700" />
               {heroVideoUrl ? (
                 <VideoPlayer 
                   src={heroVideoUrl}
                   subtitles={heroSubtitles}
-                  className="w-full aspect-video rounded-[20px] shadow-aura-lg border border-white/20 relative z-10"
+                  className="w-full max-w-[320px] mx-auto aspect-[9/16] rounded-[20px] shadow-aura-lg border border-white/20 relative z-10"
                   autoPlay={false}
                   muted={false}
                 />
               ) : (
-                <ContainerInstrument className="w-full aspect-video rounded-[20px] border border-white/20 bg-va-off-white/80 backdrop-blur-sm shadow-aura-lg relative z-10 flex items-center justify-center">
-                  <TextInstrument className="text-va-black/50 text-sm tracking-wide">Studio video niet beschikbaar</TextInstrument>
+                <ContainerInstrument className="w-full max-w-[320px] mx-auto aspect-[9/16] rounded-[20px] border border-white/20 bg-va-off-white/80 backdrop-blur-sm shadow-aura-lg relative z-10 flex items-center justify-center">
+                  <TextInstrument className="text-va-black/50 text-sm tracking-wide text-center px-4">Studio video niet beschikbaar</TextInstrument>
                 </ContainerInstrument>
               )}
               {/* Floating Decorative Element */}

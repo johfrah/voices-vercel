@@ -163,10 +163,11 @@ export const PricingSummary: React.FC<{
         city: state.customer.city,
         country: state.customer.country || 'BE',
         language: normalizeLocale(language),
-        usage: state.usage,
-        plan: state.plan,
-        briefing: safeBriefing,
-        quoteMessage: quoteMessage || null,
+      usage: state.usage,
+      plan: state.plan,
+      briefing: safeBriefing,
+      ownMusicFile: state.ownMusicFile || null,
+      quoteMessage: quoteMessage || null,
         payment_method: state.paymentMethod,
         metadata: {
           words: wordCount,
@@ -470,7 +471,7 @@ export const PricingSummary: React.FC<{
                   {/* Uitleg, prijs en deleteknop rechts (LAYA-MANDAAT) */}
                   <ContainerInstrument className="flex flex-1 items-center justify-between gap-4 min-w-0">
                     <ContainerInstrument className="min-w-0 flex-1">
-                      <HeadingInstrument level={4} className="font-light text-xl text-va-black truncate tracking-tight">
+                      <HeadingInstrument level={4} className="font-light text-xl text-va-black truncate tracking-tight notranslate">
                         {itemTitle}
                       </HeadingInstrument>
                       <ContainerInstrument className="mt-2 flex flex-wrap items-center gap-2 text-[11px] text-va-black/45">
@@ -562,7 +563,7 @@ export const PricingSummary: React.FC<{
                                     <LabelInstrument className="text-[10px] uppercase tracking-widest text-va-black/30 font-bold ml-0">
                                       Ingevoerde tekst
                                     </LabelInstrument>
-                                    <div className="p-6 bg-va-off-white/40 rounded-[24px] border border-va-black/[0.03] italic text-va-black/80 relative group/script-preview text-[15px] leading-relaxed">
+                                    <div className="p-6 bg-va-off-white/40 rounded-[24px] border border-va-black/[0.03] italic text-va-black/80 relative group/script-preview text-[15px] leading-relaxed notranslate">
                                       <div className="absolute -top-2 -left-2 bg-white rounded-full p-1.5 shadow-sm border border-va-black/5">
                                         <FileText size={12} className="text-primary" />
                                       </div>
@@ -793,7 +794,7 @@ export const PricingSummary: React.FC<{
                         className="object-cover"
                       />
                     </div>
-                    <div className="space-y-1.5">
+                    <div className="space-y-1.5 notranslate">
                       <HeadingInstrument level={3} className="text-4xl font-light tracking-tighter text-va-black">
                         {selectedItem.actor?.display_name || selectedItem.name}
                       </HeadingInstrument>
@@ -849,7 +850,7 @@ export const PricingSummary: React.FC<{
                     <LabelInstrument className="text-[11px] uppercase tracking-[0.1em] text-va-black/40 font-bold ml-0">
                       <VoiceglotText translationKey="checkout.your_text" defaultText="Jouw Tekst" />
                     </LabelInstrument>
-                    <div className="bg-va-off-white/40 p-8 rounded-[32px] border border-black/[0.02] max-h-[300px] overflow-y-auto custom-scrollbar relative group/script">
+                    <div className="bg-va-off-white/40 p-8 rounded-[32px] border border-black/[0.02] max-h-[300px] overflow-y-auto custom-scrollbar relative group/script notranslate">
                       <p className="text-[16px] font-light leading-relaxed text-va-black italic whitespace-pre-wrap">
                         &quot;{selectedItem.script || selectedItem.briefing || t('common.no_text_entered', 'Nog geen tekst ingevoerd')}&quot;
                       </p>

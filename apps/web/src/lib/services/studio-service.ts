@@ -1,25 +1,60 @@
 import { db } from '@/lib/system/voices-config';
 import { sql } from 'drizzle-orm';
 
+/** Media ID voor Studio hero video (workshop-beginners-aftermovie). Override via env STUDIO_HERO_VIDEO_MEDIA_ID. */
+const STUDIO_HERO_VIDEO_MEDIA_ID = process.env.STUDIO_HERO_VIDEO_MEDIA_ID
+  ? parseInt(process.env.STUDIO_HERO_VIDEO_MEDIA_ID, 10)
+  : null;
+
+async function getStudioHeroVideo(): Promise<{ heroVideoPath: string | null; heroVideoMediaId: number | null }> {
+  if (!db) return { heroVideoPath: null, heroVideoMediaId: null };
+  let heroVideoPath: string | null = null;
+  let heroVideoMediaId: number | null = null;
+  if (STUDIO_HERO_VIDEO_MEDIA_ID) {
+    const heroRow = await db.execute(sql`
+      SELECT id, file_path FROM media WHERE id = ${STUDIO_HERO_VIDEO_MEDIA_ID} LIMIT 1
+    `);
+    const heroData = Array.isArray(heroRow) ? heroRow : (heroRow as any).rows ?? [];
+    if (heroData.length > 0 && (heroData[0] as any).file_path) {
+      heroVideoPath = (heroData[0] as any).file_path;
+      heroVideoMediaId = (heroData[0] as any).id;
+    }
+  }
+  if (!heroVideoPath) {
+    const byName = await db.execute(sql`
+      SELECT id, file_path FROM media WHERE file_path ILIKE '%workshop-beginners-aftermovie%' LIMIT 1
+    `);
+    const byNameData = Array.isArray(byName) ? byName : (byName as any).rows ?? [];
+    if (byNameData.length > 0 && (byNameData[0] as any).file_path) {
+      heroVideoPath = (byNameData[0] as any).file_path;
+      heroVideoMediaId = (byNameData[0] as any).id;
+    }
+  }
+  return { heroVideoPath, heroVideoMediaId };
+}
+
 export interface WorkshopApiResponse {
   workshops: any[];
   instructors: any[];
   faqs: any[];
+  heroVideoPath: string | null;
+  heroVideoMediaId: number | null;
   _meta: { count: number; fetched_at: string };
 }
 
 /**
  * ☢️ NUCLEAR STUDIO SERVICE (v2.16.103)
- * 
  * Absolute Source of Truth voor de Studio World.
- * Connects the dots tussen workshops, junction tables (taxonomy, reviews, faq) 
- * en de frontend instruments.
+ *
+ * DATA-EIS: Workshops tonen alleen als:
+ * - w.world_id = 2 (Studio World)
+ * - w.status IN ('publish', 'live')
+ * Geen data? Controleer in Supabase: SELECT id, title, status, world_id FROM workshops WHERE world_id = 2;
  */
 export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
   if (!db) throw new Error('Database not available');
 
   try {
-    // 1. Fetch Workshops with all junction data in one go (Nuclear Handshake)
     const workshopsRaw = await db.execute(sql`
       WITH workshop_data AS (
         SELECT
@@ -40,7 +75,8 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
     const workshopIds = (workshopsList as any[]).map((r) => r.id).filter(Boolean);
     
     if (workshopIds.length === 0) {
-      return { workshops: [], instructors: [], faqs: [], _meta: { count: 0, fetched_at: new Date().toISOString() } };
+      const hero = await getStudioHeroVideo();
+      return { workshops: [], instructors: [], faqs: [], ...hero, _meta: { count: 0, fetched_at: new Date().toISOString() } };
     }
 
     // 2. Fetch Editions (The Planning)
@@ -246,10 +282,13 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
 
     const globalFaqs = (faqsData as any[]).filter(f => !f.workshop_id).map(f => ({ id: f.id, question: f.question, answer: f.answer }));
 
+    const hero = await getStudioHeroVideo();
+
     return {
       workshops,
       instructors,
       faqs: globalFaqs,
+      ...hero,
       _meta: { count: workshops.length, fetched_at: new Date().toISOString() },
     };
   } catch (error: any) {

@@ -41,6 +41,12 @@ const getDb = () => {
         // No-op for now, but we keep an eye on it.
       }
 
+      // 🛡️ CHRIS-PROTOCOL: Force session mode (5432) for migrations to avoid pooler timeouts
+      if (connectionString.includes(':6543')) {
+        connectionString = connectionString.replace(':6543', ':5432').replace('pgbouncer=true', 'pgbouncer=false');
+        console.log('🔄 Switching to direct session mode (5432) for migration stability.');
+      }
+
       const supabaseRootCA = `-----BEGIN CERTIFICATE-----
 MIIDxDCCAqygAwIBAgIUbLxMod62P2ktCiAkxnKJwtE9VPYwDQYJKoZIhvcNAQEL
 BQAwazELMAkGA1UEBhMCVVMxEDAOBgNVBAgMB0RlbHdhcmUxEzARBgNVBAcMCk5l
@@ -66,12 +72,16 @@ o/bKiIz+Fq8=
 -----END CERTIFICATE-----`;
 
       const poolSize = process.env.NEXT_PHASE === 'phase-production-build' ? 5 : (process.env.NODE_ENV === 'production' ? 10 : 10);
-      
+      // BASSIE: Langere connect_timeout voor scripts/slow networks (voices-headless compat); env override mogelijk
+      const connectTimeout = process.env.DATABASE_CONNECT_TIMEOUT
+        ? parseInt(process.env.DATABASE_CONNECT_TIMEOUT, 10)
+        : (process.env.NEXT_RUNTIME ? 30 : 60);
+
       if (!(globalThis as any).postgresClient) {
-        (globalThis as any).postgresClient = postgres(connectionString, { 
-          prepare: false, 
+        (globalThis as any).postgresClient = postgres(connectionString, {
+          prepare: false,
           ssl: { ca: supabaseRootCA, rejectUnauthorized: false },
-          connect_timeout: 30,
+          connect_timeout: connectTimeout,
           idle_timeout: 20,
           max: poolSize,
         });

@@ -1,10 +1,11 @@
-import { db, users, worlds } from '@/lib/system/voices-config';
+import { db, users, ordersV2 } from '@/lib/system/voices-config';
 import { desc, eq, sql } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth/api-auth';
 
 /**
  *  API: ADMIN USERS (2026)
+ *  Enriched with Customer Intelligence (LTV, Activity, Worlds)
  */
 
 export async function GET(request: NextRequest) {
@@ -15,28 +16,65 @@ export async function GET(request: NextRequest) {
   const worldCode = searchParams.get('world');
 
   try {
+    // Construct the base query with aggregations
+    // We use a raw SQL selection to efficiently aggregate order data
     let query = db.select({
       id: users.id,
       first_name: users.first_name,
       last_name: users.last_name,
       email: users.email,
       companyName: users.companyName,
-      createdAt: users.createdAt
-    }).from(users);
+      createdAt: users.createdAt,
+      lastActive: users.lastActive,
+      role: users.role,
+      // Aggregated fields
+      orderCount: sql<number>`count(${ordersV2.id})::int`,
+      totalSpent: sql<string>`coalesce(sum(${ordersV2.amountNet}), 0)::text`,
+      activeWorlds: sql<number[]>`array_agg(distinct ${ordersV2.worldId}) filter (where ${ordersV2.worldId} is not null)`
+    })
+    .from(users)
+    .leftJoin(ordersV2, eq(users.id, ordersV2.userId))
+    .groupBy(users.id);
 
+    // Filter by World if requested
     if (worldCode) {
-      // 🌍 World-Aware filtering for users
-      // Users are linked to worlds via their subroles or activity, 
-      // but for now we filter based on 'approved_flows' or similar metadata if available.
-      // For a strict ancestry, we look at users who have orders in this world.
+      // 🌍 World-Aware filtering
+      // We filter users who have at least one order in the requested world
+      // Note: The HAVING clause would be more appropriate for aggregated data, 
+      // but for performance on large datasets, a WHERE IN subquery is often better.
+      // However, since we are already joining, we can use the aggregated array in the application layer 
+      // or add a WHERE clause before aggregation if we only want users *with* orders in that world.
+      
+      // Strategy: Filter the main query to only include users who have a matching order
+      // We use a subquery approach to keep the aggregation correct (total spent across ALL worlds, but filtered by specific world presence)
       query = query.where(
-        sql`id IN (SELECT user_id FROM orders_v2 WHERE world_id = (SELECT id FROM worlds WHERE code = ${worldCode}))`
+        sql`${users.id} IN (
+          SELECT user_id FROM orders_v2 
+          WHERE world_id = (SELECT id FROM worlds WHERE code = ${worldCode})
+        )`
       );
     }
 
-    const allUsers = await query.orderBy(desc(users.createdAt)).limit(50);
+    // Execute query with limit
+    const allUsers = await query.orderBy(desc(users.createdAt)).limit(500);
 
-    return NextResponse.json(allUsers);
+    // Map the results to a clean format
+    const enrichedUsers = allUsers.map((user: any) => ({
+      id: user.id,
+      name: `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.email,
+      email: user.email,
+      companyName: user.companyName,
+      role: user.role,
+      createdAt: user.createdAt,
+      lastActive: user.lastActive,
+      stats: {
+        orders: user.orderCount,
+        totalSpent: parseFloat(user.totalSpent),
+        activeWorlds: user.activeWorlds || []
+      }
+    }));
+
+    return NextResponse.json(enrichedUsers);
   } catch (error) {
     console.error('[Admin Users GET Error]:', error);
     return NextResponse.json({ error: 'Failed to fetch users' }, { status: 500 });
