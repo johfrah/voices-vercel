@@ -314,12 +314,13 @@ export default async function RootLayout({
   // 🛡️ CHRIS-PROTOCOL: ID-First Context Resolution (v3.0.0)
   const { worldId, languageId, journeyId } = MarketManagerServer.resolveContext(cleanHost, pathname);
 
-  //  CHRIS-PROTOCOL: Parallel Pulse Fetching (v2.14.798)
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
   const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
   const supabase = createClient(supabaseUrl, supabaseKey);
 
-  const [market, studioTranslations, worldLanguages, handshakeLanguages, worldConfig] = await Promise.all([
+  // CHRIS-PROTOCOL: `world_languages` ontbreekt momenteel in production schema.
+  // Vermijd per-request 404 storm; language switcher gebruikt dan de bestaande market fallback.
+  const [market, studioTranslations, handshakeLanguages, worldConfig] = await Promise.all([
     getMarketSafe(lookupHost),
     (async () => {
       try {
@@ -335,15 +336,6 @@ export default async function RootLayout({
     })(),
     withTimeoutFallback(async () => {
       try {
-        const { data } = await supabase.from('world_languages').select('*');
-        return data || [];
-      } catch (err) {
-        console.error(' RootLayout: Failed to load world languages:', err);
-        return [];
-      }
-    }, 2500, []),
-    withTimeoutFallback(async () => {
-      try {
         const { data } = await supabase.from('languages').select('id, code, label');
         return data || [];
       } catch (err) {
@@ -353,6 +345,8 @@ export default async function RootLayout({
     }, 2500, []),
     withTimeoutFallback(() => ConfigBridge.getWorldConfig(worldId, languageId), 2500, null)
   ]);
+
+  const worldLanguages: Array<{ world_id: number; language_id: number; is_primary: boolean; is_popular: boolean }> = [];
 
   if (!market) {
     throw new Error('Market configuration could not be resolved.');
