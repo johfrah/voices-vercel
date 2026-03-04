@@ -755,6 +755,12 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
   const cleanSlug = stripLanguagePrefix(normalizedSlug);
   const cleanSegments = cleanSlug.split('/').filter(Boolean);
 
+  // Ignore known bot/system probes before SmartRouter handshake and watchdog flow.
+  const firstCleanSegment = cleanSegments[0]?.toLowerCase() || '';
+  if (firstCleanSegment === '.well-known' || firstCleanSegment === 'wp-json' || firstCleanSegment === 'wp-admin') {
+    return notFound();
+  }
+
   // 🛡️ CHRIS-PROTOCOL: Log to database for forensic audit (v2.14.552)
   try {
     const { db: directDb, systemEvents } = await import('@/lib/system/voices-config');
