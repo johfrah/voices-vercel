@@ -152,7 +152,12 @@ export async function POST(request: Request) {
       ...editionWorkshopIds,
     ]));
 
-    const { data: dbActors } = await sdkClient.from('actors').select('*').or(`id.in.(${actorIds.join(',')}),wp_product_id.in.(${actorIds.join(',')})`);
+    const { data: dbActors } = actorIds.length
+      ? await sdkClient
+          .from('actors')
+          .select('*')
+          .or(`id.in.(${actorIds.join(',')}),wp_product_id.in.(${actorIds.join(',')})`)
+      : { data: [] as any[] };
     const { data: dbWorkshops } = workshopIds.length
       ? await sdkClient.from('workshops').select('*').in('id', workshopIds)
       : { data: [] as any[] };
