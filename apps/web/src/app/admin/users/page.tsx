@@ -214,6 +214,11 @@ export default function AdminUsersPage() {
                      <Users strokeWidth={1.5} size={10} />}
                     {user.role === 'guest' ? 'Lead' : user.role}
                   </ContainerInstrument>
+                  {user.subroles?.includes('partner') && (
+                    <ContainerInstrument className="inline-flex items-center gap-1 ml-2 px-2 py-0.5 bg-va-black/5 text-va-black/40 rounded-full text-[10px] font-bold tracking-widest uppercase">
+                        Partner
+                    </ContainerInstrument>
+                  )}
                 </td>
                 <td className="p-6">
                     <div className="flex flex-col gap-1">
