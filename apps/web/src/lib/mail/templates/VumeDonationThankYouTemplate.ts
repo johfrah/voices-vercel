@@ -18,79 +18,80 @@ interface DonationThankYouProps {
 }
 
 export const VumeDonationThankYouTemplate = (props: DonationThankYouProps) => {
-  const { name, amount, artistName, host = (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || MarketManager.getMarketDomains()['BE']?.replace('https://', '')), language = 'nl-BE' } = props;
+  const {
+    name,
+    amount,
+    artistName,
+    message,
+    host = (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || MarketManager.getMarketDomains()['BE']?.replace('https://', '')),
+    language = 'nl-BE'
+  } = props;
   const market = MarketManager.getCurrentMarket(host);
 
   const languageShort = (language || 'nl').toLowerCase().split('-')[0];
   const isNl = languageShort === 'nl';
+  const isFr = languageShort === 'fr';
+  const txt = (nl: string, fr: string, en: string) => (isFr ? fr : isNl ? nl : en);
+  const amountLabel = Number.isFinite(Number(amount)) ? Number(amount).toFixed(2) : String(amount || '0');
 
   const content = `
-    <div style="text-align: center; padding: 20px 0;">
-      <h1 style="font-family: 'Raleway', sans-serif; font-weight: 300; font-size: 32px; color: #1a1a1a; margin-bottom: 10px;">
-        ${isNl ? 'Bedankt voor je support!' : 'Thank you for your support!'}
-      </h1>
-      <p style="font-size: 18px; color: #666; margin-bottom: 30px;">
-        ${isNl 
-          ? `Beste ${name}, je donatie van €${amount} voor ${artistName} is goed ontvangen.` 
-          : `Dear ${name}, your donation of €${amount} for ${artistName} has been received.`}
+    <div style="margin-bottom: 18px;">
+      <p style="margin: 0 0 8px 0; font-size: 18px; color: #111827; font-weight: 600;">
+        ${txt('Beste', 'Bonjour', 'Dear')} ${name},
       </p>
-
-      <!-- 🎬 PERSONAL THANK YOU VIDEO -->
-      <div style="background: #f9f9f9; border-radius: 20px; padding: 30px; margin-bottom: 40px; border: 1px solid #eee;">
-        <h2 style="font-size: 14px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; color: #ff0080; margin-bottom: 20px;">
-          ${isNl ? 'Een persoonlijke boodschap' : 'A personal message'}
-        </h2>
-        <p style="margin-bottom: 25px; color: #444;">
-          ${isNl 
-            ? 'Youssef heeft een korte video voor je opgenomen om je persoonlijk te bedanken.' 
-            : 'Youssef has recorded a short video to personally thank you.'}
-        </p>
-        <a href="https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices/visuals/youssef/thank-you-video.mp4" 
-           style="display: inline-block; background: #1a1a1a; color: #fff; padding: 18px 35px; border-radius: 10px; text-decoration: none; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; font-size: 12px;">
-          ${isNl ? 'Bekijk de video' : 'Watch the video'}
-        </a>
-      </div>
-
-      <!-- 🎵 INSIDER CIRCLE & SPOTIFY -->
-      <div style="text-align: left; margin-bottom: 40px;">
-        <h3 style="font-size: 20px; font-weight: 300; color: #1a1a1a; margin-bottom: 15px;">
-          ${isNl ? 'Welkom bij de Insider Circle' : 'Welcome to the Insider Circle'}
-        </h3>
-        <p style="color: #666; line-height: 1.6; margin-bottom: 20px;">
-          ${isNl 
-            ? `Als supporter ben je nu onderdeel van Youssef's reis. Je krijgt als eerste toegang tot nieuwe demo's en behind-the-scenes beelden van de studio-opnames.` 
-            : `As a supporter, you are now part of Youssef's journey. You'll get early access to new demos and behind-the-scenes footage from the studio sessions.`}
-        </p>
-        
-        <div style="background: #1DB954; border-radius: 15px; padding: 20px; color: #fff; display: flex; align-items: center; gap: 15px;">
-          <div style="flex: 1;">
-            <p style="margin: 0; font-weight: 900; text-transform: uppercase; font-size: 10px; letter-spacing: 1px; opacity: 0.8;">
-              Spotify Early Access
-            </p>
-            <p style="margin: 5px 0 0 0; font-size: 14px;">
-              ${isNl ? 'Volg de exclusieve pre-release playlist' : 'Follow the exclusive pre-release playlist'}
-            </p>
-          </div>
-          <a href="https://open.spotify.com/artist/youssefzaki" style="background: #fff; color: #1DB954; padding: 10px 20px; border-radius: 30px; text-decoration: none; font-weight: 900; font-size: 11px; text-transform: uppercase;">
-            Open Spotify
-          </a>
-        </div>
-      </div>
-
-      <p style="font-size: 12px; color: #999; font-style: italic;">
-        ${isNl 
-          ? '* Dit is een pure donatie. Er zijn geen goederen of diensten geleverd in ruil voor deze bijdrage.' 
-          : '* This is a pure donation. No goods or services were provided in exchange for this contribution.'}
+      <p style="margin: 0; font-size: 15px; line-height: 1.66; color: #4B5563;">
+        ${txt(
+          `Je donatie voor ${artistName} is goed ontvangen. Dankjewel voor je steun.`,
+          `Votre don pour ${artistName} est bien reçu. Merci pour votre soutien.`,
+          `Your donation for ${artistName} has been received. Thank you for your support.`
+        )}
       </p>
+    </div>
+
+    <div style="border: 1px solid #E5E7EB; border-radius: 16px; padding: 20px; margin-bottom: 18px; background: #FFFFFF;">
+      <div style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.09em; color: #9CA3AF; margin-bottom: 10px;">
+        ${txt('Donatie-overzicht', 'Récapitulatif du don', 'Donation summary')}
+      </div>
+      <table border="0" cellpadding="0" cellspacing="0" width="100%">
+        <tr>
+          <td style="padding-bottom: 8px; font-size: 14px; color: #4B5563;">${txt('Supporter', 'Supporter', 'Supporter')}</td>
+          <td style="padding-bottom: 8px; text-align: right; font-size: 14px; color: #111827; font-weight: 600;">${name}</td>
+        </tr>
+        <tr>
+          <td style="padding-bottom: 8px; font-size: 14px; color: #4B5563;">${txt('Artiest', 'Artiste', 'Artist')}</td>
+          <td style="padding-bottom: 8px; text-align: right; font-size: 14px; color: #111827;">${artistName}</td>
+        </tr>
+        <tr>
+          <td style="padding-top: 10px; border-top: 1px solid #E5E7EB; font-size: 16px; color: #111827; font-weight: 700;">${txt('Bedrag', 'Montant', 'Amount')}</td>
+          <td style="padding-top: 10px; border-top: 1px solid #E5E7EB; text-align: right; font-size: 18px; color: #111827; font-weight: 700;">€${amountLabel}</td>
+        </tr>
+      </table>
+    </div>
+
+    <div style="font-size: 14px; line-height: 1.64; color: #4B5563;">
+      ${txt(
+        'Je krijgt updates over nieuwe releases en studio-momenten.',
+        'Vous recevez des mises à jour sur les nouvelles sorties et les sessions studio.',
+        'You will receive updates about new releases and studio sessions.'
+      )}
+      ${message ? `<br /><br /><em style="color:#6B7280;">"${message}"</em>` : ''}
     </div>
   `;
 
   return VumeMasterWrapper(content, {
-    title: isNl ? 'Bedankt voor je support!' : 'Thank you for your support!',
-    previewText: isNl ? `Beste ${name}, je donatie is goed ontvangen.` : `Dear ${name}, your donation has been received.`,
+    title: txt('Bedankt voor je support', 'Merci pour votre soutien', 'Thank you for your support'),
+    previewText: txt(
+      `Beste ${name}, je donatie is goed ontvangen.`,
+      `Bonjour ${name}, votre don est bien reçu.`,
+      `Dear ${name}, your donation has been received.`
+    ),
     journey: 'artist',
     host,
     market: market.market_code,
     language,
+    cta: {
+      label: txt('Volg nieuwe releases', 'Suivre les nouvelles sorties', 'Follow new releases'),
+      url: `https://${host || 'www.youssefzaki.eu'}`,
+    },
   });
 };

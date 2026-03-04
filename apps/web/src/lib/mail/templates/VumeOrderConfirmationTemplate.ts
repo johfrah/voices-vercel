@@ -79,7 +79,7 @@ export const VumeOrderConfirmationTemplate = (props: OrderConfirmationProps) => 
       .map((part) => part[0]?.toUpperCase() || '')
       .join('');
     return `
-      <div style="width: 52px; height: 52px; border-radius: 999px; border: 1px solid #E5E7EB; background: #F9FAFB; text-align: center; line-height: 52px; font-family: 'Raleway', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 15px; color: #4B5563; font-weight: 600;">
+      <div style="width: 52px; height: 52px; border-radius: 999px; border: 1px solid #E5E7EB; background: #F9FAFB; text-align: center; line-height: 52px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 15px; color: #4B5563; font-weight: 600;">
         ${escapeHtml(initials || 'P')}
       </div>
     `;
@@ -114,23 +114,23 @@ export const VumeOrderConfirmationTemplate = (props: OrderConfirmationProps) => 
     .join('');
 
   const content = `
-    <div style="margin-bottom: 24px;">
-      <p style="margin: 0 0 10px 0; font-size: 18px; color: #111827;">${txt('Beste', 'Bonjour', 'Dear')} ${escapeHtml(userName || txt('klant', 'client', 'customer'))},</p>
-      <p style="margin: 0; font-size: 15px; line-height: 1.7; color: #4B5563; text-align: left;">
+    <div style="margin-bottom: 18px;">
+      <p style="margin: 0 0 8px 0; font-size: 18px; color: #111827; font-weight: 600;">${txt('Beste', 'Bonjour', 'Dear')} ${escapeHtml(userName || txt('klant', 'client', 'customer'))},</p>
+      <p style="margin: 0; font-size: 15px; line-height: 1.66; color: #4B5563; text-align: left;">
         ${txt(
-          `Bedankt voor je bestelling bij <strong>${escapeHtml(host || 'Voices')}</strong>. Hieronder vind je je overzicht.`,
-          `Merci pour votre commande chez <strong>${escapeHtml(host || 'Voices')}</strong>. Voici votre aperçu.`,
-          `Thank you for your order at <strong>${escapeHtml(host || 'Voices')}</strong>. Here is your overview.`
+          `Bedankt voor je bestelling. Hieronder vind je je overzicht.`,
+          `Merci pour votre commande. Voici votre aperçu.`,
+          `Thank you for your order. Here is your overview.`
         )}
       </p>
     </div>
 
-    <div style="border: 1px solid #E5E7EB; border-radius: 16px; padding: 20px; margin-bottom: 24px; background: #FFFFFF;">
-      <div style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; color: #9CA3AF; margin-bottom: 10px;">${txt('Besteloverzicht', 'Récapitulatif', 'Order summary')}</div>
+    <div style="border: 1px solid #E5E7EB; border-radius: 16px; padding: 20px; margin-bottom: 12px; background: #FFFFFF;">
+      <div style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.09em; color: #9CA3AF; margin-bottom: 10px;">${txt('Besteloverzicht', 'Récapitulatif', 'Order summary')}</div>
       <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom: 10px;">
         <tr>
           <td style="width: 60px; padding-bottom: 8px; font-size: 12px; color: #9CA3AF;">&nbsp;</td>
-          <td style="padding-bottom: 8px; font-size: 12px; color: #9CA3AF; text-transform: uppercase; letter-spacing: 0.07em;">${txt('Info', 'Info', 'Info')}</td>
+          <td style="padding-bottom: 8px; font-size: 12px; color: #9CA3AF; text-transform: uppercase; letter-spacing: 0.07em;">${txt('Product', 'Produit', 'Item')}</td>
           <td style="padding-bottom: 8px; text-align: right; font-size: 12px; color: #9CA3AF; text-transform: uppercase; letter-spacing: 0.07em;">${txt('Prijs', 'Prix', 'Price')}</td>
         </tr>
         ${itemsHtml}
@@ -145,27 +145,14 @@ export const VumeOrderConfirmationTemplate = (props: OrderConfirmationProps) => 
           <td style="padding-top: 8px; text-align: right; font-size: 14px; color: #111827;">${formatCurrency(safeTax, formatLocale)}</td>
         </tr>
         <tr>
+          <td style="padding-top: 8px; font-size: 14px; color: #4B5563;">${txt('Betaling', 'Paiement', 'Payment')}</td>
+          <td style="padding-top: 8px; text-align: right; font-size: 14px; color: #111827;">${escapeHtml(paymentMethod || txt('Online betaling', 'Paiement en ligne', 'Online payment'))}</td>
+        </tr>
+        <tr>
           <td style="padding-top: 12px; font-size: 16px; color: #111827; font-weight: 700;">${txt('Totaal', 'Total', 'Total')}</td>
           <td style="padding-top: 12px; text-align: right; font-size: 18px; color: #111827; font-weight: 700;">${formatCurrency(safeTotal, formatLocale)}</td>
         </tr>
       </table>
-    </div>
-
-    <div style="margin-bottom: 20px;">
-      <div style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; color: #9CA3AF; margin-bottom: 10px;">${txt('Betalingsinfo', 'Paiement', 'Payment')}</div>
-      <p style="margin: 0; font-size: 14px; line-height: 1.6; color: #4B5563;">
-        ${txt('Methode', 'Méthode', 'Method')}: <strong style="color: #111827;">${escapeHtml(paymentMethod || txt('Online betaling', 'Paiement en ligne', 'Online payment'))}</strong>
-      </p>
-    </div>
-
-    <div style="background: #F9FAFB; padding: 16px; border-radius: 12px; border: 1px solid #E5E7EB; margin-bottom: 6px; text-align: left;">
-      <p style="margin: 0; font-size: 14px; color: #4B5563; line-height: 1.6;">
-        ${txt(
-          'Vragen over je project? Antwoord op deze mail. We helpen je meteen.',
-          'Une question sur votre projet ? Répondez à cet e-mail. Nous vous aidons rapidement.',
-          'Questions about your project? Reply to this email. We will help you quickly.'
-        )}
-      </p>
     </div>
   `;
 

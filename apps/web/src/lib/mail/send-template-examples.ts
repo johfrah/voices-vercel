@@ -50,7 +50,7 @@ async function sendOrderExample(recipient: string, language: ExampleLanguage): P
           price: 275,
           deliveryTime: language === 'fr-fr' ? 'Sous 24 heures' : language === 'en-gb' ? 'Within 24 hours' : 'Binnen 24 uur',
           projectCode: `PRJ-${orderId}`,
-          thumbnailUrl: `https://${host}/api/proxy?path=${encodeURIComponent('/assets/common/branding/founder/johfrah.png')}&v=20260213`,
+          thumbnailUrl: `https://${host}/api/proxy/?path=${encodeURIComponent('common/branding/founder/johfrah-avatar-be.png')}`,
         },
         {
           name: language === 'fr-fr' ? 'Musique de fond' : language === 'en-gb' ? 'Background music' : 'Achtergrondmuziek',

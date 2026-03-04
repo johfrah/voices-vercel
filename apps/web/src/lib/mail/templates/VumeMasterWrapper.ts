@@ -2,16 +2,21 @@ import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-m
 import { localeToBcp47, normalizeLocale } from '@/lib/system/locale-utils';
 
 /**
- *  VUME MASTER WRAPPER (2026) - MARK & LAYA EDITION
- * 
- * DNA: De perfecte balans tussen de krachtige legacy (Mark) en de moderne esthetiek (Laya).
- *  Chris-Protocol: Volledig inline styling voor maximale compatibiliteit.
+ * VUME MASTER WRAPPER (2026)
+ *
+ * Minimal, consistent and robust:
+ * - Clean typographic hierarchy
+ * - Stable asset URLs for email clients
+ * - World-aware signature and footer links
  */
+
+type JourneyKey = 'agency' | 'artist' | 'portfolio' | 'studio' | 'auth';
+type LocaleShort = 'nl' | 'fr' | 'en';
 
 interface WrapperOptions {
   title: string;
   previewText?: string;
-  journey?: 'agency' | 'artist' | 'portfolio' | 'studio' | 'auth';
+  journey?: JourneyKey;
   market?: string;
   host?: string;
   language?: string;
@@ -24,154 +29,253 @@ interface WrapperOptions {
   };
 }
 
+const FALLBACK_LOGO_BY_MARKET: Record<string, string> = {
+  BE: 'common/branding/Voices_LOGO_BE.svg',
+  NLNL: 'common/branding/Voices_LOGO_NL.svg',
+  FR: 'common/branding/Voices_LOGO_FR.svg',
+  ES: 'common/branding/Voices_LOGO_ES.svg',
+  PT: 'common/branding/Voices_LOGO_PT.svg',
+  EU: 'common/branding/Voices_LOGO_EU.svg',
+  STUDIO: 'common/branding/Voices_LOGO_BE.svg',
+  ACADEMY: 'common/branding/Voices_LOGO_BE.svg',
+  ADEMING: 'common/branding/Voices_LOGO_BE.svg',
+  FREELANCE: 'common/branding/johfrah.be_LOGO.svg',
+  JOHFRAI: 'common/branding/Voices_LOGO_BE.svg',
+  ARTIST: 'common/branding/logo-color.png',
+  PORTFOLIO: 'common/branding/Voices_LOGO_BE.svg',
+};
+
+const JOURNEY_PROFILE: Record<
+  JourneyKey,
+  {
+    profilePath: string;
+    supportPath: string;
+    line1: Record<LocaleShort, string>;
+    line2: Record<LocaleShort, string>;
+    worldLabel: Record<LocaleShort, string>;
+  }
+> = {
+  agency: {
+    profilePath: '/',
+    supportPath: '/contact',
+    line1: { nl: 'Team Voices', fr: 'Team Voices', en: 'Voices Team' },
+    line2: { nl: 'Agency World', fr: 'Agency World', en: 'Agency World' },
+    worldLabel: { nl: 'Agency', fr: 'Agency', en: 'Agency' },
+  },
+  auth: {
+    profilePath: '/account',
+    supportPath: '/account/mailbox',
+    line1: { nl: 'Team Voices', fr: 'Équipe Voices', en: 'Voices Team' },
+    line2: { nl: 'Account', fr: 'Compte', en: 'Account' },
+    worldLabel: { nl: 'Account', fr: 'Account', en: 'Account' },
+  },
+  studio: {
+    profilePath: '/studio',
+    supportPath: '/studio/contact',
+    line1: { nl: 'Team Voices Studio', fr: 'Équipe Voices Studio', en: 'Voices Studio Team' },
+    line2: { nl: 'Studio World', fr: 'Studio World', en: 'Studio World' },
+    worldLabel: { nl: 'Studio', fr: 'Studio', en: 'Studio' },
+  },
+  portfolio: {
+    profilePath: '/portfolio',
+    supportPath: '/portfolio/contact',
+    line1: { nl: 'Team Portfolio', fr: 'Équipe Portfolio', en: 'Portfolio Team' },
+    line2: { nl: 'Portfolio World', fr: 'Portfolio World', en: 'Portfolio World' },
+    worldLabel: { nl: 'Portfolio', fr: 'Portfolio', en: 'Portfolio' },
+  },
+  artist: {
+    profilePath: '/artist',
+    supportPath: '/contact',
+    line1: { nl: 'Team Artist', fr: 'Équipe Artist', en: 'Artist Team' },
+    line2: { nl: 'Artist World', fr: 'Artist World', en: 'Artist World' },
+    worldLabel: { nl: 'Artist', fr: 'Artist', en: 'Artist' },
+  },
+};
+
+function sanitizeHost(inputHost?: string): string {
+  return (inputHost || process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'www.voices.be')
+    .replace(/^https?:\/\//, '')
+    .replace(/\/+$/, '')
+    .trim();
+}
+
+function decodeProxyPath(input: string): string | null {
+  try {
+    const parsed = new URL(input);
+    if (!parsed.pathname.includes('/api/proxy')) return null;
+    const pathParam = parsed.searchParams.get('path');
+    return pathParam ? decodeURIComponent(pathParam) : null;
+  } catch {
+    return null;
+  }
+}
+
+function normalizeAssetPath(rawPath: string | undefined, marketCode: string): string {
+  const fallback = FALLBACK_LOGO_BY_MARKET[marketCode] || 'common/branding/email/logos/email-logo.png';
+  if (!rawPath || typeof rawPath !== 'string') return fallback;
+
+  let candidate = rawPath.trim();
+
+  const extractedProxyPath = decodeProxyPath(candidate);
+  if (extractedProxyPath) candidate = extractedProxyPath;
+
+  if (candidate.includes('/storage/v1/object/public/voices/')) {
+    const [, pathTail] = candidate.split('/storage/v1/object/public/voices/');
+    if (pathTail) candidate = pathTail;
+  }
+
+  if (/^https?:\/\//i.test(candidate)) {
+    try {
+      const parsed = new URL(candidate);
+      candidate = `${parsed.pathname}${parsed.search}`;
+    } catch {
+      return fallback;
+    }
+  }
+
+  if (candidate.includes('?path=')) {
+    const [, pathTail] = candidate.split('?path=');
+    candidate = decodeURIComponent(pathTail || '');
+  }
+
+  candidate = candidate.split('?')[0];
+  candidate = candidate.startsWith('/assets/') ? candidate.slice('/assets/'.length) : candidate;
+  candidate = candidate.startsWith('assets/') ? candidate.slice('assets/'.length) : candidate;
+  candidate = candidate.startsWith('/') ? candidate.slice(1) : candidate;
+
+  if (
+    !candidate ||
+    candidate === 'common/branding/Voices-LOGO-Animated.svg' ||
+    candidate === 'common/branding/Voices-LOGO.svg'
+  ) {
+    return fallback;
+  }
+
+  return candidate;
+}
+
+function buildProxyAssetUrl(host: string, storagePath: string): string {
+  return `https://${host}/api/proxy/?path=${encodeURIComponent(storagePath)}`;
+}
+
 export function VumeMasterWrapper(content: string, options: WrapperOptions) {
   const {
     title,
     previewText,
     journey = 'agency',
-    host = (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'www.voices.be'),
+    host,
     showSignature = true,
     language,
     headerImage,
     optOutUrl,
     cta,
   } = options;
-  const market = MarketManager.getCurrentMarket(host);
+  const resolvedHost = sanitizeHost(host);
+  const market = MarketManager.getCurrentMarket(resolvedHost);
   const resolvedLanguage = normalizeLocale(language || market.primary_language || 'nl-be');
-  const languageShort = resolvedLanguage.split('-')[0];
-  const i18n = (
+  const languageShort = (resolvedLanguage.split('-')[0] === 'fr' || resolvedLanguage.split('-')[0] === 'en'
+    ? resolvedLanguage.split('-')[0]
+    : 'nl') as LocaleShort;
+  const profile = JOURNEY_PROFILE[journey] || JOURNEY_PROFILE.agency;
+  const fallbackLogo = FALLBACK_LOGO_BY_MARKET[market.market_code] || 'common/branding/email/logos/email-logo.png';
+  const logoStoragePath = normalizeAssetPath(market.logo_url || fallbackLogo, market.market_code);
+  const logoSrc = buildProxyAssetUrl(resolvedHost, logoStoragePath);
+  const founderStoragePath = journey === 'artist'
+    ? 'common/branding/founder/johfrah-contact.jpg'
+    : languageShort === 'nl'
+      ? 'common/branding/founder/johfrah-avatar-nl.png'
+      : 'common/branding/founder/johfrah-avatar-be.png';
+  const founderSrc = buildProxyAssetUrl(resolvedHost, founderStoragePath);
+  const supportHref = `https://${resolvedHost}${profile.supportPath}`;
+  const websiteHref = `https://${resolvedHost}${profile.profilePath}`;
+  const accountHref = `https://${resolvedHost}/account`;
+  const i18n =
     languageShort === 'fr'
       ? {
           unsubscribe: 'Se désinscrire',
           forMarketing: 'des e-mails marketing',
-          websiteCta: 'Voir le site',
+          websiteCta: 'Site',
+          supportCta: 'Chat',
+          accountCta: 'Compte',
         }
       : languageShort === 'en'
         ? {
             unsubscribe: 'Unsubscribe',
             forMarketing: 'from marketing emails',
-            websiteCta: 'Visit website',
+            websiteCta: 'Website',
+            supportCta: 'Live chat',
+            accountCta: 'Account',
           }
         : {
             unsubscribe: 'Uitschrijven',
             forMarketing: 'voor marketing-mails',
-            websiteCta: 'Bekijk website',
-          }
-  );
-  
-  //  Laya's Refined Gradients (Voices 2.0 - Liquid DNA)
-  const gradients = {
-    agency: 'linear-gradient(135deg, #FBFBF9 0%, #E8F4F1 50%, #E1EEF3 100%)', // Liquid Agency 2.0
-    studio: 'linear-gradient(135deg, #FFFBF2 0%, #FFF3E0 100%)', // Warm Studio 2.0
-    artist: 'linear-gradient(135deg, #000000 0%, #1A1A1A 100%)',
-    auth: 'linear-gradient(135deg, #FBFBF9 0%, #E8F4F1 50%, #E1EEF3 100%)',
-    portfolio: 'linear-gradient(135deg, #FFFFFF 0%, #FBFBF9 100%)'
-  };
-
-  const primaryGradient = gradients[journey] || gradients.agency;
-  const isDark = journey === 'artist';
-  const isAgency20 = journey === 'agency' || journey === 'auth';
-
-  const signatureByJourney: Record<
-    NonNullable<WrapperOptions['journey']>,
-    {
-      profilePath: string;
-      line1: { nl: string; fr: string; en: string };
-      line2: { nl: string; fr: string; en: string };
-    }
-  > = {
-    agency: {
-      profilePath: '/',
-      line1: { nl: 'Johfrah Lefebvre', fr: 'Johfrah Lefebvre', en: 'Johfrah Lefebvre' },
-      line2: {
-        nl: 'Agency World',
-        fr: 'Agency World',
-        en: 'Agency World',
-      },
-    },
-    auth: {
-      profilePath: '/account',
-      line1: { nl: 'Team Voices', fr: 'Équipe Voices', en: 'Voices Team' },
-      line2: {
-        nl: 'Account & Support',
-        fr: 'Compte et support',
-        en: 'Account and support',
-      },
-    },
-    studio: {
-      profilePath: '/studio',
-      line1: { nl: 'Team Voices Studio', fr: 'Équipe Voices Studio', en: 'Voices Studio Team' },
-      line2: {
-        nl: 'Studio World',
-        fr: 'Studio World',
-        en: 'Studio World',
-      },
-    },
-    portfolio: {
-      profilePath: '/portfolio',
-      line1: { nl: 'Johfrah Portfolio', fr: 'Johfrah Portfolio', en: 'Johfrah Portfolio' },
-      line2: {
-        nl: 'Portfolio World',
-        fr: 'Portfolio World',
-        en: 'Portfolio World',
-      },
-    },
-    artist: {
-      profilePath: '/artist',
-      line1: { nl: 'Team Artist', fr: 'Équipe Artist', en: 'Artist Team' },
-      line2: {
-        nl: 'Artist World',
-        fr: 'Artist World',
-        en: 'Artist World',
-      },
-    },
-  };
-  const signatureProfile = signatureByJourney[journey] || signatureByJourney.agency;
-  const signatureName = signatureProfile.line1[languageShort as 'nl' | 'fr' | 'en'] || signatureProfile.line1.nl;
-  const signatureRole = signatureProfile.line2[languageShort as 'nl' | 'fr' | 'en'] || signatureProfile.line2.nl;
+            websiteCta: 'Website',
+            supportCta: 'Live chat',
+            accountCta: 'Account',
+          };
+  const signatureName = profile.line1[languageShort] || profile.line1.nl;
+  const signatureRole = profile.line2[languageShort] || profile.line2.nl;
+  const journeyLabel = profile.worldLabel[languageShort] || profile.worldLabel.nl;
 
   // Replace {{host}} in content
-  const processedContent = content.replace(/\{\{host\}\}/g, host);
+  const processedContent = content.replace(/\{\{host\}\}/g, resolvedHost);
 
-  //  Header Logic: Specific image or dynamic banner
-  const headerHtml = headerImage ? `
+  let resolvedHeaderImage: string | null = null;
+  if (headerImage) {
+    if (
+      /^https?:\/\//i.test(headerImage) &&
+      !headerImage.includes('/api/proxy') &&
+      !headerImage.includes('/storage/v1/object/public/voices/') &&
+      !headerImage.includes('/assets/')
+    ) {
+      resolvedHeaderImage = headerImage;
+    } else {
+      const headerAssetPath = normalizeAssetPath(headerImage, market.market_code);
+      resolvedHeaderImage = buildProxyAssetUrl(resolvedHost, headerAssetPath);
+    }
+  }
+
+  const logoHtml = `
     <tr>
-      <td align="center" style="padding: 0; overflow: hidden; border-radius: 20px 20px 0 0;">
-        <img src="${headerImage}" alt="${title}" width="600" style="display: block; width: 100%; max-width: 600px; height: auto; border: 0;" />
-      </td>
-    </tr>
-  ` : `
-    <tr>
-      <td align="center" style="background: ${primaryGradient}; padding: 50px 20px; border-radius: 20px 20px 0 0; border-bottom: 1px solid #F0F0F0;">
-        <h1 style="margin: 0; color: ${isAgency20 ? '#1A1A1A' : '#FFFFFF'}; font-family: 'Raleway', sans-serif; font-weight: 300; font-size: 28px; letter-spacing: -0.01em; line-height: 1.2;">
-          ${title}
-        </h1>
+      <td align="center" style="padding: 0 0 20px 0;">
+        <img src="${logoSrc}" alt="${market.name}" width="136" style="display:block; border:0; width:136px; height:auto;" />
       </td>
     </tr>
   `;
 
-  const logoHtml = `
+  const headerHtml = `
+    ${
+      resolvedHeaderImage
+        ? `
+      <tr>
+        <td style="padding: 0 40px 0 40px;">
+          <img src="${resolvedHeaderImage}" alt="${title}" width="520" style="display:block; width:100%; max-width:520px; border-radius:14px; border:1px solid #E5E7EB;" />
+        </td>
+      </tr>
+      `
+        : ''
+    }
     <tr>
-      <td align="center" style="padding-bottom: 40px;">
-                  <img src="${market.logo_url.startsWith('http') ? market.logo_url : `https://${host}/api/proxy?path=${encodeURIComponent(market.logo_url)}`}" alt="${market.name}" width="140" style="display: block; border: 0;" />
+      <td style="padding: ${resolvedHeaderImage ? '22px' : '6px'} 40px 0 40px;">
+        <p style="margin:0 0 10px 0; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; color:#9CA3AF; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">${journeyLabel}</p>
+        <h1 style="margin:0; font-size:30px; line-height:1.2; font-weight:600; color:#111827; letter-spacing:-0.01em; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">${title}</h1>
       </td>
     </tr>
   `;
 
   const signatureHtml = showSignature ? `
-    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-top: 40px; border-top: 1px solid #F0F0F0; padding-top: 30px;">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-top: 32px; border-top: 1px solid #E5E7EB; padding-top: 24px;">
       <tr>
-        <td width="100" style="vertical-align: middle; text-align: center;">
-          <a href="https://${host}${signatureProfile.profilePath}?utm_source=email&utm_medium=transactional" style="text-decoration: none;">
-            <img src="https://${host}/api/proxy?path=${encodeURIComponent('/assets/common/branding/founder/johfrah.png')}&v=20260213" alt="Johfrah" width="100" style="display: block; border: 0; margin: auto;" />
+        <td width="68" style="vertical-align: top;">
+          <a href="${websiteHref}?utm_source=email&utm_medium=transactional" style="text-decoration:none;">
+            <img src="${founderSrc}" alt="${signatureName}" width="56" height="56" style="display:block; width:56px; height:56px; border-radius:999px; object-fit:cover; border:1px solid #E5E7EB;" />
           </a>
         </td>
-        <td style="vertical-align: middle; padding-left: 31px; font-family: 'Raleway', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 1.5; color: #333333;">
-          <span style="font-weight: 700; color: ${isDark ? '#FFFFFF' : '#1A1A1A'};">${signatureName}</span><br />
-          <span style="color: ${isDark ? '#999' : '#666'};">${signatureRole}</span><br />
-          <a href="mailto:${market.email}" style="color: ${isDark ? '#999' : '#666'}; text-decoration: none;">${market.email}</a><br />
-          <a href="tel:${market.phone.replace(/\s+/g, '')}" style="color: ${isDark ? '#999' : '#666'}; text-decoration: none;">${market.phone}</a><br />
-          <a href="https://${host}${signatureProfile.profilePath}?utm_source=email&utm_medium=transactional" style="color: #1155CC; text-decoration: none; font-weight: 500;">${i18n.websiteCta}</a>
+        <td style="vertical-align: top; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif; font-size:14px; line-height:1.5; color:#4B5563;">
+          <div style="font-weight:600; color:#111827;">${signatureName}</div>
+          <div style="margin-bottom:4px; color:#6B7280;">${signatureRole}</div>
+          <a href="mailto:${market.email}" style="color:#4B5563; text-decoration:none;">${market.email}</a>
+          ${market.phone ? `<br /><a href="tel:${market.phone.replace(/\s+/g, '')}" style="color:#4B5563; text-decoration:none;">${market.phone}</a>` : ''}
         </td>
       </tr>
     </table>
@@ -179,10 +283,10 @@ export function VumeMasterWrapper(content: string, options: WrapperOptions) {
 
   const ctaHtml = cta?.label && cta?.url
     ? `
-      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-top: 24px; margin-bottom: 8px;">
+      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-top:24px;">
         <tr>
           <td align="left">
-            <a href="${cta.url}" style="display: inline-block; padding: 14px 26px; border-radius: 12px; background: #111111; color: #FFFFFF; text-decoration: none; font-family: 'Raleway', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 14px; font-weight: 600; letter-spacing: 0.02em;">${cta.label}</a>
+            <a href="${cta.url}" style="display:inline-block; padding:12px 22px; border-radius:999px; background:#111827; color:#FFFFFF; text-decoration:none; font-size:14px; font-weight:600; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">${cta.label}</a>
           </td>
         </tr>
       </table>
@@ -190,11 +294,17 @@ export function VumeMasterWrapper(content: string, options: WrapperOptions) {
     : '';
 
   const footerHtml = `
-    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-top: 40px; text-align: center; color: #999999; font-family: 'Raleway', sans-serif; font-size: 12px; line-height: 1.5;">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-top:26px; text-align:center; color:#6B7280; font-size:12px; line-height:1.6; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
       <tr>
-        <td style="padding-bottom: 20px;">
-          &copy; 2026 ${market.company_name} &bull; ${market.name}<br />
-          ${optOutUrl ? `<a href="${optOutUrl}" style="color: #999999; text-decoration: underline;">${i18n.unsubscribe}</a> ${i18n.forMarketing}` : ''}
+        <td style="padding-top:16px;">
+          <a href="${websiteHref}" style="color:#6B7280; text-decoration:none;">${i18n.websiteCta}</a>
+          &nbsp;&nbsp;&bull;&nbsp;&nbsp;
+          <a href="${supportHref}" style="color:#6B7280; text-decoration:none;">${i18n.supportCta}</a>
+          &nbsp;&nbsp;&bull;&nbsp;&nbsp;
+          <a href="${accountHref}" style="color:#6B7280; text-decoration:none;">${i18n.accountCta}</a>
+          <br />
+          &copy; 2026 ${market.company_name} - ${market.name}
+          ${optOutUrl ? `<br /><a href="${optOutUrl}" style="color:#6B7280; text-decoration:underline;">${i18n.unsubscribe}</a> ${i18n.forMarketing}` : ''}
         </td>
       </tr>
     </table>
@@ -208,34 +318,29 @@ export function VumeMasterWrapper(content: string, options: WrapperOptions) {
       <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
       <title>${title}</title>
     </head>
-    <body style="margin: 0; padding: 0; background-color: #FAFAFA; font-family: 'Raleway', 'Helvetica Neue', Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased;">
-      ${previewText ? `<div style="display:none; max-height:0px; max-width:0px; opacity:0; overflow:hidden;">${previewText}</div>` : ''}
-      
-      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #FAFAFA; padding-bottom: 60px;">
-        <tr>
-          <td align="center" style="padding: 40px 20px;">
-            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
-              <!-- LOGO ABOVE CARD -->
-              ${logoHtml}
-              
-              <tr>
-                <td style="background-color: #FFFFFF; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.04);">
-                  <table border="0" cellpadding="0" cellspacing="0" width="100%">
-                    <!-- DYNAMIC HEADER (IMAGE OR BANNER) -->
-                    ${headerHtml}
+    <body style="margin:0; padding:0; background-color:#F5F5F7; -webkit-font-smoothing:antialiased;">
+      ${previewText ? `<div style="display:none; max-height:0; max-width:0; opacity:0; overflow:hidden;">${previewText}</div>` : ''}
 
-                    <!-- CONTENT -->
+      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#F5F5F7; padding:32px 0 56px 0;">
+        <tr>
+          <td align="center" style="padding:0 16px;">
+            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width:600px;">
+              ${logoHtml}
+              <tr>
+                <td style="background-color:#FFFFFF; border-radius:18px; overflow:hidden; border:1px solid #E5E7EB; box-shadow:0 4px 18px rgba(17,24,39,0.06);">
+                  <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                    ${headerHtml}
                     <tr>
-                      <td style="padding: 50px; color: #333333; font-family: 'Raleway', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 1.6; font-weight: 400;">
+                      <td style="padding:28px 40px 34px 40px; color:#374151; font-size:15px; line-height:1.68; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
                         ${processedContent}
                         ${ctaHtml}
                         ${signatureHtml}
+                        ${footerHtml}
                       </td>
                     </tr>
                   </table>
                 </td>
               </tr>
-              ${footerHtml}
             </table>
           </td>
         </tr>
@@ -248,7 +353,7 @@ export function VumeMasterWrapper(content: string, options: WrapperOptions) {
 export type BaseTemplateProps = {
   title: string;
   previewText?: string;
-  journey?: 'agency' | 'artist' | 'portfolio' | 'studio' | 'auth';
+  journey?: JourneyKey;
   market?: string;
   host?: string;
   language?: string;

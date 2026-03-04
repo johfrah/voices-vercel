@@ -38,7 +38,39 @@ function toSafeNumber(value: unknown): number {
   return Number.isFinite(numeric) ? numeric : 0;
 }
 
-function buildWebhookOrderEmailItems(items: any[]): Array<{
+function resolveWebhookThumbnailUrl(value: unknown, host: string): string | undefined {
+  if (!value || typeof value !== 'string') return undefined;
+  const rawValue = value.trim();
+  if (!rawValue) return undefined;
+  if (rawValue.startsWith('http://') || rawValue.startsWith('https://')) return rawValue;
+
+  if (
+    rawValue.startsWith('/') &&
+    !rawValue.startsWith('/assets/') &&
+    !rawValue.startsWith('/wp-content/') &&
+    !rawValue.startsWith('/api/')
+  ) {
+    return `https://${host}${rawValue}`;
+  }
+
+  let normalizedPath = rawValue;
+  if (normalizedPath.includes('/api/proxy') && normalizedPath.includes('?path=')) {
+    const [, extractedPath] = normalizedPath.split('?path=');
+    normalizedPath = decodeURIComponent(extractedPath || '');
+  }
+
+  normalizedPath = normalizedPath.startsWith('/assets/') ? normalizedPath.slice('/assets/'.length) : normalizedPath;
+  normalizedPath = normalizedPath.startsWith('assets/') ? normalizedPath.slice('assets/'.length) : normalizedPath;
+  normalizedPath = normalizedPath.startsWith('/') ? normalizedPath.slice(1) : normalizedPath;
+  if (normalizedPath.startsWith('wp-content/') || normalizedPath.startsWith('api/')) {
+    normalizedPath = `/${normalizedPath}`;
+  }
+  if (!normalizedPath) return undefined;
+
+  return `https://${host}/api/proxy/?path=${encodeURIComponent(normalizedPath)}`;
+}
+
+function buildWebhookOrderEmailItems(items: any[], host: string): Array<{
   name: string;
   price: number;
   quantity: number;
@@ -62,7 +94,7 @@ function buildWebhookOrderEmailItems(items: any[]): Array<{
       unitPrice: quantity > 0 ? lineTotal / quantity : lineTotal,
       deliveryTime: snapshot.delivery_time || metaData.deliveryTime || undefined,
       description: snapshot.description || metaData.usage || undefined,
-      thumbnailUrl: snapshot.thumbnail_url || undefined,
+      thumbnailUrl: resolveWebhookThumbnailUrl(snapshot.thumbnail_url, host),
       projectCode: snapshot.project_code || undefined,
     };
   });
@@ -258,7 +290,7 @@ export async function POST(request: NextRequest) {
                       total: parseFloat(order.total || '0'),
                       subtotal: items.reduce((sum: number, i: any) => sum + toSafeNumber(i.price), 0),
                       tax: items.reduce((sum: number, i: any) => sum + toSafeNumber(i.tax), 0),
-                      items: buildWebhookOrderEmailItems(items),
+                      items: buildWebhookOrderEmailItems(items, host),
                       paymentMethod: payment.method || 'Online',
                       language: orderLanguage,
                       ctaUrl: `${baseUrl}/account/orders?orderId=${encodeURIComponent(orderId)}`,

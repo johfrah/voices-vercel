@@ -47,7 +47,7 @@ export const VumeActorAssignmentTemplate = (props: ActorAssignmentProps) => {
       </p>
     </div>
 
-    <div style="background: #fcfaf7; border-radius: 20px; padding: 25px; border: 1px solid #eee; margin-bottom: 30px;">
+    <div style="background: #ffffff; border-radius: 16px; padding: 22px; border: 1px solid #E5E7EB; margin-bottom: 24px;">
       <div style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; color: #bbbbbb; margin-bottom: 15px;">${isNl ? 'Over de opdracht' : 'Project Details'}</div>
       <table border="0" cellpadding="0" cellspacing="0" width="100%">
         <tr>
@@ -64,14 +64,14 @@ export const VumeActorAssignmentTemplate = (props: ActorAssignmentProps) => {
         </tr>
         <tr>
           <td style="padding-bottom: 10px; font-size: 14px; color: #999;">${isNl ? 'Deadline' : 'Deadline'}:</td>
-          <td style="padding-bottom: 10px; font-size: 14px; color: #ff4f00; font-weight: bold;">${deliveryTime}</td>
+          <td style="padding-bottom: 10px; font-size: 14px; color: #111827; font-weight: 600;">${deliveryTime}</td>
         </tr>
       </table>
     </div>
 
     <div style="margin-bottom: 30px;">
       <div style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; color: #bbbbbb; margin-bottom: 10px;">${isNl ? 'Het Script' : 'The Script'}</div>
-      <div style="background: #fff; border: 2px solid #f0f0f0; border-radius: 15px; padding: 25px; font-size: 18px; line-height: 1.8; color: #1a1a1a; font-style: italic;">
+      <div style="background: #fff; border: 1px solid #E5E7EB; border-radius: 14px; padding: 22px; font-size: 17px; line-height: 1.75; color: #1a1a1a; font-style: italic;">
         "${cleanText(script)}"
       </div>
     </div>
@@ -85,7 +85,7 @@ export const VumeActorAssignmentTemplate = (props: ActorAssignmentProps) => {
       </div>
     ` : ''}
 
-    <div style="background: #fff5f0; padding: 20px; border-radius: 15px; border: 1px solid rgba(255, 79, 0, 0.1); margin-bottom: 30px;">
+    <div style="background: #F9FAFB; padding: 18px; border-radius: 12px; border: 1px solid #E5E7EB; margin-bottom: 24px;">
       <p style="margin: 0; font-size: 14px; color: #666; line-height: 1.5;">
         ${isNl 
           ? 'Graag de opname uploaden via je overzicht. Voor vragen kun je direct reageren op deze mail.' 

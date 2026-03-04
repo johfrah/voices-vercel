@@ -46,11 +46,11 @@ export function VumeStudioTemplate(options: StudioExperienceOptions) {
     headerImage,
     instructorName = 'Johfrah Lefebvre',
     instructorRole = 'Voice-over en coach',
-    instructorImage = `https://${host}/api/proxy?path=${encodeURIComponent('/assets/common/branding/founder/johfrah.png')}&v=20260213`,
-    description = 'In deze workshop leer je de basis van voice-overs inspreken: van stemopwarming tot tekstbegrip en intonatie en spreken in de microfoon.',
-    learningPoints = 'Tijdens deze praktijkgerichte workshop werk je intensief met tekst en microfoon. Je doet niet alleen nieuwe vaardigheden op, maar gaat ook naar huis met een hoogwaardige opname.',
+    instructorImage = `https://${host}/api/proxy/?path=${encodeURIComponent('common/branding/founder/johfrah-avatar-be.png')}`,
+    description = 'Je oefent direct aan de microfoon. Je krijgt heldere coaching per oefening.',
+    learningPoints = 'Je werkt op stemopwarming, interpretatie en opnamekwaliteit met directe feedback.',
     schedule = '09u45: Aankomst\n10u00: Kennismaking\n10u15: Workshop deel 1\n13u30: Lunch\n14u15: Workshop deel 2\n17u00: Einde',
-    videoThumbnail = `https://${host}/api/proxy?path=${encodeURIComponent('/assets/studio/common/branding/VSTUDIO.webp')}`,
+    videoThumbnail = `https://${host}/api/proxy/?path=${encodeURIComponent('studio/common/branding/vstudio.webp')}`,
     videoUrl = `https://${host}/studio/`,
     aftermovieText = 'Ontdek hoe deelnemers hun stem leren inzetten om teksten echt te laten leven.',
     // MarketManager is used for domain resolution in the mail engine
@@ -64,7 +64,7 @@ export function VumeStudioTemplate(options: StudioExperienceOptions) {
     nl: {
       title: workshopName,
       greeting: `Hey ${name},`,
-      intro: `Wil je je voice-over skills bijschaven of ontdekken hoe je ermee start? We hebben je plekje gereserveerd. Per workshop zijn er maximaal 4 deelnemers, zodat iedereen veel tijd achter de microfoon krijgt.`,
+      intro: `Je plek is gereserveerd. We werken in kleine groep met veel microfoontijd.`,
       reservationTitle: 'Jouw reservatie',
       instructorLabel: `Een workshop door ${instructorName},`,
       instructorTitle: instructorRole,
@@ -73,16 +73,17 @@ export function VumeStudioTemplate(options: StudioExperienceOptions) {
       scheduleTitle: 'Dagindeling',
       videoTitle: 'Zo verloopt de workshop (video)',
       instructorBioTitle: `Over ${instructorName}`,
+      instructorBio: `${instructorName} coacht je strak en menselijk. Je vertrekt met heldere audio en concrete tips.`,
       ctaTitle: 'Klaar om te beginnen?',
       ctaText: 'Bekijk je dashboard voor alle details.',
-      button: 'NAAR DASHBOARD',
+      button: 'Naar dashboard',
       footer: 'Warme groeten,<br>Bernadette en Johfrah',
       studioLink: `${host}/studio/`
     },
     en: {
       title: workshopName,
       greeting: `Hi ${name},`,
-      intro: `Want to sharpen your voice-over skills or discover how to get started? We've reserved your spot. Each workshop has a maximum of 4 participants, so everyone gets plenty of time behind the microphone.`,
+      intro: `Your spot is reserved. We work in small groups with a lot of mic time.`,
       reservationTitle: 'Your reservation',
       instructorLabel: `A workshop by ${instructorName},`,
       instructorTitle: instructorRole,
@@ -91,9 +92,10 @@ export function VumeStudioTemplate(options: StudioExperienceOptions) {
       scheduleTitle: 'Schedule',
       videoTitle: 'How the workshop goes (video)',
       instructorBioTitle: `About ${instructorName}`,
+      instructorBio: `${instructorName} coaches you with clear feedback. You leave with clean audio and practical next steps.`,
       ctaTitle: 'Ready to start?',
       ctaText: 'Check your dashboard for all details.',
-      button: 'TO DASHBOARD',
+      button: 'Open dashboard',
       footer: 'Warm regards,<br>Bernadette and Johfrah',
       studioLink: `${host}/studio/`
     }
@@ -116,7 +118,7 @@ export function VumeStudioTemplate(options: StudioExperienceOptions) {
             <table border="0" cellpadding="0" cellspacing="0" width="100%">
               <tr>
                 <td width="60" style="vertical-align: top;">
-                  <img src="${headerImage || `https://${host}/api/proxy?path=${encodeURIComponent('/assets/studio/common/branding/VSTUDIO.webp')}`}" width="60" height="60" style="border-radius: 50%; object-fit: cover; border: 1px solid #eee; display: block;" />
+                  <img src="${headerImage || `https://${host}/api/proxy/?path=${encodeURIComponent('studio/common/branding/vstudio.webp')}`}" width="60" height="60" style="border-radius: 50%; object-fit: cover; border: 1px solid #eee; display: block;" />
                 </td>
                 <td style="padding-left: 15px; vertical-align: top;">
                   <div style="font-weight: 600; font-size: 16px; color: #111; margin-bottom: 4px;">${date}</div>
@@ -161,7 +163,7 @@ export function VumeStudioTemplate(options: StudioExperienceOptions) {
       <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom: 30px;">
         <tr>
           <td style="vertical-align: top;">
-            <p style="margin: 0; font-size: 16px; line-height: 1.6; color: #111;">${instructorName} is een bedreven voice-over met jarenlange ervaring. Je herkent zijn stem van TV-spots en hulplijnen van grote merken.</p>
+            <p style="margin: 0; font-size: 16px; line-height: 1.6; color: #111;">${content.instructorBio}</p>
           </td>
           <td width="120" style="vertical-align: top; padding-left: 20px;">
             <img src="${instructorImage}" width="120" height="213" style="border-radius: 8px; border: 1px solid #eee; display: block; object-fit: cover;" />
@@ -185,7 +187,7 @@ export function VumeStudioTemplate(options: StudioExperienceOptions) {
     journey: 'studio',
     host,
     language,
-    headerImage: headerImage || `https://${host}/api/proxy?path=${encodeURIComponent('/assets/studio/common/branding/VSTUDIO.webp')}`,
+    headerImage: headerImage || `https://${host}/api/proxy/?path=${encodeURIComponent('studio/common/branding/vstudio.webp')}`,
     optOutUrl
   });
 }

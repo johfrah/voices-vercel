@@ -103,12 +103,35 @@ function resolveCheckoutItemThumbnail(item: any, dbActor: any, host: string): st
     null;
 
   if (!candidate || typeof candidate !== 'string') return undefined;
-  if (candidate.startsWith('http://') || candidate.startsWith('https://') || candidate.startsWith('/')) {
+  if (candidate.startsWith('http://') || candidate.startsWith('https://')) {
     return candidate;
   }
 
-  const normalizedPath = candidate.startsWith('/') ? candidate : `/${candidate}`;
-  return `https://${host}/api/proxy?path=${encodeURIComponent(normalizedPath)}`;
+  const rawCandidate = candidate.trim();
+  if (
+    rawCandidate.startsWith('/') &&
+    !rawCandidate.startsWith('/assets/') &&
+    !rawCandidate.startsWith('/wp-content/') &&
+    !rawCandidate.startsWith('/api/')
+  ) {
+    return `https://${host}${rawCandidate}`;
+  }
+
+  let normalizedPath = rawCandidate;
+  if (normalizedPath.includes('/api/proxy') && normalizedPath.includes('?path=')) {
+    const [, extractedPath] = normalizedPath.split('?path=');
+    normalizedPath = decodeURIComponent(extractedPath || '');
+  }
+
+  normalizedPath = normalizedPath.startsWith('/assets/') ? normalizedPath.slice('/assets/'.length) : normalizedPath;
+  normalizedPath = normalizedPath.startsWith('assets/') ? normalizedPath.slice('assets/'.length) : normalizedPath;
+  normalizedPath = normalizedPath.startsWith('/') ? normalizedPath.slice(1) : normalizedPath;
+  if (normalizedPath.startsWith('wp-content/') || normalizedPath.startsWith('api/')) {
+    normalizedPath = `/${normalizedPath}`;
+  }
+  if (!normalizedPath) return undefined;
+
+  return `https://${host}/api/proxy/?path=${encodeURIComponent(normalizedPath)}`;
 }
 
 function resolveCheckoutItemDescription(item: any): string {
