@@ -53,13 +53,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 🛡️ CHRIS-PROTOCOL: Enrichment Logic (v2.28.48)
+    // 🛡️ CHRIS-PROTOCOL: Enrichment Logic (v2.28.49)
+    // Now using a Staging Area (actor_profile_proposals) for HITL approval.
     if (is_enrichment && userId) {
       const actorIdResult = await db.select({ id: actors.id }).from(actors).where(eq(actors.userId, userId)).limit(1);
       const actorId = actorIdResult[0]?.id;
 
       if (actorId) {
-        const updatePayload: any = {
+        const proposalData = {
           first_name: first_name.trim(),
           last_name: last_name?.trim() || null,
           gender: gender || null,
@@ -73,34 +74,22 @@ export async function POST(request: NextRequest) {
           bio: bio?.trim() || null,
           why_voices: why_voices?.trim() || null,
           studio_specs: studio_specs || null,
-          updatedAt: new Date()
+          extra_lang_ids: extra_lang_ids || [],
+          tone_ids: tone_ids || []
         };
 
-        await db.update(actors).set(updatePayload).where(eq(actors.id, actorId));
-
-        // Sync relations (delete and re-insert for simplicity/integrity)
-        if (actorLanguages) {
-          await db.delete(actorLanguages).where(eq(actorLanguages.actorId, actorId));
-          if (native_lang_id) {
-            await db.insert(actorLanguages).values({ actorId, languageId: parseInt(String(native_lang_id)), isNative: true });
-          }
-          if (Array.isArray(extra_lang_ids)) {
-            for (const langId of extra_lang_ids) {
-              await db.insert(actorLanguages).values({ actorId, languageId: parseInt(String(langId)), isNative: false }).catch(() => {});
-            }
-          }
-        }
-
-        if (actorTones && Array.isArray(tone_ids)) {
-          await db.delete(actorTones).where(eq(actorTones.actorId, actorId));
-          for (const toneId of tone_ids) {
-            await db.insert(actorTones).values({ actorId, toneId: parseInt(String(toneId)) }).catch(() => {});
-          }
-        }
+        // Insert into Staging Area instead of direct update
+        const { actorProfileProposals } = await import('@/lib/system/voices-config');
+        await db.insert(actorProfileProposals).values({
+          actorId: actorId,
+          userId: userId,
+          status: 'pending',
+          proposalData: proposalData
+        });
 
         return NextResponse.json({
           success: true,
-          message: 'Je profiel is succesvol bijgewerkt naar de 2026 standaard!',
+          message: 'Bedankt! Je wijzigingen zijn ontvangen en worden door Johfrah gecontroleerd voordat ze live gaan.',
         });
       }
     }

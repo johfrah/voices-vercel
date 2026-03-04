@@ -363,7 +363,23 @@ export default function AdminUsersPage() {
       </div>
 
       <FixedActionDockInstrument>
-        <ButtonInstrument 
+            <ButtonInstrument 
+              variant="outline" 
+              className="group relative overflow-hidden rounded-2xl border-black/5 hover:border-primary/20 transition-all duration-500"
+              onClick={() => window.location.href = '/admin/actors/proposals'}
+            >
+              <div className="flex items-center gap-3 px-2 py-1">
+                <div className="w-8 h-8 bg-primary/10 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
+                  <ShieldCheck size={16} className="text-primary" />
+                </div>
+                <div className="flex flex-col items-start">
+                  <span className="text-[10px] font-black text-va-black/20 uppercase tracking-widest leading-none mb-1">HITL Review</span>
+                  <span className="text-sm font-bold text-va-black/60 group-hover:text-primary transition-colors">Voorstellen</span>
+                </div>
+              </div>
+            </ButtonInstrument>
+
+            <ButtonInstrument 
           onClick={() => {
             logAction('users_refresh');
             fetchUsers();

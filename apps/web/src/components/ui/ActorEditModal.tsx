@@ -100,29 +100,47 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
     }
   }, [taxonomies.languages, formData.native_lang]);
 
-  //  CHRIS-PROTOCOL: Resolve extra_langs labels to codes
+  //  CHRIS-PROTOCOL: Resolve extra_langs labels to codes and IDs (2026)
   useEffect(() => {
-    if (taxonomies.languages.length > 0 && formData.extra_langs) {
-      const currentLangs = formData.extra_langs.split(',').map(l => l.trim()).filter(Boolean);
+    if (taxonomies.languages.length > 0) {
+      const currentLangs = formData.extra_langs ? formData.extra_langs.split(',').map(l => l.trim()).filter(Boolean) : [];
+      const currentIds = formData.extra_lang_ids || [];
+      
       let hasChanges = false;
-      const newLangs = currentLangs.map(lang => {
+      const newIds = [...currentIds];
+      const newLangs = [...currentLangs];
+
+      // 1. Map labels to IDs if IDs are missing
+      currentLangs.forEach(lang => {
         const found = taxonomies.languages.find(l => 
           l.label.toLowerCase() === lang.toLowerCase() || 
           l.code === lang
         );
-        if (found && found.code !== lang) {
+        if (found && !newIds.includes(found.id)) {
           hasChanges = true;
-          return found.code;
+          newIds.push(found.id);
         }
-        return lang;
+      });
+
+      // 2. Map IDs back to codes for the text field
+      newIds.forEach(id => {
+        const found = taxonomies.languages.find(l => l.id === id);
+        if (found && !newLangs.includes(found.code)) {
+          hasChanges = true;
+          newLangs.push(found.code);
+        }
       });
 
       if (hasChanges) {
-        console.log(` CHRIS-PROTOCOL: Resolving extra_langs to codes:`, newLangs);
-        setFormData(prev => ({ ...prev, extra_langs: newLangs.join(', ') }));
+        console.log(` CHRIS-PROTOCOL: Healing language handshake in UI:`, { newIds, newLangs });
+        setFormData(prev => ({ 
+          ...prev, 
+          extra_lang_ids: newIds,
+          extra_langs: newLangs.join(', ') 
+        }));
       }
     }
-  }, [taxonomies.languages, formData.extra_langs]);
+  }, [taxonomies.languages, formData.extra_langs, formData.extra_lang_ids]);
 
   const [isSaving, setIsSaving] = useState(false);
   const [isUploadingDemo, setIsUploadingDemo] = useState<number | null>(null);
