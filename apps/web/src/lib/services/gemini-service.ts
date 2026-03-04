@@ -48,7 +48,7 @@ export class GeminiService {
   /**
    * Helper om het model op te halen met de juiste v1beta compatibiliteit
    */
-  private getModel() {
+  private getModel(priority: 'high' | 'low' = 'low') {
     //  GEMINI 2026 UPGRADE: Gebruik gemini-flash-latest voor maximale stabiliteit en snelheid
     return this.genAI.getGenerativeModel({ model: "gemini-flash-latest" });
   }
@@ -57,7 +57,7 @@ export class GeminiService {
    * Genereert platte tekst via Gemini. Gebruikt door heal-routes, chat en Telegram-Bob.
    * NU MET AGENT-MANDAAT: Kan gestructureerde acties voorstellen.
    */
-  async generateText(prompt: string, options?: { jsonMode?: boolean, lang?: string, host?: string }): Promise<string> {
+  async generateText(prompt: string, options?: { jsonMode?: boolean, lang?: string, host?: string, priority?: 'high' | 'low' }): Promise<string> {
     if (!process.env.GOOGLE_API_KEY) {
       console.warn('[GeminiService] GOOGLE_API_KEY not configured. Returning helpful fallback.');
       return options?.jsonMode
@@ -73,7 +73,7 @@ export class GeminiService {
     }
 
     try {
-      const model = this.getModel();
+      const model = this.getModel(options?.priority);
       let finalPrompt = prompt;
 
       //  MARKET DNA INJECTION: Als er een taal is meegegeven, injecteren we de regels
@@ -127,7 +127,7 @@ ${prompt}
   /**
    * Static shortcut voor generateText (compat met heal-routes).
    */
-  static async generateText(prompt: string, options?: { jsonMode?: boolean, lang?: string, host?: string }): Promise<string> {
+  static async generateText(prompt: string, options?: { jsonMode?: boolean, lang?: string, host?: string, priority?: 'high' | 'low' }): Promise<string> {
     return GeminiService.getInstance().generateText(prompt, options);
   }
 

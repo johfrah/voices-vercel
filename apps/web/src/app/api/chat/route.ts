@@ -753,7 +753,7 @@ ${workshopEditionsData.filter((ed: any) => ed.status === 'upcoming').map((ed: an
           - Gebruik Natural Capitalization.
         `;
         
-        aiContent = await gemini.generateText(prompt, { jsonMode: true, lang: language });
+        aiContent = await gemini.generateText(prompt, { jsonMode: true, lang: language, priority: 'high' });
         console.log('[Voicy API] Gemini Response received:', aiContent.substring(0, 50));
 
         //  BUTLER BRIDGE: Parse JSON en extraheer acties
