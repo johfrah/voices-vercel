@@ -350,6 +350,7 @@ async function discoverAndRegisterSlug(slug: string, marketCode: string, journey
         .from('slug_registry')
         .insert({
           slug: slug.toLowerCase(),
+          routing_type: 'actor',
           entity_id: actor.id,
           entity_type_id: 1, // actor
           market_code: marketCode === 'ADEMING' ? 'BE' : marketCode,
@@ -378,6 +379,7 @@ async function discoverAndRegisterSlug(slug: string, marketCode: string, journey
         .from('slug_registry')
         .insert({
           slug: slug.toLowerCase(),
+          routing_type: 'article',
           entity_id: article.id,
           entity_type_id: 3, // article
           market_code: 'ALL',
@@ -407,6 +409,7 @@ async function discoverAndRegisterSlug(slug: string, marketCode: string, journey
         .from('slug_registry')
         .insert({
           slug: slug.toLowerCase().startsWith('studio/') ? slug.toLowerCase() : `studio/${slug.toLowerCase()}`,
+          routing_type: 'workshop',
           entity_id: workshop.id,
           entity_type_id: 5, // workshop
           world_id: 2, // Studio
@@ -435,6 +438,7 @@ async function discoverAndRegisterSlug(slug: string, marketCode: string, journey
         .from('slug_registry')
         .insert({
           slug: slug.toLowerCase(),
+          routing_type: 'artist',
           entity_id: artist.id,
           entity_type_id: 4, // artist
           market_code: 'ALL',
@@ -463,6 +467,7 @@ async function discoverAndRegisterSlug(slug: string, marketCode: string, journey
             .from('slug_registry')
             .insert({
               slug: slug.toLowerCase(),
+              routing_type: 'casting_list',
               entity_id: list.id,
               entity_type_id: 6,
               market_code: 'ALL',
@@ -1393,6 +1398,8 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
     // World prefixes are valid entry points — their sub-pages resolve via CMS article lookup.
     const worldPrefixes = ['studio', 'academy', 'ademing', 'johfrai', 'partners', 'freelance', 'casting'];
     const isKnownEntryPoint = MarketManager.isAgencyEntryPoint(segments[0]) || ['voice', 'artist', 'portfolio'].includes(segments[0]) || worldPrefixes.includes(segments[0]?.toLowerCase());
+    const actorJourneySegments = ['telephony', 'telefoon', 'telefooncentrale', 'video', 'commercial', 'reclame'];
+    const allowsLegacyActorJourney = cleanSegments.length > 1 && actorJourneySegments.includes((cleanSegments[1] || '').toLowerCase());
     
     // 🛡️ CHRIS-PROTOCOL: Category/Native/Language Route Protection (v2.16.103)
     const isCategoryNative = segments[0] === 'category' || segments[0] === 'native' || segments[0] === 'language';
@@ -1401,7 +1408,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
       return notFound();
     }
 
-    if (!resolved && !isKnownEntryPoint && segments.length > 1) {
+    if (!resolved && !isKnownEntryPoint && segments.length > 1 && !allowsLegacyActorJourney) {
       console.error(` [SmartRouter] NUCLEAR BLOCK: Path "${lookupSlug}" not in registry and not a known entry point. Blocking.`);
       return notFound();
     }
@@ -1616,7 +1623,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
 
     // 3. Check voor Stem (Legacy Fallback by Slug)
     try {
-      if (!resolved && !isKnownEntryPoint && segments.length > 1) {
+      if (!resolved && !isKnownEntryPoint && segments.length > 1 && !allowsLegacyActorJourney) {
         console.error(` [SmartRouter] NUCLEAR BLOCK: Path "${lookupSlug}" not in registry and not a known entry point. Blocking.`);
         return notFound();
       }
@@ -1679,7 +1686,8 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
           .from('content_articles')
           .select('*')
           .eq('slug', cmsSlug)
-          .single();
+          .limit(1)
+          .maybeSingle();
 
         if (error) {
           console.warn(` [SmartRouter] CMS Article not found or SDK error: ${cmsSlug}`, error.message);
@@ -1751,6 +1759,10 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
 
     return notFound();
   } catch (err: any) {
+    if (err?.digest === 'NEXT_NOT_FOUND' || String(err?.message || '').includes('NEXT_NOT_FOUND')) {
+      throw err;
+    }
+
     console.error("[SmartRouter] FATAL ERROR:", err);
     const { ServerWatchdog } = await import('@/lib/services/server-watchdog');
     await ServerWatchdog.report({

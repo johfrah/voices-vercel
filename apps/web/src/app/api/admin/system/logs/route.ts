@@ -104,6 +104,7 @@ export async function POST(request: Request) {
     // 🛡️ CHRIS-PROTOCOL: Spam preventie (max 1x per 10 min voor identieke client-fouten)
     // Gebruik een echt Date object voor Drizzle (v2.16.001)
     const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
+    const tenMinutesAgoIso = tenMinutesAgo.toISOString();
     
       try {
         const recent = await db.select().from(systemEvents)
@@ -135,7 +136,7 @@ export async function POST(request: Request) {
       const { data: recent } = await supabase.from('system_events')
         .select('id')
         .eq('message', message)
-        .gte('created_at', tenMinutesAgo)
+        .gte('created_at', tenMinutesAgoIso)
         .limit(1);
 
       if (recent && recent.length > 0) {
