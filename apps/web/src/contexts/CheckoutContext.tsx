@@ -80,6 +80,10 @@ interface CheckoutState {
     type: 'audio' | 'video' | 'text';
     url: string;
   }[];
+  ownMusicFile?: {
+    name: string;
+    url: string;
+  };
   pricingConfig: any;
   pricing: {
     base: number;
@@ -129,6 +133,7 @@ interface CheckoutContextType {
   calculatePricing: () => void;
   addBriefingFile: (file: { name: string, type: 'audio' | 'video' | 'text', url: string }) => void;
   removeBriefingFile: (id: string) => void;
+  updateOwnMusicFile: (file?: { name: string, url: string }) => void;
   lockPrice: () => void;
   unlockPrice: () => void;
   isVatExempt: boolean;
@@ -381,6 +386,7 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         customer: state.customer,
         selectedActor: state.selectedActor,
         briefing: state.briefing,
+        ownMusicFile: state.ownMusicFile,
         usage: state.usage,
         media: state.media,
         country: state.country,
@@ -564,6 +570,7 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       yearsDetail: typeof item.years === 'object' ? item.years : {},
       liveSession: item.liveSession || false,
       music: item.music || { trackId: null, asBackground: false, asHoldMusic: false },
+      ownMusicFile: item.ownMusicFile,
       items: prev.items.filter((i: any) => i.id !== item.id)
     }));
   }, []);
@@ -589,6 +596,7 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         asBackground: false,
         asHoldMusic: false,
       },
+      ownMusicFile: undefined,
       pricing: {
         base: 0,
         wordSurcharge: 0,
@@ -612,6 +620,10 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       ...prev,
       briefingFiles: prev.briefingFiles.filter(f => f.id !== id)
     }));
+  }, []);
+
+  const updateOwnMusicFile = useCallback((file?: { name: string, url: string }) => {
+    setState(prev => ({ ...prev, ownMusicFile: file }));
   }, []);
 
   const lockPrice = useCallback(() => setState(prev => ({ ...prev, isLocked: true })), []);
@@ -803,6 +815,7 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       calculatePricing,
       addBriefingFile,
       removeBriefingFile,
+      updateOwnMusicFile,
       lockPrice,
       unlockPrice,
       isVatExempt,

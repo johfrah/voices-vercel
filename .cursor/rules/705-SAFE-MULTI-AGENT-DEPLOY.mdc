@@ -1,0 +1,51 @@
+---
+description: Safe deploy when multiple agents or sessions touch the repo — branch, commit only this task's files, merge later.
+globs: 
+alwaysApply: false
+---
+
+# 🌿 Safe Multi-Agent Deploy (Branch-First)
+
+Gebruik dit protocol wanneer **meerdere agents** of sessies aan de repo werken, of wanneer de gebruiker vraagt om "veilig pushen", "branch", of "niet direct op main".
+
+## Wanneer toepassen
+
+- Gebruiker zegt: "veilig", "safe deploy", "via branch", "niet direct main", "multi-agent".
+- Er staan veel andere gewijzigde bestanden in `git status` die niet bij deze taak horen.
+
+## Stappen (agent voert uit)
+
+1. **Branch maken** (vanaf actuele main):
+   - `git fetch origin main`
+   - Branch-naam: `{area}/{korte-beschrijving}` (bijv. `studio/doe-je-mee-skills`, `academy/footer-fix`).
+   - `git checkout -b <branch>`
+
+2. **Alleen de bestanden van deze taak stagen** — NOOIT `git add .`:
+   - Expliciet: `git add <pad1> <pad2> ...` voor uitsluitend de bestanden die bij de huidige taak horen.
+   - Controleer met `git status -s` dat geen andere wijzigingen gestaged zijn.
+
+3. **Commit** met duidelijke message (makkelijk terugvinden / revert):
+   - `git commit -m "Area: korte titel\n\n- Bullet met wat er is gedaan"`
+
+4. **Branch pushen** (main blijft ongewijzigd):
+   - `git push -u origin <branch>`
+
+5. **Merge naar main** gebeurt later:
+   - Door de gebruiker, of
+   - Door een andere agent (lokaal of cloud) met:  
+     `git checkout main && git pull origin main && git merge <branch> -m "Merge <branch>: ..." && git push origin main`  
+   - Of via Pull Request in GitHub/GitLab.
+
+## Wat de agent NIET doet in deze modus
+
+- Geen `git add .`
+- Geen directe push naar `main` door deze agent (tenzij gebruiker expliciet "merge nu" vraagt).
+- Geen versiebump of pre-vercel in deze stap (die horen bij de merge-naar-main / release-lane).
+
+## Korte gebruikersprompt (copy-paste)
+
+Gebruiker kan aan een agent zeggen:
+
+*"Commit en push deze wijziging op de **veilige manier**: branch aanmaken, alleen de bestanden die bij deze taak horen committen, branch pushen. Niet mergen naar main; dat doe ik later (of een andere agent)."*
+
+Een **cloud agent** (of andere sessie) kan later dezelfde repo gebruiken en met schrijfrechten de branch mergen naar main en pushen — de merge-stappen zijn gewone git-commando's.

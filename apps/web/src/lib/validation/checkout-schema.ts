@@ -46,6 +46,10 @@ const CheckoutItemSchema = z.object({
     asBackground: z.boolean().optional(),
     asHoldMusic: z.boolean().optional(),
   }).optional(),
+  ownMusicFile: z.object({
+    name: z.string(),
+    url: z.string(),
+  }).optional(),
   participant_info: z.unknown().optional(),
   pricing: z.object({
     total: z.coerce.number(),
@@ -104,6 +108,10 @@ export const CheckoutPayloadSchema = z.object({
     trackId: z.string().nullable().optional(),
     asBackground: z.boolean().default(false),
     asHoldMusic: z.boolean().default(false),
+  }).optional(),
+  ownMusicFile: z.object({
+    name: z.string(),
+    url: z.string(),
   }).optional(),
   
   // 5. Metadata

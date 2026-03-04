@@ -326,6 +326,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
         usage: state.usage,
         plan: state.plan,
         briefing: safeBriefing,
+        ownMusicFile: state.ownMusicFile || null,
         quoteMessage: quoteMessage || null,
         payment_method: state.paymentMethod,
         metadata: {

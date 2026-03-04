@@ -7,12 +7,16 @@ import { Check, Info, Loader2, Music, Pause, Play } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { VoiceglotText } from './VoiceglotText';
 
+import { AudioUploadWithWaveform } from './audio/AudioUploadWithWaveform';
+
 export const MusicSelector: React.FC<{ context?: string }> = ({ context }) => {
-  const { state, updateMusic } = useCheckout();
+  const { state, updateMusic, updateOwnMusicFile } = useCheckout();
   const [tracks, setTracks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [playingId, setPlayingId] = useState<string | null>(null);
   const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
+
+  const isOwnMusic = state.music.trackId === 'own-music';
 
   useEffect(() => {
     async function loadMusic() {
@@ -45,8 +49,10 @@ export const MusicSelector: React.FC<{ context?: string }> = ({ context }) => {
   const handleSelectTrack = (trackId: string) => {
     if (state.music.trackId === trackId) {
       updateMusic({ trackId: null, asBackground: false, asHoldMusic: false });
+      if (trackId === 'own-music') updateOwnMusicFile(undefined);
     } else {
       updateMusic({ trackId, asBackground: true }); // Default to background
+      if (trackId !== 'own-music') updateOwnMusicFile(undefined);
     }
   };
 
@@ -83,12 +89,43 @@ export const MusicSelector: React.FC<{ context?: string }> = ({ context }) => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* Eigen Muziek Optie */}
+        <div className="relative group">
+          <button 
+            onClick={() => handleSelectTrack('own-music')}
+            className={cn(
+              "w-full p-4 rounded-2xl border-2 transition-all text-left flex items-center justify-between min-h-[76px]",
+              isOwnMusic ? "border-primary bg-primary/5 shadow-sm" : "border-black/5 bg-white hover:border-primary/20"
+            )}
+          >
+            <div>
+              <p className={cn("text-[15px] font-black uppercase tracking-widest", isOwnMusic ? "text-primary" : "text-va-black")}>
+                <VoiceglotText translationKey="music.own.title" defaultText="Eigen Muziek" />
+              </p>
+              <p className="text-[15px] font-bold text-va-black/30 tracking-tighter">
+                <VoiceglotText translationKey="music.own.vibe" defaultText="Upload je eigen track" />
+              </p>
+            </div>
+            <div className={cn(
+              "w-8 h-8 rounded-full flex items-center justify-center transition-all",
+              isOwnMusic ? "bg-primary text-white" : "bg-va-black/5 text-va-black/20 group-hover:bg-va-black group-hover:text-white"
+            )}>
+              <Upload size={14} strokeWidth={2.5} />
+            </div>
+          </button>
+          {isOwnMusic && (
+            <div className="absolute -top-2 -right-2 w-5 h-5 bg-primary text-white rounded-full flex items-center justify-center shadow-lg animate-in zoom-in duration-300">
+              <Check strokeWidth={1.5} size={12} />
+            </div>
+          )}
+        </div>
+
         {tracks.map((track) => (
           <div key={track.id} className="relative group">
             <button 
               onClick={() => handleSelectTrack(track.id)}
               className={cn(
-                "w-full p-4 rounded-2xl border-2 transition-all text-left flex items-center justify-between",
+                "w-full p-4 rounded-2xl border-2 transition-all text-left flex items-center justify-between min-h-[76px]",
                 state.music.trackId === track.id ? "border-primary bg-primary/5 shadow-sm" : "border-black/5 bg-white hover:border-primary/20"
               )}
             >
@@ -111,6 +148,36 @@ export const MusicSelector: React.FC<{ context?: string }> = ({ context }) => {
           </div>
         ))}
       </div>
+
+      {/* Eigen Muziek Upload Area */}
+      <AnimatePresence>
+        {isOwnMusic && (
+          <motion.div 
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="overflow-hidden"
+          >
+            <div className="bg-white p-6 rounded-2xl border border-primary/10 space-y-4">
+              <div className="flex items-center gap-2 mb-2">
+                <Upload strokeWidth={1.5} size={14} className="text-primary" />
+                <p className="text-[15px] font-black tracking-widest text-va-black/60 uppercase">
+                  <VoiceglotText translationKey="music.own.upload_title" defaultText="Upload je bestand" />
+                </p>
+              </div>
+              <AudioUploadWithWaveform 
+                uploadEndpoint="/api/media/upload"
+                value={state.ownMusicFile?.url || ''}
+                onUploadSuccess={(url, mediaId) => updateOwnMusicFile({ name: 'Eigen Muziek', url })}
+                replaceLabel={t('action.replace', 'Vervangen')}
+              />
+              <p className="text-[12px] text-va-black/40 italic">
+                <VoiceglotText translationKey="music.own.upload_hint" defaultText="Wij zorgen voor de perfecte mix met de gekozen stem." />
+              </p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {state.music.trackId && (
         <div className="bg-white p-6 rounded-2xl border border-primary/10 space-y-4 animate-in slide-in-from-top-2 duration-500">
