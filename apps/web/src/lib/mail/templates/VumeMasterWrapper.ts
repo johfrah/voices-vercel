@@ -238,7 +238,7 @@ export function VumeMasterWrapper(content: string, options: WrapperOptions) {
   const logoHtml = `
     <tr>
       <td align="center" style="padding: 0 0 20px 0;">
-        <img src="${logoSrc}" alt="${market.name}" width="136" style="display:block; border:0; width:136px; height:auto;" />
+        <img class="vume-logo" src="${logoSrc}" alt="${market.name}" width="136" style="display:block; border:0; width:136px; height:auto;" />
       </td>
     </tr>
   `;
@@ -257,14 +257,14 @@ export function VumeMasterWrapper(content: string, options: WrapperOptions) {
     }
     <tr>
       <td style="padding: ${resolvedHeaderImage ? '22px' : '6px'} 40px 0 40px;">
-        <p style="margin:0 0 10px 0; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; color:#9CA3AF; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">${journeyLabel}</p>
-        <h1 style="margin:0; font-size:30px; line-height:1.2; font-weight:600; color:#111827; letter-spacing:-0.01em; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">${title}</h1>
+        <p class="vume-kicker vume-muted" style="margin:0 0 10px 0; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; color:#9CA3AF; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">${journeyLabel}</p>
+        <h1 class="vume-title" style="margin:0; font-size:30px; line-height:1.2; font-weight:600; color:#111827; letter-spacing:-0.01em; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">${title}</h1>
       </td>
     </tr>
   `;
 
   const signatureHtml = showSignature ? `
-    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-top: 32px; border-top: 1px solid #E5E7EB; padding-top: 24px;">
+    <table class="vume-signature" border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-top: 32px; border-top: 1px solid #E5E7EB; padding-top: 24px;">
       <tr>
         <td width="68" style="vertical-align: top;">
           <a href="${websiteHref}?utm_source=email&utm_medium=transactional" style="text-decoration:none;">
@@ -273,9 +273,9 @@ export function VumeMasterWrapper(content: string, options: WrapperOptions) {
         </td>
         <td style="vertical-align: top; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif; font-size:14px; line-height:1.5; color:#4B5563;">
           <div style="font-weight:600; color:#111827;">${signatureName}</div>
-          <div style="margin-bottom:4px; color:#6B7280;">${signatureRole}</div>
-          <a href="mailto:${market.email}" style="color:#4B5563; text-decoration:none;">${market.email}</a>
-          ${market.phone ? `<br /><a href="tel:${market.phone.replace(/\s+/g, '')}" style="color:#4B5563; text-decoration:none;">${market.phone}</a>` : ''}
+          <div class="vume-muted" style="margin-bottom:4px; color:#6B7280;">${signatureRole}</div>
+          <a class="vume-link" href="mailto:${market.email}" style="color:#4B5563; text-decoration:none;">${market.email}</a>
+          ${market.phone ? `<br /><a class="vume-link" href="tel:${market.phone.replace(/\s+/g, '')}" style="color:#4B5563; text-decoration:none;">${market.phone}</a>` : ''}
         </td>
       </tr>
     </table>
@@ -286,7 +286,7 @@ export function VumeMasterWrapper(content: string, options: WrapperOptions) {
       <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-top:24px;">
         <tr>
           <td align="left">
-            <a href="${cta.url}" style="display:inline-block; padding:12px 22px; border-radius:999px; background:#111827; color:#FFFFFF; text-decoration:none; font-size:14px; font-weight:600; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">${cta.label}</a>
+            <a class="vume-button" href="${cta.url}" style="display:inline-block; padding:12px 22px; border-radius:999px; background:#111827; color:#FFFFFF; text-decoration:none; font-size:14px; font-weight:600; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">${cta.label}</a>
           </td>
         </tr>
       </table>
@@ -294,17 +294,17 @@ export function VumeMasterWrapper(content: string, options: WrapperOptions) {
     : '';
 
   const footerHtml = `
-    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-top:26px; text-align:center; color:#6B7280; font-size:12px; line-height:1.6; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
+    <table class="vume-footer vume-muted" border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-top:26px; text-align:center; color:#6B7280; font-size:12px; line-height:1.6; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
       <tr>
         <td style="padding-top:16px;">
-          <a href="${websiteHref}" style="color:#6B7280; text-decoration:none;">${i18n.websiteCta}</a>
+          <a class="vume-link" href="${websiteHref}" style="color:#6B7280; text-decoration:none;">${i18n.websiteCta}</a>
           &nbsp;&nbsp;&bull;&nbsp;&nbsp;
-          <a href="${supportHref}" style="color:#6B7280; text-decoration:none;">${i18n.supportCta}</a>
+          <a class="vume-link" href="${supportHref}" style="color:#6B7280; text-decoration:none;">${i18n.supportCta}</a>
           &nbsp;&nbsp;&bull;&nbsp;&nbsp;
-          <a href="${accountHref}" style="color:#6B7280; text-decoration:none;">${i18n.accountCta}</a>
+          <a class="vume-link" href="${accountHref}" style="color:#6B7280; text-decoration:none;">${i18n.accountCta}</a>
           <br />
           &copy; 2026 ${market.company_name} - ${market.name}
-          ${optOutUrl ? `<br /><a href="${optOutUrl}" style="color:#6B7280; text-decoration:underline;">${i18n.unsubscribe}</a> ${i18n.forMarketing}` : ''}
+          ${optOutUrl ? `<br /><a class="vume-link" href="${optOutUrl}" style="color:#6B7280; text-decoration:underline;">${i18n.unsubscribe}</a> ${i18n.forMarketing}` : ''}
         </td>
       </tr>
     </table>
@@ -316,22 +316,122 @@ export function VumeMasterWrapper(content: string, options: WrapperOptions) {
     <head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+      <meta name="color-scheme" content="light dark" />
+      <meta name="supported-color-schemes" content="light dark" />
+      <style type="text/css">
+        :root {
+          color-scheme: light dark;
+          supported-color-schemes: light dark;
+        }
+
+        @media (prefers-color-scheme: dark) {
+          body.vume-body, table.vume-shell, td.vume-shell-cell {
+            background: #0B0C0F !important;
+          }
+
+          td.vume-card {
+            background: #121418 !important;
+            border-color: #2A2E36 !important;
+            box-shadow: none !important;
+          }
+
+          td.vume-content,
+          td.vume-content * {
+            color: #E5E7EB !important;
+          }
+
+          td.vume-content .vume-muted,
+          td.vume-content .vume-muted * {
+            color: #A1A1AA !important;
+          }
+
+          td.vume-content .vume-title {
+            color: #F5F5F5 !important;
+          }
+
+          td.vume-content .vume-link {
+            color: #9CC9FF !important;
+          }
+
+          td.vume-content .vume-button {
+            background: #F3F4F6 !important;
+            color: #111827 !important;
+            border: 1px solid #D1D5DB !important;
+          }
+
+          td.vume-content [style*="background:#FFFFFF"],
+          td.vume-content [style*="background: #FFFFFF"],
+          td.vume-content [style*="background:#ffffff"],
+          td.vume-content [style*="background: #ffffff"],
+          td.vume-content [style*="background-color:#FFFFFF"],
+          td.vume-content [style*="background-color: #FFFFFF"],
+          td.vume-content [style*="background-color:#ffffff"],
+          td.vume-content [style*="background-color: #ffffff"],
+          td.vume-content [style*="background: #F9FAFB"],
+          td.vume-content [style*="background:#F9FAFB"],
+          td.vume-content [style*="background: #f9fafb"],
+          td.vume-content [style*="background:#f9fafb"] {
+            background: #161A22 !important;
+          }
+
+          td.vume-content table,
+          td.vume-content td,
+          td.vume-content div {
+            border-color: #2A2E36 !important;
+          }
+
+          img.vume-logo {
+            filter: brightness(0) invert(1) contrast(1.03);
+          }
+        }
+
+        [data-ogsc] body.vume-body,
+        [data-ogsc] table.vume-shell,
+        [data-ogsc] td.vume-shell-cell {
+          background: #0B0C0F !important;
+        }
+
+        [data-ogsc] td.vume-card {
+          background: #121418 !important;
+          border-color: #2A2E36 !important;
+        }
+
+        [data-ogsc] td.vume-content,
+        [data-ogsc] td.vume-content * {
+          color: #E5E7EB !important;
+        }
+
+        [data-ogsc] td.vume-content .vume-muted,
+        [data-ogsc] td.vume-content .vume-muted * {
+          color: #A1A1AA !important;
+        }
+
+        [data-ogsc] td.vume-content .vume-link {
+          color: #9CC9FF !important;
+        }
+
+        [data-ogsc] td.vume-content .vume-button {
+          background: #F3F4F6 !important;
+          color: #111827 !important;
+          border: 1px solid #D1D5DB !important;
+        }
+      </style>
       <title>${title}</title>
     </head>
-    <body style="margin:0; padding:0; background-color:#F5F5F7; -webkit-font-smoothing:antialiased;">
+    <body class="vume-body" style="margin:0; padding:0; background-color:#F5F5F7; -webkit-font-smoothing:antialiased;">
       ${previewText ? `<div style="display:none; max-height:0; max-width:0; opacity:0; overflow:hidden;">${previewText}</div>` : ''}
 
-      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#F5F5F7; padding:32px 0 56px 0;">
+      <table class="vume-shell" border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#F5F5F7; padding:32px 0 56px 0;">
         <tr>
-          <td align="center" style="padding:0 16px;">
+          <td class="vume-shell-cell" align="center" style="padding:0 16px;">
             <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width:600px;">
               ${logoHtml}
               <tr>
-                <td style="background-color:#FFFFFF; border-radius:18px; overflow:hidden; border:1px solid #E5E7EB; box-shadow:0 4px 18px rgba(17,24,39,0.06);">
+                <td class="vume-card" style="background-color:#FFFFFF; border-radius:18px; overflow:hidden; border:1px solid #E5E7EB; box-shadow:0 4px 18px rgba(17,24,39,0.06);">
                   <table border="0" cellpadding="0" cellspacing="0" width="100%">
                     ${headerHtml}
                     <tr>
-                      <td style="padding:28px 40px 34px 40px; color:#374151; font-size:15px; line-height:1.68; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
+                      <td class="vume-content" style="padding:28px 40px 34px 40px; color:#374151; font-size:15px; line-height:1.68; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
                         ${processedContent}
                         ${ctaHtml}
                         ${signatureHtml}
