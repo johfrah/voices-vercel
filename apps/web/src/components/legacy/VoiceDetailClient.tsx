@@ -2,9 +2,10 @@
 
 import { ArrowLeft } from "lucide-react";
 import {
-    ButtonInstrument,
     ContainerInstrument,
+    HeadingInstrument,
     SectionInstrument,
+    TextInstrument,
 } from "@/components/ui/LayoutInstruments";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { useCheckout } from "@/contexts/CheckoutContext";
@@ -12,10 +13,8 @@ import { useTranslation } from "@/contexts/TranslationContext";
 import { useMasterControl } from "@/contexts/VoicesMasterControlContext";
 import { VoiceCard } from "@/components/ui/VoiceCard";
 import { VoicesMasterControl } from "@/components/ui/VoicesMasterControl";
-import Image from "next/image";
 import Link from "next/link";
 import { useEffect, Suspense, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import dynamic from "next/dynamic";
 
 //  NUCLEAR LOADING MANDATE
@@ -59,7 +58,6 @@ export function VoiceDetailClient({
 
   const { selectActor, updateUsage, updateMedia, updateBriefing } = useCheckout();
   const { updateJourney } = useMasterControl();
-  const router = useRouter();
 
   // Sync with checkout context on mount and when actor changes
   useEffect(() => {
@@ -134,7 +132,7 @@ export function VoiceDetailClient({
 
     // BOB-METHODE: Update zowel de MasterControl (voor filters/UI) als de Checkout (voor prijs)
     updateJourney(finalJourney as any);
-    updateUsage(finalJourney === 'commercial' ? 'commercial' : (finalJourney === 'telephony' ? 'telephony' : 'unpaid'), finalJourneyId);
+    updateUsage(finalJourney === 'commercial' ? 'commercial' : (finalJourney === 'telephony' ? 'telefonie' : 'unpaid'), finalJourneyId);
     
     if (finalJourney === 'commercial' && initialMedium) {
       const mediumMap: Record<string, string> = {
@@ -173,6 +171,29 @@ export function VoiceDetailClient({
     // 🛡️ CHRIS-PROTOCOL: No cleanup here to prevent race conditions during hydration
   }, [actor, initialJourney, initialMedium, selectActor, updateUsage, updateMedia, updateBriefing, updateJourney]);
 
+  const actorPath = actor?.slug ? `/${actor.slug}` : '/agency';
+  const primaryLanguage = actor?.native_lang_label || actor?.native_lang || 'Niet opgegeven';
+  const extraLanguages = actor?.extra_langs
+    ? actor.extra_langs.split(',').map((entry: string) => entry.trim()).filter(Boolean)
+    : [];
+  const deliveryWindow = actor?.delivery_days_min || actor?.delivery_days_max
+    ? `${actor.delivery_days_min || 1}-${actor.delivery_days_max || actor.delivery_days_min || 1} dagen`
+    : 'Niet opgegeven';
+  const toneSummary = actor?.tone_of_voice
+    ? actor.tone_of_voice.split(',').map((entry: string) => entry.trim()).filter(Boolean).slice(0, 4).join(', ')
+    : 'Niet opgegeven';
+  const startingPrice = actor?.starting_price || actor?.price_unpaid
+    ? `€${Math.round(Number(actor.starting_price || actor.price_unpaid || 0))}`
+    : 'Op aanvraag';
+  const demoOverview = (actor?.demos || []).slice(0, 4);
+  const useCaseLabels: Record<string, string> = {
+    telephony: 'Telefonie',
+    commercial: 'Commercial',
+    video: 'Video',
+    demo: 'Demo'
+  };
+  const knownAboutLanguages = actor?.languages?.map((entry: any) => entry?.name).filter(Boolean) || [];
+
   return (
     <ContainerInstrument className="max-w-[1440px] mx-auto px-4 md:px-6 pt-32 pb-20 relative z-10">
       <div className="mb-12">
@@ -195,14 +216,14 @@ export function VoiceDetailClient({
             {
               "@context": "https://schema.org",
               "@type": "Person",
-              "@id": `/voice/${actor.slug}#person`,
+              "@id": `${actorPath}#person`,
               "name": actor.display_name,
               "description": actor.bio || actor.description,
               "image": actor.photo_url || undefined,
               "jobTitle": t('common.job_title.voice_actor', "Voice-over Artist"),
               "gender": actor.gender,
-              "url": `/voice/${actor.slug}`,
-              "knowsAbout": actor.languages?.map((l: any) => l.name) || actor.native_lang ? [actor.native_lang] : [t('common.language.dutch', "Nederlands")],
+              "url": actorPath,
+              "knowsAbout": knownAboutLanguages.length > 0 ? knownAboutLanguages : (actor.native_lang ? [actor.native_lang] : [t('common.language.dutch', "Nederlands")]),
               "aggregateRating": actor.voice_score ? {
                 "@type": "AggregateRating",
                 "ratingValue": actor.voice_score,
@@ -235,13 +256,49 @@ export function VoiceDetailClient({
                   "@type": "ListItem",
                   "position": 3,
                   "name": actor.display_name,
-                  "item": `/voice/${actor.slug}`
+                  "item": actorPath
                 }
               ]
             }
           ])
         }}
       />
+
+      <SectionInstrument className="mb-10">
+        <ContainerInstrument className="rounded-[28px] border border-va-black/10 bg-white/80 p-6 md:p-8">
+          <HeadingInstrument level={1} className="text-3xl md:text-4xl font-extralight tracking-tight mb-3">
+            <VoiceglotText translationKey={`actor.${actor?.id}.name`} defaultText={actor?.display_name || actor?.first_name || 'Voice-over stem'} noTranslate={true} />
+          </HeadingInstrument>
+          <TextInstrument className="text-va-black/60 text-[15px] md:text-[16px] leading-relaxed mb-6">
+            {actor?.tagline || actor?.bio || t('voice.detail.about.default_summary', 'Professionele stem met snelle levering en duidelijke briefing-flow.')}
+          </TextInstrument>
+          <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+            <ContainerInstrument className="rounded-[18px] border border-va-black/5 bg-va-off-white p-4">
+              <TextInstrument className="text-[11px] uppercase tracking-widest text-va-black/40 mb-1">Moedertaal</TextInstrument>
+              <TextInstrument className="text-[14px] md:text-[15px] font-medium text-va-black">{primaryLanguage}</TextInstrument>
+            </ContainerInstrument>
+            <ContainerInstrument className="rounded-[18px] border border-va-black/5 bg-va-off-white p-4">
+              <TextInstrument className="text-[11px] uppercase tracking-widest text-va-black/40 mb-1">Extra talen</TextInstrument>
+              <TextInstrument className="text-[14px] md:text-[15px] font-medium text-va-black">{extraLanguages.length > 0 ? extraLanguages.join(', ') : 'Geen extra talen'}</TextInstrument>
+            </ContainerInstrument>
+            <ContainerInstrument className="rounded-[18px] border border-va-black/5 bg-va-off-white p-4">
+              <TextInstrument className="text-[11px] uppercase tracking-widest text-va-black/40 mb-1">Levering</TextInstrument>
+              <TextInstrument className="text-[14px] md:text-[15px] font-medium text-va-black">{deliveryWindow}</TextInstrument>
+            </ContainerInstrument>
+            <ContainerInstrument className="rounded-[18px] border border-va-black/5 bg-va-off-white p-4">
+              <TextInstrument className="text-[11px] uppercase tracking-widest text-va-black/40 mb-1">Vanaf</TextInstrument>
+              <TextInstrument className="text-[14px] md:text-[15px] font-medium text-va-black">{startingPrice}</TextInstrument>
+            </ContainerInstrument>
+          </ContainerInstrument>
+          <TextInstrument className="text-va-black/55 text-[13px] md:text-[14px] leading-relaxed mt-4">
+            <VoiceglotText translationKey="voice.detail.facts.tones" defaultText="Kern van de stem:" /> {toneSummary}
+          </TextInstrument>
+          <Link href="#order-engine" className="inline-flex mt-5 text-[12px] md:text-[13px] uppercase tracking-widest text-primary hover:opacity-70 transition-opacity">
+            <VoiceglotText translationKey="voice.detail.jump_to_order" defaultText="Ga naar prijs en briefing" />
+          </Link>
+        </ContainerInstrument>
+      </SectionInstrument>
+
       {/*  HET MAAKPROCES: Direct naar de 3-koloms configurator */}
       <div id="order-engine" className="mb-20">
         {/*  BOB-METHODE: MasterControl integratie op stempagina */}
@@ -291,6 +348,68 @@ export function VoiceDetailClient({
           </div>
         </div>
       </div>
+
+      <SectionInstrument className="mb-10">
+        <ContainerInstrument className="rounded-[28px] border border-va-black/10 bg-white/80 p-6 md:p-8">
+          <HeadingInstrument level={2} className="text-2xl md:text-3xl font-extralight tracking-tight mb-2">
+            <VoiceglotText translationKey="voice.detail.use_cases.title" defaultText="Waar deze stem voor werkt" />
+          </HeadingInstrument>
+          <TextInstrument className="text-va-black/60 text-[14px] md:text-[15px] leading-relaxed mb-5">
+            <VoiceglotText translationKey="voice.detail.use_cases.subtitle" defaultText="Kies een demo op basis van je kanaal. Zo hoor je sneller of de stem past." />
+          </TextInstrument>
+          <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {demoOverview.length > 0 ? demoOverview.map((demo: any) => (
+              <ContainerInstrument key={demo.id} className="rounded-[18px] border border-va-black/5 bg-va-off-white p-4">
+                <TextInstrument className="text-[11px] uppercase tracking-widest text-va-black/40 mb-1">
+                  {useCaseLabels[demo.category as keyof typeof useCaseLabels] || demo.category || 'Demo'}
+                </TextInstrument>
+                <TextInstrument className="text-[14px] md:text-[15px] font-medium text-va-black leading-snug">
+                  {demo.title || demo.name}
+                </TextInstrument>
+              </ContainerInstrument>
+            )) : (
+              <ContainerInstrument className="rounded-[18px] border border-va-black/5 bg-va-off-white p-4 md:col-span-2">
+                <TextInstrument className="text-[14px] md:text-[15px] text-va-black/60">
+                  <VoiceglotText translationKey="voice.detail.use_cases.no_demos" defaultText="Demo’s worden binnenkort aangevuld." />
+                </TextInstrument>
+              </ContainerInstrument>
+            )}
+          </ContainerInstrument>
+        </ContainerInstrument>
+      </SectionInstrument>
+
+      <SectionInstrument className="mb-12">
+        <ContainerInstrument className="rounded-[28px] border border-va-black/10 bg-white/80 p-6 md:p-8">
+          <HeadingInstrument level={2} className="text-2xl md:text-3xl font-extralight tracking-tight mb-2">
+            <VoiceglotText translationKey="voice.detail.order_info.title" defaultText="Praktische afspraken" />
+          </HeadingInstrument>
+          <TextInstrument className="text-va-black/60 text-[14px] md:text-[15px] leading-relaxed mb-5">
+            <VoiceglotText translationKey="voice.detail.order_info.subtitle" defaultText="Alles wat je nodig hebt om snel te beslissen en correct te bestellen." />
+          </TextInstrument>
+          <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <ContainerInstrument className="rounded-[18px] border border-va-black/5 bg-va-off-white p-4">
+              <TextInstrument className="text-[11px] uppercase tracking-widest text-va-black/40 mb-1">Levertermijn</TextInstrument>
+              <TextInstrument className="text-[14px] md:text-[15px] font-medium text-va-black">{deliveryWindow}</TextInstrument>
+            </ContainerInstrument>
+            <ContainerInstrument className="rounded-[18px] border border-va-black/5 bg-va-off-white p-4">
+              <TextInstrument className="text-[11px] uppercase tracking-widest text-va-black/40 mb-1">Bestelflow</TextInstrument>
+              <TextInstrument className="text-[14px] md:text-[15px] font-medium text-va-black">Kies stem → Script → Overzicht → Afrekenen</TextInstrument>
+            </ContainerInstrument>
+            <ContainerInstrument className="rounded-[18px] border border-va-black/5 bg-va-off-white p-4">
+              <TextInstrument className="text-[11px] uppercase tracking-widest text-va-black/40 mb-1">Contact</TextInstrument>
+              <Link href="/agency/contact" className="text-[14px] md:text-[15px] font-medium text-primary hover:opacity-70 transition-opacity">
+                <VoiceglotText translationKey="voice.detail.order_info.contact_cta" defaultText="Vraag advies via de Agency foyer" />
+              </Link>
+            </ContainerInstrument>
+            <ContainerInstrument className="rounded-[18px] border border-va-black/5 bg-va-off-white p-4">
+              <TextInstrument className="text-[11px] uppercase tracking-widest text-va-black/40 mb-1">Gebruik</TextInstrument>
+              <TextInstrument className="text-[14px] md:text-[15px] font-medium text-va-black">
+                {(actor?.demos || []).length > 0 ? 'Telefonie, video en commercial mogelijk' : 'Gebruik wordt per project afgestemd'}
+              </TextInstrument>
+            </ContainerInstrument>
+          </ContainerInstrument>
+        </ContainerInstrument>
+      </SectionInstrument>
 
       {/*  REVIEWS */}
       {actor.reviews && actor.reviews.length > 0 && (

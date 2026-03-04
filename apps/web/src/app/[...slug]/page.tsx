@@ -131,6 +131,16 @@ function generateArtistSchema(artist: any, host: string = '') {
   };
 }
 
+function isPublicActorVisible(actor: any): boolean {
+  const statusCode = String(actor?.status_code || actor?.status || '').toLowerCase();
+  return actor?.is_public === true && statusCode === 'live';
+}
+
+function getActorCanonicalSlug(actor: any, fallbackSlug: string): string {
+  const raw = String(actor?.slug || fallbackSlug || '').trim().toLowerCase();
+  return raw.split('/')[0] || raw;
+}
+
 const FALLBACK_LOCALE_DOMAINS: Record<string, string> = {
   'nl-be': 'https://www.voices.be',
   'nl-nl': 'https://www.voices.nl',
@@ -619,16 +629,71 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
       });
       
       if (actor) {
-        const title = await getTranslatedSEO(`seo.actor.${actor.id}.title`, `${actor.first_name || actor.first_name} - Voice-over Stem | ${market.name}`);
-        const description = await getTranslatedSEO(`seo.actor.${actor.id}.description`, actor.bio || `Ontdek de stem van ${actor.first_name || actor.first_name} op ${market.name}.`);
+        const actorName = actor.display_name || actor.first_name || 'Voice-over stem';
+        const actorCanonicalSlug = getActorCanonicalSlug(actor, cleanSegments[0] || lookupSlug.split('/')[0] || '');
+        const actorCanonicalPath = actorCanonicalSlug ? `/${actorCanonicalSlug}` : metadataPath;
+        const actorAlternateLanguages: Record<string, string> = {};
+
+        for (const locale of Object.keys(localeDomainMap)) {
+          let localizedActorSlug = actorCanonicalSlug;
+          if (resolved?.entity_id && resolved?.entity_type_id) {
+            const localeLanguageId = MarketManager.getLanguageId(locale, market.primary_language);
+            const localizedSlug = await findLocalizedSlugVariant(
+              resolved.entity_id,
+              resolved.entity_type_id,
+              market.market_code,
+              localeLanguageId
+            );
+            if (localizedSlug) localizedActorSlug = localizedSlug;
+          }
+          const localizedActorPath = localizedActorSlug ? `/${localizedActorSlug}` : actorCanonicalPath;
+          actorAlternateLanguages[localeToBcp47(locale)] = buildLocaleUrl(locale, localizedActorPath, localeDomainMap);
+        }
+
+        actorAlternateLanguages['x-default'] =
+          actorAlternateLanguages[localeToBcp47('en-gb')] ||
+          buildLocaleUrl('en-gb', actorCanonicalPath, localeDomainMap);
+
+        const actorCanonicalUrl =
+          actorAlternateLanguages[localeToBcp47(lang)] ||
+          buildLocaleUrl(lang, actorCanonicalPath, localeDomainMap);
+
+        const title = await getTranslatedSEO(`seo.actor.${actor.id}.title`, `${actorName} - Voice-over Stem | ${market.name}`);
+        const description = await getTranslatedSEO(`seo.actor.${actor.id}.description`, actor.bio || `Ontdek de stem van ${actorName} op ${market.name}.`);
+        const siteRootUrl = buildLocaleUrl(lang, '/', localeDomainMap).replace(/\/$/, '');
+        const actorImage = actor.photo_url
+          ? (actor.photo_url.startsWith('http')
+            ? actor.photo_url
+            : `${siteRootUrl}${actor.photo_url.startsWith('/') ? actor.photo_url : `/${actor.photo_url}`}`)
+          : undefined;
         const schema = generateActorSchema(actor, market.name, host);
+        const isVisible = isPublicActorVisible(actor);
 
         return {
           title,
           description,
           alternates: {
-            canonical: canonicalUrl,
-            languages: alternateLanguages,
+            canonical: actorCanonicalUrl,
+            languages: actorAlternateLanguages,
+          },
+          robots: isVisible
+            ? undefined
+            : {
+                index: false,
+                follow: false
+              },
+          openGraph: {
+            title,
+            description,
+            url: actorCanonicalUrl,
+            type: 'profile',
+            images: actorImage ? [{ url: actorImage, alt: actorName }] : undefined
+          },
+          twitter: {
+            card: actorImage ? 'summary_large_image' : 'summary',
+            title,
+            description,
+            images: actorImage ? [actorImage] : undefined
           },
           other: {
             'script:ld+json': JSON.stringify(schema)
@@ -925,6 +990,10 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
       if (resolved.routing_type === 'actor') {
         const actor = await getActor(resolved.entity_id.toString(), lang);
         if (actor) {
+          if (!isPublicActorVisible(actor)) {
+            console.error(` [SmartRouter] Visibility block: actor ${actor.id} is not public/live.`);
+            return notFound();
+          }
           const journeyMap: Record<string, JourneyType> = {
             'telefoon': 'telephony', 'telefooncentrale': 'telephony', 'telephony': 'telephony',
             'video': 'video', 'commercial': 'commercial', 'reclame': 'commercial'
@@ -1486,6 +1555,10 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
       });
 
       if (actor) {
+        if (!isPublicActorVisible(actor)) {
+          console.error(` [SmartRouter] Visibility block (legacy fallback): actor ${actor.id} is not public/live.`);
+          return notFound();
+        }
         console.error(` [SmartRouter] Handshake SUCCESS (Legacy Fallback) for ${actor.first_name}. Rendering VoiceDetailClient.`);
         
         // 🛡️ CHRIS-PROTOCOL: Log handshake success
