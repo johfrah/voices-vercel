@@ -471,16 +471,19 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
       }
 
       const actorDemosList = demosData.filter((d: any) => d.actor_id === actor.id);
-      const proxiedDemos = actorDemosList.map((d: any) => {
-        // 🛡️ CHRIS-PROTOCOL: Eén bron van waarheid – playback altijd via stream-route (ID → actor_demos + media)
-        return {
-          id: d.id,
-          title: d.name,
-          audio_url: `/api/admin/actors/demos/${d.id}/stream`,
-          category: d.type || 'demo',
-          status: d.status || 'approved'
-        };
-      });
+      const hasPlayableSource = (d: any) => {
+        const urlOk = (d.url ?? '').toString().trim().length > 0;
+        const mediaRow = d.media_id ? mediaResults.find((m: any) => m.id === d.media_id) : null;
+        const mediaPathOk = mediaRow && ((mediaRow.file_path ?? mediaRow.filePath) ?? '').toString().trim().length > 0;
+        return urlOk || mediaPathOk;
+      };
+      const proxiedDemos = actorDemosList.filter(hasPlayableSource).map((d: any) => ({
+        id: d.id,
+        title: d.name,
+        audio_url: `/api/admin/actors/demos/${d.id}/stream`,
+        category: d.type || 'demo',
+        status: d.status || 'approved'
+      }));
 
       const actorVideosList = videosData.filter((v: any) => v.actor_id === actor.id);
       const proxiedVideos = actorVideosList.map((v: any) => {
@@ -725,14 +728,28 @@ async function processActorData(actor: any, slug: string): Promise<Actor> {
   let mappedVideos: any[] = [];
 
   try {
-    const { db: directDb, actorDemos: demosTable, actorVideos: videosTable } = await import('@/lib/system/voices-config');
+    const { db: directDb, actorDemos: demosTable, actorVideos: videosTable, media: mediaTable } = await import('@/lib/system/voices-config');
     const [demos, videos] = await Promise.all([
       directDb.select().from(demosTable).where(and(eq(demosTable.actorId, actor.id), eq(demosTable.is_public, true))),
       directDb.select().from(videosTable).where(and(eq(videosTable.actorId, actor.id), eq(videosTable.is_public, true)))
     ]);
 
-    // 🛡️ CHRIS-PROTOCOL: Eén bron van waarheid – playback altijd via stream-route (ID → actor_demos + media)
-    mappedDemos = (demos || []).map((d: any) => ({
+    const demoMediaIds = [...new Set((demos || []).map((d: any) => d.mediaId ?? d.media_id).filter(Boolean))];
+    const demoMediaRows = demoMediaIds.length > 0
+      ? await directDb.select().from(mediaTable).where(sql`${mediaTable.id} in (${sql.join(demoMediaIds.map(id => sql`${id}`), sql`, `)})`)
+      : [];
+    const mediaById = new Map(demoMediaRows.map((m: any) => [m.id, m]));
+
+    const hasPlayableSource = (d: any) => {
+      const urlOk = (d.url ?? '').toString().trim().length > 0;
+      const mediaId = d.mediaId ?? d.media_id;
+      const mediaRow = mediaId ? mediaById.get(mediaId) : null;
+      const mediaPathOk = mediaRow && ((mediaRow as any).filePath ?? (mediaRow as any).file_path ?? '').toString().trim().length > 0;
+      return urlOk || mediaPathOk;
+    };
+
+    // 🛡️ CHRIS-PROTOCOL: Alleen demo's met geldige bron – geen UX slop (geen weergave van niet-bestaande demo's)
+    mappedDemos = (demos || []).filter(hasPlayableSource).map((d: any) => ({
       id: d.id,
       title: d.name,
       audio_url: `/api/admin/actors/demos/${d.id}/stream`,

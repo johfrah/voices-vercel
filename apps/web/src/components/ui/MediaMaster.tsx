@@ -102,15 +102,8 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
   const [duration, setDuration] = useState(0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  const streamUrl = demo.id ? `/api/admin/actors/demos/${demo.id}/stream` : undefined;
-  const [audioSrc, setAudioSrc] = useState<string>(() => demo.audio_url || streamUrl || '');
-
   useEffect(() => {
-    setAudioSrc(demo.audio_url || streamUrl || '');
-  }, [demo.id, demo.audio_url]);
-
-  useEffect(() => {
-    if (audioRef.current && audioSrc) {
+    if (audioRef.current && demo.audio_url) {
       const audio = audioRef.current;
       setProgress(0);
       const playAudio = () => {
@@ -124,7 +117,7 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
       const timer = setTimeout(playAudio, 100);
       return () => clearTimeout(timer);
     }
-  }, [audioSrc, setIsPlaying]);
+  }, [demo.audio_url, setIsPlaying]);
 
   // Sync audio element with context isPlaying state
   useEffect(() => {
@@ -168,12 +161,6 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
   };
 
   const handleError = (e: any) => {
-    const currentSrc = audioRef.current?.src ?? '';
-    const isStreamUrl = demo.id && currentSrc.includes(`/api/admin/actors/demos/${demo.id}/stream`);
-    if (demo.id && !isStreamUrl && streamUrl) {
-      setAudioSrc(streamUrl);
-      return;
-    }
     console.error(" MediaMaster: Audio error", {
       url: demo.audio_url,
       error: e.target.error,
@@ -267,7 +254,7 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
 
         <audio 
           ref={audioRef} 
-          src={audioSrc || undefined}
+          src={demo.audio_url || undefined}
           onTimeUpdate={handleTimeUpdate} 
           onLoadedMetadata={handleLoadedMetadata}
           onEnded={() => setIsPlaying(false)}
