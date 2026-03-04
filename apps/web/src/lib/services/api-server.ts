@@ -472,27 +472,11 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
 
       const actorDemosList = demosData.filter((d: any) => d.actor_id === actor.id);
       const proxiedDemos = actorDemosList.map((d: any) => {
-        // 🛡️ CHRIS-PROTOCOL: Resolve audio URL via media_id if url is empty (v2.16.112)
-        let finalUrl = d.url;
-        if (!finalUrl && d.media_id) {
-          const mediaItem = mediaResults.find((m: any) => m.id === d.media_id);
-          if (mediaItem) {
-            finalUrl = mediaItem.file_path || mediaItem.filePath;
-          }
-        }
-
-        // 🛡️ CHRIS-PROTOCOL: Zero-Slop Audio URL (v2.16.114)
-        // If finalUrl is empty, leave audio_url empty so MediaMaster falls back to the stream route.
-        // NEVER create a proxy URL with an empty path (causes 400 errors).
-        let audioUrl = '';
-        if (finalUrl) {
-          audioUrl = finalUrl.startsWith('http') ? finalUrl : `/api/proxy/?path=${encodeURIComponent(finalUrl)}`;
-        }
-
+        // 🛡️ CHRIS-PROTOCOL: Eén bron van waarheid – playback altijd via stream-route (ID → actor_demos + media)
         return {
           id: d.id,
           title: d.name,
-          audio_url: audioUrl,
+          audio_url: `/api/admin/actors/demos/${d.id}/stream`,
           category: d.type || 'demo',
           status: d.status || 'approved'
         };
@@ -747,16 +731,14 @@ async function processActorData(actor: any, slug: string): Promise<Actor> {
       directDb.select().from(videosTable).where(and(eq(videosTable.actorId, actor.id), eq(videosTable.is_public, true)))
     ]);
 
-    mappedDemos = (demos || []).map((d: any) => {
-      const audioUrl = d.url?.startsWith('http') ? d.url : `/api/proxy/?path=${encodeURIComponent(d.url)}`;
-      return {
-        id: d.id,
-        title: d.name,
-        audio_url: audioUrl,
-        category: d.type || 'demo',
-        status: d.status || 'approved'
-      };
-    });
+    // 🛡️ CHRIS-PROTOCOL: Eén bron van waarheid – playback altijd via stream-route (ID → actor_demos + media)
+    mappedDemos = (demos || []).map((d: any) => ({
+      id: d.id,
+      title: d.name,
+      audio_url: `/api/admin/actors/demos/${d.id}/stream`,
+      category: d.type || 'demo',
+      status: d.status || 'approved'
+    }));
 
     mappedVideos = (videos || []).map((v: any) => {
       const videoUrl = v.url?.startsWith('http') ? v.url : `/api/proxy/?path=${encodeURIComponent(v.url)}`;

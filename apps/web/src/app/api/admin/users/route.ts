@@ -17,8 +17,8 @@ export async function GET(request: NextRequest) {
   const filter = searchParams.get('filter');
 
   try {
-    // Construct the base query with aggregations
-    // We use a raw SQL selection to efficiently aggregate order data
+    // 1. Base Query (Select + From + Join)
+    // We use $dynamic() to allow chaining .where() conditionally before .groupBy()
     let query = db.select({
       id: users.id,
       first_name: users.first_name,
@@ -35,12 +35,15 @@ export async function GET(request: NextRequest) {
     })
     .from(users)
     .leftJoin(ordersV2, eq(users.id, ordersV2.userId))
-    .groupBy(users.id);
+    .$dynamic();
+
+    // 2. Apply Filters (Where Clauses)
+    const filters = [];
 
     // Filter by World if requested
     if (worldCode) {
       // 🌍 World-Aware filtering
-      query = query.where(
+      filters.push(
         sql`${users.id} IN (
           SELECT user_id FROM orders_v2 
           WHERE world_id = (SELECT id FROM worlds WHERE code = ${worldCode})
@@ -52,7 +55,7 @@ export async function GET(request: NextRequest) {
     if (filter === 'incomplete') {
       // Find users where first_name AND last_name are empty/null
       // AND companyName is empty/null (otherwise they are corporate users)
-      query = query.where(
+      filters.push(
         and(
           or(isNull(users.first_name), eq(users.first_name, '')),
           or(isNull(users.last_name), eq(users.last_name, '')),
@@ -62,8 +65,16 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Execute query with limit
-    const allUsers = await query.orderBy(desc(users.createdAt)).limit(500);
+    if (filters.length > 0) {
+      query = query.where(and(...filters));
+    }
+
+    // 3. Finalize Query (Group By + Order By + Limit)
+    // CRITICAL: .groupBy() must be called AFTER .where()
+    const allUsers = await query
+      .groupBy(users.id)
+      .orderBy(desc(users.createdAt))
+      .limit(500);
 
     // Map the results to a clean format
     const enrichedUsers = allUsers.map((user: any) => {

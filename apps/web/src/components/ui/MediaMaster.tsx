@@ -102,12 +102,17 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
   const [duration, setDuration] = useState(0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
+  const streamUrl = demo.id ? `/api/admin/actors/demos/${demo.id}/stream` : undefined;
+  const [audioSrc, setAudioSrc] = useState<string>(() => demo.audio_url || streamUrl || '');
+
   useEffect(() => {
-    if (audioRef.current) {
+    setAudioSrc(demo.audio_url || streamUrl || '');
+  }, [demo.id, demo.audio_url]);
+
+  useEffect(() => {
+    if (audioRef.current && audioSrc) {
       const audio = audioRef.current;
-      // Don't reset isPlaying here, let the context handle it
       setProgress(0);
-      
       const playAudio = () => {
         audio.play()
           .then(() => setIsPlaying(true))
@@ -116,11 +121,10 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
             setIsPlaying(false);
           });
       };
-
       const timer = setTimeout(playAudio, 100);
       return () => clearTimeout(timer);
     }
-  }, [demo.audio_url, setIsPlaying]);
+  }, [audioSrc, setIsPlaying]);
 
   // Sync audio element with context isPlaying state
   useEffect(() => {
@@ -164,6 +168,12 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
   };
 
   const handleError = (e: any) => {
+    const currentSrc = audioRef.current?.src ?? '';
+    const isStreamUrl = demo.id && currentSrc.includes(`/api/admin/actors/demos/${demo.id}/stream`);
+    if (demo.id && !isStreamUrl && streamUrl) {
+      setAudioSrc(streamUrl);
+      return;
+    }
     console.error(" MediaMaster: Audio error", {
       url: demo.audio_url,
       error: e.target.error,
@@ -257,7 +267,7 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
 
         <audio 
           ref={audioRef} 
-          src={demo.audio_url || (demo.id ? `/api/admin/actors/demos/${demo.id}/stream` : undefined)}
+          src={audioSrc || undefined}
           onTimeUpdate={handleTimeUpdate} 
           onLoadedMetadata={handleLoadedMetadata}
           onEnded={() => setIsPlaying(false)}
