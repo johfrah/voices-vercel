@@ -26,14 +26,27 @@ const toStorageUrl = (filePath?: string | null): string | null => {
   return `${STORAGE_BASE}/${cleanPath}`;
 };
 
-const normalizeSubtitleTracks = (subtitleData: any): Array<{ srcLang: string; label: string; data: Array<{ start: number; end: number; text: string }> }> => {
+const normalizeSubtitleTracks = (workshop: any): Array<{ srcLang: string; label: string; src?: string; data?: Array<{ start: number; end: number; text: string }> }> => {
+  const junctionTracks = Array.isArray(workshop?.subtitle_tracks) ? workshop.subtitle_tracks : [];
+  const normalizedJunction = junctionTracks
+    .map((track: any) => ({
+      srcLang: track.src_lang || track.srcLang || 'nl-BE',
+      label: track.label || 'Nederlands',
+      src: track.src || undefined,
+      data: Array.isArray(track.data) ? track.data : undefined
+    }))
+    .filter((track) => Boolean(track.src) || (Array.isArray(track.data) && track.data.length > 0));
+
+  if (normalizedJunction.length > 0) return normalizedJunction;
+
+  const subtitleData = workshop?.subtitle_data;
   if (!subtitleData) return [];
 
   if (Array.isArray(subtitleData)) {
     return subtitleData
       .filter((track) => Array.isArray(track?.items) && track.items.length > 0)
       .map((track) => ({
-        srcLang: track.lang || 'nl',
+        srcLang: track.lang || 'nl-BE',
         label: track.label || track.lang || 'Nederlands',
         data: track.items
       }));
@@ -41,7 +54,7 @@ const normalizeSubtitleTracks = (subtitleData: any): Array<{ srcLang: string; la
 
   if (Array.isArray(subtitleData.items) && subtitleData.items.length > 0) {
     return [{
-      srcLang: subtitleData.lang || 'nl',
+      srcLang: subtitleData.lang || 'nl-BE',
       label: subtitleData.label || 'Nederlands',
       data: subtitleData.items
     }];
@@ -81,13 +94,13 @@ export default async function StudioPage() {
   // 🛡️ CHRIS-PROTOCOL: Nuclear Handshake (Direct DB access)
   const { workshops, instructors, faqs } = await getStudioWorkshopsData();
   const heroWorkshop = workshops.find((workshop: any) => workshop?.video?.id === 722) || workshops.find((workshop: any) => workshop?.video?.file_path);
-  const subtitleWorkshop = (normalizeSubtitleTracks(heroWorkshop?.subtitle_data).length > 0
+  const subtitleWorkshop = (normalizeSubtitleTracks(heroWorkshop).length > 0
     ? heroWorkshop
-    : workshops.find((workshop: any) => normalizeSubtitleTracks(workshop?.subtitle_data).length > 0)
+    : workshops.find((workshop: any) => normalizeSubtitleTracks(workshop).length > 0)
   ) || heroWorkshop;
 
   const heroVideoUrl = toStorageUrl(heroWorkshop?.video?.file_path);
-  const heroSubtitles = normalizeSubtitleTracks(subtitleWorkshop?.subtitle_data);
+  const heroSubtitles = normalizeSubtitleTracks(subtitleWorkshop);
 
   return (
     <PageWrapperInstrument className="bg-va-off-white min-h-screen" data-world="studio">
