@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from '@/lib/system/voices-config';
-import { workshops } from '@/lib/system/voices-config';
+import { sql } from 'drizzle-orm';
 import { getServerUser, isAdminUser } from "@/lib/auth/server-auth";
 
 export async function POST(req: Request) {
@@ -12,29 +12,50 @@ export async function POST(req: Request) {
   const data = await req.json();
 
   try {
-    // Voor nieuwe workshops moeten we een ID genereren of een unieke ID toekennen.
-    // Aangezien we WooCommerce IDs gebruiken, moeten we voorzichtig zijn.
-    // Voor handmatige toevoegingen kunnen we een hoge range gebruiken of serial laten doen.
-    // Echter, de 'id' kolom is momenteel bigint en niet serial in de schema definitie (id: bigint('id', { mode: 'number' }).primaryKey()).
-    
-    // We zoeken de hoogste ID en doen +1
-    const highestIdRes = await db.select({ id: workshops.id }).from(workshops).orderBy(workshops.id).limit(1).catch(() => []);
-    const nextId = (highestIdRes[0]?.id || 1000000) + 1;
+    const maxIdResult: any = await db.execute(sql`
+      select coalesce(max(id), 260250) as max_id
+      from workshops
+    `);
+    const maxRows = Array.isArray(maxIdResult)
+      ? maxIdResult
+      : Array.isArray(maxIdResult?.rows)
+        ? maxIdResult.rows
+        : [];
+    const nextId = Number(maxRows[0]?.max_id || 260250) + 1;
+    const programJson = data.program ? JSON.stringify(data.program) : null;
+    const metaJson = data.meta ? JSON.stringify(data.meta) : null;
 
-    await db.insert(workshops)
-      .values({
-        id: nextId,
-        title: data.title,
-        slug: data.slug,
-        description: data.description,
-        price: data.price,
-        duration: data.duration,
-        instructorId: data.instructorId || null,
-        program: data.program,
-        meta: data.meta,
-        date: new Date(), // Default date
-        wp_product_id: nextId // Keep sync
-      });
+    await db.execute(sql`
+      insert into workshops (
+        id,
+        title,
+        slug,
+        description,
+        price,
+        duration,
+        instructor_id,
+        program,
+        meta,
+        date,
+        wp_product_id,
+        status,
+        world_id
+      ) values (
+        ${nextId},
+        ${String(data.title || '').trim()},
+        ${String(data.slug || '').trim()},
+        ${data.description || null},
+        ${data.price ? String(data.price) : null},
+        ${data.duration || null},
+        ${data.instructorId || null},
+        ${programJson ? sql`cast(${programJson} as jsonb)` : sql`null`},
+        ${metaJson ? sql`cast(${metaJson} as jsonb)` : sql`null`},
+        ${new Date().toISOString()},
+        ${nextId},
+        ${'live'},
+        ${2}
+      )
+    `);
 
     return NextResponse.json({ success: true, id: nextId });
   } catch (err: any) {
