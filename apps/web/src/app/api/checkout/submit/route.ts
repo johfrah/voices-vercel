@@ -141,7 +141,7 @@ function normalizeCommercialFactor(
 }
 
 function extractWorkshopId(item: Record<string, unknown>): number | null {
-  const candidates = [item.workshop_id, item.workshopId, item.edition_id, item.editionId, item.id];
+  const candidates = [item.workshop_id, item.workshopId, item.id];
   for (const candidate of candidates) {
     if (typeof candidate === 'number' && Number.isFinite(candidate) && candidate > 0) {
       return Math.round(candidate);
@@ -153,7 +153,7 @@ function extractWorkshopId(item: Record<string, unknown>): number | null {
       if (Number.isFinite(direct) && direct > 0) {
         return Math.round(direct);
       }
-      const match = trimmed.match(/(\d+)$/);
+      const match = trimmed.match(/^workshop-(\d+)(?:-|$)/i);
       if (match) {
         const fromSuffix = Number(match[1]);
         if (Number.isFinite(fromSuffix) && fromSuffix > 0) {
@@ -164,13 +164,122 @@ function extractWorkshopId(item: Record<string, unknown>): number | null {
   }
   return null;
 }
+
+function toSafeNumber(value: unknown): number {
+  const numeric = Number(value);
+  return Number.isFinite(numeric) ? numeric : 0;
+}
+
+function extractProxyPath(rawValue: string): string | null {
+  const queryStart = rawValue.indexOf('?');
+  if (queryStart === -1) return null;
+  const params = new URLSearchParams(rawValue.slice(queryStart + 1));
+  const pathValue = params.get('path');
+  return pathValue ? decodeURIComponent(pathValue) : null;
+}
+
+function resolveCheckoutItemThumbnail(item: any, dbActor: any, host: string): string | undefined {
+  const candidate =
+    item?.thumbnail_url ||
+    item?.featured_image_url ||
+    item?.image_url ||
+    item?.media_url ||
+    item?.actor?.photo_url ||
+    item?.actor?.thumbnail_url ||
+    dbActor?.dropbox_url ||
+    null;
+
+  if (!candidate || typeof candidate !== 'string') return undefined;
+  if (candidate.startsWith('http://') || candidate.startsWith('https://')) {
+    return candidate;
+  }
+
+  const rawCandidate = candidate.trim();
+  if (
+    rawCandidate.startsWith('/') &&
+    !rawCandidate.startsWith('/assets/') &&
+    !rawCandidate.startsWith('/wp-content/') &&
+    !rawCandidate.startsWith('/api/')
+  ) {
+    return `https://${host}${rawCandidate}`;
+  }
+
+  let normalizedPath = rawCandidate;
+  if (normalizedPath.includes('/api/proxy') && normalizedPath.includes('?path=')) {
+    const extractedPath = extractProxyPath(normalizedPath);
+    normalizedPath = extractedPath || normalizedPath;
+  }
+
+  normalizedPath = normalizedPath.startsWith('/assets/') ? normalizedPath.slice('/assets/'.length) : normalizedPath;
+  normalizedPath = normalizedPath.startsWith('assets/') ? normalizedPath.slice('assets/'.length) : normalizedPath;
+  normalizedPath = normalizedPath.startsWith('/') ? normalizedPath.slice(1) : normalizedPath;
+  if (normalizedPath.startsWith('wp-content/') || normalizedPath.startsWith('api/')) {
+    normalizedPath = `/${normalizedPath}`;
+  }
+  if (!normalizedPath) return undefined;
+
+  return `https://${host}/api/proxy/?path=${encodeURIComponent(normalizedPath)}`;
+}
+
+function resolveCheckoutItemDescription(item: any): string {
+  const usage = item?.usage ? String(item.usage).replace(/_/g, ' ') : '';
+  const media = Array.isArray(item?.media) && item.media.length > 0 ? item.media.join(', ') : '';
+  const country = item?.country ? String(item.country) : '';
+  return [usage, media, country].filter(Boolean).join(' • ');
+}
+
+function buildOrderEmailItems(validatedItems: any[], actorMap: Map<number, any>, host: string): Array<{
+  name: string;
+  price: number;
+  quantity: number;
+  unitPrice: number;
+  deliveryTime?: string;
+  description?: string;
+  thumbnailUrl?: string;
+  projectCode?: string;
+}> {
+  return (validatedItems || []).map((item: any) => {
+    const dbActor = actorMap.get(Number(item?.actor?.id));
+    const lineTotal = toSafeNumber(item?.pricing?.total || item?.pricing?.subtotal || item?.price || 0);
+    const quantity = Math.max(1, toSafeNumber(item?.quantity || 1));
+    return {
+      name: resolveCheckoutItemName(item),
+      price: lineTotal,
+      quantity,
+      unitPrice: quantity > 0 ? lineTotal / quantity : lineTotal,
+      deliveryTime: item?.actor?.delivery_time || item?.actor?.deliveryTime || dbActor?.deliveryTime || undefined,
+      description: item?.description || resolveCheckoutItemDescription(item) || undefined,
+      thumbnailUrl: resolveCheckoutItemThumbnail(item, dbActor, host),
+      projectCode: item?.project_code || item?.id || undefined,
+    };
+  });
+}
+
+function resolveCheckoutItemName(item: any): string {
+  const candidate =
+    item?.name ||
+    item?.actor?.display_name ||
+    item?.actor?.name ||
+    item?.actor?.first_name ||
+    item?.workshop_title;
+  if (typeof candidate === 'string' && candidate.trim().length > 0) {
+    return candidate.trim();
+  }
+  const technicalFallback = item?.id || item?.workshop_id || item?.workshopId;
+  return String(technicalFallback || 'item');
+}
 export async function POST(request: Request) {
   return await ServerWatchdog.atomic('CheckoutAPI', 'SubmitOrder', {}, async () => {
     let rawBody: any = null;
     const headersList = headers();
     const host = headersList.get('host') || MarketManager.getMarketDomains()['BE']?.replace('https://', '');
     const marketConfig = MarketManager.getCurrentMarket(host);
-    const baseUrl = MarketManager.getMarketDomains()[marketConfig.market_code] || `https://${host || MarketManager.getMarketDomains()['BE']?.replace('https://', '') || 'www.voices.be'}`;
+    const marketBaseUrl =
+      MarketManager.getMarketDomains()[marketConfig.market_code] ||
+      `https://${host || MarketManager.getMarketDomains()['BE']?.replace('https://', '') || 'www.voices.be'}`;
+    const isLocalHost = host.includes('localhost') || host.includes('127.0.0.1');
+    const baseUrl = isLocalHost ? `http://${host}` : marketBaseUrl;
+    const webhookBaseUrl = marketBaseUrl;
     const ip = headersList.get('x-forwarded-for') || 'unknown';
 
     // 1. Validatie van de payload
@@ -195,8 +304,11 @@ export async function POST(request: Request) {
     const { 
       pricing, items, selectedActor, step, first_name, last_name, email, 
       vat_number, postal_code, city, metadata, quoteMessage, phone, 
-      company, address_street, usage, plan, music, ownMusicFile, country, payment_method, language
+      company, address_street, usage, plan, music, ownMusicFile, country, payment_method, language,
+      billing_po, purchase_order, financial_email, billing_email_alt, is_quote
     } = data;
+    const resolvedPurchaseOrder = String(billing_po || purchase_order || '').trim() || null;
+    const resolvedBillingEmailAlt = String(financial_email || billing_email_alt || '').trim().toLowerCase() || null;
     const normalizedLanguage = normalizeLocale(language || marketConfig.primary_language || 'nl-be');
     const languageShort = localeToShort(normalizedLanguage);
     if (!items || items.length === 0) {
@@ -385,7 +497,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Leeg mandje. Voeg eerst een voice-over toe.' }, { status: 400 });
     }
 
-    const requestedQuote = Boolean((rawBody as { isQuote?: unknown })?.isQuote);
+    const requestedQuote = Boolean(is_quote);
     const isQuote = isQuoteOnly || requestedQuote;
     const amount = Math.round(serverCalculatedSubtotal * (1 + taxRate) * 100) / 100;
     if (!isQuote && amount <= 0) {
@@ -393,34 +505,45 @@ export async function POST(request: Request) {
     }
 
     // 4. User Management
-    let userId = metadata?.user_id;
+    let userId = metadata?.user_id ? Number(metadata.user_id) : null;
     if (email) {
-      const { data: user } = await sdkClient.from('users').select('id').eq('email', email).single();
-      if (user) {
-        userId = user.id;
+      const { data: existingUsers, error: existingUserErr } = await sdkClient
+        .from('users')
+        .select('id')
+        .eq('email', email)
+        .order('id', { ascending: false })
+        .limit(1);
+
+      if (existingUserErr) {
+        throw new Error(`User lookup failed: ${existingUserErr.message}`);
+      }
+
+      if (Array.isArray(existingUsers) && existingUsers.length > 0) {
+        userId = Number(existingUsers[0].id);
       } else {
-        const { data: newUser, error: newUserError } = await sdkClient.from('users').insert({
-          email,
-          first_name,
-          last_name,
-          phone: phone || null,
-          company_name: company || null,
-          vat_number: vat_number || null,
-          address_street: address_street || null,
-          address_zip: postal_code || null,
-          address_city: city || null,
-          address_country: country || 'BE',
-          role: 'customer',
-        }).select('id').single();
-        if (newUserError) {
-          await ServerWatchdog.report({
-            level: 'warn',
-            component: 'CheckoutAPI',
-            error: 'User insert failed, proceeding with guest order',
-            payload: { email, reason: newUserError.message },
-          });
+        const { data: newUser, error: newUserErr } = await sdkClient
+          .from('users')
+          .insert({
+            email,
+            first_name: first_name,
+            last_name: last_name,
+            phone: phone || null,
+            company_name: company || null,
+            vat_number: vat_number || null,
+            address_street: address_street || null,
+            address_zip: postal_code || null,
+            address_city: city || null,
+            address_country: country || 'BE',
+            role: 'customer'
+          })
+          .select('id')
+          .single();
+
+        if (newUserErr) {
+          throw new Error(`User creation failed: ${newUserErr.message}`);
         }
-        userId = newUser?.id;
+
+        userId = newUser?.id ? Number(newUser.id) : null;
       }
     }
 
@@ -435,6 +558,8 @@ export async function POST(request: Request) {
       status: isQuote ? 'quote-pending' : 'pending',
       user_id: userId || null,
       journey: validatedItems[0]?.journey || 'agency',
+      purchase_order: resolvedPurchaseOrder,
+      billing_email_alt: resolvedBillingEmailAlt,
       billing_vat_number: vat_number || null,
       is_quote: !!isQuote,
       quote_message: quoteMessage || null,
@@ -445,7 +570,13 @@ export async function POST(request: Request) {
         plan,
         language: normalizedLanguage,
         itemsCount: validatedItems.length,
-        customer: { email, first_name, last_name },
+        customer: {
+          email,
+          financial_email: resolvedBillingEmailAlt,
+          purchase_order: resolvedPurchaseOrder,
+          first_name,
+          last_name,
+        },
         items: validatedItems,
         own_music_file: ownMusicFile || null,
       }
@@ -455,6 +586,49 @@ export async function POST(request: Request) {
 
     // 6. Order Items
     const itemsToInsert = validatedItems.flatMap((item: any) => {
+      if (item.type === 'workshop_edition') {
+        const workshopSubtotal = Number(item.pricing?.subtotal ?? item.pricing?.total ?? item.price ?? 0);
+        if (!Number.isFinite(workshopSubtotal) || workshopSubtotal <= 0) {
+          throw new Error(`Workshop subtotal ongeldig voor item ${item?.id || 'onbekend'}`);
+        }
+        const workshopTax = Math.round(workshopSubtotal * taxRate * 100) / 100;
+        return [{
+          order_id: newOrder.id,
+          actor_id: null,
+          edition_id: item.editionId || item.edition_id || null,
+          name: resolveCheckoutItemName(item),
+          quantity: Math.max(1, toSafeNumber(item.quantity || 1)),
+          price: workshopSubtotal.toFixed(2),
+          tax: workshopTax.toFixed(2),
+          meta_data: {
+            ...item.pricing,
+            item_type: 'workshop_edition',
+            purchase_order: resolvedPurchaseOrder,
+            billing_email_alt: resolvedBillingEmailAlt,
+            billing_vat_number: vat_number || null,
+            company_name: company || null,
+            workshop_id: item.workshop_id || item.workshopId || null,
+            edition_id: item.edition_id || item.editionId || null,
+            date: item.date || null,
+            location: item.location || null,
+            location_address: item.location_address || null,
+            location_city: item.location_city || null,
+            location_zip: item.location_zip || null,
+            location_country: item.location_country || null,
+            participant_info: item.participant_info || undefined,
+            email_item_snapshot: {
+              description: item.description || resolveCheckoutItemDescription(item) || null,
+              thumbnail_url: resolveCheckoutItemThumbnail(item, null, host) || null,
+              delivery_time: null,
+              quantity: Math.max(1, toSafeNumber(item.quantity || 1)),
+              unit_price: workshopSubtotal,
+              project_code: item.project_code || item.id || null,
+            },
+          },
+          delivery_status: 'waiting'
+        }];
+      }
+
       const dbActor = actorMap.get(Number(item.actor?.id));
       const primaryCountry = toStringArray(item.country)[0] || '';
       
@@ -473,12 +647,20 @@ export async function POST(request: Request) {
       const voiceSubtotal = Math.max(0, itemSubtotal - musicSurcharge);
       const voiceTax = Math.round(voiceSubtotal * taxRate * 100) / 100;
       const musicTax = Math.round(musicSurcharge * taxRate * 100) / 100;
+      const emailItemSnapshot = {
+        description: item.description || resolveCheckoutItemDescription(item) || null,
+        thumbnail_url: resolveCheckoutItemThumbnail(item, dbActor, host) || null,
+        delivery_time: item.actor?.delivery_time || item.actor?.deliveryTime || dbActor?.deliveryTime || null,
+        quantity: Math.max(1, toSafeNumber(item.quantity || 1)),
+        unit_price: voiceSubtotal > 0 ? voiceSubtotal : itemSubtotal,
+        project_code: item.project_code || item.id || null,
+      };
 
       const voiceRow = {
         order_id: newOrder.id,
         actor_id: dbActor?.id || null,
         edition_id: item.editionId || item.edition_id || null,
-        name: item.name || 'Product',
+        name: resolveCheckoutItemName(item),
         quantity: 1,
         price: voiceSubtotal.toFixed(2),
         tax: voiceTax.toFixed(2),
@@ -487,6 +669,10 @@ export async function POST(request: Request) {
           item_type: 'voice',
           briefing: item.briefing, 
           usage: item.usage, 
+          purchase_order: resolvedPurchaseOrder,
+          billing_email_alt: resolvedBillingEmailAlt,
+          billing_vat_number: vat_number || null,
+          company_name: company || null,
           media: item.media,
           spots: item.spots,
           years: item.years,
@@ -500,6 +686,7 @@ export async function POST(request: Request) {
                 as_hold_music: musicAsHoldMusic,
               }
             : null,
+          email_item_snapshot: emailItemSnapshot,
           // 🛡️ Store hard IDs and participant context for analytics
           country_id: countryId || item.countryId || item.country_id,
           language_id: dbActor?.native_language_id,
@@ -522,13 +709,25 @@ export async function POST(request: Request) {
         tax: musicTax.toFixed(2),
         meta_data: {
           item_type: 'music',
+          purchase_order: resolvedPurchaseOrder,
+          billing_email_alt: resolvedBillingEmailAlt,
+          billing_vat_number: vat_number || null,
+          company_name: company || null,
+          email_item_snapshot: {
+            description: `Music track: ${musicTrackLabel}`,
+            thumbnail_url: null,
+            delivery_time: item.actor?.delivery_time || item.actor?.deliveryTime || null,
+            quantity: 1,
+            unit_price: musicSurcharge,
+            project_code: item.project_code || item.id || null,
+          },
           music_choice: {
             track_id: musicTrackId,
             track_label: musicTrackLabel,
             as_background: musicAsBackground,
             as_hold_music: musicAsHoldMusic,
             source_actor_id: dbActor?.id || null,
-            source_item_name: item.name || 'voice_over',
+            source_item_name: resolveCheckoutItemName(item),
           },
           usage: item.usage || null,
           media: item.media || [],
@@ -585,13 +784,12 @@ export async function POST(request: Request) {
               userName: first_name,
               orderId: newOrder.id,
               total: amount,
-              items: validatedItems.map((item: any) => ({
-                name: item.name || item.actor?.display_name || 'Voice Over',
-                price: Number(item.pricing?.total || item.pricing?.subtotal || 0),
-                deliveryTime: item.actor?.delivery_time || item.actor?.deliveryTime
-              })),
+              subtotal: serverCalculatedSubtotal,
+              tax: amount - serverCalculatedSubtotal,
+              items: buildOrderEmailItems(validatedItems, actorMap, host),
               paymentMethod: payment_method,
-              language: normalizedLanguage
+              language: normalizedLanguage,
+              ctaUrl: `${baseUrl}/account/orders?orderId=${encodeURIComponent(newOrder.id)}`,
             },
             host
           });
@@ -606,7 +804,7 @@ export async function POST(request: Request) {
       amount: { currency: 'EUR', value: amount.toFixed(2) },
       orderNumber: newOrder.id.toString(),
       lines: validatedItems.map((i: any) => ({
-        name: i.name || 'Voice Over',
+        name: resolveCheckoutItemName(i),
         quantity: 1,
         unitPrice: { currency: 'EUR', value: (i.pricing?.total || 0).toFixed(2) },
         totalAmount: { currency: 'EUR', value: (i.pricing?.total || 0).toFixed(2) },
@@ -614,8 +812,8 @@ export async function POST(request: Request) {
         vatAmount: { currency: 'EUR', value: (i.pricing?.tax || 0).toFixed(2) }
       })),
       billingAddress: { streetAndNumber: address_street || 'N/A', postalCode: postal_code || 'N/A', city: city || 'N/A', country: country || 'BE', givenName: first_name, familyName: last_name, email },
-      redirectUrl: `${baseUrl}/api/auth/magic-login?token=${secureToken}&redirect=/account/orders?orderId=${newOrder.id}`,
-      webhookUrl: `${baseUrl}/api/checkout/webhook`,
+      redirectUrl: `${baseUrl}/api/auth/magic-login?token=${secureToken}&redirect=/account/orders?orderId=${newOrder.id}&email=${encodeURIComponent(email)}`,
+      webhookUrl: `${webhookBaseUrl}/api/checkout/webhook`,
       locale: localeToMollie(normalizedLanguage) as any,
       metadata: {
         orderId: newOrder.id,
@@ -627,6 +825,39 @@ export async function POST(request: Request) {
         language: normalizedLanguage
       }
     });
+
+    // Customer receipt for Mollie checkout submit (pending payment),
+    // so the user always gets immediate confirmation of the action.
+    (async () => {
+      try {
+        const mollieSubject = languageShort === 'fr'
+          ? `Commande reçue (paiement en attente) : #${newOrder.id}`
+          : languageShort === 'en'
+            ? `Order received (payment pending): #${newOrder.id}`
+            : `Bestelling ontvangen (betaling in behandeling): #${newOrder.id}`;
+
+        await VumeEngine.send({
+          to: email,
+          subject: mollieSubject,
+          template: 'order-confirmation',
+          context: {
+            userName: first_name,
+            orderId: newOrder.id,
+            total: amount,
+            items: validatedItems.map((item: any) => ({
+              name: resolveCheckoutItemName(item),
+              price: Number(item.pricing?.total || item.pricing?.subtotal || 0),
+              deliveryTime: item.actor?.delivery_time || item.actor?.deliveryTime
+            })),
+            paymentMethod: payment_method || 'mollie',
+            language: normalizedLanguage
+          },
+          host
+        });
+      } catch (mailErr) {
+        console.warn('[Checkout] Failed to send Mollie submit confirmation:', mailErr);
+      }
+    })();
 
     return NextResponse.json({ success: true, orderId: newOrder.id, checkoutUrl: mollieOrder._links.checkout.href, token: secureToken });
   });

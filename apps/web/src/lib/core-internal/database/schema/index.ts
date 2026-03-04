@@ -1168,6 +1168,27 @@ export const systemEvents = pgTable('system_events', {
   createdAt: timestamp('created_at').defaultNow(),
 });
 
+// 🧾 FINANCIAL LEDGER (Atomic Source of Truth)
+export const financialLedger = pgTable('financial_ledger', {
+  id: serial('id').primaryKey(),
+  orderId: integer('order_id').references(() => orders.id).notNull(),
+  orderItemId: integer('order_item_id').references(() => orderItems.id),
+  entryType: text('entry_type').notNull(), // revenue, tax, cost, refund, payout, adjustment
+  sourceSystem: text('source_system').notNull().default('checkout_submit'),
+  amountNet: decimal('amount_net', { precision: 12, scale: 2 }).notNull(),
+  currencyCode: text('currency_code').notNull().default('EUR'),
+  idempotencyKey: text('idempotency_key').notNull(),
+  metaData: jsonb('meta_data').default({}),
+  occurredAt: timestamp('occurred_at', { withTimezone: true }).defaultNow(),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow(),
+}, (table) => ({
+  idempotencyUnique: uniqueIndex('financial_ledger_idempotency_key_idx').on(table.idempotencyKey),
+  orderIdx: index('financial_ledger_order_id_idx').on(table.orderId),
+  orderItemIdx: index('financial_ledger_order_item_id_idx').on(table.orderItemId),
+  entryTypeIdx: index('financial_ledger_entry_type_idx').on(table.entryType),
+}));
+
 // 💰 COSTS (Centralized Financial Tracking)
 export const costs = pgTable('costs', {
   id: serial('id').primaryKey(),
@@ -1340,6 +1361,37 @@ export const mailContent = pgTable('mail_content', {
     messageIdIdx: uniqueIndex('message_id_idx').on(table.messageId),
     accountIdIdx: index('account_id_idx').on(table.accountId), // 🚀 Snel deleten per account
   }
+});
+
+export const emailStatusHandshakes = pgTable('email_status_handshakes', {
+  id: serial('id').primaryKey(),
+  handshake_id: text('handshake_id').unique().notNull(),
+  approval_queue_id: integer('approval_queue_id').references(() => approvalQueue.id),
+  mail_content_id: integer('mail_content_id').references(() => mailContent.id),
+  template_key: text('template_key').notNull(),
+  status: text('status').default('queued').notNull(),
+  recipient_email: text('recipient_email').notNull(),
+  subject: text('subject').notNull(),
+  market_code: text('market_code'),
+  world_id: integer('world_id'),
+  journey_code: text('journey_code'),
+  language_code: text('language_code'),
+  source_host: text('source_host'),
+  target_type: text('target_type'),
+  target_id: text('target_id'),
+  provider_message_id: text('provider_message_id'),
+  error_message: text('error_message'),
+  payload: jsonb('payload').default({}).notNull(),
+  meta_data: jsonb('meta_data').default({}).notNull(),
+  created_at: timestamp('created_at').defaultNow(),
+  updated_at: timestamp('updated_at').defaultNow(),
+  sent_at: timestamp('sent_at'),
+  failed_at: timestamp('failed_at'),
+}, (table) => {
+  return {
+    statusCreatedIdx: index('email_status_handshakes_status_created_at_idx').on(table.status, table.created_at),
+    providerMessageIdIdx: uniqueIndex('email_status_handshakes_provider_message_id_idx').on(table.provider_message_id),
+  };
 });
 
 /**
@@ -1865,6 +1917,16 @@ export const costsRelations = relations(costs, ({ one }) => ({
   journey: one(journeys, {
     fields: [costs.journeyId],
     references: [journeys.id],
+  }),
+}));
+export const financialLedgerRelations = relations(financialLedger, ({ one }) => ({
+  order: one(orders, {
+    fields: [financialLedger.orderId],
+    references: [orders.id],
+  }),
+  orderItem: one(orderItems, {
+    fields: [financialLedger.orderItemId],
+    references: [orderItems.id],
   }),
 }));
 export const recordingSessionsRelations = relations(recordingSessions, ({ one, many }) => ({

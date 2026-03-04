@@ -20,6 +20,22 @@ export class ServerWatchdog {
     schema?: string;
     details?: any;
   }) {
+    const normalizedError = String(options.error || '').toUpperCase();
+    const normalizedUrl = String(options.url || '').toLowerCase();
+    const shouldIgnoreNoise =
+      normalizedError.includes('NEXT_NOT_FOUND') ||
+      normalizedError.includes('NEXT_HTTP_ERROR_FALLBACK') ||
+      normalizedUrl.startsWith('.well-known') ||
+      normalizedUrl.includes('.well-known/') ||
+      normalizedUrl.startsWith('wp-json') ||
+      normalizedUrl.includes('/wp-json/') ||
+      normalizedUrl.startsWith('wp-admin') ||
+      normalizedUrl.includes('/wp-admin/');
+
+    if (shouldIgnoreNoise) {
+      return;
+    }
+
     console.log(`🛡️ [ServerWatchdog] Reporting ${options.level || 'error'}: ${options.error}`);
     try {
       // 🛡️ CHRIS-PROTOCOL: Nuclear Payload Scrubbing

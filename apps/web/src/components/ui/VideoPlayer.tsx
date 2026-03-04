@@ -317,6 +317,9 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
                   <button
                     key={track.srcLang}
                     onClick={() => setActiveSubtitle(activeSubtitle === track.srcLang ? null : track.srcLang)}
+                    aria-pressed={activeSubtitle === track.srcLang}
+                    aria-label={activeSubtitle === track.srcLang ? `Ondertitels ${track.srcLang} uitschakelen` : `Ondertitels ${track.srcLang} inschakelen`}
+                    title={activeSubtitle === track.srcLang ? `Ondertitels ${track.srcLang} uitschakelen` : `Ondertitels ${track.srcLang} inschakelen`}
                     className={cn(
                       "text-[15px] px-2 py-1 rounded border border-white/20 transition-all",
                       activeSubtitle === track.srcLang ? "bg-[#FFC421] border-[#FFC421] text-va-black" : "bg-white/10 text-white/60 hover:bg-white/20"

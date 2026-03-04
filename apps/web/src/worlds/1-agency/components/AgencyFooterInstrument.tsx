@@ -5,10 +5,11 @@ import { ContainerInstrument, HeadingInstrument, TextInstrument, ButtonInstrumen
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { VoiceglotImage } from '@/components/ui/VoiceglotImage';
 import { VoicesLinkInstrument } from '@/components/ui/VoicesLinkInstrument';
-import { Star, Phone, Mail, Instagram, Youtube, Music, Facebook, Linkedin, Calculator, Globe2, HelpCircle, MessageSquare, Mic2, Info, Euro, Quote, Monitor, Radio, Globe, Building2 } from 'lucide-react';
+import { Star, Phone, Mail, Instagram, Youtube, Music, Facebook, Linkedin, Calculator, Globe2, HelpCircle, MessageSquare, Mic2, Info, Euro, Quote } from 'lucide-react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { useVoicesState } from '@/contexts/VoicesStateContext';
+import { AGENCY_CATEGORY_LINKS } from '@/lib/system/constants/agency-category-links';
 
 export function AgencyFooter({ market, activeSocials, activePhone, activeEmail, reviewStats }: any) {
   const { t } = useTranslation();
@@ -135,14 +136,7 @@ export function AgencyFooter({ market, activeSocials, activePhone, activeEmail, 
           <VoiceglotText translationKey="nav.menu.categories_title" defaultText="Stemmen per categorie" />
         </HeadingInstrument>
         <ul className="space-y-3">
-          {[
-            { label: 'TV Spot', icon: Monitor, href: '/agency/commercial/tv', key: 'category.tv' },
-            { label: 'Radio', icon: Radio, href: '/agency/commercial/radio', key: 'category.radio' },
-            { label: 'Online', icon: Globe, href: '/agency/commercial/online', key: 'category.online' },
-            { label: 'Podcast', icon: Mic2, href: '/agency/commercial/podcast', key: 'category.podcast' },
-            { label: 'Telefonie', icon: Phone, href: '/agency/telephony', key: 'category.telefoon' },
-            { label: 'Corporate', icon: Building2, href: '/agency/video', key: 'category.corporate' }
-          ].map((cat) => (
+          {AGENCY_CATEGORY_LINKS.map((cat) => (
             <li key={cat.label}>
               <VoicesLinkInstrument href={cat.href} className="flex items-center gap-2 text-[15px] font-light text-va-black/60 hover:text-primary transition-colors group">
                 <cat.icon size={16} strokeWidth={1.5} className="text-primary/40 group-hover:text-primary" />

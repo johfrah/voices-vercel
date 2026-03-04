@@ -11,6 +11,24 @@ import { type NextRequest, NextResponse } from 'next/server'
  */
 
 export async function updateSession(request: NextRequest) {
+  const protectedPaths = [
+    '/backoffice',
+    '/artist/dashboard',
+    '/admin',
+    '/studio/beheer',
+    '/studio/reviews',
+  ]
+
+  const hasSessionCookieHints = request.cookies.getAll().some(({ name }) =>
+    name === 'sb-access-token' ||
+    name === 'sb-refresh-token' ||
+    name === 'voices_role' ||
+    (name.startsWith('sb-') && name.includes('auth-token'))
+  )
+
+  const url = new URL(request.url)
+  const isProtected = protectedPaths.some(p => url.pathname.startsWith(p))
+
   let response = NextResponse.next({
     request: {
       headers: request.headers,
@@ -19,43 +37,48 @@ export async function updateSession(request: NextRequest) {
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  if (!supabaseUrl || !supabaseAnonKey) {
-    console.warn(' Supabase env vars missing  skipping session refresh')
-    return response
-  }
-
-  const supabase = createServerClient(
-    supabaseUrl,
-    supabaseAnonKey,
-    {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll()
-        },
-        setAll(cookiesToSet) {
-          // request.cookies is readonly  alleen response mag .set() aanroepen
-          response = NextResponse.next({
-            request: { headers: request.headers },
-          })
-          cookiesToSet.forEach(({ name, value, options }) =>
-            response.cookies.set(name, value, options)
-          )
-        },
-      },
-    }
-  )
-
-  // 1. Refresh session (graceful fallback on Supabase errors)
+  // 1. Refresh session (alleen wanneer nodig: protected route of aanwezige sessie-cookie)
   let user: { id?: string } | null = null
-  try {
-    const { data } = await supabase.auth.getUser()
-    user = data.user
-  } catch (err) {
-    console.warn(' Supabase auth.getUser failed:', err)
+
+  const shouldResolveAuth = isProtected || hasSessionCookieHints
+  if (shouldResolveAuth) {
+    if (!supabaseUrl || !supabaseAnonKey) {
+      console.warn(' Supabase env vars missing  protected/auth route fallback')
+    } else {
+      const supabase = createServerClient(
+        supabaseUrl,
+        supabaseAnonKey,
+        {
+          cookies: {
+            getAll() {
+              return request.cookies.getAll()
+            },
+            setAll(cookiesToSet) {
+              // request.cookies is readonly  alleen response mag .set() aanroepen
+              response = NextResponse.next({
+                request: { headers: request.headers },
+              })
+              cookiesToSet.forEach(({ name, value, options }) =>
+                response.cookies.set(name, value, options)
+              )
+            },
+          },
+        }
+      )
+
+      try {
+        const authResult = await Promise.race([
+          supabase.auth.getUser(),
+          new Promise<never>((_, reject) => setTimeout(() => reject(new Error('auth_timeout')), 1200))
+        ])
+        user = authResult.data.user
+      } catch (err) {
+        console.warn(' Supabase auth.getUser failed or timed out:', err)
+      }
+    }
   }
 
   // 2. System CONTEXT DETECTION (De Vier-Eenheid)
-  const url = new URL(request.url)
   const host = request.headers.get('host') || ''
   const userAgent = request.headers.get('user-agent') || ''
   const ip = request.headers.get('x-forwarded-for')?.split(',')[0] || '127.0.0.1'
@@ -102,14 +125,6 @@ export async function updateSession(request: NextRequest) {
   }
 
   // Beveiliging: Redirect naar login voor beschermde routes
-  const protectedPaths = [
-    '/backoffice',
-    '/artist/dashboard',
-    '/admin',
-    '/studio/beheer',
-    '/studio/reviews',
-  ]
-  const isProtected = protectedPaths.some(p => url.pathname.startsWith(p))
   if (!user && isProtected) {
     return NextResponse.redirect(new URL('/account', request.url))
   }

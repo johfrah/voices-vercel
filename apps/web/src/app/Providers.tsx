@@ -70,7 +70,11 @@ export function Providers({
 
   // 🛡️ CHRIS-PROTOCOL: Version Sync Mandate (v2.27.8)
   // Major Refactor: ID-First Handshake Architecture
+<<<<<<< HEAD
   const currentVersion = '2.28.14';
+=======
+  const currentVersion = '2.28.28';
+>>>>>>> d0e3858f797467c8dab1a0fa4ed1001f8b5ef896
 
   // 🛡️ CHRIS-PROTOCOL: Language is now strictly passed from Server (Source of Truth)
   // to prevent Hydration Mismatch errors (#419, #425).

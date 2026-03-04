@@ -171,9 +171,9 @@ export async function generateMetadata(): Promise<Metadata> {
   const { worldId, languageId, journeyId } = MarketManagerServer.resolveContext(cleanHost, pathname);
 
   // 🛡️ CHRIS-PROTOCOL: Parallel Pulse Fetching (v2.14.798)
-  const [market, worldConfig, alternateLanguages, studioTranslations] = await Promise.all([
+  // We fetch market, locales and translations in parallel to minimize TTFB
+  const [market, alternateLanguages, studioTranslations] = await Promise.all([
     getMarketSafe(marketHost),
-    ConfigBridge.getWorldConfig(worldId, languageId),
     (async () => {
       try {
         const localesPromise = MarketDatabaseService.getAllLocalesAsync();
@@ -309,6 +309,8 @@ export default async function RootLayout({
   const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
   const supabase = createClient(supabaseUrl, supabaseKey);
 
+  // CHRIS-PROTOCOL: `world_languages` ontbreekt momenteel in production schema.
+  // Vermijd per-request 404 storm; language switcher gebruikt dan de bestaande market fallback.
   const [market, studioTranslations, handshakeLanguages, worldConfig] = await Promise.all([
     getMarketSafe(marketHost),
     (async () => {

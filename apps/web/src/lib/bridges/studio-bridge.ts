@@ -51,6 +51,10 @@ export interface WorkshopDetail extends Workshop {
     date_raw: string;
     price: string;
     location: string;
+    location_address?: string;
+    location_city?: string;
+    location_zip?: string;
+    location_country?: string;
     capacity: number;
   }>;
   aftermovie_url?: string;
@@ -164,6 +168,9 @@ export class StudioDataBridge {
           price: e.price || dbWorkshop.price || '0',
           location: e.location?.name || 'Locatie volgt',
           location_address: e.location?.address,
+          location_city: e.location?.city,
+          location_zip: e.location?.zip,
+          location_country: e.location?.country,
           instructor: e.instructor?.name || instructor?.name,
           capacity: e.capacity || 8,
           filled: e.participants?.length || 0, //  Deelnemers koppelen voor de chip

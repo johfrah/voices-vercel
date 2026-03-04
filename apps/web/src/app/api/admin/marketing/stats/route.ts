@@ -6,6 +6,8 @@ import { type NextRequest, NextResponse } from 'next/server'
  * 
  * Berekent marketing-intelligence stats voor het dashboard.
  */
+export const dynamic = 'force-dynamic'
+
 export async function GET(request: NextRequest) {
   try {
     const supabase = createClient(

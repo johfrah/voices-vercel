@@ -7,7 +7,10 @@ import { VumeNewAccountTemplate } from './templates/VumeNewAccountTemplate';
 import { VumeDonationThankYouTemplate } from './templates/VumeDonationThankYouTemplate';
 import { VumeOrderConfirmationTemplate } from './templates/VumeOrderConfirmationTemplate';
 import { VumeFollowUpTemplate } from './templates/VumeFollowUpTemplate';
+import { VumeActorReminderTemplate } from './templates/VumeActorReminderTemplate';
 import { normalizeLocale } from '@/lib/system/locale-utils';
+import { EmailHandshakeService } from './email-handshake-service';
+import { MarketManagerServer as MarketManager } from '@/lib/system/core/market-manager';
 
 /**
  *  VUME ENGINE (2026)
@@ -18,11 +21,37 @@ import { normalizeLocale } from '@/lib/system/locale-utils';
 interface SendOptions {
   to: string;
   subject: string;
-  template: 'magic-link' | 'studio-experience' | 'invoice-reply' | 'actor-assignment' | 'new-account' | 'donation-thank-you' | 'order-confirmation' | 'follow-up';
+  template: 'magic-link' | 'studio-experience' | 'invoice-reply' | 'actor-assignment' | 'actor-reminder' | 'new-account' | 'donation-thank-you' | 'order-confirmation' | 'follow-up';
   context: any;
   from?: string;
   host?: string;
   language?: string;
+}
+
+const TEMPLATE_JOURNEY_MAP: Record<SendOptions['template'], 'agency' | 'artist' | 'portfolio' | 'studio' | 'auth'> = {
+  'magic-link': 'auth',
+  'studio-experience': 'studio',
+  'invoice-reply': 'agency',
+  'actor-assignment': 'agency',
+  'actor-reminder': 'agency',
+  'new-account': 'agency',
+  'donation-thank-you': 'artist',
+  'order-confirmation': 'agency',
+  'follow-up': 'agency',
+};
+
+const HANDSHAKE_TIMEOUT_MS = 800;
+
+async function withTimeout<T>(task: Promise<T>, fallback: T, timeoutMs: number = HANDSHAKE_TIMEOUT_MS): Promise<T> {
+  let timeoutRef: ReturnType<typeof setTimeout> | null = null;
+  const timeoutPromise = new Promise<T>((resolve) => {
+    timeoutRef = setTimeout(() => resolve(fallback), timeoutMs);
+  });
+
+  const safeTask = task.catch(() => fallback);
+  const result = await Promise.race([safeTask, timeoutPromise]);
+  if (timeoutRef) clearTimeout(timeoutRef);
+  return result;
 }
 
 export class VumeEngine {
@@ -82,6 +111,18 @@ export class VumeEngine {
         });
         break;
 
+      case 'actor-reminder':
+        html = VumeActorReminderTemplate({
+          actorName: context.actorName,
+          orderId: context.orderId,
+          usageType: context.usageType,
+          deliveryTime: context.deliveryTime,
+          isOverdue: context.isOverdue,
+          host: host,
+          language: resolvedLanguage,
+        });
+        break;
+
       case 'new-account':
         html = VumeNewAccountTemplate({
           name: context.name,
@@ -106,8 +147,11 @@ export class VumeEngine {
           userName: context.userName,
           orderId: context.orderId,
           total: context.total,
+          subtotal: context.subtotal,
+          tax: context.tax,
           items: context.items,
           paymentMethod: context.paymentMethod,
+          ctaUrl: context.ctaUrl,
           host: host,
           language: resolvedLanguage
         });
@@ -127,15 +171,62 @@ export class VumeEngine {
         throw new Error(`Template ${template} niet gevonden in VUME.`);
     }
 
-    const mailService = DirectMailService.getInstance();
-    await mailService.sendMail({
-      to,
+    const templateJourney = TEMPLATE_JOURNEY_MAP[template] || 'agency';
+    const market = MarketManager.getCurrentMarket(host);
+    const worldId = MarketManager.getWorldId(templateJourney);
+    const targetId = context?.orderId || context?.order_id || context?.userId || context?.user_id || context?.targetId || context?.target_id || null;
+    const targetType = context?.orderId || context?.order_id
+      ? 'order'
+      : context?.userId || context?.user_id
+        ? 'user'
+        : 'mail';
+    const handshakeRow = await withTimeout(EmailHandshakeService.createQueued({
+      template_key: template,
+      recipient_email: to,
       subject,
-      html,
-      from,
-      host
-    });
+      market_code: market.market_code,
+      world_id: worldId,
+      journey_code: templateJourney,
+      language_code: resolvedLanguage,
+      source_host: host || null,
+      target_type: targetType,
+      target_id: targetId ? String(targetId) : null,
+      payload: {
+        order_id: context?.orderId || context?.order_id || null,
+        item_count: Array.isArray(context?.items) ? context.items.length : null,
+      },
+      meta_data: {
+        template,
+      },
+    }), null);
 
-    console.log(`[VUME ] Mail verzonden via template: ${template} naar ${to}`);
+    const mailService = DirectMailService.getInstance();
+    try {
+      const sendResult = await mailService.sendMail({
+        to,
+        subject,
+        html,
+        from,
+        host
+      });
+
+      if (handshakeRow?.id) {
+        void withTimeout(EmailHandshakeService.markSent({
+          id: handshakeRow.id,
+          provider_message_id: sendResult.message_id,
+        }), undefined);
+      }
+
+      console.log(`[VUME ] Mail verzonden via template: ${template} naar ${to}`);
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Mail send failed';
+      if (handshakeRow?.id) {
+        void withTimeout(EmailHandshakeService.markFailed({
+          id: handshakeRow.id,
+          error_message: errorMessage,
+        }), undefined);
+      }
+      throw error;
+    }
   }
 }

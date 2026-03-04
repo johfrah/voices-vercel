@@ -626,7 +626,8 @@ const getArticlePayloadCached = unstable_cache(
       .from('content_articles')
       .select('*')
       .eq('slug', slug)
-      .single();
+      .limit(1)
+      .maybeSingle();
 
     if (error || !article) {
       console.warn(`[api-server] Article not found for slug: ${slug}`, error);
