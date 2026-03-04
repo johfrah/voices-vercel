@@ -32,7 +32,8 @@ export async function GET(request: NextRequest) {
       orderCount: sql<number>`count(${ordersV2.id})::int`,
       totalSpent: sql<string>`coalesce(sum(${ordersV2.amountNet}), 0)::text`,
       activeWorlds: sql<any[]>`array_agg(distinct jsonb_build_object('id', ${ordersV2.worldId}, 'code', (SELECT code FROM worlds WHERE id = ${ordersV2.worldId}), 'icon', (SELECT icon FROM worlds WHERE id = ${ordersV2.worldId}))) filter (where ${ordersV2.worldId} is not null)`,
-      subroles: users.subroles
+      subroles: users.subroles,
+      totalEarned: sql<string>`(SELECT coalesce(sum(cost), 0)::text FROM order_items WHERE actor_id = (SELECT id FROM actors WHERE user_id = ${users.id} LIMIT 1))`
     })
     .from(users)
     .leftJoin(ordersV2, eq(users.id, ordersV2.userId))
@@ -106,6 +107,7 @@ export async function GET(request: NextRequest) {
         stats: {
           orders: user.orderCount,
           totalSpent: parseFloat(user.totalSpent),
+          totalEarned: parseFloat(user.totalEarned || '0'),
           activeWorlds: user.activeWorlds || []
         }
       };

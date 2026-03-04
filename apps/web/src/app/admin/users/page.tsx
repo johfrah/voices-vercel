@@ -223,14 +223,20 @@ export default function AdminUsersPage() {
                 <td className="p-6">
                     <div className="flex flex-col gap-1">
                         <div className="flex items-center gap-2">
-                            <span className="font-medium text-primary">€{user.stats?.totalSpent?.toFixed(2) || '0.00'}</span>
+                            {user.role === 'actor' ? (
+                                <span className="font-medium text-green-600">€{user.stats?.totalEarned?.toFixed(2) || '0.00'}</span>
+                            ) : (
+                                <span className="font-medium text-primary">€{user.stats?.totalSpent?.toFixed(2) || '0.00'}</span>
+                            )}
                             <div className="flex gap-1">
                                 {user.stats?.activeWorlds?.map((w: any) => (
                                     <WorldIcon key={w.id} icon={w.icon} title={`${w.code.charAt(0).toUpperCase() + w.code.slice(1)} Klant`} />
                                 ))}
                             </div>
                         </div>
-                        <span className="text-[12px] text-va-black/30">{user.stats?.orders || 0} orders</span>
+                        <span className="text-[12px] text-va-black/30">
+                            {user.role === 'actor' ? 'Verdiend' : `${user.stats?.orders || 0} orders`}
+                        </span>
                     </div>
                 </td>
                 <td className="p-6">
