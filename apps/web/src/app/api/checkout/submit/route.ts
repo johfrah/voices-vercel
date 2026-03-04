@@ -7,7 +7,7 @@ import { headers } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
 import { MollieService } from '@/lib/payments/mollie';
-import { SlimmeKassa } from '@/lib/engines/pricing-engine';
+import { SlimmeKassa, type CommercialMediaType } from '@/lib/engines/pricing-engine';
 import { generateCartHash } from '@/lib/utils/cart-utils';
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { CheckoutPayloadSchema } from '@/lib/validation/checkout-schema';
@@ -85,6 +85,85 @@ function formatMusicTrackLabel(trackId: unknown): string {
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
     .join(' ');
 }
+
+function toStringArray(value: unknown): string[] {
+  if (Array.isArray(value)) {
+    return value
+      .map((entry) => String(entry || '').trim())
+      .filter(Boolean);
+  }
+  const single = String(value || '').trim();
+  return single ? [single] : [];
+}
+
+const COMMERCIAL_MEDIA_TYPES = new Set<CommercialMediaType>([
+  'online',
+  'tv_national',
+  'radio_national',
+  'podcast',
+  'tv_regional',
+  'tv_local',
+  'radio_regional',
+  'radio_local',
+]);
+
+function toCommercialMediaTypes(value: unknown): CommercialMediaType[] {
+  return toStringArray(value).filter((media): media is CommercialMediaType =>
+    COMMERCIAL_MEDIA_TYPES.has(media as CommercialMediaType),
+  );
+}
+
+function normalizeCommercialFactor(
+  value: unknown,
+  mediaTypes: string[],
+): Record<string, number> | undefined {
+  if (typeof value === 'number' && Number.isFinite(value) && value > 0) {
+    const normalized = Math.max(1, Math.round(value));
+    const targetMedia = mediaTypes.length > 0 ? mediaTypes : ['online'];
+    return targetMedia.reduce<Record<string, number>>((acc, mediaType) => {
+      acc[mediaType] = normalized;
+      return acc;
+    }, {});
+  }
+
+  if (value && typeof value === 'object' && !Array.isArray(value)) {
+    const mapped = Object.entries(value as Record<string, unknown>).reduce<Record<string, number>>((acc, [key, raw]) => {
+      const parsed = Number(raw);
+      if (Number.isFinite(parsed) && parsed > 0) {
+        acc[key] = Math.max(1, Math.round(parsed));
+      }
+      return acc;
+    }, {});
+    return Object.keys(mapped).length > 0 ? mapped : undefined;
+  }
+
+  return undefined;
+}
+
+function extractWorkshopId(item: Record<string, unknown>): number | null {
+  const candidates = [item.workshop_id, item.workshopId, item.edition_id, item.editionId, item.id];
+  for (const candidate of candidates) {
+    if (typeof candidate === 'number' && Number.isFinite(candidate) && candidate > 0) {
+      return Math.round(candidate);
+    }
+    if (typeof candidate === 'string') {
+      const trimmed = candidate.trim();
+      if (!trimmed) continue;
+      const direct = Number(trimmed);
+      if (Number.isFinite(direct) && direct > 0) {
+        return Math.round(direct);
+      }
+      const match = trimmed.match(/(\d+)$/);
+      if (match) {
+        const fromSuffix = Number(match[1]);
+        if (Number.isFinite(fromSuffix) && fromSuffix > 0) {
+          return Math.round(fromSuffix);
+        }
+      }
+    }
+  }
+  return null;
+}
 export async function POST(request: Request) {
   return await ServerWatchdog.atomic('CheckoutAPI', 'SubmitOrder', {}, async () => {
     let rawBody: any = null;
@@ -120,19 +199,30 @@ export async function POST(request: Request) {
     } = data;
     const normalizedLanguage = normalizeLocale(language || marketConfig.primary_language || 'nl-be');
     const languageShort = localeToShort(normalizedLanguage);
+    if (!items || items.length === 0) {
+      return NextResponse.json({ error: 'Leeg mandje. Voeg eerst een voice-over toe.' }, { status: 400 });
+    }
 
     // 2. Fetch Data voor prijsvalidatie
     const actorIds = Array.from(new Set([
-      ...(items || []).map((i: any) => i.actor?.id).filter(Boolean),
+      ...(items || []).map((i: any) => i.actor?.id).filter((id: unknown) => Number.isFinite(Number(id))),
       ...(selectedActor?.id ? [selectedActor.id] : [])
     ])).map(id => Number(id));
 
     const workshopIds = Array.from(new Set([
-      ...(items || []).map((i: any) => i.id).filter((id: any) => !isNaN(Number(id)) && Number(id) > 0)
+      ...(items || [])
+        .map((i: any) => extractWorkshopId(i as Record<string, unknown>))
+        .filter((id: number | null): id is number => id !== null)
     ])).map(id => Number(id));
 
-    const { data: dbActors } = await sdkClient.from('actors').select('*').or(`id.in.(${actorIds.join(',')}),wp_product_id.in.(${actorIds.join(',')})`);
-    const { data: dbWorkshops } = await sdkClient.from('workshops').select('*').in('id', workshopIds);
+    const dbActors =
+      actorIds.length > 0
+        ? (await sdkClient.from('actors').select('*').or(`id.in.(${actorIds.join(',')}),wp_product_id.in.(${actorIds.join(',')})`)).data || []
+        : [];
+    const dbWorkshops =
+      workshopIds.length > 0
+        ? (await sdkClient.from('workshops').select('*').in('id', workshopIds)).data || []
+        : [];
 
     const actorMap = new Map();
     (dbActors || []).forEach(a => {
@@ -152,13 +242,20 @@ export async function POST(request: Request) {
       if (item.type === 'voice_over') {
         const dbActor = actorMap.get(Number(item.actor?.id));
         if (!dbActor) return item;
+        const mediaTypes = toCommercialMediaTypes(item.media);
+        const countries = toStringArray(item.country);
+        const primaryCountry = countries[0] || 'BE';
+        const spotsByMedia = normalizeCommercialFactor(item.spots, mediaTypes);
+        const yearsByMedia = normalizeCommercialFactor(item.years, mediaTypes);
+        const scriptText = String(item.briefing || item.script || '').trim();
         const result = SlimmeKassa.calculate({
           usage: item.usage,
-          words: item.briefing?.trim().split(/\s+/).filter(Boolean).length || 0,
-          mediaTypes: item.media,
-          country: item.country,
-          spots: item.spots,
-          years: item.years,
+          words: scriptText.split(/\s+/).filter(Boolean).length || 0,
+          mediaTypes,
+          countries,
+          country: primaryCountry,
+          spots: spotsByMedia,
+          years: yearsByMedia,
           liveSession: item.liveSession,
           actorRates: dbActor,
           music: item.music,
@@ -169,7 +266,8 @@ export async function POST(request: Request) {
         return { ...item, pricing: result };
       }
       if (item.type === 'workshop_edition') {
-        const dbWorkshop = workshopMap.get(Number(item.id));
+        const workshopId = extractWorkshopId(item as Record<string, unknown>);
+        const dbWorkshop = workshopId ? workshopMap.get(workshopId) : null;
         const price = dbWorkshop ? Number(dbWorkshop.price) : 0;
         serverCalculatedSubtotal += price;
         return { ...item, pricing: { total: price, subtotal: price, tax: price * taxRate } };
@@ -177,7 +275,16 @@ export async function POST(request: Request) {
       return item;
     });
 
+    if (validatedItems.length === 0) {
+      return NextResponse.json({ error: 'Leeg mandje. Voeg eerst een voice-over toe.' }, { status: 400 });
+    }
+
+    const requestedQuote = Boolean((rawBody as { isQuote?: unknown })?.isQuote);
+    const isQuote = isQuoteOnly || requestedQuote;
     const amount = Math.round(serverCalculatedSubtotal * (1 + taxRate) * 100) / 100;
+    if (!isQuote && amount <= 0) {
+      return NextResponse.json({ error: 'Kon geen geldige prijs berekenen voor deze bestelling.' }, { status: 400 });
+    }
 
     // 4. User Management
     let userId = metadata?.user_id;
@@ -186,11 +293,27 @@ export async function POST(request: Request) {
       if (user) {
         userId = user.id;
       } else {
-        const { data: newUser } = await sdkClient.from('users').insert({
-          email, first_name: first_name, last_name: last_name, phone, companyName: company,
-          vatNumber: vat_number, addressStreet: address_street, addressZip: postal_code,
-          addressCity: city, addressCountry: country || 'BE', role: 'customer'
-        }).select().single();
+        const { data: newUser, error: newUserError } = await sdkClient.from('users').insert({
+          email,
+          first_name,
+          last_name,
+          phone: phone || null,
+          company_name: company || null,
+          vat_number: vat_number || null,
+          address_street: address_street || null,
+          address_zip: postal_code || null,
+          address_city: city || null,
+          address_country: country || 'BE',
+          role: 'customer',
+        }).select('id').single();
+        if (newUserError) {
+          await ServerWatchdog.report({
+            level: 'warn',
+            component: 'CheckoutAPI',
+            error: 'User insert failed, proceeding with guest order',
+            payload: { email, reason: newUserError.message },
+          });
+        }
         userId = newUser?.id;
       }
     }
@@ -199,7 +322,6 @@ export async function POST(request: Request) {
     const { data: maxOrder } = await sdkClient.from('orders').select('wp_order_id').order('wp_order_id', { ascending: false }).limit(1).single();
     const uniqueWpId = Math.max((maxOrder?.wp_order_id ? Number(maxOrder.wp_order_id) : 0) + 1, 310001);
 
-    const isQuote = isQuoteOnly || (rawBody as any).isQuote;
     const { data: newOrder, error: orderErr } = await sdkClient.from('orders').insert({
       wp_order_id: uniqueWpId,
       total: amount.toString(),
@@ -217,7 +339,8 @@ export async function POST(request: Request) {
         plan,
         language: normalizedLanguage,
         itemsCount: validatedItems.length,
-        customer: { email, first_name, last_name }
+        customer: { email, first_name, last_name },
+        items: validatedItems,
       }
     }).select().single();
 
@@ -226,11 +349,12 @@ export async function POST(request: Request) {
     // 6. Order Items
     const itemsToInsert = validatedItems.flatMap((item: any) => {
       const dbActor = actorMap.get(Number(item.actor?.id));
+      const primaryCountry = toStringArray(item.country)[0] || '';
       
       // 🛡️ CHRIS-PROTOCOL: Handshake Truth (ID-First)
       // We resolve the country code to its official database ID for the meta_data.
-      const countryId = MarketManager.getCountryLabel(item.country) ? 
-                        (global as any).handshakeCountries?.find((c: any) => c.code === item.country || c.label === item.country)?.id : null;
+      const countryId = MarketManager.getCountryLabel(primaryCountry) ? 
+                        (global as any).handshakeCountries?.find((c: any) => c.code === primaryCountry || c.label === primaryCountry)?.id : null;
       const itemSubtotal = Number(item.pricing?.subtotal || 0);
       const musicSurchargeRaw = Number(item.pricing?.musicSurcharge || 0);
       const musicTrackId = String(item.music?.trackId || '').trim();
@@ -246,7 +370,7 @@ export async function POST(request: Request) {
       const voiceRow = {
         order_id: newOrder.id,
         actor_id: dbActor?.id || null,
-        edition_id: item.editionId || null,
+        edition_id: item.editionId || item.edition_id || null,
         name: item.name || 'Product',
         quantity: 1,
         price: voiceSubtotal.toFixed(2),
@@ -270,7 +394,7 @@ export async function POST(request: Request) {
               }
             : null,
           // 🛡️ Store hard IDs and participant context for analytics
-          country_id: countryId || item.countryId,
+          country_id: countryId || item.countryId || item.country_id,
           language_id: dbActor?.native_language_id,
           participant_info: item.participant_info || undefined
         },
@@ -301,7 +425,7 @@ export async function POST(request: Request) {
           usage: item.usage || null,
           media: item.media || [],
           journey: item.journey || null,
-          country_id: countryId || item.countryId || null,
+          country_id: countryId || item.countryId || item.country_id || null,
         },
         delivery_status: 'waiting'
       };
@@ -312,6 +436,9 @@ export async function POST(request: Request) {
 
       return [voiceRow, musicRow];
     });
+    if (itemsToInsert.length === 0) {
+      return NextResponse.json({ error: 'Geen geldige orderregels gevonden.' }, { status: 400 });
+    }
 
     const { error: itemsErr } = await sdkClient.from('order_items').insert(itemsToInsert);
     if (itemsErr) throw new Error(`Order items failed: ${itemsErr.message}`);
