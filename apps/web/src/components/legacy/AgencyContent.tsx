@@ -20,7 +20,6 @@ import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-m
 import { useRouter } from 'next/navigation';
 import { calculateDeliveryDate } from '@/lib/utils/delivery-logic';
 import { VoiceFilterEngine } from '@/lib/engines/voice-filter-engine';
-import { writeClientDebugLog } from '@/lib/system/client-debug-log';
 
 import { RecentlyPlayedBar } from "@/components/ui/RecentlyPlayedBar";
 
@@ -129,20 +128,6 @@ export function AgencyContent({ mappedActors, filters }: { mappedActors: any[], 
 
   const handleActorSelect = (actor: any) => {
     playClick('success');
-    // #region agent log
-    writeClientDebugLog({
-      hypothesisId: 'D2',
-      location: 'AgencyContent.tsx:handleActorSelect:entry',
-      message: 'Actor select CTA clicked from grid',
-      data: {
-        clicked_actor_id: actor?.id ?? null,
-        clicked_actor_name: actor?.display_name ?? null,
-        previous_selected_actor_id: checkoutState.selectedActor?.id ?? null,
-        items_count: checkoutState.items?.length ?? 0,
-        current_step: state.currentStep
-      }
-    });
-    // #endregion
     selectActor(actor);
     
     //  CHRIS-PROTOCOL: Immediate step update for SPA responsiveness

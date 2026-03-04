@@ -12,7 +12,6 @@ import {
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useCheckout } from '@/contexts/CheckoutContext';
 import { VoicesLink as Link } from '@/components/ui/VoicesLink';
-import { writeClientDebugLog } from '@/lib/system/client-debug-log';
 import { usePathname } from 'next/navigation';
 
 import { ArrowLeft, Edit2, ShoppingCart } from 'lucide-react';
@@ -91,19 +90,6 @@ export default function CheckoutPageClient() {
       : [];
 
     if (mismatchedVoiceItems.length > 0) {
-      // #region agent log
-      writeClientDebugLog({
-        hypothesisId: 'D5',
-        location: 'CheckoutPageClient.tsx:voice_reconcile:remove_stale_items',
-        message: 'Removing stale voice-over item(s) before checkout render',
-        data: {
-          selected_actor_id: state.selectedActor?.id ?? null,
-          fallback_actor_id: fallbackActor?.id ?? null,
-          stale_item_ids: mismatchedVoiceItems.map((item: any) => item?.id).filter(Boolean),
-          path: pathname
-        }
-      });
-      // #endregion
       mismatchedVoiceItems.forEach((item: any) => {
         if (item?.id) removeItem(item.id);
       });
@@ -111,17 +97,6 @@ export default function CheckoutPageClient() {
     }
 
     if (!state.selectedActor && resolvedActor) {
-      // #region agent log
-      writeClientDebugLog({
-        hypothesisId: 'D5',
-        location: 'CheckoutPageClient.tsx:voice_reconcile:adopt_fallback_actor',
-        message: 'Adopting fallback actor from voices_state for checkout reconciliation',
-        data: {
-          fallback_actor_id: resolvedActor.id,
-          path: pathname
-        }
-      });
-      // #endregion
       selectActor(resolvedActor);
       return;
     }
@@ -178,19 +153,6 @@ export default function CheckoutPageClient() {
         total: currentSelectionTotal
       }
     });
-    // #region agent log
-    writeClientDebugLog({
-      hypothesisId: 'D5',
-      location: 'CheckoutPageClient.tsx:voice_reconcile:materialize_item',
-      message: 'Materialized resolved actor into checkout cart',
-      data: {
-        selected_actor_id: state.selectedActor?.id ?? null,
-        resolved_actor_id: resolvedActor.id,
-        total: currentSelectionTotal,
-        path: pathname
-      }
-    });
-    // #endregion
   }, [
     isHydrated,
     isStudioJourney,
