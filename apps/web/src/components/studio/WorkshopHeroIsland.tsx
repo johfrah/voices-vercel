@@ -79,6 +79,9 @@ export const WorkshopHeroIsland: React.FC<WorkshopHeroIslandProps> = ({ workshop
       type: 'workshop_edition' as const,
       name: workshop.title,
       price: priceValue,
+      workshop_id: workshop.id,
+      workshopId: workshop.id,
+      edition_id: nextEdition!.id,
       editionId: nextEdition!.id,
       date: nextEdition!.date,
       ...locationPayload,
@@ -98,7 +101,7 @@ export const WorkshopHeroIsland: React.FC<WorkshopHeroIslandProps> = ({ workshop
       email: participantData.email,
     });
     setShowParticipantForm(false);
-    router.push('/checkout');
+    router.push('/studio/checkout');
   };
 
   return (

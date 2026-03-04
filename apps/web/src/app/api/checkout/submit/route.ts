@@ -85,6 +85,15 @@ function formatMusicTrackLabel(trackId: unknown): string {
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
     .join(' ');
 }
+
+function resolveItemName(item: any): string {
+  const candidate = item?.name || item?.actor?.display_name || item?.actor?.name || item?.workshop_title;
+  if (typeof candidate === 'string' && candidate.trim().length > 0) {
+    return candidate.trim();
+  }
+  const technicalFallback = item?.id || item?.workshop_id || item?.workshopId;
+  return String(technicalFallback || 'item');
+}
 export async function POST(request: Request) {
   return await ServerWatchdog.atomic('CheckoutAPI', 'SubmitOrder', {}, async () => {
     let rawBody: any = null;
@@ -116,30 +125,62 @@ export async function POST(request: Request) {
     const { 
       pricing, items, selectedActor, step, first_name, last_name, email, 
       vat_number, postal_code, city, metadata, quoteMessage, phone, 
-      company, address_street, usage, plan, music, country, payment_method, language
+      company, address_street, usage, plan, music, country, payment_method, language, is_quote
     } = data;
     const normalizedLanguage = normalizeLocale(language || marketConfig.primary_language || 'nl-be');
     const languageShort = localeToShort(normalizedLanguage);
 
     // 2. Fetch Data voor prijsvalidatie
-    const actorIds = Array.from(new Set([
-      ...(items || []).map((i: any) => i.actor?.id).filter(Boolean),
-      ...(selectedActor?.id ? [selectedActor.id] : [])
-    ])).map(id => Number(id));
+    const normalizePositiveNumber = (value: unknown): number | null => {
+      const parsed = Number(value);
+      return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
+    };
 
-    const workshopIds = Array.from(new Set([
-      ...(items || []).map((i: any) => i.id).filter((id: any) => !isNaN(Number(id)) && Number(id) > 0)
-    ])).map(id => Number(id));
+    const actorIds = Array.from(
+      new Set(
+        [
+          ...(items || []).map((i: any) => normalizePositiveNumber(i.actor?.id)),
+          normalizePositiveNumber(selectedActor?.id),
+        ].filter((id): id is number => id !== null)
+      )
+    );
 
-    const { data: dbActors } = await sdkClient.from('actors').select('*').or(`id.in.(${actorIds.join(',')}),wp_product_id.in.(${actorIds.join(',')})`);
-    const { data: dbWorkshops } = await sdkClient.from('workshops').select('*').in('id', workshopIds);
+    const workshopIds = Array.from(
+      new Set(
+        (items || [])
+          .map((i: any) => normalizePositiveNumber(i.workshop_id ?? i.workshopId ?? i.id))
+          .filter((id): id is number => id !== null)
+      )
+    );
 
-    const actorMap = new Map();
+    const editionIds = Array.from(
+      new Set(
+        (items || [])
+          .map((i: any) => normalizePositiveNumber(i.edition_id ?? i.editionId))
+          .filter((id): id is number => id !== null)
+      )
+    );
+
+    const actorFilter = actorIds.length > 0
+      ? `id.in.(${actorIds.join(',')}),wp_product_id.in.(${actorIds.join(',')})`
+      : null;
+    const { data: dbActors = [] } = actorFilter
+      ? await sdkClient.from('actors').select('*').or(actorFilter)
+      : { data: [] as any[] };
+    const { data: dbWorkshops = [] } = workshopIds.length > 0
+      ? await sdkClient.from('workshops').select('*').in('id', workshopIds)
+      : { data: [] as any[] };
+    const { data: dbEditions = [] } = editionIds.length > 0
+      ? await sdkClient.from('workshop_editions').select('id, workshop_id, price').in('id', editionIds)
+      : { data: [] as any[] };
+
+    const actorMap = new Map<number, any>();
     (dbActors || []).forEach(a => {
       actorMap.set(Number(a.id), a);
       if (a.wp_product_id) actorMap.set(Number(a.wp_product_id), a);
     });
-    const workshopMap = new Map((dbWorkshops || []).map(w => [Number(w.id), w]));
+    const workshopMap = new Map<number, any>((dbWorkshops || []).map(w => [Number(w.id), w]));
+    const editionMap = new Map<number, any>((dbEditions || []).map((edition: any) => [Number(edition.id), edition]));
 
     const isVatExempt = !!vat_number && vat_number.length > 2 && !vat_number.startsWith('BE'); 
     const taxRate = isVatExempt ? 0 : 0.21;
@@ -148,10 +189,14 @@ export async function POST(request: Request) {
     let serverCalculatedSubtotal = 0;
     let isQuoteOnly = false;
 
-    const validatedItems = (items || []).map((item: any) => {
+    const validatedItems: any[] = [];
+    for (const item of (items || []) as any[]) {
       if (item.type === 'voice_over') {
-        const dbActor = actorMap.get(Number(item.actor?.id));
-        if (!dbActor) return item;
+        const dbActorId = normalizePositiveNumber(item.actor?.id);
+        const dbActor = dbActorId ? actorMap.get(dbActorId) : null;
+        if (!dbActor) {
+          throw new Error(`Stemacteur niet gevonden voor item ${item?.id || 'onbekend'}`);
+        }
         const result = SlimmeKassa.calculate({
           usage: item.usage,
           words: item.briefing?.trim().split(/\s+/).filter(Boolean).length || 0,
@@ -166,16 +211,34 @@ export async function POST(request: Request) {
         });
         if (result.isQuoteOnly) isQuoteOnly = true;
         serverCalculatedSubtotal += result.subtotal;
-        return { ...item, pricing: result };
+        validatedItems.push({ ...item, pricing: result });
+        continue;
       }
       if (item.type === 'workshop_edition') {
-        const dbWorkshop = workshopMap.get(Number(item.id));
-        const price = dbWorkshop ? Number(dbWorkshop.price) : 0;
+        const workshopId = normalizePositiveNumber(item.workshop_id ?? item.workshopId ?? item.id);
+        const editionId = normalizePositiveNumber(item.edition_id ?? item.editionId);
+        const dbEdition = editionId ? editionMap.get(editionId) : null;
+        const resolvedWorkshopId = workshopId ?? normalizePositiveNumber(dbEdition?.workshop_id);
+        const dbWorkshop = resolvedWorkshopId ? workshopMap.get(resolvedWorkshopId) : null;
+        const rawPrice = dbEdition?.price ?? dbWorkshop?.price;
+        const price = Number(rawPrice);
+        if (!Number.isFinite(price) || price <= 0) {
+          throw new Error(`Workshop prijs niet valide voor item ${item?.id || 'onbekend'}`);
+        }
         serverCalculatedSubtotal += price;
-        return { ...item, pricing: { total: price, subtotal: price, tax: price * taxRate } };
+        validatedItems.push({
+          ...item,
+          workshop_title: dbWorkshop?.title || null,
+          workshop_id: resolvedWorkshopId ?? null,
+          workshopId: resolvedWorkshopId ?? null,
+          edition_id: editionId ?? null,
+          editionId: editionId ?? null,
+          pricing: { total: price, subtotal: price, tax: Math.round(price * taxRate * 100) / 100 },
+        });
+        continue;
       }
-      return item;
-    });
+      throw new Error(`Onbekend item type: ${item?.type || 'onbekend'}`);
+    }
 
     const amount = Math.round(serverCalculatedSubtotal * (1 + taxRate) * 100) / 100;
 
@@ -199,7 +262,7 @@ export async function POST(request: Request) {
     const { data: maxOrder } = await sdkClient.from('orders').select('wp_order_id').order('wp_order_id', { ascending: false }).limit(1).single();
     const uniqueWpId = Math.max((maxOrder?.wp_order_id ? Number(maxOrder.wp_order_id) : 0) + 1, 310001);
 
-    const isQuote = isQuoteOnly || (rawBody as any).isQuote;
+    const isQuote = isQuoteOnly || !!is_quote;
     const { data: newOrder, error: orderErr } = await sdkClient.from('orders').insert({
       wp_order_id: uniqueWpId,
       total: amount.toString(),
@@ -225,7 +288,41 @@ export async function POST(request: Request) {
 
     // 6. Order Items
     const itemsToInsert = validatedItems.flatMap((item: any) => {
+      if (item.type === 'workshop_edition') {
+        const workshopSubtotal = Number(item.pricing?.subtotal ?? item.pricing?.total ?? item.price ?? 0);
+        if (!Number.isFinite(workshopSubtotal) || workshopSubtotal <= 0) {
+          throw new Error(`Workshop subtotal ongeldig voor item ${item?.id || 'onbekend'}`);
+        }
+        const workshopTax = Math.round(workshopSubtotal * taxRate * 100) / 100;
+        return [{
+          order_id: newOrder.id,
+          actor_id: null,
+          edition_id: item.edition_id || item.editionId || null,
+          name: resolveItemName(item),
+          quantity: 1,
+          price: workshopSubtotal.toFixed(2),
+          tax: workshopTax.toFixed(2),
+          meta_data: {
+            ...item.pricing,
+            item_type: 'workshop_edition',
+            workshop_id: item.workshop_id || item.workshopId || null,
+            edition_id: item.edition_id || item.editionId || null,
+            date: item.date || null,
+            location: item.location || null,
+            location_address: item.location_address || null,
+            location_city: item.location_city || null,
+            location_zip: item.location_zip || null,
+            location_country: item.location_country || null,
+            participant_info: item.participant_info || undefined,
+          },
+          delivery_status: 'waiting'
+        }];
+      }
+
       const dbActor = actorMap.get(Number(item.actor?.id));
+      if (!dbActor) {
+        throw new Error(`Stemacteur niet gevonden tijdens order item mapping (${item?.id || 'onbekend'})`);
+      }
       
       // 🛡️ CHRIS-PROTOCOL: Handshake Truth (ID-First)
       // We resolve the country code to its official database ID for the meta_data.
@@ -247,7 +344,7 @@ export async function POST(request: Request) {
         order_id: newOrder.id,
         actor_id: dbActor?.id || null,
         edition_id: item.editionId || null,
-        name: item.name || 'Product',
+        name: resolveItemName(item),
         quantity: 1,
         price: voiceSubtotal.toFixed(2),
         tax: voiceTax.toFixed(2),
@@ -299,7 +396,7 @@ export async function POST(request: Request) {
             as_background: musicAsBackground,
             as_hold_music: musicAsHoldMusic,
             source_actor_id: dbActor?.id || null,
-            source_item_name: item.name || 'voice_over',
+            source_item_name: resolveItemName(item),
           },
           usage: item.usage || null,
           usage_id: item.usageId || item.usage_id || null,
@@ -357,7 +454,7 @@ export async function POST(request: Request) {
               orderId: newOrder.id,
               total: amount,
               items: validatedItems.map((item: any) => ({
-                name: item.name || item.actor?.display_name || 'Voice Over',
+                name: resolveItemName(item),
                 price: Number(item.pricing?.total || item.pricing?.subtotal || 0),
                 deliveryTime: item.actor?.delivery_time || item.actor?.deliveryTime
               })),
@@ -377,7 +474,7 @@ export async function POST(request: Request) {
       amount: { currency: 'EUR', value: amount.toFixed(2) },
       orderNumber: newOrder.id.toString(),
       lines: validatedItems.map((i: any) => ({
-        name: i.name || 'Voice Over',
+        name: resolveItemName(i),
         quantity: 1,
         unitPrice: { currency: 'EUR', value: (i.pricing?.total || 0).toFixed(2) },
         totalAmount: { currency: 'EUR', value: (i.pricing?.total || 0).toFixed(2) },

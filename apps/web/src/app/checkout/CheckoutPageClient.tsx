@@ -144,7 +144,12 @@ export default function CheckoutPageClient() {
             <CheckoutForm strokeWidth={1.5} />
             
             {/* Mobile: Show totals and CTA at the very bottom, after the form */}
-            <PricingSummary strokeWidth={1.5} onlyTotals={true} className="lg:hidden mt-10" />
+            <PricingSummary
+              strokeWidth={1.5}
+              onlyTotals={true}
+              showCtaWhenOnlyTotals={true}
+              className="lg:hidden mt-10"
+            />
           </ContainerInstrument>
         </ContainerInstrument>
       </SectionInstrument>

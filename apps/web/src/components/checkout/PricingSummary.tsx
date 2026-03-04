@@ -31,9 +31,10 @@ import { calculateDeliveryDate } from '@/lib/utils/delivery-logic';
 export const PricingSummary: React.FC<{ 
   onlyItems?: boolean; 
   onlyTotals?: boolean;
+  showCtaWhenOnlyTotals?: boolean;
   className?: string;
-}> = ({ onlyItems, onlyTotals, className }) => {
-  const { state, subtotal, cartHash, removeItem, clearCart, restoreItem, isVatExempt, updateCustomer, updateIsSubmitting, updateAgreedToTerms, isHydrated } = useCheckout();
+}> = ({ onlyItems, onlyTotals, showCtaWhenOnlyTotals, className }) => {
+  const { state, subtotal, cartHash, removeItem, clearCart, restoreItem, isVatExempt, updateIsSubmitting, isHydrated } = useCheckout();
   const { updateStep } = useMasterControl();
   const { playClick } = useSonicDNA();
   const { t, language } = useTranslation();
@@ -115,22 +116,13 @@ export const PricingSummary: React.FC<{
   }, [isHydrated, state.items]);
 
   const applyCoupon = async () => {
-    const cleanCode = couponCode.trim().toUpperCase();
-    if (!cleanCode) return;
     setIsCouponApplying(true);
     setCouponError(null);
     playClick('light');
 
     try {
-      // TODO: Implement real coupon validation API
-      // For now, we simulate a successful validation for 'VOICES2026'
-      if (cleanCode === 'VOICES2026') {
-        updateCustomer({ active_coupon: { code: 'VOICES2026', discount: 10, type: 'percentage' } });
-        playClick('success');
-      } else {
-        setCouponError(t('checkout.coupon.invalid', 'Ongeldige kortingscode'));
-        playClick('error');
-      }
+      setCouponError(t('checkout.coupon.disabled', 'Kortingscodes zijn tijdelijk niet beschikbaar'));
+      playClick('error');
     } catch (e) {
       setCouponError(t('checkout.coupon.error', 'Fout bij valideren'));
     } finally {
@@ -177,6 +169,7 @@ export const PricingSummary: React.FC<{
         plan: state.plan,
         briefing: safeBriefing,
         quoteMessage: quoteMessage || null,
+        is_quote: state.isQuoteRequest || false,
         payment_method: state.paymentMethod,
         metadata: {
           words: wordCount,
@@ -253,13 +246,15 @@ export const PricingSummary: React.FC<{
   const resolveWorkshopImageSrc = (workshopItem: any): string => {
     return resolveWorkshopImageFromItem(workshopItem as Record<string, unknown>, workshopThumbnailMap) || '/icon-workshop.svg';
   };
-  const discountAmount = state.customer.active_coupon 
-    ? (state.customer.active_coupon.type === 'percentage' 
-        ? (subtotal * (state.customer.active_coupon.discount / 100)) 
-        : state.customer.active_coupon.discount)
+  const activeCoupon = ((state as any)?.customer?.active_coupon?.verified === true)
+    ? (state as any).customer.active_coupon
+    : null;
+  const discountAmount = activeCoupon
+    ? (activeCoupon.type === 'percentage'
+        ? (subtotal * (activeCoupon.discount / 100))
+        : Number(activeCoupon.discount || 0))
     : 0;
-
-  const subtotalAfterDiscount = subtotal - discountAmount;
+  const subtotalAfterDiscount = Math.max(0, subtotal - discountAmount);
   const vatRate = isVatExempt ? 0 : 0.21;
   const tax = subtotalAfterDiscount * vatRate;
   const total = subtotalAfterDiscount + tax;
@@ -476,7 +471,7 @@ export const PricingSummary: React.FC<{
                   <ContainerInstrument className="flex flex-1 items-start justify-between gap-4 min-w-0">
                     <ContainerInstrument className="min-w-0 flex-1">
                       <HeadingInstrument level={4} className="font-light text-xl text-va-black truncate tracking-tight">
-                        {itemTitle || '—'}
+                        {itemTitle || t('common.not_available', 'Niet beschikbaar')}
                       </HeadingInstrument>
                       <ContainerInstrument className="mt-2 flex flex-wrap items-center gap-2 text-[11px] text-va-black/45">
                         {usageLabel && (
@@ -692,11 +687,11 @@ export const PricingSummary: React.FC<{
 
                     <ContainerInstrument className="flex flex-col items-end gap-3 shrink-0 self-start">
                       <div className="flex flex-col items-end min-w-[120px]">
-                        {state.customer.active_coupon && (
+                        {activeCoupon && (
                           <TextInstrument className="text-[12px] text-va-black/20 line-through font-light">
                             {toNumberOrNull(itemObj.pricing?.subtotal ?? itemObj.pricing?.total ?? itemObj.price) !== null
                               ? `€${toNumberOrNull(itemObj.pricing?.subtotal ?? itemObj.pricing?.total ?? itemObj.price)!.toFixed(2)}`
-                              : '—'}
+                              : t('common.not_available', 'Niet beschikbaar')}
                           </TextInstrument>
                         )}
                         <TextInstrument className={cn(
@@ -705,7 +700,7 @@ export const PricingSummary: React.FC<{
                         )}>
                           {toNumberOrNull(itemObj.pricing?.subtotal ?? itemObj.pricing?.total ?? itemObj.price) !== null
                             ? `€${toNumberOrNull(itemObj.pricing?.subtotal ?? itemObj.pricing?.total ?? itemObj.price)!.toFixed(2)}`
-                            : '—'}
+                            : t('common.not_available', 'Niet beschikbaar')}
                         </TextInstrument>
                         <TextInstrument className="text-[10px] text-va-black/20 font-light uppercase tracking-widest mt-0.5">
                           Excl. BTW
@@ -764,9 +759,10 @@ export const PricingSummary: React.FC<{
             applyCoupon={applyCoupon}
             isApplyingCoupon={isApplyingCoupon}
             couponError={couponError}
-            showCoupon={isCheckoutPage}
+            activeCoupon={activeCoupon}
+            showCoupon={false}
           />
-          {!onlyTotals && isCheckoutPage && (
+          {((!onlyTotals || !!showCtaWhenOnlyTotals) && isCheckoutPage) && (
             <CTASection 
               handleSubmit={handleSubmit}
               setIsPreviewOpen={setIsPreviewOpen}
@@ -850,7 +846,7 @@ export const PricingSummary: React.FC<{
                         <span className="text-va-black">
                           {toNumberOrNull(selectedItem.pricing?.subtotal ?? selectedItem.pricing?.total ?? selectedItem.price) !== null
                             ? `€ ${toNumberOrNull(selectedItem.pricing?.subtotal ?? selectedItem.pricing?.total ?? selectedItem.price)!.toFixed(2)}`
-                            : '—'}
+                            : t('common.not_available', 'Niet beschikbaar')}
                         </span>
                       </div>
                     </div>
@@ -960,17 +956,16 @@ export const PricingSummary: React.FC<{
 // Helper components to avoid duplication
 const TotalsSection: React.FC<any> = ({ 
   subtotal, discountAmount, subtotalAfterDiscount, tax, total, isVatExempt,
-  couponCode, setCouponCode, applyCoupon, isApplyingCoupon, couponError, showCoupon = true
+  couponCode, setCouponCode, applyCoupon, isApplyingCoupon, couponError, activeCoupon, showCoupon = true
 }) => {
   const { t } = useTranslation();
-  const { state, updateCustomer } = useCheckout();
   const { playClick } = useSonicDNA();
   
   return (
     <ContainerInstrument className="space-y-3 pt-6 border-t border-va-black/5">
       {showCoupon && (
         <div className="pb-4">
-          {!state.customer.active_coupon ? (
+          {!activeCoupon ? (
             <div className="flex gap-2">
               <div className="relative flex-1">
                 <div className="absolute left-3 top-1/2 -translate-y-1/2 text-va-black/20">
@@ -1004,16 +999,15 @@ const TotalsSection: React.FC<any> = ({
                 </div>
                 <div>
                   <TextInstrument className="text-[12px] font-bold text-green-600 tracking-wider">
-                    {state.customer.active_coupon.code}
+                    {activeCoupon.code}
                   </TextInstrument>
                   <TextInstrument className="text-[10px] text-green-600/60 font-light">
-                    {state.customer.active_coupon.type === 'percentage' ? `${state.customer.active_coupon.discount}% ${t('common.discount', 'korting')}` : `€${state.customer.active_coupon.discount} ${t('common.discount', 'korting')}`}
+                    {activeCoupon.type === 'percentage' ? `${activeCoupon.discount}% ${t('common.discount', 'korting')}` : `€${activeCoupon.discount} ${t('common.discount', 'korting')}`}
                   </TextInstrument>
                 </div>
               </div>
               <button 
                 onClick={() => {
-                  updateCustomer({ active_coupon: null });
                   setCouponCode('');
                   playClick('soft');
                 }}
@@ -1043,7 +1037,7 @@ const TotalsSection: React.FC<any> = ({
         <TextInstrument className="font-light text-va-black">€ {subtotal.toFixed(2)}</TextInstrument>
       </ContainerInstrument>
 
-      {state.customer.active_coupon && (
+      {activeCoupon && (
         <>
           <motion.div 
             initial={{ opacity: 0, x: -10 }}
@@ -1056,7 +1050,7 @@ const TotalsSection: React.FC<any> = ({
                 <VoiceglotText 
                   translationKey="checkout.discount_label_v2" 
                   defaultText="Korting ({code})" 
-                  values={{ code: state.customer.active_coupon.code }}
+                  values={{ code: activeCoupon.code }}
                 />
               </TextInstrument>
             </div>

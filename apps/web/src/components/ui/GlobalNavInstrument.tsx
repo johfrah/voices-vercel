@@ -974,7 +974,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
                       </ContainerInstrument>
                       <ContainerInstrument plain className="flex-1 min-w-0">
                         <TextInstrument className="text-[14px] font-medium text-va-black truncate">
-                          {itemTitle || '—'}
+                          {itemTitle || 'Niet beschikbaar'}
                         </TextInstrument>
                         <ContainerInstrument plain className="flex items-center gap-1.5 mt-0.5">
                           {item.type === 'workshop_edition' ? (
@@ -1019,7 +1019,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
                       <div className="flex flex-col items-end gap-1">
                         <div className="flex items-center gap-2">
                           <TextInstrument className="text-[14px] font-medium text-va-black">
-                            {amountValue !== null && Number.isFinite(amountValue) ? `€${amountValue.toFixed(2)}` : '—'}
+                            {amountValue !== null && Number.isFinite(amountValue) ? `€${amountValue.toFixed(2)}` : 'Niet beschikbaar'}
                           </TextInstrument>
                           <button 
                             onClick={(e) => {

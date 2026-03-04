@@ -19,6 +19,7 @@ import React, { useState } from 'react';
 import { CheckCircle2, ArrowRight } from 'lucide-react';
 
 interface WorkshopDate {
+  id?: number;
   date_raw: string;
   price: string;
   location: string;
@@ -101,12 +102,16 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
       //  NUCLEAR WORKSHOP SPA ENGINE
       // We voegen de workshop toe aan de checkout en navigeren direct.
       const priceExclVatValue = selectedDate ? parseFloat(selectedDate.price) || priceExclVat : priceExclVat;
+      const selectedEditionId = selectedDate?.id ?? null;
       const locationPayload = buildWorkshopLocationPayload(selectedDate || null);
       const workshopItem = {
         id: `workshop-${workshopId}-${Date.now()}`,
         type: 'workshop_edition',
         name: title,
         workshop_id: workshopId,
+        workshopId: workshopId,
+        edition_id: selectedEditionId,
+        editionId: selectedEditionId,
         price: priceExclVatValue,
         date: selectedDate?.date_raw,
         ...locationPayload,
@@ -134,7 +139,7 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
 
       // Add to cart and set journey
       addItem(workshopItem);
-      setJourney('studio', workshopId);
+      setJourney('studio', selectedEditionId ?? workshopId);
       setStep('details'); // Direct naar de details stap in de checkout
 
       setTimeout(() => {
