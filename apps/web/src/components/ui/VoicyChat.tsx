@@ -3,6 +3,7 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { useCheckout } from '@/contexts/CheckoutContext';
 import { useEditMode } from '@/contexts/EditModeContext';
+import { useVoicesState } from '@/contexts/VoicesStateContext';
 import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { useConsent } from '@/hooks/useConsent';
@@ -39,6 +40,13 @@ import { ButtonInstrument, ContainerInstrument, FormInstrument, HeadingInstrumen
 import { VoiceglotText } from './VoiceglotText';
 import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
 import { normalizeLocale } from '@/lib/system/locale-utils';
+
+export function shouldElevateVoicyChatForCastingDock(
+  selectedActorsCount: number,
+  isCastingDockExcludedPage: boolean
+): boolean {
+  return selectedActorsCount > 0 && !isCastingDockExcludedPage;
+}
 
 export const VoicyChatV2: React.FC = () => {
   // 🛡️ CHRIS-PROTOCOL: All State at the top to prevent TDZ errors
@@ -85,6 +93,7 @@ export const VoicyChatV2: React.FC = () => {
     resetSelection,
     updateMusic
   } = useCheckout();
+  const { state: voicesState } = useVoicesState();
   const { playClick: playSonicClick } = useSonicDNA();
   const playClick = (type: "pop" | "pro" | "success" | "soft" | "lock" | "unlock" | undefined) => {
     try {
@@ -99,6 +108,11 @@ export const VoicyChatV2: React.FC = () => {
   const market = MarketManager.getCurrentMarket();
   const isPortfolioJourney = market.market_code === 'PORTFOLIO';
   const isArtistPage = market.market_code === 'ARTIST' || pathname?.startsWith('/voice/');
+  const isCastingDockExcludedPage = ['ARTIST', 'PORTFOLIO', 'ADEMING'].includes(market.market_code) || pathname?.startsWith('/casting/launchpad');
+  const isCastingDockVisible = shouldElevateVoicyChatForCastingDock(
+    (voicesState.selected_actors || []).length,
+    Boolean(isCastingDockExcludedPage)
+  );
   
   // Determine Journey
   const isAcademyJourney = pathname?.includes('/academy');
@@ -170,6 +184,14 @@ export const VoicyChatV2: React.FC = () => {
   }, [conversationId, isAdmin, hasConsent]);
 
   const isJohfrah = persona === 'johfrah';
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    window.dispatchEvent(new CustomEvent('voicy:state', { detail: { isOpen } }));
+    return () => {
+      window.dispatchEvent(new CustomEvent('voicy:state', { detail: { isOpen: false } }));
+    };
+  }, [isOpen]);
 
   useEffect(() => {
     const handlePersonaChange = (e: any) => {
@@ -1035,7 +1057,8 @@ export const VoicyChatV2: React.FC = () => {
   return (
     <ContainerInstrument 
       className={cn(
-        "fixed bottom-8 right-8 z-[150] touch-manipulation",
+        "fixed right-8 z-[150] touch-manipulation transition-[bottom] duration-300",
+        isCastingDockVisible ? "bottom-[calc(8.25rem+env(safe-area-inset-bottom))] md:bottom-8" : "bottom-8",
         isOpen && "z-[250]"
       )}
       onMouseEnter={() => setIsHoveringVoicy(true)}
