@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
       // Aggregated fields
       orderCount: sql<number>`count(${ordersV2.id})::int`,
       totalSpent: sql<string>`coalesce(sum(${ordersV2.amountNet}), 0)::text`,
-      activeWorlds: sql<number[]>`array_agg(distinct ${ordersV2.worldId}) filter (where ${ordersV2.worldId} is not null)`
+      activeWorlds: sql<any[]>`array_agg(distinct jsonb_build_object('id', ${ordersV2.worldId}, 'code', (SELECT code FROM worlds WHERE id = ${ordersV2.worldId}), 'icon', (SELECT icon FROM worlds WHERE id = ${ordersV2.worldId}))) filter (where ${ordersV2.worldId} is not null)`
     })
     .from(users)
     .leftJoin(ordersV2, eq(users.id, ordersV2.userId))

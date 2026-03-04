@@ -14,7 +14,7 @@ import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useAdminTracking } from '@/hooks/useAdminTracking';
 import { useAuth } from '@/contexts/AuthContext';
 import { useWorld } from '@/contexts/WorldContext';
-import { ArrowLeft, Edit3, Loader2, Mail, MoreHorizontal, Search as SearchIcon, Shield, UserPlus, Users, RefreshCw, Ghost, Eye, DollarSign, ShoppingBag, Mic2, BookOpen, GraduationCap } from 'lucide-react';
+import { ArrowLeft, Edit3, Loader2, Mail, MoreHorizontal, Search as SearchIcon, Shield, UserPlus, Users, RefreshCw, Ghost, Eye, DollarSign, ShoppingBag, Mic2, BookOpen, GraduationCap, Bot, Briefcase, Wind, Layout, Music, HelpCircle } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState, useCallback } from 'react';
 import { toast } from 'react-hot-toast';
@@ -26,6 +26,23 @@ export const dynamic = 'force-dynamic';
  * 
  * "Beheer van de community."
  */
+
+const WorldIcon = ({ icon, title }: { icon: string, title: string }) => {
+    const props = { size: 12, className: "text-va-black/20", title };
+    switch (icon) {
+        case 'shopping-bag': return <ShoppingBag {...props} />;
+        case 'graduation-cap': return <GraduationCap {...props} />;
+        case 'book-open': return <BookOpen {...props} />;
+        case 'bot': return <Bot {...props} />;
+        case 'users': return <Users {...props} />;
+        case 'briefcase': return <Briefcase {...props} />;
+        case 'wind': return <Wind {...props} />;
+        case 'layout': return <Layout {...props} />;
+        case 'music': return <Music {...props} />;
+        default: return <HelpCircle {...props} />;
+    }
+};
+
 export default function AdminUsersPage() {
   const { logAction } = useAdminTracking();
   const { impersonate } = useAuth();
@@ -203,8 +220,9 @@ export default function AdminUsersPage() {
                         <div className="flex items-center gap-2">
                             <span className="font-medium text-primary">€{user.stats?.totalSpent?.toFixed(2) || '0.00'}</span>
                             <div className="flex gap-1">
-                                {user.stats?.activeWorlds?.includes(1) && <ShoppingBag size={12} className="text-va-black/20" title="Agency Klant" />}
-                                {user.stats?.activeWorlds?.includes(2) && <GraduationCap size={12} className="text-va-black/20" title="Studio Klant" />}
+                                {user.stats?.activeWorlds?.map((w: any) => (
+                                    <WorldIcon key={w.id} icon={w.icon} title={`${w.code.charAt(0).toUpperCase() + w.code.slice(1)} Klant`} />
+                                ))}
                             </div>
                         </div>
                         <span className="text-[12px] text-va-black/30">{user.stats?.orders || 0} orders</span>
