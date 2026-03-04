@@ -16,6 +16,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth/api-auth';
 import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
 import { YukiService } from '@/lib/services/yuki-service';
+import { reserveLocalDocumentNumber } from '@/lib/services/local-document-sequence-service';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -121,6 +122,10 @@ function inferCountryCode(vatNumber: string | null | undefined): string {
 function toNumber(value: unknown, fallback = 0): number {
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : fallback;
+}
+
+function hasYukiRuntimeConfig(): boolean {
+  return Boolean(process.env.YUKI_ACCESS_KEY && process.env.YUKI_ADMINISTRATION_ID);
 }
 
 async function resolveYukiSync(orderId: number) {
@@ -578,12 +583,44 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    const yukiResult = syncToYuki ? await resolveYukiSync(newOrder.id) : null;
+    let yukiResult: any = null;
+    let localInvoiceResult: any = null;
+
+    if (syncToYuki) {
+      if (hasYukiRuntimeConfig()) {
+        yukiResult = await resolveYukiSync(newOrder.id);
+      } else {
+        yukiResult = {
+          success: false,
+          message: 'Yuki crosscheck is tijdelijk uitgeschakeld (missing YUKI env).',
+          mode: 'local_fallback',
+        };
+      }
+
+      if (!yukiResult?.success) {
+        const localNumber = await reserveLocalDocumentNumber({
+          order_id: newOrder.id,
+          document_type: 'invoice',
+          market_code: 'BE',
+          idempotency_key: `admin-order-${newOrder.id}-invoice`,
+          admin_email: auth.user?.email || null,
+          audit_note: yukiResult?.message || 'Fallback zonder Yuki crosscheck',
+        });
+
+        localInvoiceResult = localNumber;
+        await db.insert(orderNotes).values({
+          orderId: newOrder.id,
+          note: `Lokale fallback actief: factuurnummer ${localNumber.local_number} gereserveerd zonder Yuki crosscheck.`,
+          isCustomerNote: false,
+        });
+      }
+    }
 
     return NextResponse.json({
       ...newOrder,
       displayOrderId: uniqueWpId,
       yukiResult,
+      localInvoiceResult,
     });
   } catch (error: any) {
     console.error('[Admin Orders POST Error]:', error);

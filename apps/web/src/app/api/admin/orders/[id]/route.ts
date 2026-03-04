@@ -686,7 +686,11 @@ export async function GET(request: Request, { params }: { params: { id: string }
       billing: {
         email: billingEmail,
         purchaseOrder,
-        invoiceNumber: parsedRawMeta._invoice_number || null,
+        invoiceNumber:
+          parsedRawMeta._invoice_number ||
+          parsedRawMeta.yuki_invoice_number ||
+          parsedRawMeta?.local_documents?.invoice?.local_number ||
+          null,
         transactionId: parsedRawMeta._transaction_id || parsedRawMeta._mollie_payment_id || null,
       },
 

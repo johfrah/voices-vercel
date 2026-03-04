@@ -1,6 +1,5 @@
-import { db, orders, orderNotes } from '@/lib/system/voices-config';
-import { eq } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
+import { requireAdmin } from '@/lib/auth/api-auth';
 
 /**
  * YUKI AUTOMATION BRIDGE (NUCLEAR LOGIC 2026)
@@ -13,58 +12,20 @@ import { NextResponse } from 'next/server';
  */
 
 export async function POST(request: Request) {
+  const auth = await requireAdmin();
+  if (auth instanceof NextResponse) return auth;
+
   try {
-    const { orderId } = await request.json();
-
-    // 1. Fetch order details from Supabase
-    const order = await db.query.orders.findFirst({
-      where: eq(orders.id, orderId),
-      with: {
-        user: true
-      }
-    });
-
-    if (!order) {
-      return NextResponse.json({ error: 'Order not found' }, { status: 404 });
-    }
-
-    // 2. Prepare Yuki Payload (transitional bridge)
-    // In production, this is replaced by a real Yuki connector.
-    const yukiPayload = {
-      Reference: `Order-${order.wpOrderId}`,
-      Subject: `Order-${order.wpOrderId}`,
-      Contact: {
-        Name: order.user?.email || 'Gastgebruiker',
-        Email: order.user?.email
-      },
-      Lines: [
-        {
-          Description: 'Voice-over Recording Services',
-          Amount: order.total,
-          VatCode: 'HIGH'
-        }
-      ]
-    };
-
-    console.log(' Sending to Yuki:', yukiPayload);
-
-    const yukiId = `YUK-${order.wpOrderId || order.id}`;
-
-    // 3. Update Order metadata in Supabase
-    await db.update(orders)
-      .set({ yukiInvoiceId: yukiId })
-      .where(eq(orders.id, orderId));
-
-    await db.insert(orderNotes).values({
-      orderId,
-      note: `Yuki sync geregistreerd: ${yukiId}`,
-      isCustomerNote: false,
-    });
+    const body = await request.json().catch(() => ({}));
+    const orderId = Number(body?.orderId);
 
     return NextResponse.json({
-      success: true,
-      yukiId,
-      message: 'Order successfully synced to Yuki accounting.'
+      success: false,
+      orderId: Number.isFinite(orderId) ? orderId : null,
+      error: 'Deprecated endpoint',
+      message:
+        'Deze route is uitgeschakeld om valse Yuki-bevestigingen te voorkomen. Gebruik de admin order flow met geverifieerde sync.',
+      mode: 'disabled',
     });
 
   } catch (error) {

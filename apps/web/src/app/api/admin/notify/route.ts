@@ -128,7 +128,7 @@ export async function POST(request: NextRequest) {
           : isQuote
             ? 'De klant wacht op een reactie op deze offerte. Bekijk de details en stuur de definitieve versie.'
             : isPayment
-              ? 'De betaling is succesvol verwerkt. De stemacteur(s) zijn op de hoogte gebracht.'
+              ? 'De betaling is succesvol verwerkt. Actorbriefing en Yuki-verwerking vragen nog manuele opvolging.'
               : isBanktransfer
                 ? 'Bankoverschrijving ontvangen. Yuki-sync is nog niet bevestigd. Meld pas "naar Yuki gestuurd" na een succesvolle sync-respons.'
                 : 'Nieuwe bestelling ontvangen. Controleer de orderdetails.';

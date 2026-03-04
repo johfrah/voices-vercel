@@ -135,6 +135,8 @@ export default function NewOrderPage() {
           if (data.yukiResult?.success) {
             const invoiceLabel = data.yukiResult.invoiceNumber || data.yukiResult.yukiId || 'n.v.t.';
             toast.success(`Yuki sync bevestigd: ${invoiceLabel}`);
+          } else if (data.localInvoiceResult?.local_number) {
+            toast(`Yuki niet bevestigd. Lokaal factuurnummer: ${data.localInvoiceResult.local_number}`);
           } else {
             toast.error(`Yuki sync niet bevestigd: ${data.yukiResult?.message || 'geen bevestiging ontvangen'}`);
           }
