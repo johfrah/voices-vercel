@@ -730,7 +730,7 @@ export default async function SmartRoutePage({ params }: { params: SmartRoutePar
   const reserved = [
     'admin', 'backoffice', 'account', 'api', 'auth', 'checkout', 'cart',
     'demos', 'favicon.ico', 'robots.txt',
-    'sitemap.xml', 'sitemap', 'static', 'assets', '_next',
+    'sitemap.xml', 'sitemap', 'static', 'assets', '_next', '.well-known',
     'wp-content', 'wp-includes'
   ];
 

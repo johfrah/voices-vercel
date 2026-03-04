@@ -24,6 +24,12 @@ interface VoiceglotTextProps {
 // 🛡️ CHRIS-PROTOCOL: Global registry cache to prevent request storms
 const registeredKeys = new Set<string>();
 
+function canRegisterVoiceglotOnCurrentSurface(): boolean {
+  if (typeof window === 'undefined') return false;
+  const pathname = window.location.pathname.toLowerCase();
+  return pathname.startsWith('/admin') || pathname.startsWith('/backoffice');
+}
+
 /**
  *  VOICEGLOT INLINE EDITOR & SELF-HEALING
  * 500% Intuitief: Klikken & Typen.
@@ -107,6 +113,8 @@ export const VoiceglotText: React.FC<VoiceglotTextProps> = ({
   // Zorgt ervoor dat nieuwe strings direct in de registry komen en vertaald worden
   useEffect(() => {
     if (typeof window === 'undefined' || !mounted) return;
+    const isRegistrationSurface = isEditMode || canRegisterVoiceglotOnCurrentSurface();
+    if (!isRegistrationSurface) return;
     
     // 🛡️ CHRIS-PROTOCOL: Prevent request storm - only register once per session
     if (registeredKeys.has(translationKey)) return;
