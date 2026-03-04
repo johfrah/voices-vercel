@@ -73,7 +73,7 @@ export async function GET(request: NextRequest) {
     // CRITICAL: .groupBy() must be called AFTER .where()
     const allUsers = await query
       .groupBy(users.id)
-      .orderBy(desc(users.createdAt))
+      .orderBy(desc(sql`COALESCE(sum(${ordersV2.amountNet}), 0)`), desc(users.createdAt))
       .limit(500);
 
     // Map the results to a clean format
