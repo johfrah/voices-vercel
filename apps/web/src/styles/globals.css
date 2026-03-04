@@ -75,6 +75,210 @@
   color-scheme: light;
 }
 
+/* 🌘 DARKMODE BRIDGE: normalize legacy light utilities */
+@media (prefers-color-scheme: dark) {
+  .bg-white {
+    background-color: hsl(var(--va-card)) !important;
+  }
+
+  .bg-white\/95 {
+    background-color: hsl(var(--va-card) / 0.95) !important;
+  }
+
+  .bg-white\/90 {
+    background-color: hsl(var(--va-card) / 0.9) !important;
+  }
+
+  .bg-white\/80 {
+    background-color: hsl(var(--va-card) / 0.8) !important;
+  }
+
+  .bg-white\/70 {
+    background-color: hsl(var(--va-card) / 0.7) !important;
+  }
+
+  .bg-white\/60 {
+    background-color: hsl(var(--va-card) / 0.6) !important;
+  }
+
+  .bg-white\/50 {
+    background-color: hsl(var(--va-card) / 0.5) !important;
+  }
+
+  .bg-va-off-white {
+    background-color: hsl(var(--va-card)) !important;
+  }
+
+  .bg-va-off-white\/80 {
+    background-color: hsl(var(--va-card) / 0.8) !important;
+  }
+
+  .bg-va-off-white\/70 {
+    background-color: hsl(var(--va-card) / 0.7) !important;
+  }
+
+  .bg-va-off-white\/60 {
+    background-color: hsl(var(--va-card) / 0.6) !important;
+  }
+
+  .bg-va-off-white\/50 {
+    background-color: hsl(var(--va-card) / 0.5) !important;
+  }
+
+  .border-black\/10,
+  .border-black\/5,
+  .border-black\/\[0\.03\],
+  .border-black\/\[0\.02\] {
+    border-color: hsl(var(--va-border)) !important;
+  }
+
+  .divide-black\/10 > :not([hidden]) ~ :not([hidden]) {
+    border-color: hsl(var(--va-border)) !important;
+  }
+
+  .text-black {
+    color: hsl(var(--va-black)) !important;
+  }
+
+  .bg-va-black {
+    background-color: hsl(240 10% 11%) !important;
+  }
+
+  .bg-va-black\/95 {
+    background-color: hsl(240 10% 11% / 0.95) !important;
+  }
+
+  .bg-va-black\/90 {
+    background-color: hsl(240 10% 11% / 0.9) !important;
+  }
+
+  .bg-va-black\/80 {
+    background-color: hsl(240 10% 11% / 0.8) !important;
+  }
+
+  .hover\:bg-va-black:hover {
+    background-color: hsl(240 10% 15%) !important;
+  }
+
+  .hover\:bg-va-black\/80:hover {
+    background-color: hsl(240 10% 15% / 0.8) !important;
+  }
+
+  .from-white {
+    --tw-gradient-from: hsl(var(--va-card)) var(--tw-gradient-from-position) !important;
+    --tw-gradient-to: hsl(var(--va-card) / 0) var(--tw-gradient-to-position) !important;
+  }
+
+  .via-white {
+    --tw-gradient-stops: var(--tw-gradient-from), hsl(var(--va-surface)) var(--tw-gradient-via-position), var(--tw-gradient-to) !important;
+  }
+
+  .to-white {
+    --tw-gradient-to: hsl(var(--va-surface)) var(--tw-gradient-to-position) !important;
+  }
+}
+
+/* 🌘 DARKMODE BRIDGE (manual toggle): apply same overrides when html has .dark */
+.dark .bg-white {
+  background-color: hsl(var(--va-card)) !important;
+}
+
+.dark .bg-white\/95 {
+  background-color: hsl(var(--va-card) / 0.95) !important;
+}
+
+.dark .bg-white\/90 {
+  background-color: hsl(var(--va-card) / 0.9) !important;
+}
+
+.dark .bg-white\/80 {
+  background-color: hsl(var(--va-card) / 0.8) !important;
+}
+
+.dark .bg-white\/70 {
+  background-color: hsl(var(--va-card) / 0.7) !important;
+}
+
+.dark .bg-white\/60 {
+  background-color: hsl(var(--va-card) / 0.6) !important;
+}
+
+.dark .bg-white\/50 {
+  background-color: hsl(var(--va-card) / 0.5) !important;
+}
+
+.dark .bg-va-off-white {
+  background-color: hsl(var(--va-card)) !important;
+}
+
+.dark .bg-va-off-white\/80 {
+  background-color: hsl(var(--va-card) / 0.8) !important;
+}
+
+.dark .bg-va-off-white\/70 {
+  background-color: hsl(var(--va-card) / 0.7) !important;
+}
+
+.dark .bg-va-off-white\/60 {
+  background-color: hsl(var(--va-card) / 0.6) !important;
+}
+
+.dark .bg-va-off-white\/50 {
+  background-color: hsl(var(--va-card) / 0.5) !important;
+}
+
+.dark .border-black\/10,
+.dark .border-black\/5,
+.dark .border-black\/\[0\.03\],
+.dark .border-black\/\[0\.02\] {
+  border-color: hsl(var(--va-border)) !important;
+}
+
+.dark .divide-black\/10 > :not([hidden]) ~ :not([hidden]) {
+  border-color: hsl(var(--va-border)) !important;
+}
+
+.dark .text-black {
+  color: hsl(var(--va-black)) !important;
+}
+
+.dark .bg-va-black {
+  background-color: hsl(240 10% 11%) !important;
+}
+
+.dark .bg-va-black\/95 {
+  background-color: hsl(240 10% 11% / 0.95) !important;
+}
+
+.dark .bg-va-black\/90 {
+  background-color: hsl(240 10% 11% / 0.9) !important;
+}
+
+.dark .bg-va-black\/80 {
+  background-color: hsl(240 10% 11% / 0.8) !important;
+}
+
+.dark .hover\:bg-va-black:hover {
+  background-color: hsl(240 10% 15%) !important;
+}
+
+.dark .hover\:bg-va-black\/80:hover {
+  background-color: hsl(240 10% 15% / 0.8) !important;
+}
+
+.dark .from-white {
+  --tw-gradient-from: hsl(var(--va-card)) var(--tw-gradient-from-position) !important;
+  --tw-gradient-to: hsl(var(--va-card) / 0) var(--tw-gradient-to-position) !important;
+}
+
+.dark .via-white {
+  --tw-gradient-stops: var(--tw-gradient-from), hsl(var(--va-surface)) var(--tw-gradient-via-position), var(--tw-gradient-to) !important;
+}
+
+.dark .to-white {
+  --tw-gradient-to: hsl(var(--va-surface)) var(--tw-gradient-to-position) !important;
+}
+
 .theme-ademing {
   /* Base colors - extra warm, rustgevend */
   --background: 35 25% 98%;

@@ -1,0 +1,37 @@
+---
+description: Enforces dual-theme readability and visual parity for all public UI (light + dark).
+globs: ["apps/web/src/**/*.{tsx,ts,css}"]
+alwaysApply: true
+---
+
+# 🌗 Theme Parity Mandate (Light + Dark)
+
+Alle nieuwe of gewijzigde UI moet in **beide modi** leesbaar en visueel stabiel zijn:
+
+1. **Dual-Mode Verplichting**
+   - Elke component, instrument, entity page en overlay moet correct ogen in:
+     - `prefers-color-scheme: light`
+     - `prefers-color-scheme: dark`
+
+2. **Contrast Zero-Tolerance**
+   - Verboden:
+     - witte tekst op (bijna) witte achtergrond
+     - donkere tekst op (bijna) donkere achtergrond
+     - interacties die in één mode “verdwijnen” (tabs, menu-items, inputs, badges)
+   - Streef minimaal WCAG AA contrast na voor bodytekst en controls.
+
+3. **Token Discipline**
+   - Gebruik design tokens of bestaande theming classes.
+   - Vermijd hardcoded kleuren tenzij er een expliciete licht+donker fallback is.
+   - Bij legacy utilities (`bg-white`, `bg-va-black`, etc.) moet dark behavior expliciet gevalideerd zijn.
+
+4. **Manual Visual QA (Mandatory)**
+   - Voor elke UI-wijziging:
+     - controleer minimaal homepage + betrokken route(s) in light en dark
+     - controleer navigatie/menu + primaire interactiecomponenten
+     - lever bewijs (screenshot/video) van leesbaarheid in beide modi
+
+5. **Definition of Done**
+   - Een UI-taak is pas klaar wanneer er **geen** contrastbreuken zijn in light én dark voor de aangepaste flow.
+
+"Mooi in één thema is half werk. Masterclass is parity."

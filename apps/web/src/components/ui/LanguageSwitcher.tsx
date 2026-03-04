@@ -288,7 +288,7 @@ export function LanguageSwitcher({ className }: { className?: string }) {
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
             transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
             plain
-            className="absolute top-full right-0 mt-1 w-64 bg-white rounded-[20px] shadow-aura border border-black/5 overflow-hidden z-[220]"
+            className="absolute top-full right-0 mt-1 w-64 bg-va-off-white rounded-[20px] shadow-aura border border-black/5 overflow-hidden z-[220]"
           >
             <div className="p-1">
               <ContainerInstrument plain className="px-4 py-3 border-b border-black/5 mb-1">
