@@ -1,4 +1,4 @@
-import { db, workshopInterest, systemEvents } from '@/lib/system/voices-config';
+import { db, workshopInterest } from '@/lib/system/voices-config';
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
 
@@ -14,6 +14,7 @@ export async function POST(request: Request) {
       last_name,
       email,
       selectedWorkshops,
+      skills_to_sharpen,
       profession,
       age,
       experience,
@@ -31,6 +32,11 @@ export async function POST(request: Request) {
     const productIds = Array.isArray(selectedWorkshops)
       ? selectedWorkshops.join(',')
       : '';
+
+    const iapContext =
+      Array.isArray(skills_to_sharpen) && skills_to_sharpen.length > 0
+        ? { skills_to_sharpen: skills_to_sharpen.filter((s: unknown) => typeof s === 'string') }
+        : null;
 
     // 🛡️ CHRIS-PROTOCOL: ID-First Handshake (v2.27.1)
     const activeWorldId = worldId || 2; // Default to Studio (ID 2)
@@ -54,6 +60,7 @@ export async function POST(request: Request) {
           experience: experience?.trim() || null,
           goal: goal?.trim() || null,
           productIds: productIds || null,
+          iapContext: iapContext ?? undefined,
           worldId: activeWorldId, // 🛡️ Link to World
           sourceUrl:
             typeof request.headers.get('referer') === 'string'
@@ -78,6 +85,7 @@ export async function POST(request: Request) {
           experience: experience?.trim() || null,
           goal: goal?.trim() || null,
           product_ids: productIds || null,
+          iap_context: iapContext,
           world_id: activeWorldId, // 🛡️ Link to World
           source_url: request.headers.get('referer'),
           status: 'pending',
