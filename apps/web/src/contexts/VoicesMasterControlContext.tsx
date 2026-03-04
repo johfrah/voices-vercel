@@ -7,7 +7,6 @@ import React, { createContext, useCallback, useContext, useEffect, useState } fr
 import { useCheckout } from './CheckoutContext';
 import { useVoicesState } from './VoicesStateContext';
 import { normalizeLocale } from '@/lib/system/locale-utils';
-import { writeClientDebugLog } from '@/lib/system/client-debug-log';
 
 export type JourneyType = 'telephony' | 'video' | 'commercial' | 'agency' | 'general';
 
@@ -624,22 +623,6 @@ export const VoicesMasterControlProvider: React.FC<{
       (urlState.language !== state.filters.language ||
         urlState.languageId !== state.filters.languageId);
     if (urlState.journey || effectiveNextStep !== state.currentStep || hasLocaleLanguageChange) {
-      // #region agent log
-      writeClientDebugLog({
-        hypothesisId: 'D3',
-        location: 'VoicesMasterControlContext.tsx:pathname_sync',
-        message: 'Pathname-driven step/journey sync triggered',
-        data: {
-          pathname,
-          prev_step: state.currentStep,
-          next_step: effectiveNextStep,
-          prev_journey: state.journey,
-          next_journey: urlState.journey ?? state.journey,
-          selected_actor_id: checkoutState.selectedActor?.id ?? null,
-          query_step: requestedStepFromQuery ?? null
-        }
-      });
-      // #endregion
       const journey = urlState.journey || state.journey;
       const journeyId = MarketManager.getJourneyId(journey);
       setState(prev => ({
@@ -918,19 +901,6 @@ export const VoicesMasterControlProvider: React.FC<{
   }, [updateMedia, updateSpots, updateYears, updateSpotsDetail, updateYearsDetail, updateLiveSession]);
 
   const updateStep = useCallback((step: MasterControlState['currentStep']) => {
-    // #region agent log
-    writeClientDebugLog({
-      hypothesisId: 'D4',
-      location: 'VoicesMasterControlContext.tsx:updateStep:entry',
-      message: 'updateStep invoked from UI flow',
-      data: {
-        requested_step: step,
-        selected_actor_id: checkoutState.selectedActor?.id ?? null,
-        selected_actor_slug: checkoutState.selectedActor?.slug ?? null,
-        pathname
-      }
-    });
-    // #endregion
     setState(prev => {
       if (step === 'voice') {
         const isAgencyFilterPage = pathname.startsWith('/agency/') || pathname === '/agency';
