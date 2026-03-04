@@ -89,6 +89,7 @@ export async function POST(request: NextRequest) {
       const isSameDay = type === 'sameday_alert';
       const isPayment = type === 'payment_received';
       const isDonation = type === 'donation_received';
+      const isBanktransfer = type === 'banktransfer_order';
       
       const itemsHtml = isDonation ? `
         <div style="padding: 15px; background: #f9f9f9; border-radius: 12px; margin-bottom: 10px; border: 1px solid #eee;">
@@ -107,7 +108,7 @@ export async function POST(request: NextRequest) {
       `).join('');
 
       let subject = isQuote ? `📄 Offerte: #${orderId} - ${company || email}` : `🏦 Overschrijving: #${orderId} - ${company || email}`;
-      let title = isQuote ? 'Nieuwe Offerte-aanvraag' : 'Nieuwe Bestelling (Factuur)';
+      let title = isQuote ? 'Nieuwe Offerte-aanvraag' : 'Nieuwe Bestelling (Bankoverschrijving)';
       
       if (isSameDay) {
         subject = `🚀 URGENT: Same-Day Order #${orderId} - ${company || email}`;
@@ -119,6 +120,18 @@ export async function POST(request: NextRequest) {
         subject = `💖 Donatie: #${orderId} - ${customer?.first_name || 'Supporter'} voor ${artistName}`;
         title = 'Nieuwe Donatie Ontvangen';
       }
+
+      const actionMessage = isDonation
+        ? `Er is een nieuwe donatie binnengekomen voor ${artistName}. De bedankmail is automatisch verstuurd naar de donateur.`
+        : isSameDay
+          ? 'Een acteur heeft een Same-Day belofte gedaan. Monitor de upload en valideer direct na ontvangst.'
+          : isQuote
+            ? 'De klant wacht op een reactie op deze offerte. Bekijk de details en stuur de definitieve versie.'
+            : isPayment
+              ? 'De betaling is succesvol verwerkt. De stemacteur(s) zijn op de hoogte gebracht.'
+              : isBanktransfer
+                ? 'Bankoverschrijving ontvangen. Yuki-sync is nog niet bevestigd. Meld pas "naar Yuki gestuurd" na een succesvolle sync-respons.'
+                : 'Nieuwe bestelling ontvangen. Controleer de orderdetails.';
 
       await mailEngine.sendVoicesMail({
         to: adminEmail,
@@ -156,7 +169,7 @@ export async function POST(request: NextRequest) {
           <div style="background: #fff5f0; padding: 20px; border-radius: 15px; border: 1px solid rgba(255, 79, 0, 0.1); margin-bottom: 30px;">
             <div style="font-size: 13px; color: #ff4f00; font-weight: bold; margin-bottom: 5px;">${isDonation ? 'INFO' : 'ACTIE VEREIST'}</div>
             <div style="font-size: 14px; color: #666; line-height: 1.5;">
-              ${isDonation ? `Er is een nieuwe donatie binnengekomen voor ${artistName}. De bedankmail is automatisch verstuurd naar de donateur.` : isSameDay ? 'Een acteur heeft een Same-Day belofte gedaan. Monitor de upload en valideer direct na ontvangst.' : isQuote ? 'De klant wacht op een reactie op deze offerte. Bekijk de details en stuur de definitieve versie.' : isPayment ? 'De betaling is succesvol verwerkt. De stemacteur(s) zijn op de hoogte gebracht.' : 'De factuur is aangemaakt in Yuki. Controleer de betaling en zet de order op "In behandeling" zodra akkoord.'}
+              ${actionMessage}
             </div>
           </div>
         `,
