@@ -97,8 +97,8 @@ export default function CartPageClient() {
   return (
     <ContainerInstrument plain className="min-h-screen bg-va-off-white pb-24 relative z-10">
       <LiquidBackground />
-      <SectionInstrument className="max-w-6xl mx-auto px-6 pt-20">
-        <ContainerInstrument className="mb-16 flex flex-col items-center justify-center gap-8 text-center">
+      <SectionInstrument className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 pt-20">
+        <ContainerInstrument className="mb-14 flex flex-col items-center justify-center gap-8 text-center">
           <ContainerInstrument className="space-y-4 w-full flex flex-col items-center">
             <OrderStepsInstrument currentStep="checkout" className="opacity-100 mb-4" />
             <Link  
