@@ -9,6 +9,16 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
+const parseConversationId = (value: unknown): number | null => {
+  if (typeof value === 'number' && Number.isFinite(value)) return value;
+  if (typeof value !== 'string') return null;
+  const directMatch = value.match(/(?:conversatie\s*id|chat)\s*[:#]?\s*(\d{1,10})/i);
+  if (directMatch?.[1]) return Number(directMatch[1]);
+  const hashMatch = value.match(/#(\d{1,10})/);
+  if (hashMatch?.[1]) return Number(hashMatch[1]);
+  return null;
+};
+
 /**
  *  MAILBOX INBOX API (NUCLEAR SDK 2026)
  * 
@@ -73,6 +83,10 @@ export async function GET(request: NextRequest) {
 
     const formattedMails = (mails || []).map(mail => {
       const iapContext = mail.iap_context as any;
+      const parsedFromContext = Number(iapContext?.chat_conversation_id || iapContext?.conversation_id || 0) || null;
+      const parsedFromSubject = parseConversationId(mail.subject);
+      const parsedFromBody = parseConversationId(mail.text_body);
+      const chatConversationId = parsedFromContext || parsedFromSubject || parsedFromBody;
       return {
         ...mail,
         id: mail.id.toString(),
@@ -84,7 +98,8 @@ export async function GET(request: NextRequest) {
         hasAttachments: iapContext?.hasAttachments || false,
         iapContext: iapContext,
         accountId: mail.account_id,
-        isSuperPrivate: mail.is_super_private
+        isSuperPrivate: mail.is_super_private,
+        chatConversationId
       };
     });
 

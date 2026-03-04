@@ -783,7 +783,7 @@ export const VoicyChatV2: React.FC = () => {
     setIsOpen(!isOpen);
   };
 
-  const handleSend = async (e?: React.FormEvent, overrideValue?: string, interactionType: 'text' | 'chip' | 'tool' = 'text') => {
+  const handleSend = async (e?: React.FormEvent, overrideValue?: string, interactionType: 'text' | 'chip' | 'tool' | 'faq' = 'text') => {
     e?.preventDefault();
     const messageToSend = overrideValue || inputValue;
     if (!messageToSend.trim()) return;
@@ -804,12 +804,10 @@ export const VoicyChatV2: React.FC = () => {
     });
     playClick('soft');
 
-    //  CORE MESSAGE HANDLER
-    // Slaat berichten direct op in Supabase en triggeert AI-logica
     const aiResponse = {
       id: `temp-ai-${Date.now()}`,
       role: 'assistant',
-      content: '', // Wordt hieronder gevuld
+      content: '',
       timestamp: new Date().toISOString(),
       actions: [],
       media: [],
@@ -817,55 +815,105 @@ export const VoicyChatV2: React.FC = () => {
     };
 
     try {
-      //  Check for active Cody Preview Logic
       const previewLogic = typeof window !== 'undefined' ? sessionStorage.getItem('cody_preview_logic') : null;
-
-      //  CHRIS-PROTOCOL: Timeout na 60 seconden om "vastlopen" te voorkomen (Gemini kan traag zijn bij piekbelasting)
       const controller = new AbortController();
       const timeoutId = setTimeout(() => {
         console.warn(" Voicy: Chat request timed out after 60s");
         controller.abort();
       }, 60000);
 
-      console.log("[Voicy] Sending message to API...", { message: userMessage.content });
-      
-      //  MAT-MANDATE: Haal intentie op van de Bridge voor context-bewuste AI
       const bridgeIntent = (window as any).Voicy?.getIntent()?.intent || null;
+      const journey = isAcademyJourney ? 'academy' : isStudioJourney ? 'studio' : isPortfolioJourney ? 'portfolio' : 'agency';
+
+      const requestPayload = {
+        action: 'send',
+        stream: true,
+        message: userMessage.content,
+        conversationId: conversationId || undefined,
+        language: language,
+        mode: chatMode,
+        persona: persona,
+        previewLogic: previewLogic,
+        intent: bridgeIntent,
+        context: {
+          journey,
+          briefing: state.briefing,
+          isAuthenticated,
+          user: user?.email,
+          customer360: customer360,
+          generalSettings: generalSettings,
+          visitorHash: typeof window !== 'undefined' ? localStorage.getItem('voices_visitor_hash') : null,
+          interaction_type: interactionType,
+          currentPage: window.location.pathname
+        }
+      };
+
+      setMessages(prev => [...prev, aiResponse]);
 
       const response = await fetch('/api/chat/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         signal: controller.signal,
-        body: JSON.stringify({
-          action: 'send',
-          message: userMessage.content,
-          language: language,
-          mode: chatMode,
-          persona: persona,
-          previewLogic: previewLogic, //  Stuur preview code mee naar de API
-          intent: bridgeIntent, //  MAT-MANDATE: Intentie doorgeven
-          context: {
-            journey: isAcademyJourney ? 'academy' : isStudioJourney ? 'studio' : isPortfolioJourney ? 'portfolio' : 'agency',
-            briefing: state.briefing,
-            isAuthenticated,
-            user: user?.email,
-            customer360: customer360,
-            generalSettings: generalSettings,
-            visitorHash: typeof window !== 'undefined' ? localStorage.getItem('voices_visitor_hash') : null,
-            interaction_type: interactionType,
-            currentPage: window.location.pathname
-          }
-        })
+        body: JSON.stringify(requestPayload)
       });
 
       clearTimeout(timeoutId);
-
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(errorData.error || `Server error: ${response.status}`);
       }
-      
-      const data = await response.json();
+
+      const contentType = response.headers.get('content-type') || '';
+      if (!contentType.includes('text/event-stream') || !response.body) {
+        throw new Error('Streaming response unavailable');
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let streamBuffer = '';
+      let finalPayload: any = null;
+
+      const appendToken = (token: string) => {
+        if (!token) return;
+        setMessages(prev => prev.map((msg) => {
+          if (msg.id !== aiResponse.id) return msg;
+          return {
+            ...msg,
+            content: `${msg.content || ''}${token}`
+          };
+        }));
+      };
+
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        streamBuffer += decoder.decode(value, { stream: true });
+
+        let boundaryIndex = streamBuffer.indexOf('\n\n');
+        while (boundaryIndex !== -1) {
+          const rawEvent = streamBuffer.slice(0, boundaryIndex);
+          streamBuffer = streamBuffer.slice(boundaryIndex + 2);
+          const dataLine = rawEvent
+            .split('\n')
+            .find((line) => line.startsWith('data:'));
+          if (dataLine) {
+            const payload = JSON.parse(dataLine.slice(5).trim());
+            if (payload.type === 'token') {
+              appendToken(payload.token || '');
+            } else if (payload.type === 'final') {
+              finalPayload = payload.payload;
+            } else if (payload.type === 'error') {
+              throw new Error(payload.error || 'Stream error');
+            }
+          }
+          boundaryIndex = streamBuffer.indexOf('\n\n');
+        }
+      }
+
+      const data = finalPayload;
+      if (!data) {
+        throw new Error('Streaming response ended without final payload');
+      }
 
       if (data.conversationId) {
         setConversationId(data.conversationId);
@@ -876,34 +924,39 @@ export const VoicyChatV2: React.FC = () => {
       if (data.extractedLead?.name) {
         localStorage.setItem('voices_guest_name', data.extractedLead.name);
       }
-      
-      aiResponse.content = data.content || data.message || "Ik ben even de verbinding kwijt, maar ik ben er nog!";
-      aiResponse.actions = data.actions || [];
-      aiResponse.media = data.media || [];
-      aiResponse.isDbError = !!data._db_error;
 
-      //  VOICEGLOT: Ensure AI content is translated if needed
-      if (!language.startsWith('nl') && aiResponse.content) {
+      let finalContent = data.content || data.message || aiResponse.content || "Ik ben even de verbinding kwijt, maar ik ben er nog!";
+
+      if (!language.startsWith('nl') && finalContent) {
         try {
           const transRes = await fetch('/api/translations/heal', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               key: `chat.dynamic.${aiResponse.id}`,
-              originalText: aiResponse.content,
+              originalText: finalContent,
               currentLang: language
             })
           });
           const transData = await transRes.json();
           if (transData.success && transData.text) {
-            aiResponse.content = transData.text;
+            finalContent = transData.text;
           }
         } catch (e) {
           console.error("Voicy translation failed", e);
         }
       }
 
-      setMessages(prev => [...prev, aiResponse]);
+      setMessages(prev => prev.map((msg) => {
+        if (msg.id !== aiResponse.id) return msg;
+        return {
+          ...msg,
+          content: finalContent,
+          actions: data.actions || [],
+          media: data.media || [],
+          isDbError: !!data._db_error
+        };
+      }));
       playClick('pro');
     } catch (error: any) {
       console.error("Chat API error:", error);
@@ -923,7 +976,10 @@ export const VoicyChatV2: React.FC = () => {
         content: errorMessage,
         timestamp: new Date().toISOString()
       };
-      setMessages(prev => [...prev, errorResponse]);
+      setMessages(prev => [
+        ...prev.filter(msg => msg.id !== aiResponse.id),
+        errorResponse
+      ]);
     } finally {
       setIsTyping(false);
     }

@@ -67,6 +67,106 @@ const writeHistoryCache = (conversationId: number, messages: any[]) => {
   historyCache.set(conversationId, { ts: Date.now(), data: messages });
 };
 
+const extractMessageFromJsonBuffer = (buffer: string): string | null => {
+  const keyIndex = buffer.indexOf('"message"');
+  if (keyIndex === -1) return null;
+  const colonIndex = buffer.indexOf(':', keyIndex);
+  if (colonIndex === -1) return null;
+  const quoteStart = buffer.indexOf('"', colonIndex);
+  if (quoteStart === -1) return null;
+
+  let parsed = '';
+  let isEscaped = false;
+  for (let i = quoteStart + 1; i < buffer.length; i += 1) {
+    const char = buffer[i];
+    if (isEscaped) {
+      if (char === 'n') parsed += '\n';
+      else if (char === 'r') parsed += '\r';
+      else if (char === 't') parsed += '\t';
+      else parsed += char;
+      isEscaped = false;
+      continue;
+    }
+    if (char === '\\') {
+      isEscaped = true;
+      continue;
+    }
+    if (char === '"') {
+      return parsed;
+    }
+    parsed += char;
+  }
+  return null;
+};
+
+const createSendStreamResponse = (params: any, request: NextRequest, requestStartedAt: number) => {
+  const encoder = new TextEncoder();
+
+  return new Response(new ReadableStream({
+    async start(controller) {
+      let closed = false;
+      const safeClose = () => {
+        if (closed) return;
+        closed = true;
+        try {
+          controller.close();
+        } catch {
+          // ignore
+        }
+      };
+      const sendEvent = (payload: Record<string, unknown>) => {
+        if (closed) return;
+        controller.enqueue(encoder.encode(`data: ${JSON.stringify(payload)}\n\n`));
+      };
+
+      try {
+        sendEvent({ type: 'start' });
+        let streamedBuffer = '';
+        let streamedMessage = '';
+
+        const response = await handleSendMessage(
+          {
+            ...params,
+            streamWriter: async (chunk: string) => {
+              streamedBuffer += chunk;
+              const candidate = extractMessageFromJsonBuffer(streamedBuffer);
+              if (candidate !== null) {
+                if (candidate.length > streamedMessage.length) {
+                  const delta = candidate.slice(streamedMessage.length);
+                  streamedMessage = candidate;
+                  sendEvent({ type: 'token', token: delta });
+                }
+                return;
+              }
+              if (!streamedMessage && !streamedBuffer.trimStart().startsWith('{')) {
+                sendEvent({ type: 'token', token: chunk });
+              }
+            },
+          },
+          request
+        );
+
+        const payload = await response.json();
+        sendEvent({ type: 'final', payload });
+        recordChatApiMetric('send_stream', Date.now() - requestStartedAt, response.ok);
+      } catch (error: any) {
+        console.error('[Voicy API Stream Error]:', error);
+        sendEvent({ type: 'error', error: error?.message || 'Stream failed' });
+        recordChatApiMetric('send_stream', Date.now() - requestStartedAt, false);
+      } finally {
+        safeClose();
+      }
+    }
+  }), {
+    headers: {
+      'Content-Type': 'text/event-stream; charset=utf-8',
+      'Cache-Control': 'no-cache, no-transform',
+      'Connection': 'keep-alive',
+      'X-Accel-Buffering': 'no',
+    },
+  });
+};
+
 export async function POST(request: NextRequest) {
   const requestStartedAt = Date.now();
   let action = 'unknown';
@@ -83,6 +183,9 @@ export async function POST(request: NextRequest) {
 
     switch (action) {
       case 'send':
+        if (params?.stream === true) {
+          return createSendStreamResponse(params, request, requestStartedAt);
+        }
         return finalize('send', await handleSendMessage(params, request));
       case 'conversations': {
         const { userId, filter = 'active', search = '', limit = 180 } = params;
@@ -367,7 +470,8 @@ async function handleSendMessage(params: any, request?: NextRequest) {
     mode = 'ask', 
     persona = 'voicy', 
     previewLogic = null,
-    intent = null //  MAT-MANDATE: Intent van PredictiveRouter
+    intent = null, //  MAT-MANDATE: Intent van PredictiveRouter
+    streamWriter
   } = params;
 
   console.log('[Voicy API] handleSendMessage started:', { conversationId, messageLength: message?.length, mode, persona });
@@ -753,7 +857,17 @@ ${workshopEditionsData.filter((ed: any) => ed.status === 'upcoming').map((ed: an
           - Gebruik Natural Capitalization.
         `;
         
-        aiContent = await gemini.generateText(prompt, { jsonMode: true, lang: language, priority: 'high' });
+        if (typeof streamWriter === 'function') {
+          aiContent = await gemini.generateTextStream(
+            prompt,
+            { jsonMode: true, lang: language, priority: 'high' },
+            async (chunk) => {
+              await streamWriter(chunk);
+            }
+          );
+        } else {
+          aiContent = await gemini.generateText(prompt, { jsonMode: true, lang: language, priority: 'high' });
+        }
         console.log('[Voicy API] Gemini Response received:', aiContent.substring(0, 50));
 
         //  BUTLER BRIDGE: Parse JSON en extraheer acties
@@ -899,11 +1013,30 @@ ${workshopEditionsData.filter((ed: any) => ed.status === 'upcoming').map((ed: an
             createdAt: new Date()
           }).returning();
 
+          let aiMessageId: number | null = null;
+          if (aiContent && senderType !== 'admin') {
+            const [aiMessage] = await tx.insert(chatMessages).values({
+              conversationId: convId,
+              senderId: null,
+              senderType: 'ai',
+              message: aiContent,
+              metadata: {
+                ai_persona: persona,
+                ai_mode: mode,
+                generated_for_message_id: newMessage.id,
+                interaction_type: context?.interaction_type || 'text',
+                current_page: context?.currentPage
+              },
+              createdAt: new Date()
+            }).returning({ id: chatMessages.id });
+            aiMessageId = aiMessage?.id ?? null;
+          }
+
           await tx.update(chatConversations)
             .set({ updatedAt: new Date() })
             .where(eq(chatConversations.id, convId));
 
-          return { messageId: newMessage.id, conversationId: convId };
+          return { messageId: newMessage.id, aiMessageId, conversationId: convId };
         });
       } catch (dbError) {
         console.warn('[Voicy API] Drizzle failed, falling back to Supabase SDK:', dbError);
@@ -956,7 +1089,32 @@ ${workshopEditionsData.filter((ed: any) => ed.status === 'upcoming').map((ed: an
           }).select().single();
 
           if (!msgErr && newMessage) {
-            saveResult = { messageId: newMessage.id, conversationId: convId, _source: 'supabase_sdk' };
+            let aiMessageId: number | null = null;
+            if (aiContent && senderType !== 'admin') {
+              const { data: aiMessage, error: aiErr } = await supabase.from('chat_messages').insert({
+                conversation_id: convId,
+                sender_id: null,
+                sender_type: 'ai',
+                message: aiContent,
+                metadata: {
+                  ai_persona: persona,
+                  ai_mode: mode,
+                  generated_for_message_id: newMessage.id,
+                  interaction_type: context?.interaction_type || 'text',
+                  current_page: context?.currentPage
+                },
+                created_at: new Date()
+              }).select('id').single();
+              if (!aiErr && aiMessage) {
+                aiMessageId = Number(aiMessage.id);
+              }
+            }
+            saveResult = {
+              messageId: newMessage.id,
+              aiMessageId,
+              conversationId: convId,
+              _source: 'supabase_sdk'
+            };
           }
         }
       }
@@ -1001,13 +1159,16 @@ ${workshopEditionsData.filter((ed: any) => ed.status === 'upcoming').map((ed: an
             market: market.market_code,
             sender: senderType
           });
+          const conversationPath = saveResult?.conversationId
+            ? `/admin/live-chat?conversationId=${saveResult.conversationId}`
+            : '/admin/live-chat';
 
           // 1. Email Notificatie (Alleen bij user berichten om mailbox te sparen)
           if (senderType === 'user') {
             const adminEmail = market.email || process.env.ADMIN_EMAIL || `support@${'voices'}.${'be'}`;
             mailEngine.sendVoicesMail({
               to: adminEmail,
-              subject: `💬 Chat Interactie: ${message.substring(0, 30)}...`,
+              subject: `💬 Chat #${saveResult?.conversationId || 'N/A'}: ${message.substring(0, 30)}...`,
               title: 'Nieuw bericht in de chat',
               body: `
                 <strong>Bericht:</strong> "${message}"<br/>
@@ -1015,8 +1176,8 @@ ${workshopEditionsData.filter((ed: any) => ed.status === 'upcoming').map((ed: an
                 <strong>Journey:</strong> ${journey}<br/>
                 <strong>Persona:</strong> ${persona}
               `,
-              buttonText: 'Open Dashboard',
-              buttonUrl: `${siteUrl}/admin/dashboard`,
+              buttonText: 'Open dit gesprek',
+              buttonUrl: `${siteUrl}${conversationPath}`,
               host: host
             }).then(() => console.log('[Push] Mail sent successfully'))
               .catch(e => console.error('[Push] Mail failed:', e.message));
@@ -1026,7 +1187,7 @@ ${workshopEditionsData.filter((ed: any) => ed.status === 'upcoming').map((ed: an
           PushService.notifyAdmins({
             title: `Bericht van klant (#${saveResult?.conversationId || 'N/A'})`,
             body: message.substring(0, 100),
-            url: `/admin/live-chat`
+            url: conversationPath
           }).then(() => console.log('[Push] WebPush trigger finished'))
             .catch(e => console.error('[Push] WebPush failed:', e.message));
 
@@ -1035,7 +1196,7 @@ ${workshopEditionsData.filter((ed: any) => ed.status === 'upcoming').map((ed: an
                                   `<b>Bericht:</b> <i>"${message}"</i>\n` +
                                   `<b>ID:</b> #${saveResult?.conversationId || 'N/A'}\n` +
                                   `<b>Journey:</b> ${journey}\n\n` +
-                                  `<a href="${siteUrl}/admin/live-chat">👉 Open Live Chat Watcher</a>`;
+                                  `<a href="${siteUrl}${conversationPath}">👉 Open Live Chat Watcher</a>`;
           
           TelegramService.sendAlert(telegramMsgUser, { force: true })
             .then(() => console.log('[Push] Telegram (user) sent successfully'))
@@ -1046,7 +1207,7 @@ ${workshopEditionsData.filter((ed: any) => ed.status === 'upcoming').map((ed: an
             const telegramMsgAI = `🤖 <b>Voicy Antwoord</b>\n\n` +
                                   `<b>Antwoord:</b> <i>"${aiContent}"</i>\n` +
                                   `<b>ID:</b> #${saveResult?.conversationId || 'N/A'}\n\n` +
-                                  `<a href="${siteUrl}/admin/live-chat">👉 Open Live Chat Watcher</a>`;
+                                  `<a href="${siteUrl}${conversationPath}">👉 Open Live Chat Watcher</a>`;
             
             // Kleine delay om volgorde in Telegram te garanderen
             setTimeout(() => {

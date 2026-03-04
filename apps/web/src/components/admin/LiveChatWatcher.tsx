@@ -32,6 +32,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { formatDistanceToNow } from "date-fns";
 import { nl } from "date-fns/locale";
 
@@ -134,6 +135,7 @@ function urlBase64ToUint8Array(base64String: string) {
 }
 
 export const LiveChatWatcher = () => {
+  const searchParams = useSearchParams();
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -155,6 +157,17 @@ export const LiveChatWatcher = () => {
   const sseRef = useRef<EventSource | null>(null);
   const searchInputRef = useRef<HTMLInputElement | null>(null);
   const replyInputRef = useRef<HTMLInputElement | null>(null);
+  const initialConversationId = useMemo(() => {
+    const raw = searchParams.get('conversationId');
+    if (!raw) return null;
+    const parsed = Number(raw);
+    return Number.isFinite(parsed) ? parsed : null;
+  }, [searchParams]);
+
+  useEffect(() => {
+    if (!initialConversationId) return;
+    setSelectedId((prev) => prev ?? initialConversationId);
+  }, [initialConversationId]);
 
   // Check Push Status op mount
   useEffect(() => {

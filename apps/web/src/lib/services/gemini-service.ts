@@ -38,7 +38,7 @@ export class GeminiService {
           eq(systemKnowledge.slug, `industry-glossary-${lang.toLowerCase()}`)
         ));
       
-      return dnaRecords.map(r => r.content).join("\n\n");
+      return dnaRecords.map((r: { content: string | null }) => r.content || "").join("\n\n");
     } catch (e) {
       console.error(`[GeminiService] Failed to fetch DNA for ${lang}:`, e);
       return "";
@@ -51,6 +51,19 @@ export class GeminiService {
   private getModel(priority: 'high' | 'low' = 'low') {
     //  GEMINI 2026 UPGRADE: Gebruik gemini-flash-latest voor maximale stabiliteit en snelheid
     return this.genAI.getGenerativeModel({ model: "gemini-flash-latest" });
+  }
+
+  private async withMarketDna(prompt: string, lang?: string): Promise<string> {
+    if (!lang) return prompt;
+    const dna = await this.getMarketDNA(lang);
+    if (!dna) return prompt;
+    return `
+MARKET DNA & INCLUSIVITY RULES (MANDATORY):
+${dna}
+
+TASK:
+${prompt}
+          `;
   }
 
   /**
@@ -74,21 +87,7 @@ export class GeminiService {
 
     try {
       const model = this.getModel(options?.priority);
-      let finalPrompt = prompt;
-
-      //  MARKET DNA INJECTION: Als er een taal is meegegeven, injecteren we de regels
-      if (options?.lang) {
-        const dna = await this.getMarketDNA(options.lang);
-        if (dna) {
-          finalPrompt = `
-MARKET DNA & INCLUSIVITY RULES (MANDATORY):
-${dna}
-
-TASK:
-${prompt}
-          `;
-        }
-      }
+      const finalPrompt = await this.withMarketDna(prompt, options?.lang);
       
       //  CHRIS-PROTOCOL: Voeg een timeout toe aan de Gemini call (Next.js Edge compatibel)
       //  GEMINI 2026: Timeout verhoogd naar 90s voor zware bulk-taken
@@ -125,10 +124,95 @@ ${prompt}
   }
 
   /**
+   * Streamt tekst in chunks via Gemini.
+   * Fallbackt automatisch naar generateText als stream niet beschikbaar is.
+   */
+  async generateTextStream(
+    prompt: string,
+    options?: { jsonMode?: boolean, lang?: string, host?: string, priority?: 'high' | 'low' },
+    onChunk?: (chunk: string) => Promise<void> | void
+  ): Promise<string> {
+    if (!process.env.GOOGLE_API_KEY) {
+      const fallback = await this.generateText(prompt, options);
+      if (fallback && onChunk) await onChunk(fallback);
+      return fallback;
+    }
+
+    try {
+      const model: any = this.getModel(options?.priority);
+      const finalPrompt = await this.withMarketDna(prompt, options?.lang);
+      const requestPrompt = options?.jsonMode
+        ? `${finalPrompt}\n\nANTWOORD UITSLUITEND IN STRIKT JSON FORMAAT.`
+        : finalPrompt;
+
+      if (typeof model.generateContentStream !== 'function') {
+        const fallback = await this.generateText(prompt, options);
+        if (fallback && onChunk) await onChunk(fallback);
+        return fallback;
+      }
+
+      const streamResult = await Promise.race([
+        model.generateContentStream(requestPrompt),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Gemini Timeout')), 90000))
+      ]) as any;
+
+      let fullText = '';
+      if (streamResult?.stream) {
+        for await (const chunk of streamResult.stream as AsyncIterable<any>) {
+          let chunkText = '';
+          try {
+            if (typeof chunk?.text === 'function') {
+              chunkText = chunk.text();
+            } else {
+              chunkText = String(chunk?.candidates?.[0]?.content?.parts?.[0]?.text || '');
+            }
+          } catch {
+            chunkText = '';
+          }
+          if (!chunkText) continue;
+          fullText += chunkText;
+          if (onChunk) await onChunk(chunkText);
+        }
+      }
+
+      if (!fullText && streamResult?.response) {
+        const finalResponse = await streamResult.response;
+        fullText = finalResponse?.text?.() || '';
+        if (fullText && onChunk) await onChunk(fullText);
+      }
+
+      if (!fullText) {
+        throw new Error('Empty Gemini stream response');
+      }
+
+      return options?.jsonMode ? fullText.replace(/```json|```/g, '').trim() : fullText;
+    } catch (error: any) {
+      const status = error?.status ?? error?.statusCode;
+      const msg = error?.message ?? '';
+      const isQuota = status === 429 || msg.includes('429') || msg.includes('quota') || msg.includes('Too Many Requests');
+      if (isQuota || msg === 'Gemini Timeout') {
+        const fallback = await this.generateText(prompt, options);
+        if (fallback && onChunk) await onChunk(fallback);
+        return fallback;
+      }
+      console.error(' Gemini Stream Generation Error:', error);
+      throw error;
+    }
+  }
+
+  /**
    * Static shortcut voor generateText (compat met heal-routes).
    */
   static async generateText(prompt: string, options?: { jsonMode?: boolean, lang?: string, host?: string, priority?: 'high' | 'low' }): Promise<string> {
     return GeminiService.getInstance().generateText(prompt, options);
+  }
+
+  static async generateTextStream(
+    prompt: string,
+    options?: { jsonMode?: boolean, lang?: string, host?: string, priority?: 'high' | 'low' },
+    onChunk?: (chunk: string) => Promise<void> | void
+  ): Promise<string> {
+    return GeminiService.getInstance().generateTextStream(prompt, options, onChunk);
   }
 
   /**

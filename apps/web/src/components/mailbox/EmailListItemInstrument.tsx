@@ -1,7 +1,7 @@
 import { ContainerInstrument, TextInstrument } from '@/components/ui/LayoutInstruments';
 import { formatDistanceToNow } from 'date-fns';
 import { nl } from 'date-fns/locale';
-import { Paperclip, Mic, FileText, Image as ImageIcon, Check, Archive, Brain, User } from 'lucide-react';
+import { Paperclip, Mic, FileText, Image as ImageIcon, Check, Archive, Brain, User, MessageCircle } from 'lucide-react';
 import { motion, useMotionValue, useTransform } from 'framer-motion';
 import Image from 'next/image';
 import md5 from 'md5';
@@ -14,6 +14,7 @@ interface EmailListItemProps {
   similarity?: number;
   onClick: () => void;
   onArchive?: () => void;
+  onOpenChat?: (conversationId: number) => void;
 }
 
 export const EmailListItemInstrument = ({
@@ -23,7 +24,8 @@ export const EmailListItemInstrument = ({
   isSemanticResult,
   similarity,
   onClick,
-  onArchive
+  onArchive,
+  onOpenChat
 }: EmailListItemProps) => {
   const { sender, subject, preview, date, iapContext, isUnread, avatarUrl, hasAttachments } = mail;
   const intent = iapContext?.intent;
@@ -72,6 +74,7 @@ export const EmailListItemInstrument = ({
   };
 
   const personaBadge = persona ? getPersonaBadge(persona) : null;
+  const chatConversationId = Number(mail?.chatConversationId || 0) || null;
 
   return (
     <ContainerInstrument className={`relative overflow-hidden border-b border-gray-50 ${isSelected ? 'ring-1 ring-va-black/10 ring-inset z-20 bg-gray-50/50' : ''}`}>
@@ -170,6 +173,22 @@ export const EmailListItemInstrument = ({
             <TextInstrument as="p" className="text-[15px] text-gray-500 truncate mt-0.5 font-light">
               {preview.replace(/[\n\r]/g, ' ')}
             </TextInstrument>
+            {chatConversationId && onOpenChat && (
+              <ContainerInstrument className="mt-2 flex">
+                <button
+                  type="button"
+                  onClick={(event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    onOpenChat(chatConversationId);
+                  }}
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-light tracking-widest bg-va-black text-white hover:opacity-80 transition-opacity"
+                >
+                  <MessageCircle size={12} strokeWidth={1.5} />
+                  Open chat #{chatConversationId}
+                </button>
+              </ContainerInstrument>
+            )}
           </ContainerInstrument>
         </ContainerInstrument>
       </motion.div>

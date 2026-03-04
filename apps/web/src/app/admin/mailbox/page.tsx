@@ -124,7 +124,7 @@ export default function MailboxPage() {
 
   const fetchCustomerDna = React.useCallback(async (user_id: number) => {
     try {
-      const data = await AdminService.getCustomerDna(userId);
+      const data = await AdminService.getCustomerDna(user_id);
       setCustomerDna(data);
     } catch (e) { console.error(e); }
   }, []);
@@ -520,7 +520,8 @@ export default function MailboxPage() {
                           mail={mail} 
                           isSelected={selectedIndex === index} 
                           onClick={() => { setSelectedIndex(index); handleMailClick(mail); }} 
-                          onArchive={() => handleArchiveMail(mail.id)} 
+                          onArchive={() => handleArchiveMail(mail.id)}
+                          onOpenChat={(conversationId) => router.push(`/admin/live-chat?conversationId=${conversationId}`)}
                         />
                       ))}
                       {hasMore && !isRefreshing && (
