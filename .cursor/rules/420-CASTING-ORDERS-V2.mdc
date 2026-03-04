@@ -1,0 +1,27 @@
+---
+description: Casting → orders_v2 discipline. Full configurator data + price at submit; promote = status update only. Geen casting zonder volledige info.
+globs: ["apps/web/src/app/api/casting/**/*", "apps/web/src/app/api/checkout/**/*", "docs/3-TECHNICAL-SPECS/23*.md"]
+alwaysApply: false
+---
+
+# 🎙️ CASTING & ORDERS_V2 (Single Source of Truth)
+
+**Bron:** Doc 23 (Casting → bestelling), Doc 26 (Slimme Kassa). Orders_v2 is de waarheid voor alle projecten (proefopname + bestelling).
+
+## 1. WAARHEID
+
+- **Projecten (inclusief casting)** leven in **orders_v2** + **orders** (legacy) + **order_items**. Geen nieuwe rijen in `casting_lists` / `casting_list_items` voor de nieuwe flow.
+- **Casting submit** schrijft uitsluitend naar: `orders` (met `proefopname_hash`, status casting, `iap_context`), `order_items` (per stem, met price + meta_data), `orders_v2` (status casting, amount_net/amount_total).
+- **Promote (omzetten tot opdracht)** = alleen status- en bedrag-updates op de bestaande rijen; geen kopie uit een aparte casting-tabel.
+
+## 2. VOLLEDIGE CONFIGURATIE = VOORWAARDE
+
+- **Geen volledige info = geen casting.** Submit weigeren als een verplicht veld ontbreekt (journey, usage, mediatype indien paid, script/woordenaantal, actor_ids). Zelfde set als de masterconfigurator/Slimme Kassa.
+- **Prijs bij submit:** Vóór elke persist de prijslogica (Slimme Kassa) aanroepen. Alleen schrijven als prijs succesvol berekend; resultaat opslaan in `order_items.price` en `orders_v2.amount_net` / `amount_total`.
+- **Eén payload-contract:** Gebruik één gedeeld contract (Zod/TypeScript) voor de “full configurator”-payload bij casting submit; zie doc 23 §7.2.
+
+## 3. TECHNISCHE REFERENTIE
+
+- Migratie: `orders.proefopname_hash` (text, unique, nullable); `order_statuses` bevat code `casting` (of `pre_order`).
+- Proefopname-URL: `/proefopname/{hash}`; slug_registry → entity_id = orders_v2.id (of orders.id).
+- Prijsberekening: Zie doc 26 en `pricing-engine.ts` / SlimmeKassa.calculate();zelfde inputs als checkout.

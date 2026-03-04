@@ -569,7 +569,8 @@ export const orders = pgTable('orders', {
   internal_notes: text('internal_notes'), // Privé admin notities over de order
   isPrivate: boolean('is_private').default(false), // Voor gevoelige of handmatige orders
   is_manually_edited: boolean('is_manually_edited').default(false), // 🛡️ NUCLEAR LOCK MANDATE
-  
+  proefopname_hash: text('proefopname_hash').unique(), // 🎙️ Link /proefopname/{hash} (doc 23)
+
   // 🛡️ KELLY'S INTEGRITY (B2B & Fraud)
   viesValidatedAt: timestamp('vies_validated_at'),
   viesCountryCode: text('vies_country_code'),
