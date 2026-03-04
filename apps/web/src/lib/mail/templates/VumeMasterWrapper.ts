@@ -57,46 +57,59 @@ const JOURNEY_PROFILE: Record<
 > = {
   agency: {
     profilePath: '/',
-    supportPath: '/contact',
+    supportPath: '/agency/contact',
     line1: { nl: 'Team Voices', fr: 'Team Voices', en: 'Voices Team' },
-    line2: { nl: 'Agency World', fr: 'Agency World', en: 'Agency World' },
+    line2: { nl: 'Agency team', fr: 'Équipe agency', en: 'Agency team' },
     worldLabel: { nl: 'Agency', fr: 'Agency', en: 'Agency' },
   },
   auth: {
     profilePath: '/account',
     supportPath: '/account/mailbox',
     line1: { nl: 'Team Voices', fr: 'Équipe Voices', en: 'Voices Team' },
-    line2: { nl: 'Account', fr: 'Compte', en: 'Account' },
+    line2: { nl: 'Account team', fr: 'Équipe compte', en: 'Account team' },
     worldLabel: { nl: 'Account', fr: 'Account', en: 'Account' },
   },
   studio: {
     profilePath: '/studio',
     supportPath: '/studio/contact',
     line1: { nl: 'Team Voices Studio', fr: 'Équipe Voices Studio', en: 'Voices Studio Team' },
-    line2: { nl: 'Studio World', fr: 'Studio World', en: 'Studio World' },
+    line2: { nl: 'Studio team', fr: 'Équipe studio', en: 'Studio team' },
     worldLabel: { nl: 'Studio', fr: 'Studio', en: 'Studio' },
   },
   portfolio: {
     profilePath: '/portfolio',
     supportPath: '/portfolio/contact',
     line1: { nl: 'Team Portfolio', fr: 'Équipe Portfolio', en: 'Portfolio Team' },
-    line2: { nl: 'Portfolio World', fr: 'Portfolio World', en: 'Portfolio World' },
+    line2: { nl: 'Portfolio team', fr: 'Équipe portfolio', en: 'Portfolio team' },
     worldLabel: { nl: 'Portfolio', fr: 'Portfolio', en: 'Portfolio' },
   },
   artist: {
     profilePath: '/artist',
-    supportPath: '/contact',
+    supportPath: '/artist/contact',
     line1: { nl: 'Team Artist', fr: 'Équipe Artist', en: 'Artist Team' },
-    line2: { nl: 'Artist World', fr: 'Artist World', en: 'Artist World' },
+    line2: { nl: 'Artist team', fr: 'Équipe artist', en: 'Artist team' },
     worldLabel: { nl: 'Artist', fr: 'Artist', en: 'Artist' },
   },
 };
 
 function sanitizeHost(inputHost?: string): string {
-  return (inputHost || process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'www.voices.be')
+  const cleanedHost = (inputHost || process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'www.voices.be')
     .replace(/^https?:\/\//, '')
     .replace(/\/+$/, '')
-    .trim();
+    .trim()
+    .toLowerCase();
+
+  const cleanHostWithoutPort = cleanedHost.split(':')[0];
+  const canonicalHost = cleanHostWithoutPort.replace(/^www\./, '');
+  const allowedHosts = Object.values(MarketManager.getMarketDomains()).map((domainUrl) =>
+    domainUrl.replace(/^https?:\/\//, '').replace(/^www\./, '').toLowerCase()
+  );
+
+  if (allowedHosts.includes(canonicalHost) || cleanedHost.endsWith('.vercel.app') || cleanedHost.startsWith('localhost')) {
+    return cleanedHost;
+  }
+
+  return 'www.voices.be';
 }
 
 function decodeProxyPath(input: string): string | null {
@@ -108,6 +121,16 @@ function decodeProxyPath(input: string): string | null {
   } catch {
     return null;
   }
+}
+
+function extractPathParam(rawValue: string): string | null {
+  if (!rawValue.includes('?path=')) return null;
+  const queryStart = rawValue.indexOf('?');
+  if (queryStart === -1) return null;
+  const queryParams = new URLSearchParams(rawValue.slice(queryStart + 1));
+  const pathParam = queryParams.get('path');
+  if (!pathParam) return null;
+  return decodeURIComponent(pathParam);
 }
 
 function normalizeAssetPath(rawPath: string | undefined, marketCode: string): string {
@@ -134,8 +157,8 @@ function normalizeAssetPath(rawPath: string | undefined, marketCode: string): st
   }
 
   if (candidate.includes('?path=')) {
-    const [, pathTail] = candidate.split('?path=');
-    candidate = decodeURIComponent(pathTail || '');
+    const extractedPath = extractPathParam(candidate);
+    candidate = extractedPath || candidate;
   }
 
   candidate = candidate.split('?')[0];
@@ -189,13 +212,20 @@ export function VumeMasterWrapper(content: string, options: WrapperOptions) {
   const supportHref = `https://${resolvedHost}${profile.supportPath}`;
   const websiteHref = `https://${resolvedHost}${profile.profilePath}`;
   const accountHref = `https://${resolvedHost}/account`;
+  const supportLabel =
+    profile.supportPath.includes('mailbox')
+      ? (languageShort === 'fr' ? 'Mailbox' : languageShort === 'en' ? 'Mailbox' : 'Mailbox')
+      : profile.supportPath.includes('contact')
+        ? (languageShort === 'fr' ? 'Contact' : languageShort === 'en' ? 'Contact' : 'Contact')
+        : (languageShort === 'fr' ? 'Chat' : languageShort === 'en' ? 'Live chat' : 'Live chat');
+  const logoNeedsInvert = market.market_code !== 'ARTIST';
   const i18n =
     languageShort === 'fr'
       ? {
           unsubscribe: 'Se désinscrire',
           forMarketing: 'des e-mails marketing',
           websiteCta: 'Site',
-          supportCta: 'Chat',
+          supportCta: supportLabel,
           accountCta: 'Compte',
         }
       : languageShort === 'en'
@@ -203,14 +233,14 @@ export function VumeMasterWrapper(content: string, options: WrapperOptions) {
             unsubscribe: 'Unsubscribe',
             forMarketing: 'from marketing emails',
             websiteCta: 'Website',
-            supportCta: 'Live chat',
+            supportCta: supportLabel,
             accountCta: 'Account',
           }
         : {
             unsubscribe: 'Uitschrijven',
             forMarketing: 'voor marketing-mails',
             websiteCta: 'Website',
-            supportCta: 'Live chat',
+            supportCta: supportLabel,
             accountCta: 'Account',
           };
   const signatureName = profile.line1[languageShort] || profile.line1.nl;
@@ -238,7 +268,7 @@ export function VumeMasterWrapper(content: string, options: WrapperOptions) {
   const logoHtml = `
     <tr>
       <td align="center" style="padding: 0 0 20px 0;">
-        <img class="vume-logo" src="${logoSrc}" alt="${market.name}" width="136" style="display:block; border:0; width:136px; height:auto;" />
+        <img class="vume-logo${logoNeedsInvert ? ' vume-logo--invertible' : ''}" src="${logoSrc}" alt="${market.name}" width="136" style="display:block; border:0; width:136px; height:auto;" />
       </td>
     </tr>
   `;
@@ -335,9 +365,16 @@ export function VumeMasterWrapper(content: string, options: WrapperOptions) {
             box-shadow: none !important;
           }
 
-          td.vume-content,
-          td.vume-content * {
-            color: #E5E7EB !important;
+          td.vume-content {
+            color: #D1D5DB !important;
+          }
+
+          td.vume-content p,
+          td.vume-content div,
+          td.vume-content span,
+          td.vume-content td,
+          td.vume-content li {
+            color: #D1D5DB !important;
           }
 
           td.vume-content .vume-muted,
@@ -346,6 +383,13 @@ export function VumeMasterWrapper(content: string, options: WrapperOptions) {
           }
 
           td.vume-content .vume-title {
+            color: #F5F5F5 !important;
+          }
+
+          td.vume-content strong,
+          td.vume-content h1,
+          td.vume-content h2,
+          td.vume-content h3 {
             color: #F5F5F5 !important;
           }
 
@@ -380,8 +424,42 @@ export function VumeMasterWrapper(content: string, options: WrapperOptions) {
             border-color: #2A2E36 !important;
           }
 
-          img.vume-logo {
+          img.vume-logo--invertible {
             filter: brightness(0) invert(1) contrast(1.03);
+          }
+        }
+
+        @media only screen and (max-width: 600px) {
+          td.vume-shell-cell {
+            padding: 0 12px !important;
+          }
+
+          table.vume-shell {
+            padding: 16px 0 24px 0 !important;
+          }
+
+          td.vume-card {
+            border-radius: 14px !important;
+          }
+
+          td.vume-content {
+            padding: 20px 16px 24px 16px !important;
+          }
+
+          td.vume-content .vume-title {
+            font-size: 24px !important;
+            line-height: 1.3 !important;
+          }
+
+          td.vume-content .vume-button {
+            display: block !important;
+            width: 100% !important;
+            max-width: 320px !important;
+            min-height: 48px !important;
+            padding: 14px 20px !important;
+            font-size: 16px !important;
+            line-height: 20px !important;
+            text-align: center !important;
           }
         }
 
@@ -396,9 +474,16 @@ export function VumeMasterWrapper(content: string, options: WrapperOptions) {
           border-color: #2A2E36 !important;
         }
 
-        [data-ogsc] td.vume-content,
-        [data-ogsc] td.vume-content * {
-          color: #E5E7EB !important;
+        [data-ogsc] td.vume-content {
+          color: #D1D5DB !important;
+        }
+
+        [data-ogsc] td.vume-content p,
+        [data-ogsc] td.vume-content div,
+        [data-ogsc] td.vume-content span,
+        [data-ogsc] td.vume-content td,
+        [data-ogsc] td.vume-content li {
+          color: #D1D5DB !important;
         }
 
         [data-ogsc] td.vume-content .vume-muted,
@@ -414,6 +499,10 @@ export function VumeMasterWrapper(content: string, options: WrapperOptions) {
           background: #F3F4F6 !important;
           color: #111827 !important;
           border: 1px solid #D1D5DB !important;
+        }
+
+        [data-ogsc] img.vume-logo--invertible {
+          filter: brightness(0) invert(1) contrast(1.03) !important;
         }
       </style>
       <title>${title}</title>

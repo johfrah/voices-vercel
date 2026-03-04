@@ -38,6 +38,14 @@ function toSafeNumber(value: unknown): number {
   return Number.isFinite(numeric) ? numeric : 0;
 }
 
+function extractProxyPath(rawValue: string): string | null {
+  const queryStart = rawValue.indexOf('?');
+  if (queryStart === -1) return null;
+  const params = new URLSearchParams(rawValue.slice(queryStart + 1));
+  const pathValue = params.get('path');
+  return pathValue ? decodeURIComponent(pathValue) : null;
+}
+
 function resolveWebhookThumbnailUrl(value: unknown, host: string): string | undefined {
   if (!value || typeof value !== 'string') return undefined;
   const rawValue = value.trim();
@@ -55,8 +63,8 @@ function resolveWebhookThumbnailUrl(value: unknown, host: string): string | unde
 
   let normalizedPath = rawValue;
   if (normalizedPath.includes('/api/proxy') && normalizedPath.includes('?path=')) {
-    const [, extractedPath] = normalizedPath.split('?path=');
-    normalizedPath = decodeURIComponent(extractedPath || '');
+    const extractedPath = extractProxyPath(normalizedPath);
+    normalizedPath = extractedPath || normalizedPath;
   }
 
   normalizedPath = normalizedPath.startsWith('/assets/') ? normalizedPath.slice('/assets/'.length) : normalizedPath;

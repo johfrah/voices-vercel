@@ -40,6 +40,20 @@ const TEMPLATE_JOURNEY_MAP: Record<SendOptions['template'], 'agency' | 'artist' 
   'follow-up': 'agency',
 };
 
+const HANDSHAKE_TIMEOUT_MS = 800;
+
+async function withTimeout<T>(task: Promise<T>, fallback: T, timeoutMs: number = HANDSHAKE_TIMEOUT_MS): Promise<T> {
+  let timeoutRef: ReturnType<typeof setTimeout> | null = null;
+  const timeoutPromise = new Promise<T>((resolve) => {
+    timeoutRef = setTimeout(() => resolve(fallback), timeoutMs);
+  });
+
+  const safeTask = task.catch(() => fallback);
+  const result = await Promise.race([safeTask, timeoutPromise]);
+  if (timeoutRef) clearTimeout(timeoutRef);
+  return result;
+}
+
 export class VumeEngine {
   static async send(options: SendOptions) {
     const { to, subject, template, context, from, host } = options;
@@ -166,7 +180,7 @@ export class VumeEngine {
       : context?.userId || context?.user_id
         ? 'user'
         : 'mail';
-    const handshakeRow = await EmailHandshakeService.createQueued({
+    const handshakeRow = await withTimeout(EmailHandshakeService.createQueued({
       template_key: template,
       recipient_email: to,
       subject,
@@ -184,7 +198,7 @@ export class VumeEngine {
       meta_data: {
         template,
       },
-    });
+    }), null);
 
     const mailService = DirectMailService.getInstance();
     try {
@@ -197,20 +211,20 @@ export class VumeEngine {
       });
 
       if (handshakeRow?.id) {
-        await EmailHandshakeService.markSent({
+        void withTimeout(EmailHandshakeService.markSent({
           id: handshakeRow.id,
           provider_message_id: sendResult.message_id,
-        });
+        }), undefined);
       }
 
       console.log(`[VUME ] Mail verzonden via template: ${template} naar ${to}`);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Mail send failed';
       if (handshakeRow?.id) {
-        await EmailHandshakeService.markFailed({
+        void withTimeout(EmailHandshakeService.markFailed({
           id: handshakeRow.id,
           error_message: errorMessage,
-        });
+        }), undefined);
       }
       throw error;
     }

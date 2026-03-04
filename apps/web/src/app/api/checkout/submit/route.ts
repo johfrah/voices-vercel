@@ -91,6 +91,14 @@ function toSafeNumber(value: unknown): number {
   return Number.isFinite(numeric) ? numeric : 0;
 }
 
+function extractProxyPath(rawValue: string): string | null {
+  const queryStart = rawValue.indexOf('?');
+  if (queryStart === -1) return null;
+  const params = new URLSearchParams(rawValue.slice(queryStart + 1));
+  const pathValue = params.get('path');
+  return pathValue ? decodeURIComponent(pathValue) : null;
+}
+
 function resolveCheckoutItemThumbnail(item: any, dbActor: any, host: string): string | undefined {
   const candidate =
     item?.thumbnail_url ||
@@ -119,8 +127,8 @@ function resolveCheckoutItemThumbnail(item: any, dbActor: any, host: string): st
 
   let normalizedPath = rawCandidate;
   if (normalizedPath.includes('/api/proxy') && normalizedPath.includes('?path=')) {
-    const [, extractedPath] = normalizedPath.split('?path=');
-    normalizedPath = decodeURIComponent(extractedPath || '');
+    const extractedPath = extractProxyPath(normalizedPath);
+    normalizedPath = extractedPath || normalizedPath;
   }
 
   normalizedPath = normalizedPath.startsWith('/assets/') ? normalizedPath.slice('/assets/'.length) : normalizedPath;

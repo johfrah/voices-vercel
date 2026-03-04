@@ -175,7 +175,7 @@ export function VumeStudioTemplate(options: StudioExperienceOptions) {
       <div style="text-align: center; padding: 32px 0; border-top: 1px solid #eee;">
         <p style="margin: 0 0 10px 0; font-size: 16px; font-weight: 700; color: #111;">${content.ctaTitle}</p>
         <p style="margin: 0 0 20px 0; font-size: 16px; color: #555;">${content.ctaText}</p>
-        <a href="https://${host}/account/orders" style="display: inline-block; background: #000000; color: #ffffff; text-align: center; padding: 15px 30px; border-radius: 10px; font-size: 16px; font-weight: 600; text-transform: uppercase; text-decoration: none;">${content.button}</a>
+        <a class="vume-button" href="https://${host}/account/orders" style="display: inline-block; background: #111827; color: #ffffff; text-align: center; padding: 15px 30px; border-radius: 10px; font-size: 16px; font-weight: 600; text-decoration: none;">${content.button}</a>
       </div>
 
     </div>

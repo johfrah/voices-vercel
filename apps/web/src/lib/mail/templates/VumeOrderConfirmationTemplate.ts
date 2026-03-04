@@ -64,6 +64,7 @@ export const VumeOrderConfirmationTemplate = (props: OrderConfirmationProps) => 
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;')
       .replace(/'/g, '&#39;');
+  const greetingName = userName ? ` ${escapeHtml(userName)}` : '';
 
   const renderThumbnail = (item: OrderConfirmationProps['items'][number]) => {
     if (item.thumbnailUrl) {
@@ -115,7 +116,7 @@ export const VumeOrderConfirmationTemplate = (props: OrderConfirmationProps) => 
 
   const content = `
     <div style="margin-bottom: 18px;">
-      <p style="margin: 0 0 8px 0; font-size: 18px; color: #111827; font-weight: 600;">${txt('Beste', 'Bonjour', 'Dear')} ${escapeHtml(userName || txt('klant', 'client', 'customer'))},</p>
+      <p style="margin: 0 0 8px 0; font-size: 18px; color: #111827; font-weight: 600;">${txt('Beste', 'Bonjour', 'Dear')}${greetingName},</p>
       <p style="margin: 0; font-size: 15px; line-height: 1.66; color: #4B5563; text-align: left;">
         ${txt(
           `Bedankt voor je bestelling. Hieronder vind je je overzicht.`,
