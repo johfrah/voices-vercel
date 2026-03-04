@@ -5,8 +5,10 @@
 @import './ademing-world.css';
 
 :root {
-  --va-primary: #FF0084;
-  --va-primary-dark: #D63CFF;
+  --va-primary-hsl: 334 95% 50%;
+  --va-primary-dark-hsl: 286 86% 60%;
+  --va-primary: hsl(var(--va-primary-hsl));
+  --va-primary-dark: hsl(var(--va-primary-dark-hsl));
   --background: 35 25% 98%;
   --foreground: 28 12% 10%;
   --va-surface: 35 25% 98%;
@@ -27,6 +29,8 @@
 /* 🎨 THEME SYSTEM: automatic light/dark from user OS */
 @media (prefers-color-scheme: dark) {
   :root {
+    --va-primary-hsl: 334 100% 66%;
+    --va-primary-dark-hsl: 286 90% 72%;
     --background: 240 10% 6%;
     --foreground: 0 0% 96%;
     --va-surface: 240 10% 6%;
@@ -44,6 +48,8 @@
 }
 
 .dark {
+  --va-primary-hsl: 334 100% 66%;
+  --va-primary-dark-hsl: 286 90% 72%;
   --background: 240 10% 6%;
   --foreground: 0 0% 96%;
   --va-surface: 240 10% 6%;
@@ -60,6 +66,8 @@
 }
 
 .light {
+  --va-primary-hsl: 334 95% 50%;
+  --va-primary-dark-hsl: 286 86% 60%;
   --background: 35 25% 98%;
   --foreground: 28 12% 10%;
   --va-surface: 35 25% 98%;
@@ -141,7 +149,8 @@
 }
 
 .theme-youssef {
-  --va-primary: #1A1A1A; /* Luxe Black */
+  --va-primary-hsl: 0 0% 10%;
+  --va-primary: hsl(var(--va-primary-hsl)); /* Luxe Black */
   --background: 35 25% 98%;
   --foreground: 28 12% 10%;
   --va-black: 28 12% 10%;
@@ -152,7 +161,8 @@
 }
 
 .theme-johfrai {
-  --va-primary: #9333ea;
+  --va-primary-hsl: 271 81% 56%;
+  --va-primary: hsl(var(--va-primary-hsl));
   --background: 0 0% 0%;
   --foreground: 0 0% 100%;
   --va-black: 0 0% 100%;
@@ -215,6 +225,18 @@ body {
   select,
   textarea {
     font-size: 16px !important;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .text-primary {
+    text-shadow: 0 0 10px hsl(var(--va-primary-hsl) / 0.32);
+  }
+
+  .bg-primary {
+    box-shadow:
+      0 0 0 1px hsl(0 0% 100% / 0.08),
+      0 14px 30px -16px hsl(var(--va-primary-hsl) / 0.55);
   }
 }
 

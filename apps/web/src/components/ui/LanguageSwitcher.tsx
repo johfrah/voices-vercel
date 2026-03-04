@@ -233,7 +233,7 @@ export function LanguageSwitcher({ className }: { className?: string }) {
         <Globe strokeWidth={1.5} size={20} />
         <TextInstrument 
           as="span"
-          className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-primary text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-lg border-2 border-white leading-none z-10"
+          className="absolute -top-1 -right-1 min-w-[19px] h-[19px] px-1 bg-primary text-white text-[11px] font-bold rounded-full flex items-center justify-center shadow-lg border-2 border-white leading-none z-10"
         >
           {currentLang.shortCode}
         </TextInstrument>
@@ -273,7 +273,7 @@ export function LanguageSwitcher({ className }: { className?: string }) {
           as={motion.span}
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
-          className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-primary text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-lg border-2 border-white leading-none z-10"
+          className="absolute -top-1 -right-1 min-w-[19px] h-[19px] px-1 bg-primary text-white text-[11px] font-bold rounded-full flex items-center justify-center shadow-lg border-2 border-white leading-none z-10"
         >
           {currentLang.shortCode}
         </TextInstrument>
@@ -288,11 +288,11 @@ export function LanguageSwitcher({ className }: { className?: string }) {
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
             transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
             plain
-            className="absolute top-full right-0 mt-1 w-64 bg-white rounded-[20px] shadow-aura border border-black/5 overflow-hidden z-[220]"
+            className="absolute top-full right-0 mt-1 w-64 bg-white dark:bg-va-card rounded-[20px] shadow-aura border border-black/5 dark:border-white/10 overflow-hidden z-[220]"
           >
             <div className="p-1">
               <ContainerInstrument plain className="px-4 py-3 border-b border-black/5 mb-1">
-                <TextInstrument className="text-[11px] font-bold text-va-black/40 tracking-[0.2em] uppercase">
+                <TextInstrument className="text-[12px] md:text-[11px] font-bold text-va-black/40 tracking-[0.16em] md:tracking-[0.2em] uppercase">
                   <VoiceglotText translationKey="nav.language_selection" defaultText="Language choice" />
                 </TextInstrument>
               </ContainerInstrument>
@@ -306,7 +306,7 @@ export function LanguageSwitcher({ className }: { className?: string }) {
                     size="none"
                     className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-left transition-all duration-500 group mb-1 last:mb-0 ${
                       isActive
-                        ? 'bg-primary text-white shadow-lg shadow-primary/20'
+                        ? 'bg-primary text-white shadow-lg shadow-primary/20 ring-1 ring-white/20'
                         : 'text-va-black/60 hover:text-va-black hover:bg-va-black/5'
                     }`}
                   >

@@ -119,7 +119,7 @@ const HeaderIcon = ({
         }}
         className={cn(
           "w-10 h-10 !rounded-full transition-all duration-500 cursor-pointer group/icon flex items-center justify-center relative",
-          isActive ? "!bg-primary text-white shadow-aura-sm" : "hover:bg-va-black/5 text-va-black/40 hover:text-va-black"
+          isActive ? "!bg-primary text-white shadow-aura-sm ring-1 ring-white/30" : "hover:bg-va-black/5 text-va-black/40 hover:text-va-black"
         )}
       >
         {src ? (
@@ -142,7 +142,7 @@ const HeaderIcon = ({
           <motion.span 
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
-            className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-primary text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-lg border-2 border-white leading-none z-10"
+            className="absolute -top-1 -right-1 min-w-[19px] h-[19px] px-1 bg-primary text-white text-[11px] font-bold rounded-full flex items-center justify-center shadow-lg border-2 border-white leading-none z-10"
           >
             {badgeText || badge}
           </motion.span>
@@ -156,7 +156,7 @@ const HeaderIcon = ({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
             transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            className="absolute top-full right-0 mt-1 w-[320px] bg-white rounded-[20px] shadow-aura border border-black/5 overflow-hidden z-[210]"
+            className="absolute top-full right-0 mt-1 w-[320px] bg-white dark:bg-va-card rounded-[20px] shadow-aura border border-black/5 dark:border-white/10 overflow-hidden z-[210]"
           >
             <ContainerInstrument plain className="p-1">
               {children}
@@ -609,7 +609,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
   const isDev = process.env.NODE_ENV === 'development';
 
   return (
-    <ContainerInstrument as="nav" className={`w-full px-4 md:px-6 py-1 flex items-center bg-white/40 backdrop-blur-3xl border-b border-black/5 golden-curve relative`}>
+    <ContainerInstrument as="nav" className={`w-full px-4 md:px-6 py-1 flex items-center bg-white/40 dark:bg-black/50 backdrop-blur-3xl border-b border-black/5 dark:border-white/10 golden-curve relative`}>
       <ContainerInstrument plain className="flex-1 flex justify-start">
         <ButtonInstrument 
           as={VoicesLink}
@@ -707,7 +707,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
 
             {hasSubmenu && (
               <ContainerInstrument plain className="absolute top-full left-1/2 -translate-x-1/2 pt-4 opacity-0 translate-y-2 pointer-events-none group-hover/link:opacity-100 group-hover/link:translate-y-0 group-hover/link:pointer-events-auto transition-all duration-500 z-[250]">
-                <ContainerInstrument plain className="bg-white rounded-[20px] shadow-aura border border-black/5 p-2 w-64 overflow-hidden">
+                <ContainerInstrument plain className="bg-white dark:bg-va-card rounded-[20px] shadow-aura border border-black/5 dark:border-white/10 p-2 w-64 overflow-hidden">
                   {link.submenu.map((sub: any, subIdx: number) => (
                     <DropdownItem 
                       key={subIdx}
@@ -752,7 +752,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
                   initial={{ opacity: 0, scale: 0.9, y: 10 }}
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.9, y: 10 }}
-                  className="absolute left-0 top-full mt-2 w-64 bg-white rounded-xl shadow-2xl border border-black/10 p-3 z-[250]"
+                  className="absolute left-0 top-full mt-2 w-64 bg-white dark:bg-va-card rounded-xl shadow-2xl border border-black/10 dark:border-white/10 p-3 z-[250]"
                 >
                   <ContainerInstrument plain className="flex flex-col gap-3">
                     <TextInstrument className="text-[11px] font-bold text-va-black/40 tracking-widest">
@@ -817,7 +817,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
           >
             <ContainerInstrument plain className="p-1 space-y-1">
               <ContainerInstrument plain className="px-4 py-3 border-b border-black/5 mb-1 flex justify-between items-center">
-                <TextInstrument className="text-[11px] font-bold text-va-black/40 tracking-[0.2em] uppercase">
+                <TextInstrument className="text-[12px] md:text-[11px] font-bold text-va-black/40 tracking-[0.16em] md:tracking-[0.2em] uppercase">
                   <VoiceglotText translationKey="nav.favorites_title" defaultText="Jouw selectie" />
                 </TextInstrument>
                 <TextInstrument className="text-[11px] font-medium text-va-black/30 tracking-widest uppercase">
@@ -845,7 +845,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
                           <TextInstrument className="text-[14px] font-medium text-va-black truncate">
                             {actor.display_name}
                           </TextInstrument>
-                          <TextInstrument className="text-[11px] text-va-black/40 font-light truncate tracking-widest uppercase">
+                          <TextInstrument className="text-[12px] md:text-[11px] text-va-black/40 font-light truncate tracking-[0.1em] md:tracking-widest uppercase">
                             <VoiceglotText 
                               translationKey={`common.language.${actor.native_lang?.toLowerCase()}`} 
                               defaultText={actor.native_lang_label || MarketManager.getLanguageLabel(actor.native_lang || '')} 
@@ -910,7 +910,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
         {pathname !== '/checkout' && (
           <ContainerInstrument plain className="p-1 space-y-1">
             <ContainerInstrument plain className="px-4 py-3 border-b border-black/5 mb-1 flex justify-between items-center">
-              <TextInstrument className="text-[11px] font-bold text-va-black/40 tracking-[0.2em] uppercase">
+              <TextInstrument className="text-[12px] md:text-[11px] font-bold text-va-black/40 tracking-[0.16em] md:tracking-[0.2em] uppercase">
                 <VoiceglotText translationKey="nav.cart_title" defaultText="Winkelmandje" />
               </TextInstrument>
               <TextInstrument className="text-[11px] font-medium text-va-black/30 tracking-widest uppercase">
@@ -1022,7 +1022,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
           >
             <ContainerInstrument plain className="p-1 space-y-1">
               <ContainerInstrument plain className="px-4 py-3 border-b border-black/5 mb-1 flex justify-between items-center">
-                <TextInstrument className="text-[11px] font-bold text-va-black/40 tracking-[0.2em] uppercase">
+                <TextInstrument className="text-[12px] md:text-[11px] font-bold text-va-black/40 tracking-[0.16em] md:tracking-[0.2em] uppercase">
                   <VoiceglotText  translationKey="nav.notifications_title" defaultText="Notificaties" />
                 </TextInstrument>
                 {notificationsCount > 0 && (
@@ -1116,20 +1116,20 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
                   
                   {/* Toegang Sectie */}
                   <div className="mt-3 pt-3 border-t border-black/5">
-                    <TextInstrument className="text-[9px] font-bold text-va-black/20 tracking-[0.1em] uppercase mb-2">
+                    <TextInstrument className="text-[10px] md:text-[9px] font-bold text-va-black/20 tracking-[0.08em] md:tracking-[0.1em] uppercase mb-2">
                       <VoiceglotText translationKey="nav.your_access" defaultText="Jouw Toegang" />
                     </TextInstrument>
                     <div className="flex flex-wrap gap-1.5">
-                      <div className="px-2 py-0.5 bg-va-black text-white text-[9px] font-bold rounded-md tracking-wider uppercase">
+                      <div className="px-2 py-0.5 bg-va-black text-white text-[10px] md:text-[9px] font-bold rounded-md tracking-wider uppercase">
                         <VoiceglotText translationKey="nav.access.customer" defaultText="Klant" />
                       </div>
                       {isAdmin && (
-                        <div className="px-2 py-0.5 bg-primary text-white text-[9px] font-bold rounded-md tracking-wider uppercase">
+                        <div className="px-2 py-0.5 bg-primary text-white text-[10px] md:text-[9px] font-bold rounded-md tracking-wider uppercase">
                           <VoiceglotText translationKey="nav.access.admin" defaultText="Admin" />
                         </div>
                       )}
                       {((auth.user as any)?.role === 'partner' || isAdmin) && (
-                        <div className="px-2 py-0.5 bg-blue-500 text-white text-[9px] font-bold rounded-md tracking-wider uppercase">
+                        <div className="px-2 py-0.5 bg-blue-500 text-white text-[10px] md:text-[9px] font-bold rounded-md tracking-wider uppercase">
                           <VoiceglotText translationKey="nav.access.partner" defaultText="Partner" />
                         </div>
                       )}
@@ -1201,7 +1201,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
                       <TextInstrument className="text-[13px] font-medium text-green-600">
                         {loginMessage}
                       </TextInstrument>
-                      <TextInstrument className="text-[10px] text-green-600/60 mt-1">
+                      <TextInstrument className="text-[11px] md:text-[10px] text-green-600/60 mt-1">
                         <VoiceglotText
                           translationKey="nav.login.mailbox_instruction_simple"
                           defaultText="Je ontvangt een link om automatisch in te loggen. Klik op die link."
@@ -1247,7 +1247,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
                       
                       <div className="flex items-center gap-2 py-1">
                         <div className="h-[1px] flex-1 bg-black/5" />
-                        <TextInstrument className="text-[11px] font-bold text-va-black/20 tracking-widest uppercase"><VoiceglotText translationKey="common.or" defaultText="of" /></TextInstrument>
+                        <TextInstrument className="text-[12px] md:text-[11px] font-bold text-va-black/20 tracking-[0.14em] md:tracking-widest uppercase"><VoiceglotText translationKey="common.or" defaultText="of" /></TextInstrument>
                         <div className="h-[1px] flex-1 bg-black/5" />
                       </div>
 
@@ -1278,13 +1278,13 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
               {isMobile && (
                 <>
                   <ContainerInstrument plain className="px-4 py-3 border-b border-black/5 mb-1">
-                    <TextInstrument className="text-[11px] font-bold text-va-black/40 tracking-[0.2em] uppercase">
+                    <TextInstrument className="text-[12px] md:text-[11px] font-bold text-va-black/40 tracking-[0.16em] md:tracking-[0.2em] uppercase">
                       <VoiceglotText translationKey="nav.mobile_menu_label" defaultText="Menu" />
                     </TextInstrument>
                   </ContainerInstrument>
                   <ContainerInstrument plain className="px-3 py-2 border-b border-black/5 mb-1">
                     <ContainerInstrument plain className="flex items-center justify-between gap-3">
-                      <TextInstrument className="text-[11px] font-bold text-va-black/40 tracking-[0.2em] uppercase">
+                      <TextInstrument className="text-[12px] md:text-[11px] font-bold text-va-black/40 tracking-[0.16em] md:tracking-[0.2em] uppercase">
                         <VoiceglotText translationKey="nav.language_selection" defaultText="Language choice" />
                       </TextInstrument>
                       <LanguageSwitcher className="w-9 h-9 rounded-full transition-all duration-500 cursor-pointer group flex items-center justify-center relative hover:bg-va-black/5 text-va-black/40 hover:text-va-black" />
@@ -1337,7 +1337,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
                 {!isSpecialJourney && (
                   <>
                     <div className="px-3 py-3 border-t border-black/5 mb-1">
-                      <TextInstrument className="text-[11px] font-bold text-va-black/40 tracking-[0.2em] uppercase">
+                      <TextInstrument className="text-[12px] md:text-[11px] font-bold text-va-black/40 tracking-[0.16em] md:tracking-[0.2em] uppercase">
                         <VoiceglotText translationKey="nav.menu.categories_title" defaultText="Stemmen per categorie" />
                       </TextInstrument>
                     </div>

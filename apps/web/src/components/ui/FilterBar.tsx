@@ -69,10 +69,10 @@ export const FilterBar: React.FC<FilterBarProps> = ({ filters, params: combinedP
 
   return (
     <ContainerInstrument className="w-full max-w-5xl mx-auto">
-      <ContainerInstrument className="bg-white/80 backdrop-blur-2xl border border-black/5 rounded-[32px] p-2 shadow-aura flex flex-col gap-2">
+      <ContainerInstrument className="bg-white/80 dark:bg-va-card/80 backdrop-blur-2xl border border-black/5 dark:border-white/10 rounded-[32px] p-2 shadow-aura flex flex-col gap-2">
         
         {/* Top Row: Journey Selector */}
-        <ContainerInstrument plain className="flex items-center justify-center p-1 bg-va-off-white/50 rounded-[26px]">
+        <ContainerInstrument plain className="flex items-center justify-center p-1 bg-va-off-white/50 dark:bg-white/5 rounded-[26px]">
           {journeys.map((j) => {
             const isActive = state.current_journey === j.id;
             const Icon = j.icon;
@@ -84,7 +84,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({ filters, params: combinedP
                 className={cn(
                   "flex-1 flex items-center justify-center gap-3 px-6 py-3 rounded-[22px] transition-all duration-500",
                   isActive 
-                    ? "bg-va-black text-white shadow-lg scale-[1.02]" 
+                    ? "bg-va-black text-white shadow-lg scale-[1.02] ring-1 ring-white/20" 
                     : "text-va-black/40 hover:text-va-black hover:bg-white/50"
                 )}
               >
@@ -105,7 +105,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({ filters, params: combinedP
             <InputInstrument 
               type="text" 
               placeholder={t('agency.filter.search_placeholder', 'Zoek op naam, stijl of kenmerk...')}
-              className="w-full bg-white border-none rounded-[22px] py-4 pl-14 pr-6 text-[15px] font-light focus:ring-2 focus:ring-primary/10 transition-all placeholder:text-va-black/20 shadow-sm"
+              className="w-full bg-white dark:bg-va-surface border-none dark:border dark:border-white/10 rounded-[22px] py-4 pl-14 pr-6 text-[15px] font-light focus:ring-2 focus:ring-primary/10 transition-all placeholder:text-va-black/20 shadow-sm"
               defaultValue={combinedParams.search}
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
@@ -121,7 +121,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({ filters, params: combinedP
               <Globe size={14} strokeWidth={1.5} />
             </ContainerInstrument>
             <SelectInstrument 
-              className="w-full bg-white border-none rounded-[22px] py-4 pl-12 pr-10 text-[14px] font-light tracking-widest focus:ring-2 focus:ring-primary/10 transition-all cursor-pointer appearance-none shadow-sm"
+              className="w-full bg-white dark:bg-va-surface border-none dark:border dark:border-white/10 rounded-[22px] py-4 pl-12 pr-10 text-[15px] md:text-[14px] font-light tracking-[0.12em] md:tracking-widest focus:ring-2 focus:ring-primary/10 transition-all cursor-pointer appearance-none shadow-sm"
               value={combinedParams.language || ''}
               onChange={(e) => { updateQuery({ language: e.target.value || undefined }); }}
             >
@@ -139,7 +139,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({ filters, params: combinedP
               <User size={14} strokeWidth={1.5} />
             </ContainerInstrument>
             <SelectInstrument 
-              className="w-full bg-white border-none rounded-[22px] py-4 pl-12 pr-10 text-[14px] font-light tracking-widest focus:ring-2 focus:ring-primary/10 transition-all cursor-pointer appearance-none shadow-sm"
+              className="w-full bg-white dark:bg-va-surface border-none dark:border dark:border-white/10 rounded-[22px] py-4 pl-12 pr-10 text-[15px] md:text-[14px] font-light tracking-[0.12em] md:tracking-widest focus:ring-2 focus:ring-primary/10 transition-all cursor-pointer appearance-none shadow-sm"
               value={combinedParams.gender || ''}
               onChange={(e) => { updateQuery({ gender: e.target.value || undefined }); }}
             >
@@ -153,10 +153,18 @@ export const FilterBar: React.FC<FilterBarProps> = ({ filters, params: combinedP
 
           {/* Advanced / Menu */}
           <ButtonInstrument 
-            onClick={() => { setIsSheetOpen(true); }}
-            className="w-14 h-14 rounded-[22px] bg-va-black text-white flex items-center justify-center hover:bg-primary transition-all duration-500 shadow-lg active:scale-95 shrink-0"
+            type="button"
+            ariaLabel={t('filter.title', 'Filters')}
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsSheetOpen(true);
+            }}
+            className="h-14 px-5 rounded-[22px] bg-va-black text-white flex items-center justify-center gap-2 hover:bg-primary transition-all duration-500 shadow-lg ring-1 ring-white/20 active:scale-95 shrink-0"
           >
             <Filter size={20} strokeWidth={1.5} />
+            <TextInstrument as="span" className="text-[13px] md:text-[12px] font-medium tracking-[0.08em] uppercase">
+              <VoiceglotText translationKey="filter.title" defaultText="Filters" />
+            </TextInstrument>
           </ButtonInstrument>
         </ContainerInstrument>
       </ContainerInstrument>
@@ -200,7 +208,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({ filters, params: combinedP
 const Chip = ({ label, onRemove }: { label: string, onRemove: () => void }) => {
   const { t } = useTranslation();
   return (
-    <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-black/5 rounded-[20px] text-[15px] font-light tracking-widest shadow-sm">
+    <ContainerInstrument className="inline-flex items-center gap-2 px-4 py-2 bg-white dark:bg-va-card border border-black/5 dark:border-white/10 rounded-[20px] text-[15px] font-light tracking-widest shadow-sm">
       <TextInstrument>{label}</TextInstrument>
       <ButtonInstrument onClick={() => { onRemove(); }} className="hover:text-primary transition-colors">
         <X size={14} strokeWidth={1.5} className="opacity-40" />

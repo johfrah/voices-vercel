@@ -71,11 +71,11 @@ export function MobileFloatingDock() {
                   playClick('pro');
                   window.location.href = '/casting/launchpad/';
                 }}
-                className="bg-primary text-white h-14 px-6 rounded-full flex items-center gap-3 shadow-[0_20px_50px_rgba(236,72,153,0.4)] hover:scale-105 active:scale-95 transition-all border border-white/20"
+                className="bg-primary text-white h-14 px-6 rounded-full flex items-center gap-3 shadow-[0_20px_50px_rgba(236,72,153,0.4)] hover:scale-105 active:scale-95 transition-all border border-white/20 ring-1 ring-white/20"
               >
                 <div className="relative">
                   <Mic2 size={20} strokeWidth={2.5} />
-                  <div className="absolute -top-2 -right-2 w-5 h-5 bg-va-black rounded-full flex items-center justify-center text-[10px] font-bold border border-white/20 shadow-sm">
+                  <div className="absolute -top-2 -right-2 w-5 h-5 bg-va-black rounded-full flex items-center justify-center text-[11px] font-bold border border-white/20 shadow-sm">
                     {state.selected_actors.length}
                   </div>
                 </div>
@@ -83,7 +83,7 @@ export function MobileFloatingDock() {
                   <span className="text-[13px] font-bold tracking-widest uppercase leading-none">
                     <VoiceglotText translationKey="auto.castingdock.proefopname" defaultText="Gratis proefopname" />
                   </span>
-                  <span className="text-[9px] font-medium opacity-70 leading-none mt-1 uppercase tracking-wider">
+                  <span className="text-[10px] font-medium opacity-75 leading-none mt-1 uppercase tracking-[0.08em]">
                     <VoiceglotText translationKey="auto.castingdock.start_selectie" defaultText="Bevestig selectie" />
                   </span>
                 </div>
@@ -97,7 +97,7 @@ export function MobileFloatingDock() {
           initial={{ y: 100, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ type: 'spring', damping: 20, stiffness: 100 }}
-          className="bg-va-black/90 backdrop-blur-2xl rounded-[32px] p-2 shadow-aura-lg border border-white/10 flex justify-between items-center pointer-events-auto relative z-[200]"
+          className="bg-[#10131e]/92 backdrop-blur-2xl rounded-[32px] p-2 shadow-aura-lg border border-white/12 flex justify-between items-center pointer-events-auto relative z-[200]"
         >
           {navItems.map((item) => {
             const isActive = item.href ? (pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href))) : isSearchOpen;
@@ -109,17 +109,17 @@ export function MobileFloatingDock() {
                   {isActive && (
                     <motion.div 
                       layoutId="active-pill"
-                      className="absolute inset-0 bg-primary rounded-2xl"
+                      className="absolute inset-0 bg-primary rounded-2xl ring-1 ring-white/20"
                       transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                     />
                   )}
                 </AnimatePresence>
                 
-                <div className={`relative z-10 flex flex-col items-center gap-0.5 transition-all duration-300 ${isActive ? 'scale-105 text-white' : 'opacity-40 group-hover:opacity-70 text-white'}`}>
+                <div className={`relative z-10 flex flex-col items-center gap-0.5 transition-all duration-300 ${isActive ? 'scale-105 text-white' : 'opacity-70 group-hover:opacity-100 text-white'}`}>
                   <div className="relative">
                     <Icon size={isActive ? 20 : 18} strokeWidth={isActive ? 2.5 : 1.5} />
                   </div>
-                  <span className="text-[9px] font-medium tracking-tight leading-none">
+                  <span className="text-[10px] font-medium tracking-tight leading-none">
                     <VoiceglotText translationKey={item.key} defaultText={item.label} />
                   </span>
                 </div>

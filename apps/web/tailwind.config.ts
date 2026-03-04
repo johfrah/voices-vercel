@@ -10,8 +10,8 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        "va-primary": "#E91E63",
-        "va-primary-dark": "#C2185B",
+        "va-primary": "hsl(var(--va-primary-hsl))",
+        "va-primary-dark": "hsl(var(--va-primary-dark-hsl))",
         "va-background": "hsl(var(--va-surface))",
         "va-surface": "hsl(var(--va-surface))",
         "va-card": "hsl(var(--va-card))",
@@ -20,7 +20,7 @@ const config: Config = {
         "va-dark": "hsl(var(--va-black))",
         "va-dark-soft": "#2D2D2D",
         // Legacy support
-        primary: "#E91E63",
+        primary: "hsl(var(--va-primary-hsl))",
         "va-black": "hsl(var(--va-black))",
         "va-off-white": "hsl(var(--va-off-white))",
       },
