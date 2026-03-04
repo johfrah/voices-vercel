@@ -77,7 +77,6 @@ function HomeContent({
   const { openEditModal } = useEditMode();
   const [customerDNA, setCustomerDNA] = useState<any>(null);
   const [actors, setActors] = useState<Actor[]>(initialActors);
-  const prevLangRef = useRef<number | undefined>(undefined);
 
   const [marketCode, setMarketCode] = useState('BE');
 
@@ -130,38 +129,8 @@ function HomeContent({
     setActors(initialActors);
   }, [initialActors]);
 
-  // 🛡️ CHRIS-PROTOCOL: Re-fetch actors on language change (v2.28.1)
-  const masterStateRef = useRef(masterControlState);
-  masterStateRef.current = masterControlState;
-  useEffect(() => {
-    const checkLang = () => {
-      const st = masterStateRef.current;
-      const langIds = st?.filters?.languageIds;
-      const langId = langIds?.length === 1 ? langIds[0] : (st?.filters?.languageId || 1);
-      if (langId === prevLangRef.current || !langId) return;
-      prevLangRef.current = langId;
-      if (langId === 1) { setActors(initialActors); return; }
-      console.log(`[LANG-POLL] Fetching actors for langId=${langId}`);
-      fetch(`/api/actors?languageId=${langId}`)
-        .then(r => r.json())
-        .then(d => {
-          console.log(`[LANG-POLL] Got ${d.results?.length || 0} actors`);
-          if (d.results?.length > 0) {
-            setActors(d.results.map((a: any) => ({
-              ...a,
-              photo_url: a.photo_url && !a.photo_url.startsWith('http') && !a.photo_url.startsWith('/api/proxy')
-                ? `/api/proxy/?path=${encodeURIComponent(a.photo_url)}` : a.photo_url,
-            })));
-          }
-        })
-        .catch(() => {});
-    };
-    const interval = setInterval(checkLang, 500);
-    return () => clearInterval(interval);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // Language re-fetch is handled by polling interval above
+  // 🛡️ CHRIS-PROTOCOL: Keep full actor pool in memory.
+  // Language switching is handled by VoiceFilterEngine, not by replacing the dataset.
 
   useEffect(() => {
     if (isAuthenticated && user?.email) {

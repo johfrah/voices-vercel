@@ -197,6 +197,23 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
     }
   };
 
+  const resolveMediaCode = (rawValue: string | number): string => {
+    const match = filteredOptions.find(
+      (opt) => typeof opt === 'object' && String((opt as any).value) === String(rawValue)
+    ) as any;
+    const mapped = (match && typeof match.code === 'string' && match.code) ? match.code : rawValue;
+    return String(mapped);
+  };
+
+  const normalizeCommercialMap = (map: Record<string, number> = {}) => {
+    return Object.entries(map).reduce<Record<string, number>>((acc, [rawKey, count]) => {
+      if (!count || count <= 0) return acc;
+      const code = resolveMediaCode(rawKey);
+      acc[code] = count;
+      return acc;
+    }, {});
+  };
+
   const updateStepper = (itemValue: string, delta: number) => {
     if (disabled) return;
     const currentMap = (value && typeof value === 'object' && !Array.isArray(value)) ? value : {};
@@ -230,11 +247,12 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
     // CHRIS-PROTOCOL: Force immediate pricing recalculation globally
     // This ensures that all components (including VoiceCards in the overview)
     // react immediately to the change in spots/media.
+    const normalizedSpotsDetail = normalizeCommercialMap(nextMap);
     const event = new CustomEvent('voices_pricing_update', {
       detail: {
-        spotsDetail: nextMap,
+        spotsDetail: normalizedSpotsDetail,
         yearsDetail: yearsValue, // Include years to ensure full context
-        media: Object.keys(nextMap) // Explicitly pass media types
+        media: Object.keys(normalizedSpotsDetail) // Always pass media codes
       }
     });
     window.dispatchEvent(event);
@@ -568,11 +586,13 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
                                     onYearsChange(nextMap);
 
                                     // CHRIS-PROTOCOL: Force immediate pricing update
+                                    const normalizedYearsDetail = normalizeCommercialMap(nextMap as Record<string, number>);
+                                    const normalizedSpotsDetail = normalizeCommercialMap((value || {}) as Record<string, number>);
                                     window.dispatchEvent(new CustomEvent('voices_pricing_update', {
                                       detail: {
-                                        yearsDetail: nextMap,
-                                        spotsDetail: value, // Include spots to ensure full context
-                                        media: Object.keys(value || {}) // Explicitly pass media types
+                                        yearsDetail: normalizedYearsDetail,
+                                        spotsDetail: normalizedSpotsDetail, // Include spots to ensure full context
+                                        media: Object.keys(normalizedSpotsDetail) // Always pass media codes
                                       }
                                     }));
                                   }}
@@ -598,11 +618,13 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
                                     onYearsChange(nextMap);
 
                                     // CHRIS-PROTOCOL: Force immediate pricing update
+                                    const normalizedYearsDetail = normalizeCommercialMap(nextMap as Record<string, number>);
+                                    const normalizedSpotsDetail = normalizeCommercialMap((value || {}) as Record<string, number>);
                                     window.dispatchEvent(new CustomEvent('voices_pricing_update', {
                                       detail: {
-                                        yearsDetail: nextMap,
-                                        spotsDetail: value, // Include spots to ensure full context
-                                        media: Object.keys(value || {}) // Explicitly pass media types
+                                        yearsDetail: normalizedYearsDetail,
+                                        spotsDetail: normalizedSpotsDetail, // Include spots to ensure full context
+                                        media: Object.keys(normalizedSpotsDetail) // Always pass media codes
                                       }
                                     }));
                                   }}
