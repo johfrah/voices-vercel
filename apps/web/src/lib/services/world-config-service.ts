@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import { appendFileSync } from 'node:fs';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
@@ -60,6 +61,9 @@ export async function getWorldConfig(worldId: number): Promise<WorldConfig | nul
     if (error || !data) return null;
 
     // Contact via junction table (ID-First) — resolves to contacts OR actors
+    // #region agent log
+    appendFileSync('/opt/cursor/logs/debug.log', JSON.stringify({ hypothesisId: 'D', location: 'world-config-service:getWorldConfig:beforeContactMap', message: 'Fetching world contact mapping', data: { worldId }, timestamp: Date.now() }) + '\n');
+    // #endregion
     const { data: contactMapping } = await supabase
       .from('world_contact_mappings')
       .select(`
@@ -73,6 +77,9 @@ export async function getWorldConfig(worldId: number): Promise<WorldConfig | nul
 
     const contactData = (contactMapping as any)?.contacts;
     const actorData = (contactMapping as any)?.actors;
+    // #region agent log
+    appendFileSync('/opt/cursor/logs/debug.log', JSON.stringify({ hypothesisId: 'D', location: 'world-config-service:getWorldConfig:afterContactMap', message: 'Fetched world contact mapping', data: { worldId, hasContact: !!contactData, hasActor: !!actorData }, timestamp: Date.now() }) + '\n');
+    // #endregion
     
     const contact = contactData ? {
       email: contactData.email,
@@ -125,6 +132,9 @@ export async function getWorldConfig(worldId: number): Promise<WorldConfig | nul
     cache[worldId] = { data: config, ts: now };
     return config;
   } catch (err) {
+    // #region agent log
+    appendFileSync('/opt/cursor/logs/debug.log', JSON.stringify({ hypothesisId: 'D', location: 'world-config-service:getWorldConfig:catch', message: 'World config fetch failed', data: { worldId, error: err instanceof Error ? err.message : String(err) }, timestamp: Date.now() }) + '\n');
+    // #endregion
     console.error(`[WorldConfigService] Failed to fetch config for world ${worldId}:`, err);
     return null;
   }

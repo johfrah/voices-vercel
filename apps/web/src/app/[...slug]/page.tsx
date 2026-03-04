@@ -26,6 +26,7 @@ import { normalizeSlug, stripLanguagePrefix } from '@/lib/system/slug';
 import { localeToBcp47, normalizeLocale, stripLocalePrefix, withLocalePrefix } from '@/lib/system/locale-utils';
 import { BentoGrid, BentoCard } from '@/components/ui/BentoGrid';
 import { createClient } from "@supabase/supabase-js";
+import { appendFileSync } from 'node:fs';
 
 //  CHRIS-PROTOCOL: SDK fallback for stability (v2.14.273)
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -840,6 +841,9 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
       'agency',
       activeLanguageId
     );
+    // #region agent log
+    appendFileSync('/opt/cursor/logs/debug.log', JSON.stringify({ hypothesisId: 'C', location: 'smart-router:postResolve', message: 'Registry resolve result', data: { lookupSlug, marketCode: market.market_code, activeLanguageId, resolvedType: resolved?.routing_type || null, resolvedEntityId: resolved?.entity_id || null }, timestamp: Date.now() }) + '\n');
+    // #endregion
 
     if (resolved) {
       // Locale-aware slug handshake: if we resolved a different language variant for this entity,
@@ -1014,7 +1018,26 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
       }
 
       if (resolved.routing_type === 'blog' || resolved.routing_type === 'article') {
-        const article = await getArticle(lookupSlug, lang);
+        const articleLookupSlug = resolved.slug || lookupSlug;
+        let article: any = null;
+        if (resolved.entity_id) {
+          const { data: articleById } = await supabase
+            .from('content_articles')
+            .select('*')
+            .eq('id', resolved.entity_id)
+            .maybeSingle();
+          if (articleById) {
+            const { data: blocks } = await supabase
+              .from('content_blocks')
+              .select('*')
+              .eq('article_id', articleById.id)
+              .order('display_order', { ascending: true });
+            article = { ...articleById, blocks: blocks || [] };
+          }
+        }
+        if (!article) {
+          article = await getArticle(articleLookupSlug, lang);
+        }
         if (article) {
       // 🛡️ CHRIS-PROTOCOL: Dynamic Extra Data based on Journey/World (v2.16.095)
           let extraData: any = {};
@@ -1049,7 +1072,8 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
               
               // 🎓 CHRIS-PROTOCOL: Academy Entry Handshake (v2.16.101)
               // If we are on the main /academy page, we force the LessonGrid
-              if (lookupSlug === 'academy') {
+              const isAcademyRoot = lookupSlug === 'academy' || lookupSlug === 'academy/academy' || articleLookupSlug === 'academy';
+              if (isAcademyRoot) {
                 return (
                   <PageWrapperInstrument className="bg-va-off-white min-h-screen">
                     <Suspense fallback={null}><LiquidBackground /></Suspense>
@@ -1136,7 +1160,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
             }
           }
 
-          return <CmsPageContent page={article} slug={lookupSlug} extraData={extraData} />;
+          return <CmsPageContent page={article} slug={articleLookupSlug} extraData={extraData} />;
         }
       }
 
@@ -1240,6 +1264,9 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
     // World prefixes are valid entry points — their sub-pages resolve via CMS article lookup.
     const worldPrefixes = ['studio', 'academy', 'ademing', 'johfrai', 'partners', 'freelance', 'casting'];
     const isKnownEntryPoint = MarketManager.isAgencyEntryPoint(segments[0]) || ['voice', 'artist', 'portfolio'].includes(segments[0]) || worldPrefixes.includes(segments[0]?.toLowerCase());
+    // #region agent log
+    appendFileSync('/opt/cursor/logs/debug.log', JSON.stringify({ hypothesisId: 'B', location: 'smart-router:entryPointCheck', message: 'Entry point decision values', data: { segments, lookupSlug, isKnownEntryPoint, agencySegmentLookupSlug: MarketManager.isAgencySegment(lookupSlug), agencySegmentFirst: MarketManager.isAgencySegment(segments[0]) }, timestamp: Date.now() }) + '\n');
+    // #endregion
     
     // 🛡️ CHRIS-PROTOCOL: Category/Native/Language Route Protection (v2.16.103)
     const isCategoryNative = segments[0] === 'category' || segments[0] === 'native' || segments[0] === 'language';
@@ -1254,7 +1281,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
     }
 
     // Legacy Fallbacks (Agency, Casting, etc.)
-    if (MarketManager.isAgencySegment(lookupSlug)) {
+    if (MarketManager.isAgencySegment(segments[0])) {
       const filters: Record<string, string> = {};
       
       //  CHRIS-PROTOCOL: Map translated journey segments to internal journey types via MarketManager
@@ -1596,6 +1623,9 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
       }
     }
 
+    // #region agent log
+    appendFileSync('/opt/cursor/logs/debug.log', JSON.stringify({ hypothesisId: 'C', location: 'smart-router:finalNotFound', message: 'Final notFound reached', data: { lookupSlug, segments, resolved: !!resolved, isKnownEntryPoint }, timestamp: Date.now() }) + '\n');
+    // #endregion
     return notFound();
   } catch (err: any) {
     console.error("[SmartRouter] FATAL ERROR:", err);

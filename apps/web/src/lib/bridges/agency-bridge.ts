@@ -2,6 +2,7 @@ import { db } from '@/lib/system/voices-config';
 import { actorDemos, actors } from '@/lib/system/voices-config';
 import { and, eq, like, or, sql } from "drizzle-orm";
 import { Actor, SearchResults } from "../services/api";
+import { appendFileSync } from 'node:fs';
 
 //  VOICES OS: Dit bestand mag NOOIT in de browser worden geladen.
 // Het bevat directe database-toegang.
@@ -36,6 +37,9 @@ export class AgencyDataBridge {
    */
   static async getActors(params: Record<string, string> = {}): Promise<SearchResults> {
     console.log(' Fetching actors from Supabase with params:', params);
+    // #region agent log
+    appendFileSync('/opt/cursor/logs/debug.log', JSON.stringify({ hypothesisId: 'A', location: 'agency-bridge:getActors:entry', message: 'AgencyDataBridge getActors called', data: { hasLanguage: !!params.language, language: params.language || null, hasSearch: !!params.search, journey: params.journey || null }, timestamp: Date.now() }) + '\n');
+    // #endregion
     
     const { language, search, gender } = params;
     
@@ -91,6 +95,9 @@ export class AgencyDataBridge {
 
     // @ts-ignore
     const results = await query.where(and(...conditions)).limit(50);
+    // #region agent log
+    appendFileSync('/opt/cursor/logs/debug.log', JSON.stringify({ hypothesisId: 'A', location: 'agency-bridge:getActors:postQuery', message: 'AgencyDataBridge actor query finished', data: { resultCount: results.length }, timestamp: Date.now() }) + '\n');
+    // #endregion
 
     // 2. Haal demo's en media op voor deze actors
     const actorIds = results.map(a => a.id);
