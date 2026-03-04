@@ -14,7 +14,7 @@ import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useAdminTracking } from '@/hooks/useAdminTracking';
 import { useAuth } from '@/contexts/AuthContext';
 import { useWorld } from '@/contexts/WorldContext';
-import { ArrowLeft, Edit3, Loader2, Mail, MoreHorizontal, Search as SearchIcon, Shield, UserPlus, Users, RefreshCw, Ghost, Eye, DollarSign, ShoppingBag, Mic2, BookOpen, GraduationCap, Bot, Briefcase, Wind, Layout, Music, HelpCircle } from 'lucide-react';
+import { ArrowLeft, Edit3, Loader2, Mail, MoreHorizontal, Search as SearchIcon, Shield, UserPlus, Users, RefreshCw, Ghost, Eye, DollarSign, ShoppingBag, Mic2, BookOpen, GraduationCap, Bot, Briefcase, Wind, Layout, Music, HelpCircle, UserCheck } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState, useCallback } from 'react';
 import { toast } from 'react-hot-toast';
@@ -277,6 +277,34 @@ export default function AdminUsersPage() {
                     <button onClick={() => logAction('users_mail', { user_id: user.id })} className="p-2 hover:bg-va-off-white rounded-[10px] transition-colors text-va-black/40 hover:text-primary">
                       <Mail strokeWidth={1.5} size={14} />
                     </button>
+                    {user.role === 'actor' && (
+                      <button 
+                        onClick={async () => {
+                          logAction('actor_invite_enrichment', { user_id: user.id });
+                          // 🛡️ CHRIS-PROTOCOL: Generate Enrichment Link
+                          try {
+                            const res = await fetch(`/api/admin/actors/invite-enrichment`, {
+                              method: 'POST',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({ userId: user.id })
+                            });
+                            const data = await res.json();
+                            if (data.success) {
+                              toast.success('Uitnodigingslink gegenereerd!');
+                              // Copy to clipboard or open mail
+                              navigator.clipboard.writeText(data.inviteUrl);
+                              window.open(`mailto:${user.email}?subject=Vervolledig je Voices profiel&body=Beste ${user.name},%0D%0A%0D%0Awe willen je profiel graag naar de 2026 standaard tillen. Gebruik deze link om je gegevens aan te vullen: %0D%0A%0D%0A${data.inviteUrl}`);
+                            }
+                          } catch (e) {
+                            toast.error('Link genereren mislukt');
+                          }
+                        }} 
+                        className="p-2 hover:bg-va-off-white rounded-[10px] transition-colors text-primary/40 hover:text-primary"
+                        title="Uitnodigen voor profiel-verrijking"
+                      >
+                        <UserCheck strokeWidth={1.5} size={14} />
+                      </button>
+                    )}
                   </ContainerInstrument>
                 </td>
               </tr>
