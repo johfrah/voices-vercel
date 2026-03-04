@@ -64,7 +64,7 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
       SELECT
         we.id, we.workshop_id, we.date, we.capacity, we.status,
         we.start_time, we.end_time, we.price as edition_price,
-        l.id as location_id, l.name AS location_name, l.city AS location_city, l.address AS location_address, l.map_url, l.access_instructions,
+        l.id as location_id, l.name AS location_name, l.city AS location_city, l.address AS location_address, l.zip AS location_zip, l.country AS location_country, l.map_url, l.access_instructions,
         i.id as instructor_id, i.name as instructor_name, i.tagline as instructor_tagline, i.bio as instructor_bio,
         im.file_path as instructor_photo
       FROM workshop_editions we
@@ -251,7 +251,7 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
       price: e.edition_price || null,
       location: e.location_id ? { 
         id: e.location_id, name: e.location_name, city: e.location_city, 
-        address: e.location_address, map_url: e.map_url, access_instructions: e.access_instructions 
+        address: e.location_address, zip: e.location_zip, country: e.location_country, map_url: e.map_url, access_instructions: e.access_instructions 
       } : null,
       instructor: e.instructor_id ? {
         id: e.instructor_id, name: e.instructor_name, tagline: e.instructor_tagline, 

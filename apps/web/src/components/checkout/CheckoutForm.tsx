@@ -331,6 +331,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
         plan: state.plan,
         briefing: safeBriefing,
         quoteMessage: quoteMessage || null,
+        is_quote: formData.isQuote || false,
         payment_method: state.paymentMethod,
         metadata: {
           words: wordCount,

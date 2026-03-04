@@ -107,6 +107,7 @@ export const CheckoutPayloadSchema = z.object({
   plan: z.string().optional(),
   briefing: z.string().default(''),
   quoteMessage: z.string().nullable().optional(),
+  is_quote: z.boolean().optional().default(false),
   payment_method: z.string().default('bancontact'),
   
   music: z.object({

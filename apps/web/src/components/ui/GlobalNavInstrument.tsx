@@ -10,6 +10,8 @@ import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
 import { AnimatePresence, motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { formatWorkshopLocationLabel } from '@/lib/utils/workshop-location';
+import { resolveWorkshopImageFromItem } from '@/lib/utils/workshop-image';
 import { 
   Bell, 
   Building2, 
@@ -925,7 +927,35 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
             <ContainerInstrument plain className="max-h-[320px] overflow-y-auto no-scrollbar px-1">
               {(checkoutState.items || []).length > 0 ? (
                 <ContainerInstrument plain className="space-y-1">
-                  {(checkoutState.items || []).map((item: any, idx: number) => (
+                  {(checkoutState.items || []).map((item: any, idx: number) => {
+                    const itemTitle =
+                      item.actor?.display_name ||
+                      item.actor?.name ||
+                      item.name ||
+                      item.id ||
+                      null;
+                    const workshopLocationLabel = item.type === 'workshop_edition'
+                      ? formatWorkshopLocationLabel(item)
+                      : null;
+                    const workshopImageSrc = item.type === 'workshop_edition'
+                      ? resolveWorkshopImageFromItem(item)
+                      : null;
+                    const usageInput = item.usageId ?? item.usage_id ?? item.usage;
+                    const usageLabel = usageInput !== null && usageInput !== undefined && usageInput !== ''
+                      ? (MarketManager.getUsageLabel(usageInput) || String(usageInput))
+                      : null;
+                    const countryValues = Array.isArray(item.country)
+                      ? item.country
+                      : (item.country ? [item.country] : (item.countryId ? [item.countryId] : []));
+                    const countryLabel = countryValues
+                      .map((entry: string | number) => MarketManager.getCountryLabel(entry) || String(entry))
+                      .filter((label: string) => !!label && label.trim().length > 0)
+                      .join(', ');
+                    const amountCandidate = item.pricing?.total ?? item.pricing?.subtotal ?? item.price;
+                    const amountValue = typeof amountCandidate === 'number'
+                      ? amountCandidate
+                      : (typeof amountCandidate === 'string' && amountCandidate.trim() ? Number(amountCandidate) : null);
+                    return (
                     <ContainerInstrument
                       key={item.id || idx}
                       plain
@@ -933,9 +963,9 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
                     >
                       <ContainerInstrument plain className="w-12 h-12 rounded-xl bg-va-off-white flex items-center justify-center shrink-0 border border-black/5 overflow-hidden relative shadow-sm">
                         {item.actor?.photo_url && item.actor.photo_url !== 'NULL' ? (
-                          <Image src={item.actor.photo_url} alt={item.actor.display_name || 'Voice'} fill sizes="48px" className="object-cover" />
-                        ) : item.image_url ? (
-                          <Image src={item.image_url} alt={item.name || 'Workshop'} fill sizes="48px" className="object-cover" />
+                          <Image src={item.actor.photo_url} alt={itemTitle || 'item'} fill sizes="48px" className="object-cover" />
+                        ) : workshopImageSrc ? (
+                          <Image src={workshopImageSrc} alt={itemTitle || 'item'} fill sizes="48px" className="object-cover" />
                         ) : item.type === 'workshop_edition' ? (
                           <GraduationCap size={18} className="text-primary/40" />
                         ) : (
@@ -944,37 +974,41 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
                       </ContainerInstrument>
                       <ContainerInstrument plain className="flex-1 min-w-0">
                         <TextInstrument className="text-[14px] font-medium text-va-black truncate">
-                          {item.type === 'workshop_edition' ? (item.name || 'Workshop') : (item.actor?.display_name || item.actor?.name || 'Stemopname')}
+                          {itemTitle || 'Niet beschikbaar'}
                         </TextInstrument>
                         <ContainerInstrument plain className="flex items-center gap-1.5 mt-0.5">
                           {item.type === 'workshop_edition' ? (
                             <>
-                              <TextInstrument className="text-[11px] text-primary font-bold tracking-widest uppercase">Studio</TextInstrument>
+                              <TextInstrument className="text-[11px] text-primary font-bold tracking-widest uppercase">
+                                {typeof item.type === 'string' ? item.type : ''}
+                              </TextInstrument>
                               {item.date && (
                                 <>
                                   <ContainerInstrument plain className="w-0.5 h-0.5 rounded-full bg-va-black/10" />
                                   <TextInstrument className="text-[11px] text-va-black/40 font-light tracking-widest">
-                                    {new Date(item.date).toLocaleDateString('nl-BE', { day: 'numeric', month: 'short' })}
+                                    {item.date}
                                   </TextInstrument>
                                 </>
                               )}
-                              {item.location && (
+                              {workshopLocationLabel && (
                                 <>
                                   <ContainerInstrument plain className="w-0.5 h-0.5 rounded-full bg-va-black/10" />
-                                  <TextInstrument className="text-[11px] text-va-black/40 font-light tracking-widest">{item.location}</TextInstrument>
+                                  <TextInstrument className="text-[11px] text-va-black/40 font-light tracking-widest">{workshopLocationLabel}</TextInstrument>
                                 </>
                               )}
                             </>
                           ) : (
                             <>
-                              <TextInstrument className="text-[11px] text-va-black/40 font-light truncate tracking-widest">
-                                {item.usage === 'commercial' ? t('common.commercial', 'Commercial') : item.usage === 'telefonie' ? t('common.telephony', 'Telefonie') : t('common.corporate', 'Corporate')}
-                              </TextInstrument>
-                              {item.country && (
+                              {usageLabel && (
+                                <TextInstrument className="text-[11px] text-va-black/40 font-light truncate tracking-widest">
+                                  {usageLabel}
+                                </TextInstrument>
+                              )}
+                              {countryLabel && (
                                 <>
                                   <ContainerInstrument plain className="w-0.5 h-0.5 rounded-full bg-va-black/10" />
                                   <TextInstrument className="text-[11px] text-va-black/40 font-light tracking-widest">
-                                    {Array.isArray(item.country) ? item.country[0] : item.country}
+                                    {countryLabel}
                                   </TextInstrument>
                                 </>
                               )}
@@ -985,7 +1019,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
                       <div className="flex flex-col items-end gap-1">
                         <div className="flex items-center gap-2">
                           <TextInstrument className="text-[14px] font-medium text-va-black">
-                            €{item.pricing?.total || item.pricing?.subtotal || 0}
+                            {amountValue !== null && Number.isFinite(amountValue) ? `€${amountValue.toFixed(2)}` : 'Niet beschikbaar'}
                           </TextInstrument>
                           <button 
                             onClick={(e) => {
@@ -1005,7 +1039,8 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
                         </TextInstrument>
                       </div>
                     </ContainerInstrument>
-                  ))}
+                    );
+                  })}
                 </ContainerInstrument>
               ) : (
                 <ContainerInstrument plain className="p-8 text-center">

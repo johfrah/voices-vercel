@@ -8,6 +8,7 @@ import { ArrowRight, ShoppingCart, Heart } from "lucide-react";
 import { useSonicDNA } from "@/lib/engines/sonic-dna";
 import { useVoicesRouter } from "@/components/ui/VoicesLink";
 import { useCheckout } from "@/contexts/CheckoutContext";
+import { buildWorkshopLocationPayload } from "@/lib/utils/workshop-location";
 import { WorkshopParticipantForm } from "./WorkshopParticipantForm";
 
 interface WorkshopHeroIslandProps {
@@ -31,7 +32,13 @@ interface WorkshopHeroIslandProps {
       id: number;
       date: string;
       price?: number | null;
-      location?: { city?: string } | null;
+      location?: {
+        name?: string | null;
+        address?: string | null;
+        city?: string | null;
+        zip?: string | null;
+        country?: string | null;
+      } | null;
     }>;
   };
 }
@@ -90,16 +97,21 @@ export const WorkshopHeroIsland: React.FC<WorkshopHeroIslandProps> = ({ workshop
     const imageUrl = workshop.featured_image?.file_path
       ? `${storageBase}/${workshop.featured_image.file_path}`
       : null;
+    const locationPayload = buildWorkshopLocationPayload(nextEdition?.location || null);
 
     const workshopItem = {
       id: `workshop-${nextEdition!.id}-${Date.now()}`,
       type: 'workshop_edition' as const,
       name: workshop.title,
       price: priceValue,
+      workshop_id: workshop.id,
+      workshopId: workshop.id,
+      edition_id: nextEdition!.id,
       editionId: nextEdition!.id,
       date: nextEdition!.date,
-      location: nextEdition!.location?.city || null,
+      ...locationPayload,
       image_url: imageUrl,
+      thumbnail_url: imageUrl,
       participant_info: participantData,
       pricing: {
         total: priceValue,
@@ -114,7 +126,7 @@ export const WorkshopHeroIsland: React.FC<WorkshopHeroIslandProps> = ({ workshop
       email: participantData.email,
     });
     setShowParticipantForm(false);
-    router.push('/checkout');
+    router.push('/studio/checkout');
   };
 
   return (
@@ -130,7 +142,7 @@ export const WorkshopHeroIsland: React.FC<WorkshopHeroIslandProps> = ({ workshop
             <ContainerInstrument plain className="relative z-10 w-full max-w-[360px] aspect-[9/16]">
               {hasVideo ? (
                 <VideoPlayer 
-                  src={videoUrl}
+                  src={videoUrl || ''}
                   className="w-full h-full object-cover rounded-[24px] shadow-2xl border border-white/10"
                   autoPlay={true}
                   muted={true}

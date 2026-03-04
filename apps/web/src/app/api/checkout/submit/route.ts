@@ -141,7 +141,7 @@ function normalizeCommercialFactor(
 }
 
 function extractWorkshopId(item: Record<string, unknown>): number | null {
-  const candidates = [item.workshop_id, item.workshopId, item.edition_id, item.editionId, item.id];
+  const candidates = [item.workshop_id, item.workshopId, item.id];
   for (const candidate of candidates) {
     if (typeof candidate === 'number' && Number.isFinite(candidate) && candidate > 0) {
       return Math.round(candidate);
@@ -153,7 +153,7 @@ function extractWorkshopId(item: Record<string, unknown>): number | null {
       if (Number.isFinite(direct) && direct > 0) {
         return Math.round(direct);
       }
-      const match = trimmed.match(/(\d+)$/);
+      const match = trimmed.match(/^workshop-(\d+)(?:-|$)/i);
       if (match) {
         const fromSuffix = Number(match[1]);
         if (Number.isFinite(fromSuffix) && fromSuffix > 0) {
@@ -243,7 +243,7 @@ function buildOrderEmailItems(validatedItems: any[], actorMap: Map<number, any>,
     const lineTotal = toSafeNumber(item?.pricing?.total || item?.pricing?.subtotal || item?.price || 0);
     const quantity = Math.max(1, toSafeNumber(item?.quantity || 1));
     return {
-      name: item?.name || item?.actor?.display_name || item?.actor?.first_name || 'Voice-over',
+      name: resolveCheckoutItemName(item),
       price: lineTotal,
       quantity,
       unitPrice: quantity > 0 ? lineTotal / quantity : lineTotal,
@@ -253,6 +253,20 @@ function buildOrderEmailItems(validatedItems: any[], actorMap: Map<number, any>,
       projectCode: item?.project_code || item?.id || undefined,
     };
   });
+}
+
+function resolveCheckoutItemName(item: any): string {
+  const candidate =
+    item?.name ||
+    item?.actor?.display_name ||
+    item?.actor?.name ||
+    item?.actor?.first_name ||
+    item?.workshop_title;
+  if (typeof candidate === 'string' && candidate.trim().length > 0) {
+    return candidate.trim();
+  }
+  const technicalFallback = item?.id || item?.workshop_id || item?.workshopId;
+  return String(technicalFallback || 'item');
 }
 export async function POST(request: Request) {
   return await ServerWatchdog.atomic('CheckoutAPI', 'SubmitOrder', {}, async () => {
@@ -291,7 +305,7 @@ export async function POST(request: Request) {
       pricing, items, selectedActor, step, first_name, last_name, email, 
       vat_number, postal_code, city, metadata, quoteMessage, phone, 
       company, address_street, usage, plan, music, country, payment_method, language,
-      billing_po, purchase_order, financial_email, billing_email_alt
+      billing_po, purchase_order, financial_email, billing_email_alt, is_quote
     } = data;
     const resolvedPurchaseOrder = String(billing_po || purchase_order || '').trim() || null;
     const resolvedBillingEmailAlt = String(financial_email || billing_email_alt || '').trim().toLowerCase() || null;
@@ -483,7 +497,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Leeg mandje. Voeg eerst een voice-over toe.' }, { status: 400 });
     }
 
-    const requestedQuote = Boolean((rawBody as { isQuote?: unknown })?.isQuote);
+    const requestedQuote = Boolean(is_quote);
     const isQuote = isQuoteOnly || requestedQuote;
     const amount = Math.round(serverCalculatedSubtotal * (1 + taxRate) * 100) / 100;
     if (!isQuote && amount <= 0) {
@@ -571,6 +585,49 @@ export async function POST(request: Request) {
 
     // 6. Order Items
     const itemsToInsert = validatedItems.flatMap((item: any) => {
+      if (item.type === 'workshop_edition') {
+        const workshopSubtotal = Number(item.pricing?.subtotal ?? item.pricing?.total ?? item.price ?? 0);
+        if (!Number.isFinite(workshopSubtotal) || workshopSubtotal <= 0) {
+          throw new Error(`Workshop subtotal ongeldig voor item ${item?.id || 'onbekend'}`);
+        }
+        const workshopTax = Math.round(workshopSubtotal * taxRate * 100) / 100;
+        return [{
+          order_id: newOrder.id,
+          actor_id: null,
+          edition_id: item.editionId || item.edition_id || null,
+          name: resolveCheckoutItemName(item),
+          quantity: Math.max(1, toSafeNumber(item.quantity || 1)),
+          price: workshopSubtotal.toFixed(2),
+          tax: workshopTax.toFixed(2),
+          meta_data: {
+            ...item.pricing,
+            item_type: 'workshop_edition',
+            purchase_order: resolvedPurchaseOrder,
+            billing_email_alt: resolvedBillingEmailAlt,
+            billing_vat_number: vat_number || null,
+            company_name: company || null,
+            workshop_id: item.workshop_id || item.workshopId || null,
+            edition_id: item.edition_id || item.editionId || null,
+            date: item.date || null,
+            location: item.location || null,
+            location_address: item.location_address || null,
+            location_city: item.location_city || null,
+            location_zip: item.location_zip || null,
+            location_country: item.location_country || null,
+            participant_info: item.participant_info || undefined,
+            email_item_snapshot: {
+              description: item.description || resolveCheckoutItemDescription(item) || null,
+              thumbnail_url: resolveCheckoutItemThumbnail(item, null, host) || null,
+              delivery_time: null,
+              quantity: Math.max(1, toSafeNumber(item.quantity || 1)),
+              unit_price: workshopSubtotal,
+              project_code: item.project_code || item.id || null,
+            },
+          },
+          delivery_status: 'waiting'
+        }];
+      }
+
       const dbActor = actorMap.get(Number(item.actor?.id));
       const primaryCountry = toStringArray(item.country)[0] || '';
       
@@ -602,7 +659,7 @@ export async function POST(request: Request) {
         order_id: newOrder.id,
         actor_id: dbActor?.id || null,
         edition_id: item.editionId || item.edition_id || null,
-        name: item.name || 'Product',
+        name: resolveCheckoutItemName(item),
         quantity: 1,
         price: voiceSubtotal.toFixed(2),
         tax: voiceTax.toFixed(2),
@@ -668,7 +725,7 @@ export async function POST(request: Request) {
             as_background: musicAsBackground,
             as_hold_music: musicAsHoldMusic,
             source_actor_id: dbActor?.id || null,
-            source_item_name: item.name || 'voice_over',
+            source_item_name: resolveCheckoutItemName(item),
           },
           usage: item.usage || null,
           media: item.media || [],
@@ -745,7 +802,7 @@ export async function POST(request: Request) {
       amount: { currency: 'EUR', value: amount.toFixed(2) },
       orderNumber: newOrder.id.toString(),
       lines: validatedItems.map((i: any) => ({
-        name: i.name || 'Voice Over',
+        name: resolveCheckoutItemName(i),
         quantity: 1,
         unitPrice: { currency: 'EUR', value: (i.pricing?.total || 0).toFixed(2) },
         totalAmount: { currency: 'EUR', value: (i.pricing?.total || 0).toFixed(2) },
@@ -786,7 +843,7 @@ export async function POST(request: Request) {
             orderId: newOrder.id,
             total: amount,
             items: validatedItems.map((item: any) => ({
-              name: item.name || item.actor?.display_name || 'Voice Over',
+              name: resolveCheckoutItemName(item),
               price: Number(item.pricing?.total || item.pricing?.subtotal || 0),
               deliveryTime: item.actor?.delivery_time || item.actor?.deliveryTime
             })),
