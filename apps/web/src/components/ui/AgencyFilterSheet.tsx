@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils';
 import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
 import { useTranslation } from '@/contexts/TranslationContext';
 import { useMasterControl } from '@/contexts/VoicesMasterControlContext';
+import { createPortal } from 'react-dom';
 import { 
   ButtonInstrument, 
   ContainerInstrument, 
@@ -32,6 +33,28 @@ export const AgencyFilterSheet: React.FC<{
   const { t } = useTranslation();
   const { playClick } = useSonicDNA();
   const { state } = useMasterControl();
+  const [portalRoot, setPortalRoot] = React.useState<HTMLElement | null>(null);
+
+  React.useEffect(() => {
+    setPortalRoot(document.body);
+    return () => {
+      setPortalRoot(null);
+    };
+  }, []);
+
+  const translateDynamicLabel = React.useCallback((scope: 'language' | 'gender' | 'style', value: string) => {
+    const raw = String(value || '').trim();
+    if (!raw) return '';
+
+    // Guard against key-storming with dirty source values (emails, punctuation blobs, etc.).
+    const lowered = raw.toLowerCase();
+    if (!/^[a-z0-9\s-]+$/.test(lowered)) return raw;
+
+    const token = lowered.replace(/[\s-]+/g, '_');
+    if (token.length < 2 || token.length > 36) return raw;
+
+    return t(`common.${scope}.${token}`, raw);
+  }, [t]);
 
   const handleSelect = (key: string, value: any) => {
     playClick('soft');
@@ -89,7 +112,7 @@ export const AgencyFilterSheet: React.FC<{
     });
   }, [filters.languages]);
 
-  return (
+  const sheetLayer = (
     <AnimatePresence>
       {isOpen && (
         <>
@@ -98,8 +121,10 @@ export const AgencyFilterSheet: React.FC<{
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={() => { onClose(); }}
-            className="fixed inset-0 bg-black/60 backdrop-blur-md z-50"
+            onClick={(e) => {
+              if (e.currentTarget === e.target) onClose();
+            }}
+            className="fixed inset-0 bg-black/60 backdrop-blur-md z-[60]"
           />
           <ContainerInstrument
             as={motion.div}
@@ -107,11 +132,11 @@ export const AgencyFilterSheet: React.FC<{
             animate={{ y: 0 }}
             exit={{ y: '100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed inset-x-0 bottom-0 bg-va-off-white rounded-t-[40px] z-50 shadow-2xl border-t border-white/20 max-h-[90vh] overflow-hidden flex flex-col"
+            className="fixed inset-x-0 bottom-0 bg-va-off-white dark:bg-va-card rounded-t-[40px] z-[70] shadow-2xl border-t border-white/20 dark:border-white/10 max-h-[90vh] overflow-hidden flex flex-col"
           >
             {/* Handle */}
             <ContainerInstrument className="h-12 flex items-center justify-center flex-shrink-0">
-              <ContainerInstrument className="w-12 h-1.5 bg-black/10 rounded-full" />
+              <ContainerInstrument className="w-12 h-1.5 bg-va-black/20 rounded-full" />
             </ContainerInstrument>
 
             {/* Content */}
@@ -124,7 +149,7 @@ export const AgencyFilterSheet: React.FC<{
                   </ContainerInstrument>
                   <ButtonInstrument 
                     onClick={() => { onUpdate({ language: undefined, gender: undefined, style: undefined }); }}
-                    className="text-[15px] font-light tracking-widest text-primary"
+                    className="text-[16px] md:text-[15px] font-light tracking-[0.1em] md:tracking-widest text-primary"
                   >
                     <VoiceglotText  translationKey="filter.clear_all" defaultText="Wis alles" />
                   </ButtonInstrument>
@@ -152,7 +177,7 @@ export const AgencyFilterSheet: React.FC<{
                         }}
                         className={cn(
                           "w-full px-6 py-4 rounded-2xl flex items-center gap-4 transition-all border-2",
-                          state.journey === j.id ? "bg-va-black text-white border-va-black shadow-lg" : "bg-white border-black/5 text-va-black/60"
+                          state.journey === j.id ? "bg-va-black text-white border-va-black shadow-lg ring-1 ring-white/20" : "bg-white dark:bg-va-surface border-black/5 dark:border-white/10 text-va-black/60"
                         )}
                       >
                         <j.icon size={18} strokeWidth={state.journey === j.id ? 2 : 1.5} />
@@ -177,7 +202,7 @@ export const AgencyFilterSheet: React.FC<{
                     {sortedLanguages.map(lang => (
                       <FilterChip
                         key={lang} 
-                        label={t(`common.language.${lang.toLowerCase()}`, lang)} 
+                        label={translateDynamicLabel('language', lang)} 
                         selected={activeParams.language === lang} 
                         onClick={() => { handleSelect('language', lang); }} 
                       />
@@ -195,7 +220,7 @@ export const AgencyFilterSheet: React.FC<{
                     {filters.genders.map(gender => (
                       <FilterChip
                         key={gender} 
-                        label={t(`common.gender.${gender.toLowerCase()}`, gender)} 
+                        label={translateDynamicLabel('gender', gender)} 
                         selected={activeParams.gender === gender} 
                         onClick={() => { handleSelect('gender', gender); }} 
                       />
@@ -212,7 +237,7 @@ export const AgencyFilterSheet: React.FC<{
                         <VoiceglotText translationKey="filter.quantity" defaultText="Hoeveelheid woorden" />
                       </HeadingInstrument>
                     </ContainerInstrument>
-                    <ContainerInstrument className="bg-white p-6 rounded-3xl border border-black/5 shadow-sm">
+                    <ContainerInstrument className="bg-white dark:bg-va-surface p-6 rounded-3xl border border-black/5 dark:border-white/10 shadow-sm">
                       <VoicesWordSlider 
                         inline
                         isTelephony={state.journey === 'telephony'}
@@ -244,7 +269,7 @@ export const AgencyFilterSheet: React.FC<{
                         onClick={() => onUpdate({ sortBy: s.id })}
                         className={cn(
                           "w-full px-6 py-4 rounded-2xl flex items-center gap-4 transition-all",
-                          state.filters.sortBy === s.id ? "bg-primary text-va-black font-bold" : "bg-white border border-black/5 text-va-black/60"
+                          state.filters.sortBy === s.id ? "bg-primary text-white font-bold ring-1 ring-white/20" : "bg-white dark:bg-va-surface border border-black/5 dark:border-white/10 text-va-black/60"
                         )}
                       >
                         <s.icon size={16} />
@@ -268,7 +293,7 @@ export const AgencyFilterSheet: React.FC<{
                       {filters.styles.map(style => (
                         <FilterChip
                           key={style} 
-                          label={t(`common.style.${style.toLowerCase().replace(/\s+/g, '_')}`, style)} 
+                          label={translateDynamicLabel('style', style)} 
                           selected={activeParams.style?.toLowerCase() === style.toLowerCase()} 
                           onClick={() => { handleSelect('style', style); }} 
                         />
@@ -280,7 +305,7 @@ export const AgencyFilterSheet: React.FC<{
             </ContainerInstrument>
 
             {/* Sticky Apply Button */}
-            <ContainerInstrument className="absolute bottom-0 inset-x-0 p-6 bg-gradient-to-t from-va-off-white via-va-off-white to-transparent">
+            <ContainerInstrument className="absolute bottom-0 inset-x-0 p-6 bg-gradient-to-t from-va-off-white dark:from-va-card via-va-off-white dark:via-va-card to-transparent">
               <ButtonInstrument 
                 onClick={() => { onClose(); }}
                 className="w-full py-6 bg-va-black text-white rounded-[24px] font-black tracking-widest text-[15px] shadow-aura active:scale-95 transition-all"
@@ -293,6 +318,10 @@ export const AgencyFilterSheet: React.FC<{
       )}
     </AnimatePresence>
   );
+
+  if (!portalRoot) return null;
+
+  return createPortal(sheetLayer, portalRoot);
 };
 
 const FilterChip = ({ label, selected, onClick }: { label: string, selected: boolean, onClick: () => void }) => {
@@ -305,8 +334,8 @@ const FilterChip = ({ label, selected, onClick }: { label: string, selected: boo
       className={cn(
         "px-6 py-4 rounded-2xl text-[15px] font-light tracking-widest border-2 transition-all flex items-center justify-between group",
         selected 
-          ? "bg-primary border-primary text-va-black shadow-lg" 
-          : "bg-white border-black/5 text-va-black/40 hover:border-black/10"
+          ? "bg-primary border-primary text-white shadow-lg ring-1 ring-white/20" 
+          : "bg-white dark:bg-va-surface border-black/5 dark:border-white/10 text-va-black/40 hover:border-black/10 dark:hover:border-white/20"
       )}
     >
       <ContainerInstrument className="flex items-center gap-2 truncate mr-2">
