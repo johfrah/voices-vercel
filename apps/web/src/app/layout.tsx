@@ -41,6 +41,23 @@ const VoicyChat = dynamic(() => import("@/components/ui/VoicyChat").then(mod => 
   ssr: false,
   loading: () => null 
 });
+async function withTimeoutFallback<T>(executor: () => Promise<T>, timeoutMs: number, fallbackValue: T): Promise<T> {
+  let timeoutHandle: ReturnType<typeof setTimeout> | undefined;
+  const timeoutPromise = new Promise<T>((resolve) => {
+    timeoutHandle = setTimeout(() => {
+      resolve(fallbackValue);
+    }, timeoutMs);
+  });
+
+  try {
+    return await Promise.race([executor(), timeoutPromise]);
+  } catch (error) {
+    console.warn('[layout] withTimeoutFallback triggered fallback after error:', error);
+    return fallbackValue;
+  } finally {
+    if (timeoutHandle) clearTimeout(timeoutHandle);
+  }
+}
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -288,12 +305,11 @@ export default async function RootLayout({
   // 🛡️ ID-First Context Resolution: pathname voor worldId/journeyId (Studio=2, Academy=3)
   const { worldId, languageId, journeyId } = MarketManagerServer.resolveContext(cleanHost, pathname);
 
-  //  CHRIS-PROTOCOL: Parallel Pulse Fetching (v2.14.798)
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
   const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
   const supabase = createClient(supabaseUrl, supabaseKey);
 
-  const [market, studioTranslations, worldLanguages, handshakeLanguages, worldConfig] = await Promise.all([
+  const [market, studioTranslations, handshakeLanguages, worldConfig] = await Promise.all([
     getMarketSafe(marketHost),
     (async () => {
       try {
@@ -307,16 +323,7 @@ export default async function RootLayout({
         return {};
       }
     })(),
-    (async () => {
-      try {
-        const { data } = await supabase.from('world_languages').select('*');
-        return data || [];
-      } catch (err) {
-        console.error(' RootLayout: Failed to load world languages:', err);
-        return [];
-      }
-    })(),
-    (async () => {
+    withTimeoutFallback(async () => {
       try {
         const { data } = await supabase.from('languages').select('id, code, label');
         return data || [];
@@ -324,9 +331,11 @@ export default async function RootLayout({
         console.error(' RootLayout: Failed to load language registry:', err);
         return [];
       }
-    })(),
-    ConfigBridge.getWorldConfig(worldId, languageId)
+    }, 2500, []),
+    withTimeoutFallback(() => ConfigBridge.getWorldConfig(worldId, languageId), 2500, null)
   ]);
+
+  const worldLanguages: Array<{ world_id: number; language_id: number; is_primary: boolean; is_popular: boolean }> = [];
 
   if (!market) {
     throw new Error('Market configuration could not be resolved.');
@@ -341,8 +350,6 @@ export default async function RootLayout({
   const isAcademyPage = pathname.startsWith('/academy/') || pathname === '/academy' || pathname.includes('/academy');
   
   const journeyKey = isStudioPage ? 'studio' : (isAcademyPage ? 'academy' : (market.market_code === 'ADEMING' ? 'ademing' : (market.market_code === 'PORTFOLIO' ? 'portfolio' : (market.market_code === 'ARTIST' ? 'artist' : 'agency'))));
-  const navConfig = await ConfigBridge.getNavConfig(journeyKey, normalizeLocale(langHeader || 'nl-be'));
-
   const initialJourney = isStudioPage ? 'studio' : (isAcademyPage ? 'academy' : (market.market_code === 'ADEMING' ? 'ademing' : (market.market_code === 'PORTFOLIO' ? 'portfolio' : (market.market_code === 'ARTIST' ? 'artist' : 'agency'))));
   const initialUsage = isStudioPage || isAcademyPage ? 'subscription' : (market.market_code === 'ADEMING' ? 'subscription' : 'unpaid');
 
@@ -397,6 +404,11 @@ export default async function RootLayout({
       </html>
     );
   }
+  const navConfig = await withTimeoutFallback(
+    () => ConfigBridge.getNavConfig(journeyKey, normalizeLocale(langHeader || 'nl-be')),
+    2500,
+    null
+  );
   
   // 🛡️ VISIONARY MANDATE: Journey logic exclusively from market data
   const isSpecialJourney = ['ADEMING', 'PORTFOLIO', 'ARTIST'].includes(market.market_code);

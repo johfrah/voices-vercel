@@ -20,20 +20,51 @@ import { getStudioWorkshopsData } from "@/lib/services/studio-service";
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://vcbxyyjsxuquytcsskpj.supabase.co';
 const STORAGE_BASE = `${SUPABASE_URL.replace(/\/$/, '')}/storage/v1/object/public/voices`;
 
+async function withTimeoutFallback<T>(executor: () => Promise<T>, timeoutMs: number, fallbackValue: T): Promise<T> {
+  let timeoutHandle: ReturnType<typeof setTimeout> | undefined;
+  const timeoutPromise = new Promise<T>((resolve) => {
+    timeoutHandle = setTimeout(() => resolve(fallbackValue), timeoutMs);
+  });
+
+  try {
+    return await Promise.race([executor(), timeoutPromise]);
+  } catch (error) {
+    console.warn('[studio/page] withTimeoutFallback triggered fallback after error:', error);
+    return fallbackValue;
+  } finally {
+    if (timeoutHandle) clearTimeout(timeoutHandle);
+  }
+}
+
 const toStorageUrl = (filePath?: string | null): string | null => {
   if (!filePath) return null;
   const cleanPath = filePath.replace(/^\//, '');
   return `${STORAGE_BASE}/${cleanPath}`;
 };
 
-const normalizeSubtitleTracks = (subtitleData: any): Array<{ srcLang: string; label: string; data: Array<{ start: number; end: number; text: string }> }> => {
+type SubtitleTrack = { srcLang: string; label: string; src?: string; data?: Array<{ start: number; end: number; text: string }> };
+
+const normalizeSubtitleTracks = (workshop: any): SubtitleTrack[] => {
+  const junctionTracks = Array.isArray(workshop?.subtitle_tracks) ? workshop.subtitle_tracks : [];
+  const normalizedJunction = junctionTracks
+    .map((track: any) => ({
+      srcLang: track.src_lang || track.srcLang || 'nl-BE',
+      label: track.label || 'Nederlands',
+      src: track.src || undefined,
+      data: Array.isArray(track.data) ? track.data : undefined
+    }))
+    .filter((track: SubtitleTrack) => Boolean(track.src) || (Array.isArray(track.data) && track.data.length > 0));
+
+  if (normalizedJunction.length > 0) return normalizedJunction;
+
+  const subtitleData = workshop?.subtitle_data;
   if (!subtitleData) return [];
 
   if (Array.isArray(subtitleData)) {
     return subtitleData
       .filter((track) => Array.isArray(track?.items) && track.items.length > 0)
       .map((track) => ({
-        srcLang: track.lang || 'nl',
+        srcLang: track.lang || 'nl-BE',
         label: track.label || track.lang || 'Nederlands',
         data: track.items
       }));
@@ -41,7 +72,7 @@ const normalizeSubtitleTracks = (subtitleData: any): Array<{ srcLang: string; la
 
   if (Array.isArray(subtitleData.items) && subtitleData.items.length > 0) {
     return [{
-      srcLang: subtitleData.lang || 'nl',
+      srcLang: subtitleData.lang || 'nl-BE',
       label: subtitleData.label || 'Nederlands',
       data: subtitleData.items
     }];
@@ -69,7 +100,7 @@ const StudioWorkshopsSection = nextDynamic(
 
 export async function generateMetadata(): Promise<Metadata> {
   const { getWorldConfig } = await import('@/lib/services/world-config-service');
-  const config = await getWorldConfig(2);
+  const config = await withTimeoutFallback(() => getWorldConfig(2), 2500, null);
   return {
     title: config?.meta_title || "Workshops | Voices Studio",
     description: config?.meta_description || "Professionele voice-over workshops en studio-opnames.",
@@ -79,66 +110,65 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function StudioPage() {
   const { workshops, instructors, faqs, heroVideoPath } = await getStudioWorkshopsData();
-  // Hero: workshop-beginners-aftermovie, gekoppeld via media ID (studio-service)
   const heroVideoUrl = toStorageUrl(heroVideoPath);
   const subtitleWorkshop = workshops.find((w: any) => normalizeSubtitleTracks(w?.subtitle_data).length > 0);
   const heroSubtitles = normalizeSubtitleTracks(subtitleWorkshop?.subtitle_data ?? null);
 
   return (
-    <PageWrapperInstrument className="bg-va-off-white min-h-screen" data-world="studio">
-      <Suspense fallback={null}>
-        <LiquidBackground />
-      </Suspense>
+      <PageWrapperInstrument className="bg-va-off-white min-h-screen" data-world="studio">
+        <Suspense fallback={null}>
+          <LiquidBackground />
+        </Suspense>
 
-      {/* HERO SECTION: Video (Left) + Content (Right) */}
-      <section className="relative z-10 pt-32 pb-24 overflow-hidden" data-block-type="hero">
-        <ContainerInstrument className="max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            
-            {/* Left: Video Player Island (verticaal 9:16) */}
-            <div className="relative group animate-in fade-in slide-in-from-left-8 duration-1000">
-              <div className="absolute -inset-4 bg-primary/5 rounded-[30px] blur-2xl group-hover:bg-primary/10 transition-all duration-700" />
-              {heroVideoUrl ? (
-                <VideoPlayer 
-                  src={heroVideoUrl}
-                  subtitles={heroSubtitles}
-                  className="w-full max-w-[320px] mx-auto aspect-[9/16] rounded-[20px] shadow-aura-lg border border-white/20 relative z-10"
-                  autoPlay={false}
-                  muted={false}
-                />
-              ) : (
-                <ContainerInstrument className="w-full max-w-[320px] mx-auto aspect-[9/16] rounded-[20px] border border-white/20 bg-va-off-white/80 backdrop-blur-sm shadow-aura-lg relative z-10 flex items-center justify-center">
-                  <TextInstrument className="text-va-black/50 text-sm tracking-wide text-center px-4">Studio video niet beschikbaar</TextInstrument>
-                </ContainerInstrument>
-              )}
-              {/* Floating Decorative Element */}
-              <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-primary/20 rounded-full blur-3xl animate-pulse" />
-            </div>
-
-            {/* Right: Content Island */}
-            <div className="flex flex-col items-start animate-in fade-in slide-in-from-right-8 duration-1000 delay-200">
-              <TextInstrument className="text-[13px] font-light tracking-[0.4em] uppercase text-primary mb-6 flex items-center gap-3">
-                <span className="w-8 h-[1px] bg-primary/30" />
-                <VoiceglotText translationKey="page.studio.projecttype" defaultText="Studio" />
-              </TextInstrument>
+        {/* HERO SECTION: Video (Left) + Content (Right) */}
+        <section className="relative z-10 pt-32 pb-24 overflow-hidden" data-block-type="hero">
+          <ContainerInstrument className="max-w-7xl mx-auto px-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
               
-              <HeadingInstrument level={1} className="text-5xl md:text-7xl font-light tracking-tighter leading-[1.1] text-va-black mb-8">
-                <VoiceglotText translationKey="page.studio.title" defaultText="Workshops voor professionele sprekers" />
-              </HeadingInstrument>
-              
-              <TextInstrument className="text-xl md:text-2xl text-va-black/60 font-light leading-relaxed mb-12 max-w-xl">
-                <VoiceglotText 
-                  translationKey="page.studio.description" 
-                  defaultText="Verbeter je stem, ontdek verschillende voice-overstijlen en perfectioneer je opnamevaardigheden. Leer professioneler spreken met Bernadette en Johfrah." 
-                />
-              </TextInstrument>
-            </div>
-          </div>
-        </ContainerInstrument>
-      </section>
+              {/* Left: Video Player Island (verticaal 9:16, workshop-beginners-aftermovie) */}
+              <div className="relative group animate-in fade-in slide-in-from-left-8 duration-1000">
+                <div className="absolute -inset-4 bg-primary/5 rounded-[30px] blur-2xl group-hover:bg-primary/10 transition-all duration-700" />
+                {heroVideoUrl ? (
+                  <VideoPlayer 
+                    src={heroVideoUrl}
+                    subtitles={heroSubtitles}
+                    className="w-full max-w-[320px] mx-auto aspect-[9/16] rounded-[20px] shadow-aura-lg border border-white/20 relative z-10"
+                    autoPlay={false}
+                    muted={false}
+                  />
+                ) : (
+                  <ContainerInstrument className="w-full max-w-[320px] mx-auto aspect-[9/16] rounded-[20px] border border-white/20 bg-va-off-white/80 backdrop-blur-sm shadow-aura-lg relative z-10 flex items-center justify-center">
+                    <TextInstrument className="text-va-black/50 text-sm tracking-wide text-center px-4">Studio video niet beschikbaar</TextInstrument>
+                  </ContainerInstrument>
+                )}
+                {/* Floating Decorative Element */}
+                <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-primary/20 rounded-full blur-3xl animate-pulse" />
+              </div>
 
-      {/* WORKSHOPS SECTION: Carousel Island */}
-      <StudioWorkshopsSection workshops={workshops} instructors={instructors} faqs={faqs} />
-    </PageWrapperInstrument>
-  );
+              {/* Right: Content Island */}
+              <div className="flex flex-col items-start animate-in fade-in slide-in-from-right-8 duration-1000 delay-200">
+                <TextInstrument className="text-[13px] font-light tracking-[0.4em] uppercase text-primary mb-6 flex items-center gap-3">
+                  <span className="w-8 h-[1px] bg-primary/30" />
+                  <VoiceglotText translationKey="page.studio.projecttype" defaultText="Studio" />
+                </TextInstrument>
+                
+                <HeadingInstrument level={1} className="text-5xl md:text-7xl font-light tracking-tighter leading-[1.1] text-va-black mb-8">
+                  <VoiceglotText translationKey="page.studio.title" defaultText="Workshops voor professionele sprekers" />
+                </HeadingInstrument>
+                
+                <TextInstrument className="text-xl md:text-2xl text-va-black/60 font-light leading-relaxed mb-12 max-w-xl">
+                  <VoiceglotText 
+                    translationKey="page.studio.description" 
+                    defaultText="Verbeter je stem, ontdek verschillende voice-overstijlen en perfectioneer je opnamevaardigheden. Leer professioneler spreken met Bernadette en Johfrah." 
+                  />
+                </TextInstrument>
+              </div>
+            </div>
+          </ContainerInstrument>
+        </section>
+
+        {/* WORKSHOPS SECTION: Carousel Island */}
+        <StudioWorkshopsSection workshops={workshops} instructors={instructors} faqs={faqs} />
+      </PageWrapperInstrument>
+    );
 }
