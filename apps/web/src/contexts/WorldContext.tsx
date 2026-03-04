@@ -23,6 +23,12 @@ interface WorldContextType {
   isLoading: boolean;
 }
 
+function isAbortLikeError(error: unknown): boolean {
+  const e = error as { name?: string; message?: string } | null;
+  const message = String(e?.message || '').toLowerCase();
+  return e?.name === 'AbortError' || message.includes('aborted');
+}
+
 const WorldContext = createContext<WorldContextType | undefined>(undefined);
 
 export const useWorld = () => {
@@ -39,10 +45,13 @@ export const WorldProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    const controller = new AbortController();
+    let isActive = true;
     const fetchWorlds = async () => {
       try {
-        const res = await fetch('/api/admin/config?type=worlds');
+        const res = await fetch('/api/admin/config?type=worlds', { signal: controller.signal });
         const data = await res.json();
+        if (!isActive || controller.signal.aborted) return;
         if (data.results) {
           setAllWorlds(data.results);
           
@@ -54,13 +63,18 @@ export const WorldProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           }
         }
       } catch (error) {
+        if (!isActive || controller.signal.aborted || isAbortLikeError(error)) return;
         console.error('Failed to fetch worlds for context:', error);
       } finally {
-        setIsLoading(false);
+        if (isActive) setIsLoading(false);
       }
     };
 
     fetchWorlds();
+    return () => {
+      isActive = false;
+      controller.abort();
+    };
   }, []);
 
   const setWorld = (worldCode: string) => {

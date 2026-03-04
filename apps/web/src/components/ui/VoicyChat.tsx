@@ -45,6 +45,12 @@ interface ChatFaqItem {
   answer: string;
 }
 
+function isAbortLikeError(error: unknown): boolean {
+  const e = error as { name?: string; message?: string } | null;
+  const message = String(e?.message || '').toLowerCase();
+  return e?.name === 'AbortError' || message.includes('aborted');
+}
+
 export function shouldElevateVoicyChatForCastingDock(
   selectedActorsCount: number,
   isCastingDockExcludedPage: boolean
@@ -134,6 +140,17 @@ export const VoicyChatV2: React.FC = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const lastIdRef = useRef<number>(0);
   const chatContainerRef = useRef<HTMLDivElement>(null);
+  const isMountedRef = useRef(true);
+  const historyAbortRef = useRef<AbortController | null>(null);
+
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+      historyAbortRef.current?.abort();
+      historyAbortRef.current = null;
+    };
+  }, []);
 
   //  FAQ tab: load journey-aware FAQs from Supabase (world/journey)
   const faqJourneyParam = isStudioJourney ? 'studio' : isAcademyJourney ? 'academy' : 'agency';
@@ -156,14 +173,19 @@ export const VoicyChatV2: React.FC = () => {
 
   //  CHRIS-PROTOCOL: Sync telephony config from DB
   useEffect(() => {
-    fetch('/api/admin/config?type=telephony')
+    const controller = new AbortController();
+    fetch('/api/admin/config?type=telephony', { signal: controller.signal })
       .then(res => res.json())
       .then(data => {
-        if (data.telephony_config) {
+        if (!controller.signal.aborted && data.telephony_config) {
           setTelephonyConfig(data.telephony_config);
         }
       })
-      .catch(err => console.error('Failed to fetch telephony config', err));
+      .catch(err => {
+        if (controller.signal.aborted || isAbortLikeError(err) || !isMountedRef.current) return;
+        console.error('Failed to fetch telephony config', err);
+      });
+    return () => controller.abort();
   }, [isOpen]); // Re-check when chat opens
 
   //  SENSOR MODE: Track visitor behavior and sync to DB
@@ -554,32 +576,49 @@ export const VoicyChatV2: React.FC = () => {
 
   //  Persist Conversation ID and Load History
   useEffect(() => {
+    const controller = new AbortController();
     const savedId = localStorage.getItem('voicy_conversation_id');
     if (savedId) {
       const parsedId = parseInt(savedId);
       setConversationId(parsedId);
-      loadHistory(parsedId);
+      loadHistory(parsedId, controller.signal);
     }
 
     // Fetch system config for opening hours
-    fetch('/api/admin/config?type=general')
+    fetch('/api/admin/config?type=general', { signal: controller.signal })
       .then(res => res.json())
       .then(data => {
-        if (data.general_settings) {
+        if (!controller.signal.aborted && data.general_settings) {
           setGeneralSettings(data.general_settings);
         }
       })
-      .catch(err => console.error('Failed to fetch system config', err));
+      .catch(err => {
+        if (controller.signal.aborted || isAbortLikeError(err) || !isMountedRef.current) return;
+        console.error('Failed to fetch system config', err);
+      });
+    return () => controller.abort();
   }, []);
 
-  const loadHistory = async (id: number) => {
+  const loadHistory = async (id: number, externalSignal?: AbortSignal) => {
+    historyAbortRef.current?.abort();
+    const controller = new AbortController();
+    historyAbortRef.current = controller;
+    if (externalSignal) {
+      if (externalSignal.aborted) {
+        controller.abort();
+      } else {
+        externalSignal.addEventListener('abort', () => controller.abort(), { once: true });
+      }
+    }
     setIsInitialLoading(true);
     try {
       const res = await fetch('/api/chat/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        signal: controller.signal,
         body: JSON.stringify({ action: 'history', conversationId: id })
       });
+      if (controller.signal.aborted || !isMountedRef.current) return;
       if (res.ok) {
         const data = await res.json();
         if (data.success && data.messages.length > 0) {
@@ -587,9 +626,13 @@ export const VoicyChatV2: React.FC = () => {
         }
       }
     } catch (e) {
+      if (controller.signal.aborted || isAbortLikeError(e) || !isMountedRef.current) return;
       console.error("Failed to load history", e);
     } finally {
-      setIsInitialLoading(false);
+      if (historyAbortRef.current === controller) {
+        historyAbortRef.current = null;
+        if (isMountedRef.current) setIsInitialLoading(false);
+      }
     }
   };
 

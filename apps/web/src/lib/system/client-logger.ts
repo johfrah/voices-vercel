@@ -17,6 +17,18 @@ export class ClientLogger {
   private static breadcrumbs: Breadcrumb[] = [];
   private static readonly MAX_BREADCRUMBS = 20;
 
+  private static isAbortLikeFetchError(error: any, args: any[]): boolean {
+    const requestInput = args?.[0] as any;
+    const requestSignal = args?.[1]?.signal || requestInput?.signal;
+    const message = String(error?.message || '').toLowerCase();
+    return (
+      Boolean(requestSignal?.aborted) ||
+      error?.name === 'AbortError' ||
+      message.includes('aborted') ||
+      (typeof document !== 'undefined' && document.visibilityState === 'hidden' && message.includes('failed to fetch'))
+    );
+  }
+
   static init() {
     if (this.isInitialized || typeof window === 'undefined') return;
 
@@ -152,13 +164,18 @@ export class ClientLogger {
         
         return response;
       } catch (error: any) {
+        const isAbortLike = this.isAbortLikeFetchError(error, args as any[]);
         if (url && !isSystemApi) {
-          this.addBreadcrumb('error', `Fetch Network Error: ${url}`);
-          this.report('error', `Network Error: ${url}`, {
-            url,
-            error: error.message,
-            stack: error.stack
-          });
+          if (isAbortLike) {
+            this.addBreadcrumb('warn', `Fetch Aborted: ${url}`);
+          } else {
+            this.addBreadcrumb('error', `Fetch Network Error: ${url}`);
+            this.report('error', `Network Error: ${url}`, {
+              url,
+              error: error.message,
+              stack: error.stack
+            });
+          }
         }
         throw error;
       }
