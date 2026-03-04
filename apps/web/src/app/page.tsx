@@ -17,6 +17,7 @@ import { SlimmeKassa } from '@/lib/engines/pricing-engine';
 import { VoiceFilterEngine } from "@/lib/engines/voice-filter-engine";
 import { Actor } from "@/types";
 import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
+import { buildCanonicalActorPath } from "@/lib/system/slug";
 import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import nextDynamic from "next/dynamic";
 
@@ -494,7 +495,7 @@ function HomeContent({
                               
                               // Force real route navigation so SPA click and direct URL
                               // always render the same actor detail layout tree.
-                              router.push(`/${actor.slug}`);
+                              router.push(buildCanonicalActorPath(actor.slug, actor.display_name || actor.first_name));
                             }}
                           />
                         </NuclearErrorBoundary>
