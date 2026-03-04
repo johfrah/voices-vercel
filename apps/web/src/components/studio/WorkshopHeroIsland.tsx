@@ -142,7 +142,7 @@ export const WorkshopHeroIsland: React.FC<WorkshopHeroIslandProps> = ({ workshop
             <ContainerInstrument plain className="relative z-10 w-full max-w-[360px] aspect-[9/16]">
               {hasVideo ? (
                 <VideoPlayer 
-                  src={videoUrl}
+                  src={videoUrl || ''}
                   className="w-full h-full object-cover rounded-[24px] shadow-2xl border border-white/10"
                   autoPlay={true}
                   muted={true}
