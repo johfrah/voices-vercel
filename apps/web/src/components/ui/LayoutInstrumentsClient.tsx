@@ -1,8 +1,6 @@
 "use client";
 
-import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import { cn } from '@/lib/utils';
-import Link from 'next/link';
 import React, { ButtonHTMLAttributes, ElementType, forwardRef, HTMLAttributes, ReactNode } from 'react';
 
 /**
@@ -211,7 +209,6 @@ export const ClientButtonInstrument = forwardRef<HTMLButtonElement, ButtonInstru
   download,
   ...props
 }, ref) => {
-  const { playClick } = useSonicDNA();
   const { href, ...otherProps } = props;
   
   const variantClasses = {
@@ -254,7 +251,6 @@ export const ClientButtonInstrument = forwardRef<HTMLButtonElement, ButtonInstru
       translate={noTranslate ? "no" : undefined}
       aria-label={ariaLabel}
       onClick={(e: any) => {
-        playClick('soft');
         if (props.onClick) props.onClick(e);
       }}
       {...otherProps}

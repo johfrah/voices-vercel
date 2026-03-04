@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import {
     ButtonInstrument,
     ContainerInstrument,
@@ -11,15 +11,15 @@ import {
 } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useCheckout } from '@/contexts/CheckoutContext';
-import { useTranslation } from '@/contexts/TranslationContext';
+import { useVoicesState } from '@/contexts/VoicesStateContext';
+import { SlimmeKassa } from '@/lib/engines/pricing-engine';
 import Image from 'next/image';
 import { VoicesLink as Link } from '@/components/ui/VoicesLink';
 import { usePathname } from 'next/navigation';
-import { ShoppingCart, ArrowRight, Star, Trash2, Edit2, Eye, Info, ArrowLeft } from 'lucide-react';
+import { ShoppingCart, ArrowRight, Star, Info, ArrowLeft } from 'lucide-react';
 import { PricingSummary } from '@/components/checkout/PricingSummary';
 import { OrderStepsInstrument } from '@/components/ui/OrderStepsInstrument';
 import nextDynamic from "next/dynamic";
-import { cn } from '@/lib/utils';
 
 const LiquidBackground = nextDynamic(() => import('@/components/ui/LiquidBackground').then(mod => mod.LiquidBackground), { ssr: false });
 
@@ -30,8 +30,9 @@ const LiquidBackground = nextDynamic(() => import('@/components/ui/LiquidBackgro
  * Voorkomt z-index issues en visuele vermenging.
  */
 export default function CartPageClient() {
-  const { t } = useTranslation();
-  const { state, subtotal, isHydrated } = useCheckout();
+  const { state, isHydrated, addItem } = useCheckout();
+  const { state: voicesState } = useVoicesState();
+  const seededActorsRef = useRef<string>('');
   const pathname = usePathname();
   const [reviewStats, setReviewStats] = React.useState<{ averageRating: number, totalCount: number } | null>(null);
   const hasWorkshopItem = useMemo(
@@ -58,6 +59,124 @@ export default function CartPageClient() {
     };
     fetchStats();
   }, [isHydrated]);
+
+  // Bridge selected actors from Agency casting to cart when cart is still empty.
+  useEffect(() => {
+    if (!isHydrated) return;
+    if ((state.items || []).length > 0) return;
+
+    const selectedActors = Array.isArray(voicesState.selected_actors) ? voicesState.selected_actors : [];
+    if (selectedActors.length === 0) return;
+
+    const signature = selectedActors
+      .map((actor: any) => `${actor?.id || 'unknown'}:${actor?.updated_at || ''}`)
+      .sort()
+      .join('|');
+
+    if (!signature || seededActorsRef.current === signature) return;
+    seededActorsRef.current = signature;
+
+    const safeBriefing = (state.briefing || '').trim();
+    const words = safeBriefing ? safeBriefing.split(/\s+/).filter(Boolean).length : 0;
+    const prompts = safeBriefing ? safeBriefing.split(/\n+/).filter(Boolean).length : 1;
+    const countries = Array.isArray(state.country) ? state.country : [state.country || 'BE'];
+    const spotsByMedia = state.usage === 'commercial' && Array.isArray(state.media)
+      ? state.media.reduce((acc: Record<string, number>, media) => {
+          acc[media] = (state.spotsDetail && state.spotsDetail[media]) || state.spots || 1;
+          return acc;
+        }, {})
+      : undefined;
+    const yearsByMedia = state.usage === 'commercial' && Array.isArray(state.media)
+      ? state.media.reduce((acc: Record<string, number>, media) => {
+          acc[media] = (state.yearsDetail && state.yearsDetail[media]) || state.years || 1;
+          return acc;
+        }, {})
+      : undefined;
+    const vatExempt = !!state.customer.vat_number &&
+      state.customer.vat_verified === true &&
+      (state.customer.vat_number || '').length > 2 &&
+      !state.customer.vat_number.startsWith('BE') &&
+      state.customer.country !== 'BE';
+
+    selectedActors.forEach((actor: any, index: number) => {
+      const pricing = SlimmeKassa.calculate({
+        usage: state.usage,
+        usageId: state.usageId,
+        plan: state.plan,
+        words,
+        prompts,
+        mediaTypes: state.usage === 'commercial' ? (state.media as any) : [],
+        mediaIds: state.mediaIds,
+        countries,
+        countryId: state.countryId,
+        spots: spotsByMedia,
+        years: yearsByMedia,
+        liveSession: state.liveSession,
+        actorRates: actor,
+        music: state.music,
+        secondaryLanguageIds: state.secondaryLanguageIds,
+        isVatExempt: vatExempt
+      }, state.pricingConfig || undefined);
+
+      const subtotalValue = Number(pricing?.subtotal || 0);
+      if (!Number.isFinite(subtotalValue) || subtotalValue <= 0) return;
+
+      addItem({
+        id: `seeded-${actor.id}-${Date.now()}-${index}`,
+        type: 'voice_over',
+        actor,
+        briefing: safeBriefing,
+        script: safeBriefing,
+        pronunciation: state.pronunciation,
+        usage: state.usage,
+        media: state.media,
+        country: state.country,
+        secondaryLanguages: state.secondaryLanguages,
+        spots: spotsByMedia || state.spots,
+        years: yearsByMedia || state.years,
+        liveSession: state.liveSession,
+        music: state.music,
+        pricing: {
+          base: pricing.base,
+          wordSurcharge: pricing.wordSurcharge,
+          mediaSurcharge: pricing.mediaSurcharge,
+          mediaBreakdown: pricing.mediaBreakdown,
+          musicSurcharge: pricing.musicSurcharge,
+          radioReadySurcharge: pricing.radioReadySurcharge || 0,
+          subtotal: subtotalValue,
+          total: subtotalValue,
+          vat: Number(pricing.vat || 0),
+          tax: Number(pricing.vat || 0),
+        }
+      });
+    });
+  }, [
+    addItem,
+    isHydrated,
+    state.items,
+    state.usage,
+    state.usageId,
+    state.plan,
+    state.media,
+    state.mediaIds,
+    state.country,
+    state.countryId,
+    state.spotsDetail,
+    state.yearsDetail,
+    state.spots,
+    state.years,
+    state.liveSession,
+    state.music,
+    state.secondaryLanguages,
+    state.secondaryLanguageIds,
+    state.briefing,
+    state.pronunciation,
+    state.customer.vat_number,
+    state.customer.vat_verified,
+    state.customer.country,
+    state.pricingConfig,
+    voicesState.selected_actors
+  ]);
 
   useEffect(() => {
     if (!isHydrated || !pathname) return;
