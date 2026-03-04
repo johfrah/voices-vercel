@@ -34,12 +34,16 @@ export default function AdminUsersPage() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<'newest' | 'ltv'>('newest');
+  const [filterMode, setFilterMode] = useState<'all' | 'incomplete'>('all');
 
   const fetchUsers = useCallback(async () => {
     setLoading(true);
     try {
-      const worldParam = activeWorld ? `?world=${activeWorld.code}` : '';
-      const res = await fetch(`/api/admin/users${worldParam}`);
+      const worldParam = activeWorld ? `world=${activeWorld.code}` : '';
+      const filterParam = filterMode === 'incomplete' ? 'filter=incomplete' : '';
+      const queryParams = [worldParam, filterParam].filter(Boolean).join('&');
+      
+      const res = await fetch(`/api/admin/users?${queryParams}`);
       if (res.ok) {
         const data = await res.json();
         setUsers(data);
@@ -49,7 +53,7 @@ export default function AdminUsersPage() {
     } finally {
       setLoading(false);
     }
-  }, [activeWorld]);
+  }, [activeWorld, filterMode]);
 
   useEffect(() => {
     fetchUsers();
@@ -132,16 +136,22 @@ export default function AdminUsersPage() {
       {/* Filter Tabs */}
       <ContainerInstrument className="flex gap-4 border-b border-black/5 pb-4">
           <button 
-            onClick={() => setSortBy('newest')}
-            className={`text-[13px] font-bold tracking-widest uppercase pb-2 transition-colors ${sortBy === 'newest' ? 'text-primary border-b-2 border-primary' : 'text-va-black/30 hover:text-va-black'}`}
+            onClick={() => { setSortBy('newest'); setFilterMode('all'); }}
+            className={`text-[13px] font-bold tracking-widest uppercase pb-2 transition-colors ${sortBy === 'newest' && filterMode === 'all' ? 'text-primary border-b-2 border-primary' : 'text-va-black/30 hover:text-va-black'}`}
           >
               Nieuwste
           </button>
           <button 
-            onClick={() => setSortBy('ltv')}
-            className={`text-[13px] font-bold tracking-widest uppercase pb-2 transition-colors ${sortBy === 'ltv' ? 'text-primary border-b-2 border-primary' : 'text-va-black/30 hover:text-va-black'}`}
+            onClick={() => { setSortBy('ltv'); setFilterMode('all'); }}
+            className={`text-[13px] font-bold tracking-widest uppercase pb-2 transition-colors ${sortBy === 'ltv' && filterMode === 'all' ? 'text-primary border-b-2 border-primary' : 'text-va-black/30 hover:text-va-black'}`}
           >
               Top Klanten (LTV)
+          </button>
+          <button 
+            onClick={() => { setFilterMode('incomplete'); }}
+            className={`text-[13px] font-bold tracking-widest uppercase pb-2 transition-colors flex items-center gap-2 ${filterMode === 'incomplete' ? 'text-red-500 border-b-2 border-red-500' : 'text-va-black/30 hover:text-red-400'}`}
+          >
+              <Ghost size={14} /> Probleemgevallen
           </button>
       </ContainerInstrument>
 
