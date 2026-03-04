@@ -69,7 +69,7 @@ function HomeContent({
 }) {
   const { user, isAuthenticated } = useAuth();
   const { t, language } = useTranslation();
-  const { state: masterControlState, updateStep, resetFilters } = useMasterControl();
+  const { state: masterControlState } = useMasterControl();
   const { selectActor, state: checkoutState } = useCheckout();
   const { playClick } = useSonicDNA();
   const router = useVoicesRouter();
@@ -487,23 +487,14 @@ function HomeContent({
                             }))} 
                             featured={false} 
                             onSelect={(actor) => {
-                              //  CHRIS-PROTOCOL: The "Ultimate SPA" Way
-                              // We stay on the homepage and just switch the step!
-                              console.log(`[Home] Initiating in-page SPA transition for: ${actor.display_name}`);
                               playClick('success');
                               
-                              // 1. Set the actor in global checkout context
+                              // Keep checkout context in sync for the next route render.
                               selectActor(actor);
                               
-                              // 2. Set the step to script
-                              updateStep('script');
-                              
-                              // 3. Update URL for Smart Routing
-                              const newUrl = `/${actor.slug}/${masterControlState.journey}`;
-                              window.history.pushState(null, '', newUrl);
-                              
-                              // 4. Scroll to top of the section
-                              window.scrollTo({ top: 0, behavior: 'smooth' });
+                              // Force real route navigation so SPA click and direct URL
+                              // always render the same actor detail layout tree.
+                              router.push(`/${actor.slug}`);
                             }}
                           />
                         </NuclearErrorBoundary>
