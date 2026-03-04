@@ -56,7 +56,7 @@ export class MarketDatabaseService {
           .from('market_configs')
           .select('*')
           .eq('market', staticConfig.market_code)
-          .single();
+          .maybeSingle();
 
         if (error) {
           console.warn(` [MarketDatabaseService] SDK Fetch failed for ${cacheKey}:`, error.message);

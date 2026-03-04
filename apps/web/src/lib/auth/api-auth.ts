@@ -70,6 +70,43 @@ async function getBestRoleByEmail(email: string): Promise<string | null> {
   return best?.role || null;
 }
 
+async function getRoleByUserId(userId: number): Promise<string | null> {
+  try {
+    const rows = await db
+      .select({ role: users.role, lastActive: users.lastActive, createdAt: users.createdAt })
+      .from(users)
+      .where(sql`${users.id} = ${userId}`)
+      .orderBy(desc(users.lastActive), desc(users.createdAt))
+      .limit(5);
+
+    if (rows.length > 0) {
+      const best = rows.reduce((currentBest, candidate) => {
+        const currentRank = roleRank[currentBest.role || ''] || 0;
+        const candidateRank = roleRank[candidate.role || ''] || 0;
+        if (candidateRank > currentRank) return candidate;
+        if (candidateRank < currentRank) return currentBest;
+
+        const currentTs = new Date(currentBest.lastActive || currentBest.createdAt || 0).getTime();
+        const candidateTs = new Date(candidate.lastActive || candidate.createdAt || 0).getTime();
+        return candidateTs > currentTs ? candidate : currentBest;
+      }, rows[0]);
+      return best?.role || null;
+    }
+  } catch (dbError) {
+    console.warn(' API Auth Bridge user lookup via Drizzle failed, falling back to SDK');
+  }
+
+  const { data, error } = await sdkClient
+    .from('users')
+    .select('role')
+    .eq('id', userId)
+    .limit(1)
+    .maybeSingle();
+
+  if (error || !data) return null;
+  return data.role || null;
+}
+
 /**
  * Bepaal of de gebruiker admin is. Haalt role op uit users table.
  */
@@ -79,12 +116,25 @@ async function checkIsAdmin(user: User | null): Promise<boolean> {
   // dan laten we de admin door (specifiek voor de Johfrah bridge).
   const cookieStore = await cookies();
   const voicesRole = cookieStore.get('voices_role')?.value;
-  const hasAccessToken = cookieStore.has('sb-access-token');
+  const bridgeToken = cookieStore.get('sb-access-token')?.value || '';
+  const hasAccessToken = bridgeToken.length > 0;
   const allowLegacyCookieBridge = process.env.VOICES_ENABLE_LEGACY_ADMIN_BRIDGE === 'true';
+  const bridgeAdminId = bridgeToken.startsWith('admin-bridge-')
+    ? Number.parseInt(bridgeToken.replace('admin-bridge-', ''), 10)
+    : Number.NaN;
 
+  // Legacy mode: snelle doorgang zonder extra DB-latency.
   if (!user && allowLegacyCookieBridge && voicesRole === 'admin' && hasAccessToken) {
     console.log(' NUCLEAR AUTH: Admin access granted via Legacy Bridge Cookie.');
     return true;
+  }
+
+  // Nieuwe standaard bridge-validatie: alleen geldig met geverifieerde admin-bridge token.
+  if (!user && voicesRole === 'admin' && Number.isFinite(bridgeAdminId)) {
+    const bridgeRole = await getRoleByUserId(bridgeAdminId);
+    if (bridgeRole === 'admin' || bridgeRole === 'superadmin' || bridgeRole === 'ademing_admin') {
+      return true;
+    }
   }
   if (!user && !allowLegacyCookieBridge && (voicesRole === 'admin' || hasAccessToken)) {
     console.warn(' NUCLEAR AUTH: Legacy admin cookie bridge blocked (disabled by policy).');

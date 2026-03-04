@@ -60,8 +60,10 @@ export const VumeNewAccountTemplate = (props: NewAccountProps) => {
 
   return BaseTemplate({
     title: isNl ? `Welkom bij ${market.name}` : `Welcome to ${market.name}`,
-    journey: 'agency',
+    journey: 'auth',
     market: market.market_code,
+    host,
+    language,
     children: content
   });
 };

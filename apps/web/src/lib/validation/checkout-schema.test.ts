@@ -37,6 +37,8 @@ describe('CheckoutPayloadSchema', () => {
       email: 'qa@voices.be',
       first_name: 'QA',
       last_name: 'Tester',
+      billing_po: 'PO-2026-001',
+      financial_email: 'finance@voices.be',
       postal_code: '9000',
       city: 'Gent',
       country: 'BE',
@@ -58,6 +60,8 @@ describe('CheckoutPayloadSchema', () => {
       asBackground: true,
       asHoldMusic: false,
     });
+    expect(parsed.billing_po).toBe('PO-2026-001');
+    expect(parsed.financial_email).toBe('finance@voices.be');
   });
 
   it('coerces numeric factors and accepts snake_case customer payload', () => {
@@ -79,6 +83,8 @@ describe('CheckoutPayloadSchema', () => {
       email: 'demo@voices.be',
       first_name: 'Demo',
       last_name: 'Gebruiker',
+      purchase_order: 'PO-ALIAS-7',
+      billing_email_alt: 'boekhouding@voices.be',
       postal_code: '1000',
       city: 'Brussel',
       country: 'BE',
@@ -93,6 +99,8 @@ describe('CheckoutPayloadSchema', () => {
     expect(item.spots).toBe(2);
     expect(item.years).toBe(3);
     expect(parsed.first_name).toBe('Demo');
+    expect(parsed.purchase_order).toBe('PO-ALIAS-7');
+    expect(parsed.billing_email_alt).toBe('boekhouding@voices.be');
     expect(parsed.payment_method).toBe('ideal');
   });
 });

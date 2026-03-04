@@ -8,7 +8,7 @@ import { ArrowRight, CreditCard, Info, ShieldCheck, Star, Zap, Play, Instagram, 
 import { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
-import { notFound, redirect } from 'next/navigation';
+import { notFound, permanentRedirect, redirect } from 'next/navigation';
 import { Suspense } from "react";
 import { getActor, getArtist, getActors, getWorkshops, getArticle } from "@/lib/services/api-server";
 import { WorkshopApiResponse } from "@/app/api/studio/workshops/route";
@@ -350,6 +350,7 @@ async function discoverAndRegisterSlug(slug: string, marketCode: string, journey
         .from('slug_registry')
         .insert({
           slug: slug.toLowerCase(),
+          routing_type: 'actor',
           entity_id: actor.id,
           entity_type_id: 1, // actor
           market_code: marketCode === 'ADEMING' ? 'BE' : marketCode,
@@ -378,6 +379,7 @@ async function discoverAndRegisterSlug(slug: string, marketCode: string, journey
         .from('slug_registry')
         .insert({
           slug: slug.toLowerCase(),
+          routing_type: 'article',
           entity_id: article.id,
           entity_type_id: 3, // article
           market_code: 'ALL',
@@ -407,6 +409,7 @@ async function discoverAndRegisterSlug(slug: string, marketCode: string, journey
         .from('slug_registry')
         .insert({
           slug: slug.toLowerCase().startsWith('studio/') ? slug.toLowerCase() : `studio/${slug.toLowerCase()}`,
+          routing_type: 'workshop',
           entity_id: workshop.id,
           entity_type_id: 5, // workshop
           world_id: 2, // Studio
@@ -435,6 +438,7 @@ async function discoverAndRegisterSlug(slug: string, marketCode: string, journey
         .from('slug_registry')
         .insert({
           slug: slug.toLowerCase(),
+          routing_type: 'artist',
           entity_id: artist.id,
           entity_type_id: 4, // artist
           market_code: 'ALL',
@@ -463,6 +467,7 @@ async function discoverAndRegisterSlug(slug: string, marketCode: string, journey
             .from('slug_registry')
             .insert({
               slug: slug.toLowerCase(),
+              routing_type: 'casting_list',
               entity_id: list.id,
               entity_type_id: 6,
               market_code: 'ALL',
@@ -725,7 +730,7 @@ export default async function SmartRoutePage({ params }: { params: SmartRoutePar
   const reserved = [
     'admin', 'backoffice', 'account', 'api', 'auth', 'checkout', 'cart',
     'demos', 'favicon.ico', 'robots.txt',
-    'sitemap.xml', 'sitemap', 'static', 'assets', '_next',
+    'sitemap.xml', 'sitemap', 'static', 'assets', '_next', '.well-known',
     'wp-content', 'wp-includes'
   ];
 
@@ -749,6 +754,12 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
   // 🛡️ CHRIS-PROTOCOL: Strip language prefix if present (e.g. /nl/johfrah -> johfrah)
   const cleanSlug = stripLanguagePrefix(normalizedSlug);
   const cleanSegments = cleanSlug.split('/').filter(Boolean);
+
+  // Ignore known bot/system probes before SmartRouter handshake and watchdog flow.
+  const firstCleanSegment = cleanSegments[0]?.toLowerCase() || '';
+  if (firstCleanSegment === '.well-known' || firstCleanSegment === 'wp-json' || firstCleanSegment === 'wp-admin') {
+    return notFound();
+  }
 
   // 🛡️ CHRIS-PROTOCOL: Log to database for forensic audit (v2.14.552)
   try {
@@ -902,11 +913,17 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
       }
 
       // 🛡️ CHRIS-PROTOCOL: Handle Redirects (Canonical Handshake)
-      if (resolved.canonical_slug && resolved.canonical_slug !== lookupSlug) {
-        const canonicalPath = withLocalePrefix(`/${resolved.canonical_slug}`, lang, market.primary_language);
+      // Preserve any suffix (journey/medium) when canonical slug changes.
+      const matchedSlug = resolved.slug || lookupSlug;
+      if (resolved.canonical_slug && resolved.canonical_slug !== matchedSlug) {
+        const canonicalPathRaw = buildLocalizedRoutePath(
+          cleanSlug,
+          matchedSlug,
+          resolved.canonical_slug
+        );
+        const canonicalPath = withLocalePrefix(canonicalPathRaw, lang, market.primary_language);
         console.error(` [SmartRouter] Redirecting legacy slug "${lookupSlug}" to canonical: "${canonicalPath}"`);
-        // 🛡️ NUCLEAR SEO: Use 301 Permanent Redirect for canonical handshake
-        return redirect(canonicalPath);
+        return permanentRedirect(canonicalPath);
       }
 
     // 🛡️ CHRIS-PROTOCOL: World-Aware Handshake (v2.24.4)
@@ -1011,7 +1028,10 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
                           <VoiceglotText translationKey="action.view_profile" defaultText="Bekijk Profiel" />
                         </TextInstrument>
                       </ContainerInstrument>
-                      <VoicesLink href={`/${item.actor?.slug}`} className="w-full bg-va-black text-white py-4 rounded-[10px] font-medium tracking-widest text-[13px] uppercase hover:bg-primary transition-all text-center">
+                      <VoicesLink
+                        href={buildCanonicalActorPath(item.actor?.slug, item.actor?.display_name || item.actor?.first_name)}
+                        className="w-full bg-va-black text-white py-4 rounded-[10px] font-medium tracking-widest text-[13px] uppercase hover:bg-primary transition-all text-center"
+                      >
                         <VoiceglotText translationKey="action.select_voice" defaultText="Selecteer deze stem" />
                       </VoicesLink>
                     </ContainerInstrument>
@@ -1384,6 +1404,8 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
     // World prefixes are valid entry points — their sub-pages resolve via CMS article lookup.
     const worldPrefixes = ['studio', 'academy', 'ademing', 'johfrai', 'partners', 'freelance', 'casting'];
     const isKnownEntryPoint = MarketManager.isAgencyEntryPoint(segments[0]) || ['voice', 'artist', 'portfolio'].includes(segments[0]) || worldPrefixes.includes(segments[0]?.toLowerCase());
+    const actorJourneySegments = ['telephony', 'telefoon', 'telefooncentrale', 'video', 'commercial', 'reclame'];
+    const allowsLegacyActorJourney = cleanSegments.length > 1 && actorJourneySegments.includes((cleanSegments[1] || '').toLowerCase());
     
     // 🛡️ CHRIS-PROTOCOL: Category/Native/Language Route Protection (v2.16.103)
     const isCategoryNative = segments[0] === 'category' || segments[0] === 'native' || segments[0] === 'language';
@@ -1392,7 +1414,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
       return notFound();
     }
 
-    if (!resolved && !isKnownEntryPoint && segments.length > 1) {
+    if (!resolved && !isKnownEntryPoint && segments.length > 1 && !allowsLegacyActorJourney) {
       console.error(` [SmartRouter] NUCLEAR BLOCK: Path "${lookupSlug}" not in registry and not a known entry point. Blocking.`);
       return notFound();
     }
@@ -1405,7 +1427,27 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
       const agencyJourney = MarketManager.getJourneyFromSegment(segments[1]);
 
       if (agencyJourney === "commercial" && segments[2]) {
-        filters.media = segments[2];
+        const commercialMediaMap: Record<string, string> = {
+          online: 'online',
+          podcast: 'podcast',
+          radio: 'radio_national',
+          radio_national: 'radio_national',
+          radio_regional: 'radio_regional',
+          radio_local: 'radio_local',
+          tv: 'tv_national',
+          tv_national: 'tv_national',
+          tv_regional: 'tv_regional',
+          tv_local: 'tv_local',
+          social: 'social_media',
+          socials: 'social_media',
+          social_media: 'social_media',
+          cinema: 'cinema',
+          pos: 'pos'
+        };
+        const normalizedMedia = commercialMediaMap[segments[2].toLowerCase()];
+        if (normalizedMedia) {
+          filters.media = normalizedMedia;
+        }
       }
 
       let searchResults;
@@ -1607,7 +1649,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
 
     // 3. Check voor Stem (Legacy Fallback by Slug)
     try {
-      if (!resolved && !isKnownEntryPoint && segments.length > 1) {
+      if (!resolved && !isKnownEntryPoint && segments.length > 1 && !allowsLegacyActorJourney) {
         console.error(` [SmartRouter] NUCLEAR BLOCK: Path "${lookupSlug}" not in registry and not a known entry point. Blocking.`);
         return notFound();
       }
@@ -1670,7 +1712,8 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
           .from('content_articles')
           .select('*')
           .eq('slug', cmsSlug)
-          .single();
+          .limit(1)
+          .maybeSingle();
 
         if (error) {
           console.warn(` [SmartRouter] CMS Article not found or SDK error: ${cmsSlug}`, error.message);
@@ -1742,6 +1785,11 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
 
     return notFound();
   } catch (err: any) {
+    const notFoundFingerprint = `${String(err?.digest || '')} ${String(err?.message || '')} ${String(err?.stack || '')} ${String(err || '')}`.toUpperCase();
+    if (notFoundFingerprint.includes('NEXT_NOT_FOUND') || notFoundFingerprint.includes('NEXT_HTTP_ERROR_FALLBACK')) {
+      throw err;
+    }
+
     console.error("[SmartRouter] FATAL ERROR:", err);
     const { ServerWatchdog } = await import('@/lib/services/server-watchdog');
     await ServerWatchdog.report({

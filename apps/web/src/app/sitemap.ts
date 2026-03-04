@@ -9,6 +9,7 @@ import { MetadataRoute } from 'next';
  * Doel: Een dynamische, meertalige sitemap die zoekmachines en LLM's 
  * direct naar de Gouden Bron leidt.
  */
+export const dynamic = 'force-dynamic';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://www.voices.be';

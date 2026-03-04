@@ -216,8 +216,8 @@ export default function CartPageClient() {
   return (
     <ContainerInstrument plain className="min-h-screen bg-va-off-white pb-24 relative z-10">
       <LiquidBackground />
-      <SectionInstrument className="max-w-6xl mx-auto px-6 pt-20">
-        <ContainerInstrument className="mb-16 flex flex-col items-center justify-center gap-8 text-center">
+      <SectionInstrument className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 pt-20">
+        <ContainerInstrument className="mb-14 flex flex-col items-center justify-center gap-8 text-center">
           <ContainerInstrument className="space-y-4 w-full flex flex-col items-center">
             <OrderStepsInstrument currentStep="checkout" className="opacity-100 mb-4" />
             <Link  
@@ -233,9 +233,9 @@ export default function CartPageClient() {
           </ContainerInstrument>
         </ContainerInstrument>
 
-        <ContainerInstrument className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+        <ContainerInstrument className="grid grid-cols-1 lg:grid-cols-12 gap-6 xl:gap-8 items-start">
           {/* Cart Items List */}
-          <ContainerInstrument className="lg:col-span-7 space-y-8">
+          <ContainerInstrument className="lg:col-span-8 space-y-8">
             <PricingSummary onlyItems={true} className="!space-y-6" />
             
             <div className="p-8 bg-primary/5 rounded-[32px] border border-primary/10 flex items-start gap-6">
@@ -264,7 +264,7 @@ export default function CartPageClient() {
           </ContainerInstrument>
 
           {/* Totals & Checkout CTA */}
-          <ContainerInstrument className="lg:col-span-5">
+          <ContainerInstrument className="lg:col-span-4">
             <div className="lg:sticky lg:top-24 space-y-8">
               <div className="bg-white p-10 rounded-[40px] shadow-aura-lg border border-va-black/5 space-y-8">
                 <HeadingInstrument level={3} className="text-2xl font-light tracking-tighter border-b border-va-black/5 pb-6">
@@ -282,18 +282,20 @@ export default function CartPageClient() {
                   <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
                 </ButtonInstrument>
 
-                <div className="flex flex-col items-center gap-3 text-center pt-4">
-                  <div className="flex items-center gap-2 text-green-600/60">
-                    <div className="flex -space-x-0.5">
-                      {[1,2,3,4,5].map(i => (
-                        <Star key={i} size={12} fill="currentColor" strokeWidth={0} />
-                      ))}
+                {reviewStats && (
+                  <div className="flex flex-col items-center gap-3 text-center pt-4">
+                    <div className="flex items-center gap-2 text-green-600/60">
+                      <div className="flex -space-x-0.5">
+                        {[1,2,3,4,5].map(i => (
+                          <Star key={i} size={12} fill="currentColor" strokeWidth={0} />
+                        ))}
+                      </div>
+                      <TextInstrument className="text-[11px] font-bold tracking-[0.2em] uppercase">
+                        {reviewStats.averageRating}/5 sterren
+                      </TextInstrument>
                     </div>
-                    <TextInstrument className="text-[11px] font-bold tracking-[0.2em] uppercase">
-                      {reviewStats?.averageRating || "4.9"}/5 sterren
-                    </TextInstrument>
                   </div>
-                </div>
+                )}
               </div>
 
               {/* Security Nudge */}

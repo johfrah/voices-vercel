@@ -21,7 +21,12 @@ const CheckoutItemSchema = z.object({
   actor: z.object({
     id: z.coerce.number(),
     display_name: z.string().optional(),
-  }).optional(),
+    first_name: z.string().optional(),
+    photo_url: z.string().optional(),
+    thumbnail_url: z.string().optional(),
+    delivery_time: z.string().optional(),
+    deliveryTime: z.string().optional(),
+  }).passthrough().optional(),
   usage: z.string().optional(),
   journey: z.string().optional(),
   briefing: z.string().optional(),
@@ -91,6 +96,10 @@ export const CheckoutPayloadSchema = z.object({
   phone: z.string().optional(),
   company: z.string().optional(),
   vat_number: z.string().optional(),
+  billing_po: z.string().optional(),
+  purchase_order: z.string().optional(),
+  financial_email: z.string().email().optional(),
+  billing_email_alt: z.string().email().optional(),
   address_street: z.string().optional(),
   postal_code: z.string().min(1, "Postcode is verplicht"),
   city: z.string().min(1, "Stad is verplicht"),
@@ -102,6 +111,7 @@ export const CheckoutPayloadSchema = z.object({
   plan: z.string().optional(),
   briefing: z.string().default(''),
   quoteMessage: z.string().nullable().optional(),
+  is_quote: z.boolean().optional().default(false),
   payment_method: z.string().default('bancontact'),
   
   music: z.object({

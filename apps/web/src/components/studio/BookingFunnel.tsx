@@ -11,6 +11,7 @@ import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { useCheckout } from '@/contexts/CheckoutContext';
 import { useSonicDNA } from '@/lib/engines/sonic-dna';
+import { buildWorkshopLocationPayload } from '@/lib/utils/workshop-location';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -18,9 +19,14 @@ import React, { useState } from 'react';
 import { CheckCircle2, ArrowRight } from 'lucide-react';
 
 interface WorkshopDate {
+  id?: number;
   date_raw: string;
   price: string;
   location: string;
+  location_address?: string;
+  location_city?: string;
+  location_zip?: string;
+  location_country?: string;
   capacity: number;
   filled?: number; //  Aantal deelnemers
   time?: string;
@@ -95,14 +101,20 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
     try {
       //  NUCLEAR WORKSHOP SPA ENGINE
       // We voegen de workshop toe aan de checkout en navigeren direct.
+      const selectedEditionId = selectedDate?.id ?? null;
+      const locationPayload = buildWorkshopLocationPayload(selectedDate || null);
       const workshopItem = {
         id: `workshop-${workshopId}-${Date.now()}`,
         type: 'workshop_edition',
         name: title,
         workshop_id: workshopId,
+        workshopId: workshopId,
+        edition_id: selectedEditionId,
+        editionId: selectedEditionId,
         price: priceExclVatValue,
         date: selectedDate?.date_raw,
-        location: selectedDate?.location,
+        ...locationPayload,
+        image_url: thumbnail_url || undefined,
         thumbnail_url: thumbnail_url || undefined,
         participant_info: {
           first_name: formData.first_name,
@@ -126,7 +138,7 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
 
       // Add to cart and set journey
       addItem(workshopItem);
-      setJourney('studio', workshopId);
+      setJourney('studio', selectedEditionId ?? workshopId);
       setStep('details'); // Direct naar de details stap in de checkout
 
       setTimeout(() => {
