@@ -11,6 +11,7 @@ import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { useCheckout } from '@/contexts/CheckoutContext';
 import { useSonicDNA } from '@/lib/engines/sonic-dna';
+import { buildWorkshopLocationPayload } from '@/lib/utils/workshop-location';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -21,6 +22,10 @@ interface WorkshopDate {
   date_raw: string;
   price: string;
   location: string;
+  location_address?: string;
+  location_city?: string;
+  location_zip?: string;
+  location_country?: string;
   capacity: number;
   filled?: number; //  Aantal deelnemers
   time?: string;
@@ -95,6 +100,7 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
     try {
       //  NUCLEAR WORKSHOP SPA ENGINE
       // We voegen de workshop toe aan de checkout en navigeren direct.
+      const locationPayload = buildWorkshopLocationPayload(selectedDate || null);
       const workshopItem = {
         id: `workshop-${workshopId}-${Date.now()}`,
         type: 'workshop_edition',
@@ -102,7 +108,7 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
         workshop_id: workshopId,
         price: priceExclVatValue,
         date: selectedDate?.date_raw,
-        location: selectedDate?.location,
+        ...locationPayload,
         thumbnail_url: thumbnail_url || undefined,
         participant_info: {
           first_name: formData.first_name,

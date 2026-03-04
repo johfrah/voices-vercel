@@ -10,6 +10,7 @@ import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
 import { AnimatePresence, motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { formatWorkshopLocationLabel } from '@/lib/utils/workshop-location';
 import { 
   Bell, 
   Building2, 
@@ -925,7 +926,11 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
             <ContainerInstrument plain className="max-h-[320px] overflow-y-auto no-scrollbar px-1">
               {(checkoutState.items || []).length > 0 ? (
                 <ContainerInstrument plain className="space-y-1">
-                  {(checkoutState.items || []).map((item: any, idx: number) => (
+                  {(checkoutState.items || []).map((item: any, idx: number) => {
+                    const workshopLocationLabel = item.type === 'workshop_edition'
+                      ? formatWorkshopLocationLabel(item)
+                      : null;
+                    return (
                     <ContainerInstrument
                       key={item.id || idx}
                       plain
@@ -958,10 +963,10 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
                                   </TextInstrument>
                                 </>
                               )}
-                              {item.location && (
+                              {workshopLocationLabel && (
                                 <>
                                   <ContainerInstrument plain className="w-0.5 h-0.5 rounded-full bg-va-black/10" />
-                                  <TextInstrument className="text-[11px] text-va-black/40 font-light tracking-widest">{item.location}</TextInstrument>
+                                  <TextInstrument className="text-[11px] text-va-black/40 font-light tracking-widest">{workshopLocationLabel}</TextInstrument>
                                 </>
                               )}
                             </>
@@ -1005,7 +1010,8 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
                         </TextInstrument>
                       </div>
                     </ContainerInstrument>
-                  ))}
+                    );
+                  })}
                 </ContainerInstrument>
               ) : (
                 <ContainerInstrument plain className="p-8 text-center">

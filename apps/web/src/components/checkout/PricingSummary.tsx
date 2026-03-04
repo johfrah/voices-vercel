@@ -14,6 +14,7 @@ import { useMasterControl } from '@/contexts/VoicesMasterControlContext';
 import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { cn } from '@/lib/utils';
+import { formatWorkshopLocationLabel } from '@/lib/utils/workshop-location';
 import { VOICES_CONFIG } from '@/lib/core-internal/config';
 import { normalizeLocale } from '@/lib/system/locale-utils';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -419,6 +420,11 @@ export const PricingSummary: React.FC<{
     return rows;
   };
 
+  const selectedWorkshopLocation =
+    selectedItem?.type === 'workshop_edition'
+      ? formatWorkshopLocationLabel(selectedItem as Record<string, unknown>)
+      : null;
+
   if (!isHydrated) return null;
 
   return (
@@ -446,6 +452,7 @@ export const PricingSummary: React.FC<{
                 : resolveCountDetails(itemData.years, (key) => MarketManager.getMediaLabel(key) || String(key), ' jaar');
               const deliveryLabel = isWorkshopItem ? null : resolveDeliveryLabel(itemData);
               const workshopParticipantRows = isWorkshopItem ? resolveWorkshopParticipantRows(itemData) : [];
+              const workshopLocationLabel = isWorkshopItem ? formatWorkshopLocationLabel(itemData) : null;
 
               return (
                 <ContainerInstrument 
@@ -487,10 +494,10 @@ export const PricingSummary: React.FC<{
                                 {itemObj.date}
                               </span>
                             )}
-                            {itemObj.location && (
+                            {workshopLocationLabel && (
                               <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-va-off-white border border-va-black/[0.04]">
                                 <MapPin size={12} strokeWidth={1.8} />
-                                {itemObj.location}
+                                {workshopLocationLabel}
                               </span>
                             )}
                           </>
@@ -533,10 +540,10 @@ export const PricingSummary: React.FC<{
                                       <span className="block font-medium text-va-black/70">{itemObj.date}</span>
                                     </div>
                                   )}
-                                  {itemObj.location && (
+                                  {workshopLocationLabel && (
                                     <div className="space-y-0.5">
                                       <span className="text-[10px] uppercase tracking-widest text-va-black/35">Locatie</span>
-                                      <span className="block font-medium text-va-black/70">{itemObj.location}</span>
+                                      <span className="block font-medium text-va-black/70">{workshopLocationLabel}</span>
                                     </div>
                                   )}
                                   {workshopParticipantRows.map((row, rowIndex) => (
@@ -810,10 +817,10 @@ export const PricingSummary: React.FC<{
                                 <span>{selectedItem.date}</span>
                               </>
                             )}
-                            {selectedItem.location && (
+                            {selectedWorkshopLocation && (
                               <>
                                 <span className="w-1 h-1 rounded-full bg-va-black/10" />
-                                <span>{selectedItem.location}</span>
+                                <span>{selectedWorkshopLocation}</span>
                               </>
                             )}
                           </>

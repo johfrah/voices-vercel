@@ -10,6 +10,7 @@ import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
 import { AnimatePresence, motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { formatWorkshopLocationLabel } from '@/lib/utils/workshop-location';
 import { 
   Bell, 
   Building2, 
@@ -925,6 +926,9 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
                     const itemTitle = item.type === 'workshop_edition'
                       ? (item.name || t('cart.workshop.label', 'Studio workshop'))
                       : (item.actor?.display_name || item.actor?.name || 'Stemopname');
+                    const workshopLocationLabel = item.type === 'workshop_edition'
+                      ? formatWorkshopLocationLabel(item)
+                      : null;
                     const usageInput = item.usageId ?? item.usage_id ?? item.usage;
                     const usageLabel = item.type === 'workshop_edition'
                       ? t('cart.workshop.label', 'Studio workshop')
@@ -945,7 +949,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
                       .join(', ');
 
                     const detailLine = item.type === 'workshop_edition'
-                      ? [item.date, item.location].filter(Boolean).join(' • ')
+                      ? [item.date, workshopLocationLabel].filter(Boolean).join(' • ')
                       : [usageLabel, mediaLabel, countryLabel].filter(Boolean).join(' • ');
 
                     return (

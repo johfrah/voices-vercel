@@ -8,6 +8,7 @@ import { ArrowRight, ShoppingCart, Heart } from "lucide-react";
 import { useSonicDNA } from "@/lib/engines/sonic-dna";
 import { useVoicesRouter } from "@/components/ui/VoicesLink";
 import { useCheckout } from "@/contexts/CheckoutContext";
+import { buildWorkshopLocationPayload } from "@/lib/utils/workshop-location";
 import { WorkshopParticipantForm } from "./WorkshopParticipantForm";
 
 interface WorkshopHeroIslandProps {
@@ -24,7 +25,13 @@ interface WorkshopHeroIslandProps {
       id: number;
       date: string;
       price?: number | null;
-      location?: { city?: string } | null;
+      location?: {
+        name?: string | null;
+        address?: string | null;
+        city?: string | null;
+        zip?: string | null;
+        country?: string | null;
+      } | null;
     }>;
   };
 }
@@ -65,6 +72,7 @@ export const WorkshopHeroIsland: React.FC<WorkshopHeroIslandProps> = ({ workshop
     const imageUrl = workshop.featured_image?.file_path
       ? `https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices/${workshop.featured_image.file_path}`
       : null;
+    const locationPayload = buildWorkshopLocationPayload(nextEdition?.location || null);
 
     const workshopItem = {
       id: `workshop-${nextEdition!.id}-${Date.now()}`,
@@ -73,7 +81,7 @@ export const WorkshopHeroIsland: React.FC<WorkshopHeroIslandProps> = ({ workshop
       price: priceValue,
       editionId: nextEdition!.id,
       date: nextEdition!.date,
-      location: nextEdition!.location?.city || null,
+      ...locationPayload,
       image_url: imageUrl,
       participant_info: participantData,
       pricing: {
