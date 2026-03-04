@@ -304,11 +304,7 @@ export async function POST(request: Request) {
     const { 
       pricing, items, selectedActor, step, first_name, last_name, email, 
       vat_number, postal_code, city, metadata, quoteMessage, phone, 
-<<<<<<< HEAD
       company, address_street, usage, plan, music, ownMusicFile, country, payment_method, language,
-=======
-      company, address_street, usage, plan, music, country, payment_method, language,
->>>>>>> c0862a88dc9b2fb6e30f9fbec678538130233068
       billing_po, purchase_order, financial_email, billing_email_alt, is_quote
     } = data;
     const resolvedPurchaseOrder = String(billing_po || purchase_order || '').trim() || null;

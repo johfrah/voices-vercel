@@ -59,20 +59,37 @@ export async function GET(request: NextRequest) {
     const allUsers = await query.orderBy(desc(users.createdAt)).limit(500);
 
     // Map the results to a clean format
-    const enrichedUsers = allUsers.map((user: any) => ({
-      id: user.id,
-      name: `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.email,
-      email: user.email,
-      companyName: user.companyName,
-      role: user.role,
-      createdAt: user.createdAt,
-      lastActive: user.lastActive,
-      stats: {
-        orders: user.orderCount,
-        totalSpent: parseFloat(user.totalSpent),
-        activeWorlds: user.activeWorlds || []
+    const enrichedUsers = allUsers.map((user: any) => {
+      // 🧠 Smart Name Logic (No more 'Onbekend')
+      let displayName = `${user.first_name || ''} ${user.last_name || ''}`.trim();
+      
+      if (!displayName) {
+        if (user.companyName) {
+          displayName = user.companyName;
+        } else if (user.email) {
+          const [localPart] = user.email.split('@');
+          // Capitalize first letter for a friendlier look
+          displayName = localPart.charAt(0).toUpperCase() + localPart.slice(1);
+        } else {
+          displayName = `Gastgebruiker #${user.id}`;
+        }
       }
-    }));
+
+      return {
+        id: user.id,
+        name: displayName,
+        email: user.email,
+        companyName: user.companyName,
+        role: user.role,
+        createdAt: user.createdAt,
+        lastActive: user.lastActive,
+        stats: {
+          orders: user.orderCount,
+          totalSpent: parseFloat(user.totalSpent),
+          activeWorlds: user.activeWorlds || []
+        }
+      };
+    });
 
     return NextResponse.json(enrichedUsers);
   } catch (error) {

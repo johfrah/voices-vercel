@@ -173,11 +173,7 @@ export async function generateMetadata(): Promise<Metadata> {
   // 🛡️ CHRIS-PROTOCOL: Parallel Pulse Fetching (v2.14.798)
   // We fetch market, locales and translations in parallel to minimize TTFB
   const [market, alternateLanguages, studioTranslations] = await Promise.all([
-<<<<<<< HEAD
     getMarketSafe(marketHost),
-=======
-    getMarketSafe(lookupHost),
->>>>>>> c0862a88dc9b2fb6e30f9fbec678538130233068
     (async () => {
       try {
         const localesPromise = MarketDatabaseService.getAllLocalesAsync();
@@ -316,11 +312,7 @@ export default async function RootLayout({
   // CHRIS-PROTOCOL: `world_languages` ontbreekt momenteel in production schema.
   // Vermijd per-request 404 storm; language switcher gebruikt dan de bestaande market fallback.
   const [market, studioTranslations, handshakeLanguages, worldConfig] = await Promise.all([
-<<<<<<< HEAD
     getMarketSafe(marketHost),
-=======
-    getMarketSafe(lookupHost),
->>>>>>> c0862a88dc9b2fb6e30f9fbec678538130233068
     (async () => {
       try {
         const translationPromise = getTranslationsServer(normalizeLocale(langHeader || 'nl-be'));

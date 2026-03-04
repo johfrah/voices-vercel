@@ -26,6 +26,19 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     }
     const user = userProfile[0];
 
+    // 🧠 Smart Name Logic (No more 'Onbekend')
+    let displayName = `${user.first_name || ''} ${user.last_name || ''}`.trim();
+    if (!displayName) {
+      if (user.companyName) {
+        displayName = user.companyName;
+      } else if (user.email) {
+        const [localPart] = user.email.split('@');
+        displayName = localPart.charAt(0).toUpperCase() + localPart.slice(1);
+      } else {
+        displayName = `Gastgebruiker #${user.id}`;
+      }
+    }
+
     // 2. Fetch Financial DNA (Orders)
     const userOrders = await db.select().from(ordersV2)
       .where(eq(ordersV2.userId, userId))
@@ -75,7 +88,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     const fullProfile = {
       profile: {
         ...user,
-        displayName: `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.email,
+        displayName,
       },
       financials: {
         totalSpent,

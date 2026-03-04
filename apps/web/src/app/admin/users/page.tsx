@@ -168,7 +168,7 @@ export default function AdminUsersPage() {
                         {user.name?.charAt(0) || user.email?.charAt(0)}
                         </ContainerInstrument>
                         <ContainerInstrument>
-                        <TextInstrument className="font-light text-va-black tracking-tight group-hover:text-primary transition-colors">{user.name || 'Onbekend'}</TextInstrument>
+                        <TextInstrument className="font-light text-va-black tracking-tight group-hover:text-primary transition-colors">{user.name}</TextInstrument>
                         <TextInstrument className="text-[15px] text-va-black/40 font-light">{user.email}</TextInstrument>
                         </ContainerInstrument>
                     </ContainerInstrument>

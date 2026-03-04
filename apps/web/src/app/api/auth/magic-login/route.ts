@@ -60,7 +60,6 @@ export async function GET(request: Request) {
     const secret = process.env.JWT_SECRET || 'voices-secret-2026';
     let payload: any;
     try {
-<<<<<<< HEAD
       // 🛡️ CHRIS-PROTOCOL: Support for Permanent Admin Key (v6.0.7)
       const adminKey = process.env.ADMIN_AUTOLOGIN_KEY;
       if (adminKey && token === adminKey) {
@@ -86,20 +85,6 @@ export async function GET(request: Request) {
           )
         );
       }
-=======
-      payload = verify(token, secret);
-    } catch {
-      const decodedPayload = decode(token) as any;
-      return NextResponse.redirect(
-        buildVerificationUrl(
-          currentBaseUrl,
-          redirectPath,
-          fallbackEmailParam || decodedPayload?.email || null,
-          decodedPayload?.orderId,
-          'invalid_or_expired_token'
-        )
-      );
->>>>>>> c0862a88dc9b2fb6e30f9fbec678538130233068
     }
 
     let { userId, email: tokenEmail } = payload;

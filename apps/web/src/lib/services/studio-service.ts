@@ -1,7 +1,6 @@
 import { db } from '@/lib/system/voices-config';
 import { sql } from 'drizzle-orm';
 
-<<<<<<< HEAD
 /** Media ID voor Studio hero video (workshop-beginners-aftermovie). Override via env STUDIO_HERO_VIDEO_MEDIA_ID. */
 const STUDIO_HERO_VIDEO_MEDIA_ID = process.env.STUDIO_HERO_VIDEO_MEDIA_ID
   ? parseInt(process.env.STUDIO_HERO_VIDEO_MEDIA_ID, 10)
@@ -32,22 +31,6 @@ async function getStudioHeroVideo(): Promise<{ heroVideoPath: string | null; her
     }
   }
   return { heroVideoPath, heroVideoMediaId };
-=======
-const SUPABASE_STORAGE_PUBLIC_BASE = 'https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices';
-
-function toPublicStorageUrl(filePath?: string | null): string | null {
-  if (!filePath) return null;
-  return `${SUPABASE_STORAGE_PUBLIC_BASE}/${filePath}`;
-}
-
-function languageLabelFromCode(languageCode?: string | null): string {
-  const code = (languageCode || '').toLowerCase();
-  if (code.startsWith('nl')) return 'Nederlands';
-  if (code.startsWith('fr')) return 'Français';
-  if (code.startsWith('en')) return 'English';
-  if (code.startsWith('de')) return 'Deutsch';
-  return languageCode || 'Subtitles';
->>>>>>> c0862a88dc9b2fb6e30f9fbec678538130233068
 }
 
 export interface WorkshopApiResponse {
