@@ -21,7 +21,12 @@ const CheckoutItemSchema = z.object({
   actor: z.object({
     id: z.coerce.number(),
     display_name: z.string().optional(),
-  }).optional(),
+    first_name: z.string().optional(),
+    photo_url: z.string().optional(),
+    thumbnail_url: z.string().optional(),
+    delivery_time: z.string().optional(),
+    deliveryTime: z.string().optional(),
+  }).passthrough().optional(),
   usage: z.string().optional(),
   journey: z.string().optional(),
   briefing: z.string().optional(),

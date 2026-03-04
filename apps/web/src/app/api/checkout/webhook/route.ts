@@ -34,6 +34,81 @@ function v2StatusCandidates(statusCode: string): string[] {
   return [normalized];
 }
 
+function toSafeNumber(value: unknown): number {
+  const numeric = Number(value);
+  return Number.isFinite(numeric) ? numeric : 0;
+}
+
+function extractProxyPath(rawValue: string): string | null {
+  const queryStart = rawValue.indexOf('?');
+  if (queryStart === -1) return null;
+  const params = new URLSearchParams(rawValue.slice(queryStart + 1));
+  const pathValue = params.get('path');
+  return pathValue ? decodeURIComponent(pathValue) : null;
+}
+
+function resolveWebhookThumbnailUrl(value: unknown, host: string): string | undefined {
+  if (!value || typeof value !== 'string') return undefined;
+  const rawValue = value.trim();
+  if (!rawValue) return undefined;
+  if (rawValue.startsWith('http://') || rawValue.startsWith('https://')) return rawValue;
+
+  if (
+    rawValue.startsWith('/') &&
+    !rawValue.startsWith('/assets/') &&
+    !rawValue.startsWith('/wp-content/') &&
+    !rawValue.startsWith('/api/')
+  ) {
+    return `https://${host}${rawValue}`;
+  }
+
+  let normalizedPath = rawValue;
+  if (normalizedPath.includes('/api/proxy') && normalizedPath.includes('?path=')) {
+    const extractedPath = extractProxyPath(normalizedPath);
+    normalizedPath = extractedPath || normalizedPath;
+  }
+
+  normalizedPath = normalizedPath.startsWith('/assets/') ? normalizedPath.slice('/assets/'.length) : normalizedPath;
+  normalizedPath = normalizedPath.startsWith('assets/') ? normalizedPath.slice('assets/'.length) : normalizedPath;
+  normalizedPath = normalizedPath.startsWith('/') ? normalizedPath.slice(1) : normalizedPath;
+  if (normalizedPath.startsWith('wp-content/') || normalizedPath.startsWith('api/')) {
+    normalizedPath = `/${normalizedPath}`;
+  }
+  if (!normalizedPath) return undefined;
+
+  return `https://${host}/api/proxy/?path=${encodeURIComponent(normalizedPath)}`;
+}
+
+function buildWebhookOrderEmailItems(items: any[], host: string): Array<{
+  name: string;
+  price: number;
+  quantity: number;
+  unitPrice: number;
+  deliveryTime?: string;
+  description?: string;
+  thumbnailUrl?: string;
+  projectCode?: string;
+}> {
+  return (items || []).map((item: any) => {
+    const metaData = (item?.metaData as Record<string, any>) || {};
+    const snapshot = (metaData.email_item_snapshot as Record<string, any>) || {};
+    const quantity = Math.max(1, toSafeNumber(snapshot.quantity || item?.quantity || 1));
+    const basePrice = toSafeNumber(item?.price);
+    const taxPrice = toSafeNumber(item?.tax);
+    const lineTotal = basePrice + taxPrice;
+    return {
+      name: item?.name || 'Voice-over',
+      price: lineTotal,
+      quantity,
+      unitPrice: quantity > 0 ? lineTotal / quantity : lineTotal,
+      deliveryTime: snapshot.delivery_time || metaData.deliveryTime || undefined,
+      description: snapshot.description || metaData.usage || undefined,
+      thumbnailUrl: resolveWebhookThumbnailUrl(snapshot.thumbnail_url, host),
+      projectCode: snapshot.project_code || undefined,
+    };
+  });
+}
+
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
@@ -88,6 +163,8 @@ export async function POST(request: NextRequest) {
     const host = request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || MarketManager.getMarketDomains()['BE']?.replace('https://', ''));
     const market = MarketManager.getCurrentMarket(host);
     const adminEmail = process.env.ADMIN_EMAIL || market.email;
+    const marketDomains = MarketManager.getMarketDomains();
+    const baseUrl = marketDomains[market.market_code] || `https://${marketDomains['BE']?.replace('https://', '') || 'www.voices.be'}`;
 
     await db.transaction(async (tx: any) => {
       // Haal de order op om te zien wat erin zit
@@ -242,13 +319,12 @@ export async function POST(request: NextRequest) {
                       userName: user.first_name || 'Klant',
                       orderId: orderId.toString(),
                       total: parseFloat(order.total || '0'),
-                      items: items.map((i: any) => ({
-                        name: i.name,
-                        price: parseFloat(i.price || '0'),
-                        deliveryTime: (i.metaData as any)?.deliveryTime
-                      })),
+                      subtotal: items.reduce((sum: number, i: any) => sum + toSafeNumber(i.price), 0),
+                      tax: items.reduce((sum: number, i: any) => sum + toSafeNumber(i.tax), 0),
+                      items: buildWebhookOrderEmailItems(items, host),
                       paymentMethod: payment.method || 'Online',
-                      language: orderLanguage
+                      language: orderLanguage,
+                      ctaUrl: `${baseUrl}/account/orders?orderId=${encodeURIComponent(orderId)}`,
                     },
                     host: host
                   });

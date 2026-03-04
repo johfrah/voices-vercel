@@ -1,4 +1,5 @@
 import { VumeMasterWrapper } from './VumeMasterWrapper';
+import { normalizeLocale } from '@/lib/system/locale-utils';
 
 /**
  *  VUME MAGIC LINK TEMPLATE (2026)
@@ -16,8 +17,9 @@ interface MagicLinkOptions {
 export function VumeMagicLinkTemplate(options: MagicLinkOptions) {
   const { name, link, host = (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'www.voices.be'), language = 'nl-BE' } = options;
   // MarketManager is used for domain resolution in the mail engine
+  const shortLocale = normalizeLocale(language || 'nl-be').split('-')[0];
 
-  const content = {
+  const translations = {
     nl: {
       title: 'Welkom terug',
       greeting: name ? `Beste ${name},` : 'Beste,',
@@ -39,7 +41,9 @@ export function VumeMagicLinkTemplate(options: MagicLinkOptions) {
       button: 'LOGIN DIRECTLY',
       footer: 'This link is valid for 15 minutes. Didn\'t request this email? You can safely ignore it.'
     }
-  }[language as 'nl' | 'fr' | 'en'] || content.nl;
+  };
+
+  const content = translations[shortLocale as 'nl' | 'fr' | 'en'] || translations.nl;
 
   const html = `
     <p style="margin: 0 0 20px 0; font-family: 'Raleway', 'Helvetica Neue', Helvetica, Arial, sans-serif;">${content.greeting}</p>
@@ -60,6 +64,7 @@ export function VumeMagicLinkTemplate(options: MagicLinkOptions) {
     title: content.title,
     previewText: content.body,
     journey: 'auth',
-    host
+    host,
+    language,
   });
 }

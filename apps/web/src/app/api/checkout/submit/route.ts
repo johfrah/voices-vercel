@@ -164,6 +164,96 @@ function extractWorkshopId(item: Record<string, unknown>): number | null {
   }
   return null;
 }
+
+function toSafeNumber(value: unknown): number {
+  const numeric = Number(value);
+  return Number.isFinite(numeric) ? numeric : 0;
+}
+
+function extractProxyPath(rawValue: string): string | null {
+  const queryStart = rawValue.indexOf('?');
+  if (queryStart === -1) return null;
+  const params = new URLSearchParams(rawValue.slice(queryStart + 1));
+  const pathValue = params.get('path');
+  return pathValue ? decodeURIComponent(pathValue) : null;
+}
+
+function resolveCheckoutItemThumbnail(item: any, dbActor: any, host: string): string | undefined {
+  const candidate =
+    item?.thumbnail_url ||
+    item?.featured_image_url ||
+    item?.image_url ||
+    item?.media_url ||
+    item?.actor?.photo_url ||
+    item?.actor?.thumbnail_url ||
+    dbActor?.dropbox_url ||
+    null;
+
+  if (!candidate || typeof candidate !== 'string') return undefined;
+  if (candidate.startsWith('http://') || candidate.startsWith('https://')) {
+    return candidate;
+  }
+
+  const rawCandidate = candidate.trim();
+  if (
+    rawCandidate.startsWith('/') &&
+    !rawCandidate.startsWith('/assets/') &&
+    !rawCandidate.startsWith('/wp-content/') &&
+    !rawCandidate.startsWith('/api/')
+  ) {
+    return `https://${host}${rawCandidate}`;
+  }
+
+  let normalizedPath = rawCandidate;
+  if (normalizedPath.includes('/api/proxy') && normalizedPath.includes('?path=')) {
+    const extractedPath = extractProxyPath(normalizedPath);
+    normalizedPath = extractedPath || normalizedPath;
+  }
+
+  normalizedPath = normalizedPath.startsWith('/assets/') ? normalizedPath.slice('/assets/'.length) : normalizedPath;
+  normalizedPath = normalizedPath.startsWith('assets/') ? normalizedPath.slice('assets/'.length) : normalizedPath;
+  normalizedPath = normalizedPath.startsWith('/') ? normalizedPath.slice(1) : normalizedPath;
+  if (normalizedPath.startsWith('wp-content/') || normalizedPath.startsWith('api/')) {
+    normalizedPath = `/${normalizedPath}`;
+  }
+  if (!normalizedPath) return undefined;
+
+  return `https://${host}/api/proxy/?path=${encodeURIComponent(normalizedPath)}`;
+}
+
+function resolveCheckoutItemDescription(item: any): string {
+  const usage = item?.usage ? String(item.usage).replace(/_/g, ' ') : '';
+  const media = Array.isArray(item?.media) && item.media.length > 0 ? item.media.join(', ') : '';
+  const country = item?.country ? String(item.country) : '';
+  return [usage, media, country].filter(Boolean).join(' • ');
+}
+
+function buildOrderEmailItems(validatedItems: any[], actorMap: Map<number, any>, host: string): Array<{
+  name: string;
+  price: number;
+  quantity: number;
+  unitPrice: number;
+  deliveryTime?: string;
+  description?: string;
+  thumbnailUrl?: string;
+  projectCode?: string;
+}> {
+  return (validatedItems || []).map((item: any) => {
+    const dbActor = actorMap.get(Number(item?.actor?.id));
+    const lineTotal = toSafeNumber(item?.pricing?.total || item?.pricing?.subtotal || item?.price || 0);
+    const quantity = Math.max(1, toSafeNumber(item?.quantity || 1));
+    return {
+      name: item?.name || item?.actor?.display_name || item?.actor?.first_name || 'Voice-over',
+      price: lineTotal,
+      quantity,
+      unitPrice: quantity > 0 ? lineTotal / quantity : lineTotal,
+      deliveryTime: item?.actor?.delivery_time || item?.actor?.deliveryTime || dbActor?.deliveryTime || undefined,
+      description: item?.description || resolveCheckoutItemDescription(item) || undefined,
+      thumbnailUrl: resolveCheckoutItemThumbnail(item, dbActor, host),
+      projectCode: item?.project_code || item?.id || undefined,
+    };
+  });
+}
 export async function POST(request: Request) {
   return await ServerWatchdog.atomic('CheckoutAPI', 'SubmitOrder', {}, async () => {
     let rawBody: any = null;
@@ -472,6 +562,14 @@ export async function POST(request: Request) {
       const voiceSubtotal = Math.max(0, itemSubtotal - musicSurcharge);
       const voiceTax = Math.round(voiceSubtotal * taxRate * 100) / 100;
       const musicTax = Math.round(musicSurcharge * taxRate * 100) / 100;
+      const emailItemSnapshot = {
+        description: item.description || resolveCheckoutItemDescription(item) || null,
+        thumbnail_url: resolveCheckoutItemThumbnail(item, dbActor, host) || null,
+        delivery_time: item.actor?.delivery_time || item.actor?.deliveryTime || dbActor?.deliveryTime || null,
+        quantity: Math.max(1, toSafeNumber(item.quantity || 1)),
+        unit_price: voiceSubtotal > 0 ? voiceSubtotal : itemSubtotal,
+        project_code: item.project_code || item.id || null,
+      };
 
       const voiceRow = {
         order_id: newOrder.id,
@@ -499,6 +597,7 @@ export async function POST(request: Request) {
                 as_hold_music: musicAsHoldMusic,
               }
             : null,
+          email_item_snapshot: emailItemSnapshot,
           // 🛡️ Store hard IDs and participant context for analytics
           country_id: countryId || item.countryId || item.country_id,
           language_id: dbActor?.native_language_id,
@@ -520,6 +619,14 @@ export async function POST(request: Request) {
         tax: musicTax.toFixed(2),
         meta_data: {
           item_type: 'music',
+          email_item_snapshot: {
+            description: `Music track: ${musicTrackLabel}`,
+            thumbnail_url: null,
+            delivery_time: item.actor?.delivery_time || item.actor?.deliveryTime || null,
+            quantity: 1,
+            unit_price: musicSurcharge,
+            project_code: item.project_code || item.id || null,
+          },
           music_choice: {
             track_id: musicTrackId,
             track_label: musicTrackLabel,
@@ -583,13 +690,12 @@ export async function POST(request: Request) {
               userName: first_name,
               orderId: newOrder.id,
               total: amount,
-              items: validatedItems.map((item: any) => ({
-                name: item.name || item.actor?.display_name || 'Voice Over',
-                price: Number(item.pricing?.total || item.pricing?.subtotal || 0),
-                deliveryTime: item.actor?.delivery_time || item.actor?.deliveryTime
-              })),
+              subtotal: serverCalculatedSubtotal,
+              tax: amount - serverCalculatedSubtotal,
+              items: buildOrderEmailItems(validatedItems, actorMap, host),
               paymentMethod: payment_method,
-              language: normalizedLanguage
+              language: normalizedLanguage,
+              ctaUrl: `${baseUrl}/account/orders?orderId=${encodeURIComponent(newOrder.id)}`,
             },
             host
           });

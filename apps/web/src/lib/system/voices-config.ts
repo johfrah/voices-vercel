@@ -115,6 +115,7 @@ export const marketConfigs = fullSchema?.marketConfigs || null;
 export const siteSettings = fullSchema?.siteSettings || null;
 export const fameRegistry = fullSchema?.fameRegistry || null;
 export const mailContent = fullSchema?.mailContent || null;
+export const emailStatusHandshakes = fullSchema?.emailStatusHandshakes || null;
 export const vaultFiles = fullSchema?.vaultFiles || null;
 export const agentPrompts = fullSchema?.agentPrompts || null;
 export const agentPromptVersions = fullSchema?.agentPromptVersions || null;
