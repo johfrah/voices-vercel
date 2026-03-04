@@ -216,8 +216,8 @@ export default function CartPageClient() {
   return (
     <ContainerInstrument plain className="min-h-screen bg-va-off-white pb-24 relative z-10">
       <LiquidBackground />
-      <SectionInstrument className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 pt-20">
-        <ContainerInstrument className="mb-14 flex flex-col items-center justify-center gap-8 text-center">
+      <SectionInstrument className="max-w-7xl mx-auto px-0 sm:px-4 md:px-6 lg:px-8 pt-16 sm:pt-20">
+        <ContainerInstrument className="mb-10 sm:mb-14 flex flex-col items-center justify-center gap-6 sm:gap-8 text-center">
           <ContainerInstrument className="space-y-4 w-full flex flex-col items-center">
             <OrderStepsInstrument currentStep="checkout" className="opacity-100 mb-4" />
             <Link  
@@ -233,13 +233,13 @@ export default function CartPageClient() {
           </ContainerInstrument>
         </ContainerInstrument>
 
-        <ContainerInstrument className="grid grid-cols-1 lg:grid-cols-12 gap-6 xl:gap-8 items-start">
+        <ContainerInstrument className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 xl:gap-8 items-start">
           {/* Cart Items List */}
-          <ContainerInstrument className="lg:col-span-8 space-y-8">
-            <PricingSummary onlyItems={true} className="!space-y-6" />
+          <ContainerInstrument className="lg:col-span-8 space-y-6 sm:space-y-8">
+            <PricingSummary onlyItems={true} className="!space-y-4 sm:!space-y-6" />
             
-            <div className="p-8 bg-primary/5 rounded-[32px] border border-primary/10 flex items-start gap-6">
-              <div className="w-12 h-12 bg-white rounded-[10px] flex items-center justify-center text-primary shadow-sm">
+            <div className="p-4 sm:p-6 md:p-8 bg-primary/5 rounded-[20px] sm:rounded-[28px] md:rounded-[32px] border border-primary/10 flex items-start gap-4 sm:gap-6">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white rounded-[10px] flex items-center justify-center text-primary shadow-sm shrink-0">
                 <Info size={24} strokeWidth={1.5} />
               </div>
               <div className="flex-1">
@@ -266,7 +266,7 @@ export default function CartPageClient() {
           {/* Totals & Checkout CTA */}
           <ContainerInstrument className="lg:col-span-4">
             <div className="lg:sticky lg:top-24 space-y-8">
-              <div className="bg-white p-10 rounded-[40px] shadow-aura-lg border border-va-black/5 space-y-8">
+              <div className="bg-white p-5 sm:p-7 lg:p-10 rounded-[20px] sm:rounded-[28px] lg:rounded-[40px] shadow-aura-lg border border-va-black/5 space-y-6 sm:space-y-8">
                 <HeadingInstrument level={3} className="text-2xl font-light tracking-tighter border-b border-va-black/5 pb-6">
                   Overzicht
                 </HeadingInstrument>
@@ -276,7 +276,7 @@ export default function CartPageClient() {
                 <ButtonInstrument 
                   as={Link}
                   href={checkoutPath}
-                  className="w-full va-btn-pro !py-8 text-xl !rounded-[24px] !bg-va-black !text-white flex items-center justify-center gap-3 group transition-all duration-500 hover:shadow-aura-lg hover:scale-[1.02]"
+                  className="w-full va-btn-pro !py-6 sm:!py-8 text-base sm:text-xl !rounded-[20px] sm:!rounded-[24px] !bg-va-black !text-white flex items-center justify-center gap-3 group transition-all duration-500 hover:shadow-aura-lg hover:scale-[1.02]"
                 >
                   <VoiceglotText translationKey="cart.cta.checkout" defaultText="Naar afrekenen" />
                   <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
@@ -299,7 +299,7 @@ export default function CartPageClient() {
               </div>
 
               {/* Security Nudge */}
-              <div className="flex items-center justify-center gap-4 text-va-black/20">
+              <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 text-va-black/20 px-3">
                 <Image src="/payment-methods/mollie/bancontact.png" width={36} height={20} alt="Bancontact" className="h-5 w-auto object-contain grayscale opacity-50" priority />
                 <Image src="/payment-methods/mollie/ideal.png" width={36} height={20} alt="iDEAL" className="h-5 w-auto object-contain grayscale opacity-50" priority />
                 <Image src="/payment-methods/mollie/creditcard.png" width={40} height={20} alt="Creditcard" className="h-5 w-auto object-contain grayscale opacity-50" priority />

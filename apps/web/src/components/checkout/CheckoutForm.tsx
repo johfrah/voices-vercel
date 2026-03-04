@@ -444,8 +444,8 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
   const methodLabel = selectedMethodObj?.description || (selectedMethod.charAt(0).toUpperCase() + selectedMethod.slice(1));
 
   return (
-    <ContainerInstrument className="space-y-8 w-full max-w-full">
-      <ContainerInstrument className="bg-white p-8 rounded-[20px] border border-va-black/5 shadow-aura space-y-6 w-full max-w-full">
+    <ContainerInstrument className="space-y-6 sm:space-y-8 w-full max-w-full">
+      <ContainerInstrument className="bg-white p-5 sm:p-7 lg:p-8 rounded-[16px] sm:rounded-[20px] border border-va-black/5 shadow-aura space-y-5 sm:space-y-6 w-full max-w-full">
         <ContainerInstrument className="flex items-center gap-3 mb-2">
           <ContainerInstrument className="w-10 h-10 rounded-[10px] bg-primary/5 text-primary flex items-center justify-center">
             <User size={20} strokeWidth={1.5} />
@@ -480,7 +480,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
           />
         </ContainerInstrument>
 
-        <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           <ContainerInstrument className="space-y-0.5">
             <LabelInstrument>
               <VoiceglotText  translationKey="checkout.form.first_name" defaultText="Voornaam *" />
@@ -505,7 +505,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
           </ContainerInstrument>
         </ContainerInstrument>
         
-        <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           <ContainerInstrument className="space-y-0.5">
             <LabelInstrument>
               <VoiceglotText  translationKey="checkout.form.phone" defaultText="Telefoonnummer" />
@@ -586,7 +586,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
           />
         </ContainerInstrument>
 
-        <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           <ContainerInstrument className="space-y-0.5">
             <LabelInstrument>
               <VoiceglotText  translationKey="checkout.form.address" defaultText="Straat en huisnummer" />
@@ -668,7 +668,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
                 transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
                 className="overflow-hidden"
               >
-                <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
+                <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 pt-4">
                   <ContainerInstrument className="space-y-0.5">
                     <LabelInstrument>
                       <VoiceglotText  translationKey="checkout.form.po_number" defaultText="PO Nummer / Referentie" />
@@ -700,7 +700,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
       </ContainerInstrument>
 
       {!formData.isQuote ? (
-        <ContainerInstrument className="bg-white p-8 rounded-[20px] border border-va-black/5 shadow-aura space-y-6 w-full">
+        <ContainerInstrument className="bg-white p-5 sm:p-7 lg:p-8 rounded-[16px] sm:rounded-[20px] border border-va-black/5 shadow-aura space-y-5 sm:space-y-6 w-full">
           <ContainerInstrument className="flex items-center gap-3 mb-2">
             <ContainerInstrument className="w-10 h-10 rounded-[10px] bg-primary/5 text-primary flex items-center justify-center">
               <CreditCard size={20} strokeWidth={1.5} />
@@ -809,7 +809,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
           </ContainerInstrument>
         </ContainerInstrument>
       ) : (
-        <ContainerInstrument className="p-8 bg-va-black/[0.02] rounded-[20px] border border-va-black/5 flex items-center gap-6 animate-fade-in">
+        <ContainerInstrument className="p-5 sm:p-8 bg-va-black/[0.02] rounded-[16px] sm:rounded-[20px] border border-va-black/5 flex items-center gap-4 sm:gap-6 animate-fade-in">
           <ContainerInstrument className="w-14 h-14 bg-white rounded-[10px] flex items-center justify-center text-va-black/40 shadow-sm">
             <Send size={28} strokeWidth={1.5} />
           </ContainerInstrument>
@@ -904,10 +904,10 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[10000] flex items-center justify-center p-6 bg-va-black/95 backdrop-blur-xl"
+            className="fixed inset-0 z-[10000] flex items-center justify-center p-4 sm:p-6 bg-va-black/95 backdrop-blur-xl"
           >
-            <ContainerInstrument plain className="relative w-full max-w-md bg-white rounded-[40px] overflow-hidden shadow-2xl flex flex-col z-[10001]">
-              <div className="p-8 border-b border-black/5 flex justify-between items-center">
+            <ContainerInstrument plain className="relative w-full max-w-md bg-white rounded-[24px] sm:rounded-[40px] overflow-hidden shadow-2xl flex flex-col z-[10001]">
+              <div className="p-5 sm:p-8 border-b border-black/5 flex justify-between items-center">
                 <HeadingInstrument level={3} className="text-2xl font-light tracking-tighter">
                   <VoiceglotText translationKey="checkout.login.title" defaultText="Inloggen" />
                 </HeadingInstrument>
@@ -915,7 +915,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
                   <X size={20} />
                 </button>
               </div>
-              <div className="p-8 space-y-6">
+              <div className="p-5 sm:p-8 space-y-6">
                 <AnimatePresence mode="wait">
                   {!magicLinkSent ? (
                     <motion.div

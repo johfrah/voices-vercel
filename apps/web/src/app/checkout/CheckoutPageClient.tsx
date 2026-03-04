@@ -215,8 +215,8 @@ export default function CheckoutPageClient() {
   return (
     <ContainerInstrument plain className="min-h-screen bg-va-off-white pb-24 relative z-10">
       <LiquidBackground />
-      <SectionInstrument className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 pt-20">
-        <ContainerInstrument className="mb-14 flex flex-col items-center justify-center gap-8 text-center">
+      <SectionInstrument className="max-w-7xl mx-auto px-0 sm:px-4 md:px-6 lg:px-8 pt-16 sm:pt-20">
+        <ContainerInstrument className="mb-10 sm:mb-14 flex flex-col items-center justify-center gap-6 sm:gap-8 text-center">
           <ContainerInstrument className="space-y-4 w-full flex flex-col items-center">
             <OrderStepsInstrument currentStep="checkout" className="opacity-100 mb-4" />
             <Link  
@@ -232,11 +232,11 @@ export default function CheckoutPageClient() {
           </ContainerInstrument>
         </ContainerInstrument>
 
-        <ContainerInstrument className="grid grid-cols-1 lg:grid-cols-12 gap-6 xl:gap-8 items-start">
+        <ContainerInstrument className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 xl:gap-8 items-start">
           {/* Summary Area - On mobile we only want to see the items first */}
-          <ContainerInstrument className="lg:col-span-5 lg:order-2 space-y-8">
-            <ContainerInstrument className="lg:sticky lg:top-24 space-y-6">
-              <div className="flex justify-between items-center mb-6 lg:hidden">
+          <ContainerInstrument className="lg:col-span-5 lg:order-2 space-y-6 sm:space-y-8">
+            <ContainerInstrument className="lg:sticky lg:top-24 space-y-4 sm:space-y-6">
+              <div className="flex justify-between items-center mb-4 sm:mb-6 px-4 sm:px-0 lg:hidden">
                 <HeadingInstrument level={3} className="text-2xl font-light tracking-tight">
                   Jouw bestelling
                 </HeadingInstrument>
@@ -245,7 +245,7 @@ export default function CheckoutPageClient() {
                 </Link>
               </div>
               {/* Desktop: Show everything | Mobile: Show only items at the top */}
-              <PricingSummary strokeWidth={1.5} onlyItems={true} className="lg:hidden" />
+              <PricingSummary strokeWidth={1.5} onlyItems={true} className="lg:hidden !space-y-4" />
               <ContainerInstrument className="hidden lg:block bg-white p-10 rounded-[40px] shadow-aura-lg border border-va-black/5 space-y-8">
                 <ContainerInstrument className="flex justify-between items-center border-b border-va-black/5 pb-6">
                   <HeadingInstrument level={3} className="text-2xl font-light tracking-tighter">
@@ -270,7 +270,7 @@ export default function CheckoutPageClient() {
               strokeWidth={1.5}
               onlyTotals={true}
               showCtaWhenOnlyTotals={true}
-              className="lg:hidden mt-10"
+              className="lg:hidden mt-8 !space-y-4"
             />
           </ContainerInstrument>
         </ContainerInstrument>

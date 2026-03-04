@@ -415,7 +415,7 @@ export const PricingSummary: React.FC<{
   if (!isHydrated) return null;
 
   return (
-    <ContainerInstrument className={cn("space-y-6 w-full max-w-full", className)}>
+    <ContainerInstrument className={cn("space-y-4 sm:space-y-6 w-full max-w-full", className)}>
       {(!onlyTotals) && (
         <ContainerInstrument className="space-y-4 w-full max-w-full">
           {/* Cart items list */}
@@ -453,12 +453,12 @@ export const PricingSummary: React.FC<{
                   key={itemObj.id || idx} 
                   onClick={() => !isCartPage && setSelectedItem(itemObj)}
                   className={cn(
-                    "flex items-start gap-6 p-8 bg-white rounded-[32px] border border-va-black/5 shadow-aura group relative transition-all",
+                    "flex items-start gap-3 sm:gap-5 lg:gap-6 p-4 sm:p-6 lg:p-8 bg-white rounded-[20px] sm:rounded-[28px] lg:rounded-[32px] border border-va-black/5 shadow-aura group relative transition-all",
                     !isCartPage && "cursor-pointer hover:border-primary/20 active:scale-[0.98]"
                   )}
                 >
                   {/* Afbeelding links uitgelijnd (LAYA-MANDAAT) */}
-                  <ContainerInstrument className="w-16 h-16 rounded-[20px] overflow-hidden bg-va-off-white relative border border-va-black/5 shrink-0 shadow-sm">
+                  <ContainerInstrument className="w-14 h-14 sm:w-16 sm:h-16 rounded-[16px] sm:rounded-[20px] overflow-hidden bg-va-off-white relative border border-va-black/5 shrink-0 shadow-sm">
                     <Image  
                       src={itemImage} 
                       alt={itemTitle} 
@@ -469,9 +469,9 @@ export const PricingSummary: React.FC<{
                   </ContainerInstrument>
 
                   {/* Uitleg, prijs en deleteknop rechts (LAYA-MANDAAT) */}
-                  <ContainerInstrument className="flex flex-1 items-start justify-between gap-4 min-w-0">
+                  <ContainerInstrument className="flex flex-1 items-start justify-between gap-3 sm:gap-4 min-w-0">
                     <ContainerInstrument className="min-w-0 flex-1">
-                      <HeadingInstrument level={4} className="font-light text-xl text-va-black truncate tracking-tight notranslate">
+                      <HeadingInstrument level={4} className="font-light text-lg sm:text-xl text-va-black truncate tracking-tight notranslate">
                         {itemTitle || t('common.not_available', 'Niet beschikbaar')}
                       </HeadingInstrument>
                       <ContainerInstrument className="mt-2 flex flex-wrap items-center gap-2 text-[11px] text-va-black/45">
@@ -686,8 +686,8 @@ export const PricingSummary: React.FC<{
                       </div>
                     </ContainerInstrument>
 
-                    <ContainerInstrument className="flex flex-col items-end gap-3 shrink-0 self-start">
-                      <div className="flex flex-col items-end min-w-[120px]">
+                    <ContainerInstrument className="flex flex-col items-end gap-2 sm:gap-3 shrink-0 self-start">
+                      <div className="flex flex-col items-end min-w-[92px] sm:min-w-[120px]">
                         {activeCoupon && (
                           <TextInstrument className="text-[12px] text-va-black/20 line-through font-light">
                             {toNumberOrNull(itemObj.pricing?.subtotal ?? itemObj.pricing?.total ?? itemObj.price) !== null
@@ -696,7 +696,7 @@ export const PricingSummary: React.FC<{
                           </TextInstrument>
                         )}
                         <TextInstrument className={cn(
-                          "font-light text-2xl tracking-tight",
+                          "font-light text-xl sm:text-2xl tracking-tight",
                           "text-va-black"
                         )}>
                           {toNumberOrNull(itemObj.pricing?.subtotal ?? itemObj.pricing?.total ?? itemObj.price) !== null
@@ -1144,7 +1144,7 @@ const CTASection: React.FC<any> = ({ handleSubmit, setIsPreviewOpen, setIsTermsO
           onClick={() => state.isQuoteRequest ? setIsPreviewOpen(true) : handleSubmit()}
           disabled={state.isSubmitting || !state.agreedToTerms}
           className={cn(
-            "w-full va-btn-pro !py-8 text-lg !rounded-[24px] !bg-va-black !text-white flex items-center justify-center gap-3 group transition-all duration-500 cursor-pointer",
+            "w-full va-btn-pro !py-6 sm:!py-8 text-base sm:text-lg !rounded-[20px] sm:!rounded-[24px] !bg-va-black !text-white flex items-center justify-center gap-3 group transition-all duration-500 cursor-pointer",
             (state.isSubmitting || !state.agreedToTerms) ? 'opacity-30 grayscale cursor-not-allowed' : 'hover:shadow-aura-lg hover:scale-[1.01] active:scale-[0.98]'
           )}
         >
