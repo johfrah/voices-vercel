@@ -14,6 +14,11 @@ export async function GET(request: NextRequest) {
   const assetPath = searchParams.get('path');
   const fallbackPath = searchParams.get('fallback');
   console.log(`[Proxy] Request received for path: ${assetPath}${fallbackPath ? ` (fallback: ${fallbackPath})` : ''}`);
+  if (assetPath === '' || (assetPath && (assetPath.includes('undefined') || assetPath.includes('/api/proxy/')))) {
+    // #region agent log
+    try { require('fs').appendFileSync('/opt/cursor/logs/debug.log', JSON.stringify({ hypothesisId: 'B', location: 'api/proxy/route.ts:request', message: 'proxy received suspicious path', data: { asset_path: assetPath, fallback_path: fallbackPath || '' }, timestamp: Date.now() }) + '\n'); } catch {}
+    // #endregion
+  }
 
   if (!assetPath) {
     return new NextResponse('Missing asset path', { status: 400 });

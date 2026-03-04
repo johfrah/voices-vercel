@@ -178,6 +178,18 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
     }
   };
 
+  const resolvedAudioSrc = (() => {
+    const raw = typeof demo.audio_url === 'string' ? demo.audio_url.trim() : '';
+    const isInvalid =
+      !raw ||
+      raw === '/api/proxy/?path=' ||
+      raw.includes('undefined') ||
+      raw.endsWith('/api/proxy/') ||
+      raw.endsWith('/api/proxy/?path');
+    if (!isInvalid) return raw;
+    return demo.id ? `/api/admin/actors/demos/${demo.id}/stream` : undefined;
+  })();
+
   const handleRename = async (e: React.MouseEvent, p: Demo) => {
     e.stopPropagation();
     if (editingId === p.id) {
@@ -257,7 +269,7 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
 
         <audio 
           ref={audioRef} 
-          src={demo.audio_url || (demo.id ? `/api/admin/actors/demos/${demo.id}/stream` : undefined)}
+          src={resolvedAudioSrc}
           onTimeUpdate={handleTimeUpdate} 
           onLoadedMetadata={handleLoadedMetadata}
           onEnded={() => setIsPlaying(false)}

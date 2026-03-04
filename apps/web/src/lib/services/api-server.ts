@@ -764,31 +764,92 @@ export async function getActor(slug: string, lang: string = 'nl-BE'): Promise<Ac
  */
 async function processActorData(actor: any, slug: string): Promise<Actor> {
   console.error(` [api-server] processActorData START for ${actor.first_name} (ID: ${actor.id})`);
+  // #region agent log
+  try { require('fs').appendFileSync('/opt/cursor/logs/debug.log', JSON.stringify({ hypothesisId: 'A', location: 'api-server.ts:processActorData:entry', message: 'processActorData entry', data: { actor_id: actor?.id, slug, actor_name: actor?.first_name }, timestamp: Date.now() }) + '\n'); } catch {}
+  // #endregion
   
-  // Fetch relations via Drizzle for stability (v2.14.548)
+  // Fetch relations via SDK to avoid schema drift on relation columns.
   let mappedDemos: any[] = [];
   let mappedVideos: any[] = [];
 
   try {
-    const { db: directDb, actorDemos: demosTable, actorVideos: videosTable } = await import('@/lib/system/voices-config');
-    const [demos, videos] = await Promise.all([
-      directDb.select().from(demosTable).where(and(eq(demosTable.actorId, actor.id), eq(demosTable.is_public, true))),
-      directDb.select().from(videosTable).where(and(eq(videosTable.actorId, actor.id), eq(videosTable.is_public, true)))
+    const [demosRes, videosRes] = await Promise.all([
+      supabase
+        .from('actor_demos')
+        .select('id,name,url,type,media_id')
+        .eq('actor_id', actor.id)
+        .eq('is_public', true),
+      supabase
+        .from('actor_videos')
+        .select('id,name,url,type')
+        .eq('actor_id', actor.id)
+        .eq('is_public', true)
     ]);
 
-    mappedDemos = (demos || []).map((d: any) => {
-      const audioUrl = d.url?.startsWith('http') ? d.url : `/api/proxy/?path=${encodeURIComponent(d.url)}`;
+    if (demosRes.error) throw demosRes.error;
+    if (videosRes.error) throw videosRes.error;
+
+    const demos = demosRes.data || [];
+    const videos = videosRes.data || [];
+
+    const demoMediaIds = Array.from(
+      new Set(
+        demos
+          .map((d: any) => d.media_id)
+          .filter(Boolean)
+          .map((id: any) => Number(id))
+      )
+    );
+    const mediaById = new Map<number, string>();
+    if (demoMediaIds.length > 0) {
+      const mediaRes = await supabase
+        .from('media')
+        .select('id,file_path,file_name')
+        .in('id', demoMediaIds);
+      if (mediaRes.error) throw mediaRes.error;
+      (mediaRes.data || []).forEach((m: any) => {
+        const fp = m.file_path || m.file_name || '';
+        if (fp) mediaById.set(Number(m.id), fp);
+      });
+    }
+
+    mappedDemos = demos.map((d: any) => {
+      const rawUrl = typeof d.url === 'string' ? d.url : '';
+      const demoMediaId = d.media_id ?? d.mediaId ?? null;
+      let resolvedViaMediaId = false;
+      // #region agent log
+      try { require('fs').appendFileSync('/opt/cursor/logs/debug.log', JSON.stringify({ hypothesisId: 'D', location: 'api-server.ts:processActorData:demo-input', message: 'demo mapping input', data: { actor_id: actor?.id, demo_id: d?.id, has_url: !!rawUrl, raw_url: rawUrl, media_id_snake: d?.media_id ?? null, media_id_camel: d?.mediaId ?? null, chosen_media_id: demoMediaId }, timestamp: Date.now() }) + '\n'); } catch {}
+      // #endregion
+      let finalUrl = rawUrl.trim();
+      if ((!finalUrl || finalUrl === '/api/proxy/?path=' || finalUrl.includes('undefined')) && demoMediaId) {
+        finalUrl = mediaById.get(Number(demoMediaId)) || '';
+        resolvedViaMediaId = !!finalUrl;
+      }
+
+      let audioUrl = '';
+      if (finalUrl) {
+        if (finalUrl.startsWith('/api/proxy/?path=')) {
+          const proxiedPath = finalUrl.split('?path=')[1] || '';
+          audioUrl = proxiedPath ? finalUrl : '';
+        } else {
+          audioUrl = finalUrl.startsWith('http') ? finalUrl : `/api/proxy/?path=${encodeURIComponent(finalUrl)}`;
+        }
+      }
+      // #region agent log
+      try { require('fs').appendFileSync('/opt/cursor/logs/debug.log', JSON.stringify({ hypothesisId: 'B', location: 'api-server.ts:processActorData:demo-output', message: 'demo mapping output', data: { actor_id: actor?.id, demo_id: d?.id, resolved_via_media_id: resolvedViaMediaId, mapped_audio_url: audioUrl, mapped_audio_url_is_empty: !audioUrl, mapped_audio_url_has_undefined: typeof audioUrl === 'string' && audioUrl.includes('undefined'), mapped_audio_url_empty_proxy_path: audioUrl === '/api/proxy/?path=' }, timestamp: Date.now() }) + '\n'); } catch {}
+      // #endregion
       return {
         id: d.id,
         title: d.name,
         audio_url: audioUrl,
         category: d.type || 'demo',
-        status: d.status || 'approved'
+        status: 'approved'
       };
     });
 
-    mappedVideos = (videos || []).map((v: any) => {
-      const videoUrl = v.url?.startsWith('http') ? v.url : `/api/proxy/?path=${encodeURIComponent(v.url)}`;
+    mappedVideos = videos.map((v: any) => {
+      const rawVideoUrl = typeof v.url === 'string' ? v.url : '';
+      const videoUrl = rawVideoUrl ? (rawVideoUrl.startsWith('http') ? rawVideoUrl : `/api/proxy/?path=${encodeURIComponent(rawVideoUrl)}`) : '';
       return {
         id: v.id,
         name: v.name,
@@ -797,7 +858,10 @@ async function processActorData(actor: any, slug: string): Promise<Actor> {
       };
     });
   } catch (err: any) {
-    console.warn(` [api-server] processActorData: Drizzle relations failed, using empty arrays:`, err.message);
+    // #region agent log
+    try { require('fs').appendFileSync('/opt/cursor/logs/debug.log', JSON.stringify({ hypothesisId: 'E', location: 'api-server.ts:processActorData:relations-error', message: 'drizzle relations query failed', data: { actor_id: actor?.id, error_message: err?.message || 'unknown', error_cause: err?.cause?.message || null, error_code: err?.code || null }, timestamp: Date.now() }) + '\n'); } catch {}
+    // #endregion
+    console.warn(` [api-server] processActorData: relations fetch failed, using empty arrays:`, err.message);
   }
 
   const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://vcbxyyjsxuquytcsskpj.supabase.co';
@@ -817,6 +881,12 @@ async function processActorData(actor: any, slug: string): Promise<Actor> {
       }
     } catch (e) {}
   }
+  const suspicious_demo_sources = mappedDemos
+    .filter((demo: any) => typeof demo?.audio_url === 'string' && (demo.audio_url.includes('undefined') || demo.audio_url === '/api/proxy/?path='))
+    .map((demo: any) => ({ demo_id: demo.id, audio_url: demo.audio_url }));
+  // #region agent log
+  try { require('fs').appendFileSync('/opt/cursor/logs/debug.log', JSON.stringify({ hypothesisId: 'A', location: 'api-server.ts:processActorData:exit', message: 'processActorData mapped demos summary', data: { actor_id: actor?.id, mapped_demo_count: mappedDemos.length, suspicious_demo_count: suspicious_demo_sources.length, suspicious_demo_sources }, timestamp: Date.now() }) + '\n'); } catch {}
+  // #endregion
 
   console.error(` [api-server] processActorData SUCCESS for ${actor.first_name}`);
 
