@@ -2,31 +2,48 @@
 
 import { Moon, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
-import { cn } from "@/lib/utils";
-
 import { ButtonInstrument } from "@/components/ui/LayoutInstruments";
+
+type ThemeMode = "light" | "dark";
+const THEME_STORAGE_KEY = "theme";
+
+function getSystemTheme(): ThemeMode {
+  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+}
+
+function applyTheme(mode: ThemeMode) {
+  const root = window.document.documentElement;
+  root.classList.remove("light", "dark");
+  root.classList.add(mode);
+  root.style.colorScheme = mode;
+}
 
 export const ThemeToggle = () => {
   const [isDark, setIsDark] = useState(false);
 
   useEffect(() => {
     const root = window.document.documentElement;
-    const initialColorValue = root.classList.contains("dark");
-    setIsDark(initialColorValue);
+    const storedTheme = localStorage.getItem(THEME_STORAGE_KEY);
+    const classTheme: ThemeMode | null = root.classList.contains("dark")
+      ? "dark"
+      : root.classList.contains("light")
+        ? "light"
+        : null;
+    const initialTheme: ThemeMode =
+      storedTheme === "dark" || storedTheme === "light"
+        ? storedTheme
+        : classTheme ?? getSystemTheme();
+
+    applyTheme(initialTheme);
+    setIsDark(initialTheme === "dark");
   }, []);
 
   const toggleTheme = () => {
-    const root = window.document.documentElement;
-    if (isDark) {
-      root.classList.remove("dark");
-      localStorage.setItem("theme", "light");
-      document.cookie = "theme=light; path=/; max-age=31536000";
-    } else {
-      root.classList.add("dark");
-      localStorage.setItem("theme", "dark");
-      document.cookie = "theme=dark; path=/; max-age=31536000";
-    }
-    setIsDark(!isDark);
+    const nextTheme: ThemeMode = isDark ? "light" : "dark";
+    applyTheme(nextTheme);
+    localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
+    document.cookie = `theme=${nextTheme}; path=/; max-age=31536000; samesite=lax`;
+    setIsDark(nextTheme === "dark");
   };
 
   return (
