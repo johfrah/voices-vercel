@@ -93,10 +93,19 @@ ${prompt}
       const text = result.response.text();
       return options?.jsonMode ? text.replace(/```json|```/g, '').trim() : text;
     } catch (error: any) {
-      console.error(' Gemini Text Generation Error:', error);
+      const status = error?.status ?? error?.statusCode;
+      const msg = error?.message ?? '';
+      const isQuota = status === 429 || msg.includes('429') || msg.includes('quota') || msg.includes('Too Many Requests');
+      if (isQuota) {
+        console.warn('[GeminiService] Quota exceeded (429), returning offline message. Retry after 24h.');
+        return options?.jsonMode
+          ? JSON.stringify({ message: "Voicy is momenteel offline. Probeer het later opnieuw.", actions: [] })
+          : "Voicy is momenteel offline. Probeer het later opnieuw.";
+      }
       if (error.message === 'Gemini Timeout') {
         return options?.jsonMode ? JSON.stringify({ message: "Ik heb even wat meer tijd nodig om na te denken." }) : "Ik heb even wat meer tijd nodig om na te denken. Probeer je het zo nog eens?";
       }
+      console.error(' Gemini Text Generation Error:', error);
       throw error;
     }
   }

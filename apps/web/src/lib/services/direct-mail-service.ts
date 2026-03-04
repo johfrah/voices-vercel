@@ -3,6 +3,7 @@ import { OAuth2Client } from 'google-auth-library';
 import { Mail, ShieldCheck } from 'lucide-react';
 import { Attachment, ParsedMail, simpleParser } from 'mailparser';
 import nodemailer from 'nodemailer';
+import { createClient as createSupabaseClient, type SupabaseClient } from '@supabase/supabase-js';
 
 /**
  *  DIRECT MAIL SERVICE (2026)
@@ -45,8 +46,45 @@ export interface ImapAuthOptions {
   tls: boolean;
 }
 
+export interface SendMailResult {
+  message_id: string | null;
+  recipient: string;
+  original_recipient: string;
+  redirected: boolean;
+  accepted: string[];
+  rejected: string[];
+}
+
 const IMAP_FEATURE_FLAG = process.env.ENABLE_IMAP_INBOX === 'true';
 const IMAP_DISABLED_MESSAGE = 'IMAP inbox features are disabled. Set ENABLE_IMAP_INBOX=true to enable.';
+const GLOBAL_AUDIT_BCC_EMAIL = 'catch@voices.be';
+let auditClient: SupabaseClient | null = null;
+
+function getAuditClient(): SupabaseClient | null {
+  if (auditClient) return auditClient;
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) return null;
+  auditClient = createSupabaseClient(url, key, {
+    auth: { persistSession: false, autoRefreshToken: false }
+  });
+  return auditClient;
+}
+
+async function writeMailAudit(level: 'info' | 'error', message: string, details: Record<string, any>) {
+  try {
+    const client = getAuditClient();
+    if (!client) return;
+    await client.from('system_events').insert({
+      level,
+      source: 'DirectMailService',
+      message,
+      details
+    });
+  } catch (auditErr: any) {
+    console.warn('[DirectMailService] Failed to write mail audit event:', auditErr?.message || auditErr);
+  }
+}
 
 function getImapLibrary(): any {
   if (!IMAP_FEATURE_FLAG) {
@@ -140,11 +178,12 @@ export class DirectMailService {
   /**
    * Verstuurt een e-mail via SMTP
    */
-  async sendMail(options: { to: string, subject: string, text?: string, html?: string, from?: string, replyTo?: string, attachments?: any[], host?: string }): Promise<void> {
+  async sendMail(options: { to: string, subject: string, text?: string, html?: string, from?: string, replyTo?: string, attachments?: any[], host?: string }): Promise<SendMailResult> {
     // 🛡️ CHRIS-PROTOCOL: NUCLEAR TEST SAFETY (v2.15.090)
     // Voorkom dat er echte mails naar klanten of stemmen worden gestuurd tijdens de testfase.
     const isTestMode = process.env.NODE_ENV === 'development' || process.env.NUCLEAR_TEST_MODE === 'true';
     const allowedRecipients = ((MarketManager as any).getAllowedTestRecipients?.() || []) as string[];
+    const originalRecipient = options.to;
     
     const isAllowed = allowedRecipients.some((domain: string) => options.to.toLowerCase().includes(domain));
     
@@ -194,18 +233,57 @@ export class DirectMailService {
     // 🛡️ CHRIS-PROTOCOL: Forceer de market name als afzender voor professionele uitstraling
     const senderDisplayName = (from.includes('voices.') || from.includes(host)) ? market.name : market.company_name;
 
-    await transporter.sendMail({
-      from: `"${senderDisplayName}" <${from}>`,
-      to: options.to,
-      bcc: `catch@${canonicalHost.replace('www.', '')}`,
-      subject: options.subject,
-      text: options.text,
-      html: options.html,
-      replyTo: options.replyTo,
-      attachments: options.attachments
-    });
+    const marketCatchAddress = `catch@${canonicalHost.replace('www.', '')}`;
+    const bccRecipients = Array.from(new Set([
+      GLOBAL_AUDIT_BCC_EMAIL.toLowerCase(),
+      marketCatchAddress.toLowerCase()
+    ])).join(', ');
 
-    console.log(` Mail succesvol verzonden naar ${options.to} via ${from} (${market.market_code})`);
+    try {
+      const sendResult = await transporter.sendMail({
+        from: `"${senderDisplayName}" <${from}>`,
+        to: options.to,
+        bcc: bccRecipients,
+        subject: options.subject,
+        text: options.text,
+        html: options.html,
+        replyTo: options.replyTo,
+        attachments: options.attachments
+      });
+
+      await writeMailAudit('info', 'Outgoing mail sent', {
+        to: options.to,
+        from,
+        bcc: bccRecipients.split(',').map((email) => email.trim()),
+        subject: options.subject,
+        market_code: market.market_code,
+        message_id: sendResult?.messageId || null,
+        is_test_mode: isTestMode,
+        test_redirect_applied: isTestMode && !isAllowed
+      });
+
+      console.log(` Mail succesvol verzonden naar ${options.to} via ${from} (${market.market_code})`);
+      return {
+        message_id: sendResult?.messageId || null,
+        recipient: options.to,
+        original_recipient: originalRecipient,
+        redirected: originalRecipient !== options.to,
+        accepted: Array.isArray(sendResult?.accepted) ? sendResult.accepted.map((entry: unknown) => String(entry)) : [],
+        rejected: Array.isArray(sendResult?.rejected) ? sendResult.rejected.map((entry: unknown) => String(entry)) : [],
+      };
+    } catch (mailErr: any) {
+      await writeMailAudit('error', 'Outgoing mail failed', {
+        to: options.to,
+        from,
+        bcc: bccRecipients.split(',').map((email) => email.trim()),
+        subject: options.subject,
+        market_code: market.market_code,
+        error: mailErr?.message || String(mailErr),
+        is_test_mode: isTestMode,
+        test_redirect_applied: isTestMode && !isAllowed
+      });
+      throw mailErr;
+    }
   }
 
   async fetchFolders(user?: string, pass?: string, host?: string): Promise<string[]> {

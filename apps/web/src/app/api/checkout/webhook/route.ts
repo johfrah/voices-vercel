@@ -9,6 +9,7 @@ import { YukiService } from '@/lib/services/yuki-service';
 import { VumeEngine } from '@/lib/mail/VumeEngine';
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { localeToShort, normalizeLocale } from '@/lib/system/locale-utils';
+import { mapMollieOrderToPaymentLike, normalizeMollieStatus } from '@/lib/payments/mollie-webhook-utils';
 
 /**
  *  MOLLIE WEBHOOK (NUCLEAR)
@@ -33,10 +34,107 @@ function v2StatusCandidates(statusCode: string): string[] {
   return [normalized];
 }
 
+function toSafeNumber(value: unknown): number {
+  const numeric = Number(value);
+  return Number.isFinite(numeric) ? numeric : 0;
+}
+
+function extractProxyPath(rawValue: string): string | null {
+  const queryStart = rawValue.indexOf('?');
+  if (queryStart === -1) return null;
+  const params = new URLSearchParams(rawValue.slice(queryStart + 1));
+  const pathValue = params.get('path');
+  return pathValue ? decodeURIComponent(pathValue) : null;
+}
+
+function resolveWebhookThumbnailUrl(value: unknown, host: string): string | undefined {
+  if (!value || typeof value !== 'string') return undefined;
+  const rawValue = value.trim();
+  if (!rawValue) return undefined;
+  if (rawValue.startsWith('http://') || rawValue.startsWith('https://')) return rawValue;
+
+  if (
+    rawValue.startsWith('/') &&
+    !rawValue.startsWith('/assets/') &&
+    !rawValue.startsWith('/wp-content/') &&
+    !rawValue.startsWith('/api/')
+  ) {
+    return `https://${host}${rawValue}`;
+  }
+
+  let normalizedPath = rawValue;
+  if (normalizedPath.includes('/api/proxy') && normalizedPath.includes('?path=')) {
+    const extractedPath = extractProxyPath(normalizedPath);
+    normalizedPath = extractedPath || normalizedPath;
+  }
+
+  normalizedPath = normalizedPath.startsWith('/assets/') ? normalizedPath.slice('/assets/'.length) : normalizedPath;
+  normalizedPath = normalizedPath.startsWith('assets/') ? normalizedPath.slice('assets/'.length) : normalizedPath;
+  normalizedPath = normalizedPath.startsWith('/') ? normalizedPath.slice(1) : normalizedPath;
+  if (normalizedPath.startsWith('wp-content/') || normalizedPath.startsWith('api/')) {
+    normalizedPath = `/${normalizedPath}`;
+  }
+  if (!normalizedPath) return undefined;
+
+  return `https://${host}/api/proxy/?path=${encodeURIComponent(normalizedPath)}`;
+}
+
+function buildWebhookOrderEmailItems(items: any[], host: string): Array<{
+  name: string;
+  price: number;
+  quantity: number;
+  unitPrice: number;
+  deliveryTime?: string;
+  description?: string;
+  thumbnailUrl?: string;
+  projectCode?: string;
+}> {
+  return (items || []).map((item: any) => {
+    const metaData = (item?.metaData as Record<string, any>) || {};
+    const snapshot = (metaData.email_item_snapshot as Record<string, any>) || {};
+    const quantity = Math.max(1, toSafeNumber(snapshot.quantity || item?.quantity || 1));
+    const basePrice = toSafeNumber(item?.price);
+    const taxPrice = toSafeNumber(item?.tax);
+    const lineTotal = basePrice + taxPrice;
+    return {
+      name: item?.name || 'Voice-over',
+      price: lineTotal,
+      quantity,
+      unitPrice: quantity > 0 ? lineTotal / quantity : lineTotal,
+      deliveryTime: snapshot.delivery_time || metaData.deliveryTime || undefined,
+      description: snapshot.description || metaData.usage || undefined,
+      thumbnailUrl: resolveWebhookThumbnailUrl(snapshot.thumbnail_url, host),
+      projectCode: snapshot.project_code || undefined,
+    };
+  });
+}
+
 export async function POST(request: NextRequest) {
   try {
-    const formData = await request.formData();
-    const paymentId = formData.get('id') as string;
+    const formRequest = request.clone();
+    let paymentId: string | null = null;
+
+    try {
+      const formData = await formRequest.formData();
+      paymentId = (formData.get('id') as string) || null;
+    } catch {
+      // no-op: webhook payload can be urlencoded or json
+    }
+
+    if (!paymentId) {
+      const bodyText = await request.text();
+      const asUrlEncoded = new URLSearchParams(bodyText);
+      paymentId = asUrlEncoded.get('id');
+
+      if (!paymentId) {
+        try {
+          const parsedJson = JSON.parse(bodyText || '{}');
+          paymentId = parsedJson?.id || parsedJson?.resource?.id || null;
+        } catch {
+          // no-op
+        }
+      }
+    }
 
     if (!paymentId) {
       // CHRIS-PROTOCOL: Log to Watchdog instead of crashing or sending error mails
@@ -45,49 +143,78 @@ export async function POST(request: NextRequest) {
     }
 
     // 1. Haal de status op bij Mollie
-    let payment;
+    let payment: any;
+    let transactionSource: 'payment' | 'order' = 'payment';
+    const looksLikeOrderId = paymentId.startsWith('ord_');
     try {
-      payment = await MollieService.getPayment(paymentId);
+      if (looksLikeOrderId) {
+        const mollieOrder = await MollieService.getOrder(paymentId);
+        payment = mapMollieOrderToPaymentLike(mollieOrder, paymentId);
+        transactionSource = 'order';
+      } else {
+        payment = await MollieService.getPayment(paymentId);
+      }
     } catch (mollieErr: any) {
-      console.error('[Mollie Webhook] Failed to fetch payment:', mollieErr.message);
-      return new NextResponse('Payment Not Found', { status: 404 });
+      if (!looksLikeOrderId) {
+        try {
+          const mollieOrder = await MollieService.getOrder(paymentId);
+          payment = mapMollieOrderToPaymentLike(mollieOrder, paymentId);
+          transactionSource = 'order';
+        } catch (orderErr: any) {
+          console.error('[Mollie Webhook] Failed to fetch payment/order:', mollieErr.message, orderErr?.message);
+          return new NextResponse('Payment Not Found', { status: 404 });
+        }
+      } else {
+        console.error('[Mollie Webhook] Failed to fetch order:', mollieErr.message);
+        return new NextResponse('Payment Not Found', { status: 404 });
+      }
     }
 
-    const orderId = parseInt(payment.metadata?.orderId);
+    const paymentMetadata = (payment?.metadata || {}) as Record<string, any>;
+    const orderId = parseInt(String(paymentMetadata.orderId || paymentMetadata.order_id || payment.orderNumber || ''), 10);
 
     if (!orderId) {
-      console.warn('[Mollie Webhook] Invalid or missing Order ID in metadata:', payment.metadata);
+      console.warn('[Mollie Webhook] Invalid or missing Order ID in metadata:', paymentMetadata);
       return new NextResponse('Invalid Metadata', { status: 400 });
     }
 
     // 2. Update de order status op basis van Mollie
-    let newStatus = 'pending';
-    if (payment.status === 'paid') newStatus = 'paid';
-    if (payment.status === 'canceled') newStatus = 'cancelled';
-    if (payment.status === 'expired') newStatus = 'expired';
-    if (payment.status === 'failed') newStatus = 'failed';
+    const newStatus = normalizeMollieStatus(payment.status);
 
     //  NUCLEAR CONFIG: Haal admin e-mail uit MarketManager of ENV
     const host = request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || MarketManager.getMarketDomains()['BE']?.replace('https://', ''));
     const market = MarketManager.getCurrentMarket(host);
     const adminEmail = process.env.ADMIN_EMAIL || market.email;
+    const marketDomains = MarketManager.getMarketDomains();
+    const baseUrl = marketDomains[market.market_code] || `https://${marketDomains['BE']?.replace('https://', '') || 'www.voices.be'}`;
 
     await db.transaction(async (tx: any) => {
       // Haal de order op om te zien wat erin zit
       const [order] = await tx.select().from(orders).where(eq(orders.id, orderId)).limit(1);
+      if (!order) {
+        throw new Error(`Order ${orderId} not found for webhook ${paymentId}`);
+      }
+
+      const orderRawMeta = (order.rawMeta as any) || {};
       const orderLanguage = normalizeLocale(
-        (order?.rawMeta as any)?.language ||
-        payment.metadata?.language ||
+        orderRawMeta?.language ||
+        paymentMetadata.language ||
         market.primary_language ||
         'nl-be'
       );
       const orderLanguageShort = localeToShort(orderLanguage);
       
       // Update Order status
-      let finalStatus = newStatus;
+      let finalStatus: string = newStatus;
+      const existingStatus = String(order?.status || '').toLowerCase();
+      const settledStatuses = new Set(['paid', 'completed', 'in_productie']);
+      const isDuplicatePaidEvent = newStatus === 'paid' && settledStatuses.has(existingStatus);
+      if (isDuplicatePaidEvent) {
+        finalStatus = existingStatus;
+      }
       
       //  Als betaald: Check of het een "Music Only" of "Donation" order is
-      if (newStatus === 'paid' && order) {
+      if (newStatus === 'paid' && order && !isDuplicatePaidEvent) {
         const hasVoice = (order.rawMeta as any)?.actorId || (order.rawMeta as any)?.voiceId || (order.rawMeta as any)?.itemsCount > 0;
         const hasMusic = (order.rawMeta as any)?.music?.trackId;
         const isDonation = order.journey === 'artist_donation';
@@ -154,32 +281,45 @@ export async function POST(request: NextRequest) {
       // 🔁 V2 status sync: keep orders_v2 aligned with webhook transitions.
       if (order?.wpOrderId) {
         const candidateCodes = v2StatusCandidates(finalStatus);
-        const statusRows = await tx
-          .select({ id: orderStatuses.id, code: orderStatuses.code })
-          .from(orderStatuses)
-          .where(inArray(orderStatuses.code, candidateCodes))
-          .limit(1);
-        const matchedStatus = statusRows[0];
+        let matchedStatus: { id: number; code: string } | undefined;
+
+        for (const candidateCode of candidateCodes) {
+          const statusRows = await tx
+            .select({ id: orderStatuses.id, code: orderStatuses.code })
+            .from(orderStatuses)
+            .where(eq(orderStatuses.code, candidateCode))
+            .limit(1);
+          if (statusRows[0]) {
+            matchedStatus = statusRows[0];
+            break;
+          }
+        }
+
         if (matchedStatus) {
-          await tx
+          const updatedV2Rows = await tx
             .update(ordersV2)
             .set({
               statusId: matchedStatus.id,
               legacyInternalId: order.id,
             })
-            .where(eq(ordersV2.id, Number(order.wpOrderId)));
+            .where(eq(ordersV2.id, Number(order.wpOrderId)))
+            .returning({ id: ordersV2.id });
+
+          if (!updatedV2Rows.length) {
+            console.warn(`[Mollie Webhook] orders_v2 sync missed for wp_order_id ${order.wpOrderId}`);
+          }
         }
       }
 
       // Log Note
       await tx.insert(orderNotes).values({
         orderId: orderId,
-        note: `Mollie Status Update: ${newStatus}${finalStatus === 'in_productie' ? ' (Auto-status: In Productie)' : finalStatus === 'completed' ? ' (Auto-completed: Music Only)' : ''} (Payment ID: ${paymentId})`,
+        note: `Mollie Status Update: ${newStatus}${isDuplicatePaidEvent ? ' (Duplicate callback ignored)' : finalStatus === 'in_productie' ? ' (Auto-status: In Productie)' : finalStatus === 'completed' ? ' (Auto-completed: Music Only)' : ''} (${transactionSource} ID: ${paymentId})`,
         isCustomerNote: false
       });
 
       //  Als betaald: Lever muziek en update DNA + Sales
-      if (newStatus === 'paid') {
+      if (newStatus === 'paid' && !isDuplicatePaidEvent && order) {
         // 1. Verhoog total_sales voor de betrokken acteurs
         try {
           const items = await tx.select({ actorId: orderItems.actorId, name: orderItems.name, price: orderItems.price, metaData: orderItems.metaData })
@@ -219,13 +359,12 @@ export async function POST(request: NextRequest) {
                       userName: user.first_name || 'Klant',
                       orderId: orderId.toString(),
                       total: parseFloat(order.total || '0'),
-                      items: items.map((i: any) => ({
-                        name: i.name,
-                        price: parseFloat(i.price || '0'),
-                        deliveryTime: (i.metaData as any)?.deliveryTime
-                      })),
+                      subtotal: items.reduce((sum: number, i: any) => sum + toSafeNumber(i.price), 0),
+                      tax: items.reduce((sum: number, i: any) => sum + toSafeNumber(i.tax), 0),
+                      items: buildWebhookOrderEmailItems(items, host),
                       paymentMethod: payment.method || 'Online',
-                      language: orderLanguage
+                      language: orderLanguage,
+                      ctaUrl: `${baseUrl}/account/orders?orderId=${encodeURIComponent(orderId)}`,
                     },
                     host: host
                   });
@@ -296,8 +435,8 @@ export async function POST(request: NextRequest) {
         // We maken GEEN automatische Yuki factuur meer aan.
         // De admin triggert dit handmatig na controle.
 
-        if (payment.metadata.user_id) {
-          const userId = parseInt(payment.metadata.user_id);
+        if (paymentMetadata.user_id) {
+          const userId = parseInt(String(paymentMetadata.user_id), 10);
           
           // Verhoog order count en spent in user DNA
           await tx.update(users)
@@ -312,10 +451,10 @@ export async function POST(request: NextRequest) {
 
         // 🛡️ CHRIS-PROTOCOL: Invalidate Customer 360 Cache (v2.14.347)
         try {
-          const cacheKey = `customer_360_${payment.metadata.email || order.users?.email}`;
+          const cacheKey = `customer_360_${paymentMetadata.email || order.users?.email}`;
           if (cacheKey) {
             await sdkClient.from('app_configs').delete().eq('key', cacheKey);
-            console.log(`[Automation] UCI Cache invalidated for ${payment.metadata.email || order.users?.email}`);
+            console.log(`[Automation] UCI Cache invalidated for ${paymentMetadata.email || order.users?.email}`);
           }
         } catch (cacheErr) {
           console.warn('[Automation] Failed to invalidate UCI cache in webhook:', cacheErr);
@@ -323,7 +462,7 @@ export async function POST(request: NextRequest) {
 
         //  Notificatie naar Admin (HITL)
         try {
-          const isSameDay = (order.rawMeta as any)?.items?.some((i: any) => i.actor?.delivery_config?.type === 'sameday');
+          const isSameDay = orderRawMeta?.items?.some((i: any) => i.actor?.delivery_config?.type === 'sameday');
           const siteUrl = MarketManager.getMarketDomains()[market.market_code] || `https://${MarketManager.getMarketDomains()['BE']?.replace('https://', '') || 'www.voices.be'}`;
           const fetchUrl = `${siteUrl}/api/admin/notify`;
           
@@ -334,11 +473,11 @@ export async function POST(request: NextRequest) {
               type: isSameDay ? 'sameday_alert' : 'payment_received',
               data: {
                 orderId: orderId,
-                email: payment.metadata.email || 'Gast',
-                amount: payment.amount.value,
-                company: payment.metadata.company,
-                items: (order.rawMeta as any)?.items || [],
-                customer: { first_name: payment.metadata.givenName, last_name: payment.metadata.familyName }
+                email: paymentMetadata.email || 'Gast',
+                amount: payment?.amount?.value || '0.00',
+                company: paymentMetadata.company,
+                items: orderRawMeta?.items || [],
+                customer: { first_name: paymentMetadata.givenName, last_name: paymentMetadata.familyName }
               }
             })
           });

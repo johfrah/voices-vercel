@@ -70,7 +70,7 @@ export function Providers({
 
   // 🛡️ CHRIS-PROTOCOL: Version Sync Mandate (v2.27.8)
   // Major Refactor: ID-First Handshake Architecture
-  const currentVersion = '2.28.17';
+  const currentVersion = '2.28.27';
 
   // 🛡️ CHRIS-PROTOCOL: Language is now strictly passed from Server (Source of Truth)
   // to prevent Hydration Mismatch errors (#419, #425).
@@ -182,7 +182,7 @@ function DebugLogger({
     if (typeof window !== 'undefined') {
       const g = window as any;
       const host = window.location.host.replace('www.', '');
-      const pathname = window.location.pathname || '';
+      const pathname = window.location.pathname;
       const handshake = g.handshakeContext;
       const currentMarket = MarketManager.getCurrentMarket(host, pathname);
       const contextResolved = MarketManager.resolveContext(host, pathname);

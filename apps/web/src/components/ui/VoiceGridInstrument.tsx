@@ -16,6 +16,16 @@ interface VoiceGridProps {
 
 export const VoiceGrid: React.FC<VoiceGridProps> = ({ actors, featured = false, onSelect }) => {
   const { playDemo } = useGlobalAudio();
+  const actorCount = (actors || []).filter(Boolean).length;
+  const adaptiveGridClass = actorCount <= 1
+    ? "grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 xl:grid-cols-1 gap-4 md:gap-5 items-stretch auto-rows-fr"
+    : actorCount === 2
+      ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-4 md:gap-5 items-stretch auto-rows-fr"
+      : actorCount === 3
+        ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4 md:gap-5 items-stretch auto-rows-fr"
+        : actorCount === 4
+          ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-5 items-stretch auto-rows-fr"
+          : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 md:gap-5 items-stretch auto-rows-fr";
   
   // 🛡️ CHRIS-PROTOCOL: Grid-Gap Mandate (v2.14.109)
   // We gebruiken een vaste grid-structuur die ALTIJD van links naar rechts vult.
@@ -33,7 +43,7 @@ export const VoiceGrid: React.FC<VoiceGridProps> = ({ actors, featured = false, 
           className={cn(
             featured 
               ? "flex md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5 min-w-max md:min-w-full items-stretch" 
-              : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 md:gap-5 items-stretch auto-rows-fr"
+              : adaptiveGridClass
           )}
         >
           <AnimatePresence initial={false}>

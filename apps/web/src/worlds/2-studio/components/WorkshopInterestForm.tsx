@@ -6,17 +6,30 @@ import {
     HeadingInstrument,
     InputInstrument,
     LabelInstrument,
-    TextInstrument,
+    OptionInstrument,
     SelectInstrument,
-    OptionInstrument
+    TextInstrument
 } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import { cn } from '@/lib/utils';
-import React, { useState, useEffect } from 'react';
-import Image from 'next/image';
-import { Info, ArrowRight, Check, AlertCircle } from 'lucide-react';
+import { AlertCircle, ArrowRight, Check, Info } from 'lucide-react';
+import dynamic from 'next/dynamic';
+import Link from 'next/link';
+import React, { useEffect, useState } from 'react';
+
+const VIDEO_TEASER_SRC = 'https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices/studio/workshops/videos/workshop_studio_teaser.mp4';
+const VIDEO_POSTER = 'https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices/assets/visuals/branding/branding-branding-photo-horizontal-1.webp';
+
+const SuccessVideoPlayer = dynamic(
+  () => import('@/components/ui/VideoPlayer').then(mod => mod.VideoPlayer),
+  { ssr: false, loading: () => <div className="w-full aspect-video rounded-[20px] bg-va-black/5 animate-pulse" /> }
+);
+const SuccessWorkshopCalendar = dynamic(
+  () => import('@/components/studio/WorkshopCalendar').then(mod => mod.WorkshopCalendar),
+  { ssr: false, loading: () => <div className="h-[320px] rounded-[20px] bg-va-off-white/50 animate-pulse" /> }
+);
 
 const WORKSHOPS = [
   { id: '260250', title: 'Voice-over voor Beginners' },
@@ -38,6 +51,7 @@ export const WorkshopInterestForm: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(true);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [successWorkshops, setSuccessWorkshops] = useState<any[]>([]);
 
   // 🛡️ CHRIS-PROTOCOL: Handshake Truth - Fetch workshops from DB
   useEffect(() => {
@@ -63,6 +77,33 @@ export const WorkshopInterestForm: React.FC = () => {
     };
     fetchWorkshops();
   }, []);
+
+  useEffect(() => {
+    if (!isSubmitted) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch('/api/studio/workshops/');
+        const data = await res.json();
+        if (cancelled || !res.ok) return;
+        const list = Array.isArray(data.workshops) ? data.workshops : [];
+        setSuccessWorkshops(list.map((w: any) => ({
+          ...w,
+          editions: w.upcoming_editions || w.editions || []
+        })));
+      } catch {
+        // Kalender toont leeg of placeholder
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [isSubmitted]);
+
+  // Anna: na succes naar boven scrollen
+  useEffect(() => {
+    if (isSubmitted && typeof window !== 'undefined') {
+      requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: 'smooth' }));
+    }
+  }, [isSubmitted]);
 
   const toggleWorkshop = (id: string) => {
     setSelectedWorkshops(prev => 
@@ -130,16 +171,53 @@ export const WorkshopInterestForm: React.FC = () => {
 
   if (isSubmitted) {
     return (
-      <ContainerInstrument className="max-w-xl mx-auto text-center space-y-8 py-16 px-4 sm:py-24">
-        <ContainerInstrument className="w-16 h-16 sm:w-20 sm:h-20 bg-green-500/10 text-green-500 rounded-[20px] flex items-center justify-center mx-auto transition-transform duration-100">
-          <Check size={32} strokeWidth={2} className="sm:w-10 sm:h-10" />
-        </ContainerInstrument>
-        <HeadingInstrument level={2} className="text-4xl font-light tracking-tighter text-va-black">
-          <VoiceglotText  translationKey="workshop.interest.success.title" defaultText="Bedankt!" />
-        </HeadingInstrument>
-        <TextInstrument className="text-[15px] text-va-black/50 font-light leading-relaxed max-w-md mx-auto">
-          <VoiceglotText  translationKey="workshop.interest.success.text" defaultText="We hebben je interesse ontvangen. Johfrah neemt binnenkort contact met je op." />
-        </TextInstrument>
+      <ContainerInstrument className="max-w-6xl mx-auto py-12 sm:py-16 px-4 sm:px-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
+          <div className="relative group animate-in fade-in slide-in-from-left-4 duration-500">
+            <div className="absolute -inset-2 bg-primary/5 rounded-[24px] blur-xl group-hover:bg-primary/10 transition-all duration-500" />
+            <SuccessVideoPlayer
+              src={VIDEO_TEASER_SRC}
+              poster={VIDEO_POSTER}
+              className="w-full aspect-video rounded-[20px] shadow-aura-lg border border-black/5 relative z-10"
+              autoPlay={false}
+              muted={false}
+            />
+          </div>
+          <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-500 delay-150">
+            <div className="flex flex-col items-start text-left">
+              <ContainerInstrument className="w-14 h-14 sm:w-16 sm:h-16 bg-green-500/10 text-green-500 rounded-[20px] flex items-center justify-center mb-6">
+                <Check size={28} strokeWidth={2} className="sm:w-8 sm:h-8" />
+              </ContainerInstrument>
+              <HeadingInstrument level={2} className="text-3xl sm:text-4xl font-light tracking-tighter text-va-black mb-4">
+                <VoiceglotText translationKey="workshop.interest.success.title" defaultText="Bedankt!" />
+              </HeadingInstrument>
+              <TextInstrument className="text-[15px] text-va-black/60 font-light leading-relaxed max-w-md">
+                <VoiceglotText translationKey="workshop.interest.success.text" defaultText="We hebben je interesse ontvangen. Johfrah neemt binnenkort contact met je op." />
+              </TextInstrument>
+              <ButtonInstrument as={Link} href="/studio" className="mt-6 va-btn-pro group min-h-[48px]">
+                <VoiceglotText translationKey="workshop.interest.success.cta" defaultText="Bekijk workshops" />
+                <ArrowRight size={18} className="ml-2 group-hover:translate-x-1 transition-transform" />
+              </ButtonInstrument>
+            </div>
+            <div className="rounded-[20px] border border-black/[0.06] bg-white/80 backdrop-blur-sm p-6 shadow-sm">
+              {successWorkshops.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
+                  <TextInstrument className="text-[13px] font-bold text-va-black/40 uppercase tracking-widest mb-2">
+                    <VoiceglotText translationKey="studio.calendar.title" defaultText="Workshop kalender" />
+                  </TextInstrument>
+                  <TextInstrument className="text-[15px] font-light text-va-black/50 max-w-xs">
+                    <VoiceglotText translationKey="studio.calendar.empty_after_submit" defaultText="Binnenkort komen er nieuwe data. We houden je op de hoogte." />
+                  </TextInstrument>
+                  <ButtonInstrument as={Link} href="/studio" variant="outline" className="mt-6 min-h-[44px]">
+                    <VoiceglotText translationKey="workshop.interest.success.cta" defaultText="Bekijk workshops" />
+                  </ButtonInstrument>
+                </div>
+              ) : (
+                <SuccessWorkshopCalendar workshops={successWorkshops} />
+              )}
+            </div>
+          </div>
+        </div>
       </ContainerInstrument>
     );
   }
@@ -286,10 +364,10 @@ export const WorkshopInterestForm: React.FC = () => {
                   value={formData.experience}
                   onChange={(e) => setFormData({...formData, experience: e.target.value})}
                 >
-                  <OptionInstrument value=""><VoiceglotText  translationKey="common.choose_level" defaultText="Kies je niveau..." /></OptionInstrument>
-                  <OptionInstrument value="beginner"><VoiceglotText  translationKey="common.level.beginner" defaultText="Beginner (geen ervaring)" /></OptionInstrument>
-                  <OptionInstrument value="intermediate"><VoiceglotText  translationKey="common.level.intermediate" defaultText="Enige ervaring (hobby/amateur)" /></OptionInstrument>
-                  <OptionInstrument value="pro"><VoiceglotText  translationKey="common.level.pro" defaultText="Professional" /></OptionInstrument>
+                  <OptionInstrument value="">{t('common.choose_level', 'Kies je niveau...')}</OptionInstrument>
+                  <OptionInstrument value="beginner">{t('common.level.beginner', 'Beginner (geen ervaring)')}</OptionInstrument>
+                  <OptionInstrument value="intermediate">{t('common.level.intermediate', 'Enige ervaring (hobby/amateur)')}</OptionInstrument>
+                  <OptionInstrument value="pro">{t('common.level.pro', 'Professional')}</OptionInstrument>
                 </SelectInstrument>
               </ContainerInstrument>
               <ContainerInstrument className="space-y-2 md:col-span-2">

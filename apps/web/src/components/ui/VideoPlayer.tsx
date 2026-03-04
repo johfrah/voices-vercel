@@ -17,6 +17,33 @@ interface SubtitleTrack {
   data?: SubtitleData[];
 }
 
+function toVttTimestamp(seconds: number): string {
+  const clamped = Math.max(0, Number.isFinite(seconds) ? seconds : 0);
+  const hours = Math.floor(clamped / 3600);
+  const minutes = Math.floor((clamped % 3600) / 60);
+  const wholeSeconds = Math.floor(clamped % 60);
+  const milliseconds = Math.floor((clamped % 1) * 1000);
+  const hh = String(hours).padStart(2, '0');
+  const mm = String(minutes).padStart(2, '0');
+  const ss = String(wholeSeconds).padStart(2, '0');
+  const mmm = String(milliseconds).padStart(3, '0');
+  return `${hh}:${mm}:${ss}.${mmm}`;
+}
+
+function subtitleDataToVtt(data: SubtitleData[]): string {
+  const header = 'WEBVTT\n\n';
+  const cues = data
+    .filter((cue) => Number.isFinite(cue.start) && Number.isFinite(cue.end) && cue.end > cue.start)
+    .map((cue, index) => {
+      const from = toVttTimestamp(cue.start);
+      const to = toVttTimestamp(cue.end);
+      const text = (cue.text || '').trim() || '...';
+      return `${index + 1}\n${from} --> ${to}\n${text}`;
+    })
+    .join('\n\n');
+  return `${header}${cues}\n`;
+}
+
 interface VideoPlayerProps {
   src: string;
   poster?: string;
@@ -48,11 +75,33 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(autoPlay);
   const [isMuted, setIsMuted] = useState(muted);
+  const [isFrameReady, setIsFrameReady] = useState(false);
   const [progress, setProgress] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
   const [showControls, setShowControls] = useState(false);
   const [activeSubtitle, setActiveSubtitle] = useState<string | null>(subtitles.length > 0 ? subtitles[0].srcLang : null);
   const [currentSubtitleText, setCurrentSubtitleText] = useState<string>("");
+  const [resolvedSubtitles, setResolvedSubtitles] = useState<SubtitleTrack[]>(subtitles);
+
+  useEffect(() => {
+    // Enforce video-first frame policy: never rely on image posters.
+    setIsFrameReady(false);
+  }, [src, poster]);
+
+  useEffect(() => {
+    const generatedObjectUrls: string[] = [];
+    const nextTracks = subtitles.map((track) => {
+      if (track.src || !Array.isArray(track.data) || track.data.length === 0) return track;
+      const vtt = subtitleDataToVtt(track.data);
+      const objectUrl = URL.createObjectURL(new Blob([vtt], { type: 'text/vtt' }));
+      generatedObjectUrls.push(objectUrl);
+      return { ...track, src: objectUrl };
+    });
+    setResolvedSubtitles(nextTracks);
+    return () => {
+      generatedObjectUrls.forEach((url) => URL.revokeObjectURL(url));
+    };
+  }, [subtitles]);
 
   // Update active subtitle based on array data if available
   useEffect(() => {
@@ -106,7 +155,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
         tracks[i].removeEventListener('cuechange', onCueChange);
       }
     };
-  }, [activeSubtitle, subtitles]);
+  }, [activeSubtitle, subtitles, resolvedSubtitles]);
 
   const togglePlay = () => {
     if (videoRef.current) {
@@ -160,7 +209,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
   return (
     <div 
       className={cn(
-        "relative rounded-[20px] overflow-hidden bg-va-black shadow-aura group",
+        "relative rounded-[20px] overflow-hidden bg-va-off-white shadow-aura group",
         aspectClasses[aspectRatio],
         className
       )}
@@ -170,16 +219,22 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
       <video
         ref={videoRef}
         src={src}
-        poster={poster}
-        className="w-full h-full object-cover"
+        className={cn(
+          "w-full h-full object-cover transition-opacity duration-300",
+          isFrameReady ? "opacity-100" : "opacity-0"
+        )}
         autoPlay={autoPlay}
         loop={loop}
         muted={muted}
+        preload="metadata"
         onTimeUpdate={handleProgress}
+        onLoadedMetadata={() => setIsFrameReady(true)}
+        onLoadedData={() => setIsFrameReady(true)}
+        onCanPlay={() => setIsFrameReady(true)}
         onClick={togglePlay}
         playsInline
       >
-        {subtitles.map((track) => (
+        {resolvedSubtitles.map((track) => (
           <track
             key={track.srcLang}
             kind="subtitles"
@@ -213,8 +268,14 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
         </div>
       )}
 
+      {!isFrameReady && (
+        <div className="absolute inset-0 flex items-center justify-center bg-va-off-white">
+          <div className="w-12 h-12 rounded-full border-2 border-primary/20 border-t-primary animate-spin" />
+        </div>
+      )}
+
       {/* Overlay Play Button (Visible when paused) */}
-      {!isPlaying && (
+      {!isPlaying && isFrameReady && (
         <div 
           className="absolute inset-0 flex items-center justify-center bg-black/20 cursor-pointer transition-opacity duration-300"
           onClick={togglePlay}
@@ -250,12 +311,15 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
             </button>
             
             {/* Subtitle Selector */}
-            {subtitles.length > 0 && (
+            {resolvedSubtitles.length > 0 && (
               <div className="flex items-center gap-2 ml-2">
-                {subtitles.map((track) => (
+                {resolvedSubtitles.map((track) => (
                   <button
                     key={track.srcLang}
                     onClick={() => setActiveSubtitle(activeSubtitle === track.srcLang ? null : track.srcLang)}
+                    aria-pressed={activeSubtitle === track.srcLang}
+                    aria-label={activeSubtitle === track.srcLang ? `Ondertitels ${track.srcLang} uitschakelen` : `Ondertitels ${track.srcLang} inschakelen`}
+                    title={activeSubtitle === track.srcLang ? `Ondertitels ${track.srcLang} uitschakelen` : `Ondertitels ${track.srcLang} inschakelen`}
                     className={cn(
                       "text-[15px] px-2 py-1 rounded border border-white/20 transition-all",
                       activeSubtitle === track.srcLang ? "bg-[#FFC421] border-[#FFC421] text-va-black" : "bg-white/10 text-white/60 hover:bg-white/20"

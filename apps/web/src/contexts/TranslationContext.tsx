@@ -15,6 +15,12 @@ interface TranslationContextType {
 
 const StudioTranslationContext = createContext<TranslationContextType | undefined>(undefined);
 
+function canRegisterTranslationsOnCurrentSurface(): boolean {
+  if (typeof window === 'undefined') return false;
+  const pathname = window.location.pathname.toLowerCase();
+  return pathname.startsWith('/admin') || pathname.startsWith('/backoffice');
+}
+
 export const TranslationProvider: React.FC<{ 
   children: ReactNode; 
   lang?: string;
@@ -41,6 +47,10 @@ export const TranslationProvider: React.FC<{
 
   const flushRegistrationQueue = React.useCallback(async () => {
     if (registrationQueue.current.size === 0) return;
+    if (!canRegisterTranslationsOnCurrentSurface()) {
+      registrationQueue.current.clear();
+      return;
+    }
     const batch = Array.from(registrationQueue.current.entries()).slice(0, 8);
     batch.forEach(([key]) => registrationQueue.current.delete(key));
 
@@ -73,6 +83,7 @@ export const TranslationProvider: React.FC<{
   }, [sourceLanguageId]);
 
   const queueRegistration = React.useCallback((key: string, defaultText: string) => {
+    if (!canRegisterTranslationsOnCurrentSurface()) return;
     if (!key || !defaultText || key.startsWith('admin.') || key.startsWith('command.')) return;
     if (registeredMissingKeys.current.has(key)) return;
     registeredMissingKeys.current.add(key);

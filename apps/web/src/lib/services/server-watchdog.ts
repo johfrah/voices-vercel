@@ -36,20 +36,26 @@ export class ServerWatchdog {
         const systemEvents = getTable('systemEvents');
         
         if (db && systemEvents) {
-          await db.insert(systemEvents).values({
-            level: options.level || 'error',
-            source: options.component || 'ServerWatchdog',
-            message: options.error,
-            details: {
-              stack: options.stack,
-              url: options.url || 'Server-Side',
-              payload: scrubbedPayload,
-              schema: options.schema,
-              extra: options.details,
-              timestamp: new Date()
-            },
-            createdAt: new Date()
-          }).catch((e: any) => console.warn('[ServerWatchdog] Direct DB logging failed:', e.message));
+          // Never block request flow on telemetry persistence.
+          void Promise.race([
+            db.insert(systemEvents).values({
+              level: options.level || 'error',
+              source: options.component || 'ServerWatchdog',
+              message: options.error,
+              details: {
+                stack: options.stack,
+                url: options.url || 'Server-Side',
+                payload: scrubbedPayload,
+                schema: options.schema,
+                extra: options.details,
+                timestamp: new Date()
+              },
+              createdAt: new Date()
+            }),
+            new Promise((_, reject) =>
+              setTimeout(() => reject(new Error('Watchdog DB logging timeout')), 1500)
+            )
+          ]).catch((e: any) => console.warn('[ServerWatchdog] Direct DB logging failed:', e.message));
         }
       } catch (dbErr) {
         // Silent fail for DB, fetch will try next
@@ -89,7 +95,7 @@ export class ServerWatchdog {
     const startTime = Date.now();
     
     // 1. Log Start
-    await this.report({
+    void this.report({
       level: 'info',
       component,
       error: `ATOMIC START: ${operation}`,
@@ -101,7 +107,7 @@ export class ServerWatchdog {
       const result = await fn();
       
       // 3. Log Success
-      await this.report({
+      void this.report({
         level: 'info',
         component,
         error: `ATOMIC SUCCESS: ${operation}`,
@@ -111,7 +117,7 @@ export class ServerWatchdog {
       return result;
     } catch (error: any) {
       // 4. Log Failure (Forensic)
-      await this.report({
+      void this.report({
         level: 'critical',
         component,
         error: `ATOMIC CRASH: ${operation} - ${error.message}`,

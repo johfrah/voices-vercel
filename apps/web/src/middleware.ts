@@ -102,28 +102,29 @@ export async function middleware(request: NextRequest) {
     console.log(' NUCLEAR CLEANUP: Legacy session flags cleared.')
   }
 
-  // 1.7 UNDER CONSTRUCTION GATE (GOD MODE)
-  // Als de site in 'under construction' modus staat, laten we alleen admins door.
-  // We gebruiken een environment variable of een cookie voor de bypass.
-  const forceUnderConstruction = process.env.NEXT_PUBLIC_UNDER_CONSTRUCTION === 'true';
-  
-  // 🛡️ CHRIS-PROTOCOL: MarketManager is the source of truth for domains
-  const isUnderConstruction = false; // Bob: Live gaan! 🚀
-
-  // 1.7.5 LIGHT MODE REDIRECT (NUCLEAR)
-  const isAdmin = request.cookies.get('voices_role')?.value === 'admin' || request.cookies.get('sb-access-token') !== undefined;
-  
-  // 🛡️ CHRIS-PROTOCOL: Bypass voor assets en API's is al geregeld bovenin de middleware.
-  // We forceren hier de redirect naar /light voor alle andere routes.
-  if (isUnderConstruction && !isAdmin && pathname !== '/light' && pathname !== '/light/' && !pathname.startsWith('/auth') && !pathname.startsWith('/api')) {
-    const lightUrl = url.clone();
-    lightUrl.pathname = '/light';
-    console.log(` NUCLEAR REDIRECT: Forcing /light for ${pathname}`);
-    return NextResponse.redirect(lightUrl);
-  }
-
   // 1.8 LEGACY REDIRECTS (v2.24)
   // Vang oude URL-structuren op en stuur ze naar de nieuwe canonieke paden.
+  const shortLocalePattern = SUPPORTED_LOCALE_PREFIXES.join('|')
+  const localizedVoiceRegex = new RegExp(`^/(${shortLocalePattern})/voice(?:/(.+))?$`, 'i')
+  const legacyVoiceRegex = /^\/voice(?:\/(.+))?$/i
+  const localizedVoiceMatch = pathname.match(localizedVoiceRegex)
+  const legacyVoiceMatch = pathname.match(legacyVoiceRegex)
+
+  if (localizedVoiceMatch) {
+    const locale = localizedVoiceMatch[1].toLowerCase()
+    const suffix = (localizedVoiceMatch[2] || '').replace(/\/+$/, '')
+    const redirectUrl = url.clone()
+    redirectUrl.pathname = suffix ? `/${locale}/${suffix}` : `/${locale}/agency`
+    return NextResponse.redirect(redirectUrl, 308)
+  }
+
+  if (legacyVoiceMatch) {
+    const suffix = (legacyVoiceMatch[1] || '').replace(/\/+$/, '')
+    const redirectUrl = url.clone()
+    redirectUrl.pathname = suffix ? `/${suffix}` : '/agency'
+    return NextResponse.redirect(redirectUrl, 308)
+  }
+
   const isLegacyAgencyPath = pathname.startsWith('/agency/video') || 
                              pathname.startsWith('/agency/telephony') || 
                              pathname.startsWith('/agency/commercial');
@@ -181,6 +182,8 @@ export async function middleware(request: NextRequest) {
     return loginResponse;
   }
   
+  const isAdmin = request.cookies.get('voices_role')?.value === 'admin' || request.cookies.get('sb-access-token') !== undefined;
+
   // DOMAIN BYPASS: Specifieke domeinen en staging mogen ALTIJD door (Johfrah, Ademing, Youssef, Staging)
   const isBypassDomain = host.includes('staging.') ||
                          host.includes('johfrah.be') || 
@@ -188,7 +191,6 @@ export async function middleware(request: NextRequest) {
                          host.includes('youssefzaki.eu') ||
                          host.includes('johfrai.be') ||
                          host.includes('localhost') || // LOCAL TEST BYPASS
-                         pathname.startsWith('/light') || // LIGHT VERSION BYPASS
                          url.searchParams.get('moby') === 'true' ||
                          url.searchParams.get('launch') === 'true' ||
                          url.searchParams.get('bob') === 'true'; // BOB BYPASS
@@ -200,19 +202,6 @@ export async function middleware(request: NextRequest) {
   // Injecteer context in headers voor server components
   response.headers.set('x-voices-intent', intent)
   response.headers.set('x-voices-persona', persona)
-
-  const isAuthPath = pathname.startsWith('/auth')
-  const isUnderConstructionPath = pathname === '/under-construction' || pathname === '/under-construction/'
-
-  if (isUnderConstruction && !isAdmin && !isAuthPath && !isUnderConstructionPath && !isBypassDomain) {
-    url.pathname = '/under-construction'
-    // We gebruiken rewrite in plaats van redirect om de headers te behouden
-    const response = NextResponse.rewrite(url)
-    // Voeg een header toe zodat we in de layout weten dat we in construction mode zitten
-    response.headers.set('x-voices-under-construction', 'true')
-    response.headers.set('x-voices-pathname', '/under-construction')
-    return response
-  }
 
   // REDIRECT OLD AUTH PATHS TO UNIVERSAL ACCOUNT PAGE
   if (pathname === '/auth/login' || pathname === '/auth/login/') {
@@ -348,7 +337,6 @@ export async function middleware(request: NextRequest) {
     return ademingResponse
   }
 
-  const shortLocalePattern = SUPPORTED_LOCALE_PREFIXES.join('|')
   const shortLocaleRegex = new RegExp(`^/(${shortLocalePattern})(/|$)`, 'i')
   const isoLocaleRegex = /^\/(fr-fr|en-gb|nl-be|de-de|es-es|it-it|pt-pt)(\/|$)/i
 

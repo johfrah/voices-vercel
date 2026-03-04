@@ -72,6 +72,7 @@ export const VumeFollowUpTemplate = (props: FollowUpProps) => {
     title: isNl ? 'Hoe was je ervaring?' : 'How was your experience?',
     journey: 'agency',
     host,
+    language,
     children: content
   });
 };

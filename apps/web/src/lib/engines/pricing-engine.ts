@@ -314,7 +314,11 @@ export class SlimmeKassa {
 
           if (feeCents === 0) {
             isQuoteOnly = true;
-            quoteReason = `Geen specifiek tarief gevonden voor mediatype '${m}' in ${market}.`;
+            if (m === 'cinema' || m === 'pos') {
+              quoteReason = `Mediatype '${m}' is niet instelbaar in de acteur-UI; prijs op aanvraag.`;
+            } else {
+              quoteReason = `Geen specifiek tarief gevonden voor mediatype '${m}' in ${market}.`;
+            }
             if (m === 'online') feeCents = 10000;
           }
 

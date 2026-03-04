@@ -173,7 +173,7 @@ export async function POST(request: NextRequest) {
         </div>
       `,
       buttonText: 'Open Collaborative Studio',
-      buttonUrl: `${siteUrl}/pitch/${sessionHash}`,
+      buttonUrl: `${siteUrl}/proefopname/${sessionHash}`,
       host: host
     });
 

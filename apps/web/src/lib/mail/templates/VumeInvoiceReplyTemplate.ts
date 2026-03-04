@@ -1,4 +1,5 @@
 import { VumeMasterWrapper } from './VumeMasterWrapper';
+import { normalizeLocale } from '@/lib/system/locale-utils';
 
 /**
  *  VUME INVOICE REPLY TEMPLATE (2026)
@@ -17,8 +18,9 @@ interface InvoiceReplyOptions {
 export function VumeInvoiceReplyTemplate(options: InvoiceReplyOptions) {
   const { userName, invoiceNumber, amount, host = process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'www.voices.be', language = 'nl-BE' } = options;
   // MarketManager is used for domain resolution in the mail engine
+  const shortLocale = normalizeLocale(language || 'nl-be').split('-')[0];
 
-  const content = {
+  const translations = {
     nl: {
       title: 'Ontvangstbevestiging',
       greeting: userName ? `Beste ${userName},` : 'Beste,',
@@ -46,7 +48,9 @@ export function VumeInvoiceReplyTemplate(options: InvoiceReplyOptions) {
       button: 'VIEW IN DASHBOARD',
       footer: 'This is an automated confirmation. You do not need to reply to this email.'
     }
-  }[language as 'nl' | 'fr' | 'en'] || content.nl;
+  };
+
+  const content = translations[shortLocale as 'nl' | 'fr' | 'en'] || translations.nl;
 
   const html = `
     <p style="margin: 0 0 20px 0; font-family: 'Raleway', 'Helvetica Neue', Helvetica, Arial, sans-serif;">${content.greeting}</p>
@@ -69,6 +73,7 @@ export function VumeInvoiceReplyTemplate(options: InvoiceReplyOptions) {
     title: content.title,
     previewText: content.title,
     journey: 'agency',
-    host
+    host,
+    language,
   });
 }

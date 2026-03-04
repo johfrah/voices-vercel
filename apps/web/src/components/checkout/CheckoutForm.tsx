@@ -299,6 +299,8 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
     try {
       const safeBriefing = state.briefing || '';
       const wordCount = (safeBriefing || '').trim().split(/\s+/).filter(Boolean).length;
+      const normalizedBillingPo = (formData.billing_po || '').trim();
+      const normalizedFinancialEmail = (formData.financial_email || '').trim().toLowerCase();
 
       const payload = {
         pricing: {
@@ -318,6 +320,8 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
         phone: formData.phone,
         company: formData.company,
         vat_number: formData.vat_number,
+        billing_po: normalizedBillingPo || undefined,
+        financial_email: normalizedFinancialEmail || undefined,
         address_street: formData.address_street,
         postal_code: formData.postal_code,
         city: formData.city,
@@ -669,7 +673,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
                       <VoiceglotText  translationKey="checkout.form.po_number" defaultText="PO Nummer / Referentie" />
                     </LabelInstrument>
                     <InputInstrument
-                      value={(formData as any).billing_po || ''}
+                      value={formData.billing_po || ''}
                       placeholder={t('checkout.form.po_placeholder', "Bijv. PO-12345")}
                       className="w-full !rounded-[10px]"
                       onChange={(e) => handleChange('billing_po', e.target.value)}
@@ -681,7 +685,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
                     </LabelInstrument>
                     <InputInstrument
                       type="email"
-                      value={(formData as any).financial_email || ''}
+                      value={formData.financial_email || ''}
                       placeholder={t('checkout.form.financial_email_placeholder', "facturatie@bedrijf.be")}
                       className="w-full !rounded-[10px]"
                       onChange={(e) => handleChange('financial_email', e.target.value)}

@@ -58,3 +58,39 @@ export function stripLanguagePrefix(slug: string): string {
   segments.shift(); // Verwijder de eerste (taal) segment
   return segments.join('/');
 }
+
+/**
+ * Bouwt de canonieke actor-segment slug uit eender welke legacy-vorm.
+ * Voorbeelden:
+ * - "johfrah" -> "johfrah"
+ * - "/voice/johfrah/" -> "johfrah"
+ * - "agency/johfrah/video" -> "johfrah"
+ */
+export function resolveActorSlugSegment(rawSlug?: string | null, fallbackName?: string | null): string {
+  const normalized = stripLanguagePrefix(normalizeSlug(rawSlug || ''));
+  const segments = normalized.split('/').filter(Boolean);
+
+  let candidate = '';
+  if (segments.length === 1) {
+    candidate = segments[0];
+  } else if (segments.length > 1) {
+    const knownPrefixes = new Set([
+      'voice', 'stem', 'voix', 'stimme', 'agency', 'voices',
+      'studio', 'academy', 'ademing', 'johfrai', 'partners', 'freelance', 'casting', 'artist', 'portfolio'
+    ]);
+    candidate = knownPrefixes.has(segments[0]) ? segments[1] : segments[0];
+  }
+
+  const cleanedCandidate = generateSlug(candidate);
+  if (cleanedCandidate) return cleanedCandidate;
+
+  const generatedFallback = generateSlug(fallbackName || '');
+  return generatedFallback || 'actor-profile';
+}
+
+/**
+ * Bouwt het canonieke actorpad: /{actor-slug}
+ */
+export function buildCanonicalActorPath(rawSlug?: string | null, fallbackName?: string | null): string {
+  return `/${resolveActorSlugSegment(rawSlug, fallbackName)}`;
+}

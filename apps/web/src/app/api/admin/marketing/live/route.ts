@@ -6,6 +6,8 @@ import { type NextRequest, NextResponse } from 'next/server'
  * 
  * Haalt real-time visitor data op uit de Mat-proof tabellen.
  */
+export const dynamic = 'force-dynamic'
+
 export async function GET(request: NextRequest) {
   try {
     const supabase = createClient(

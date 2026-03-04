@@ -54,7 +54,7 @@ interface OrderRecord {
 }
 
 export default function OrdersPage() {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, isLoading: isAuthLoading } = useAuth();
   const { t } = useTranslation();
   const searchParams = useSearchParams();
   const highlightedOrderId = searchParams?.get('orderId');
@@ -80,34 +80,103 @@ export default function OrdersPage() {
     return '/agency/contact';
   };
 
-  useEffect(() => {
-    if (isAuthenticated && user?.email) {
-      setErrorMessage(null);
-      const forceRefresh = !!highlightedOrderId;
-      fetch(`/api/intelligence/customer-360?email=${user.email}${forceRefresh ? '&forceRefresh=true' : ''}`)
-        .then(async (res) => {
-          if (!res.ok) {
-            throw new Error('orders_fetch_failed');
-          }
-          return res.json();
-        })
-        .then(data => {
-          setOrdersList(data.orders || []);
-          setIsLoading(false);
-          // Auto-expand highlighted order
-          if (highlightedOrderId) {
-            const parsedOrderId = Number(highlightedOrderId);
-            if (!Number.isNaN(parsedOrderId)) {
-              setExpandedOrders(prev => ({ ...prev, [parsedOrderId]: true }));
-            }
-          }
-        })
-        .catch(() => {
-          setErrorMessage('Bestellingen konden niet geladen worden. Probeer opnieuw.');
-          setIsLoading(false);
-        });
+  const getOrderStatusMeta = (status?: string) => {
+    const normalized = String(status || 'pending').toLowerCase();
+    if (normalized === 'completed' || normalized === 'approved') {
+      return {
+        badgeClass: 'bg-green-50 text-green-600 border-green-100',
+        label: t('order.status.completed', 'Voltooid'),
+        isSuccess: true,
+        isIssue: false,
+      };
     }
-  }, [isAuthenticated, user, highlightedOrderId]);
+    if (normalized === 'paid') {
+      return {
+        badgeClass: 'bg-blue-50 text-blue-600 border-blue-100',
+        label: t('order.status.paid', 'Betaald'),
+        isSuccess: false,
+        isIssue: false,
+      };
+    }
+    if (normalized === 'failed') {
+      return {
+        badgeClass: 'bg-red-50 text-red-600 border-red-100',
+        label: t('order.status.failed', 'Betaling mislukt'),
+        isSuccess: false,
+        isIssue: true,
+      };
+    }
+    if (normalized === 'cancelled') {
+      return {
+        badgeClass: 'bg-red-50 text-red-600 border-red-100',
+        label: t('order.status.cancelled', 'Geannuleerd'),
+        isSuccess: false,
+        isIssue: true,
+      };
+    }
+    if (normalized === 'expired') {
+      return {
+        badgeClass: 'bg-red-50 text-red-600 border-red-100',
+        label: t('order.status.expired', 'Betaling verlopen'),
+        isSuccess: false,
+        isIssue: true,
+      };
+    }
+    return {
+      badgeClass: 'bg-amber-50 text-amber-600 border-amber-100',
+      label: t('order.status.pending', 'Betaling in behandeling'),
+      isSuccess: false,
+      isIssue: false,
+    };
+  };
+
+  useEffect(() => {
+    if (isAuthLoading) return;
+
+    if (!isAuthenticated || !user?.email) {
+      setErrorMessage(null);
+      setIsLoading(false);
+      setOrdersList([]);
+      return;
+    }
+
+    setIsLoading(true);
+    setErrorMessage(null);
+    const forceRefresh = !!highlightedOrderId;
+    fetch(`/api/intelligence/customer-360?email=${user.email}${forceRefresh ? '&forceRefresh=true' : ''}`)
+      .then(async (res) => {
+        if (!res.ok) {
+          throw new Error('orders_fetch_failed');
+        }
+        return res.json();
+      })
+      .then(data => {
+        setOrdersList(data.orders || []);
+        setIsLoading(false);
+        // Auto-expand highlighted order
+        if (highlightedOrderId) {
+          const parsedOrderId = Number(highlightedOrderId);
+          if (!Number.isNaN(parsedOrderId)) {
+            setExpandedOrders(prev => ({ ...prev, [parsedOrderId]: true }));
+          }
+        }
+      })
+      .catch(() => {
+        setErrorMessage('Bestellingen konden niet geladen worden. Probeer opnieuw.');
+        setIsLoading(false);
+      });
+  }, [isAuthLoading, isAuthenticated, user, highlightedOrderId]);
+
+  useEffect(() => {
+    if (!isAuthLoading) return;
+
+    const timer = window.setTimeout(() => {
+      setIsLoading(false);
+      setErrorMessage('Sessiecontrole duurt langer dan verwacht. Herlaad de pagina.');
+    }, 10000);
+
+    return () => window.clearTimeout(timer);
+  }, [isAuthLoading]);
 
   useEffect(() => {
     if (highlightedOrderId && ordersList.length > 0) {
@@ -170,6 +239,7 @@ export default function OrdersPage() {
               const isExpanded = !!expandedOrders[order.id];
               const invoiceUrl = resolveInvoiceUrl(order);
               const helpPath = resolveHelpPath(order);
+              const statusMeta = getOrderStatusMeta(order.status);
               
               return (
                 <BentoCard 
@@ -186,9 +256,10 @@ export default function OrdersPage() {
                       <div className="flex items-center gap-3">
                         <TextInstrument className={cn(
                           "text-[13px] font-bold tracking-[0.2em] uppercase px-3 py-1 rounded-full border",
-                          order.status === 'completed' ? 'bg-green-50 text-green-600 border-green-100' : 'bg-primary/5 text-primary border-primary/10 animate-pulse'
+                          statusMeta.badgeClass,
+                          !statusMeta.isSuccess && !statusMeta.isIssue && 'animate-pulse'
                         )}>
-                          {order.status === 'completed' ? <VoiceglotText translationKey="order.status.completed" defaultText="Voltooid" /> : <VoiceglotText translationKey="order.status.processing" defaultText="In behandeling" />}
+                          {statusMeta.label}
                         </TextInstrument>
                         {order.isQuote && (
                           <span className="bg-blue-50 text-blue-600 text-[11px] font-bold tracking-widest uppercase px-3 py-1 rounded-full border border-blue-100">
@@ -371,7 +442,12 @@ export default function OrdersPage() {
                         </HeadingInstrument>
                       </div>
                       <TextInstrument className="text-[16px] text-va-black/60 font-light leading-relaxed">
-                        {order.paymentMethod === 'banktransfer' ? (
+                        {statusMeta.isIssue ? (
+                          <VoiceglotText
+                            translationKey="account.orders.next_steps.payment_issue"
+                            defaultText="De betaling is niet afgerond. Probeer opnieuw of neem contact op met ons team. Je order blijft veilig bewaard."
+                          />
+                        ) : order.paymentMethod === 'banktransfer' ? (
                           <VoiceglotText 
                             translationKey="account.orders.next_steps.banktransfer" 
                             defaultText="We hebben je bestelling ontvangen. Zodra de betaling is verwerkt, gaat de stemacteur direct voor je aan de slag. Je ontvangt een pushbericht bij elke update." 
@@ -390,12 +466,14 @@ export default function OrdersPage() {
                     <ContainerInstrument className="flex items-center gap-3">
                       <ContainerInstrument className={cn(
                         "w-2 h-2 rounded-full animate-pulse",
-                        order.status === 'completed' ? 'bg-green-500' : 'bg-primary'
+                        statusMeta.isSuccess ? 'bg-green-500' : statusMeta.isIssue ? 'bg-red-500' : 'bg-primary'
                       )} />
                       <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/60">
-                        {order.status === 'completed' 
-                          ? <VoiceglotText translationKey="order.delivery.success" defaultText="Project succesvol opgeleverd" /> 
-                          : <VoiceglotText translationKey="order.delivery.expected" defaultText={`Verwachte oplevering: ${order.orderItems?.[0]?.metaData?.deliveryTime || 'binnen 48 uur'}`} />}
+                        {statusMeta.isSuccess
+                          ? <VoiceglotText translationKey="order.delivery.success" defaultText="Project succesvol opgeleverd" />
+                          : statusMeta.isIssue
+                            ? <VoiceglotText translationKey="order.delivery.payment_issue" defaultText="Betaling niet afgerond — actie vereist om productie te starten" />
+                            : <VoiceglotText translationKey="order.delivery.expected" defaultText={`Verwachte oplevering: ${order.orderItems?.[0]?.metaData?.deliveryTime || 'binnen 48 uur'}`} />}
                       </TextInstrument>
                     </ContainerInstrument>
                     <ContainerInstrument className="flex items-center gap-6">

@@ -27,6 +27,14 @@ import toast from 'react-hot-toast';
  * Focus: High-End Curation & Action
  * Volgens Chris-Protocol: 100ms feedback, Liquid DNA
  */
+export function shouldShowCastingDock(
+  selectedActorsCount: number,
+  isExcludedPage: boolean,
+  isVoicyOpen: boolean
+): boolean {
+  return selectedActorsCount > 0 && !isExcludedPage && !isVoicyOpen;
+}
+
 export const CastingDock = () => {
   const pathname = usePathname();
   const router = useVoicesRouter();
@@ -35,6 +43,7 @@ export const CastingDock = () => {
   const { isAdmin } = useAuth();
   const { t } = useTranslation();
   const [isGeneratingLink, setIsGeneratingLink] = useState(false);
+  const [isVoicyOpen, setIsVoicyOpen] = useState(false);
   const selectedActors = state.selected_actors;
   
   const market = MarketManager.getCurrentMarket();
@@ -43,7 +52,18 @@ export const CastingDock = () => {
   const isExcludedMarket = ['ARTIST', 'PORTFOLIO', 'ADEMING'].includes(market.market_code);
   const isExcludedPage = isExcludedMarket || 
                          pathname?.startsWith('/casting/launchpad');
-  const isVisible = selectedActors.length > 0 && !isExcludedPage;
+  const isVisible = shouldShowCastingDock(selectedActors.length, Boolean(isExcludedPage), isVoicyOpen);
+
+  useEffect(() => {
+    const handleVoicyState = (event: Event) => {
+      const customEvent = event as CustomEvent<{ isOpen?: boolean }>;
+      setIsVoicyOpen(Boolean(customEvent.detail?.isOpen));
+    };
+    window.addEventListener('voicy:state', handleVoicyState as EventListener);
+    return () => {
+      window.removeEventListener('voicy:state', handleVoicyState as EventListener);
+    };
+  }, []);
 
   const removeActor = (e: React.MouseEvent, actor: any) => {
     e.stopPropagation();

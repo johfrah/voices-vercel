@@ -131,8 +131,13 @@ export default function NewOrderPage() {
         const data = await res.json();
         logAction('order_created_manually', { orderId: data.id, syncToYuki });
         toast.success(`Order #${data.displayOrderId || data.id} succesvol aangemaakt!`);
-        if (syncToYuki && data.yukiResult) {
-          toast.success('Gezonken naar Yuki: ' + data.yukiResult.yukiId);
+        if (syncToYuki) {
+          if (data.yukiResult?.success) {
+            const invoiceLabel = data.yukiResult.invoiceNumber || data.yukiResult.yukiId || 'n.v.t.';
+            toast.success(`Yuki sync bevestigd: ${invoiceLabel}`);
+          } else {
+            toast.error(`Yuki sync niet bevestigd: ${data.yukiResult?.message || 'geen bevestiging ontvangen'}`);
+          }
         }
         router.push('/admin/orders');
       } else {
@@ -168,7 +173,7 @@ export default function NewOrderPage() {
               Nieuwe Bestelling
             </HeadingInstrument>
             <TextInstrument className="text-xl text-black/40 font-light tracking-tight">
-              Handmatige order toevoegen en direct factureren naar Yuki.
+              Handmatige order toevoegen en optioneel direct proberen syncen naar Yuki.
             </TextInstrument>
           </div>
         </SectionInstrument>
@@ -292,7 +297,7 @@ export default function NewOrderPage() {
                 </div>
                 <div>
                   <div className="text-[15px] font-medium tracking-tight">Direct Yuki Factuur aanmaken</div>
-                  <div className="text-[12px] font-light text-va-black/40 tracking-tight">De order wordt direct als &apos;verwerkt&apos; naar Yuki gestuurd.</div>
+                  <div className="text-[12px] font-light text-va-black/40 tracking-tight">We tonen pas een succesmelding na een echte Yuki sync-respons.</div>
                 </div>
               </div>
               <button 

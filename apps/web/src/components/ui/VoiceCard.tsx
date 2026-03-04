@@ -13,6 +13,7 @@ import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import { cn } from '@/lib/utils';
 import { Actor } from '@/types';
 import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
+import { buildCanonicalActorPath } from "@/lib/system/slug";
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, Check, ChevronDown, Clock, Edit3, Globe, MapPin, Mic, Pause, Play, Plus, Search as SearchIcon, Settings, ShieldCheck, Zap, X, Star } from 'lucide-react';
 import { useVoicesRouter } from '@/components/ui/VoicesLink';
@@ -157,7 +158,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
     if (!voice || onSelect) return;
     e.stopPropagation();
     playClick('soft');
-    router.push(`/${voice.slug}`);
+    router.push(buildCanonicalActorPath(voice.slug, voice.display_name || voice.first_name));
   };
 
   const handleMouseEnter = () => {
@@ -473,13 +474,55 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
 
   const displayPrice = useMemo(() => {
     if (!voice || !masterControlState || !checkoutState) return null;
+    const serviceCodeById = (serviceId: number): string => {
+      const mediaMatch = (MarketManager.mediaTypes || []).find((m: any) => m.id === serviceId);
+      if (mediaMatch?.code) return mediaMatch.code;
+      const serviceMatch = (MarketManager.services || []).find((s: any) => s.id === serviceId);
+      if (serviceMatch?.code) return serviceMatch.code;
+
+      const emergencyMap: Record<number, string> = {
+        1: 'online',
+        2: 'podcast',
+        3: 'radio_national',
+        4: 'radio_regional',
+        5: 'radio_local',
+        6: 'tv_national',
+        7: 'tv_regional',
+        8: 'tv_local',
+      };
+      return emergencyMap[serviceId] || String(serviceId);
+    };
+    const normalizeMediaCode = (raw: string | number): string => {
+      if (typeof raw === 'number') {
+        return serviceCodeById(raw);
+      }
+      const asNumber = Number(raw);
+      if (!Number.isNaN(asNumber) && String(asNumber) === String(raw)) {
+        return serviceCodeById(asNumber);
+      }
+      return String(raw);
+    };
+    const normalizeMediaList = (media: any): string[] => {
+      if (!Array.isArray(media)) return [];
+      return media.map((entry) => normalizeMediaCode(entry)).filter(Boolean);
+    };
+    const normalizeDetailMap = (detail: any): Record<string, number> => {
+      if (!detail || typeof detail !== 'object') return {};
+      return Object.entries(detail).reduce<Record<string, number>>((acc, [rawKey, rawValue]) => {
+        const code = normalizeMediaCode(rawKey);
+        const count = Number(rawValue);
+        if (!code || Number.isNaN(count) || count <= 0) return acc;
+        acc[code] = count;
+        return acc;
+      }, {});
+    };
     const isConfigurator = masterControlState.currentStep === 'script';
     const briefingWordCount = (checkoutState.briefing || '').trim().split(/\s+/).filter(Boolean).length;
     const promptCount = (checkoutState.briefing || '').trim().split(/\n+/).filter(Boolean).length;
     const wordCount = isConfigurator && briefingWordCount > 0 ? briefingWordCount : (masterControlState.filters?.words || 0);
-    const currentSpotsDetail = eventData?.spotsDetail || masterControlState.filters?.spotsDetail;
-    const currentYearsDetail = eventData?.yearsDetail || masterControlState.filters?.yearsDetail;
-    const currentMedia = eventData?.media || masterControlState.filters?.media || ['online'];
+    const currentSpotsDetail = normalizeDetailMap(eventData?.spotsDetail || masterControlState.filters?.spotsDetail);
+    const currentYearsDetail = normalizeDetailMap(eventData?.yearsDetail || masterControlState.filters?.yearsDetail);
+    const currentMedia = normalizeMediaList(eventData?.media || masterControlState.filters?.media || ['online']);
     const spotsMap = masterControlState.journey === 'commercial' && Array.isArray(currentMedia) ? currentMedia.reduce((acc, m) => ({ ...acc, [m]: (currentSpotsDetail && currentSpotsDetail[m]) || masterControlState.filters?.spots || 1 }), {}) : undefined;
     const yearsMap = masterControlState.journey === 'commercial' && Array.isArray(currentMedia) ? currentMedia.reduce((acc, m) => ({ ...acc, [m]: (currentYearsDetail && currentYearsDetail[m]) || masterControlState.filters?.years || 1 }), {}) : undefined;
     const result = SlimmeKassa.calculate({ 

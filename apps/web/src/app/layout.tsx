@@ -41,6 +41,23 @@ const VoicyChat = dynamic(() => import("@/components/ui/VoicyChat").then(mod => 
   ssr: false,
   loading: () => null 
 });
+async function withTimeoutFallback<T>(executor: () => Promise<T>, timeoutMs: number, fallbackValue: T): Promise<T> {
+  let timeoutHandle: ReturnType<typeof setTimeout> | undefined;
+  const timeoutPromise = new Promise<T>((resolve) => {
+    timeoutHandle = setTimeout(() => {
+      resolve(fallbackValue);
+    }, timeoutMs);
+  });
+
+  try {
+    return await Promise.race([executor(), timeoutPromise]);
+  } catch (error) {
+    console.warn('[layout] withTimeoutFallback triggered fallback after error:', error);
+    return fallbackValue;
+  } finally {
+    if (timeoutHandle) clearTimeout(timeoutHandle);
+  }
+}
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -100,26 +117,6 @@ function buildAlternatesForPath(pathname: string, rawLocales?: Record<string, st
   return alternates;
 }
 
-async function withTimeoutFallback<T>(
-  op: () => Promise<T>,
-  timeoutMs: number,
-  fallback: T,
-  label: string
-): Promise<T> {
-  let timeoutHandle: ReturnType<typeof setTimeout> | null = null;
-  try {
-    const timeoutPromise = new Promise<T>((resolve) => {
-      timeoutHandle = setTimeout(() => resolve(fallback), timeoutMs);
-    });
-    return await Promise.race([op(), timeoutPromise]);
-  } catch (error) {
-    console.error(`[layout] ${label} failed, using fallback`, error);
-    return fallback;
-  } finally {
-    if (timeoutHandle) clearTimeout(timeoutHandle);
-  }
-}
-
   /** Veilige market-resolutie: voorkomt 500 bij onverwachte hosts (Combell proxy, etc.) */
 async function getMarketSafe(host: string) {
   try {
@@ -152,10 +149,15 @@ const cormorant = Cormorant_Garamond({
 });
 
 export const viewport: Viewport = {
-  themeColor: "#000000",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#faf8f5" },
+    { media: "(prefers-color-scheme: dark)", color: "#101015" },
+  ],
+  colorScheme: "dark light",
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
+  viewportFit: "cover",
 };
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -176,14 +178,8 @@ export async function generateMetadata(): Promise<Metadata> {
 
   // 🛡️ CHRIS-PROTOCOL: Parallel Pulse Fetching (v2.14.798)
   // We fetch market, locales and translations in parallel to minimize TTFB
-  const [market, worldConfig, alternateLanguages, studioTranslations] = await Promise.all([
+  const [market, alternateLanguages, studioTranslations] = await Promise.all([
     getMarketSafe(lookupHost),
-    withTimeoutFallback(
-      () => ConfigBridge.getWorldConfig(worldId, languageId),
-      3000,
-      null,
-      'generateMetadata worldConfig'
-    ),
     (async () => {
       try {
         const localesPromise = MarketDatabaseService.getAllLocalesAsync();
@@ -318,12 +314,13 @@ export default async function RootLayout({
   // 🛡️ CHRIS-PROTOCOL: ID-First Context Resolution (v3.0.0)
   const { worldId, languageId, journeyId } = MarketManagerServer.resolveContext(cleanHost, pathname);
 
-  //  CHRIS-PROTOCOL: Parallel Pulse Fetching (v2.14.798)
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
   const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
   const supabase = createClient(supabaseUrl, supabaseKey);
 
-  const [market, studioTranslations, worldLanguages, handshakeLanguages, worldConfig] = await Promise.all([
+  // CHRIS-PROTOCOL: `world_languages` ontbreekt momenteel in production schema.
+  // Vermijd per-request 404 storm; language switcher gebruikt dan de bestaande market fallback.
+  const [market, studioTranslations, handshakeLanguages, worldConfig] = await Promise.all([
     getMarketSafe(lookupHost),
     (async () => {
       try {
@@ -337,31 +334,19 @@ export default async function RootLayout({
         return {};
       }
     })(),
-    withTimeoutFallback(
-      async () => {
-        const { data } = await supabase.from('world_languages').select('*');
-        return data || [];
-      },
-      3000,
-      [],
-      'RootLayout world_languages'
-    ),
-    withTimeoutFallback(
-      async () => {
+    withTimeoutFallback(async () => {
+      try {
         const { data } = await supabase.from('languages').select('id, code, label');
         return data || [];
-      },
-      3000,
-      [],
-      'RootLayout languages'
-    ),
-    withTimeoutFallback(
-      () => ConfigBridge.getWorldConfig(worldId, languageId),
-      3000,
-      null,
-      'RootLayout worldConfig'
-    )
+      } catch (err) {
+        console.error(' RootLayout: Failed to load language registry:', err);
+        return [];
+      }
+    }, 2500, []),
+    withTimeoutFallback(() => ConfigBridge.getWorldConfig(worldId, languageId), 2500, null)
   ]);
+
+  const worldLanguages: Array<{ world_id: number; language_id: number; is_primary: boolean; is_popular: boolean }> = [];
 
   if (!market) {
     throw new Error('Market configuration could not be resolved.');
@@ -376,13 +361,6 @@ export default async function RootLayout({
   const isAcademyPage = pathname.startsWith('/academy/') || pathname === '/academy' || pathname.includes('/academy');
   
   const journeyKey = isStudioPage ? 'studio' : (isAcademyPage ? 'academy' : (market.market_code === 'ADEMING' ? 'ademing' : (market.market_code === 'PORTFOLIO' ? 'portfolio' : (market.market_code === 'ARTIST' ? 'artist' : 'agency'))));
-  const navConfig = await withTimeoutFallback(
-    () => ConfigBridge.getNavConfig(journeyKey, normalizeLocale(langHeader || 'nl-be')),
-    3000,
-    null,
-    'RootLayout navConfig'
-  );
-
   const initialJourney = isStudioPage ? 'studio' : (isAcademyPage ? 'academy' : (market.market_code === 'ADEMING' ? 'ademing' : (market.market_code === 'PORTFOLIO' ? 'portfolio' : (market.market_code === 'ARTIST' ? 'artist' : 'agency'))));
   const initialUsage = isStudioPage || isAcademyPage ? 'subscription' : (market.market_code === 'ADEMING' ? 'subscription' : 'unpaid');
 
@@ -395,7 +373,7 @@ export default async function RootLayout({
   
   const htmlClass = `${isAdeming ? cormorant.className : raleway.className} ${inter.className} ${cormorant.variable} theme-${isAdeming ? 'ademing' : market.theme} ${raleway.variable}`;
   const bodyClass = cn(
-    "pb-24 md:pb-0 touch-manipulation va-main-layout",
+    "pb-[calc(6rem+env(safe-area-inset-bottom))] md:pb-0 touch-manipulation va-main-layout overflow-x-hidden",
     !isAdeming && "pt-[80px] md:pt-[110px]",
     isAdeming && "bg-background text-foreground"
   );
@@ -436,22 +414,24 @@ export default async function RootLayout({
       </html>
     );
   }
+  const navConfig = await withTimeoutFallback(
+    () => ConfigBridge.getNavConfig(journeyKey, normalizeLocale(langHeader || 'nl-be')),
+    2500,
+    null
+  );
   
   // 🛡️ VISIONARY MANDATE: Journey logic exclusively from market data
   const isSpecialJourney = ['ADEMING', 'PORTFOLIO', 'ARTIST'].includes(market.market_code);
   const isStudioJourney = ['STUDIO', 'ACADEMY'].includes(market.market_code);
   
-  const isUnderConstruction = headersList.get('x-voices-under-construction') === 'true' || 
-    pathname === '/under-construction' ||
-    pathname === '/under-construction/';
-  
   const isYoussefJourney = pathname.includes('/artist/youssef') || market.market_code === 'ARTIST';
   
   const isArtistJourney = market.market_code === 'ARTIST' || pathname.includes('/artist/') || pathname.includes('/voice/');
 
-  const showVoicy = !isArtistJourney && !isUnderConstruction && market.market_code !== 'ADEMING';
-  const showTopBar = !isArtistJourney && !isUnderConstruction && market.market_code !== 'ADEMING' && market.market_code !== 'PORTFOLIO';
-  const showGlobalNav = !isUnderConstruction && market.market_code !== 'ADEMING' && market.market_code !== 'PORTFOLIO';
+  // Chat zichtbaar: overal behalve Artist, Ademing. Bij open DevTools rechts kan het bolletje bedekt zijn (fixed right).
+  const showVoicy = !isArtistJourney && market.market_code !== 'ADEMING';
+  const showTopBar = !isArtistJourney && market.market_code !== 'ADEMING' && market.market_code !== 'PORTFOLIO';
+  const showGlobalNav = market.market_code !== 'ADEMING' && market.market_code !== 'PORTFOLIO';
   const schemaLanguages = Array.from(
     new Set((market.supported_languages || [market.primary_language]).map((l: string) => localeToBcp47(l)))
   );
@@ -470,32 +450,6 @@ export default async function RootLayout({
       "availableLanguage": schemaLanguages
     }
   };
-
-  // UNDER CONSTRUCTION MODE: Minimalistische layout zonder navigatie/footer/voicy
-  if (isUnderConstruction) {
-    return (
-      <html lang={htmlLang} className={htmlClass} suppressHydrationWarning>
-      <body className={bodyClass}>
-        <Providers 
-          lang={lang} 
-          market={market} 
-          initialTranslations={studioTranslations} 
-          initialJourney={initialJourney} 
-          initialUsage={initialUsage}
-          handshakeContext={handshakeContext}
-          handshakeLanguages={handshakeLanguages}
-        >
-          <Suspense fallback={null}>
-            <SonicDNAHandler />
-          </Suspense>
-          <PageWrapperInstrument>
-            {children}
-          </PageWrapperInstrument>
-        </Providers>
-      </body>
-    </html>
-    );
-  }
 
   return (
     <html lang={htmlLang} className={htmlClass} suppressHydrationWarning>
