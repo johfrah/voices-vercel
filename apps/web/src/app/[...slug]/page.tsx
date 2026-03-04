@@ -1759,7 +1759,8 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
 
     return notFound();
   } catch (err: any) {
-    if (err?.digest === 'NEXT_NOT_FOUND' || String(err?.message || '').includes('NEXT_NOT_FOUND')) {
+    const notFoundFingerprint = `${String(err?.digest || '')} ${String(err?.message || '')} ${String(err?.stack || '')} ${String(err || '')}`.toUpperCase();
+    if (notFoundFingerprint.includes('NEXT_NOT_FOUND') || notFoundFingerprint.includes('NEXT_HTTP_ERROR_FALLBACK')) {
       throw err;
     }
 
