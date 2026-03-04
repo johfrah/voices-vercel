@@ -4,7 +4,6 @@ import { createClient as createServerClient } from '@/utils/supabase/server';
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { db, users } from '@/lib/system/voices-config';
 import { eq } from 'drizzle-orm';
-import { appendFileSync } from 'node:fs';
 
 /**
  *  API: CUSTOMER 360 INSIGHTS
@@ -62,9 +61,6 @@ export async function GET(request: NextRequest) {
     const email = searchParams.get('email');
     const userId = searchParams.get('userId');
     const forceRefresh = searchParams.get('forceRefresh') === 'true';
-    // #region agent log
-    appendFileSync('/opt/cursor/logs/debug.log', JSON.stringify({ hypothesisId: 'E', location: 'customer-360-route:entry', message: 'Customer 360 request received', data: { hasUser: !!user, userEmail: user?.email || null, emailParam: email, userIdParam: userId, forceRefresh }, timestamp: Date.now() }) + '\n');
-    // #endregion
 
     if (!email && !userId) {
       return NextResponse.json({ error: 'Email or userId required' }, { status: 400 });
@@ -111,14 +107,8 @@ export async function GET(request: NextRequest) {
     let customerData;
     try {
       customerData = await Promise.race([customerDataPromise, timeoutPromise]) as any;
-      // #region agent log
-      appendFileSync('/opt/cursor/logs/debug.log', JSON.stringify({ hypothesisId: 'E', location: 'customer-360-route:raceSuccess', message: 'Customer 360 race resolved', data: { identifier, hasCustomerData: !!customerData, ordersCount: customerData?.orders?.length ?? null }, timestamp: Date.now() }) + '\n');
-      // #endregion
     } catch (raceError: any) {
       console.warn(`[API Customer 360] Race failed or timeout: ${raceError.message}`);
-      // #region agent log
-      appendFileSync('/opt/cursor/logs/debug.log', JSON.stringify({ hypothesisId: 'E', location: 'customer-360-route:raceError', message: 'Customer 360 race failed', data: { identifier, error: raceError?.message || 'unknown' }, timestamp: Date.now() }) + '\n');
-      // #endregion
       // Fallback naar basis data als de volledige 360 te lang duurt
       if (raceError.message === 'Customer 360 Timeout') {
         return NextResponse.json({ 

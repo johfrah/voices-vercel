@@ -26,7 +26,6 @@ import { normalizeSlug, stripLanguagePrefix } from '@/lib/system/slug';
 import { localeToBcp47, normalizeLocale, stripLocalePrefix, withLocalePrefix } from '@/lib/system/locale-utils';
 import { BentoGrid, BentoCard } from '@/components/ui/BentoGrid';
 import { createClient } from "@supabase/supabase-js";
-import { appendFileSync } from 'node:fs';
 
 //  CHRIS-PROTOCOL: SDK fallback for stability (v2.14.273)
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -841,9 +840,6 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
       'agency',
       activeLanguageId
     );
-    // #region agent log
-    appendFileSync('/opt/cursor/logs/debug.log', JSON.stringify({ hypothesisId: 'C', location: 'smart-router:postResolve', message: 'Registry resolve result', data: { lookupSlug, marketCode: market.market_code, activeLanguageId, resolvedType: resolved?.routing_type || null, resolvedEntityId: resolved?.entity_id || null }, timestamp: Date.now() }) + '\n');
-    // #endregion
 
     if (resolved) {
       // Locale-aware slug handshake: if we resolved a different language variant for this entity,
@@ -1264,9 +1260,6 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
     // World prefixes are valid entry points — their sub-pages resolve via CMS article lookup.
     const worldPrefixes = ['studio', 'academy', 'ademing', 'johfrai', 'partners', 'freelance', 'casting'];
     const isKnownEntryPoint = MarketManager.isAgencyEntryPoint(segments[0]) || ['voice', 'artist', 'portfolio'].includes(segments[0]) || worldPrefixes.includes(segments[0]?.toLowerCase());
-    // #region agent log
-    appendFileSync('/opt/cursor/logs/debug.log', JSON.stringify({ hypothesisId: 'B', location: 'smart-router:entryPointCheck', message: 'Entry point decision values', data: { segments, lookupSlug, isKnownEntryPoint, agencySegmentLookupSlug: MarketManager.isAgencySegment(lookupSlug), agencySegmentFirst: MarketManager.isAgencySegment(segments[0]) }, timestamp: Date.now() }) + '\n');
-    // #endregion
     
     // 🛡️ CHRIS-PROTOCOL: Category/Native/Language Route Protection (v2.16.103)
     const isCategoryNative = segments[0] === 'category' || segments[0] === 'native' || segments[0] === 'language';
@@ -1623,9 +1616,6 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
       }
     }
 
-    // #region agent log
-    appendFileSync('/opt/cursor/logs/debug.log', JSON.stringify({ hypothesisId: 'C', location: 'smart-router:finalNotFound', message: 'Final notFound reached', data: { lookupSlug, segments, resolved: !!resolved, isKnownEntryPoint }, timestamp: Date.now() }) + '\n');
-    // #endregion
     return notFound();
   } catch (err: any) {
     console.error("[SmartRouter] FATAL ERROR:", err);

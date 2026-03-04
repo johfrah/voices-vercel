@@ -5,7 +5,6 @@ import { db, ademingTracks } from "@/lib/system/voices-config";
 import { createClient } from "@supabase/supabase-js";
 import { and, asc, desc, eq, or, sql } from "drizzle-orm";
 import { unstable_cache } from "next/cache";
-import { appendFileSync } from "node:fs";
 import {
     Actor,
     SearchResults,
@@ -679,10 +678,6 @@ export async function getAdemingTracksPublic(): Promise<any[]> {
 export async function getActor(slug: string, lang: string = 'nl-BE'): Promise<Actor> {
   const cleanSlug = slug?.trim().toLowerCase();
   const isNumericId = /^\d+$/.test(cleanSlug);
-  
-  // #region agent log
-  appendFileSync('/opt/cursor/logs/debug.log', JSON.stringify({ hypothesisId: 'A', location: 'api-server.ts:getActor:entry', message: 'getActor start', data: { slug, cleanSlug, isNumericId, lang }, timestamp: Date.now() }) + '\n');
-  // #endregion
   console.error(` [api-server] getActor lookup START: "${cleanSlug}" (isId: ${isNumericId}, lang: ${lang})`);
   
   if (!cleanSlug) throw new Error("Slug is required");
@@ -727,16 +722,10 @@ export async function getActor(slug: string, lang: string = 'nl-BE'): Promise<Ac
       return processActorData(sdkActor, cleanSlug);
     }
   } catch (sdkErr: any) {
-    // #region agent log
-    appendFileSync('/opt/cursor/logs/debug.log', JSON.stringify({ hypothesisId: 'A', location: 'api-server.ts:getActor:drizzleCatch', message: 'SDK actor lookup failed', data: { cleanSlug, isNumericId, error: sdkErr?.message || 'unknown' }, timestamp: Date.now() }) + '\n');
-    // #endregion
     console.error(` [api-server] Supabase SDK lookup failed:`, sdkErr.message);
   }
 
   console.error(` [api-server] Actor NOT FOUND for ${isNumericId ? 'ID' : 'slug'}: "${cleanSlug}"`);
-  // #region agent log
-  appendFileSync('/opt/cursor/logs/debug.log', JSON.stringify({ hypothesisId: 'A', location: 'api-server.ts:getActor:notFound', message: 'Actor lookup exhausted all fallbacks', data: { cleanSlug, isNumericId }, timestamp: Date.now() }) + '\n');
-  // #endregion
   throw new Error("Actor not found");
 }
 
