@@ -209,10 +209,28 @@ export async function POST(request: Request) {
       ...(selectedActor?.id ? [selectedActor.id] : [])
     ])).map(id => Number(id));
 
+    const editionIds = Array.from(new Set(
+      (items || [])
+        .map((i: any) => Number(i.editionId ?? i.edition_id))
+        .filter((id: number) => Number.isFinite(id) && id > 0)
+    ));
+
+    const { data: dbEditions } = editionIds.length
+      ? await sdkClient
+          .from('workshop_editions')
+          .select('id, workshop_id, price')
+          .in('id', editionIds)
+      : { data: [] as any[] };
+
+    const editionWorkshopIds = (dbEditions || [])
+      .map((edition: any) => Number(edition.workshop_id))
+      .filter((id: number) => Number.isFinite(id) && id > 0);
+
     const workshopIds = Array.from(new Set([
       ...(items || [])
         .map((i: any) => extractWorkshopId(i as Record<string, unknown>))
-        .filter((id: number | null): id is number => id !== null)
+        .filter((id: number | null): id is number => id !== null),
+      ...editionWorkshopIds,
     ])).map(id => Number(id));
 
     const dbActors =
@@ -230,6 +248,7 @@ export async function POST(request: Request) {
       if (a.wp_product_id) actorMap.set(Number(a.wp_product_id), a);
     });
     const workshopMap = new Map((dbWorkshops || []).map(w => [Number(w.id), w]));
+    const editionMap = new Map((dbEditions || []).map((edition: any) => [Number(edition.id), edition]));
 
     const isVatExempt = !!vat_number && vat_number.length > 2 && !vat_number.startsWith('BE'); 
     const taxRate = isVatExempt ? 0 : 0.21;
@@ -295,10 +314,18 @@ export async function POST(request: Request) {
         serverCalculatedSubtotal += result.subtotal;
         return [{ ...item, pricing: result }];
       }
-
       if (itemType === 'workshop_edition') {
-        const workshopId = extractWorkshopId(item as Record<string, unknown>);
-        const dbWorkshop = workshopId ? workshopMap.get(workshopId) : null;
+        const editionId = Number(item.editionId ?? item.edition_id);
+        const dbEdition = Number.isFinite(editionId) && editionId > 0 ? editionMap.get(editionId) : null;
+        const extractedWorkshopId = extractWorkshopId(item as Record<string, unknown>);
+        const workshopIdFromEdition = Number(dbEdition?.workshop_id || 0);
+        const workshopId = extractedWorkshopId ?? (
+          Number.isFinite(workshopIdFromEdition) && workshopIdFromEdition > 0
+            ? workshopIdFromEdition
+            : null
+        );
+        const dbWorkshop = workshopId && Number.isFinite(workshopId) ? workshopMap.get(Number(workshopId)) : null;
+
         if (!workshopId || !dbWorkshop) {
           itemValidationErrors.push({
             item_id: itemId,
@@ -307,8 +334,16 @@ export async function POST(request: Request) {
           });
           return [];
         }
-        const price = Number(dbWorkshop.price || 0);
-        if (price <= 0) {
+
+        const priceCandidates = [
+          Number(dbEdition?.price),
+          Number(dbWorkshop.price),
+          Number(item.price),
+          Number(item.pricing?.subtotal),
+          Number(item.pricing?.total),
+        ];
+        const resolvedSubtotal = priceCandidates.find((value) => Number.isFinite(value) && value > 0) ?? 0;
+        if (resolvedSubtotal <= 0) {
           itemValidationErrors.push({
             item_id: itemId,
             item_type: itemType,
@@ -316,8 +351,16 @@ export async function POST(request: Request) {
           });
           return [];
         }
-        serverCalculatedSubtotal += price;
-        return [{ ...item, pricing: { total: price, subtotal: price, tax: price * taxRate } }];
+        const resolvedTax = Math.round(resolvedSubtotal * taxRate * 100) / 100;
+        const resolvedTotal = Math.round((resolvedSubtotal + resolvedTax) * 100) / 100;
+
+        serverCalculatedSubtotal += resolvedSubtotal;
+        return [{
+          ...item,
+          workshop_id: workshopId ?? item.workshop_id ?? item.workshopId ?? null,
+          editionId: Number.isFinite(editionId) && editionId > 0 ? editionId : item.editionId,
+          pricing: { total: resolvedTotal, subtotal: resolvedSubtotal, tax: resolvedTax },
+        }];
       }
 
       itemValidationErrors.push({
