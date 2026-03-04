@@ -17,7 +17,7 @@ import { cn } from '@/lib/utils';
 import { VOICES_CONFIG } from '@/lib/core-internal/config';
 import { normalizeLocale } from '@/lib/system/locale-utils';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircle2, Loader2, Trash2, Edit2, X, ChevronRight, Info, CreditCard, FileText, Tag, Eye, Lock, AlertCircle, Send, ArrowRight, Check, Instagram } from 'lucide-react';
+import { CheckCircle2, Loader2, Trash2, Edit2, X, ChevronRight, Info, CreditCard, FileText, Tag, Eye, Lock, AlertCircle, Send, ArrowRight, Check, Instagram, Clock3, RadioTower, Target, CalendarDays, MapPin, UserRound, Mail } from 'lucide-react';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
 import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
@@ -287,6 +287,137 @@ export const PricingSummary: React.FC<{
   const vatRate = isVatExempt ? 0 : 0.21;
   const tax = subtotalAfterDiscount * vatRate;
   const total = subtotalAfterDiscount + tax;
+  const toArrayValues = (value: unknown): Array<string | number> => {
+    if (Array.isArray(value)) return value.filter((entry): entry is string | number => typeof entry === 'string' || typeof entry === 'number');
+    if (value === null || value === undefined || value === '') return [];
+    if (typeof value === 'string') {
+      return value
+        .split(',')
+        .map((entry) => entry.trim())
+        .filter(Boolean);
+    }
+    if (typeof value === 'number') return [value];
+    return [];
+  };
+
+  const toNumberOrNull = (value: unknown): number | null => {
+    if (typeof value === 'number' && Number.isFinite(value)) return value;
+    if (typeof value === 'string') {
+      const trimmed = value.trim();
+      if (!trimmed) return null;
+      const parsed = Number(trimmed);
+      return Number.isFinite(parsed) ? parsed : null;
+    }
+    return null;
+  };
+
+  const resolveUsageLabel = (item: Record<string, unknown>): string => {
+    const usageCandidate = item.usageId ?? item.usage_id ?? item.usage ?? item.journeyId ?? item.journey_id;
+    if (typeof usageCandidate === 'number') {
+      return MarketManager.getUsageLabel(usageCandidate);
+    }
+    if (typeof usageCandidate === 'string' && usageCandidate.trim()) {
+      return MarketManager.getUsageLabel(usageCandidate);
+    }
+    return t('cart.detail.not_specified', 'Niet opgegeven');
+  };
+
+  const resolveMediaLabels = (item: Record<string, unknown>): string[] => {
+    const mediaCandidates = toArrayValues(item.mediaIds ?? item.media_ids);
+    const mediaValues = mediaCandidates.length > 0 ? mediaCandidates : toArrayValues(item.media);
+    return mediaValues
+      .map((entry) => MarketManager.getMediaLabel(entry))
+      .filter((label): label is string => !!label && label.trim().length > 0);
+  };
+
+  const resolveCountryLabels = (item: Record<string, unknown>): string[] => {
+    const countryIdCandidates = toArrayValues(item.countryIds ?? item.country_ids ?? item.countryId ?? item.country_id);
+    const countryValues = countryIdCandidates.length > 0 ? countryIdCandidates : toArrayValues(item.country);
+    return countryValues
+      .map((entry) => MarketManager.getCountryLabel(entry))
+      .filter((label): label is string => !!label && label.trim().length > 0);
+  };
+
+  const resolveCountDetails = (
+    value: unknown,
+    labelResolver: (key: string | number) => string,
+    suffix = ''
+  ): string[] => {
+    if (value === null || value === undefined || value === '') return [];
+
+    if (typeof value === 'number' || typeof value === 'string') {
+      const numericValue = toNumberOrNull(value);
+      return numericValue !== null ? [`${numericValue}${suffix}`] : [];
+    }
+
+    if (typeof value !== 'object' || Array.isArray(value)) return [];
+
+    return Object.entries(value as Record<string, unknown>)
+      .map(([rawKey, rawValue]) => {
+        const numericValue = toNumberOrNull(rawValue);
+        if (numericValue === null) return '';
+        const asNumber = toNumberOrNull(rawKey);
+        const resolvedLabel = labelResolver(asNumber ?? rawKey);
+        return `${resolvedLabel || rawKey}: ${numericValue}${suffix}`;
+      })
+      .filter(Boolean);
+  };
+
+  const resolveDeliveryLabel = (item: Record<string, unknown>): string | null => {
+    const actor = item.actor as Record<string, unknown> | null;
+    if (!actor) return null;
+
+    const actorDeliveryText = [actor.delivery_time, actor.deliveryTime].find(
+      (entry) => typeof entry === 'string' && entry.trim().length > 0
+    );
+    if (typeof actorDeliveryText === 'string') return actorDeliveryText.trim();
+
+    const minDays = toNumberOrNull(actor.delivery_days_min);
+    const maxDays = toNumberOrNull(actor.delivery_days_max);
+    if (minDays === null && maxDays === null) return null;
+
+    const delivery = calculateDeliveryDate({
+      delivery_days_min: minDays ?? maxDays ?? 1,
+      delivery_days_max: maxDays ?? minDays ?? 1,
+      cutoff_time: (typeof actor.cutoff_time === 'string' && actor.cutoff_time.trim()) ? actor.cutoff_time : '18:00',
+      availability: Array.isArray(actor.availability) ? actor.availability : [],
+      holidayFrom: typeof actor.holiday_from === 'string' ? actor.holiday_from : null,
+      holidayTill: typeof actor.holiday_till === 'string' ? actor.holiday_till : null,
+      delivery_config: (actor.delivery_config as any) || undefined
+    });
+
+    return delivery.formatted;
+  };
+
+  const resolveWorkshopParticipantRows = (item: Record<string, unknown>): Array<{ label: string; value: string; icon: 'user' | 'mail' }> => {
+    const participant = (item.participant_info || item.participantInfo) as Record<string, unknown> | undefined;
+    if (!participant || typeof participant !== 'object') return [];
+
+    const fullName = [
+      participant.first_name,
+      participant.firstName,
+      participant.last_name,
+      participant.lastName
+    ]
+      .filter((part): part is string => typeof part === 'string' && part.trim().length > 0)
+      .join(' ')
+      .trim();
+
+    const email = [participant.email, participant.email_address]
+      .find((entry) => typeof entry === 'string' && entry.trim().length > 0);
+    const profession = [participant.profession, participant.job]
+      .find((entry) => typeof entry === 'string' && entry.trim().length > 0);
+    const age = toNumberOrNull(participant.age);
+
+    const rows: Array<{ label: string; value: string; icon: 'user' | 'mail' }> = [];
+
+    if (fullName) rows.push({ label: t('cart.workshop.participant', 'Deelnemer'), value: fullName, icon: 'user' });
+    if (typeof email === 'string') rows.push({ label: t('common.email', 'E-mail'), value: email, icon: 'mail' });
+    if (typeof profession === 'string') rows.push({ label: t('cart.workshop.profession', 'Beroep'), value: profession, icon: 'user' });
+    if (age !== null) rows.push({ label: t('cart.workshop.age', 'Leeftijd'), value: `${age}`, icon: 'user' });
+
+    return rows;
+  };
 
   if (!isHydrated) return null;
 
@@ -299,10 +430,22 @@ export const PricingSummary: React.FC<{
             {/* 🛡️ CHRIS-PROTOCOL: Defensive guard for items array (v2.15.065) */}
             {(state.items?.length || 0) > 0 && (state.items || []).map((itemObj, idx) => {
               const isWorkshopItem = itemObj.type === 'workshop_edition';
+              const itemData = itemObj as Record<string, unknown>;
               const itemImage = isWorkshopItem
                 ? resolveWorkshopImageSrc(itemObj)
                 : (itemObj.actor?.photo_url || VOICES_CONFIG.assets.placeholders.voice);
               const itemTitle = itemObj.actor?.display_name || itemObj.name || (isWorkshopItem ? 'Workshop' : 'Stemopname');
+              const usageLabel = isWorkshopItem ? t('cart.workshop.label', 'Studio workshop') : resolveUsageLabel(itemData);
+              const mediaLabels = isWorkshopItem ? [] : resolveMediaLabels(itemData);
+              const countryLabels = isWorkshopItem ? [] : resolveCountryLabels(itemData);
+              const spotsDetails = isWorkshopItem
+                ? []
+                : resolveCountDetails(itemData.spots, (key) => MarketManager.getMediaLabel(key) || String(key));
+              const yearsDetails = isWorkshopItem
+                ? []
+                : resolveCountDetails(itemData.years, (key) => MarketManager.getMediaLabel(key) || String(key), ' jaar');
+              const deliveryLabel = isWorkshopItem ? null : resolveDeliveryLabel(itemData);
+              const workshopParticipantRows = isWorkshopItem ? resolveWorkshopParticipantRows(itemData) : [];
 
               return (
                 <ContainerInstrument 
@@ -330,42 +473,52 @@ export const PricingSummary: React.FC<{
                       <HeadingInstrument level={4} className="font-light text-xl text-va-black truncate tracking-tight">
                         {itemTitle}
                       </HeadingInstrument>
+                      <ContainerInstrument className="mt-2 flex flex-wrap items-center gap-2 text-[11px] text-va-black/45">
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-va-off-white border border-va-black/[0.04] font-medium text-va-black/65">
+                          <RadioTower size={12} strokeWidth={1.8} />
+                          {usageLabel}
+                        </span>
+
+                        {isWorkshopItem ? (
+                          <>
+                            {itemObj.date && (
+                              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-va-off-white border border-va-black/[0.04]">
+                                <CalendarDays size={12} strokeWidth={1.8} />
+                                {itemObj.date}
+                              </span>
+                            )}
+                            {itemObj.location && (
+                              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-va-off-white border border-va-black/[0.04]">
+                                <MapPin size={12} strokeWidth={1.8} />
+                                {itemObj.location}
+                              </span>
+                            )}
+                          </>
+                        ) : (
+                          <>
+                            {mediaLabels.length > 0 && (
+                              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-va-off-white border border-va-black/[0.04]">
+                                <RadioTower size={12} strokeWidth={1.8} />
+                                {mediaLabels.join(' • ')}
+                              </span>
+                            )}
+                            {countryLabels.length > 0 && (
+                              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-va-off-white border border-va-black/[0.04]">
+                                <MapPin size={12} strokeWidth={1.8} />
+                                {countryLabels.join(', ')}
+                              </span>
+                            )}
+                            {deliveryLabel && (
+                              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-green-500/5 border border-green-500/15 text-green-700/80">
+                                <Clock3 size={12} strokeWidth={1.8} />
+                                {deliveryLabel}
+                              </span>
+                            )}
+                          </>
+                        )}
+                      </ContainerInstrument>
+
                       <div className="text-[13px] leading-relaxed text-va-black/40 font-light mt-1">
-                        <div className="flex flex-col gap-1">
-                          {isWorkshopItem ? (
-                            <>
-                              <span className="font-medium text-va-black/60">
-                                <VoiceglotText translationKey="cart.workshop.label" defaultText="Studio workshop" />
-                              </span>
-                              {itemObj.date && (
-                                <span className="text-[11px] uppercase tracking-widest opacity-70">
-                                  {itemObj.date}
-                                </span>
-                              )}
-                              {itemObj.location && (
-                                <span className="text-[11px] uppercase tracking-widest opacity-70">
-                                  {itemObj.location}
-                                </span>
-                              )}
-                            </>
-                          ) : (
-                            <>
-                              <span className="font-medium text-va-black/60">
-                                {itemObj.usage === 'commercial' ? (
-                                  Array.isArray(itemObj.media) 
-                                    ? itemObj.media.map((m: string) => MarketManager.getMediaLabel(m)).join(' • ')
-                                    : MarketManager.getMediaLabel(itemObj.media)
-                                ) : MarketManager.getUsageLabel(itemObj.usage)}
-                              </span>
-                              {itemObj.usage === 'commercial' && (
-                                <span className="text-[11px] uppercase tracking-widest opacity-70">
-                                  {MarketManager.getCountryLabel(itemObj.country) || t('common.country.be', 'België')}
-                                </span>
-                              )}
-                            </>
-                          )}
-                        </div>
-                        
                         {isCartPage && (
                           <div className="mt-6 space-y-6">
                             {isWorkshopItem ? (
@@ -386,6 +539,19 @@ export const PricingSummary: React.FC<{
                                       <span className="font-medium text-va-black/70">{itemObj.location}</span>
                                     </div>
                                   )}
+                                  {workshopParticipantRows.map((row, rowIndex) => (
+                                    <div key={`${row.label}-${rowIndex}`} className="flex justify-between gap-6">
+                                      <span className="inline-flex items-center gap-1.5">
+                                        {row.icon === 'mail' ? (
+                                          <Mail size={12} strokeWidth={1.8} className="text-va-black/40" />
+                                        ) : (
+                                          <UserRound size={12} strokeWidth={1.8} className="text-va-black/40" />
+                                        )}
+                                        {row.label}
+                                      </span>
+                                      <span className="font-medium text-va-black/70 text-right">{row.value}</span>
+                                    </div>
+                                  ))}
                                 </div>
                               </div>
                             ) : (
@@ -405,6 +571,57 @@ export const PricingSummary: React.FC<{
                                   </div>
                                 )}
                                 
+                                <div className="pt-4 border-t border-va-black/[0.03] space-y-3">
+                                  <LabelInstrument className="text-[10px] uppercase tracking-widest text-va-black/30 font-bold ml-0">
+                                    <VoiceglotText translationKey="cart.usage_and_rights.label" defaultText="Gebruik & rechten" />
+                                  </LabelInstrument>
+                                  <div className="space-y-2.5 text-[13px] text-va-black/60">
+                                    <div className="flex justify-between gap-6">
+                                      <span className="inline-flex items-center gap-1.5">
+                                        <RadioTower size={12} strokeWidth={1.8} className="text-va-black/40" />
+                                        <VoiceglotText translationKey="cart.usage.label" defaultText="Gebruikstype" />
+                                      </span>
+                                      <span className="font-medium text-va-black/70 text-right">{usageLabel}</span>
+                                    </div>
+                                    {mediaLabels.length > 0 && (
+                                      <div className="flex justify-between gap-6">
+                                        <span className="inline-flex items-center gap-1.5">
+                                          <RadioTower size={12} strokeWidth={1.8} className="text-va-black/40" />
+                                          <VoiceglotText translationKey="cart.media.label" defaultText="Mediatype(s)" />
+                                        </span>
+                                        <span className="font-medium text-va-black/70 text-right">{mediaLabels.join(' • ')}</span>
+                                      </div>
+                                    )}
+                                    {countryLabels.length > 0 && (
+                                      <div className="flex justify-between gap-6">
+                                        <span className="inline-flex items-center gap-1.5">
+                                          <MapPin size={12} strokeWidth={1.8} className="text-va-black/40" />
+                                          <VoiceglotText translationKey="cart.broadcast_area.label" defaultText="Uitzendgebied" />
+                                        </span>
+                                        <span className="font-medium text-va-black/70 text-right">{countryLabels.join(', ')}</span>
+                                      </div>
+                                    )}
+                                    {spotsDetails.length > 0 && (
+                                      <div className="flex justify-between gap-6">
+                                        <span className="inline-flex items-center gap-1.5">
+                                          <Target size={12} strokeWidth={1.8} className="text-va-black/40" />
+                                          <VoiceglotText translationKey="cart.spots.label" defaultText="Aantal spots" />
+                                        </span>
+                                        <span className="font-medium text-va-black/70 text-right">{spotsDetails.join(' • ')}</span>
+                                      </div>
+                                    )}
+                                    {yearsDetails.length > 0 && (
+                                      <div className="flex justify-between gap-6">
+                                        <span className="inline-flex items-center gap-1.5">
+                                          <CalendarDays size={12} strokeWidth={1.8} className="text-va-black/40" />
+                                          <VoiceglotText translationKey="cart.license_years.label" defaultText="Looptijd licentie" />
+                                        </span>
+                                        <span className="font-medium text-va-black/70 text-right">{yearsDetails.join(' • ')}</span>
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+
                                 {/* Delivery & Pricing Grid */}
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4 border-t border-va-black/[0.03]">
                                   {/* Delivery Date */}
@@ -412,22 +629,21 @@ export const PricingSummary: React.FC<{
                                     <LabelInstrument className="text-[10px] uppercase tracking-widest text-va-black/30 font-bold ml-0">
                                       Levering
                                     </LabelInstrument>
-                                    {(() => {
-                                      const delivery = calculateDeliveryDate({
-                                        delivery_days_min: itemObj.actor?.delivery_days_min || 1,
-                                        delivery_days_max: itemObj.actor?.delivery_days_max || 3,
-                                        cutoff_time: itemObj.actor?.cutoff_time || '18:00',
-                                        availability: itemObj.actor?.availability || []
-                                      });
-                                      return (
-                                        <div className="inline-flex items-center gap-2 px-3 py-2 bg-green-500/5 border border-green-500/10 rounded-xl w-fit">
-                                          <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-                                          <span className="text-[12px] font-bold text-green-600/80 uppercase tracking-wider">
-                                            {delivery.formatted}
-                                          </span>
-                                        </div>
-                                      );
-                                    })()}
+                                    {deliveryLabel ? (
+                                      <div className="inline-flex items-center gap-2 px-3 py-2 bg-green-500/5 border border-green-500/10 rounded-xl w-fit">
+                                        <Clock3 size={13} strokeWidth={1.8} className="text-green-600/80" />
+                                        <span className="text-[12px] font-bold text-green-600/80 uppercase tracking-wider">
+                                          {deliveryLabel}
+                                        </span>
+                                      </div>
+                                    ) : (
+                                      <div className="inline-flex items-center gap-2 px-3 py-2 bg-amber-500/5 border border-amber-500/20 rounded-xl w-fit">
+                                        <Clock3 size={13} strokeWidth={1.8} className="text-amber-700/80" />
+                                        <span className="text-[12px] font-bold text-amber-700/80 uppercase tracking-wider">
+                                          <VoiceglotText translationKey="cart.delivery.pending" defaultText="Nog niet bevestigd" />
+                                        </span>
+                                      </div>
+                                    )}
                                   </div>
 
                                   {/* Price Breakdown */}

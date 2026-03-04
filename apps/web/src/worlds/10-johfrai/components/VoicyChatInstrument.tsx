@@ -408,6 +408,13 @@ export const VoicyChatV2: React.FC = () => {
               briefing: params.briefing || state.briefing,
               usage: params.usage || state.usage,
               media: state.media,
+              usageId: state.usageId,
+              journeyId: state.journeyId,
+              mediaIds: state.mediaIds,
+              country: state.country,
+              countryId: state.countryId,
+              spots: state.spotsDetail || state.spots,
+              years: state.yearsDetail || state.years,
               pricing: { ...state.pricing }
             });
             

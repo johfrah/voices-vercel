@@ -921,61 +921,79 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
             <ContainerInstrument plain className="max-h-[320px] overflow-y-auto no-scrollbar px-1">
               {(checkoutState.items || []).length > 0 ? (
                 <ContainerInstrument plain className="space-y-1">
-                  {(checkoutState.items || []).map((item: any, idx: number) => (
-                    <ContainerInstrument
-                      key={item.id || idx}
-                      plain
-                      className="flex items-center gap-3 p-2 rounded-xl hover:bg-va-black/5 transition-all group border border-transparent hover:border-black/5"
-                    >
-                      <ContainerInstrument plain className="w-12 h-12 rounded-xl bg-va-off-white flex items-center justify-center shrink-0 border border-black/5 overflow-hidden relative shadow-sm">
-                        {item.actor?.photo_url && item.actor.photo_url !== 'NULL' || item.actor?.image_url && item.actor.image_url !== 'NULL' ? (
-                          <Image src={item.actor.photo_url || item.actor.image_url} alt={item.actor.name || item.actor.display_name} fill sizes="48px" className="object-cover" />
-                        ) : (
-                          <Mic2 size={18} className="text-va-black/20" />
-                        )}
-                      </ContainerInstrument>
-                      <ContainerInstrument plain className="flex-1 min-w-0">
-                        <TextInstrument className="text-[14px] font-medium text-va-black truncate">
-                          {item.actor?.display_name || item.actor?.name || 'Stemopname'}
-                        </TextInstrument>
-                        <div className="flex items-center gap-1.5 mt-0.5">
-                          <TextInstrument className="text-[11px] text-va-black/40 font-light truncate tracking-widest">
-                            {item.usage === 'commercial' ? t('common.commercial', 'Commercial') : item.usage === 'telefonie' ? t('common.telephony', 'Telefonie') : t('common.corporate', 'Corporate')}
-                          </TextInstrument>
-                          {item.country && (
-                            <>
-                              <span className="w-0.5 h-0.5 rounded-full bg-va-black/10" />
-                              <TextInstrument className="text-[11px] text-va-black/40 font-light tracking-widest">
-                                {Array.isArray(item.country) ? item.country[0] : item.country}
-                              </TextInstrument>
-                            </>
+                  {(checkoutState.items || []).map((item: any, idx: number) => {
+                    const itemTitle = item.type === 'workshop_edition'
+                      ? (item.name || t('cart.workshop.label', 'Studio workshop'))
+                      : (item.actor?.display_name || item.actor?.name || 'Stemopname');
+                    const usageInput = item.usageId ?? item.usage_id ?? item.usage;
+                    const usageLabel = item.type === 'workshop_edition'
+                      ? t('cart.workshop.label', 'Studio workshop')
+                      : MarketManager.getUsageLabel(usageInput || item.usage || '');
+                    const mediaValues = Array.isArray(item.mediaIds) && item.mediaIds.length > 0
+                      ? item.mediaIds
+                      : (Array.isArray(item.media) ? item.media : (item.media ? [item.media] : []));
+                    const mediaLabel = mediaValues
+                      .map((entry: string | number) => MarketManager.getMediaLabel(entry))
+                      .filter((label: string) => !!label)
+                      .join(' • ');
+                    const countryValues = Array.isArray(item.country)
+                      ? item.country
+                      : (item.country ? [item.country] : (item.countryId ? [item.countryId] : []));
+                    const countryLabel = countryValues
+                      .map((entry: string | number) => MarketManager.getCountryLabel(entry))
+                      .filter((label: string) => !!label)
+                      .join(', ');
+
+                    const detailLine = item.type === 'workshop_edition'
+                      ? [item.date, item.location].filter(Boolean).join(' • ')
+                      : [usageLabel, mediaLabel, countryLabel].filter(Boolean).join(' • ');
+
+                    return (
+                      <ContainerInstrument
+                        key={item.id || idx}
+                        plain
+                        className="flex items-center gap-3 p-2 rounded-xl hover:bg-va-black/5 transition-all group border border-transparent hover:border-black/5"
+                      >
+                        <ContainerInstrument plain className="w-12 h-12 rounded-xl bg-va-off-white flex items-center justify-center shrink-0 border border-black/5 overflow-hidden relative shadow-sm">
+                          {item.actor?.photo_url && item.actor.photo_url !== 'NULL' || item.actor?.image_url && item.actor.image_url !== 'NULL' ? (
+                            <Image src={item.actor.photo_url || item.actor.image_url} alt={itemTitle} fill sizes="48px" className="object-cover" />
+                          ) : (
+                            <Mic2 size={18} className="text-va-black/20" />
                           )}
+                        </ContainerInstrument>
+                        <ContainerInstrument plain className="flex-1 min-w-0">
+                          <TextInstrument className="text-[14px] font-medium text-va-black truncate">
+                            {itemTitle}
+                          </TextInstrument>
+                          <TextInstrument className="text-[11px] text-va-black/40 font-light truncate tracking-widest mt-0.5">
+                            {detailLine || t('cart.detail.not_specified', 'Niet opgegeven')}
+                          </TextInstrument>
+                        </ContainerInstrument>
+                        <div className="flex flex-col items-end gap-1">
+                          <div className="flex items-center gap-2">
+                            <TextInstrument className="text-[14px] font-medium text-va-black">
+                              €{item.pricing?.total || item.pricing?.subtotal || 0}
+                            </TextInstrument>
+                            <button 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                removeItem(item.id);
+                                playClick('light');
+                              }}
+                              className="p-1.5 text-va-black/20 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                              title={t('common.remove', 'Verwijderen')}
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          </div>
+                          <TextInstrument className="text-[10px] text-va-black/20 font-light tracking-tighter">
+                            <VoiceglotText translationKey="common.excl_vat" defaultText="Excl. BTW" />
+                          </TextInstrument>
                         </div>
                       </ContainerInstrument>
-                      <div className="flex flex-col items-end gap-1">
-                        <div className="flex items-center gap-2">
-                          <TextInstrument className="text-[14px] font-medium text-va-black">
-                            €{item.pricing?.total || item.pricing?.subtotal || 0}
-                          </TextInstrument>
-                          <button 
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              e.preventDefault();
-                              removeItem(item.id);
-                              playClick('light');
-                            }}
-                            className="p-1.5 text-va-black/20 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
-                            title={t('common.remove', 'Verwijderen')}
-                          >
-                            <Trash2 size={14} />
-                          </button>
-                        </div>
-                        <TextInstrument className="text-[10px] text-va-black/20 font-light tracking-tighter">
-                          <VoiceglotText translationKey="common.excl_vat" defaultText="Excl. BTW" />
-                        </TextInstrument>
-                      </div>
-                    </ContainerInstrument>
-                  ))}
+                    );
+                  })}
                 </ContainerInstrument>
               ) : (
                 <ContainerInstrument plain className="p-8 text-center">
