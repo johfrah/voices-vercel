@@ -144,7 +144,9 @@ export async function POST(request: NextRequest) {
     let newStatus = 'pending';
     const mollieStatus = String(payment.status || '').toLowerCase();
     if (webhookResourceType === 'order') {
-      if (['paid', 'authorized', 'completed'].includes(mollieStatus)) newStatus = 'paid';
+      // `authorized` is not a definitive captured payment status, keep it pending.
+      if (['paid', 'completed'].includes(mollieStatus)) newStatus = 'paid';
+      if (mollieStatus === 'authorized') newStatus = 'pending';
       if (mollieStatus === 'canceled') newStatus = 'cancelled';
       if (mollieStatus === 'expired') newStatus = 'expired';
       if (mollieStatus === 'failed') newStatus = 'failed';
@@ -159,13 +161,20 @@ export async function POST(request: NextRequest) {
     const adminEmail = process.env.ADMIN_EMAIL || market.email;
     void adminEmail; // Intentional: kept for compatibility with existing env contracts.
 
+    const paymentMetadata = payment?.metadata || {};
+
     await db.transaction(async (tx: any) => {
       // Haal de order op om te zien wat erin zit
       const [order] = await tx.select().from(orders).where(eq(orders.id, resolvedOrderId)).limit(1);
+      if (!order) {
+        throw new Error(`Order ${resolvedOrderId} not found for webhook ${paymentId}`);
+      }
+
+      const orderRawMeta = (order.rawMeta as any) || {};
       const previousLegacyStatus = String(order?.status || '').toLowerCase() || null;
       const orderLanguage = normalizeLocale(
-        (order?.rawMeta as any)?.language ||
-        payment.metadata?.language ||
+        orderRawMeta?.language ||
+        paymentMetadata?.language ||
         market.primary_language ||
         'nl-be'
       );
@@ -242,20 +251,33 @@ export async function POST(request: NextRequest) {
       // 🔁 V2 status sync: keep orders_v2 aligned with webhook transitions.
       if (order?.wpOrderId) {
         const candidateCodes = v2StatusCandidates(finalStatus);
-        const statusRows = await tx
-          .select({ id: orderStatuses.id, code: orderStatuses.code })
-          .from(orderStatuses)
-          .where(inArray(orderStatuses.code, candidateCodes))
-          .limit(1);
-        const matchedStatus = statusRows[0];
+        let matchedStatus: { id: number; code: string } | undefined;
+
+        for (const candidateCode of candidateCodes) {
+          const statusRows = await tx
+            .select({ id: orderStatuses.id, code: orderStatuses.code })
+            .from(orderStatuses)
+            .where(eq(orderStatuses.code, candidateCode))
+            .limit(1);
+          if (statusRows[0]) {
+            matchedStatus = statusRows[0];
+            break;
+          }
+        }
+
         if (matchedStatus) {
-          await tx
+          const updatedV2Rows = await tx
             .update(ordersV2)
             .set({
               statusId: matchedStatus.id,
               legacyInternalId: order.id,
             })
-            .where(eq(ordersV2.id, Number(order.wpOrderId)));
+            .where(eq(ordersV2.id, Number(order.wpOrderId)))
+            .returning({ id: ordersV2.id });
+
+          if (!updatedV2Rows.length) {
+            console.warn(`[Mollie Webhook] orders_v2 sync missed for wp_order_id ${order.wpOrderId}`);
+          }
         }
       }
 
@@ -267,7 +289,11 @@ export async function POST(request: NextRequest) {
       });
 
       //  Als betaald: Lever muziek en update DNA + Sales
-      if (newStatus === 'paid') {
+      const previousStatusIsPaidLike = ['paid', 'completed'].includes(previousLegacyStatus || '');
+      const nowStatusIsPaidLike = ['paid', 'completed'].includes(String(finalStatus || '').toLowerCase());
+      const shouldRunPaidSideEffects = !previousStatusIsPaidLike && nowStatusIsPaidLike;
+
+      if (shouldRunPaidSideEffects) {
         // 1. Verhoog total_sales voor de betrokken acteurs
         try {
           const items = await tx.select({ actorId: orderItems.actorId, name: orderItems.name, price: orderItems.price, metaData: orderItems.metaData })
@@ -347,7 +373,7 @@ export async function POST(request: NextRequest) {
             const exportBase = `/Voices.be/Projects/Exports/${resolvedOrderId}`;
             // 🛡️ CHRIS-PROTOCOL: ID-First Handshake — Telephony = journey_id 26
             const orderJourneyId = (order as any)?.journeyId ?? (order as any)?.journey_id;
-            const metaJourneyId = (order?.rawMeta as any)?.journeyId ?? (order?.rawMeta as any)?.journey_id;
+            const metaJourneyId = orderRawMeta?.journeyId ?? orderRawMeta?.journey_id;
             const isTelephony = orderJourneyId === 26 || metaJourneyId === 26;
             const subFolders = isTelephony 
               ? ['48kHz 24bit', '8kHz 16bit', '16kHz 16bit']
@@ -384,8 +410,8 @@ export async function POST(request: NextRequest) {
         // We maken GEEN automatische Yuki factuur meer aan.
         // De admin triggert dit handmatig na controle.
 
-        if (payment.metadata.user_id) {
-          const userId = parseInt(payment.metadata.user_id);
+        if (paymentMetadata.user_id) {
+          const userId = parseInt(String(paymentMetadata.user_id), 10);
           
           // Verhoog order count en spent in user DNA
           await tx.update(users)
@@ -400,10 +426,10 @@ export async function POST(request: NextRequest) {
 
         // 🛡️ CHRIS-PROTOCOL: Invalidate Customer 360 Cache (v2.14.347)
         try {
-          const cacheKey = `customer_360_${payment.metadata.email || order.users?.email}`;
+          const cacheKey = `customer_360_${paymentMetadata.email || order.users?.email}`;
           if (cacheKey) {
             await sdkClient.from('app_configs').delete().eq('key', cacheKey);
-            console.log(`[Automation] UCI Cache invalidated for ${payment.metadata.email || order.users?.email}`);
+            console.log(`[Automation] UCI Cache invalidated for ${paymentMetadata.email || order.users?.email}`);
           }
         } catch (cacheErr) {
           console.warn('[Automation] Failed to invalidate UCI cache in webhook:', cacheErr);
@@ -411,15 +437,15 @@ export async function POST(request: NextRequest) {
 
         //  Notificatie naar Admin (HITL)
         try {
-          const isSameDay = (order.rawMeta as any)?.items?.some((i: any) => i.actor?.delivery_config?.type === 'sameday');
+          const isSameDay = orderRawMeta?.items?.some((i: any) => i.actor?.delivery_config?.type === 'sameday');
           
           await fireAdminNotify(siteUrl, isSameDay ? 'sameday_alert' : 'payment_received', {
             orderId: resolvedOrderId,
-            email: payment.metadata.email || 'Gast',
+            email: paymentMetadata.email || 'Gast',
             amount: payment.amount?.value || order.total || '0',
-            company: payment.metadata.company,
-            items: (order.rawMeta as any)?.items || [],
-            customer: { first_name: payment.metadata.givenName, last_name: payment.metadata.familyName }
+            company: paymentMetadata.company,
+            items: orderRawMeta?.items || [],
+            customer: { first_name: paymentMetadata.givenName, last_name: paymentMetadata.familyName }
           });
         } catch (mailErr) {
           console.error(' Failed to send payment notification:', mailErr);
@@ -429,12 +455,12 @@ export async function POST(request: NextRequest) {
       const shouldNotifyStatusUpdate = ['paid', 'cancelled', 'failed', 'expired'].includes(newStatus);
       const hasStatusTransition = previousLegacyStatus !== String(finalStatus || '').toLowerCase();
 
-      if (shouldNotifyStatusUpdate && (hasStatusTransition || newStatus === 'paid')) {
+      if (shouldNotifyStatusUpdate && hasStatusTransition) {
         await fireAdminNotify(siteUrl, 'payment_status_update', {
           orderId: resolvedOrderId,
           paymentId,
-          email: payment.metadata?.email || (order?.rawMeta as any)?._billing_email || null,
-          company: payment.metadata?.company || (order?.rawMeta as any)?._billing_company || null,
+          email: paymentMetadata?.email || orderRawMeta?._billing_email || null,
+          company: paymentMetadata?.company || orderRawMeta?._billing_company || null,
           amount: payment.amount?.value || order?.total || '0',
           paymentStatus: newStatus,
           previousStatus: previousLegacyStatus,

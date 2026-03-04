@@ -80,7 +80,16 @@ export default function SuccessPageClient() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!emailParam || !supabase) return;
+    if (!emailParam) {
+      setLoginError(t('checkout.success.verify.email_missing', 'We missen je e-mailadres in deze sessie.'));
+      playClick('lock');
+      return;
+    }
+    if (!supabase) {
+      setLoginError(t('checkout.login.error_service', 'Inloggen is tijdelijk niet beschikbaar. Open je account login.'));
+      playClick('lock');
+      return;
+    }
     
     setIsLoggingIn(true);
     setLoginError(null);
@@ -90,7 +99,7 @@ export default function SuccessPageClient() {
       const response = await fetch('/api/auth/send-magic-link/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: emailParam, redirect: accountOrdersPath }),
+        body: JSON.stringify({ email: emailParam, redirect: accountOrdersPathWithDelivery }),
       });
 
       const result = await response.json();
@@ -195,7 +204,7 @@ export default function SuccessPageClient() {
                   ) : (
                     <form onSubmit={handleLogin} className="space-y-4">
                       <button  
-                        disabled={isLoggingIn || !emailParam}
+                        disabled={isLoggingIn || !emailParam || !supabase}
                         className="va-btn-pro !bg-va-black !text-white !py-6 px-12 w-full text-center !rounded-[20px] font-bold tracking-widest uppercase text-[13px] hover:!bg-primary transition-all shadow-aura-lg group/btn flex items-center justify-center gap-3"
                       >
                         {isLoggingIn ? <Loader2 className="animate-spin" size={18} /> : <LogIn size={18} />}
@@ -209,7 +218,24 @@ export default function SuccessPageClient() {
                           />
                         </TextInstrument>
                       )}
+                      {!supabase && (
+                        <TextInstrument className="text-amber-600 text-xs">
+                          <VoiceglotText
+                            translationKey="checkout.success.verify.service_unavailable"
+                            defaultText="De login-service is tijdelijk niet bereikbaar. Gebruik de account login als fallback."
+                          />
+                        </TextInstrument>
+                      )}
                       {loginError && <TextInstrument className="text-red-500 text-xs">{loginError}</TextInstrument>}
+                      <Link
+                        href={`/account?redirect=${encodeURIComponent(accountOrdersPathWithDelivery)}`}
+                        className="block text-center text-xs text-va-black/50 hover:text-primary transition-colors"
+                      >
+                        <VoiceglotText
+                          translationKey="checkout.success.verify.fallback_account_login"
+                          defaultText="Open account login"
+                        />
+                      </Link>
                     </form>
                   )}
                 </div>
