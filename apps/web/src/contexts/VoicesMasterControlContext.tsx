@@ -7,6 +7,7 @@ import React, { createContext, useCallback, useContext, useEffect, useState } fr
 import { useCheckout } from './CheckoutContext';
 import { useVoicesState } from './VoicesStateContext';
 import { normalizeLocale } from '@/lib/system/locale-utils';
+import { buildCanonicalActorPath } from '@/lib/system/slug';
 
 export type JourneyType = 'telephony' | 'video' | 'commercial' | 'agency' | 'general';
 
@@ -709,11 +710,16 @@ export const VoicesMasterControlProvider: React.FC<{
   const updateStep = useCallback((step: MasterControlState['currentStep']) => {
     setState(prev => {
       if (step === 'script' && checkoutState.selectedActor?.slug) {
-        const slug = checkoutState.selectedActor.slug;
-        const journey = prev.journey;
-        const newUrl = '/' + slug + '/' + journey;
         if (typeof window !== 'undefined') {
-          window.history.replaceState(null, '', newUrl);
+          const actorPath = buildCanonicalActorPath(
+            checkoutState.selectedActor.slug,
+            checkoutState.selectedActor.display_name || checkoutState.selectedActor.first_name
+          );
+          const newUrl = `${actorPath}${window.location.search || ''}`;
+          const currentUrl = `${window.location.pathname}${window.location.search || ''}`;
+          if (newUrl !== currentUrl) {
+            window.history.replaceState(null, '', newUrl);
+          }
         }
       } else if (step === 'voice') {
         const isAgencyFilterPage = pathname.startsWith('/agency/') || pathname === '/agency';
@@ -732,7 +738,13 @@ export const VoicesMasterControlProvider: React.FC<{
       checkout: 'details'
     };
     setCheckoutStep(stepMap[step]);
-  }, [setCheckoutStep, checkoutState.selectedActor?.slug, pathname]);
+  }, [
+    setCheckoutStep,
+    checkoutState.selectedActor?.slug,
+    checkoutState.selectedActor?.display_name,
+    checkoutState.selectedActor?.first_name,
+    pathname
+  ]);
 
   const resetFilters = useCallback(() => {
     const host = typeof window !== 'undefined' ? window.location.host : (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || MarketManager.getMarketDomains()['BE'].replace('https://', ''));
