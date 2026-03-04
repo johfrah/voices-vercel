@@ -286,7 +286,30 @@ export async function GET(request: NextRequest) {
       } catch (e) {
         // Ignore self-healing errors
       }
-      
+
+      // Keep UI stable: for missing image assets we return a tiny SVG placeholder (200).
+      const lowerPath = (assetPath || '').toLowerCase();
+      const looksLikeImage =
+        lowerPath.endsWith('.jpg') ||
+        lowerPath.endsWith('.jpeg') ||
+        lowerPath.endsWith('.png') ||
+        lowerPath.endsWith('.webp') ||
+        lowerPath.endsWith('.gif') ||
+        lowerPath.endsWith('.svg');
+
+      if (looksLikeImage) {
+        const placeholderSvg =
+          '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><rect width="120" height="120" fill="#F3F4F6"/><circle cx="60" cy="46" r="18" fill="#D1D5DB"/><rect x="24" y="78" width="72" height="14" rx="7" fill="#D1D5DB"/></svg>';
+        return new NextResponse(placeholderSvg, {
+          status: 200,
+          headers: {
+            'Content-Type': 'image/svg+xml',
+            'Cache-Control': 'public, max-age=300',
+            'X-Voices-Proxy': 'Voices-Core-2026-Placeholder',
+          },
+        });
+      }
+
       return new NextResponse(null, { status: 404, statusText: 'Asset not found' });
     }
 
