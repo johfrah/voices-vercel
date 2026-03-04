@@ -6,6 +6,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export const dynamic = 'force-dynamic';
 
+/** BOB: category = journey (studio/academy/agency/general). Optional world_id filter can be added later for stricter World alignment. */
 /** CHRIS-PROTOCOL: API payloads snake_case (200-CODE-INTEGRITY) */
 export type FaqRowPayload = {
   id: number;

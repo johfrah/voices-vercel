@@ -1685,12 +1685,20 @@ export const VoicyChatV2: React.FC = () => {
                         handleSend(undefined, item.question, 'faq');
                       }}
                       className="w-full py-3 px-4 text-left bg-va-off-white hover:bg-va-black hover:text-white rounded-xl text-[15px] font-light transition-all flex items-center gap-2 border border-black/5"
+                      aria-label={item.question}
                     >
                       <HelpCircle strokeWidth={1.5} size={18} className="shrink-0" />
                       <TextInstrument as="span" className="line-clamp-2">{item.question}</TextInstrument>
                       <ChevronRight strokeWidth={1.5} size={16} className="shrink-0 ml-auto opacity-50" />
                     </ButtonInstrument>
                   ))}
+                  <ButtonInstrument
+                    onClick={() => setActiveTab('chat')}
+                    className="w-full py-2.5 px-4 text-left bg-transparent hover:bg-va-off-white rounded-xl text-[14px] font-light text-va-black/60 hover:text-va-black transition-all flex items-center gap-2 border border-black/5"
+                  >
+                    <MessageCircle strokeWidth={1.5} size={16} className="shrink-0" />
+                    <VoiceglotText translationKey="chat.faq.ask_in_chat" defaultText="Geen antwoord? Stel je vraag in de chat." />
+                  </ButtonInstrument>
                 </ContainerInstrument>
               ) : null}
               <ContainerInstrument plain className="flex flex-col gap-2 pt-2 border-t border-black/5">
