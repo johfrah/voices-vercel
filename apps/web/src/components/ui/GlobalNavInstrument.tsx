@@ -8,6 +8,7 @@ import { useCheckout } from '@/contexts/CheckoutContext';
 import { useNotifications } from '@/contexts/NotificationContext';
 import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
+import { AGENCY_CATEGORY_LINKS } from '@/lib/system/constants/agency-category-links';
 import { AnimatePresence, motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { formatWorkshopLocationLabel } from '@/lib/utils/workshop-location';
@@ -1408,14 +1409,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
                     </div>
                     
                     <ContainerInstrument plain className="space-y-0.5">
-                      {[
-                        { label: 'TV Spot', icon: Monitor, href: '/agency/commercial/tv', key: 'category.tv' },
-                        { label: 'Radio', icon: Radio, href: '/agency/commercial/radio', key: 'category.radio' },
-                        { label: 'Online', icon: Globe, href: '/agency/commercial/online', key: 'category.online' },
-                        { label: 'Podcast', icon: Mic2, href: '/agency/commercial/podcast', key: 'category.podcast' },
-                        { label: 'Telefonie', icon: Phone, href: '/agency/telephony', key: 'category.telefoon' },
-                        { label: 'Corporate', icon: Building2, href: '/agency/video', key: 'category.corporate' }
-                      ].map((cat) => (
+                      {AGENCY_CATEGORY_LINKS.map((cat) => (
                         <DropdownItem 
                           key={cat.label}
                           icon={cat.icon}
