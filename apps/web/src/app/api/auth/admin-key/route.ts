@@ -1,5 +1,5 @@
-import { db, users } from '@/lib/system/voices-config';
-import { eq, sql } from 'drizzle-orm';
+import { db } from '@/lib/system/voices-config';
+import { sql } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 
 export const dynamic = 'force-dynamic';
@@ -22,17 +22,19 @@ export async function GET(request: Request) {
       return NextResponse.redirect(new URL('/login?error=no_key', request.url));
     }
 
-    // 1. Zoek admin op basis van key via Raw SQL (Chris-Protocol: Anti-Drift)
-    const postgres = require('postgres');
-    const connectionString = process.env.DATABASE_URL!.replace('?pgbouncer=true', '');
-    const sqlDirect = postgres(connectionString, {
-      ssl: 'require',
-    });
-    
-    const [admin] = await sqlDirect`
-      SELECT id, email, role FROM users WHERE admin_key = ${key} LIMIT 1
-    `;
-    await sqlDirect.end();
+    // 1. Zoek admin op basis van key via gedeelde DB pool (anti-connection-spikes)
+    const adminResult: any = await db.execute(sql`
+      select id, email, role
+      from users
+      where admin_key = ${key}
+      limit 1
+    `);
+    const adminRows = Array.isArray(adminResult)
+      ? adminResult
+      : Array.isArray(adminResult?.rows)
+        ? adminResult.rows
+        : [];
+    const admin = adminRows[0];
 
     if (!admin || (admin.role !== 'admin' && admin.role !== 'ademing_admin')) {
       console.warn(`[Admin Key] Invalid key attempt: ${key.substring(0, 5)}...`);

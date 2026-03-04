@@ -136,15 +136,28 @@ export async function GET(request: Request) {
     });
 
     if (error && (error.message.includes('User not found') || error.status === 422)) {
-      const signupResult = await supabaseAdmin.auth.admin.generateLink({
-        type: 'signup' as any,
+      // Ensure Auth user exists, then retry with magiclink.
+      const createResult = await supabaseAdmin.auth.admin.createUser({
+        email: userRecord.email,
+        email_confirm: true,
+      });
+      if (
+        createResult.error &&
+        !String(createResult.error.message || '').toLowerCase().includes('already') &&
+        !String(createResult.error.message || '').toLowerCase().includes('registered')
+      ) {
+        console.error('[Magic Login] createUser fallback failed:', createResult.error.message);
+      }
+
+      const retryResult = await supabaseAdmin.auth.admin.generateLink({
+        type: 'magiclink',
         email: userRecord.email,
         options: {
           redirectTo: `${currentBaseUrl}/account/confirm`,
         }
       });
-      data = signupResult.data;
-      error = signupResult.error;
+      data = retryResult.data;
+      error = retryResult.error;
     }
 
     if (error || !data?.properties?.action_link) {
