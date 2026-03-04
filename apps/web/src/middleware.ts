@@ -125,23 +125,12 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(redirectUrl, 308)
   }
 
-  const isLegacyAgencyPath = pathname.startsWith('/agency/video') || 
-                             pathname.startsWith('/agency/telephony') || 
-                             pathname.startsWith('/agency/commercial');
-  
   const isOtherLegacyPath = pathname === '/agency/tarieven' || 
                             pathname === '/agency/tarieven/' ||
                             pathname === '/price' ||
                             pathname === '/price/';
 
   if (isOtherLegacyPath) {
-    const tarievenUrl = url.clone();
-    tarievenUrl.pathname = '/tarieven/';
-    // Behoud eventuele query params voor de calculator
-    return NextResponse.redirect(tarievenUrl, 301);
-  }
-
-  if (isLegacyAgencyPath) {
     const tarievenUrl = url.clone();
     tarievenUrl.pathname = '/tarieven/';
     // Behoud eventuele query params voor de calculator

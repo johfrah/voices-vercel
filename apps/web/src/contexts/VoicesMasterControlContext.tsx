@@ -109,6 +109,7 @@ export const VoicesMasterControlProvider: React.FC<{
   });
 
   const [isClient, setIsClient] = useState(false);
+  const [isStateInitialized, setIsStateInitialized] = useState(false);
 
   // 🛡️ CHRIS-PROTOCOL: Initialize state from URL/LocalStorage ONLY on client-side
   // to prevent Hydration Mismatch errors (#419).
@@ -118,6 +119,7 @@ export const VoicesMasterControlProvider: React.FC<{
     // We delay the actual state initialization from external sources (URL/Storage)
     // until AFTER the first render to ensure hydration matches the server.
     const initializeState = () => {
+      try {
       const host = typeof window !== 'undefined' ? window.location.host : '';
       const market = MarketManager.getCurrentMarket(host, window.location.pathname);
       const localePrefixMatch = window.location.pathname.match(/^\/(nl|fr|en|de|es|it|pt)(\/|$)/i);
@@ -140,15 +142,65 @@ export const VoicesMasterControlProvider: React.FC<{
         if (saved) savedState = JSON.parse(saved);
       } catch (e) {}
 
-      // 🛡️ CHRIS-PROTOCOL: Journey Resolution Priority (v2.28.1)
-      // When user has explicitly switched journey (current_journey !== 'general'),
-      // prefer that over initialJourney to prevent tab state reset.
+      const currentPath = window.location.pathname;
+      const rawSegments = currentPath.split('/').filter(Boolean);
+      const pathSegments = localePrefixMatch ? rawSegments.slice(1) : rawSegments;
+
+      // 🛡️ CHRIS-PROTOCOL: URL-First Journey/Media parse (v2.28.24)
+      // Deep links like /agency/commercial/online must override stale localStorage.
+      const pathJourneyMap: Record<string, JourneyType> = {
+        telephony: 'telephony',
+        telefonie: 'telephony',
+        telefoon: 'telephony',
+        video: 'video',
+        corporate: 'video',
+        commercial: 'commercial',
+        reclame: 'commercial',
+        advertising: 'commercial',
+      };
+      const pathJourneySegment = pathSegments[0] === 'agency' ? pathSegments[1]?.toLowerCase() : undefined;
+      const journeyFromPath = pathJourneySegment ? pathJourneyMap[pathJourneySegment] : undefined;
+
+      const parseCommercialMediaSegments = (segments: string[]) => {
+        const media: string[] = [];
+        const media_ids: number[] = [];
+        const spots_detail: Record<string, number> = {};
+        const years_detail: Record<string, number> = {};
+
+        segments.forEach((seg) => {
+          const normalized = String(seg || '').toLowerCase();
+          const encodedMatch = normalized.match(/^([a-z_]+)(\d+)x(\d+)$/i);
+          const mediaCode = encodedMatch ? encodedMatch[1] : normalized;
+          if (!mediaCode) return;
+
+          media.push(mediaCode);
+          const mediaId = MarketManager.getServiceId(mediaCode);
+          if (mediaId != null) media_ids.push(mediaId);
+
+          if (encodedMatch) {
+            spots_detail[mediaCode] = parseInt(encodedMatch[2], 10);
+            years_detail[mediaCode] = parseInt(encodedMatch[3], 10);
+          }
+        });
+
+        return { media, media_ids, spots_detail, years_detail };
+      };
+
+      const pathCommercialState =
+        journeyFromPath === 'commercial'
+          ? parseCommercialMediaSegments(pathSegments.slice(2))
+          : null;
+
+      // 🛡️ CHRIS-PROTOCOL: Journey Resolution Priority (v2.28.24)
+      // URL path wins, then query, then explicit user selection, then storage.
       const userSelectedJourney = voicesState?.current_journey && voicesState.current_journey !== 'general' && voicesState.current_journey !== 'agency'
         ? voicesState.current_journey as JourneyType
         : null;
-      const journey = (searchParams?.get('journey') as JourneyType) || userSelectedJourney || initialJourney || 'video';
-      
-      const journeyId = searchParams?.get('journeyId') ? parseInt(searchParams.get('journeyId')!) : (savedState.journeyId || MarketManager.getJourneyId(journey));
+      const journey = (searchParams?.get('journey') as JourneyType) || journeyFromPath || userSelectedJourney || savedState.journey || initialJourney || 'video';
+
+      const journeyId = searchParams?.get('journeyId')
+        ? parseInt(searchParams.get('journeyId')!)
+        : ((journeyFromPath ? MarketManager.getJourneyId(journeyFromPath) : null) || savedState.journeyId || MarketManager.getJourneyId(journey));
       const targetUsage = SlimmeKassa.getUsageFromJourneyId(journeyId || journey);
 
       const initialLanguageParam = searchParams?.get('language');
@@ -182,21 +234,25 @@ export const VoicesMasterControlProvider: React.FC<{
         ? parseInt(initialWordsParam) 
         : (savedState.filters?.words || (journey === 'telephony' ? 25 : (journey === 'commercial' ? 100 : 200)));
       
-      const currentPath = window.location.pathname;
-      const pathSegments = currentPath.split('/').filter(Boolean);
       let initialMedia = (searchParams?.get('media') ? searchParams?.get('media')?.split(',') : (savedState.filters?.media || ['online']));
       
-      if (currentPath.startsWith('/agency') && journey === 'commercial' && pathSegments[2]) {
-        initialMedia = [pathSegments[2].toLowerCase()];
+      if (journey === 'commercial' && pathCommercialState?.media && pathCommercialState.media.length > 0) {
+        initialMedia = pathCommercialState.media;
       }
 
       let initialSpotsDetail = savedState.filters?.spotsDetail;
+      if (journey === 'commercial' && pathCommercialState?.spots_detail && Object.keys(pathCommercialState.spots_detail).length > 0) {
+        initialSpotsDetail = { ...(initialSpotsDetail || {}), ...pathCommercialState.spots_detail };
+      }
       try {
         const sd = searchParams?.get('spotsDetail');
         if (sd) initialSpotsDetail = JSON.parse(decodeURIComponent(sd));
       } catch (e) {}
 
       let initialYearsDetail = savedState.filters?.yearsDetail;
+      if (journey === 'commercial' && pathCommercialState?.years_detail && Object.keys(pathCommercialState.years_detail).length > 0) {
+        initialYearsDetail = { ...(initialYearsDetail || {}), ...pathCommercialState.years_detail };
+      }
       try {
         const yd = searchParams?.get('yearsDetail');
         if (yd) initialYearsDetail = JSON.parse(decodeURIComponent(yd));
@@ -208,7 +264,10 @@ export const VoicesMasterControlProvider: React.FC<{
         if (mr) initialMediaRegion = JSON.parse(decodeURIComponent(mr));
       } catch (e) {}
 
-      const initialMediaIds = searchParams?.get('mediaIds') ? searchParams?.get('mediaIds')?.split(',').map(Number) : (savedState.filters?.mediaIds || [5]);
+      let initialMediaIds = searchParams?.get('mediaIds') ? searchParams?.get('mediaIds')?.split(',').map(Number) : (savedState.filters?.mediaIds || [5]);
+      if (journey === 'commercial' && pathCommercialState?.media_ids && pathCommercialState.media_ids.length > 0) {
+        initialMediaIds = pathCommercialState.media_ids;
+      }
 
       const newState: MasterControlState = {
         journey,
@@ -241,6 +300,9 @@ export const VoicesMasterControlProvider: React.FC<{
       };
 
       setState(newState);
+      } finally {
+        setIsStateInitialized(true);
+      }
     };
 
     // CHRIS-PROTOCOL: Execute initialization in the next tick to guarantee hydration completion
@@ -249,7 +311,7 @@ export const VoicesMasterControlProvider: React.FC<{
   }, [searchParams, pathname, voicesState.current_journey, initialJourney]);
 
   useEffect(() => {
-    if (!isClient) return;
+    if (!isClient || !isStateInitialized) return;
 
     const targetUsage = SlimmeKassa.getUsageFromJourneyId(state.journeyId || state.journey);
     
@@ -261,7 +323,7 @@ export const VoicesMasterControlProvider: React.FC<{
     if (state.filters.media && (JSON.stringify(checkoutState.media) !== JSON.stringify(state.filters.media) || JSON.stringify(checkoutState.mediaIds) !== JSON.stringify(state.filters.mediaIds))) {
       updateMedia(state.filters.media, state.filters.mediaIds);
     }
-  }, [isClient, state.journey, state.journeyId, state.filters.media, state.filters.mediaIds, checkoutState.usage, checkoutState.usageId, checkoutState.media, checkoutState.mediaIds, updateUsage, updateMedia]);
+  }, [isClient, isStateInitialized, state.journey, state.journeyId, state.filters.media, state.filters.mediaIds, checkoutState.usage, checkoutState.usageId, checkoutState.media, checkoutState.mediaIds, updateUsage, updateMedia]);
 
   const detectStateFromUrl = useCallback((url: string) => {
     const localeMatch = url.match(/^\/(nl|fr|en|de|es|it|pt)(\/|$)/i);
@@ -393,7 +455,9 @@ export const VoicesMasterControlProvider: React.FC<{
 
         setState(prev => {
           const journey = urlState.journey || (searchParams?.get('journey') as JourneyType) || savedState.journey || prev.journey;
-          const journeyId = searchParams?.get('journeyId') ? parseInt(searchParams.get('journeyId')!) : (savedState.journeyId || MarketManager.getJourneyId(journey));
+          const journeyId = searchParams?.get('journeyId')
+            ? parseInt(searchParams.get('journeyId')!)
+            : ((urlState as any).journeyId || (urlState.journey ? MarketManager.getJourneyId(urlState.journey) : null) || savedState.journeyId || MarketManager.getJourneyId(journey));
           
           return {
             ...prev,
@@ -408,7 +472,14 @@ export const VoicesMasterControlProvider: React.FC<{
               languageId: urlState.languageId || (searchParams?.get('languageId') ? parseInt(searchParams.get('languageId')!) : (savedState.filters?.languageId || prev.filters.languageId)),
               languageIds: urlState.languageId ? [urlState.languageId] : (savedState.filters?.languageIds || prev.filters.languageIds),
               gender: urlState.gender || searchParams?.get('gender') || savedState.filters?.gender || prev.filters.gender,
-              media: searchParams?.get('media') ? searchParams?.get('media')?.split(',') : (savedState.filters?.media || prev.filters.media),
+              media: ((urlState as any).media && (urlState as any).media.length > 0)
+                ? (urlState as any).media
+                : (searchParams?.get('media') ? searchParams?.get('media')?.split(',') : (savedState.filters?.media || prev.filters.media)),
+              mediaIds: ((urlState as any).mediaIds && (urlState as any).mediaIds.length > 0)
+                ? (urlState as any).mediaIds
+                : (searchParams?.get('mediaIds') ? searchParams?.get('mediaIds')?.split(',').map(Number) : (savedState.filters?.mediaIds || prev.filters.mediaIds)),
+              spotsDetail: (urlState as any).spotsDetail || savedState.filters?.spotsDetail || prev.filters.spotsDetail,
+              yearsDetail: (urlState as any).yearsDetail || savedState.filters?.yearsDetail || prev.filters.yearsDetail,
             },
             currentStep: urlState.step || (searchParams?.get('step') as any) || 'voice'
           };
@@ -546,6 +617,7 @@ export const VoicesMasterControlProvider: React.FC<{
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
+    if (!isStateInitialized) return;
 
     const params = new URLSearchParams(window.location.search);
     const URL_EXCLUDED_KEYS = ['spotsDetail', 'yearsDetail', 'mediaRegion', 'media'];
@@ -623,7 +695,7 @@ export const VoicesMasterControlProvider: React.FC<{
     if (window.location.pathname + window.location.search !== finalUrl) {
       window.history.replaceState(null, '', finalUrl);
     }
-  }, [state.journey, state.filters, pathname]);
+  }, [state.journey, state.filters, pathname, isStateInitialized]);
 
   const updateJourney = useCallback((journeyInput: JourneyType | number) => {
     let journey: JourneyType;
