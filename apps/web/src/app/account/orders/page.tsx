@@ -84,11 +84,13 @@ export default function OrdersPage() {
     if (isAuthLoading) return;
 
     if (!isAuthenticated || !user?.email) {
+      setErrorMessage(null);
       setIsLoading(false);
       setOrdersList([]);
       return;
     }
 
+    setIsLoading(true);
     setErrorMessage(null);
     const forceRefresh = !!highlightedOrderId;
     fetch(`/api/intelligence/customer-360?email=${user.email}${forceRefresh ? '&forceRefresh=true' : ''}`)
@@ -114,6 +116,17 @@ export default function OrdersPage() {
         setIsLoading(false);
       });
   }, [isAuthLoading, isAuthenticated, user, highlightedOrderId]);
+
+  useEffect(() => {
+    if (!isAuthLoading) return;
+
+    const timer = window.setTimeout(() => {
+      setIsLoading(false);
+      setErrorMessage('Sessiecontrole duurt langer dan verwacht. Herlaad de pagina.');
+    }, 10000);
+
+    return () => window.clearTimeout(timer);
+  }, [isAuthLoading]);
 
   useEffect(() => {
     if (highlightedOrderId && ordersList.length > 0) {
