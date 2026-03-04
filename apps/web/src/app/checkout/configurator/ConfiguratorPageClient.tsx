@@ -915,7 +915,6 @@ export default function ConfiguratorPageClient({
         total: currentItemPrice,
       }
     });
-    
     setAddedToCart(true);
     
     //  HITL-TRIGGER: Stuur een mailtje naar de admin bij add-to-cart
@@ -1834,7 +1833,7 @@ export default function ConfiguratorPageClient({
           </div>
 
           {!minimalMode && !hidePriceBlock && (
-            <div className="hidden lg:block w-full space-y-8 lg:sticky lg:top-24 pt-0 z-20 mt-8 lg:mt-0 lg:col-span-3">
+            <div className="hidden lg:block w-full space-y-8 pt-0 z-20 mt-8 lg:mt-0 lg:col-span-12">
               <PriceBlock />
             </div>
           )}
