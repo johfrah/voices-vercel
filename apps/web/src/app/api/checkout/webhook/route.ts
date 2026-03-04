@@ -33,14 +33,37 @@ function v2StatusCandidates(statusCode: string): string[] {
   return [normalized];
 }
 
+async function fireAdminNotify(siteUrl: string, type: string, data: Record<string, any>) {
+  try {
+    await fetch(`${siteUrl}/api/admin/notify`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type, data })
+    });
+  } catch (notifyErr: any) {
+    console.warn(`[Mollie Webhook] Admin notify failed (${type}):`, notifyErr?.message || notifyErr);
+  }
+}
+
 export async function POST(request: NextRequest) {
+  let paymentId: string | null = null;
+  let orderId: number | null = null;
+
   try {
     const formData = await request.formData();
-    const paymentId = formData.get('id') as string;
+    paymentId = formData.get('id') as string;
+    const host = request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || MarketManager.getMarketDomains()['BE']?.replace('https://', ''));
+    const market = MarketManager.getCurrentMarket(host);
+    const siteUrl = MarketManager.getMarketDomains()[market.market_code] || `https://${MarketManager.getMarketDomains()['BE']?.replace('https://', '') || 'www.voices.be'}`;
 
     if (!paymentId) {
       // CHRIS-PROTOCOL: Log to Watchdog instead of crashing or sending error mails
       console.warn('[Mollie Webhook] Missing ID in request');
+      await fireAdminNotify(siteUrl, 'webhook_error', {
+        source: 'MollieWebhook',
+        error: 'Webhook called without payment id',
+        step: 'missing_payment_id'
+      });
       return new NextResponse('Missing ID', { status: 400 });
     }
 
@@ -50,15 +73,29 @@ export async function POST(request: NextRequest) {
       payment = await MollieService.getPayment(paymentId);
     } catch (mollieErr: any) {
       console.error('[Mollie Webhook] Failed to fetch payment:', mollieErr.message);
+      await fireAdminNotify(siteUrl, 'webhook_error', {
+        source: 'MollieWebhook',
+        paymentId,
+        error: `Failed to fetch payment at Mollie: ${mollieErr.message}`,
+        step: 'mollie_get_payment'
+      });
       return new NextResponse('Payment Not Found', { status: 404 });
     }
 
-    const orderId = parseInt(payment.metadata?.orderId);
+    orderId = parseInt(payment.metadata?.orderId);
 
     if (!orderId) {
       console.warn('[Mollie Webhook] Invalid or missing Order ID in metadata:', payment.metadata);
+      await fireAdminNotify(siteUrl, 'webhook_error', {
+        source: 'MollieWebhook',
+        paymentId,
+        error: 'Webhook metadata missing valid order id',
+        step: 'invalid_order_id_metadata',
+        metadata: payment.metadata || null
+      });
       return new NextResponse('Invalid Metadata', { status: 400 });
     }
+    const resolvedOrderId = Number(orderId);
 
     // 2. Update de order status op basis van Mollie
     let newStatus = 'pending';
@@ -67,14 +104,14 @@ export async function POST(request: NextRequest) {
     if (payment.status === 'expired') newStatus = 'expired';
     if (payment.status === 'failed') newStatus = 'failed';
 
-    //  NUCLEAR CONFIG: Haal admin e-mail uit MarketManager of ENV
-    const host = request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || MarketManager.getMarketDomains()['BE']?.replace('https://', ''));
-    const market = MarketManager.getCurrentMarket(host);
+    //  NUCLEAR CONFIG: market context
     const adminEmail = process.env.ADMIN_EMAIL || market.email;
+    void adminEmail; // Intentional: kept for compatibility with existing env contracts.
 
     await db.transaction(async (tx: any) => {
       // Haal de order op om te zien wat erin zit
-      const [order] = await tx.select().from(orders).where(eq(orders.id, orderId)).limit(1);
+      const [order] = await tx.select().from(orders).where(eq(orders.id, resolvedOrderId)).limit(1);
+      const previousLegacyStatus = String(order?.status || '').toLowerCase() || null;
       const orderLanguage = normalizeLocale(
         (order?.rawMeta as any)?.language ||
         payment.metadata?.language ||
@@ -149,7 +186,7 @@ export async function POST(request: NextRequest) {
 
       await tx.update(orders)
         .set({ status: finalStatus, updatedAt: new Date() })
-        .where(eq(orders.id, orderId));
+        .where(eq(orders.id, resolvedOrderId));
 
       // 🔁 V2 status sync: keep orders_v2 aligned with webhook transitions.
       if (order?.wpOrderId) {
@@ -173,7 +210,7 @@ export async function POST(request: NextRequest) {
 
       // Log Note
       await tx.insert(orderNotes).values({
-        orderId: orderId,
+        orderId: resolvedOrderId,
         note: `Mollie Status Update: ${newStatus}${finalStatus === 'in_productie' ? ' (Auto-status: In Productie)' : finalStatus === 'completed' ? ' (Auto-completed: Music Only)' : ''} (Payment ID: ${paymentId})`,
         isCustomerNote: false
       });
@@ -184,7 +221,7 @@ export async function POST(request: NextRequest) {
         try {
           const items = await tx.select({ actorId: orderItems.actorId, name: orderItems.name, price: orderItems.price, metaData: orderItems.metaData })
             .from(orderItems)
-            .where(eq(orderItems.orderId, orderId));
+            .where(eq(orderItems.orderId, resolvedOrderId));
           
           const actorIds = items
             .map((i: any) => i.actorId)
@@ -217,7 +254,7 @@ export async function POST(request: NextRequest) {
                     template: 'order-confirmation',
                     context: {
                       userName: user.first_name || 'Klant',
-                      orderId: orderId.toString(),
+                      orderId: resolvedOrderId.toString(),
                       total: parseFloat(order.total || '0'),
                       items: items.map((i: any) => ({
                         name: i.name,
@@ -256,7 +293,7 @@ export async function POST(request: NextRequest) {
           const { access_token: dbxToken } = await tokenRes.json();
           
           if (dbxToken) {
-            const exportBase = `/Voices.be/Projects/Exports/${orderId}`;
+            const exportBase = `/Voices.be/Projects/Exports/${resolvedOrderId}`;
             // 🛡️ CHRIS-PROTOCOL: ID-First Handshake — Telephony = journey_id 26
             const orderJourneyId = (order as any)?.journeyId ?? (order as any)?.journey_id;
             const metaJourneyId = (order?.rawMeta as any)?.journeyId ?? (order?.rawMeta as any)?.journey_id;
@@ -274,10 +311,10 @@ export async function POST(request: NextRequest) {
             }
             
             // Save Dropbox folder URL on the order
-            const dropboxUrl = `https://www.dropbox.com/home/Voices.be/Projects/Exports/${orderId}`;
+            const dropboxUrl = `https://www.dropbox.com/home/Voices.be/Projects/Exports/${resolvedOrderId}`;
             await tx.update(orders)
               .set({ dropboxFolderUrl: dropboxUrl })
-              .where(eq(orders.id, orderId));
+              .where(eq(orders.id, resolvedOrderId));
             
             console.log(` [Dropbox] Exports folder created: ${exportBase}`);
           }
@@ -287,7 +324,7 @@ export async function POST(request: NextRequest) {
 
         // 3. Lever muziek uit indien aanwezig in de order
         try {
-          await MusicDeliveryService.deliverMusic(orderId);
+          await MusicDeliveryService.deliverMusic(resolvedOrderId);
         } catch (musicErr) {
           console.error(' Failed to deliver music after payment:', musicErr);
         }
@@ -324,27 +361,34 @@ export async function POST(request: NextRequest) {
         //  Notificatie naar Admin (HITL)
         try {
           const isSameDay = (order.rawMeta as any)?.items?.some((i: any) => i.actor?.delivery_config?.type === 'sameday');
-          const siteUrl = MarketManager.getMarketDomains()[market.market_code] || `https://${MarketManager.getMarketDomains()['BE']?.replace('https://', '') || 'www.voices.be'}`;
-          const fetchUrl = `${siteUrl}/api/admin/notify`;
           
-          await fetch(fetchUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              type: isSameDay ? 'sameday_alert' : 'payment_received',
-              data: {
-                orderId: orderId,
-                email: payment.metadata.email || 'Gast',
-                amount: payment.amount.value,
-                company: payment.metadata.company,
-                items: (order.rawMeta as any)?.items || [],
-                customer: { first_name: payment.metadata.givenName, last_name: payment.metadata.familyName }
-              }
-            })
+          await fireAdminNotify(siteUrl, isSameDay ? 'sameday_alert' : 'payment_received', {
+            orderId: resolvedOrderId,
+            email: payment.metadata.email || 'Gast',
+            amount: payment.amount.value,
+            company: payment.metadata.company,
+            items: (order.rawMeta as any)?.items || [],
+            customer: { first_name: payment.metadata.givenName, last_name: payment.metadata.familyName }
           });
         } catch (mailErr) {
           console.error(' Failed to send payment notification:', mailErr);
         }
+      }
+
+      const shouldNotifyStatusUpdate = ['paid', 'cancelled', 'failed', 'expired'].includes(newStatus);
+      const hasStatusTransition = previousLegacyStatus !== String(finalStatus || '').toLowerCase();
+
+      if (shouldNotifyStatusUpdate && (hasStatusTransition || newStatus === 'paid')) {
+        await fireAdminNotify(siteUrl, 'payment_status_update', {
+          orderId: resolvedOrderId,
+          paymentId,
+          email: payment.metadata?.email || (order?.rawMeta as any)?._billing_email || null,
+          company: payment.metadata?.company || (order?.rawMeta as any)?._billing_company || null,
+          amount: payment.amount?.value || order?.total || '0',
+          paymentStatus: newStatus,
+          previousStatus: previousLegacyStatus,
+          source: 'MollieWebhook'
+        });
       }
     });
 
@@ -352,6 +396,20 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     console.error(' MOLLIE WEBHOOK ERROR:', error);
+    try {
+      const host = request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || MarketManager.getMarketDomains()['BE']?.replace('https://', ''));
+      const market = MarketManager.getCurrentMarket(host);
+      const siteUrl = MarketManager.getMarketDomains()[market.market_code] || `https://${MarketManager.getMarketDomains()['BE']?.replace('https://', '') || 'www.voices.be'}`;
+      await fireAdminNotify(siteUrl, 'webhook_error', {
+        source: 'MollieWebhook',
+        paymentId,
+        orderId,
+        error: (error as any)?.message || 'Unknown webhook error',
+        step: 'webhook_post_catch'
+      });
+    } catch (notifyError) {
+      console.error(' [Mollie Webhook] Failed to report webhook_error notify:', notifyError);
+    }
     return new NextResponse('Internal Error', { status: 500 });
   }
 }

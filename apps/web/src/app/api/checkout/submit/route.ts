@@ -85,19 +85,49 @@ function formatMusicTrackLabel(trackId: unknown): string {
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
     .join(' ');
 }
+
+async function fireAdminNotify(baseUrl: string, type: string, data: Record<string, any>) {
+  try {
+    await fetch(`${baseUrl}/api/admin/notify`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type, data })
+    });
+  } catch (notifyErr: any) {
+    console.warn(`[CheckoutAPI] Failed to send admin notify (${type}):`, notifyErr?.message || notifyErr);
+  }
+}
 export async function POST(request: Request) {
-  return await ServerWatchdog.atomic('CheckoutAPI', 'SubmitOrder', {}, async () => {
+  const headersList = headers();
+  const host = headersList.get('host') || MarketManager.getMarketDomains()['BE']?.replace('https://', '');
+  const marketConfig = MarketManager.getCurrentMarket(host);
+  const baseUrl = MarketManager.getMarketDomains()[marketConfig.market_code] || `https://${host || MarketManager.getMarketDomains()['BE']?.replace('https://', '') || 'www.voices.be'}`;
+  const ip = headersList.get('x-forwarded-for') || 'unknown';
+
+  const alertContext: Record<string, any> = {
+    source: 'CheckoutAPI',
+    host,
+    ip
+  };
+
+  try {
+    return await ServerWatchdog.atomic('CheckoutAPI', 'SubmitOrder', {}, async () => {
     let rawBody: any = null;
-    const headersList = headers();
-    const host = headersList.get('host') || MarketManager.getMarketDomains()['BE']?.replace('https://', '');
-    const marketConfig = MarketManager.getCurrentMarket(host);
-    const baseUrl = MarketManager.getMarketDomains()[marketConfig.market_code] || `https://${host || MarketManager.getMarketDomains()['BE']?.replace('https://', '') || 'www.voices.be'}`;
-    const ip = headersList.get('x-forwarded-for') || 'unknown';
 
     // 1. Validatie van de payload
     try {
       rawBody = await request.json();
+      alertContext.email = rawBody?.email || null;
+      alertContext.company = rawBody?.company || null;
+      alertContext.paymentMethod = rawBody?.payment_method || null;
+      alertContext.usage = rawBody?.usage || null;
+      alertContext.itemsCount = Array.isArray(rawBody?.items) ? rawBody.items.length : 0;
     } catch (e: any) {
+      await fireAdminNotify(baseUrl, 'checkout_error', {
+        ...alertContext,
+        error: `JSON Parse Error: ${e.message}`,
+        step: 'request_json_parse'
+      });
       throw new Error(`JSON Parse Error: ${e.message}`);
     }
     
@@ -108,6 +138,12 @@ export async function POST(request: Request) {
         component: 'CheckoutAPI',
         error: 'Gegevens onvolledig',
         payload: { errors: validation.error.format(), rawBody }
+      });
+      await fireAdminNotify(baseUrl, 'checkout_error', {
+        ...alertContext,
+        error: 'Checkout payload validation failed',
+        step: 'payload_validation',
+        validationErrors: validation.error.flatten()
       });
       return NextResponse.json({ error: 'Ongeldige bestelgegevens', details: validation.error.format() }, { status: 400 });
     }
@@ -222,6 +258,9 @@ export async function POST(request: Request) {
     }).select().single();
 
     if (orderErr) throw new Error(`Order creation failed: ${orderErr.message}`);
+    alertContext.orderId = newOrder.id;
+    alertContext.amount = amount;
+    alertContext.journey = validatedItems[0]?.journey || 'agency';
 
     // 6. Order Items
     const itemsToInsert = validatedItems.flatMap((item: any) => {
@@ -316,6 +355,19 @@ export async function POST(request: Request) {
     const { error: itemsErr } = await sdkClient.from('order_items').insert(itemsToInsert);
     if (itemsErr) throw new Error(`Order items failed: ${itemsErr.message}`);
 
+    await fireAdminNotify(baseUrl, 'checkout_submitted', {
+      orderId: newOrder.id,
+      email,
+      company: company || null,
+      amount,
+      paymentMethod: payment_method || 'mollie',
+      usage: usage || validatedItems[0]?.usage || null,
+      journey: validatedItems[0]?.journey || 'agency',
+      itemsCount: validatedItems.length,
+      ip,
+      language: normalizedLanguage
+    });
+
     // 7. Payment Handshake
     const secureToken = sign({ userId, orderId: newOrder.id, email }, process.env.JWT_SECRET || 'voices-secret-2026', { expiresIn: '24h' });
 
@@ -406,4 +458,16 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ success: true, orderId: newOrder.id, checkoutUrl: mollieOrder._links.checkout.href, token: secureToken });
   });
+  } catch (error: any) {
+    await fireAdminNotify(baseUrl, 'checkout_error', {
+      ...alertContext,
+      error: error?.message || 'Unknown checkout error',
+      step: 'checkout_submit_crash'
+    });
+
+    return NextResponse.json({
+      error: 'Checkout flow failed',
+      details: process.env.NODE_ENV !== 'production' ? error?.message : undefined
+    }, { status: 500 });
+  }
 }

@@ -15,6 +15,19 @@ import { createClient } from '@supabase/supabase-js';
 
 export const dynamic = 'force-dynamic';
 
+function resolveAdminRecipients(...candidates: Array<string | undefined | null>): string[] {
+  const recipients = new Set<string>();
+
+  candidates
+    .filter(Boolean)
+    .flatMap((value) => String(value).split(','))
+    .map((value) => value.trim())
+    .filter((value) => value.includes('@'))
+    .forEach((value) => recipients.add(value));
+
+  return Array.from(recipients);
+}
+
 export async function POST(request: NextRequest) {
   console.log('[Watchdog] Incoming error report...');
   try {
@@ -109,7 +122,11 @@ export async function POST(request: NextRequest) {
 
     const host = request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || MarketManager.getMarketDomains()['BE']?.replace('https://', ''));
     const market = MarketManager.getCurrentMarket(host);
-    const adminEmail = market.email;
+    const adminRecipients = resolveAdminRecipients(
+      process.env.ADMIN_ALERT_EMAILS,
+      process.env.ADMIN_EMAIL,
+      market.email
+    );
     
     //  CHRIS-PROTOCOL: Safe Mail Engine initialization
     let mailEngine;
@@ -121,11 +138,36 @@ export async function POST(request: NextRequest) {
 
     if (mailEngine) {
       // CHRIS-PROTOCOL: Skip emails if requested by user (logging to watchdog only)
-      // 🛡️ VOICES-MANDATE: DISABLE_ADMIN_EMAILS is true by default to prevent spam during development
-      const skipEmails = process.env.DISABLE_ADMIN_EMAILS !== 'false';
+      const skipEmails = process.env.DISABLE_ADMIN_EMAILS === 'true';
+      const aggressiveAlerts = process.env.ADMIN_ALERT_VERBOSE === 'true' || process.env.NODE_ENV !== 'production';
+
+      const sendMailToAdmins = async (payload: {
+        subject: string;
+        title: string;
+        body: string;
+        buttonText?: string;
+        buttonUrl?: string;
+      }) => {
+        if (adminRecipients.length === 0) {
+          console.warn('[Watchdog] No admin recipients configured.');
+          return;
+        }
+
+        for (const recipient of adminRecipients) {
+          await mailEngine.sendVoicesMail({
+            to: recipient,
+            subject: payload.subject,
+            title: payload.title,
+            body: payload.body,
+            buttonText: payload.buttonText,
+            buttonUrl: payload.buttonUrl,
+            host
+          });
+        }
+      };
 
       // 🛡️ CHRIS-PROTOCOL: Filter out common noise to prevent mail spam
-      const isNoise = (
+      const isNoise = !aggressiveAlerts && (
         level === 'info' ||                           // Skip info logs
         error.includes('Minified React error #419') || // Hydration mismatch (common in Next.js/Browser extensions)
         error.includes('Server Components render') || // Generic Next.js error often paired with others
@@ -147,7 +189,8 @@ export async function POST(request: NextRequest) {
       }
 
       //  BOB'S MANDATE: Rate limiting voor mails (max 1 per 10 minuten)
-      const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
+      const rateLimitMs = aggressiveAlerts ? 2 * 60 * 1000 : 10 * 60 * 1000;
+      const thresholdDate = new Date(Date.now() - rateLimitMs);
       
       let recentMailSent = false;
       try {
@@ -157,7 +200,7 @@ export async function POST(request: NextRequest) {
           .where(
             and(
               eq(systemEvents.source, 'WatchdogMail'),
-              gte(systemEvents.createdAt, tenMinutesAgo),
+              gte(systemEvents.createdAt, thresholdDate),
               eq(systemEvents.message, `Watchdog summary mail sent: ${error.substring(0, 50)}`)
             )
           )
@@ -199,8 +242,7 @@ export async function POST(request: NextRequest) {
         console.log(`[Watchdog] 🛡️ SAFE AUTO-HEAL TRIGGERED for: ${error}`);
         
         try {
-          await mailEngine.sendVoicesMail({
-            to: adminEmail,
+          await sendMailToAdmins({
             subject: `✅ Systeem Auto-Heal Geactiveerd: ${error.substring(0, 40)}...`,
             title: 'Auto-Heal Actief',
             body: `
@@ -212,22 +254,22 @@ export async function POST(request: NextRequest) {
                 </code>
               </div>
               De AI-Healer analyseert de broncode en pusht binnen enkele minuten een fix naar GitHub. Geen actie vereist.
-            `,
-            host
+            `
           });
         } catch (mailErr: any) {
           console.error('[Watchdog] Auto-Heal mail failed:', mailErr.message);
         }
-      } else if (level === 'error' || level === 'critical') {
+      } else if (level === 'error' || level === 'critical' || (aggressiveAlerts && level === 'warn')) {
         // 3. Bij onbekende kritieke fouten: Stuur een One-Click Repair mail
         const siteUrl = MarketManager.getMarketDomains()[market.market_code] || `https://${MarketManager.getMarketDomains()['BE']?.replace('https://', '') || 'www.voices.be'}`;
         const repairUrl = `${siteUrl}/api/admin/system/repair?eventId=${eventId}`;
 
         try {
-          await mailEngine.sendVoicesMail({
-            to: adminEmail,
-            subject: `🚨 Systeemfout gedetecteerd: ${error.substring(0, 50)}`,
-            title: 'Systeem Watchdog',
+          await sendMailToAdmins({
+            subject: level === 'warn'
+              ? `⚠️ Systeemwaarschuwing: ${error.substring(0, 50)}`
+              : `🚨 Systeemfout gedetecteerd: ${error.substring(0, 50)}`,
+            title: level === 'warn' ? 'Systeem Waarschuwing' : 'Systeem Watchdog',
             body: `
               Er is een kritieke fout opgetreden in de <strong>${component || 'frontend'}</strong>.<br/><br/>
               <div style="background: #fdf2f8; border-left: 4px solid #ff007a; padding: 20px; margin: 20px 0; border-radius: 8px;">
@@ -259,8 +301,7 @@ export async function POST(request: NextRequest) {
               </table>
             `,
             buttonText: 'GENEES SYSTEEM (ONE-CLICK)',
-            buttonUrl: repairUrl,
-            host
+            buttonUrl: repairUrl
           });
         } catch (mailErr: any) {
           console.error('[Watchdog] Critical error mail failed:', mailErr.message);
