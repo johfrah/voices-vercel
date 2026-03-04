@@ -157,7 +157,7 @@ const HeaderIcon = ({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
             transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            className="absolute top-full right-0 mt-1 w-[320px] bg-white rounded-[20px] shadow-aura border border-black/5 overflow-hidden z-[210]"
+            className="absolute top-full right-0 mt-1 w-[320px] bg-va-off-white rounded-[20px] shadow-aura border border-black/5 overflow-hidden z-[210]"
           >
             <ContainerInstrument plain className="p-1">
               {children}
@@ -230,7 +230,7 @@ const DropdownItem = ({
           as="div"
           className={`w-full flex items-center justify-between px-3 py-3 rounded-xl transition-all duration-500 group ${
             isActive ? 'bg-primary/5 text-primary' : 
-            variant === 'danger' ? 'text-red-500 hover:bg-red-50' : 
+            variant === 'danger' ? 'text-red-500 hover:bg-red-500/10' : 
             variant === 'primary' ? 'text-primary hover:bg-primary/5' :
             'text-va-black/40 hover:text-va-black hover:bg-va-black/5'
           }`}
@@ -256,7 +256,7 @@ const DropdownItem = ({
       size="none"
       className={`w-full flex items-center justify-between px-3 py-3 rounded-xl transition-all duration-500 group ${
         isActive ? 'bg-primary/5 text-primary' : 
-        variant === 'danger' ? 'text-red-500 hover:bg-red-50' : 
+        variant === 'danger' ? 'text-red-500 hover:bg-red-500/10' : 
         variant === 'primary' ? 'text-primary hover:bg-primary/5' :
         'text-va-black/40 hover:text-va-black hover:bg-va-black/5'
       }`}
@@ -607,7 +607,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
   const isDev = process.env.NODE_ENV === 'development';
 
   return (
-    <ContainerInstrument as="nav" className={`w-full px-4 md:px-6 py-1 flex items-center bg-white/40 backdrop-blur-3xl border-b border-black/5 golden-curve relative`}>
+    <ContainerInstrument as="nav" className={`w-full px-4 md:px-6 py-1 flex items-center bg-va-off-white/80 backdrop-blur-3xl border-b border-black/5 golden-curve relative`}>
       <ContainerInstrument plain className="flex-1 flex justify-start">
         <ButtonInstrument 
           as={VoicesLinkInstrument}
@@ -706,11 +706,11 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
             {hasSubmenu && (
               <ContainerInstrument plain className="absolute top-full left-1/2 -translate-x-1/2 pt-4 opacity-0 translate-y-2 pointer-events-none group-hover/link:opacity-100 group-hover/link:translate-y-0 group-hover/link:pointer-events-auto transition-all duration-500 z-[250]">
                 {(pathname.startsWith('/studio') && idx === 0) ? (
-                  <ContainerInstrument plain className="bg-white rounded-[20px] shadow-aura border border-black/5 w-[480px] overflow-hidden">
+                  <ContainerInstrument plain className="bg-va-off-white rounded-[20px] shadow-aura border border-black/5 w-[480px] overflow-hidden">
                     <StudioWorkshopsMenu />
                   </ContainerInstrument>
                 ) : (
-                  <ContainerInstrument plain className="bg-white rounded-[20px] shadow-aura border border-black/5 p-2 w-64 overflow-hidden">
+                <ContainerInstrument plain className="bg-va-off-white rounded-[20px] shadow-aura border border-black/5 p-2 w-64 overflow-hidden">
                     {link.submenu.map((sub: any, subIdx: number) => (
                       <DropdownItem 
                         key={subIdx}
@@ -742,7 +742,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
                   variant="plain"
                   size="none"
                   onClick={() => removeLink(idx)}
-                  className="p-1 text-red-500 hover:bg-red-50 rounded"
+                  className="p-1 text-red-500 hover:bg-red-500/10 rounded"
                 >
                   <Trash2 size={10} />
                 </ButtonInstrument>
@@ -756,7 +756,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
                   initial={{ opacity: 0, scale: 0.9, y: 10 }}
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.9, y: 10 }}
-                  className="absolute left-0 top-full mt-2 w-64 bg-white rounded-xl shadow-2xl border border-black/10 p-3 z-[250]"
+                  className="absolute left-0 top-full mt-2 w-64 bg-va-off-white rounded-xl shadow-2xl border border-black/10 p-3 z-[250]"
                 >
                   <ContainerInstrument plain className="flex flex-col gap-3">
                     <TextInstrument className="text-[11px] font-bold text-va-black/40 tracking-widest">
@@ -994,7 +994,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
                               removeItem(item.id);
                               playClick('light');
                             }}
-                            className="p-1.5 text-va-black/20 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                              className="p-1.5 text-va-black/20 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-all"
                             title={t('common.remove', 'Verwijderen')}
                           >
                             <Trash2 size={14} />
@@ -1245,7 +1245,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
                         <input 
                           type="email"
                           placeholder={t('nav.login.email_placeholder', "E-mailadres")}
-                          className="w-full py-4 pl-12 pr-4 rounded-xl bg-va-off-white border-2 border-transparent focus:border-primary/20 focus:bg-white transition-all text-[15px] font-light outline-none text-va-black placeholder:text-va-black/20"
+                          className="w-full py-4 pl-12 pr-4 rounded-xl bg-va-off-white border-2 border-transparent focus:border-primary/20 focus:bg-va-off-white transition-all text-[15px] font-light outline-none text-va-black placeholder:text-va-black/20"
                           value={loginEmail}
                           onChange={(e) => setLoginEmail(e.target.value)}
                           required
@@ -1276,9 +1276,9 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
                       </ButtonInstrument>
                       
                       <div className="flex items-center gap-2 py-1">
-                        <div className="h-[1px] flex-1 bg-black/5" />
+                        <div className="h-[1px] flex-1 bg-va-black/10" />
                         <TextInstrument className="text-[11px] font-bold text-va-black/20 tracking-widest uppercase"><VoiceglotText translationKey="common.or" defaultText="of" /></TextInstrument>
-                        <div className="h-[1px] flex-1 bg-black/5" />
+                        <div className="h-[1px] flex-1 bg-va-black/10" />
                       </div>
 
                       <ButtonInstrument 
@@ -1333,7 +1333,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
                   <DropdownItem icon={Heart} label={<VoiceglotText translationKey="nav.favorites" defaultText="Favorieten" />} href="/account/favorites/" badge={favoritesCount > 0 ? favoritesCount : undefined} />
                   {!isPortfolioMarket && <DropdownItem icon={ShoppingCart} label={<VoiceglotText translationKey="nav.cart" defaultText="Winkelmandje" />} href="/checkout/" badge={cartCount > 0 ? cartCount : undefined} />}
                   <DropdownItem icon={User} label={<VoiceglotText translationKey="nav.account" defaultText={auth.isAuthenticated ? "Mijn Account" : "Inloggen"} />} href="/account/" />
-                  <div className="h-px bg-black/5 mx-2 my-1" />
+                  <div className="h-px bg-va-black/10 mx-2 my-1" />
                 </>
               )}
               
