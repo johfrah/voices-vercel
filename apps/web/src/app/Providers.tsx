@@ -11,7 +11,6 @@ import { VoicesStateProvider } from '@/contexts/VoicesStateContext';
 import { WatchdogProvider } from '@/contexts/WatchdogContext';
 import { WorldProvider } from '@/contexts/WorldContext';
 import { ClientLogger } from '@/lib/system/client-logger';
-import { usePathname } from 'next/navigation';
 import React, { ReactNode } from 'react';
 
 import { VersionGuard } from '@/components/system/VersionGuard';
@@ -69,7 +68,6 @@ export function Providers({
     };
   }
 
-  const pathname = usePathname();
   // 🛡️ CHRIS-PROTOCOL: Version Sync Mandate (v2.27.8)
   // Major Refactor: ID-First Handshake Architecture
   const currentVersion = '2.28.17';
@@ -147,7 +145,7 @@ export function Providers({
                   <EditModeProvider>
                     <GlobalAudioProvider>
                       <NotificationProvider>
-                        <DebugLogger currentVersion={currentVersion} pathname={pathname} activeLang={activeLang} />
+                        <DebugLogger currentVersion={currentVersion} activeLang={activeLang} />
                         {children}
                       </NotificationProvider>
                     </GlobalAudioProvider>
@@ -169,11 +167,9 @@ export function Providers({
  */
 function DebugLogger({ 
   currentVersion, 
-  pathname, 
   activeLang 
 }: { 
   currentVersion: string; 
-  pathname: string; 
   activeLang: string; 
 }) {
   const { isAdmin, isAuthenticated, isLoading } = useAuth();
@@ -186,6 +182,7 @@ function DebugLogger({
     if (typeof window !== 'undefined') {
       const g = window as any;
       const host = window.location.host.replace('www.', '');
+      const pathname = window.location.pathname || '';
       const handshake = g.handshakeContext;
       const currentMarket = MarketManager.getCurrentMarket(host, pathname);
       const contextResolved = MarketManager.resolveContext(host, pathname);
@@ -219,7 +216,7 @@ function DebugLogger({
       (window as any).__VOICES_MARKET__ = currentMarket;
       (window as any).__VOICES_WORLD_ID__ = worldId;
     }
-  }, [currentVersion, pathname, activeLang, isAdmin, isAuthenticated, isLoading]);
+  }, [currentVersion, activeLang, isAdmin, isAuthenticated, isLoading]);
 
   return null;
 }

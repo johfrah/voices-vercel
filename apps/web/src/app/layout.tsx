@@ -15,6 +15,9 @@ import type { Metadata, Viewport } from "next";
 import { Inter, Raleway, Cormorant_Garamond } from "next/font/google";
 import { headers } from "next/headers";
 import Link from "next/link";
+// #region agent log
+import fs from "node:fs";
+// #endregion
 import { Suspense } from "react";
 import dynamic from "next/dynamic";
 import { Toaster } from 'react-hot-toast';
@@ -100,6 +103,26 @@ function buildAlternatesForPath(pathname: string, rawLocales?: Record<string, st
   return alternates;
 }
 
+async function withTimeoutFallback<T>(
+  op: () => Promise<T>,
+  timeoutMs: number,
+  fallback: T,
+  label: string
+): Promise<T> {
+  let timeoutHandle: ReturnType<typeof setTimeout> | null = null;
+  try {
+    const timeoutPromise = new Promise<T>((resolve) => {
+      timeoutHandle = setTimeout(() => resolve(fallback), timeoutMs);
+    });
+    return await Promise.race([op(), timeoutPromise]);
+  } catch (error) {
+    console.error(`[layout] ${label} failed, using fallback`, error);
+    return fallback;
+  } finally {
+    if (timeoutHandle) clearTimeout(timeoutHandle);
+  }
+}
+
   /** Veilige market-resolutie: voorkomt 500 bij onverwachte hosts (Combell proxy, etc.) */
 async function getMarketSafe(host: string) {
   try {
@@ -145,6 +168,9 @@ export async function generateMetadata(): Promise<Metadata> {
   const pathname = headersList.get('x-voices-pathname') || '';
   const host = headersList.get("x-voices-host") || headersList.get("host") || process.env.NEXT_PUBLIC_SITE_URL || MarketManagerServer.getMarketDomains()['BE'].replace('https://', '');
   const cleanHost = host.replace(/^https?:\/\//, '');
+  // #region agent log
+  fs.appendFileSync('/opt/cursor/logs/debug.log', JSON.stringify({ hypothesisId: 'C', location: 'app/layout.tsx:generateMetadata:entry', message: 'generateMetadata entry', data: { pathname, cleanHost, activeLocale }, timestamp: Date.now() }) + '\n');
+  // #endregion
   
   // 🛡️ CHRIS-PROTOCOL: Pass pathname to market manager for sub-journey detection (e.g. /studio, /academy)
   let lookupHost = cleanHost;
@@ -158,7 +184,12 @@ export async function generateMetadata(): Promise<Metadata> {
   // We fetch market, locales and translations in parallel to minimize TTFB
   const [market, worldConfig, alternateLanguages, studioTranslations] = await Promise.all([
     getMarketSafe(lookupHost),
-    ConfigBridge.getWorldConfig(worldId, languageId),
+    withTimeoutFallback(
+      () => ConfigBridge.getWorldConfig(worldId, languageId),
+      3000,
+      null,
+      'generateMetadata worldConfig'
+    ),
     (async () => {
       try {
         const localesPromise = MarketDatabaseService.getAllLocalesAsync();
@@ -190,6 +221,9 @@ export async function generateMetadata(): Promise<Metadata> {
       }
     })()
   ]);
+  // #region agent log
+  fs.appendFileSync('/opt/cursor/logs/debug.log', JSON.stringify({ hypothesisId: 'B', location: 'app/layout.tsx:generateMetadata:resolved', message: 'generateMetadata async resolved', data: { pathname, worldId, languageId, hasMarket: !!market, marketCode: market?.market_code || null, localeCount: Object.keys(alternateLanguages || {}).length, translationCount: Object.keys((studioTranslations as Record<string, string>) || {}).length }, timestamp: Date.now() }) + '\n');
+  // #endregion
 
   if (!market) {
     throw new Error('Market configuration could not be resolved.');
@@ -284,6 +318,9 @@ export default async function RootLayout({
   const pathname = headersList.get('x-voices-pathname') || '';
   const host = headersList.get("x-voices-host") || headersList.get("host") || process.env.NEXT_PUBLIC_SITE_URL || MarketManagerServer.getMarketDomains()['BE'].replace('https://', '');
   const cleanHost = host.replace(/^https?:\/\//, '');
+  // #region agent log
+  fs.appendFileSync('/opt/cursor/logs/debug.log', JSON.stringify({ hypothesisId: 'C', location: 'app/layout.tsx:RootLayout:entry', message: 'RootLayout entry', data: { pathname, cleanHost }, timestamp: Date.now() }) + '\n');
+  // #endregion
   
   // 🛡️ CHRIS-PROTOCOL: Pass pathname to market manager for sub-journey detection (e.g. /studio, /academy)
   let lookupHost = cleanHost;
@@ -312,26 +349,34 @@ export default async function RootLayout({
         return {};
       }
     })(),
-    (async () => {
-      try {
+    withTimeoutFallback(
+      async () => {
         const { data } = await supabase.from('world_languages').select('*');
         return data || [];
-      } catch (err) {
-        console.error(' RootLayout: Failed to load world languages:', err);
-        return [];
-      }
-    })(),
-    (async () => {
-      try {
+      },
+      3000,
+      [],
+      'RootLayout world_languages'
+    ),
+    withTimeoutFallback(
+      async () => {
         const { data } = await supabase.from('languages').select('id, code, label');
         return data || [];
-      } catch (err) {
-        console.error(' RootLayout: Failed to load language registry:', err);
-        return [];
-      }
-    })(),
-    ConfigBridge.getWorldConfig(worldId, languageId)
+      },
+      3000,
+      [],
+      'RootLayout languages'
+    ),
+    withTimeoutFallback(
+      () => ConfigBridge.getWorldConfig(worldId, languageId),
+      3000,
+      null,
+      'RootLayout worldConfig'
+    )
   ]);
+  // #region agent log
+  fs.appendFileSync('/opt/cursor/logs/debug.log', JSON.stringify({ hypothesisId: 'B', location: 'app/layout.tsx:RootLayout:resolved', message: 'RootLayout async resolved', data: { pathname, worldId, languageId, journeyId, hasMarket: !!market, marketCode: market?.market_code || null, translationCount: Object.keys((studioTranslations as Record<string, string>) || {}).length, worldLanguagesCount: Array.isArray(worldLanguages) ? worldLanguages.length : -1, handshakeLanguagesCount: Array.isArray(handshakeLanguages) ? handshakeLanguages.length : -1 }, timestamp: Date.now() }) + '\n');
+  // #endregion
 
   if (!market) {
     throw new Error('Market configuration could not be resolved.');
@@ -346,7 +391,12 @@ export default async function RootLayout({
   const isAcademyPage = pathname.startsWith('/academy/') || pathname === '/academy' || pathname.includes('/academy');
   
   const journeyKey = isStudioPage ? 'studio' : (isAcademyPage ? 'academy' : (market.market_code === 'ADEMING' ? 'ademing' : (market.market_code === 'PORTFOLIO' ? 'portfolio' : (market.market_code === 'ARTIST' ? 'artist' : 'agency'))));
-  const navConfig = await ConfigBridge.getNavConfig(journeyKey, normalizeLocale(langHeader || 'nl-be'));
+  const navConfig = await withTimeoutFallback(
+    () => ConfigBridge.getNavConfig(journeyKey, normalizeLocale(langHeader || 'nl-be')),
+    3000,
+    null,
+    'RootLayout navConfig'
+  );
 
   const initialJourney = isStudioPage ? 'studio' : (isAcademyPage ? 'academy' : (market.market_code === 'ADEMING' ? 'ademing' : (market.market_code === 'PORTFOLIO' ? 'portfolio' : (market.market_code === 'ARTIST' ? 'artist' : 'agency'))));
   const initialUsage = isStudioPage || isAcademyPage ? 'subscription' : (market.market_code === 'ADEMING' ? 'subscription' : 'unpaid');
@@ -377,8 +427,14 @@ export default async function RootLayout({
     journeyId,
     worldConfig
   };
+  // #region agent log
+  fs.appendFileSync('/opt/cursor/logs/debug.log', JSON.stringify({ hypothesisId: 'A', location: 'app/layout.tsx:RootLayout:branch_eval', message: 'RootLayout branch evaluation', data: { pathname, marketCode: market.market_code, isAdminRoute, isStudioPage, isAcademyPage, isAdeming, isOffline }, timestamp: Date.now() }) + '\n');
+  // #endregion
 
   if (isAdminRoute || isStudioPage || (isAdeming && isOffline && !isAdmin)) {
+    // #region agent log
+    fs.appendFileSync('/opt/cursor/logs/debug.log', JSON.stringify({ hypothesisId: 'A', location: 'app/layout.tsx:RootLayout:branch_minimal', message: 'RootLayout selected minimal branch', data: { pathname, reason: { isAdminRoute, isStudioPage, ademingOffline: isAdeming && isOffline && !isAdmin } }, timestamp: Date.now() }) + '\n');
+    // #endregion
     return (
       <html lang={htmlLang} className={htmlClass} suppressHydrationWarning>
         <body className={bodyClass} suppressHydrationWarning>
@@ -438,6 +494,9 @@ export default async function RootLayout({
 
   // UNDER CONSTRUCTION MODE: Minimalistische layout zonder navigatie/footer/voicy
   if (isUnderConstruction) {
+    // #region agent log
+    fs.appendFileSync('/opt/cursor/logs/debug.log', JSON.stringify({ hypothesisId: 'A', location: 'app/layout.tsx:RootLayout:branch_under_construction', message: 'RootLayout selected under construction branch', data: { pathname }, timestamp: Date.now() }) + '\n');
+    // #endregion
     return (
       <html lang={htmlLang} className={htmlClass} suppressHydrationWarning>
       <body className={bodyClass}>
@@ -461,6 +520,9 @@ export default async function RootLayout({
     </html>
     );
   }
+  // #region agent log
+  fs.appendFileSync('/opt/cursor/logs/debug.log', JSON.stringify({ hypothesisId: 'A', location: 'app/layout.tsx:RootLayout:branch_full', message: 'RootLayout selected full branch', data: { pathname, marketCode: market.market_code }, timestamp: Date.now() }) + '\n');
+  // #endregion
 
   return (
     <html lang={htmlLang} className={htmlClass} suppressHydrationWarning>

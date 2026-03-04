@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef } from 'react';
-import { usePathname } from 'next/navigation';
 import toast from 'react-hot-toast';
 
 /**
@@ -11,7 +10,6 @@ import toast from 'react-hot-toast';
  * Dit voorkomt "Version Lag" waarbij de browser op een oude build blijft hangen.
  */
 export function VersionGuard({ currentVersion }: { currentVersion: string }) {
-  const pathname = usePathname();
   const lastCheck = useRef<number>(0); // Start at 0 to force check on mount
 
   useEffect(() => {
@@ -85,15 +83,23 @@ export function VersionGuard({ currentVersion }: { currentVersion: string }) {
       }
     };
 
-    // Check bij mount en route-verandering, maar max 1x per 30 seconden
-    const now = Date.now();
-    if (now - lastCheck.current > 30000) {
-      lastCheck.current = now;
-      checkVersion();
-    }
+    const runVersionCheck = () => {
+      const now = Date.now();
+      if (now - lastCheck.current > 30000) {
+        lastCheck.current = now;
+        checkVersion();
+      }
+    };
 
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [pathname, currentVersion]);
+    // Check bij mount en periodiek, zonder router-context dependency
+    runVersionCheck();
+    const intervalId = window.setInterval(runVersionCheck, 30000);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.clearInterval(intervalId);
+    };
+  }, [currentVersion]);
 
   return null;
 }
