@@ -11,8 +11,6 @@ import {
 } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useCheckout } from '@/contexts/CheckoutContext';
-import { useVoicesState } from '@/contexts/VoicesStateContext';
-import { SlimmeKassa } from '@/lib/engines/pricing-engine';
 import { VoicesLink as Link } from '@/components/ui/VoicesLink';
 import { usePathname } from 'next/navigation';
 
@@ -28,10 +26,9 @@ const LiquidBackground = nextDynamic(() => import('@/components/ui/LiquidBackgro
  *  CHECKOUT PAGE (NUCLEAR 2026)
  */
 export default function CheckoutPageClient() {
-  const { state, setJourney, isHydrated, addItem } = useCheckout();
-  const { state: voicesState } = useVoicesState();
-  const seededActorsRef = useRef<string>('');
+  const { state, setJourney, addItem, isHydrated } = useCheckout();
   const pathname = usePathname();
+  const didMaterializeSelectedActorRef = useRef(false);
   const hasWorkshopItem = useMemo(
     () => (state.items || []).some((item: any) => item?.type === 'workshop_edition'),
     [state.items]
@@ -59,124 +56,6 @@ export default function CheckoutPageClient() {
     }
   }, [searchParams, setJourney]);
 
-  // Bridge selected actors from Agency casting to checkout cart when cart is still empty.
-  useEffect(() => {
-    if (!isHydrated) return;
-    if ((state.items || []).length > 0) return;
-
-    const selectedActors = Array.isArray(voicesState.selected_actors) ? voicesState.selected_actors : [];
-    if (selectedActors.length === 0) return;
-
-    const signature = selectedActors
-      .map((actor: any) => `${actor?.id || 'unknown'}:${actor?.updated_at || ''}`)
-      .sort()
-      .join('|');
-
-    if (!signature || seededActorsRef.current === signature) return;
-    seededActorsRef.current = signature;
-
-    const safeBriefing = (state.briefing || '').trim();
-    const words = safeBriefing ? safeBriefing.split(/\s+/).filter(Boolean).length : 0;
-    const prompts = safeBriefing ? safeBriefing.split(/\n+/).filter(Boolean).length : 1;
-    const countries = Array.isArray(state.country) ? state.country : [state.country || 'BE'];
-    const spotsByMedia = state.usage === 'commercial' && Array.isArray(state.media)
-      ? state.media.reduce((acc: Record<string, number>, media) => {
-          acc[media] = (state.spotsDetail && state.spotsDetail[media]) || state.spots || 1;
-          return acc;
-        }, {})
-      : undefined;
-    const yearsByMedia = state.usage === 'commercial' && Array.isArray(state.media)
-      ? state.media.reduce((acc: Record<string, number>, media) => {
-          acc[media] = (state.yearsDetail && state.yearsDetail[media]) || state.years || 1;
-          return acc;
-        }, {})
-      : undefined;
-    const vatExempt = !!state.customer.vat_number &&
-      state.customer.vat_verified === true &&
-      (state.customer.vat_number || '').length > 2 &&
-      !state.customer.vat_number.startsWith('BE') &&
-      state.customer.country !== 'BE';
-
-    selectedActors.forEach((actor: any, index: number) => {
-      const pricing = SlimmeKassa.calculate({
-        usage: state.usage,
-        usageId: state.usageId,
-        plan: state.plan,
-        words,
-        prompts,
-        mediaTypes: state.usage === 'commercial' ? (state.media as any) : [],
-        mediaIds: state.mediaIds,
-        countries,
-        countryId: state.countryId,
-        spots: spotsByMedia,
-        years: yearsByMedia,
-        liveSession: state.liveSession,
-        actorRates: actor,
-        music: state.music,
-        secondaryLanguageIds: state.secondaryLanguageIds,
-        isVatExempt: vatExempt
-      }, state.pricingConfig || undefined);
-
-      const subtotal = Number(pricing?.subtotal || 0);
-      if (!Number.isFinite(subtotal) || subtotal <= 0) return;
-
-      addItem({
-        id: `seeded-${actor.id}-${Date.now()}-${index}`,
-        type: 'voice_over',
-        actor,
-        briefing: safeBriefing,
-        script: safeBriefing,
-        pronunciation: state.pronunciation,
-        usage: state.usage,
-        media: state.media,
-        country: state.country,
-        secondaryLanguages: state.secondaryLanguages,
-        spots: spotsByMedia || state.spots,
-        years: yearsByMedia || state.years,
-        liveSession: state.liveSession,
-        music: state.music,
-        pricing: {
-          base: pricing.base,
-          wordSurcharge: pricing.wordSurcharge,
-          mediaSurcharge: pricing.mediaSurcharge,
-          mediaBreakdown: pricing.mediaBreakdown,
-          musicSurcharge: pricing.musicSurcharge,
-          radioReadySurcharge: pricing.radioReadySurcharge || 0,
-          subtotal,
-          total: subtotal,
-          vat: Number(pricing.vat || 0),
-          tax: Number(pricing.vat || 0),
-        }
-      });
-    });
-  }, [
-    addItem,
-    isHydrated,
-    state.items,
-    state.usage,
-    state.usageId,
-    state.plan,
-    state.media,
-    state.mediaIds,
-    state.country,
-    state.countryId,
-    state.spotsDetail,
-    state.yearsDetail,
-    state.spots,
-    state.years,
-    state.liveSession,
-    state.music,
-    state.secondaryLanguages,
-    state.secondaryLanguageIds,
-    state.briefing,
-    state.pronunciation,
-    state.customer.vat_number,
-    state.customer.vat_verified,
-    state.customer.country,
-    state.pricingConfig,
-    voicesState.selected_actors
-  ]);
-
   useEffect(() => {
     if (!isHydrated || !pathname) return;
     const isCheckoutPath = pathname.includes('/checkout');
@@ -185,6 +64,78 @@ export default function CheckoutPageClient() {
       window.location.replace(studioCheckoutPath);
     }
   }, [isHydrated, isStudioJourney, pathname, studioCheckoutPath]);
+
+  useEffect(() => {
+    if (!isHydrated) return;
+    if (didMaterializeSelectedActorRef.current) return;
+    if (isStudioJourney) return;
+    if (state.items.length > 0) return;
+    if (!state.selectedActor) return;
+
+    const currentSelectionTotal = Number(state.pricing?.total ?? 0);
+    if (!Number.isFinite(currentSelectionTotal) || currentSelectionTotal <= 0) {
+      return;
+    }
+
+    const itemId = `voice-${state.selectedActor.id}-${Date.now()}`;
+    didMaterializeSelectedActorRef.current = true;
+    addItem({
+      id: itemId,
+      type: 'voice_over',
+      actor: state.selectedActor,
+      briefing: state.briefing,
+      script: state.briefing,
+      pronunciation: state.pronunciation,
+      usage: state.usage,
+      usageId: state.usageId,
+      journeyId: state.journeyId,
+      media: state.media,
+      mediaIds: state.mediaIds,
+      country: state.country,
+      countryId: state.countryId,
+      secondaryLanguages: state.secondaryLanguages,
+      secondaryLanguageIds: state.secondaryLanguageIds,
+      spots: state.spotsDetail || state.spots,
+      years: state.yearsDetail || state.years,
+      liveSession: state.liveSession,
+      music: state.music,
+      pricing: {
+        base: state.pricing.base,
+        wordSurcharge: state.pricing.wordSurcharge,
+        mediaSurcharge: state.pricing.mediaSurcharge,
+        mediaBreakdown: state.pricing.mediaBreakdown,
+        musicSurcharge: state.pricing.musicSurcharge,
+        radioReadySurcharge: state.pricing.radioReadySurcharge || 0,
+        subtotal: currentSelectionTotal,
+        total: currentSelectionTotal
+      }
+    });
+  }, [
+    isHydrated,
+    isStudioJourney,
+    pathname,
+    state.briefing,
+    state.country,
+    state.countryId,
+    state.items.length,
+    state.journeyId,
+    state.liveSession,
+    state.media,
+    state.mediaIds,
+    state.music,
+    state.pricing,
+    state.pronunciation,
+    state.secondaryLanguageIds,
+    state.secondaryLanguages,
+    state.selectedActor,
+    state.spots,
+    state.spotsDetail,
+    state.usage,
+    state.usageId,
+    state.years,
+    state.yearsDetail,
+    addItem
+  ]);
 
   if (!isHydrated) return <LoadingScreenInstrument />;
 
