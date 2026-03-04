@@ -54,7 +54,7 @@ interface OrderRecord {
 }
 
 export default function OrdersPage() {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, isLoading: isAuthLoading } = useAuth();
   const { t } = useTranslation();
   const searchParams = useSearchParams();
   const highlightedOrderId = searchParams?.get('orderId');
@@ -81,33 +81,52 @@ export default function OrdersPage() {
   };
 
   useEffect(() => {
-    if (isAuthenticated && user?.email) {
+    if (isAuthLoading) return;
+
+    if (!isAuthenticated || !user?.email) {
       setErrorMessage(null);
-      const forceRefresh = !!highlightedOrderId;
-      fetch(`/api/intelligence/customer-360?email=${user.email}${forceRefresh ? '&forceRefresh=true' : ''}`)
-        .then(async (res) => {
-          if (!res.ok) {
-            throw new Error('orders_fetch_failed');
-          }
-          return res.json();
-        })
-        .then(data => {
-          setOrdersList(data.orders || []);
-          setIsLoading(false);
-          // Auto-expand highlighted order
-          if (highlightedOrderId) {
-            const parsedOrderId = Number(highlightedOrderId);
-            if (!Number.isNaN(parsedOrderId)) {
-              setExpandedOrders(prev => ({ ...prev, [parsedOrderId]: true }));
-            }
-          }
-        })
-        .catch(() => {
-          setErrorMessage('Bestellingen konden niet geladen worden. Probeer opnieuw.');
-          setIsLoading(false);
-        });
+      setIsLoading(false);
+      setOrdersList([]);
+      return;
     }
-  }, [isAuthenticated, user, highlightedOrderId]);
+
+    setIsLoading(true);
+    setErrorMessage(null);
+    const forceRefresh = !!highlightedOrderId;
+    fetch(`/api/intelligence/customer-360?email=${user.email}${forceRefresh ? '&forceRefresh=true' : ''}`)
+      .then(async (res) => {
+        if (!res.ok) {
+          throw new Error('orders_fetch_failed');
+        }
+        return res.json();
+      })
+      .then(data => {
+        setOrdersList(data.orders || []);
+        setIsLoading(false);
+        // Auto-expand highlighted order
+        if (highlightedOrderId) {
+          const parsedOrderId = Number(highlightedOrderId);
+          if (!Number.isNaN(parsedOrderId)) {
+            setExpandedOrders(prev => ({ ...prev, [parsedOrderId]: true }));
+          }
+        }
+      })
+      .catch(() => {
+        setErrorMessage('Bestellingen konden niet geladen worden. Probeer opnieuw.');
+        setIsLoading(false);
+      });
+  }, [isAuthLoading, isAuthenticated, user, highlightedOrderId]);
+
+  useEffect(() => {
+    if (!isAuthLoading) return;
+
+    const timer = window.setTimeout(() => {
+      setIsLoading(false);
+      setErrorMessage('Sessiecontrole duurt langer dan verwacht. Herlaad de pagina.');
+    }, 10000);
+
+    return () => window.clearTimeout(timer);
+  }, [isAuthLoading]);
 
   useEffect(() => {
     if (highlightedOrderId && ordersList.length > 0) {
