@@ -57,9 +57,19 @@ export interface NavConfig {
 
 export class ConfigBridge {
   //  CHRIS-PROTOCOL: In-memory cache for 0ms navigation loading (2026)
-  private static navCache = new Map<string, { data: NavConfig, timestamp: number }>();
+  private static navCache = new Map<string, { data: NavConfig | null, timestamp: number }>();
   private static worldConfigCache = new Map<string, { data: any, timestamp: number }>();
   private static CACHE_TTL = 1000 * 60 * 5; // 5 minuten cache
+  private static logThrottle = new Map<string, number>();
+  private static LOG_COOLDOWN_MS = 1000 * 60;
+
+  private static shouldLog(key: string): boolean {
+    const now = Date.now();
+    const previous = this.logThrottle.get(key) || 0;
+    if (now - previous < this.LOG_COOLDOWN_MS) return false;
+    this.logThrottle.set(key, now);
+    return true;
+  }
 
   /**
    * 🌍 WORLD CONFIG RESOLVER
@@ -111,7 +121,10 @@ export class ConfigBridge {
     try {
       // 2. Fetch from DB
       const rawData = await this.fetchFromSource(key);
-      if (!rawData) return null;
+      if (!rawData) {
+        this.navCache.set(cacheKey, { data: null, timestamp: now });
+        return null;
+      }
 
       // 3. DNA-ROUTING: Resolve all entityIds to slugs
       const resolvedData = await this.resolveDNA(rawData, language);
@@ -173,9 +186,7 @@ export class ConfigBridge {
 
   private static async revalidateCache(key: string) {
     const data = await this.fetchFromSource(key);
-    if (data) {
-      this.navCache.set(key, { data, timestamp: Date.now() });
-    }
+    this.navCache.set(key, { data, timestamp: Date.now() });
   }
 
   private static async fetchFromSource(key: string): Promise<NavConfig | null> {
@@ -189,7 +200,9 @@ export class ConfigBridge {
         throw new Error('Drizzle not available on Edge');
       }
     } catch (dbError) {
-      console.warn(` ConfigBridge Drizzle failed for ${key}, falling back to SDK`);
+      if (this.shouldLog(`drizzle:${key}`)) {
+        console.warn(` ConfigBridge Drizzle failed for ${key}, falling back to SDK`);
+      }
       try {
         const { data, error } = await sdkClient
           .from('nav_menus')
@@ -205,7 +218,9 @@ export class ConfigBridge {
           };
         }
       } catch (sdkErr: any) {
-        console.error(`[ConfigBridge] SDK fallback failed for ${key}:`, sdkErr.message);
+        if (this.shouldLog(`sdk:${key}:${sdkErr?.message || 'unknown'}`)) {
+          console.warn(`[ConfigBridge] SDK fallback failed for ${key}:`, sdkErr?.message || sdkErr);
+        }
       }
     }
 

@@ -508,7 +508,9 @@ interface SmartRouteParams {
 }
 
 export async function generateMetadata({ params }: { params: SmartRouteParams }): Promise<Metadata> {
-  console.error(` [SmartRouter] generateMetadata triggered for: ${params.slug.join('/')}`);
+  if (process.env.NODE_ENV === 'development') {
+    console.info(` [SmartRouter] generateMetadata: ${params.slug.join('/')}`);
+  }
   const [initialSegment] = params.slug;
   
   // 🛡️ CHRIS-PROTOCOL: System Route Protection (v2.15.034)
@@ -528,7 +530,9 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
   const lang = normalizeLocale(headersList.get('x-voices-lang') || 'nl-be');
   const normalizedSlug = normalizeSlug(params.slug);
   
-  console.error(` [SmartRouter] Metadata context: host=${host}, market=${market.market_code}, lang=${lang}, slug=${normalizedSlug}`);
+  if (process.env.NODE_ENV === 'development') {
+    console.info(` [SmartRouter] Metadata context: host=${host}, market=${market.market_code}, lang=${lang}, slug=${normalizedSlug}`);
+  }
   
   // 🛡️ CHRIS-PROTOCOL: Strip language prefix for metadata resolution
   const cleanSlug = stripLanguagePrefix(normalizedSlug);
@@ -579,7 +583,9 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
   // But with multilingual registry, the full path should be in the database.
   const firstSegment = lookupSlug;
 
-  console.error(` [SmartRouter] Resolved firstSegment: ${firstSegment} (from cleanSlug: ${cleanSlug})`);
+  if (process.env.NODE_ENV === 'development') {
+    console.info(` [SmartRouter] Resolved firstSegment: ${firstSegment} (from cleanSlug: ${cleanSlug})`);
+  }
 
   //  CHRIS-PROTOCOL: Helper voor meertalige SEO via Voiceglot
   const getTranslatedSEO = async (key: string, defaultText: string) => {
@@ -735,7 +741,9 @@ export default async function SmartRoutePage({ params }: { params: SmartRoutePar
   ];
 
   if (reserved.includes(firstSegment)) {
-    console.error(` [SmartRouter] NUCLEAR BLOCK: Attempted to route system path "${firstSegment}" via SmartRouter. Redirecting to 404.`);
+    if (process.env.NODE_ENV === 'development') {
+      console.info(` [SmartRouter] Reserved path blocked: "${firstSegment}".`);
+    }
     return notFound();
   }
 
@@ -761,22 +769,28 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
     return notFound();
   }
 
-  // 🛡️ CHRIS-PROTOCOL: Log to database for forensic audit (v2.14.552)
-  try {
-    const { db: directDb, systemEvents } = await import('@/lib/system/voices-config');
-    if (directDb && systemEvents) {
-      await directDb.insert(systemEvents).values({
-        level: 'info',
-        source: 'SmartRouter',
-        message: `[SmartRouter] SmartRouteContent START for: ${normalizedSlug}`,
-        details: { segments, lang, cleanSlug, cleanSegments },
-      });
+  // Optional forensic audit logging (disabled by default to avoid noisy writes).
+  if (process.env.ENABLE_SMART_ROUTER_AUDIT_LOGS === 'true') {
+    try {
+      const { db: directDb, systemEvents } = await import('@/lib/system/voices-config');
+      if (directDb && systemEvents) {
+        await directDb.insert(systemEvents).values({
+          level: 'info',
+          source: 'SmartRouter',
+          message: `[SmartRouter] SmartRouteContent START for: ${normalizedSlug}`,
+          details: { segments, lang, cleanSlug, cleanSegments },
+        });
+      }
+    } catch (e: any) {
+      if (process.env.NODE_ENV === 'development') {
+        console.warn(` [SmartRouter] Audit DB logging failed: ${e.message}`);
+      }
     }
-  } catch (e: any) {
-    console.error(` [SmartRouter] DB logging failed: ${e.message}`);
   }
 
-  console.error(` [SmartRouter] SmartRouteContent START for: ${segments.join('/')}`);
+  if (process.env.NODE_ENV === 'development') {
+    console.info(` [SmartRouter] SmartRouteContent START for: ${segments.join('/')}`);
+  }
   try {
     // 🛡️ NUCLEAR HANDSHAKE: Resolve via Slug Registry
     const host = headersList.get('host') || '';
@@ -1465,41 +1479,22 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
       const actors = searchResults?.results || [];
 
       const mappedActors = actors.map((actor: any) => ({
-        id: actor.id,
-        display_name: actor.display_name,
-        first_name: actor.first_name,
-        last_name: actor.last_name,
-        email: actor.email,
-        photo_url: actor.photo_url,
-        voice_score: actor.voice_score,
-        native_lang: actor.native_lang,
-        native_lang_id: actor.native_lang_id ?? actor.native_language_id ?? null,
-        native_language_id: actor.native_language_id ?? actor.native_lang_id ?? null,
-        gender: actor.gender,
-        gender_id: actor.gender_id ?? null,
-        starting_price: actor.starting_price,
+        // Keep full payload so filter/pricing engines retain required ID fields.
+        ...actor,
         delivery_days_min: actor.delivery_days_min || 1,
         delivery_days_max: actor.delivery_days_max || 2,
-        extra_langs: actor.extra_langs,
-        country_id: actor.country_id ?? null,
-        tone_of_voice: actor.tone_of_voice,
-        clients: actor.clients,
         cutoff_time: actor.cutoff_time || "18:00",
         availability: actor.availability || [],
-        tagline: actor.tagline,
         ai_tags: actor.ai_tags || [],
-        slug: actor.slug,
         demos: actor.demos || [],
-        bio: actor.bio,
-        price_ivr: actor.price_ivr,
-        price_unpaid: actor.price_unpaid,
-        price_online: actor.price_online,
-        price_bsf: actor.price_bsf,
-        bsf: actor.bsf,
-        holiday_from: actor.holiday_from,
-        holiday_till: actor.holiday_till,
-        rates: actor.rates || actor.rates_raw || {},
-        rates_raw: actor.rates_raw || actor.rates || {}
+        native_lang_id: actor.native_lang_id ?? actor.native_language_id ?? null,
+        native_language_id: actor.native_language_id ?? actor.native_lang_id ?? null,
+        gender_id: actor.gender_id ?? actor.genderId ?? null,
+        genderId: actor.genderId ?? actor.gender_id ?? null,
+        country_id: actor.country_id ?? actor.countryId ?? null,
+        countryId: actor.countryId ?? actor.country_id ?? null,
+        rates_raw: actor.rates_raw || actor.rates || {},
+        rates: actor.rates || actor.rates_raw || {}
       }));
       const marketCode = headersList.get("x-voices-market") || "BE";
 

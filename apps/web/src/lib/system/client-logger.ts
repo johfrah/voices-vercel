@@ -16,6 +16,12 @@ export class ClientLogger {
   private static isInitialized = false;
   private static breadcrumbs: Breadcrumb[] = [];
   private static readonly MAX_BREADCRUMBS = 20;
+  private static reportThrottle = new Map<string, number>();
+  private static readonly THROTTLE_MS: Record<'info' | 'warn' | 'error', number> = {
+    info: 30000,
+    warn: 15000,
+    error: 5000,
+  };
 
   static init() {
     if (this.isInitialized || typeof window === 'undefined') return;
@@ -74,11 +80,7 @@ export class ClientLogger {
 
         this.addBreadcrumb(level, message.substring(0, 500));
 
-        // 🛡️ CHRIS-PROTOCOL: Full Visibility Mode (v2.14.241)
-        // We loggen nu ALLES direct naar de server voor maximale debug-kracht.
-        const isVoicesLog = message.includes('[Voices]') || message.includes('[CheckoutContext]') || message.includes('[Watchdog]');
-        
-        if (level === 'error' || level === 'warn' || isVoicesLog) {
+        if (level === 'error' || level === 'warn') {
           const errorObj = args.find(arg => arg instanceof Error);
           this.report(level as any, `${level.toUpperCase()}: ${message.substring(0, 500)}`, {
             full_console_output: message,
@@ -290,6 +292,10 @@ export class ClientLogger {
 
   static async report(level: 'info' | 'warn' | 'error', message: string, details: any = {}) {
     try {
+      if (!this.shouldReport(level, message)) {
+        return;
+      }
+
       const payload = JSON.stringify({
         level,
         message,
@@ -337,5 +343,19 @@ export class ClientLogger {
     } catch (e) {
       // Stille fail
     }
+  }
+
+  private static shouldReport(level: 'info' | 'warn' | 'error', message: string): boolean {
+    const key = `${level}:${message.slice(0, 180)}`;
+    const now = Date.now();
+    const previous = this.reportThrottle.get(key) || 0;
+    const cooldown = this.THROTTLE_MS[level] || 15000;
+
+    if (now - previous < cooldown) {
+      return false;
+    }
+
+    this.reportThrottle.set(key, now);
+    return true;
   }
 }
