@@ -187,7 +187,7 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
       raw.endsWith('/api/proxy/') ||
       raw.endsWith('/api/proxy/?path');
     if (!isInvalid) return raw;
-    return demo.id ? `/api/admin/actors/demos/${demo.id}/stream` : undefined;
+    return demo.id ? `/api/admin/actors/demos/${demo.id}/stream` : '';
   })();
 
   const handleRename = async (e: React.MouseEvent, p: Demo) => {
@@ -243,7 +243,7 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
       }
     } else {
       setIsDeleting(p.id);
-      playClick('warning');
+      playClick('lock');
       setTimeout(() => setIsDeleting(null), 3000);
     }
   };
@@ -282,7 +282,7 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
             {demo.actor_photo ? (
               <VoiceglotImage  
                 src={demo.actor_photo} 
-                alt={demo.actor_name} 
+                alt={demo.actor_name || 'Voice-over'} 
                 fill
                 className="object-cover" 
               />

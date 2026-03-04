@@ -764,9 +764,6 @@ export async function getActor(slug: string, lang: string = 'nl-BE'): Promise<Ac
  */
 async function processActorData(actor: any, slug: string): Promise<Actor> {
   console.error(` [api-server] processActorData START for ${actor.first_name} (ID: ${actor.id})`);
-  // #region agent log
-  try { require('fs').appendFileSync('/opt/cursor/logs/debug.log', JSON.stringify({ hypothesisId: 'A', location: 'api-server.ts:processActorData:entry', message: 'processActorData entry', data: { actor_id: actor?.id, slug, actor_name: actor?.first_name }, timestamp: Date.now() }) + '\n'); } catch {}
-  // #endregion
   
   // Fetch relations via SDK to avoid schema drift on relation columns.
   let mappedDemos: any[] = [];
@@ -816,14 +813,9 @@ async function processActorData(actor: any, slug: string): Promise<Actor> {
     mappedDemos = demos.map((d: any) => {
       const rawUrl = typeof d.url === 'string' ? d.url : '';
       const demoMediaId = d.media_id ?? d.mediaId ?? null;
-      let resolvedViaMediaId = false;
-      // #region agent log
-      try { require('fs').appendFileSync('/opt/cursor/logs/debug.log', JSON.stringify({ hypothesisId: 'D', location: 'api-server.ts:processActorData:demo-input', message: 'demo mapping input', data: { actor_id: actor?.id, demo_id: d?.id, has_url: !!rawUrl, raw_url: rawUrl, media_id_snake: d?.media_id ?? null, media_id_camel: d?.mediaId ?? null, chosen_media_id: demoMediaId }, timestamp: Date.now() }) + '\n'); } catch {}
-      // #endregion
       let finalUrl = rawUrl.trim();
       if ((!finalUrl || finalUrl === '/api/proxy/?path=' || finalUrl.includes('undefined')) && demoMediaId) {
         finalUrl = mediaById.get(Number(demoMediaId)) || '';
-        resolvedViaMediaId = !!finalUrl;
       }
 
       let audioUrl = '';
@@ -835,9 +827,6 @@ async function processActorData(actor: any, slug: string): Promise<Actor> {
           audioUrl = finalUrl.startsWith('http') ? finalUrl : `/api/proxy/?path=${encodeURIComponent(finalUrl)}`;
         }
       }
-      // #region agent log
-      try { require('fs').appendFileSync('/opt/cursor/logs/debug.log', JSON.stringify({ hypothesisId: 'B', location: 'api-server.ts:processActorData:demo-output', message: 'demo mapping output', data: { actor_id: actor?.id, demo_id: d?.id, resolved_via_media_id: resolvedViaMediaId, mapped_audio_url: audioUrl, mapped_audio_url_is_empty: !audioUrl, mapped_audio_url_has_undefined: typeof audioUrl === 'string' && audioUrl.includes('undefined'), mapped_audio_url_empty_proxy_path: audioUrl === '/api/proxy/?path=' }, timestamp: Date.now() }) + '\n'); } catch {}
-      // #endregion
       return {
         id: d.id,
         title: d.name,
@@ -858,9 +847,6 @@ async function processActorData(actor: any, slug: string): Promise<Actor> {
       };
     });
   } catch (err: any) {
-    // #region agent log
-    try { require('fs').appendFileSync('/opt/cursor/logs/debug.log', JSON.stringify({ hypothesisId: 'E', location: 'api-server.ts:processActorData:relations-error', message: 'drizzle relations query failed', data: { actor_id: actor?.id, error_message: err?.message || 'unknown', error_cause: err?.cause?.message || null, error_code: err?.code || null }, timestamp: Date.now() }) + '\n'); } catch {}
-    // #endregion
     console.warn(` [api-server] processActorData: relations fetch failed, using empty arrays:`, err.message);
   }
 
@@ -881,12 +867,6 @@ async function processActorData(actor: any, slug: string): Promise<Actor> {
       }
     } catch (e) {}
   }
-  const suspicious_demo_sources = mappedDemos
-    .filter((demo: any) => typeof demo?.audio_url === 'string' && (demo.audio_url.includes('undefined') || demo.audio_url === '/api/proxy/?path='))
-    .map((demo: any) => ({ demo_id: demo.id, audio_url: demo.audio_url }));
-  // #region agent log
-  try { require('fs').appendFileSync('/opt/cursor/logs/debug.log', JSON.stringify({ hypothesisId: 'A', location: 'api-server.ts:processActorData:exit', message: 'processActorData mapped demos summary', data: { actor_id: actor?.id, mapped_demo_count: mappedDemos.length, suspicious_demo_count: suspicious_demo_sources.length, suspicious_demo_sources }, timestamp: Date.now() }) + '\n'); } catch {}
-  // #endregion
 
   console.error(` [api-server] processActorData SUCCESS for ${actor.first_name}`);
 

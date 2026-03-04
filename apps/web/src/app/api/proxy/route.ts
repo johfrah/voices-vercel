@@ -14,11 +14,6 @@ export async function GET(request: NextRequest) {
   const assetPath = searchParams.get('path');
   const fallbackPath = searchParams.get('fallback');
   console.log(`[Proxy] Request received for path: ${assetPath}${fallbackPath ? ` (fallback: ${fallbackPath})` : ''}`);
-  if (assetPath === '' || (assetPath && (assetPath.includes('undefined') || assetPath.includes('/api/proxy/')))) {
-    // #region agent log
-    try { require('fs').appendFileSync('/opt/cursor/logs/debug.log', JSON.stringify({ hypothesisId: 'B', location: 'api/proxy/route.ts:request', message: 'proxy received suspicious path', data: { asset_path: assetPath, fallback_path: fallbackPath || '' }, timestamp: Date.now() }) + '\n'); } catch {}
-    // #endregion
-  }
 
   if (!assetPath) {
     return new NextResponse('Missing asset path', { status: 400 });
@@ -61,7 +56,7 @@ export async function GET(request: NextRequest) {
         // 🛡️ CHRIS-PROTOCOL: Use MarketManager for domain checks
         const { MarketManagerServer } = require('@/lib/system/core/market-manager');
         const currentMarket = MarketManagerServer.getCurrentMarket();
-        const marketDomains = Object.values(MarketManagerServer.getMarketDomains());
+        const marketDomains = Object.values(MarketManagerServer.getMarketDomains()) as string[];
 
         if (marketDomains.some(d => url.hostname.includes(d.replace('https://', ''))) || url.hostname === 'localhost' || url.hostname === '127.0.0.1' || url.hostname.includes('vercel.app')) {
           cleanPath = url.pathname + url.search;
@@ -75,7 +70,7 @@ export async function GET(request: NextRequest) {
     // We staan /wp-content/ tijdelijk nog toe voor legacy fallbacks, 
     // maar de proxy logt dit als een waarschuwing.
     const { MarketManagerServer } = require('@/lib/system/core/market-manager');
-    const marketDomains = Object.values(MarketManagerServer.getMarketDomains());
+    const marketDomains = Object.values(MarketManagerServer.getMarketDomains()) as string[];
     
     marketDomains.forEach(d => {
       const domain = d.replace('https://', '').replace('www.', '');

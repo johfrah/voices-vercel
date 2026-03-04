@@ -14,9 +14,6 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   const demoId = parseInt(params.id);
-  // #region agent log
-  try { require('fs').appendFileSync('/opt/cursor/logs/debug.log', JSON.stringify({ hypothesisId: 'C', location: 'api/admin/actors/demos/[id]/stream/route.ts:entry', message: 'stream route entry', data: { demo_id: params.id, parsed_demo_id: demoId }, timestamp: Date.now() }) + '\n'); } catch {}
-  // #endregion
   
   if (isNaN(demoId)) {
     return new NextResponse('Invalid Demo ID', { status: 400 });
@@ -76,18 +73,11 @@ export async function GET(
         }
       }
     }
-    // #region agent log
-    try { require('fs').appendFileSync('/opt/cursor/logs/debug.log', JSON.stringify({ hypothesisId: 'C', location: 'api/admin/actors/demos/[id]/stream/route.ts:resolved', message: 'stream route source resolution', data: { demo_id: demoId, demo_url: demo?.url || '', demo_media_id: demo?.media_id ?? null, resolved_audio_url: audioUrl || '', resolved_audio_url_is_empty: !audioUrl }, timestamp: Date.now() }) + '\n'); } catch {}
-    // #endregion
-
     if (!audioUrl) {
       return new NextResponse('No audio source found for this demo', { status: 404 });
     }
 
     const isAbsoluteUrl = audioUrl.startsWith('http://') || audioUrl.startsWith('https://');
-    // #region agent log
-    try { require('fs').appendFileSync('/opt/cursor/logs/debug.log', JSON.stringify({ hypothesisId: 'C', location: 'api/admin/actors/demos/[id]/stream/route.ts:redirect', message: 'stream route redirect target', data: { demo_id: demoId, is_absolute_url: isAbsoluteUrl, target: audioUrl }, timestamp: Date.now() }) + '\n'); } catch {}
-    // #endregion
 
     // 3. Redirect direct for absolute public storage URLs, proxy only for relative paths.
     if (isAbsoluteUrl) {
