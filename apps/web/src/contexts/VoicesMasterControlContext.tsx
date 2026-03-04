@@ -7,7 +7,7 @@ import React, { createContext, useCallback, useContext, useEffect, useState } fr
 import { useCheckout } from './CheckoutContext';
 import { useVoicesState } from './VoicesStateContext';
 import { normalizeLocale } from '@/lib/system/locale-utils';
-import { buildCanonicalActorPath } from '@/lib/system/slug';
+import { writeClientDebugLog } from '@/lib/system/client-debug-log';
 
 export type JourneyType = 'telephony' | 'video' | 'commercial' | 'agency' | 'general';
 
@@ -122,7 +122,7 @@ export const VoicesMasterControlProvider: React.FC<{
   const pathname = usePathname();
   const { state: voicesState, updateJourney: updateVoicesJourney } = useVoicesState() || { state: { current_journey: 'video' }, updateJourney: () => {} };
   const checkout = useCheckout();
-  const { state: checkoutState, updateUsage, updateMedia, updateSpots, updateYears, updateSpotsDetail, updateYearsDetail, updateLiveSession, updateBriefing, setStep: setCheckoutStep } = checkout;
+  const { state: checkoutState, updateUsage, updateMedia, updateSpots, updateYears, updateSpotsDetail, updateYearsDetail, updateLiveSession, setStep: setCheckoutStep } = checkout;
 
   const [state, setState] = useState<MasterControlState>({
     journey: initialJourney || 'video',
@@ -392,13 +392,20 @@ export const VoicesMasterControlProvider: React.FC<{
     if (!isClient || !isStateInitialized) return;
 
     const targetUsage = SlimmeKassa.getUsageFromJourneyId(state.journeyId || state.journey);
-    
+    const shouldSyncUsage = checkoutState.usage !== targetUsage || checkoutState.usageId !== state.journeyId;
+    const shouldSyncMedia = !!(
+      state.filters.media &&
+      (
+        JSON.stringify(checkoutState.media) !== JSON.stringify(state.filters.media) ||
+        JSON.stringify(checkoutState.mediaIds) !== JSON.stringify(state.filters.mediaIds)
+      )
+    );
     // Only sync if there is an actual difference to prevent infinite loops
-    if (checkoutState.usage !== targetUsage || checkoutState.usageId !== state.journeyId) {
+    if (shouldSyncUsage) {
       updateUsage(targetUsage, state.journeyId || undefined);
     }
     
-    if (state.filters.media && (JSON.stringify(checkoutState.media) !== JSON.stringify(state.filters.media) || JSON.stringify(checkoutState.mediaIds) !== JSON.stringify(state.filters.mediaIds))) {
+    if (state.filters.media && shouldSyncMedia) {
       updateMedia(state.filters.media, state.filters.mediaIds);
     }
   }, [isClient, isStateInitialized, state.journey, state.journeyId, state.filters.media, state.filters.mediaIds, checkoutState.usage, checkoutState.usageId, checkoutState.media, checkoutState.mediaIds, updateUsage, updateMedia]);
@@ -606,16 +613,38 @@ export const VoicesMasterControlProvider: React.FC<{
 
   useEffect(() => {
     const urlState = detectStateFromUrl(pathname);
+    const requestedStepFromQuery = searchParams?.get('step');
+    const shouldPreserveScriptStep =
+      state.currentStep === 'script' &&
+      urlState.step === 'voice' &&
+      pathname.startsWith('/agency');
+    const effectiveNextStep: MasterControlState['currentStep'] = shouldPreserveScriptStep ? 'script' : urlState.step;
     const hasLocaleLanguageChange =
       !!urlState.language &&
       (urlState.language !== state.filters.language ||
         urlState.languageId !== state.filters.languageId);
-    if (urlState.journey || urlState.step !== state.currentStep || hasLocaleLanguageChange) {
+    if (urlState.journey || effectiveNextStep !== state.currentStep || hasLocaleLanguageChange) {
+      // #region agent log
+      writeClientDebugLog({
+        hypothesisId: 'D3',
+        location: 'VoicesMasterControlContext.tsx:pathname_sync',
+        message: 'Pathname-driven step/journey sync triggered',
+        data: {
+          pathname,
+          prev_step: state.currentStep,
+          next_step: effectiveNextStep,
+          prev_journey: state.journey,
+          next_journey: urlState.journey ?? state.journey,
+          selected_actor_id: checkoutState.selectedActor?.id ?? null,
+          query_step: requestedStepFromQuery ?? null
+        }
+      });
+      // #endregion
       const journey = urlState.journey || state.journey;
       const journeyId = MarketManager.getJourneyId(journey);
       setState(prev => ({
         ...prev,
-        currentStep: urlState.step,
+        currentStep: effectiveNextStep,
         journey,
         journeyId,
         usage: SlimmeKassa.getUsageFromJourneyId(journeyId || journey),
@@ -632,7 +661,7 @@ export const VoicesMasterControlProvider: React.FC<{
         }
       }));
     }
-  }, [pathname, detectStateFromUrl, state.currentStep, state.filters.language, state.filters.languageId]);
+  }, [pathname, detectStateFromUrl, state.currentStep, state.filters.language, state.filters.languageId, searchParams, checkoutState.selectedActor]);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -655,22 +684,9 @@ export const VoicesMasterControlProvider: React.FC<{
   }, [state.filters.language, searchParams]);
 
   useEffect(() => {
-    const targetUsage = SlimmeKassa.getUsageFromJourneyId(state.journeyId || state.journey);
-    
-    if (checkoutState.usage !== targetUsage) {
-      const timer = setTimeout(() => {
-        updateUsage(targetUsage);
-      }, 0);
-      return () => clearTimeout(timer);
-    }
-    
+    if (!isClient || !isStateInitialized) return;
+
     if (state.journey === 'commercial') {
-      if (state.filters.media && JSON.stringify(checkoutState.media) !== JSON.stringify(state.filters.media)) {
-        const timer = setTimeout(() => {
-          updateMedia(state.filters.media!);
-        }, 0);
-        return () => clearTimeout(timer);
-      }
       if (state.filters.spotsDetail && JSON.stringify(checkoutState.spotsDetail) !== JSON.stringify(state.filters.spotsDetail)) {
         const timer = setTimeout(() => {
           updateSpotsDetail(state.filters.spotsDetail!);
@@ -685,20 +701,15 @@ export const VoicesMasterControlProvider: React.FC<{
       }
     }
   }, [
+    isClient,
+    isStateInitialized,
     state.journey, 
-    state.filters.media, 
-    state.filters.words, 
     state.filters.spotsDetail, 
     state.filters.yearsDetail, 
-    checkoutState.briefing, 
-    checkoutState.usage, 
-    checkoutState.media, 
+    checkoutState.usage,
     checkoutState.spotsDetail, 
     checkoutState.yearsDetail, 
-    updateBriefing, 
-    updateMedia, 
     updateSpotsDetail, 
-    updateUsage, 
     updateYearsDetail
   ]); 
 
@@ -907,20 +918,21 @@ export const VoicesMasterControlProvider: React.FC<{
   }, [updateMedia, updateSpots, updateYears, updateSpotsDetail, updateYearsDetail, updateLiveSession]);
 
   const updateStep = useCallback((step: MasterControlState['currentStep']) => {
+    // #region agent log
+    writeClientDebugLog({
+      hypothesisId: 'D4',
+      location: 'VoicesMasterControlContext.tsx:updateStep:entry',
+      message: 'updateStep invoked from UI flow',
+      data: {
+        requested_step: step,
+        selected_actor_id: checkoutState.selectedActor?.id ?? null,
+        selected_actor_slug: checkoutState.selectedActor?.slug ?? null,
+        pathname
+      }
+    });
+    // #endregion
     setState(prev => {
-      if (step === 'script' && checkoutState.selectedActor?.slug) {
-        if (typeof window !== 'undefined') {
-          const actorPath = buildCanonicalActorPath(
-            checkoutState.selectedActor.slug,
-            checkoutState.selectedActor.display_name || checkoutState.selectedActor.first_name
-          );
-          const newUrl = `${actorPath}${window.location.search || ''}`;
-          const currentUrl = `${window.location.pathname}${window.location.search || ''}`;
-          if (newUrl !== currentUrl) {
-            window.history.replaceState(null, '', newUrl);
-          }
-        }
-      } else if (step === 'voice') {
+      if (step === 'voice') {
         const isAgencyFilterPage = pathname.startsWith('/agency/') || pathname === '/agency';
         const newUrl = isAgencyFilterPage ? '/agency/' + prev.journey : pathname;
         if (typeof window !== 'undefined' && newUrl !== pathname) {

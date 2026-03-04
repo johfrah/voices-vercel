@@ -12,6 +12,7 @@ import {
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useCheckout } from '@/contexts/CheckoutContext';
 import { VoicesLink as Link } from '@/components/ui/VoicesLink';
+import { writeClientDebugLog } from '@/lib/system/client-debug-log';
 import { usePathname } from 'next/navigation';
 
 import { ArrowLeft, Edit2, ShoppingCart } from 'lucide-react';
@@ -26,7 +27,7 @@ const LiquidBackground = nextDynamic(() => import('@/components/ui/LiquidBackgro
  *  CHECKOUT PAGE (NUCLEAR 2026)
  */
 export default function CheckoutPageClient() {
-  const { state, setJourney, addItem, isHydrated } = useCheckout();
+  const { state, setJourney, addItem, removeItem, selectActor, isHydrated } = useCheckout();
   const pathname = usePathname();
   const didMaterializeSelectedActorRef = useRef(false);
   const hasWorkshopItem = useMemo(
@@ -69,20 +70,87 @@ export default function CheckoutPageClient() {
     if (!isHydrated) return;
     if (didMaterializeSelectedActorRef.current) return;
     if (isStudioJourney) return;
-    if (state.items.length > 0) return;
-    if (!state.selectedActor) return;
+    const fallbackActor = (() => {
+      if (typeof window === 'undefined') return null;
+      try {
+        const raw = localStorage.getItem('voices_state');
+        if (!raw) return null;
+        const parsed = JSON.parse(raw);
+        const selectedActors = Array.isArray(parsed?.selected_actors) ? parsed.selected_actors : [];
+        if (selectedActors.length === 0) return null;
+        return selectedActors[selectedActors.length - 1];
+      } catch {
+        return null;
+      }
+    })();
 
-    const currentSelectionTotal = Number(state.pricing?.total ?? 0);
-    if (!Number.isFinite(currentSelectionTotal) || currentSelectionTotal <= 0) {
+    const resolvedActor = state.selectedActor || fallbackActor;
+    const voiceItems = (state.items || []).filter((item: any) => item?.type === 'voice_over');
+    const mismatchedVoiceItems = resolvedActor
+      ? voiceItems.filter((item: any) => item?.actor?.id != null && item.actor.id !== resolvedActor.id)
+      : [];
+
+    if (mismatchedVoiceItems.length > 0) {
+      // #region agent log
+      writeClientDebugLog({
+        hypothesisId: 'D5',
+        location: 'CheckoutPageClient.tsx:voice_reconcile:remove_stale_items',
+        message: 'Removing stale voice-over item(s) before checkout render',
+        data: {
+          selected_actor_id: state.selectedActor?.id ?? null,
+          fallback_actor_id: fallbackActor?.id ?? null,
+          stale_item_ids: mismatchedVoiceItems.map((item: any) => item?.id).filter(Boolean),
+          path: pathname
+        }
+      });
+      // #endregion
+      mismatchedVoiceItems.forEach((item: any) => {
+        if (item?.id) removeItem(item.id);
+      });
       return;
     }
 
-    const itemId = `voice-${state.selectedActor.id}-${Date.now()}`;
+    if (!state.selectedActor && resolvedActor) {
+      // #region agent log
+      writeClientDebugLog({
+        hypothesisId: 'D5',
+        location: 'CheckoutPageClient.tsx:voice_reconcile:adopt_fallback_actor',
+        message: 'Adopting fallback actor from voices_state for checkout reconciliation',
+        data: {
+          fallback_actor_id: resolvedActor.id,
+          path: pathname
+        }
+      });
+      // #endregion
+      selectActor(resolvedActor);
+      return;
+    }
+
+    if (!resolvedActor) {
+      didMaterializeSelectedActorRef.current = true;
+      return;
+    }
+
+    const hasMatchingVoiceItem = voiceItems.some((item: any) => item?.actor?.id === resolvedActor.id);
+    if (hasMatchingVoiceItem) {
+      didMaterializeSelectedActorRef.current = true;
+      return;
+    }
+
+    const configuredTotal = Number(state.pricing?.total ?? 0);
+    const fallbackTotal = Number((resolvedActor as any)?.starting_price ?? (resolvedActor as any)?.price_unpaid ?? 0);
+    const currentSelectionTotal = Number.isFinite(configuredTotal) && configuredTotal > 0 ? configuredTotal : fallbackTotal;
+    if (!Number.isFinite(currentSelectionTotal) || currentSelectionTotal <= 0) {
+      didMaterializeSelectedActorRef.current = true;
+      return;
+    }
+
+    const itemId = `voice-${resolvedActor.id}-${Date.now()}`;
     didMaterializeSelectedActorRef.current = true;
     addItem({
       id: itemId,
       type: 'voice_over',
-      actor: state.selectedActor,
+      actor: resolvedActor,
       briefing: state.briefing,
       script: state.briefing,
       pronunciation: state.pronunciation,
@@ -110,6 +178,19 @@ export default function CheckoutPageClient() {
         total: currentSelectionTotal
       }
     });
+    // #region agent log
+    writeClientDebugLog({
+      hypothesisId: 'D5',
+      location: 'CheckoutPageClient.tsx:voice_reconcile:materialize_item',
+      message: 'Materialized resolved actor into checkout cart',
+      data: {
+        selected_actor_id: state.selectedActor?.id ?? null,
+        resolved_actor_id: resolvedActor.id,
+        total: currentSelectionTotal,
+        path: pathname
+      }
+    });
+    // #endregion
   }, [
     isHydrated,
     isStudioJourney,
@@ -134,7 +215,9 @@ export default function CheckoutPageClient() {
     state.usageId,
     state.years,
     state.yearsDetail,
-    addItem
+    addItem,
+    removeItem,
+    selectActor
   ]);
 
   if (!isHydrated) return <LoadingScreenInstrument />;

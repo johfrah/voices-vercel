@@ -16,6 +16,7 @@ import { PlanType, SlimmeKassa, UsageType } from '@/lib/engines/pricing-engine';
 import { generateCartHash } from '@/lib/utils/cart-utils';
 import { Actor } from '@/types';
 import { cn } from '@/lib/utils';
+import { writeClientDebugLog } from '@/lib/system/client-debug-log';
 import { CheckCircle2 } from 'lucide-react';
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 
@@ -470,6 +471,20 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       prev.usage === 'commercial' ? (prev.media as any) : [],
       Array.isArray(prev.country) ? prev.country[0] : prev.country
     ) : 'available';
+
+    // #region agent log
+    writeClientDebugLog({
+      hypothesisId: 'D1',
+      location: 'CheckoutContext.tsx:selectActor',
+      message: 'selectActor state mutation requested',
+      data: {
+        prev_actor_id: prev.selectedActor?.id ?? null,
+        next_actor_id: actor?.id ?? null,
+        items_count: prev.items.length,
+        first_item_actor_id: prev.items?.[0]?.actor?.id ?? null
+      }
+    });
+    // #endregion
 
     return {
       ...prev,
