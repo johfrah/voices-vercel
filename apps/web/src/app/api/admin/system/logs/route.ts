@@ -101,6 +101,17 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, error: "Missing message" }, { status: 400 });
     }
 
+    const detailsLocation = String((details as any)?.location || '');
+    const detailsPathname = String((details as any)?.pathname || '');
+    const detailsUrl = String((details as any)?.url || '');
+    const isLocalDevEvent = [detailsLocation, detailsPathname, detailsUrl, String(message)]
+      .some((value) => /localhost:3000|127\.0\.0\.1:3000/i.test(value));
+
+    // Ignore local development noise to keep production forensic stream clean.
+    if (isLocalDevEvent) {
+      return NextResponse.json({ success: true, status: 'ignored_local_dev' });
+    }
+
     // 🛡️ CHRIS-PROTOCOL: Spam preventie (max 1x per 10 min voor identieke client-fouten)
     // Gebruik een echt Date object voor Drizzle (v2.16.001)
     const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);

@@ -40,6 +40,22 @@ export async function POST(request: NextRequest) {
     const details = body.details || {};
     const payload = body.payload || details.payload;
 
+    const normalizedError = String(error || '').toUpperCase();
+    const detailsLocation = String(details?.location || '');
+    const detailsPathname = String(details?.pathname || '');
+    const normalizedUrl = String(url || '');
+    const isLocalDevEvent = [detailsLocation, detailsPathname, normalizedUrl, String(error)]
+      .some((value) => /localhost:3000|127\.0\.0\.1:3000/i.test(value));
+
+    // Ignore expected not-found throws and local dev noise.
+    if (
+      normalizedError.includes('NEXT_NOT_FOUND') ||
+      normalizedError.includes('NEXT_HTTP_ERROR_FALLBACK') ||
+      isLocalDevEvent
+    ) {
+      return NextResponse.json({ success: true, ignored: true });
+    }
+
     if (!error) {
       return NextResponse.json({ error: 'Error message required' }, { status: 400 });
     }
