@@ -448,6 +448,35 @@ async function discoverAndRegisterSlug(slug: string, marketCode: string, journey
       
       if (newEntry) return { entity_id: artist.id, routing_type: 'artist', journey: 'artist' };
     }
+
+    // 6. Pitch (Casting List) — ID-First: slug = pitch/{hash}, entity_id = casting_lists.id
+    if (slug.startsWith('pitch/')) {
+      const hashPart = slug.replace('pitch/', '').trim();
+      if (hashPart) {
+        const { data: list } = await supabase
+          .from('casting_lists')
+          .select('id')
+          .eq('hash', hashPart)
+          .maybeSingle();
+        if (list) {
+          const { data: newEntry } = await supabase
+            .from('slug_registry')
+            .insert({
+              slug: slug.toLowerCase(),
+              entity_id: list.id,
+              entity_type_id: 6,
+              market_code: 'ALL',
+              journey: 'agency',
+              is_active: true,
+              created_at: new Date(),
+              updated_at: new Date(),
+            })
+            .select('entity_id, journey')
+            .single();
+          if (newEntry) return { entity_id: list.id, routing_type: 'casting_list', journey: 'agency' };
+        }
+      }
+    }
   } catch (err) {
     console.error(' [SmartRouter] Lazy Discovery FAILED:', err);
   }
@@ -480,7 +509,7 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
   // 🛡️ CHRIS-PROTOCOL: System Route Protection (v2.15.034)
   const reserved = [
     'admin', 'backoffice', 'account', 'api', 'auth', 'checkout', 'cart', 
-    'demos', 'light', 'under-construction', 'favicon.ico', 'robots.txt', 
+    'demos', 'favicon.ico', 'robots.txt', 
     'sitemap.xml', 'sitemap', 'static', 'assets', '_next'
   ];
   
@@ -695,7 +724,7 @@ export default async function SmartRoutePage({ params }: { params: SmartRoutePar
   // 🛡️ CHRIS-PROTOCOL: System Route Protection (v2.16.090)
   const reserved = [
     'admin', 'backoffice', 'account', 'api', 'auth', 'checkout', 'cart',
-    'demos', 'light', 'under-construction', 'favicon.ico', 'robots.txt',
+    'demos', 'favicon.ico', 'robots.txt',
     'sitemap.xml', 'sitemap', 'static', 'assets', '_next',
     'wp-content', 'wp-includes'
   ];
@@ -921,7 +950,90 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
         console.error(` [SmartRouter] DB logging failed: ${e.message}`);
       }
 
-      // Route based on type
+      // Route based on type (ID-First Handshake)
+      if (resolved.routing_type === 'casting_list') {
+        const { data: list, error: listError } = await supabase
+          .from('casting_lists')
+          .select('*, items:casting_list_items(*, actor:actors(*))')
+          .eq('id', resolved.entity_id)
+          .single();
+        if (!listError && list) {
+          const host = headersList.get('host') || MarketManager.getMarketDomains()['BE']?.replace('https://', '') || '';
+          const pitchMarket = MarketManager.getCurrentMarket(host);
+          const sortedItems = (list.items || []).sort((a: any, b: any) => (a.display_order || 0) - (b.display_order || 0));
+          const listSettings = list.settings as any;
+          const showRates = listSettings?.isAdminGenerated === true;
+          const schema = {
+            '@context': 'https://schema.org',
+            '@type': 'ItemList',
+            'name': list.name,
+            'numberOfItems': sortedItems.length,
+            'itemListElement': sortedItems.map((item: any, i: number) => ({
+              '@type': 'ListItem',
+              'position': i + 1,
+              'item': { '@type': 'Service', 'name': item.actor?.first_name || item.actor?.display_name, 'provider': { '@type': 'LocalBusiness', 'name': pitchMarket.name } }
+            }))
+          };
+          return (
+            <PageWrapperInstrument className="bg-va-off-white">
+              <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+              <Suspense fallback={null}><LiquidBackground /></Suspense>
+              <ContainerInstrument className="py-48 max-w-5xl mx-auto">
+                <header className="mb-20 text-center">
+                  <TextInstrument className="text-[15px] font-medium tracking-[0.4em] text-primary/60 mb-6 block uppercase">
+                    <VoiceglotText translationKey="casting.selection_title" defaultText="Casting Selectie" />
+                  </TextInstrument>
+                  <HeadingInstrument level={1} className="text-6xl font-light tracking-tighter mb-8 text-va-black">{list.name}</HeadingInstrument>
+                  <ContainerInstrument className="w-24 h-1 bg-primary/20 rounded-full mx-auto" />
+                </header>
+                <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {sortedItems.map((item: any, i: number) => (
+                    <ContainerInstrument key={i} className="bg-white p-8 rounded-[20px] shadow-aura border border-black/5 flex flex-col gap-6">
+                      <ContainerInstrument className="flex items-center gap-4">
+                        <ContainerInstrument className="w-16 h-16 bg-va-off-white rounded-full flex items-center justify-center text-2xl font-light text-va-black/20 overflow-hidden relative">
+                          {item.actor?.photo_id ? (
+                            <Image src={`/api/proxy/?path=${encodeURIComponent(item.actor?.dropbox_url || '')}`} alt={item.actor?.first_name || item.actor?.display_name || ''} fill className="object-cover" />
+                          ) : (item.actor?.first_name || item.actor?.display_name || '?')[0]}
+                        </ContainerInstrument>
+                        <ContainerInstrument>
+                          <HeadingInstrument level={3} className="text-2xl font-light">{item.actor?.first_name || item.actor?.display_name}</HeadingInstrument>
+                          <ContainerInstrument className="flex items-center justify-between mt-1">
+                            <TextInstrument className="text-[15px] text-va-black/40">
+                              <VoiceglotText translationKey={`common.language.${(item.actor?.native_lang || 'nl')?.toLowerCase()}`} defaultText={MarketManager.getLanguageLabel(item.actor?.native_lang || 'nl')} />
+                            </TextInstrument>
+                            {showRates && <TextInstrument className="text-[15px] font-bold text-primary">€{parseFloat(item.actor?.price_unpaid || '0').toFixed(2)}</TextInstrument>}
+                          </ContainerInstrument>
+                        </ContainerInstrument>
+                      </ContainerInstrument>
+                      <ContainerInstrument className="h-12 bg-va-off-white rounded-[10px] flex items-center px-4 gap-2">
+                        <ContainerInstrument className="w-8 h-8 bg-va-black rounded-full flex items-center justify-center text-white"><ArrowRight size={14} /></ContainerInstrument>
+                        <TextInstrument className="text-[13px] font-medium tracking-widest text-va-black/40 uppercase">
+                          <VoiceglotText translationKey="action.view_profile" defaultText="Bekijk Profiel" />
+                        </TextInstrument>
+                      </ContainerInstrument>
+                      <VoicesLink href={`/${item.actor?.slug}`} className="w-full bg-va-black text-white py-4 rounded-[10px] font-medium tracking-widest text-[13px] uppercase hover:bg-primary transition-all text-center">
+                        <VoiceglotText translationKey="action.select_voice" defaultText="Selecteer deze stem" />
+                      </VoicesLink>
+                    </ContainerInstrument>
+                  ))}
+                </ContainerInstrument>
+                <footer className="mt-32 text-center">
+                  <ContainerInstrument className="bg-va-black text-white p-16 rounded-[20px] shadow-aura-lg relative overflow-hidden group">
+                    <HeadingInstrument level={2} className="text-4xl font-light mb-8">
+                      <VoiceglotText translationKey="casting.no_match_title" defaultText="Niet de juiste match?" />
+                    </HeadingInstrument>
+                    <VoicesLink href="/agency" className="va-btn-pro inline-flex items-center gap-2">
+                      <VoiceglotText translationKey="action.view_all_voices" defaultText="Bekijk alle stemmen" /> <ArrowRight size={18} />
+                    </VoicesLink>
+                  </ContainerInstrument>
+                </footer>
+              </ContainerInstrument>
+            </PageWrapperInstrument>
+          );
+        }
+        return notFound();
+      }
+
       if (resolved.routing_type === 'actor') {
         const actor = await getActor(resolved.entity_id.toString(), lang);
         if (actor) {
@@ -1345,8 +1457,8 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
       );
     }
 
-    // 2. Pitch Link (Casting List)
-    if (lookupSlug === 'pitch' && journey) {
+    // 2. Pitch Link (Casting List) — firstSegment i.p.v. lookupSlug (lookupSlug is 'pitch/hash' na join)
+    if (firstSegment === 'pitch' && journey) {
       try {
         const host = headersList.get('host') || MarketManager.getMarketDomains()['BE']?.replace('https://', '') || MarketManager.getMarketDomains()['BE']?.replace('https://', '');
         const market = MarketManager.getCurrentMarket(host);

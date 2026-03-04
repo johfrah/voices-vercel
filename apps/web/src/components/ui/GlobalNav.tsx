@@ -1,57 +1,60 @@
 "use client";
 
 import { useAuth } from '@/contexts/AuthContext';
-import { useTranslation } from '@/contexts/TranslationContext';
-import { useEditMode } from '@/contexts/EditModeContext';
-import { useVoicesState } from '@/contexts/VoicesStateContext';
 import { useCheckout } from '@/contexts/CheckoutContext';
+import { useEditMode } from '@/contexts/EditModeContext';
 import { useNotifications } from '@/contexts/NotificationContext';
+import { useTranslation } from '@/contexts/TranslationContext';
+import { useVoicesState } from '@/contexts/VoicesStateContext';
 import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
-import { AnimatePresence, motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { 
-  Bell, 
-  Building2, 
-  ChevronRight, 
-  ChevronDown, 
-  Globe, 
-  Heart, 
-  LayoutDashboard, 
-  LogOut, 
-  Mail, 
-  Menu, 
-  Mic2, 
-  Monitor, 
-  Phone, 
-  Radio, 
-  ShoppingBag, 
-  ShoppingCart, 
-  User, 
-  Info, 
-  Settings, 
-  Home, 
-  Euro, 
-  GraduationCap, 
-  Quote, 
-  Users 
-} from 'lucide-react';
-import { VoicesLink, useVoicesRouter } from './VoicesLink';
-import { 
-  ButtonInstrument, 
-  ContainerInstrument,
-  HeadingInstrument,
-  TextInstrument,
-  InputInstrument
-} from './LayoutInstruments';
-import { VoiceglotImage } from './VoiceglotImage';
-import { VoiceglotText } from './VoiceglotText';
 import { NavConfig } from '@/lib/utils/config-bridge';
-import { Plus, Trash2, Link as LinkIcon, Search as SearchIcon, X, Check, ArrowRight, Loader2 } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
+import {
+    ArrowRight,
+    Bell,
+    Building2,
+    Check,
+    ChevronDown,
+    ChevronRight,
+    Euro,
+    Globe,
+    Heart,
+    Home,
+    Info,
+    LayoutDashboard,
+    Link as LinkIcon,
+    Loader2,
+    LogOut,
+    Mail,
+    Menu,
+    Mic2,
+    Monitor,
+    Phone,
+    Plus,
+    Quote,
+    Radio,
+    Settings,
+    ShoppingBag,
+    ShoppingCart,
+    Trash2,
+    User
+} from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+    ButtonInstrument,
+    ContainerInstrument,
+    HeadingInstrument,
+    InputInstrument,
+    TextInstrument
+} from './LayoutInstruments';
+import { VoiceglotImage } from './VoiceglotImage';
+import { VoiceglotText } from './VoiceglotText';
+import { VoicesLink, useVoicesRouter } from './VoicesLink';
 
 import { LanguageSwitcher } from './LanguageSwitcher';
 
@@ -672,6 +675,13 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
               variant="plain"
               size="none"
               onClick={(e) => {
+                const isContact = link.href?.toLowerCase().replace(/\/$/, '').endsWith('/contact');
+                if (isContact) {
+                  e.preventDefault();
+                  playClick('soft');
+                  window.dispatchEvent(new CustomEvent('voicy:open', { detail: { tab: 'mail' } }));
+                  return;
+                }
                 if (link.onClick) {
                   e.preventDefault();
                   link.onClick();
@@ -1291,15 +1301,18 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
                     </ContainerInstrument>
                   </ContainerInstrument>
                   <DropdownItem icon={Home} label={<VoiceglotText translationKey="nav.home" defaultText="Home" />} href="/" />
-                  {activeLinks.map((link: any, idx: number) => (
-                    <DropdownItem 
-                      key={link.name}
-                      icon={ChevronRight} 
-                      label={<VoiceglotText translationKey={resolveLinkTranslationKey(link, idx)} defaultText={link.name || ''} />} 
-                      href={link.href !== '#' ? link.href : undefined}
-                      onClick={link.onClick} 
-                    />
-                  ))}
+                  {activeLinks.map((link: any, idx: number) => {
+                    const isContact = link.href?.toLowerCase().replace(/\/$/, '').endsWith('/contact');
+                    return (
+                      <DropdownItem
+                        key={link.name}
+                        icon={ChevronRight}
+                        label={<VoiceglotText translationKey={resolveLinkTranslationKey(link, idx)} defaultText={link.name || ''} />}
+                        href={isContact ? undefined : (link.href !== '#' ? link.href : undefined)}
+                        onClick={isContact ? () => { playClick('soft'); window.dispatchEvent(new CustomEvent('voicy:open', { detail: { tab: 'mail' } })); } : link.onClick}
+                      />
+                    );
+                  })}
                   <DropdownItem icon={Heart} label={<VoiceglotText translationKey="nav.favorites" defaultText="Favorieten" />} href="/account/favorites/" badge={favoritesCount > 0 ? favoritesCount : undefined} />
                   {!isPortfolioMarket && <DropdownItem icon={ShoppingCart} label={<VoiceglotText translationKey="nav.cart" defaultText="Winkelmandje" />} href="/checkout/" badge={cartCount > 0 ? cartCount : undefined} />}
                   <DropdownItem icon={User} label={<VoiceglotText translationKey="nav.account" defaultText={auth.isAuthenticated ? "Mijn Account" : "Inloggen"} />} href="/account/" />
@@ -1307,13 +1320,18 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
                 </>
               )}
               
-              {!isMobile && activeLinks.map((link: any, idx: number) => (
-                <DropdownItem key={link.name}
-                  icon={ChevronRight} 
-                  label={<VoiceglotText translationKey={resolveLinkTranslationKey(link, idx)} defaultText={link.name || ''} />} 
-                  href={link.href !== '#' ? link.href : undefined}
-                  onClick={link.onClick} />
-              ))}
+              {!isMobile && activeLinks.map((link: any, idx: number) => {
+                const isContact = link.href?.toLowerCase().replace(/\/$/, '').endsWith('/contact');
+                return (
+                  <DropdownItem
+                    key={link.name}
+                    icon={ChevronRight}
+                    label={<VoiceglotText translationKey={resolveLinkTranslationKey(link, idx)} defaultText={link.name || ''} />}
+                    href={isContact ? undefined : (link.href !== '#' ? link.href : undefined)}
+                    onClick={isContact ? () => { playClick('soft'); window.dispatchEvent(new CustomEvent('voicy:open', { detail: { tab: 'mail' } })); } : link.onClick}
+                  />
+                );
+              })}
 
               {/* Footer Links Integration (Nuclear Sync) */}
               {!isSpecialJourney && (
@@ -1376,9 +1394,11 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
               </ContainerInstrument>
 
           <ContainerInstrument plain className="mt-2 pt-2 border-t border-black/5">
-            <DropdownItem icon={Mail} 
-              label={<VoiceglotText  translationKey="nav.support" defaultText="Support" />} 
-              href="/contact/" 
+            <DropdownItem
+              icon={Mail}
+              label={<VoiceglotText translationKey="nav.support" defaultText="Support" />}
+              href={undefined}
+              onClick={() => { playClick('soft'); window.dispatchEvent(new CustomEvent('voicy:open', { detail: { tab: 'mail' } })); }}
             />
           </ContainerInstrument>
             </ContainerInstrument>

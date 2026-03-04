@@ -3,9 +3,11 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { useCheckout } from '@/contexts/CheckoutContext';
 import { useEditMode } from '@/contexts/EditModeContext';
-import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { useConsent } from '@/hooks/useConsent';
+import { useSonicDNA } from '@/lib/engines/sonic-dna';
+import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
+import { normalizeLocale } from '@/lib/system/locale-utils';
 import { cn } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
@@ -14,13 +16,11 @@ import {
     ChevronRight,
     HelpCircle,
     Info,
-    LayoutDashboard,
-    Loader2,
-    Maximize,
-    Minimize2,
     Mail,
     MapPin,
+    Maximize,
     MessageCircle,
+    Minimize2,
     Phone,
     PlayCircle,
     Search,
@@ -31,14 +31,18 @@ import {
     X,
     Zap
 } from 'lucide-react';
-import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import React, { useEffect, useRef, useState } from 'react';
-import { isOfficeOpen, getNextOpeningTime } from '@/lib/utils/delivery-logic';
-import { ButtonInstrument, ContainerInstrument, FormInstrument, HeadingInstrument, InputInstrument, LabelInstrument, TextInstrument } from './LayoutInstruments';
+import { flushSync } from 'react-dom';
+import { ButtonInstrument, ContainerInstrument, FormInstrument, HeadingInstrument, InputInstrument, LabelInstrument, TextInstrument, TextareaInstrument } from './LayoutInstruments';
 import { VoiceglotText } from './VoiceglotText';
-import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
-import { normalizeLocale } from '@/lib/system/locale-utils';
+
+/** FAQ item for chat tab (snake_case API handshake) */
+interface ChatFaqItem {
+  id: number;
+  question: string;
+  answer: string;
+}
 
 export const VoicyChatV2: React.FC = () => {
   // 🛡️ CHRIS-PROTOCOL: All State at the top to prevent TDZ errors
@@ -71,6 +75,8 @@ export const VoicyChatV2: React.FC = () => {
     scrollDepth: 0,
     lastInteraction: new Date().toISOString()
   });
+  const [chatFaqs, setChatFaqs] = useState<ChatFaqItem[]>([]);
+  const [chatFaqsLoading, setChatFaqsLoading] = useState(false);
 
   const { 
     state, 
@@ -91,7 +97,7 @@ export const VoicyChatV2: React.FC = () => {
       playSonicClick(type);
     } catch (e) {}
   };
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const { user, isAuthenticated, isAdmin } = useAuth();
   const { isEditMode, toggleEditMode } = useEditMode();
   const pathname = usePathname();
@@ -114,6 +120,25 @@ export const VoicyChatV2: React.FC = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const lastIdRef = useRef<number>(0);
   const chatContainerRef = useRef<HTMLDivElement>(null);
+
+  //  FAQ tab: load journey-aware FAQs from Supabase (world/journey)
+  const faqJourneyParam = isStudioJourney ? 'studio' : isAcademyJourney ? 'academy' : 'agency';
+  useEffect(() => {
+    if (activeTab !== 'faq') return;
+    setChatFaqsLoading(true);
+    fetch(`/api/faq?journey=${encodeURIComponent(faqJourneyParam)}&limit=10`)
+      .then((res) => (res.ok ? res.json() : []))
+      .then((data: { id: number; question_nl?: string | null; question_en?: string | null; answer_nl?: string | null; answer_en?: string | null }[]) => {
+        const langEn = (language || 'nl-BE').toLowerCase().startsWith('en');
+        setChatFaqs((Array.isArray(data) ? data : []).map((f) => {
+          const q = langEn ? (f.question_en ?? f.question_nl) : (f.question_nl ?? f.question_en);
+          const a = langEn ? (f.answer_en ?? f.answer_nl) : (f.answer_nl ?? f.answer_en);
+          return { id: f.id, question: q ?? '', answer: a ?? '' };
+        }).filter((f): f is ChatFaqItem => Boolean(f.question)));
+      })
+      .catch(() => setChatFaqs([]))
+      .finally(() => setChatFaqsLoading(false));
+  }, [activeTab, faqJourneyParam, language]);
 
   //  CHRIS-PROTOCOL: Sync telephony config from DB
   useEffect(() => {
@@ -539,11 +564,6 @@ export const VoicyChatV2: React.FC = () => {
     }
   };
 
-  //  Get current language
-  const language = typeof window !== 'undefined'
-    ? normalizeLocale(document.cookie.split('; ').find(row => row.startsWith('voices_lang='))?.split('=')[1] || 'nl-be')
-    : 'nl-be';
-
   //  Listen for Voicy Suggestions from other components
   useEffect(() => {
     const handleSuggestion = (e: any) => {
@@ -747,9 +767,12 @@ export const VoicyChatV2: React.FC = () => {
       metadata: { interaction_type: interactionType }
     };
 
-    setMessages(prev => [...prev, userMessage]);
-    setInputValue('');
-    setIsTyping(true);
+    //  50ms-feedback: forceer directe UI-update vóór fetch (bericht + typing), daarna pas netwerk
+    flushSync(() => {
+      setMessages(prev => [...prev, userMessage]);
+      setInputValue('');
+      setIsTyping(true);
+    });
     playClick('soft');
 
     //  CORE MESSAGE HANDLER
@@ -881,7 +904,7 @@ export const VoicyChatV2: React.FC = () => {
     e.preventDefault();
     if (!leadFormData.email || !leadFormData.name) return;
 
-    setIsTyping(true);
+    flushSync(() => setIsTyping(true));
     playClick('success');
 
     try {
@@ -945,7 +968,10 @@ export const VoicyChatV2: React.FC = () => {
           source: 'voicy_mail_tab',
           context: {
             customer360: customer360,
-            isAuthenticated
+            isAuthenticated,
+            journey: isAcademyJourney ? 'academy' : isStudioJourney ? 'studio' : isPortfolioJourney ? 'portfolio' : 'agency',
+            market_code: market.market_code,
+            current_page: typeof window !== 'undefined' ? window.location.pathname : ''
           }
         })
       });
@@ -1035,7 +1061,9 @@ export const VoicyChatV2: React.FC = () => {
   return (
     <ContainerInstrument 
       className={cn(
-        "fixed bottom-8 right-8 z-[150] touch-manipulation",
+        "fixed z-[150] touch-manipulation",
+        "bottom-[max(2rem,env(safe-area-inset-bottom))] right-[max(2rem,env(safe-area-inset-right))]",
+        "max-[420px]:right-auto max-[420px]:left-[max(2rem,env(safe-area-inset-left))]",
         isOpen && "z-[250]"
       )}
       onMouseEnter={() => setIsHoveringVoicy(true)}
@@ -1043,7 +1071,7 @@ export const VoicyChatV2: React.FC = () => {
     >
       {/* Smart Chips (Floating above toggle) */}
       {!isOpen && showChips && (
-        <ContainerInstrument className="absolute bottom-20 right-0 flex flex-col items-end gap-2 pointer-events-none">
+        <ContainerInstrument className="absolute bottom-20 right-0 max-[420px]:right-auto max-[420px]:left-0 flex flex-col items-end max-[420px]:items-start gap-2 pointer-events-none">
           <AnimatePresence>
             {getSmartChips().map((chip, i) => (
               <motion.button
@@ -1077,12 +1105,13 @@ export const VoicyChatV2: React.FC = () => {
         </ContainerInstrument>
       )}
 
-      {/* Chat Toggle Button */}
+      {/* Chat Toggle Button: verborgen wanneer chat open (sluiten via X in header), zo wint het venster hoogte */}
       <ButtonInstrument
         onClick={toggleChat}
-        className={`w-16 h-16 rounded-full shadow-aura flex items-center justify-center transition-all duration-500 hover:scale-110 active:scale-95 group relative touch-manipulation ${
-          isOpen ? 'bg-va-black text-white rotate-90' : 'hred text-white'
-        }`}
+        className={cn(
+          "w-16 h-16 rounded-full shadow-aura flex items-center justify-center transition-all duration-500 hover:scale-110 active:scale-95 group relative touch-manipulation hred text-white",
+          isOpen && "hidden"
+        )}
       >
         {isOpen ? <X strokeWidth={1.5} size={28} /> : (
           <MessageCircle strokeWidth={1.5} size={32} className="relative z-10" />
@@ -1092,13 +1121,15 @@ export const VoicyChatV2: React.FC = () => {
         )}
       </ButtonInstrument>
 
-      {/* Chat Window */}
+      {/* Chat Window: van bovenrand tot onderkant viewport; chatbolletje verdwijnt als open, sluiten via X in header */}
       <ContainerInstrument plain className={cn(
-        "absolute bottom-20 right-0 bg-white rounded-[32px] shadow-aura flex flex-col overflow-hidden transition-all duration-500 origin-bottom-right",
+        "bg-white rounded-[32px] shadow-aura flex flex-col overflow-hidden transition-all duration-500 origin-bottom-right max-[420px]:origin-bottom-left",
         isOpen ? 'scale-100 opacity-100' : 'scale-0 opacity-0 pointer-events-none',
-        isFullMode 
-          ? 'fixed inset-8 w-auto h-auto right-8 bottom-8 z-[101]' 
-          : 'w-[400px] h-[600px]',
+        isFullMode
+          ? 'fixed w-auto h-auto z-[260] top-[max(2rem,env(safe-area-inset-top))] right-[max(2rem,env(safe-area-inset-right))] bottom-[max(2rem,env(safe-area-inset-bottom))] left-[max(2rem,env(safe-area-inset-left))]'
+          : isOpen
+            ? 'fixed z-[260] top-[max(2rem,env(safe-area-inset-top))] right-[max(2rem,env(safe-area-inset-right))] bottom-[max(2rem,env(safe-area-inset-bottom))] left-[max(2rem,env(safe-area-inset-left))] md:left-auto md:top-[max(0px,env(safe-area-inset-top))] md:w-[400px] md:max-w-[calc(100vw-2rem)]'
+            : 'absolute bottom-20 right-0 max-[420px]:right-auto max-[420px]:left-0 w-[400px] max-w-[calc(100vw-2rem)] min-h-0',
         isJohfrah && "border border-primary/20"
       )}>
         {/* Header */}
@@ -1422,34 +1453,17 @@ export const VoicyChatV2: React.FC = () => {
                         </ContainerInstrument>
                       ))}
 
-                      {/*  TYPING INDICATOR (CHRIS-PROTOCOL: 100ms Feedback) */}
+                      {/* Geen zichtbare "Voicy denkt na"-tekst; isTyping blijft voor scroll/state */}
                       {isTyping && (
                         <motion.div
-                          initial={{ opacity: 0, y: 5 }}
-                          animate={{ opacity: 1, y: 0 }}
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
                           className="flex justify-start"
                         >
-                          <ContainerInstrument plain className="bg-va-off-white text-va-black p-4 rounded-[20px] rounded-tl-none flex items-center gap-2">
-                            <ContainerInstrument plain className="flex gap-1">
-                              <motion.span 
-                                animate={{ opacity: [0.3, 1, 0.3] }}
-                                transition={{ duration: 1.5, repeat: Infinity, delay: 0 }}
-                                className="w-1.5 h-1.5 bg-va-black/40 rounded-full" 
-                              />
-                              <motion.span 
-                                animate={{ opacity: [0.3, 1, 0.3] }}
-                                transition={{ duration: 1.5, repeat: Infinity, delay: 0.2 }}
-                                className="w-1.5 h-1.5 bg-va-black/40 rounded-full" 
-                              />
-                              <motion.span 
-                                animate={{ opacity: [0.3, 1, 0.3] }}
-                                transition={{ duration: 1.5, repeat: Infinity, delay: 0.4 }}
-                                className="w-1.5 h-1.5 bg-va-black/40 rounded-full" 
-                              />
-                            </ContainerInstrument>
-                            <TextInstrument className="text-[13px] tracking-widest opacity-40 font-light">
-                              <VoiceglotText translationKey="chat.status.typing" defaultText="VOICY DENKT NA..." />
-                            </TextInstrument>
+                          <ContainerInstrument plain className="bg-va-off-white/60 text-va-black p-3 rounded-[20px] rounded-tl-none flex items-center gap-1.5">
+                            <motion.span animate={{ opacity: [0.3, 1, 0.3] }} transition={{ duration: 1.2, repeat: Infinity, delay: 0 }} className="w-1.5 h-1.5 bg-va-black/30 rounded-full" />
+                            <motion.span animate={{ opacity: [0.3, 1, 0.3] }} transition={{ duration: 1.2, repeat: Infinity, delay: 0.15 }} className="w-1.5 h-1.5 bg-va-black/30 rounded-full" />
+                            <motion.span animate={{ opacity: [0.3, 1, 0.3] }} transition={{ duration: 1.2, repeat: Infinity, delay: 0.3 }} className="w-1.5 h-1.5 bg-va-black/30 rounded-full" />
                           </ContainerInstrument>
                         </motion.div>
                       )}
@@ -1573,6 +1587,130 @@ export const VoicyChatV2: React.FC = () => {
                   </ContainerInstrument>
                 </ContainerInstrument>
               )}
+            </ContainerInstrument>
+          )}
+
+          {activeTab === 'mail' && (
+            <ContainerInstrument plain className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
+              {mailSent ? (
+                <ContainerInstrument plain className="bg-primary/10 text-primary p-4 rounded-2xl text-center">
+                  <TextInstrument className="text-[15px] font-light">
+                    <VoiceglotText translationKey="chat.mail.sent" defaultText="Je bericht is verstuurd. We nemen zo snel mogelijk contact op." />
+                  </TextInstrument>
+                </ContainerInstrument>
+              ) : (
+                <FormInstrument onSubmit={handleMailSubmit} className="space-y-4">
+                  <ContainerInstrument plain>
+                    <LabelInstrument htmlFor="voicy-mail-email" className="block text-[13px] font-light tracking-widest text-va-black/50 mb-1.5">
+                      <VoiceglotText translationKey="chat.mail.email" defaultText="E-mail" />
+                    </LabelInstrument>
+                    <InputInstrument
+                      id="voicy-mail-email"
+                      type="email"
+                      value={mailForm.email}
+                      onChange={(e) => setMailForm(prev => ({ ...prev, email: e.target.value }))}
+                      placeholder="naam@voorbeeld.be"
+                      required
+                      className="w-full bg-va-off-white border border-black/5 rounded-xl py-3 px-4 text-[15px] font-light"
+                    />
+                  </ContainerInstrument>
+                  <ContainerInstrument plain>
+                    <LabelInstrument htmlFor="voicy-mail-message" className="block text-[13px] font-light tracking-widest text-va-black/50 mb-1.5">
+                      <VoiceglotText translationKey="chat.mail.message" defaultText="Bericht" />
+                    </LabelInstrument>
+                    <TextareaInstrument
+                      id="voicy-mail-message"
+                      value={mailForm.message}
+                      onChange={(e) => setMailForm(prev => ({ ...prev, message: e.target.value }))}
+                      placeholder={t('chat.mail.placeholder', 'Typ je bericht...')}
+                      required
+                      rows={4}
+                      className="w-full bg-va-off-white border border-black/5 rounded-xl py-3 px-4 text-[15px] font-light placeholder:text-va-black/40 resize-none"
+                    />
+                  </ContainerInstrument>
+                  <ButtonInstrument
+                    type="submit"
+                    disabled={isSendingMail}
+                    className="w-full py-3 bg-va-black text-white rounded-xl text-[15px] font-light tracking-widest hover:opacity-90 disabled:opacity-50 transition-all"
+                  >
+                    {isSendingMail ? <VoiceglotText translationKey="common.sending" defaultText="Versturen..." /> : <VoiceglotText translationKey="chat.mail.send" defaultText="Versturen" />}
+                  </ButtonInstrument>
+                </FormInstrument>
+              )}
+            </ContainerInstrument>
+          )}
+
+          {activeTab === 'phone' && (
+            <ContainerInstrument plain className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
+              <TextInstrument className="text-[15px] font-light text-va-black/60">
+                <VoiceglotText translationKey="chat.phone.intro" defaultText="Bel ons voor vragen of om een belafspraak in te plannen." />
+              </TextInstrument>
+              <ContainerInstrument plain className="flex flex-col gap-3">
+                <ButtonInstrument
+                  as="a"
+                  href={`tel:${activePhone || ''}`}
+                  className="w-full py-4 bg-va-black text-white rounded-2xl text-[15px] font-light tracking-widest hover:opacity-90 transition-all flex items-center justify-center gap-2"
+                >
+                  <Phone strokeWidth={1.5} size={20} />
+                  {activePhone || t('chat.phone.number', 'Nummer')}
+                </ButtonInstrument>
+                {callError && (
+                  <TextInstrument className="text-[13px] text-red-600">{callError}</TextInstrument>
+                )}
+                {callRequested && (
+                  <TextInstrument className="text-[13px] text-primary">
+                    <VoiceglotText translationKey="chat.phone.callback_requested" defaultText="We bellen je zo snel mogelijk terug." />
+                  </TextInstrument>
+                )}
+              </ContainerInstrument>
+            </ContainerInstrument>
+          )}
+
+          {activeTab === 'faq' && (
+            <ContainerInstrument plain className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4">
+              <TextInstrument className="text-[15px] font-light text-va-black/60 mb-4">
+                <VoiceglotText translationKey="chat.faq.intro" defaultText="Veelgestelde vragen en contact." />
+              </TextInstrument>
+              {chatFaqsLoading ? (
+                <TextInstrument className="text-[13px] font-light text-va-black/40">
+                  <VoiceglotText translationKey="chat.faq.loading" defaultText="FAQs laden..." />
+                </TextInstrument>
+              ) : chatFaqs.length > 0 ? (
+                <ContainerInstrument plain className="flex flex-col gap-2">
+                  {chatFaqs.map((item) => (
+                    <ButtonInstrument
+                      key={item.id}
+                      onClick={() => {
+                        setActiveTab('chat');
+                        handleSend(undefined, item.question, 'faq');
+                      }}
+                      className="w-full py-3 px-4 text-left bg-va-off-white hover:bg-va-black hover:text-white rounded-xl text-[15px] font-light transition-all flex items-center gap-2 border border-black/5"
+                    >
+                      <HelpCircle strokeWidth={1.5} size={18} className="shrink-0" />
+                      <TextInstrument as="span" className="line-clamp-2">{item.question}</TextInstrument>
+                      <ChevronRight strokeWidth={1.5} size={16} className="shrink-0 ml-auto opacity-50" />
+                    </ButtonInstrument>
+                  ))}
+                </ContainerInstrument>
+              ) : null}
+              <ContainerInstrument plain className="flex flex-col gap-2 pt-2 border-t border-black/5">
+                <ButtonInstrument
+                  as="a"
+                  href="/contact"
+                  className="w-full py-3 bg-va-off-white hover:bg-va-black hover:text-white rounded-xl text-[15px] font-light tracking-widest transition-all flex items-center justify-center gap-2 border border-black/5"
+                >
+                  <Mail strokeWidth={1.5} size={18} />
+                  <VoiceglotText translationKey="chat.faq.contact" defaultText="Contactpagina" />
+                </ButtonInstrument>
+                <ButtonInstrument
+                  as="a"
+                  href={isStudioJourney ? '/studio' : isAcademyJourney ? '/academy' : '/tarieven'}
+                  className="w-full py-3 bg-va-off-white hover:bg-va-black hover:text-white rounded-xl text-[15px] font-light tracking-widest transition-all flex items-center justify-center gap-2 border border-black/5"
+                >
+                  <HelpCircle strokeWidth={1.5} size={18} />
+                  <VoiceglotText translationKey="chat.faq.more_info" defaultText="Meer info" />
+                </ButtonInstrument>
+              </ContainerInstrument>
             </ContainerInstrument>
           )}
         </ContainerInstrument>
