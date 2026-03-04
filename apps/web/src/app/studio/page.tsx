@@ -63,7 +63,7 @@ export default async function StudioPage() {
             <div className="relative group animate-in fade-in slide-in-from-left-8 duration-1000">
               <div className="absolute -inset-4 bg-primary/5 rounded-[30px] blur-2xl group-hover:bg-primary/10 transition-all duration-700" />
               <VideoPlayer 
-                src="https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices/studio/workshops/videos/workshop_studio_teaser.mp4"
+                src="https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices/studio/workshops/videos/workshop_evta_aftermovie.mp4"
                 poster="https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices/assets/visuals/branding/branding-branding-photo-horizontal-1.webp"
                 className="w-full aspect-video rounded-[20px] shadow-aura-lg border border-white/20 relative z-10"
                 autoPlay={false}

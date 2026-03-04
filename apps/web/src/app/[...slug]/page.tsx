@@ -1671,10 +1671,10 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
                 <ContainerInstrument plain className="voices-hero-visual-container">
                   <Suspense fallback={<div className="w-full h-full bg-va-black/5 animate-pulse rounded-[32px]" />}>
                     <StudioVideoPlayer 
-                      url={videoUrl || "/assets/studio/workshops/videos/workshop_studio_teaser.mp4"} 
-                      subtitles={subtitleUrl || "/assets/studio/workshops/subtitles/workshop_studio_teaser-nl.vtt"}
+                      url={videoUrl || "https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices/studio/workshops/videos/workshop_evta_aftermovie.mp4"} 
+                      subtitles={subtitleUrl}
                       poster={posterUrl || "/assets/visuals/branding/branding-branding-photo-horizontal-1.webp"}
-                      aspect="portrait"
+                      aspect="video"
                       className="shadow-aura-lg border-none w-full h-full"
                     />
                   </Suspense>
