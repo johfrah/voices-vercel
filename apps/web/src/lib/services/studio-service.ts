@@ -46,7 +46,7 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
           (SELECT label FROM experience_levels el JOIN workshop_level_mappings wlm ON el.id = wlm.level_id WHERE wlm.workshop_id = w.id LIMIT 1) as level_label
         FROM workshops w
         LEFT JOIN media m ON m.id = w.media_id
-        WHERE w.status IN ('publish', 'live') AND w.world_id = 2
+        WHERE w.status IN ('publish', 'live') AND w.world_id = 2 AND w.is_public = true
       )
       SELECT * FROM workshop_data
       ORDER BY title
@@ -123,16 +123,23 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
     `);
 
     // 4d. Fetch Video media paths (from meta.video_id)
-    const videoIds = (workshopsList as any[])
+    const videoIdCandidates = (workshopsList as any[])
       .flatMap((w) => {
         const m = (w.meta as Record<string, any>) || {};
         return [m.video_id, m.aftermovie_video_id].filter(Boolean);
       });
+    const normalizedVideoIds = Array.from(
+      new Set(
+        videoIdCandidates
+          .map((id) => Number(id))
+          .filter((id) => Number.isInteger(id) && id > 0)
+      )
+    );
     
     let videoPathsMap: Record<number, string> = {};
-    if (videoIds.length > 0) {
+    if (normalizedVideoIds.length > 0) {
       const videoRows = await db.execute(sql`
-        SELECT id, file_path FROM media WHERE id IN (${sql.join(videoIds.map((id: number) => sql`${id}`), sql`, `)})
+        SELECT id, file_path FROM media WHERE id IN (${sql.join(normalizedVideoIds.map((id) => sql`${id}`), sql`, `)})
       `);
       const videoData = Array.isArray(videoRows) ? videoRows : (videoRows as any).rows || [];
       videoPathsMap = (videoData as any[]).reduce((acc, v) => {
@@ -142,10 +149,9 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
     }
 
     // 4e. Fetch subtitle tracks via the ID-junction system
-    const uniqueVideoIds = Array.from(new Set(videoIds.map((id) => Number(id)).filter((id) => Number.isFinite(id))));
     let subtitleRowsData: any[] = [];
 
-    if (workshopIds.length > 0 && uniqueVideoIds.length > 0) {
+    if (workshopIds.length > 0) {
       const subtitleRows = await db.execute(sql`
         SELECT
           l.id,
@@ -162,7 +168,6 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
         FROM workshop_video_subtitle_links l
         LEFT JOIN media m ON m.id = l.subtitle_media_id
         WHERE l.workshop_id IN (${sql.join(workshopIds.map((id) => sql`${id}`), sql`, `)})
-          AND l.video_media_id IN (${sql.join(uniqueVideoIds.map((id) => sql`${id}`), sql`, `)})
           AND l.is_enabled = true
         ORDER BY l.workshop_id ASC, l.video_media_id ASC, l.is_default DESC, l.id ASC
       `);
@@ -170,8 +175,28 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
       subtitleRowsData = Array.isArray(subtitleRows) ? subtitleRows : (subtitleRows as any).rows || [];
     }
 
+    // Include any video IDs found in subtitle links, even if missing/stale in workshop.meta
+    const subtitleVideoIds = Array.from(
+      new Set(
+        (subtitleRowsData as any[])
+          .map((row) => Number(row.video_media_id))
+          .filter((id) => Number.isInteger(id) && id > 0)
+      )
+    );
+    const missingVideoIds = subtitleVideoIds.filter((id) => !videoPathsMap[id]);
+    if (missingVideoIds.length > 0) {
+      const extraVideoRows = await db.execute(sql`
+        SELECT id, file_path FROM media WHERE id IN (${sql.join(missingVideoIds.map((id) => sql`${id}`), sql`, `)})
+      `);
+      const extraVideoData = Array.isArray(extraVideoRows) ? extraVideoRows : (extraVideoRows as any).rows || [];
+      (extraVideoData as any[]).forEach((row) => {
+        videoPathsMap[row.id] = row.file_path;
+      });
+    }
+
     const subtitleCoverageByKey = (subtitleRowsData as any[]).reduce((acc, row) => {
-      const key = `${row.workshop_id}:${row.video_media_id}`;
+      const role = row.video_role || 'video';
+      const key = `${row.workshop_id}:${row.video_media_id}:${role}`;
       if (!acc[key]) {
         acc[key] = { total: 0, ready: 0, missing: 0 };
       }
@@ -182,7 +207,8 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
     }, {} as Record<string, { total: number; ready: number; missing: number }>);
 
     const subtitleTracksByKey = (subtitleRowsData as any[]).reduce((acc, row) => {
-      const key = `${row.workshop_id}:${row.video_media_id}`;
+      const role = row.video_role || 'video';
+      const key = `${row.workshop_id}:${row.video_media_id}:${role}`;
       if (!acc[key]) acc[key] = [];
 
       const payload = (row.subtitle_data as Record<string, any> | null) || null;
@@ -279,8 +305,8 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
     const wid = String(w.id);
     const videoId = meta.video_id ? Number(meta.video_id) : null;
     const aftermovieVideoId = meta.aftermovie_video_id ? Number(meta.aftermovie_video_id) : null;
-    const videoSubtitleTracks = videoId ? (subtitleTracksByKey[`${w.id}:${videoId}`] || []) : [];
-    const aftermovieSubtitleTracks = aftermovieVideoId ? (subtitleTracksByKey[`${w.id}:${aftermovieVideoId}`] || []) : [];
+    const videoSubtitleTracks = videoId ? (subtitleTracksByKey[`${w.id}:${videoId}:video`] || []) : [];
+    const aftermovieSubtitleTracks = aftermovieVideoId ? (subtitleTracksByKey[`${w.id}:${aftermovieVideoId}:aftermovie`] || []) : [];
     const primaryVideoTrack = videoSubtitleTracks.find((track) => track.is_default) || videoSubtitleTracks[0];
     const resolvedSubtitleData = primaryVideoTrack?.data
       ? {
@@ -324,8 +350,8 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
       subtitle_tracks: videoSubtitleTracks,
       aftermovie_subtitle_tracks: aftermovieSubtitleTracks,
       subtitle_coverage: {
-        video: videoId ? (subtitleCoverageByKey[`${w.id}:${videoId}`] || { total: 0, ready: 0, missing: 0 }) : { total: 0, ready: 0, missing: 0 },
-        aftermovie: aftermovieVideoId ? (subtitleCoverageByKey[`${w.id}:${aftermovieVideoId}`] || { total: 0, ready: 0, missing: 0 }) : { total: 0, ready: 0, missing: 0 }
+        video: videoId ? (subtitleCoverageByKey[`${w.id}:${videoId}:video`] || { total: 0, ready: 0, missing: 0 }) : { total: 0, ready: 0, missing: 0 },
+        aftermovie: aftermovieVideoId ? (subtitleCoverageByKey[`${w.id}:${aftermovieVideoId}:aftermovie`] || { total: 0, ready: 0, missing: 0 }) : { total: 0, ready: 0, missing: 0 }
       },
       subtitle_data: resolvedSubtitleData,
       featured_image: w.media_file_path ? { file_path: w.media_file_path, alt_text: w.media_alt_text } : null,

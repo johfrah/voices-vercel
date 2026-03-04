@@ -49,8 +49,9 @@ export const WorkshopHeroIsland: React.FC<WorkshopHeroIslandProps> = ({ workshop
   const { addItem, setJourney, updateCustomer } = useCheckout();
   const [showParticipantForm, setShowParticipantForm] = useState(false);
   const storageBase = "https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices";
-  const videoPath = workshop.video?.file_path || workshop.featured_image?.file_path;
-  const hasVideo = !!workshop.video?.file_path;
+  const videoPath = workshop.video?.file_path || null;
+  const videoUrl = videoPath ? `${storageBase}/${videoPath}` : null;
+  const hasVideo = Boolean(videoUrl);
   const nextEdition = workshop.upcoming_editions?.[0];
   const hasEdition = !!nextEdition?.id;
   const price = nextEdition?.price || workshop.price || 0;
@@ -127,13 +128,19 @@ export const WorkshopHeroIsland: React.FC<WorkshopHeroIslandProps> = ({ workshop
           <ContainerInstrument plain className="lg:col-span-5 relative group flex justify-center">
             <ContainerInstrument plain className="absolute -inset-4 bg-primary/10 rounded-[30px] blur-2xl opacity-0 group-hover:opacity-100 transition-all duration-1000" />
             <ContainerInstrument plain className="relative z-10 w-full max-w-[360px] aspect-[9/16]">
-              <VideoPlayer 
-                src={`${storageBase}/${videoPath}`}
-                className="w-full h-full object-cover rounded-[24px] shadow-2xl border border-white/10"
-                autoPlay={true}
-                muted={true}
-                subtitles={subtitleTracks}
-              />
+              {hasVideo ? (
+                <VideoPlayer 
+                  src={videoUrl}
+                  className="w-full h-full object-cover rounded-[24px] shadow-2xl border border-white/10"
+                  autoPlay={true}
+                  muted={true}
+                  subtitles={subtitleTracks}
+                />
+              ) : (
+                <ContainerInstrument plain className="w-full h-full rounded-[24px] border border-white/10 bg-white/10 backdrop-blur-sm flex items-center justify-center">
+                  <TextInstrument as="span" className="text-white/80 text-xs tracking-wide">Workshopvideo niet beschikbaar</TextInstrument>
+                </ContainerInstrument>
+              )}
             </ContainerInstrument>
           </ContainerInstrument>
 

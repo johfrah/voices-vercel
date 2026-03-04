@@ -93,14 +93,14 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function StudioPage() {
   // 🛡️ CHRIS-PROTOCOL: Nuclear Handshake (Direct DB access)
   const { workshops, instructors, faqs } = await getStudioWorkshopsData();
-  const heroWorkshop = workshops.find((workshop: any) => workshop?.video?.id === 722) || workshops.find((workshop: any) => workshop?.video?.file_path);
-  const subtitleWorkshop = (normalizeSubtitleTracks(heroWorkshop).length > 0
-    ? heroWorkshop
-    : workshops.find((workshop: any) => normalizeSubtitleTracks(workshop).length > 0)
-  ) || heroWorkshop;
+  const workshopsWithVideo = workshops.filter((workshop: any) => workshop?.video?.file_path);
+  const heroWorkshop =
+    workshopsWithVideo.find((workshop: any) => normalizeSubtitleTracks(workshop).length > 0) ||
+    workshopsWithVideo[0] ||
+    null;
 
-  const heroVideoUrl = toStorageUrl(heroWorkshop?.video?.file_path);
-  const heroSubtitles = normalizeSubtitleTracks(subtitleWorkshop);
+  const heroVideoUrl = toStorageUrl(heroWorkshop?.video?.file_path || null);
+  const heroSubtitles = heroWorkshop ? normalizeSubtitleTracks(heroWorkshop) : [];
 
   return (
     <PageWrapperInstrument className="bg-va-off-white min-h-screen" data-world="studio">
