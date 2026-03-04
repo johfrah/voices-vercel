@@ -6,6 +6,8 @@ import { DbService } from '@/lib/services/db-service';
  * Ontsluit de relationele taxonomies voor de UI.
  */
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
     const taxonomies = await DbService.getTaxonomies();
