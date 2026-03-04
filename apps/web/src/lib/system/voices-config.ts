@@ -105,6 +105,7 @@ export const reviews = fullSchema?.reviews || null;
 export const workshopGallery = fullSchema?.workshopGallery || null;
 export const freePreviews = fullSchema?.freePreviews || null;
 export const costs = fullSchema?.costs || null;
+export const financialLedger = fullSchema?.financialLedger || null;
 export const recordingSessions = fullSchema?.recordingSessions || null;
 export const recordingScripts = fullSchema?.recordingScripts || null;
 export const recordingFeedback = fullSchema?.recordingFeedback || null;
