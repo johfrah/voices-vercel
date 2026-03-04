@@ -820,12 +820,12 @@ export const VoicyChatV2: React.FC = () => {
       //  Check for active Cody Preview Logic
       const previewLogic = typeof window !== 'undefined' ? sessionStorage.getItem('cody_preview_logic') : null;
 
-      //  CHRIS-PROTOCOL: Timeout na 30 seconden om "vastlopen" te voorkomen (Gemini kan traag zijn)
+      //  CHRIS-PROTOCOL: Timeout na 60 seconden om "vastlopen" te voorkomen (Gemini kan traag zijn bij piekbelasting)
       const controller = new AbortController();
       const timeoutId = setTimeout(() => {
-        console.warn(" Voicy: Chat request timed out after 30s");
+        console.warn(" Voicy: Chat request timed out after 60s");
         controller.abort();
-      }, 30000);
+      }, 60000);
 
       console.log("[Voicy] Sending message to API...", { message: userMessage.content });
       
@@ -912,7 +912,7 @@ export const VoicyChatV2: React.FC = () => {
       let errorMessage = t('chat.error.default', "Oeps, er ging iets mis bij het verwerken van je bericht. Probeer het later nog eens!");
       
       if (error.name === 'AbortError') {
-        errorMessage = t('chat.error.slow_response', "Voicy doet er iets langer over dan normaal. Ik probeer het nog eens, of stuur ons een mailtje!");
+        errorMessage = t('chat.error.slow_response', "Ik ben even druk bezet! Bekijk ondertussen onze stemmen of vraag een offerte aan. Je kunt ons ook bellen op +32 (0)2 793 19 91.");
       } else if (error.message?.includes('Network response was not ok') || error.message?.includes('Server error')) {
         errorMessage = t('chat.error.connection', "Ik ben even de verbinding kwijt. Probeer je het nog een keer?");
       }

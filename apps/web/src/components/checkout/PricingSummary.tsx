@@ -471,7 +471,11 @@ export const PricingSummary: React.FC<{
                   {/* Uitleg, prijs en deleteknop rechts (LAYA-MANDAAT) */}
                   <ContainerInstrument className="flex flex-1 items-start justify-between gap-4 min-w-0">
                     <ContainerInstrument className="min-w-0 flex-1">
+<<<<<<< HEAD
                       <HeadingInstrument level={4} className="font-light text-xl text-va-black truncate tracking-tight notranslate">
+=======
+                      <HeadingInstrument level={4} className="font-light text-xl text-va-black truncate tracking-tight">
+>>>>>>> c0862a88dc9b2fb6e30f9fbec678538130233068
                         {itemTitle || t('common.not_available', 'Niet beschikbaar')}
                       </HeadingInstrument>
                       <ContainerInstrument className="mt-2 flex flex-wrap items-center gap-2 text-[11px] text-va-black/45">
@@ -992,7 +996,11 @@ const TotalsSection: React.FC<any> = ({
             <motion.div 
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
+<<<<<<< HEAD
               className="p-3 bg-green-500/5 border border-green-500/20 rounded-[12px] flex items-center justify-center group"
+=======
+              className="p-3 bg-green-500/5 border border-green-500/20 rounded-[12px] flex items-center justify-between group"
+>>>>>>> c0862a88dc9b2fb6e30f9fbec678538130233068
             >
               <div className="flex items-center gap-3">
                 <div className="w-7 h-7 bg-green-500 rounded-lg flex items-center justify-center text-white shadow-sm">
@@ -1184,7 +1192,11 @@ const CTASection: React.FC<any> = ({ handleSubmit, setIsPreviewOpen, setIsTermsO
               <ContainerInstrument className="flex -space-x-0.5">
                 {[1,2,3,4,5].map(i => (
                   <svg key={i} className="w-3 h-3 fill-current" viewBox="0 0 20 20">
+<<<<<<< HEAD
                     <path d="M9.049 2.927c.3-.921 1.603-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+=======
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+>>>>>>> c0862a88dc9b2fb6e30f9fbec678538130233068
                   </svg>
                 ))}
               </ContainerInstrument>

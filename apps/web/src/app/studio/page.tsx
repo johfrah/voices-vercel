@@ -109,6 +109,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function StudioPage() {
+<<<<<<< HEAD
   const { workshops, instructors, faqs, heroVideoPath } = await getStudioWorkshopsData();
   const heroVideoUrl = toStorageUrl(heroVideoPath);
   const subtitleWorkshop = workshops.find((w: any) => normalizeSubtitleTracks(w?.subtitle_data).length > 0);
@@ -120,25 +121,67 @@ export default async function StudioPage() {
           <LiquidBackground />
         </Suspense>
 
+=======
+  try {
+    // 🛡️ CHRIS-PROTOCOL: Nuclear Handshake (Direct DB access)
+    const studioData = await withTimeoutFallback(
+      () => getStudioWorkshopsData(),
+      3000,
+      { workshops: [], instructors: [], faqs: [], _meta: { count: 0, fetched_at: new Date(0).toISOString() } }
+    );
+
+    const workshops = Array.isArray(studioData?.workshops) ? studioData.workshops : [];
+    const instructors = Array.isArray(studioData?.instructors) ? studioData.instructors : [];
+    const faqs = Array.isArray(studioData?.faqs) ? studioData.faqs : [];
+
+    const workshopsWithVideo = workshops.filter((workshop: any) => workshop?.video?.file_path);
+    const heroWorkshop =
+      workshopsWithVideo.find((workshop: any) => normalizeSubtitleTracks(workshop).length > 0) ||
+      workshopsWithVideo[0] ||
+      null;
+
+    const heroVideoUrl = toStorageUrl(heroWorkshop?.video?.file_path || null);
+    const heroSubtitles = heroWorkshop ? normalizeSubtitleTracks(heroWorkshop) : [];
+
+    return (
+      <PageWrapperInstrument className="bg-va-off-white min-h-screen" data-world="studio">
+        <Suspense fallback={null}>
+          <LiquidBackground />
+        </Suspense>
+
+>>>>>>> c0862a88dc9b2fb6e30f9fbec678538130233068
         {/* HERO SECTION: Video (Left) + Content (Right) */}
         <section className="relative z-10 pt-32 pb-24 overflow-hidden" data-block-type="hero">
           <ContainerInstrument className="max-w-7xl mx-auto px-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
               
+<<<<<<< HEAD
               {/* Left: Video Player Island (verticaal 9:16, workshop-beginners-aftermovie) */}
+=======
+              {/* Left: Video Player Island */}
+>>>>>>> c0862a88dc9b2fb6e30f9fbec678538130233068
               <div className="relative group animate-in fade-in slide-in-from-left-8 duration-1000">
                 <div className="absolute -inset-4 bg-primary/5 rounded-[30px] blur-2xl group-hover:bg-primary/10 transition-all duration-700" />
                 {heroVideoUrl ? (
                   <VideoPlayer 
                     src={heroVideoUrl}
                     subtitles={heroSubtitles}
+<<<<<<< HEAD
                     className="w-full max-w-[320px] mx-auto aspect-[9/16] rounded-[20px] shadow-aura-lg border border-white/20 relative z-10"
+=======
+                    className="w-full aspect-video rounded-[20px] shadow-aura-lg border border-white/20 relative z-10"
+>>>>>>> c0862a88dc9b2fb6e30f9fbec678538130233068
                     autoPlay={false}
                     muted={false}
                   />
                 ) : (
+<<<<<<< HEAD
                   <ContainerInstrument className="w-full max-w-[320px] mx-auto aspect-[9/16] rounded-[20px] border border-white/20 bg-va-off-white/80 backdrop-blur-sm shadow-aura-lg relative z-10 flex items-center justify-center">
                     <TextInstrument className="text-va-black/50 text-sm tracking-wide text-center px-4">Studio video niet beschikbaar</TextInstrument>
+=======
+                  <ContainerInstrument className="w-full aspect-video rounded-[20px] border border-white/20 bg-va-off-white/80 backdrop-blur-sm shadow-aura-lg relative z-10 flex items-center justify-center">
+                    <TextInstrument className="text-va-black/50 text-sm tracking-wide">Studio video niet beschikbaar</TextInstrument>
+>>>>>>> c0862a88dc9b2fb6e30f9fbec678538130233068
                   </ContainerInstrument>
                 )}
                 {/* Floating Decorative Element */}
@@ -171,4 +214,25 @@ export default async function StudioPage() {
         <StudioWorkshopsSection workshops={workshops} instructors={instructors} faqs={faqs} />
       </PageWrapperInstrument>
     );
+<<<<<<< HEAD
+=======
+  } catch (error) {
+    console.error('[StudioPage] Render fallback triggered:', error);
+    return (
+      <PageWrapperInstrument className="bg-va-off-white min-h-screen" data-world="studio">
+        <ContainerInstrument className="max-w-7xl mx-auto px-6 pt-40 pb-24">
+          <HeadingInstrument level={1} className="text-5xl md:text-7xl font-light tracking-tighter leading-[1.1] text-va-black mb-8">
+            <VoiceglotText translationKey="page.studio.title" defaultText="Workshops voor professionele sprekers" />
+          </HeadingInstrument>
+          <TextInstrument className="text-xl md:text-2xl text-va-black/60 font-light leading-relaxed max-w-2xl">
+            <VoiceglotText
+              translationKey="page.studio.fallback.description"
+              defaultText="De studio-inhoud wordt tijdelijk herladen. Probeer binnen enkele seconden opnieuw."
+            />
+          </TextInstrument>
+        </ContainerInstrument>
+      </PageWrapperInstrument>
+    );
+  }
+>>>>>>> c0862a88dc9b2fb6e30f9fbec678538130233068
 }

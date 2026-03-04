@@ -48,7 +48,7 @@ export class GeminiService {
   /**
    * Helper om het model op te halen met de juiste v1beta compatibiliteit
    */
-  private getModel() {
+  private getModel(priority: 'high' | 'low' = 'low') {
     //  GEMINI 2026 UPGRADE: Gebruik gemini-flash-latest voor maximale stabiliteit en snelheid
     return this.genAI.getGenerativeModel({ model: "gemini-flash-latest" });
   }
@@ -57,16 +57,23 @@ export class GeminiService {
    * Genereert platte tekst via Gemini. Gebruikt door heal-routes, chat en Telegram-Bob.
    * NU MET AGENT-MANDAAT: Kan gestructureerde acties voorstellen.
    */
-  async generateText(prompt: string, options?: { jsonMode?: boolean, lang?: string, host?: string }): Promise<string> {
+  async generateText(prompt: string, options?: { jsonMode?: boolean, lang?: string, host?: string, priority?: 'high' | 'low' }): Promise<string> {
     if (!process.env.GOOGLE_API_KEY) {
-      console.warn('[GeminiService] GOOGLE_API_KEY not configured. Returning fallback.');
+      console.warn('[GeminiService] GOOGLE_API_KEY not configured. Returning helpful fallback.');
       return options?.jsonMode
-        ? JSON.stringify({ message: "Voicy is momenteel offline. Neem contact op via e-mail of telefoon.", actions: [] })
-        : "Voicy is momenteel offline. Neem contact op via e-mail of telefoon.";
+        ? JSON.stringify({ 
+            message: "Welkom bij Voices! Ik help je graag verder. Bekijk onze stemmen, vraag een offerte aan, of neem contact op via +32 (0)2 793 19 91.", 
+            actions: [
+              { label: "Stemmen bekijken", action: "BROWSE_VOICES" },
+              { label: "Offerte aanvragen", action: "SHOW_LEAD_FORM" }
+            ],
+            suggestedAction: { type: "BROWSE_VOICES", params: {} }
+          })
+        : "Welkom bij Voices! Bekijk onze stemmen, vraag een offerte aan, of neem contact op via +32 (0)2 793 19 91.";
     }
 
     try {
-      const model = this.getModel();
+      const model = this.getModel(options?.priority);
       let finalPrompt = prompt;
 
       //  MARKET DNA INJECTION: Als er een taal is meegegeven, injecteren we de regels
@@ -97,10 +104,17 @@ ${prompt}
       const msg = error?.message ?? '';
       const isQuota = status === 429 || msg.includes('429') || msg.includes('quota') || msg.includes('Too Many Requests');
       if (isQuota) {
-        console.warn('[GeminiService] Quota exceeded (429), returning offline message. Retry after 24h.');
+        console.warn('[GeminiService] Quota exceeded (429), returning helpful fallback. Retry after quota reset.');
         return options?.jsonMode
-          ? JSON.stringify({ message: "Voicy is momenteel offline. Probeer het later opnieuw.", actions: [] })
-          : "Voicy is momenteel offline. Probeer het later opnieuw.";
+          ? JSON.stringify({ 
+              message: "Ik ben even druk bezet! Maar ik kan je alvast helpen: bekijk onze stemmen of vraag een vrijblijvende offerte aan. Of bel ons gerust op +32 (0)2 793 19 91.", 
+              actions: [
+                { label: "Stemmen bekijken", action: "BROWSE_VOICES" },
+                { label: "Offerte aanvragen", action: "SHOW_LEAD_FORM" }
+              ],
+              suggestedAction: { type: "BROWSE_VOICES", params: {} }
+            })
+          : "Ik ben even druk bezet! Bekijk onze stemmen of vraag een vrijblijvende offerte aan. Of bel ons gerust op +32 (0)2 793 19 91.";
       }
       if (error.message === 'Gemini Timeout') {
         return options?.jsonMode ? JSON.stringify({ message: "Ik heb even wat meer tijd nodig om na te denken." }) : "Ik heb even wat meer tijd nodig om na te denken. Probeer je het zo nog eens?";
@@ -113,7 +127,7 @@ ${prompt}
   /**
    * Static shortcut voor generateText (compat met heal-routes).
    */
-  static async generateText(prompt: string, options?: { jsonMode?: boolean, lang?: string, host?: string }): Promise<string> {
+  static async generateText(prompt: string, options?: { jsonMode?: boolean, lang?: string, host?: string, priority?: 'high' | 'low' }): Promise<string> {
     return GeminiService.getInstance().generateText(prompt, options);
   }
 

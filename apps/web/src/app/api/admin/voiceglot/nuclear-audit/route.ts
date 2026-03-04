@@ -63,7 +63,9 @@ export async function POST(request: NextRequest) {
       `;
 
       try {
-        const improved = await GeminiService.generateText(prompt, { lang: row.lang });
+        // 🛡️ CHRIS-PROTOCOL: Quota Guard (v2.20.1)
+        // Audit gebruikt priority: 'low' om de chat-capaciteit te beschermen.
+        const improved = await GeminiService.generateText(prompt, { lang: row.lang, priority: 'low' });
         const cleanImproved = improved.trim().replace(/^"|"$/g, '');
 
         //  CHRIS-FILTER: Alleen updaten als er echt een verbetering is

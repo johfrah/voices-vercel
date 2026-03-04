@@ -183,21 +183,13 @@ export async function GET(request: NextRequest) {
         const config = await dbWithTimeout(db.select().from(appConfigs).where(eq(appConfigs.key, 'general_settings')).limit(1)) as any[];
         return NextResponse.json({
           general_settings: config[0]?.value || {},
-<<<<<<< HEAD
-          _version: '2.28.14'
-=======
-          _version: '2.28.28'
->>>>>>> d0e3858f797467c8dab1a0fa4ed1001f8b5ef896
+          _version: '2.28.29'
         });
       } catch (err: any) {
         console.warn(`[Admin Config] General settings fetch failed, returning empty: ${err.message}`);
         return NextResponse.json({
           general_settings: {},
-<<<<<<< HEAD
-          _version: '2.28.14'
-=======
-          _version: '2.28.28'
->>>>>>> d0e3858f797467c8dab1a0fa4ed1001f8b5ef896
+          _version: '2.28.29'
         });
       }
     }
@@ -289,11 +281,7 @@ export async function POST(request: NextRequest) {
         }
       });
 
-<<<<<<< HEAD
-    return NextResponse.json({ success: true, _version: '2.28.14' });
-=======
-    return NextResponse.json({ success: true, _version: '2.28.28' });
->>>>>>> d0e3858f797467c8dab1a0fa4ed1001f8b5ef896
+    return NextResponse.json({ success: true, _version: '2.28.29' });
   } catch (error) {
     console.error('[Admin Config POST Error]:', error);
     return NextResponse.json({ error: 'Failed to update config' }, { status: 500 });

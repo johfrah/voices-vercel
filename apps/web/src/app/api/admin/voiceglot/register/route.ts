@@ -151,6 +151,8 @@ export async function POST(request: NextRequest) {
               .catch(() => []);
 
             if (!existing || !existing.translatedText || existing.translatedText === sourceText) {
+              // 🛡️ CHRIS-PROTOCOL: Quota Guard (v2.20.1)
+              // We gebruiken priority: 'low' voor Voiceglot om de chat niet te hinderen.
               const prompt = `
                 Vertaal de volgende tekst van het Nederlands naar het ${lang}.
                 Context: ${context || 'Algemene website tekst'}
@@ -161,7 +163,7 @@ export async function POST(request: NextRequest) {
                 Vertaling:
               `;
 
-              const translatedText = await GeminiService.generateText(prompt, { lang: lang });
+              const translatedText = await GeminiService.generateText(prompt, { lang: lang, priority: 'low' });
               if (translatedText.includes('Voicy is momenteel offline')) {
                 console.warn('[RegisterAPI] Gemini unavailable (quota or key), skipping remaining languages for this key.');
                 await notifyAdminGeminiQuotaExceeded();
