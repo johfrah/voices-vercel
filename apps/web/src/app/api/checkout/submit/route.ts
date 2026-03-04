@@ -488,6 +488,39 @@ export async function POST(request: Request) {
       }
     });
 
+    // Customer receipt for Mollie checkout submit (pending payment),
+    // so the user always gets immediate confirmation of the action.
+    (async () => {
+      try {
+        const mollieSubject = languageShort === 'fr'
+          ? `Commande reçue (paiement en attente) : #${newOrder.id}`
+          : languageShort === 'en'
+            ? `Order received (payment pending): #${newOrder.id}`
+            : `Bestelling ontvangen (betaling in behandeling): #${newOrder.id}`;
+
+        await VumeEngine.send({
+          to: email,
+          subject: mollieSubject,
+          template: 'order-confirmation',
+          context: {
+            userName: first_name,
+            orderId: newOrder.id,
+            total: amount,
+            items: validatedItems.map((item: any) => ({
+              name: item.name || item.actor?.display_name || 'Voice Over',
+              price: Number(item.pricing?.total || item.pricing?.subtotal || 0),
+              deliveryTime: item.actor?.delivery_time || item.actor?.deliveryTime
+            })),
+            paymentMethod: payment_method || 'mollie',
+            language: normalizedLanguage
+          },
+          host
+        });
+      } catch (mailErr) {
+        console.warn('[Checkout] Failed to send Mollie submit confirmation:', mailErr);
+      }
+    })();
+
     return NextResponse.json({ success: true, orderId: newOrder.id, checkoutUrl: mollieOrder._links.checkout.href, token: secureToken });
   });
   } catch (error: any) {
