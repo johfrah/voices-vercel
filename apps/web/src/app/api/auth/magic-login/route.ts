@@ -59,24 +59,48 @@ export async function GET(request: Request) {
     const siteUrl = MarketManager.getMarketDomains()[market.market_code] || `https://${MarketManager.getMarketDomains()['BE']?.replace('https://', '') || 'www.voices.be'}`;
     const currentBaseUrl = host.includes('localhost') ? `http://${host}` : siteUrl;
 
-    // 4. Generate Magic Link (Action Link)
-    const { data, error } = await supabaseAdmin.auth.admin.generateLink({
+    // 4. Generate Magic Link (Action Link) and always finalize via /account/confirm
+    // to let server-side verifyOtp establish a stable session.
+    let { data, error } = await supabaseAdmin.auth.admin.generateLink({
       type: 'magiclink',
       email: userRecord.email,
       options: {
-        redirectTo: `${currentBaseUrl}${redirectPath}`,
+        redirectTo: `${currentBaseUrl}/account/confirm`,
       }
     });
 
-    if (error) {
-      console.error('Supabase GenerateLink Error:', error);
-      throw error;
+    if (error && (error.message.includes('User not found') || error.status === 422)) {
+      const signupResult = await supabaseAdmin.auth.admin.generateLink({
+        type: 'signup' as any,
+        email: userRecord.email,
+        options: {
+          redirectTo: `${currentBaseUrl}/account/confirm`,
+        }
+      });
+      data = signupResult.data;
+      error = signupResult.error;
     }
 
-    const actionLink = data.properties.action_link;
+    if (error || !data?.properties?.action_link) {
+      console.error('Supabase GenerateLink Error:', error);
+      throw error || new Error('Failed to generate action link');
+    }
 
-    // 5. Redirect to the Action Link (which will set the session and redirect to final destination)
-    return NextResponse.redirect(actionLink);
+    const supabaseLink = new URL(data.properties.action_link);
+    const confirmToken = supabaseLink.searchParams.get('token');
+    const confirmType = supabaseLink.searchParams.get('type') || 'magiclink';
+
+    if (!confirmToken) {
+      throw new Error('No token found in generated action link');
+    }
+
+    const confirmUrl =
+      `${currentBaseUrl}/account/confirm?token=${encodeURIComponent(confirmToken)}` +
+      `&type=${encodeURIComponent(confirmType)}` +
+      `&redirect=${encodeURIComponent(redirectPath)}`;
+
+    // 5. Redirect to our own confirm route for cookie-based session establishment.
+    return NextResponse.redirect(confirmUrl);
 
   } catch (error: any) {
     console.error(' MAGIC LOGIN ERROR:', error);
