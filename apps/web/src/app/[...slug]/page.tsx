@@ -1063,16 +1063,18 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
           };
           
           // 🛡️ CHRIS-PROTOCOL: Unified Journey Handshake
-          // We prioritize the journey from the slug_registry metadata (if it was a deep match)
-          // Otherwise we look at the segment after the resolved path.
+          // Path journey wins; registry journey is fallback when no explicit suffix exists.
           const registryJourney = resolved.metadata?.journey || resolved.journey;
-          const lookupSegments = lookupSlug.split('/');
-          const nextSegment = cleanSegments[lookupSegments.length];
-          const mappedJourney = registryJourney || (nextSegment ? journeyMap[nextSegment.toLowerCase()] : undefined);
+          const resolvedSlugSegments = (resolved.slug || '').split('/').filter(Boolean);
+          const resolvedDepth = resolvedSlugSegments.length > 0 ? resolvedSlugSegments.length : 1;
+          const nextSegment = cleanSegments[resolvedDepth];
+          const mappedJourneyFromPath = nextSegment ? journeyMap[nextSegment.toLowerCase()] : undefined;
+          const mappedJourney = mappedJourneyFromPath || registryJourney;
+          const initialMediumCandidate = cleanSegments[resolvedDepth + 1];
           
           console.error(` [SmartRouter] Actor Handshake: registryJourney=${registryJourney}, nextSegment=${nextSegment}, finalJourney=${mappedJourney}`);
           
-          return <VoiceDetailClient actor={actor} initialJourney={mappedJourney || (nextSegment as any)} initialMedium={cleanSegments[lookupSegments.length + 1]} />;
+          return <VoiceDetailClient actor={actor} initialJourney={mappedJourney || (nextSegment as any)} initialMedium={initialMediumCandidate} />;
         }
       }
 
@@ -1444,7 +1446,10 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
           cinema: 'cinema',
           pos: 'pos'
         };
-        const normalizedMedia = commercialMediaMap[segments[2].toLowerCase()];
+        const rawMediaSegment = segments[2].toLowerCase();
+        const encodedSegmentMatch = rawMediaSegment.match(/^([a-z_]+)\d+x\d+$/i);
+        const mediaLookupKey = encodedSegmentMatch ? encodedSegmentMatch[1] : rawMediaSegment;
+        const normalizedMedia = commercialMediaMap[mediaLookupKey];
         if (normalizedMedia) {
           filters.media = normalizedMedia;
         }
@@ -1468,11 +1473,15 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
         photo_url: actor.photo_url,
         voice_score: actor.voice_score,
         native_lang: actor.native_lang,
+        native_lang_id: actor.native_lang_id ?? actor.native_language_id ?? null,
+        native_language_id: actor.native_language_id ?? actor.native_lang_id ?? null,
         gender: actor.gender,
+        gender_id: actor.gender_id ?? null,
         starting_price: actor.starting_price,
         delivery_days_min: actor.delivery_days_min || 1,
         delivery_days_max: actor.delivery_days_max || 2,
         extra_langs: actor.extra_langs,
+        country_id: actor.country_id ?? null,
         tone_of_voice: actor.tone_of_voice,
         clients: actor.clients,
         cutoff_time: actor.cutoff_time || "18:00",
@@ -1485,11 +1494,13 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
         price_ivr: actor.price_ivr,
         price_unpaid: actor.price_unpaid,
         price_online: actor.price_online,
+        price_bsf: actor.price_bsf,
+        bsf: actor.bsf,
         holiday_from: actor.holiday_from,
         holiday_till: actor.holiday_till,
-        rates_raw: actor.rates_raw || {}
+        rates: actor.rates || actor.rates_raw || {},
+        rates_raw: actor.rates_raw || actor.rates || {}
       }));
-
       const marketCode = headersList.get("x-voices-market") || "BE";
 
       return (

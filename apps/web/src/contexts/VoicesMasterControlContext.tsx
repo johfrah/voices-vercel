@@ -202,7 +202,22 @@ export const VoicesMasterControlProvider: React.FC<{
         reclame: 'commercial',
         advertising: 'commercial',
       };
-      const pathJourneySegment = pathSegments[0] === 'agency' ? pathSegments[1]?.toLowerCase() : undefined;
+      const firstPathSegment = pathSegments[0]?.toLowerCase() || '';
+      const isAgencyPath = firstPathSegment === 'agency';
+      const nonVoiceProfilePrefixes = new Set([
+        'admin', 'backoffice', 'account', 'api', 'auth', 'checkout',
+        'tarieven', 'price', 'contact', 'over-ons', 'agency', 'voice',
+        'artist', 'portfolio', 'studio', 'academy', 'ademing', 'johfrai',
+        'partners', 'freelance', 'casting'
+      ]);
+      const isActorJourneyPath =
+        pathSegments.length >= 2 &&
+        !isAgencyPath &&
+        !nonVoiceProfilePrefixes.has(firstPathSegment);
+      const pathJourneySegment =
+        (isAgencyPath || isActorJourneyPath)
+          ? pathSegments[1]?.toLowerCase()
+          : undefined;
       const journeyFromPath = pathJourneySegment ? pathJourneyMap[pathJourneySegment] : undefined;
 
       const parseCommercialMediaSegments = (segments: string[]) => {
@@ -264,21 +279,40 @@ export const VoicesMasterControlProvider: React.FC<{
       let initialLanguageId = initialLanguageIdParam 
         ? parseInt(initialLanguageIdParam) 
         : (localeIdFromPath || savedState.filters?.languageId || defaultLangId);
-        
-      const initialLanguages = searchParams?.get('languages')
+
+      const resolvedLanguageIdFromCode = MarketManager.getLanguageId(
+        initialLanguage,
+        market?.primary_language || 'nl-be'
+      );
+      if (!initialLanguageIdParam && resolvedLanguageIdFromCode) {
+        initialLanguageId = resolvedLanguageIdFromCode;
+      }
+
+      let initialLanguages = searchParams?.get('languages')
         ? searchParams?.get('languages')?.split(',')
         : (
           localeFromPath
             ? [localeFromPath]
             : (savedState.filters?.languages || [initialLanguage.toLowerCase()])
         );
-      const initialLanguageIds = searchParams?.get('languageIds')
+      let initialLanguageIds = searchParams?.get('languageIds')
         ? searchParams?.get('languageIds')?.split(',').map(Number)
         : (
           localeIdFromPath
             ? [localeIdFromPath]
             : (savedState.filters?.languageIds || (initialLanguageId ? [initialLanguageId] : []))
         );
+
+      if (!initialLanguageIds || initialLanguageIds.length === 0) {
+        initialLanguageIds = initialLanguageId ? [initialLanguageId] : [defaultLangId];
+      }
+
+      if (journeyFromPath === 'commercial' && !initialLanguageParam && !initialLanguageIdParam) {
+        initialLanguage = localeFromPath || defaultLang;
+        initialLanguageId = localeIdFromPath || defaultLangId;
+        initialLanguages = [initialLanguage.toLowerCase()];
+        initialLanguageIds = [initialLanguageId];
+      }
 
       const initialWordsParam = searchParams?.get('words');
       const initialWords = (initialWordsParam && parseInt(initialWordsParam) > 0) 
@@ -545,6 +579,38 @@ export const VoicesMasterControlProvider: React.FC<{
           const journey = urlState.journey || (searchParams?.get('journey') as JourneyType) || savedState.journey || prev.journey;
           const queryJourneyId = searchParams?.get('journeyId') ? parseInt(searchParams.get('journeyId')!, 10) : null;
           const journeyId = (urlState as any).journeyId || (urlState.journey ? MarketManager.getJourneyId(urlState.journey) : null) || queryJourneyId || savedState.journeyId || MarketManager.getJourneyId(journey);
+          const mergedMedia = ((urlState as any).media && (urlState as any).media.length > 0)
+            ? (urlState as any).media
+            : (searchParams?.get('media') ? searchParams?.get('media')?.split(',') : (savedState.filters?.media || prev.filters.media));
+
+          let media = mergedMedia;
+          let mediaIds = ((urlState as any).mediaIds && (urlState as any).mediaIds.length > 0)
+            ? (urlState as any).mediaIds
+            : (searchParams?.get('mediaIds') ? searchParams?.get('mediaIds')?.split(',').map(Number) : (savedState.filters?.mediaIds || prev.filters.mediaIds));
+
+          let spotsDetail = (urlState as any).spotsDetail || savedState.filters?.spotsDetail || prev.filters.spotsDetail;
+          let yearsDetail = (urlState as any).yearsDetail || savedState.filters?.yearsDetail || prev.filters.yearsDetail;
+
+          if (journey === 'commercial') {
+            const normalizedMedia = Array.from(
+              new Set(
+                (media || [])
+                  .map((mediaCode: string) => normalizeCommercialMediaCode(mediaCode))
+                  .filter((mediaCode: string | null): mediaCode is string => !!mediaCode)
+              )
+            );
+            media = normalizedMedia.length > 0 ? normalizedMedia : [DEFAULT_COMMERCIAL_MEDIA_CODE];
+
+            const normalizedMediaIds = media
+              .map((mediaCode: string) => MarketManager.getServiceId(mediaCode))
+              .filter((mediaId: number | null): mediaId is number => mediaId != null);
+            mediaIds = normalizedMediaIds.length > 0
+              ? normalizedMediaIds
+              : [MarketManager.getServiceId(DEFAULT_COMMERCIAL_MEDIA_CODE) || 5];
+
+            spotsDetail = sanitizeCommercialDetailMap(spotsDetail, media, 1);
+            yearsDetail = sanitizeCommercialDetailMap(yearsDetail, media, 1);
+          }
           
           return {
             ...prev,
@@ -559,14 +625,10 @@ export const VoicesMasterControlProvider: React.FC<{
               languageId: urlState.languageId || (searchParams?.get('languageId') ? parseInt(searchParams.get('languageId')!) : (savedState.filters?.languageId || prev.filters.languageId)),
               languageIds: urlState.languageId ? [urlState.languageId] : (savedState.filters?.languageIds || prev.filters.languageIds),
               gender: urlState.gender || searchParams?.get('gender') || savedState.filters?.gender || prev.filters.gender,
-              media: ((urlState as any).media && (urlState as any).media.length > 0)
-                ? (urlState as any).media
-                : (searchParams?.get('media') ? searchParams?.get('media')?.split(',') : (savedState.filters?.media || prev.filters.media)),
-              mediaIds: ((urlState as any).mediaIds && (urlState as any).mediaIds.length > 0)
-                ? (urlState as any).mediaIds
-                : (searchParams?.get('mediaIds') ? searchParams?.get('mediaIds')?.split(',').map(Number) : (savedState.filters?.mediaIds || prev.filters.mediaIds)),
-              spotsDetail: (urlState as any).spotsDetail || savedState.filters?.spotsDetail || prev.filters.spotsDetail,
-              yearsDetail: (urlState as any).yearsDetail || savedState.filters?.yearsDetail || prev.filters.yearsDetail,
+              media,
+              mediaIds,
+              spotsDetail,
+              yearsDetail,
             },
             currentStep: urlState.step || (searchParams?.get('step') as any) || 'voice'
           };
@@ -582,22 +644,52 @@ export const VoicesMasterControlProvider: React.FC<{
       const currentUrl = window.location.pathname;
       const urlState = detectStateFromUrl(currentUrl);
       
-      setState(prev => ({
-        ...prev,
-        currentStep: urlState.step,
-        journey: urlState.journey || prev.journey,
-        filters: {
-          ...prev.filters,
-          language: urlState.language || prev.filters.language,
-          languageId: urlState.languageId || prev.filters.languageId,
-          languageIds: urlState.languageId ? [urlState.languageId] : prev.filters.languageIds,
-          gender: urlState.gender || prev.filters.gender,
-          media: (urlState as any).media || prev.filters.media,
-          spotsDetail: (urlState as any).spotsDetail || prev.filters.spotsDetail,
-          yearsDetail: (urlState as any).yearsDetail || prev.filters.yearsDetail,
-          words: (urlState as any).words || prev.filters.words
+      setState(prev => {
+        const journey = urlState.journey || prev.journey;
+        let media = (urlState as any).media || prev.filters.media;
+        let mediaIds = (urlState as any).mediaIds || prev.filters.mediaIds;
+        let spotsDetail = (urlState as any).spotsDetail || prev.filters.spotsDetail;
+        let yearsDetail = (urlState as any).yearsDetail || prev.filters.yearsDetail;
+
+        if (journey === 'commercial') {
+          const normalizedMedia = Array.from(
+            new Set(
+              (media || [])
+                .map((mediaCode: string) => normalizeCommercialMediaCode(mediaCode))
+                .filter((mediaCode: string | null): mediaCode is string => !!mediaCode)
+            )
+          );
+          media = normalizedMedia.length > 0 ? normalizedMedia : [DEFAULT_COMMERCIAL_MEDIA_CODE];
+
+          const normalizedMediaIds = media
+            .map((mediaCode: string) => MarketManager.getServiceId(mediaCode))
+            .filter((mediaId: number | null): mediaId is number => mediaId != null);
+          mediaIds = normalizedMediaIds.length > 0
+            ? normalizedMediaIds
+            : [MarketManager.getServiceId(DEFAULT_COMMERCIAL_MEDIA_CODE) || 5];
+
+          spotsDetail = sanitizeCommercialDetailMap(spotsDetail, media, 1);
+          yearsDetail = sanitizeCommercialDetailMap(yearsDetail, media, 1);
         }
-      }));
+
+        return {
+          ...prev,
+          currentStep: urlState.step,
+          journey,
+          filters: {
+            ...prev.filters,
+            language: urlState.language || prev.filters.language,
+            languageId: urlState.languageId || prev.filters.languageId,
+            languageIds: urlState.languageId ? [urlState.languageId] : prev.filters.languageIds,
+            gender: urlState.gender || prev.filters.gender,
+            media,
+            mediaIds,
+            spotsDetail,
+            yearsDetail,
+            words: (urlState as any).words || prev.filters.words
+          }
+        };
+      });
     };
 
     window.addEventListener('popstate', handlePopState);
@@ -613,26 +705,55 @@ export const VoicesMasterControlProvider: React.FC<{
     if (urlState.journey || urlState.step !== state.currentStep || hasLocaleLanguageChange) {
       const journey = urlState.journey || state.journey;
       const journeyId = MarketManager.getJourneyId(journey);
-      setState(prev => ({
-        ...prev,
-        currentStep: urlState.step,
-        journey,
-        journeyId,
-        usage: SlimmeKassa.getUsageFromJourneyId(journeyId || journey),
-        filters: {
-          ...prev.filters,
-          language: urlState.language || prev.filters.language,
-          languageId: urlState.languageId || prev.filters.languageId,
-          languageIds: urlState.languageId ? [urlState.languageId] : prev.filters.languageIds,
-          gender: urlState.gender || prev.filters.gender,
-          media: (urlState as any).media || prev.filters.media,
-          spotsDetail: (urlState as any).spotsDetail || prev.filters.spotsDetail,
-          yearsDetail: (urlState as any).yearsDetail || prev.filters.yearsDetail,
-          words: (urlState as any).words || prev.filters.words
+      setState(prev => {
+        let media = (urlState as any).media || prev.filters.media;
+        let mediaIds = (urlState as any).mediaIds || prev.filters.mediaIds;
+        let spotsDetail = (urlState as any).spotsDetail || prev.filters.spotsDetail;
+        let yearsDetail = (urlState as any).yearsDetail || prev.filters.yearsDetail;
+
+        if (journey === 'commercial') {
+          const normalizedMedia = Array.from(
+            new Set(
+              (media || [])
+                .map((mediaCode: string) => normalizeCommercialMediaCode(mediaCode))
+                .filter((mediaCode: string | null): mediaCode is string => !!mediaCode)
+            )
+          );
+          media = normalizedMedia.length > 0 ? normalizedMedia : [DEFAULT_COMMERCIAL_MEDIA_CODE];
+
+          const normalizedMediaIds = media
+            .map((mediaCode: string) => MarketManager.getServiceId(mediaCode))
+            .filter((mediaId: number | null): mediaId is number => mediaId != null);
+          mediaIds = normalizedMediaIds.length > 0
+            ? normalizedMediaIds
+            : [MarketManager.getServiceId(DEFAULT_COMMERCIAL_MEDIA_CODE) || 5];
+
+          spotsDetail = sanitizeCommercialDetailMap(spotsDetail, media, 1);
+          yearsDetail = sanitizeCommercialDetailMap(yearsDetail, media, 1);
         }
-      }));
+
+        return {
+          ...prev,
+          currentStep: urlState.step,
+          journey,
+          journeyId,
+          usage: SlimmeKassa.getUsageFromJourneyId(journeyId || journey),
+          filters: {
+            ...prev.filters,
+            language: urlState.language || prev.filters.language,
+            languageId: urlState.languageId || prev.filters.languageId,
+            languageIds: urlState.languageId ? [urlState.languageId] : prev.filters.languageIds,
+            gender: urlState.gender || prev.filters.gender,
+            media,
+            mediaIds,
+            spotsDetail,
+            yearsDetail,
+            words: (urlState as any).words || prev.filters.words
+          }
+        };
+      });
     }
-  }, [pathname, detectStateFromUrl, state.currentStep, state.filters.language, state.filters.languageId]);
+  }, [pathname, detectStateFromUrl, state.currentStep, state.filters.language, state.filters.languageId, state.journey]);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -686,6 +807,7 @@ export const VoicesMasterControlProvider: React.FC<{
     }
   }, [
     state.journey, 
+    state.journeyId,
     state.filters.media, 
     state.filters.words, 
     state.filters.spotsDetail, 
@@ -736,8 +858,6 @@ export const VoicesMasterControlProvider: React.FC<{
       const locale = pathname.match(/^\/(nl|fr|en|de|es|it|pt)/)?.[0] || '';
       targetUrl = locale + '/agency/' + jSlug + '/';
       
-      if (state.journeyId) params.set('journeyId', state.journeyId.toString());
-      
       if (state.journey === 'commercial') {
         const normalizedEntriesMap = new Map<string, string>();
         (state.filters.media || []).forEach((rawMediaCode) => {
@@ -755,7 +875,11 @@ export const VoicesMasterControlProvider: React.FC<{
         normalizedEntries.forEach(([normalizedMediaCode, rawMediaCode]) => {
           const spots = state.filters.spotsDetail?.[normalizedMediaCode] || state.filters.spotsDetail?.[rawMediaCode] || 1;
           const years = state.filters.yearsDetail?.[normalizedMediaCode] || state.filters.yearsDetail?.[rawMediaCode] || 1;
-          targetUrl += normalizedMediaCode + spots + 'x' + years + '/';
+          if (spots === 1 && years === 1) {
+            targetUrl += normalizedMediaCode + '/';
+          } else {
+            targetUrl += normalizedMediaCode + spots + 'x' + years + '/';
+          }
         });
       } else if ((state.journey === 'telephony' || state.journey === 'video') && state.filters.words) {
         targetUrl += state.filters.words + '/';
@@ -783,11 +907,6 @@ export const VoicesMasterControlProvider: React.FC<{
       return;
     }
 
-    // 🛡️ CHRIS-PROTOCOL: Nuclear ID-First URL Sync (v2.14.711)
-    // We append the languageId and genderId to the query string to ensure 
-    // the API receives the strict IDs for filtering.
-    if (state.filters.languageId) params.set('languageId', state.filters.languageId.toString());
-    if (state.filters.genderId) params.set('genderId', state.filters.genderId.toString());
     const queryString = params.toString();
     
     const finalUrl = targetUrl + (queryString ? '?' + queryString : '');
@@ -795,7 +914,7 @@ export const VoicesMasterControlProvider: React.FC<{
     if (window.location.pathname + window.location.search !== finalUrl) {
       window.history.replaceState(null, '', finalUrl);
     }
-  }, [state.journey, state.filters, pathname, isStateInitialized]);
+  }, [state.journey, state.filters, pathname, isStateInitialized, state.journeyId]);
 
   const updateJourney = useCallback((journeyInput: JourneyType | number) => {
     let journey: JourneyType;

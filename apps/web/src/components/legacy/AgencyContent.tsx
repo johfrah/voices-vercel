@@ -91,6 +91,26 @@ export function AgencyContent({ mappedActors, filters }: { mappedActors: any[], 
 
     const result = VoiceFilterEngine.filter(mappedActors, filterOptions) || [];
 
+    if (state.journey === 'commercial') {
+      const selectedMedia = Array.isArray(state.filters.media) && state.filters.media.length > 0
+        ? state.filters.media
+        : ['online'];
+      const countrySource = state.filters.country ?? state.filters.countries?.[0] ?? 'BE';
+      const parsedCountryId = typeof countrySource === 'number'
+        ? countrySource
+        : (!Number.isNaN(Number(countrySource)) ? Number(countrySource) : null);
+      const countryRegistry = (MarketManager.countries && MarketManager.countries.length > 0)
+        ? MarketManager.countries
+        : (typeof window !== 'undefined' ? (window as any).handshakeCountries || [] : []);
+      const resolvedCountryCode = parsedCountryId != null
+        ? (countryRegistry.find((countryEntry: any) => countryEntry.id === parsedCountryId)?.code || 'BE')
+        : String(countrySource || 'BE').toUpperCase();
+
+      return result.filter((actor) =>
+        SlimmeKassa.getAvailabilityStatus(actor as any, selectedMedia as any, resolvedCountryCode) !== 'unavailable'
+      );
+    }
+
     if (mounted) {
       console.log(`[AgencyContent] Result actors: ${result.length}`, {
         firstActor: result[0] ? { id: result[0].id, name: result[0].display_name } : 'none'

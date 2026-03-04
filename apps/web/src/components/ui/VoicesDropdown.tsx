@@ -269,7 +269,7 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
       if (activeKeys.length === 1) {
         const key = activeKeys[0];
         const count = value[key];
-        const opt = options.find(o => (typeof o === 'string' ? o : o.value) === key);
+        const opt = options.find((o) => String(typeof o === 'string' ? o : o.value) === String(key));
         const label = typeof opt === 'string' ? opt : opt?.label || key;
 
         // CHRIS-PROTOCOL: Human-friendly full labels for single selection

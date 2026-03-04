@@ -1261,13 +1261,13 @@ export default function ConfiguratorPageClient({
                       </LabelInstrument>
                       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                         {commercialMediaOptions.map((opt) => {
-                          const baseId = opt.id.split('_')[0];
+                          const baseId = String(opt.code || '').split('_')[0];
                           const isSelected = state.media?.some(m => m.startsWith(baseId));
                           return (
                             <button
-                              key={opt.id}
+                              key={opt.code}
                               type="button"
-                              onClick={() => handleMediaToggle(opt.id)}
+                              onClick={() => handleMediaToggle(opt.code)}
                               className={cn(
                                 "flex flex-col items-center gap-1 p-3 rounded-[12px] border transition-all text-center group relative overflow-hidden",
                                 isSelected ? "bg-va-black text-white border-va-black shadow-lg scale-[1.02]" : "bg-white border-black/[0.03] text-va-black/40 hover:border-black/10 hover:bg-va-off-white/50"
@@ -1285,7 +1285,7 @@ export default function ConfiguratorPageClient({
                     <div className="space-y-3 pt-2">
                       <AnimatePresence mode="popLayout">
                         {state.media?.map((mediaId) => {
-                          const opt = commercialMediaOptions.find(o => o.id === mediaId);
+                          const opt = commercialMediaOptions.find(o => o.code === mediaId || o.id === mediaId);
                           if (!opt) return null;
                           const isPodcast = mediaId === 'podcast';
                           const hasRegions = (opt as any).hasRegions;
@@ -1300,7 +1300,7 @@ export default function ConfiguratorPageClient({
                                     <opt.icon size={14} strokeWidth={2.5} />
                                   </div>
                                   <span className="text-[13px] font-bold text-va-black uppercase tracking-tight">
-                                    <VoiceglotText translationKey={`common.media.${opt.id}`} defaultText={opt.label} />
+                                    <VoiceglotText translationKey={`common.media.${opt.code}`} defaultText={opt.label} />
                                   </span>
                                 </div>
                                 <div className="text-[10px] font-black text-primary/40 uppercase tracking-widest bg-primary/5 px-2 py-1 rounded-md">
