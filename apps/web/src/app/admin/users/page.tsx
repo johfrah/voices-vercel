@@ -14,7 +14,7 @@ import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useAdminTracking } from '@/hooks/useAdminTracking';
 import { useAuth } from '@/contexts/AuthContext';
 import { useWorld } from '@/contexts/WorldContext';
-import { ArrowLeft, Edit3, Loader2, Mail, MoreHorizontal, Search as SearchIcon, Shield, UserPlus, Users, RefreshCw, Ghost, Eye, DollarSign, ShoppingBag } from 'lucide-react';
+import { ArrowLeft, Edit3, Loader2, Mail, MoreHorizontal, Search as SearchIcon, Shield, UserPlus, Users, RefreshCw, Ghost, Eye, DollarSign, ShoppingBag, Mic2, BookOpen, GraduationCap } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState, useCallback } from 'react';
 import { toast } from 'react-hot-toast';
@@ -186,15 +186,27 @@ export default function AdminUsersPage() {
                 </td>
                 <td className="p-6">
                   <ContainerInstrument className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-[15px] font-light tracking-widest ${
-                    user.role === 'admin' ? 'bg-va-black text-white' : 'bg-va-off-white text-va-black/40'
+                    user.role === 'admin' ? 'bg-va-black text-white' : 
+                    user.role === 'actor' ? 'bg-primary/10 text-primary' :
+                    user.role === 'guest' ? 'bg-va-off-white text-va-black/20' :
+                    'bg-va-off-white text-va-black/40'
                   }`}>
-                    {user.role === 'admin' ? <Shield strokeWidth={1.5} size={10} /> : <Users strokeWidth={1.5} size={10} />}
-                    {user.role}
+                    {user.role === 'admin' ? <Shield strokeWidth={1.5} size={10} /> : 
+                     user.role === 'actor' ? <Mic2 strokeWidth={1.5} size={10} /> :
+                     user.role === 'guest' ? <Ghost strokeWidth={1.5} size={10} /> :
+                     <Users strokeWidth={1.5} size={10} />}
+                    {user.role === 'guest' ? 'Lead' : user.role}
                   </ContainerInstrument>
                 </td>
                 <td className="p-6">
-                    <div className="flex flex-col">
-                        <span className="font-medium text-primary">€{user.stats?.totalSpent?.toFixed(2) || '0.00'}</span>
+                    <div className="flex flex-col gap-1">
+                        <div className="flex items-center gap-2">
+                            <span className="font-medium text-primary">€{user.stats?.totalSpent?.toFixed(2) || '0.00'}</span>
+                            <div className="flex gap-1">
+                                {user.stats?.activeWorlds?.includes(1) && <ShoppingBag size={12} className="text-va-black/20" title="Agency Klant" />}
+                                {user.stats?.activeWorlds?.includes(2) && <GraduationCap size={12} className="text-va-black/20" title="Studio Klant" />}
+                            </div>
+                        </div>
                         <span className="text-[12px] text-va-black/30">{user.stats?.orders || 0} orders</span>
                     </div>
                 </td>
