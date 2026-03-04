@@ -115,6 +115,13 @@ export const WorkshopInterestForm: React.FC = () => {
     return () => { cancelled = true; };
   }, [isSubmitted]);
 
+  // Anna: na succes naar boven scrollen zodat bedankview direct zichtbaar is
+  useEffect(() => {
+    if (isSubmitted && typeof window !== 'undefined') {
+      requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: 'smooth' }));
+    }
+  }, [isSubmitted]);
+
   const toggleWorkshop = (id: string) => {
     setSelectedWorkshops(prev => 
       prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
@@ -232,9 +239,23 @@ export const WorkshopInterestForm: React.FC = () => {
               </ButtonInstrument>
             </div>
 
-            {/* Kalender: eerstvolgende sessies in de buurt */}
+            {/* Kalender of lege staat (Berny) */}
             <div className="rounded-[20px] border border-black/[0.06] bg-white/80 backdrop-blur-sm p-6 shadow-sm">
-              <SuccessWorkshopCalendar workshops={successWorkshops} />
+              {successWorkshops.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
+                  <TextInstrument className="text-[13px] font-bold text-va-black/40 uppercase tracking-widest mb-2">
+                    <VoiceglotText translationKey="studio.calendar.title" defaultText="Workshop kalender" />
+                  </TextInstrument>
+                  <TextInstrument className="text-[15px] font-light text-va-black/50 max-w-xs">
+                    <VoiceglotText translationKey="studio.calendar.empty_after_submit" defaultText="Binnenkort komen er nieuwe data. We houden je op de hoogte." />
+                  </TextInstrument>
+                  <ButtonInstrument as={Link} href="/studio" variant="outline" className="mt-6 min-h-[44px]">
+                    <VoiceglotText translationKey="workshop.interest.success.cta" defaultText="Bekijk workshops" />
+                  </ButtonInstrument>
+                </div>
+              ) : (
+                <SuccessWorkshopCalendar workshops={successWorkshops} />
+              )}
             </div>
           </div>
         </div>
