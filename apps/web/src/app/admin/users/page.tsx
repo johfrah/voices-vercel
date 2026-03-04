@@ -226,7 +226,12 @@ export default function AdminUsersPage() {
                             {user.role === 'actor' ? (
                                 <span className="font-medium text-green-600">€{user.stats?.totalEarned?.toFixed(2) || '0.00'}</span>
                             ) : (
-                                <span className="font-medium text-primary">€{user.stats?.totalSpent?.toFixed(2) || '0.00'}</span>
+                                <div className="flex flex-col">
+                                    <span className="font-medium text-primary">€{user.stats?.totalSpent?.toFixed(2) || '0.00'}</span>
+                                    {user.stats?.profit > 0 && (
+                                        <span className="text-[10px] text-green-500 font-bold tracking-tighter">PROFIT: €{user.stats?.profit?.toFixed(2)}</span>
+                                    )}
+                                </div>
                             )}
                             <div className="flex gap-1">
                                 {user.stats?.activeWorlds?.map((w: any) => (
