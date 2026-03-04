@@ -468,7 +468,7 @@ export const PricingSummary: React.FC<{
                   </ContainerInstrument>
 
                   {/* Uitleg, prijs en deleteknop rechts (LAYA-MANDAAT) */}
-                  <ContainerInstrument className="flex flex-1 items-center justify-between gap-4 min-w-0">
+                  <ContainerInstrument className="flex flex-1 items-start justify-between gap-4 min-w-0">
                     <ContainerInstrument className="min-w-0 flex-1">
                       <HeadingInstrument level={4} className="font-light text-xl text-va-black truncate tracking-tight">
                         {itemTitle}
@@ -526,22 +526,22 @@ export const PricingSummary: React.FC<{
                                 <LabelInstrument className="text-[10px] uppercase tracking-widest text-va-black/30 font-bold ml-0">
                                   <VoiceglotText translationKey="cart.workshop.details" defaultText="Workshop details" />
                                 </LabelInstrument>
-                                <div className="space-y-1.5 text-[13px] text-va-black/60">
+                                <div className="space-y-2.5 text-[13px] text-va-black/60">
                                   {itemObj.date && (
-                                    <div className="flex justify-between gap-6">
-                                      <span>Datum</span>
-                                      <span className="font-medium text-va-black/70">{itemObj.date}</span>
+                                    <div className="space-y-0.5">
+                                      <span className="text-[10px] uppercase tracking-widest text-va-black/35">Datum</span>
+                                      <span className="block font-medium text-va-black/70">{itemObj.date}</span>
                                     </div>
                                   )}
                                   {itemObj.location && (
-                                    <div className="flex justify-between gap-6">
-                                      <span>Locatie</span>
-                                      <span className="font-medium text-va-black/70">{itemObj.location}</span>
+                                    <div className="space-y-0.5">
+                                      <span className="text-[10px] uppercase tracking-widest text-va-black/35">Locatie</span>
+                                      <span className="block font-medium text-va-black/70">{itemObj.location}</span>
                                     </div>
                                   )}
                                   {workshopParticipantRows.map((row, rowIndex) => (
-                                    <div key={`${row.label}-${rowIndex}`} className="flex justify-between gap-6">
-                                      <span className="inline-flex items-center gap-1.5">
+                                    <div key={`${row.label}-${rowIndex}`} className="space-y-0.5">
+                                      <span className="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-widest text-va-black/35">
                                         {row.icon === 'mail' ? (
                                           <Mail size={12} strokeWidth={1.8} className="text-va-black/40" />
                                         ) : (
@@ -549,7 +549,7 @@ export const PricingSummary: React.FC<{
                                         )}
                                         {row.label}
                                       </span>
-                                      <span className="font-medium text-va-black/70 text-right">{row.value}</span>
+                                      <span className="block font-medium text-va-black/70">{row.value}</span>
                                     </div>
                                   ))}
                                 </div>
@@ -575,55 +575,55 @@ export const PricingSummary: React.FC<{
                                   <LabelInstrument className="text-[10px] uppercase tracking-widest text-va-black/30 font-bold ml-0">
                                     <VoiceglotText translationKey="cart.usage_and_rights.label" defaultText="Gebruik & rechten" />
                                   </LabelInstrument>
-                                  <div className="space-y-2.5 text-[13px] text-va-black/60">
-                                    <div className="flex justify-between gap-6">
-                                      <span className="inline-flex items-center gap-1.5">
+                                  <div className="space-y-3 text-[13px] text-va-black/60">
+                                    <div className="space-y-0.5">
+                                      <span className="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-widest text-va-black/35">
                                         <RadioTower size={12} strokeWidth={1.8} className="text-va-black/40" />
                                         <VoiceglotText translationKey="cart.usage.label" defaultText="Gebruikstype" />
                                       </span>
-                                      <span className="font-medium text-va-black/70 text-right">{usageLabel}</span>
+                                      <span className="block font-medium text-va-black/70">{usageLabel}</span>
                                     </div>
                                     {mediaLabels.length > 0 && (
-                                      <div className="flex justify-between gap-6">
-                                        <span className="inline-flex items-center gap-1.5">
+                                      <div className="space-y-0.5">
+                                        <span className="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-widest text-va-black/35">
                                           <RadioTower size={12} strokeWidth={1.8} className="text-va-black/40" />
                                           <VoiceglotText translationKey="cart.media.label" defaultText="Mediatype(s)" />
                                         </span>
-                                        <span className="font-medium text-va-black/70 text-right">{mediaLabels.join(' • ')}</span>
+                                        <span className="block font-medium text-va-black/70">{mediaLabels.join(' • ')}</span>
                                       </div>
                                     )}
                                     {countryLabels.length > 0 && (
-                                      <div className="flex justify-between gap-6">
-                                        <span className="inline-flex items-center gap-1.5">
+                                      <div className="space-y-0.5">
+                                        <span className="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-widest text-va-black/35">
                                           <MapPin size={12} strokeWidth={1.8} className="text-va-black/40" />
                                           <VoiceglotText translationKey="cart.broadcast_area.label" defaultText="Uitzendgebied" />
                                         </span>
-                                        <span className="font-medium text-va-black/70 text-right">{countryLabels.join(', ')}</span>
+                                        <span className="block font-medium text-va-black/70">{countryLabels.join(', ')}</span>
                                       </div>
                                     )}
                                     {spotsDetails.length > 0 && (
-                                      <div className="flex justify-between gap-6">
-                                        <span className="inline-flex items-center gap-1.5">
+                                      <div className="space-y-0.5">
+                                        <span className="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-widest text-va-black/35">
                                           <Target size={12} strokeWidth={1.8} className="text-va-black/40" />
                                           <VoiceglotText translationKey="cart.spots.label" defaultText="Aantal spots" />
                                         </span>
-                                        <span className="font-medium text-va-black/70 text-right">{spotsDetails.join(' • ')}</span>
+                                        <span className="block font-medium text-va-black/70">{spotsDetails.join(' • ')}</span>
                                       </div>
                                     )}
                                     {yearsDetails.length > 0 && (
-                                      <div className="flex justify-between gap-6">
-                                        <span className="inline-flex items-center gap-1.5">
+                                      <div className="space-y-0.5">
+                                        <span className="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-widest text-va-black/35">
                                           <CalendarDays size={12} strokeWidth={1.8} className="text-va-black/40" />
                                           <VoiceglotText translationKey="cart.license_years.label" defaultText="Looptijd licentie" />
                                         </span>
-                                        <span className="font-medium text-va-black/70 text-right">{yearsDetails.join(' • ')}</span>
+                                        <span className="block font-medium text-va-black/70">{yearsDetails.join(' • ')}</span>
                                       </div>
                                     )}
                                   </div>
                                 </div>
 
-                                {/* Delivery & Pricing Grid */}
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4 border-t border-va-black/[0.03]">
+                                {/* Delivery & Pricing */}
+                                <div className="space-y-5 pt-4 border-t border-va-black/[0.03]">
                                   {/* Delivery Date */}
                                   <div className="space-y-2">
                                     <LabelInstrument className="text-[10px] uppercase tracking-widest text-va-black/30 font-bold ml-0">
@@ -652,27 +652,27 @@ export const PricingSummary: React.FC<{
                                       <LabelInstrument className="text-[10px] uppercase tracking-widest text-va-black/30 font-bold ml-0">
                                         Prijsopbouw (excl. BTW)
                                       </LabelInstrument>
-                                      <div className="space-y-1.5">
-                                        <div className="flex justify-between text-[13px] text-va-black/60">
-                                          <span>Basistarief</span>
-                                          <span className="font-medium">€ {(itemObj.pricing.base ?? 0).toFixed(2)}</span>
+                                      <div className="space-y-2">
+                                        <div className="space-y-0.5 text-[13px] text-va-black/60">
+                                          <span className="text-[10px] uppercase tracking-widest text-va-black/35">Basistarief</span>
+                                          <span className="block font-medium text-va-black/70">€ {(itemObj.pricing.base ?? 0).toFixed(2)}</span>
                                         </div>
                                         {(itemObj.pricing.wordSurcharge ?? 0) > 0 && (
-                                          <div className="flex justify-between text-[13px] text-va-black/60">
-                                            <span>Extra woorden/verwerking</span>
-                                            <span className="font-medium">+ € {(itemObj.pricing.wordSurcharge ?? 0).toFixed(2)}</span>
+                                          <div className="space-y-0.5 text-[13px] text-va-black/60">
+                                            <span className="text-[10px] uppercase tracking-widest text-va-black/35">Extra woorden/verwerking</span>
+                                            <span className="block font-medium text-va-black/70">+ € {(itemObj.pricing.wordSurcharge ?? 0).toFixed(2)}</span>
                                           </div>
                                         )}
                                         {(itemObj.pricing.mediaSurcharge ?? 0) > 0 && (
-                                          <div className="flex justify-between text-[13px] text-va-black/60">
-                                            <span>Licenties & Buyouts</span>
-                                            <span className="font-medium">+ € {(itemObj.pricing.mediaSurcharge ?? 0).toFixed(2)}</span>
+                                          <div className="space-y-0.5 text-[13px] text-va-black/60">
+                                            <span className="text-[10px] uppercase tracking-widest text-va-black/35">Licenties & Buyouts</span>
+                                            <span className="block font-medium text-va-black/70">+ € {(itemObj.pricing.mediaSurcharge ?? 0).toFixed(2)}</span>
                                           </div>
                                         )}
                                         {(itemObj.pricing.musicSurcharge ?? 0) > 0 && (
-                                          <div className="flex justify-between text-[13px] text-va-black/60">
-                                            <span>Muziek & Mixage</span>
-                                            <span className="font-medium">+ € {(itemObj.pricing.musicSurcharge ?? 0).toFixed(2)}</span>
+                                          <div className="space-y-0.5 text-[13px] text-va-black/60">
+                                            <span className="text-[10px] uppercase tracking-widest text-va-black/35">Muziek & Mixage</span>
+                                            <span className="block font-medium text-va-black/70">+ € {(itemObj.pricing.musicSurcharge ?? 0).toFixed(2)}</span>
                                           </div>
                                         )}
                                       </div>
@@ -686,7 +686,23 @@ export const PricingSummary: React.FC<{
                       </div>
                     </ContainerInstrument>
 
-                    <div className="flex items-center gap-6 shrink-0">
+                    <ContainerInstrument className="flex flex-col items-end gap-3 shrink-0 self-start">
+                      <div className="flex flex-col items-end min-w-[120px]">
+                        {state.customer.active_coupon && (
+                          <TextInstrument className="text-[12px] text-va-black/20 line-through font-light">
+                            €{(itemObj.pricing?.subtotal ?? itemObj.pricing?.total ?? 0).toFixed(2)}
+                          </TextInstrument>
+                        )}
+                        <TextInstrument className={cn(
+                          "font-light text-2xl tracking-tight",
+                          "text-va-black"
+                        )}>
+                          €{(itemObj.pricing?.subtotal ?? itemObj.pricing?.total ?? 0).toFixed(2)}
+                        </TextInstrument>
+                        <TextInstrument className="text-[10px] text-va-black/20 font-light uppercase tracking-widest mt-0.5">
+                          Excl. BTW
+                        </TextInstrument>
+                      </div>
                       <div className="flex items-center gap-2">
                         <button 
                           onClick={(e) => {
@@ -714,23 +730,7 @@ export const PricingSummary: React.FC<{
                           <Trash2 size={18} strokeWidth={1.5} className="group-hover/delete:scale-110 transition-transform" />
                         </button>
                       </div>
-                      <div className="flex flex-col items-end min-w-[120px]">
-                        {state.customer.active_coupon && (
-                          <TextInstrument className="text-[12px] text-va-black/20 line-through font-light">
-                            €{(itemObj.pricing?.subtotal ?? itemObj.pricing?.total ?? 0).toFixed(2)}
-                          </TextInstrument>
-                        )}
-                        <TextInstrument className={cn(
-                          "font-light text-2xl tracking-tight",
-                          "text-va-black"
-                        )}>
-                          €{(itemObj.pricing?.subtotal ?? itemObj.pricing?.total ?? 0).toFixed(2)}
-                        </TextInstrument>
-                        <TextInstrument className="text-[10px] text-va-black/20 font-light uppercase tracking-widest mt-0.5">
-                          Excl. BTW
-                        </TextInstrument>
-                      </div>
-                    </div>
+                    </ContainerInstrument>
                   </ContainerInstrument>
                 </ContainerInstrument>
               );
@@ -739,7 +739,7 @@ export const PricingSummary: React.FC<{
         </ContainerInstrument>
       )}
 
-      {(!onlyItems && isCheckoutPage) && (
+      {(!onlyItems && (isCheckoutPage || !!onlyTotals)) && (
         <ContainerInstrument className={cn(
           "space-y-6",
           !onlyTotals && "block"
@@ -756,13 +756,16 @@ export const PricingSummary: React.FC<{
             applyCoupon={applyCoupon}
             isApplyingCoupon={isApplyingCoupon}
             couponError={couponError}
+            showCoupon={isCheckoutPage}
           />
-          <CTASection 
-            handleSubmit={handleSubmit}
-            setIsPreviewOpen={setIsPreviewOpen}
-            setIsTermsOpen={setIsTermsOpen}
-            reviewStats={reviewStats}
-          />
+          {!onlyTotals && isCheckoutPage && (
+            <CTASection 
+              handleSubmit={handleSubmit}
+              setIsPreviewOpen={setIsPreviewOpen}
+              setIsTermsOpen={setIsTermsOpen}
+              reviewStats={reviewStats}
+            />
+          )}
         </ContainerInstrument>
       )}
 
@@ -939,7 +942,7 @@ export const PricingSummary: React.FC<{
 // Helper components to avoid duplication
 const TotalsSection: React.FC<any> = ({ 
   subtotal, discountAmount, subtotalAfterDiscount, tax, total, isVatExempt,
-  couponCode, setCouponCode, applyCoupon, isApplyingCoupon, couponError
+  couponCode, setCouponCode, applyCoupon, isApplyingCoupon, couponError, showCoupon = true
 }) => {
   const { t } = useTranslation();
   const { state, updateCustomer } = useCheckout();
@@ -947,72 +950,73 @@ const TotalsSection: React.FC<any> = ({
   
   return (
     <ContainerInstrument className="space-y-3 pt-6 border-t border-va-black/5">
-      {/* Coupon Code Section */}
-      <div className="pb-4">
-        {!state.customer.active_coupon ? (
-          <div className="flex gap-2">
-            <div className="relative flex-1">
-              <div className="absolute left-3 top-1/2 -translate-y-1/2 text-va-black/20">
-                <Tag size={14} strokeWidth={1.5} />
+      {showCoupon && (
+        <div className="pb-4">
+          {!state.customer.active_coupon ? (
+            <div className="flex gap-2">
+              <div className="relative flex-1">
+                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-va-black/20">
+                  <Tag size={14} strokeWidth={1.5} />
+                </div>
+                <InputInstrument
+                  value={couponCode}
+                  onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                  placeholder={t('checkout.coupon.placeholder', "Kortingscode")}
+                  className="w-full !pl-10 !py-2 !text-[13px] !rounded-[12px] bg-va-off-white/50 border-transparent focus:bg-white transition-all"
+                />
               </div>
-              <InputInstrument
-                value={couponCode}
-                onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-                placeholder={t('checkout.coupon.placeholder', "Kortingscode")}
-                className="w-full !pl-10 !py-2 !text-[13px] !rounded-[12px] bg-va-off-white/50 border-transparent focus:bg-white transition-all"
-              />
+              <ButtonInstrument
+                type="button"
+                onClick={applyCoupon}
+                disabled={!couponCode || isApplyingCoupon}
+                className="px-4 bg-va-black text-white rounded-[12px] text-[11px] font-bold tracking-widest hover:bg-primary transition-all disabled:opacity-30"
+              >
+                {isApplyingCoupon ? <Loader2 size={14} className="animate-spin" /> : <VoiceglotText translationKey="common.apply" defaultText="Toepassen" />}
+              </ButtonInstrument>
             </div>
-            <ButtonInstrument
-              type="button"
-              onClick={applyCoupon}
-              disabled={!couponCode || isApplyingCoupon}
-              className="px-4 bg-va-black text-white rounded-[12px] text-[11px] font-bold tracking-widest hover:bg-primary transition-all disabled:opacity-30"
+          ) : (
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="p-3 bg-green-500/5 border border-green-500/20 rounded-[12px] flex items-center justify-between group"
             >
-              {isApplyingCoupon ? <Loader2 size={14} className="animate-spin" /> : <VoiceglotText translationKey="common.apply" defaultText="Toepassen" />}
-            </ButtonInstrument>
-          </div>
-        ) : (
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="p-3 bg-green-500/5 border border-green-500/20 rounded-[12px] flex items-center justify-between group"
-          >
-            <div className="flex items-center gap-3">
-              <div className="w-7 h-7 bg-green-500 rounded-lg flex items-center justify-center text-white shadow-sm">
-                <Tag size={14} strokeWidth={2} />
+              <div className="flex items-center gap-3">
+                <div className="w-7 h-7 bg-green-500 rounded-lg flex items-center justify-center text-white shadow-sm">
+                  <Tag size={14} strokeWidth={2} />
+                </div>
+                <div>
+                  <TextInstrument className="text-[12px] font-bold text-green-600 tracking-wider">
+                    {state.customer.active_coupon.code}
+                  </TextInstrument>
+                  <TextInstrument className="text-[10px] text-green-600/60 font-light">
+                    {state.customer.active_coupon.type === 'percentage' ? `${state.customer.active_coupon.discount}% ${t('common.discount', 'korting')}` : `€${state.customer.active_coupon.discount} ${t('common.discount', 'korting')}`}
+                  </TextInstrument>
+                </div>
               </div>
-              <div>
-                <TextInstrument className="text-[12px] font-bold text-green-600 tracking-wider">
-                  {state.customer.active_coupon.code}
-                </TextInstrument>
-                <TextInstrument className="text-[10px] text-green-600/60 font-light">
-                  {state.customer.active_coupon.type === 'percentage' ? `${state.customer.active_coupon.discount}% ${t('common.discount', 'korting')}` : `€${state.customer.active_coupon.discount} ${t('common.discount', 'korting')}`}
-                </TextInstrument>
-              </div>
-            </div>
-            <button 
-              onClick={() => {
-                updateCustomer({ active_coupon: null });
-                setCouponCode('');
-                playClick('soft');
-              }}
-              className="p-1.5 text-green-600/20 hover:text-red-500 transition-colors group/delete"
-              title={t('action.remove_coupon', "Verwijder kortingscode")}
+              <button 
+                onClick={() => {
+                  updateCustomer({ active_coupon: null });
+                  setCouponCode('');
+                  playClick('soft');
+                }}
+                className="p-1.5 text-green-600/20 hover:text-red-500 transition-colors group/delete"
+                title={t('action.remove_coupon', "Verwijder kortingscode")}
+              >
+                <Trash2 size={14} strokeWidth={1.5} className="group-hover/delete:scale-110 transition-transform" />
+              </button>
+            </motion.div>
+          )}
+          {couponError && (
+            <motion.p 
+              initial={{ opacity: 0, y: -5 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-[10px] text-red-500 font-medium mt-2 ml-3 flex items-center gap-1"
             >
-              <Trash2 size={14} strokeWidth={1.5} className="group-hover/delete:scale-110 transition-transform" />
-            </button>
-          </motion.div>
-        )}
-        {couponError && (
-          <motion.p 
-            initial={{ opacity: 0, y: -5 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-[10px] text-red-500 font-medium mt-2 ml-3 flex items-center gap-1"
-          >
-            <AlertCircle size={10} /> {couponError}
-          </motion.p>
-        )}
-      </div>
+              <AlertCircle size={10} /> {couponError}
+            </motion.p>
+          )}
+        </div>
+      )}
 
       <ContainerInstrument className="flex justify-between text-[15px]">
         <TextInstrument className="text-va-black/40 font-light tracking-widest text-[15px] ">

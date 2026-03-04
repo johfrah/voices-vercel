@@ -114,9 +114,9 @@ export default function CartPageClient() {
           </ContainerInstrument>
         </ContainerInstrument>
 
-        <ContainerInstrument className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+        <ContainerInstrument className="grid grid-cols-1 lg:grid-cols-12 gap-6 xl:gap-8 items-start">
           {/* Cart Items List */}
-          <ContainerInstrument className="lg:col-span-7 space-y-8">
+          <ContainerInstrument className="lg:col-span-8 space-y-8">
             <PricingSummary onlyItems={true} className="!space-y-6" />
             
             <div className="p-8 bg-primary/5 rounded-[32px] border border-primary/10 flex items-start gap-6">
@@ -145,7 +145,7 @@ export default function CartPageClient() {
           </ContainerInstrument>
 
           {/* Totals & Checkout CTA */}
-          <ContainerInstrument className="lg:col-span-5">
+          <ContainerInstrument className="lg:col-span-4">
             <div className="lg:sticky lg:top-24 space-y-8">
               <div className="bg-white p-10 rounded-[40px] shadow-aura-lg border border-va-black/5 space-y-8">
                 <HeadingInstrument level={3} className="text-2xl font-light tracking-tighter border-b border-va-black/5 pb-6">
