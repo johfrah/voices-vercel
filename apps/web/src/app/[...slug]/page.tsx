@@ -50,7 +50,7 @@ const AgencyCalculator = nextDynamic(() => import("@/components/ui/AgencyCalcula
 // Workshop Components
 const WorkshopCarousel = nextDynamic(() => import("@/components/studio/WorkshopCarousel").then(mod => mod.WorkshopCarousel), { ssr: false });
 const WorkshopCalendar = nextDynamic(() => import("@/components/studio/WorkshopCalendar").then(mod => mod.WorkshopCalendar), { ssr: false });
-const StudioVideoPlayer = nextDynamic(() => import("@/components/ui/StudioVideoPlayer").then(mod => mod.StudioVideoPlayer), { ssr: false });
+const VideoPlayerIsland = nextDynamic(() => import("@/components/ui/VideoPlayer").then(mod => mod.VideoPlayer), { ssr: false });
 const JourneyCta = nextDynamic(() => import("@/components/ui/JourneyCta").then(mod => mod.JourneyCta), { ssr: false });
 const StudioLaunchpad = nextDynamic(() => import("@/components/ui/StudioLaunchpad").then(mod => mod.StudioLaunchpad), { ssr: false });
 const WorkshopQuiz = nextDynamic(() => import("@/components/studio/WorkshopQuiz").then(mod => mod.WorkshopQuiz), { ssr: false });
@@ -1663,6 +1663,9 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
         const videoUrl = body.match(/video:\s*([^\n]+)/)?.[1]?.trim();
         const posterUrl = body.match(/poster:\s*([^\n]+)/)?.[1]?.trim();
         const subtitleUrl = body.match(/subtitles:\s*([^\n]+)/)?.[1]?.trim();
+        const subtitleTracks = subtitleUrl
+          ? [{ srcLang: 'nl', label: 'Nederlands', src: subtitleUrl }]
+          : [];
         
         return (
           <section key={block.id} className="voices-hero">
@@ -1670,13 +1673,21 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
               <ContainerInstrument plain className="voices-hero-right group lg:order-1">
                 <ContainerInstrument plain className="voices-hero-visual-container">
                   <Suspense fallback={<div className="w-full h-full bg-va-black/5 animate-pulse rounded-[32px]" />}>
-                    <StudioVideoPlayer 
-                      url={videoUrl || "https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices/studio/workshops/videos/workshop_evta_aftermovie.mp4"} 
-                      subtitles={subtitleUrl}
-                      poster={posterUrl || "/assets/visuals/branding/branding-branding-photo-horizontal-1.webp"}
-                      aspect="video"
-                      className="shadow-aura-lg border-none w-full h-full"
-                    />
+                    {videoUrl ? (
+                      <VideoPlayerIsland
+                        src={videoUrl}
+                        poster={posterUrl}
+                        subtitles={subtitleTracks}
+                        aspectRatio="video"
+                        className="shadow-aura-lg border-none w-full h-full"
+                        autoPlay={false}
+                        muted={false}
+                      />
+                    ) : (
+                      <ContainerInstrument className="w-full h-full rounded-[32px] bg-va-off-white border border-black/5 flex items-center justify-center">
+                        <TextInstrument className="text-va-black/40 text-sm tracking-wide">Workshopvideo ontbreekt in CMS-block</TextInstrument>
+                      </ContainerInstrument>
+                    )}
                   </Suspense>
                 </ContainerInstrument>
                 <ContainerInstrument plain className="absolute -top-10 -right-10 w-40 h-40 bg-primary/10 rounded-full blur-[80px] -z-10 animate-pulse" />

@@ -17,6 +17,39 @@ import { Suspense } from "react";
 import nextDynamic from "next/dynamic";
 import { getStudioWorkshopsData } from "@/lib/services/studio-service";
 
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://vcbxyyjsxuquytcsskpj.supabase.co';
+const STORAGE_BASE = `${SUPABASE_URL.replace(/\/$/, '')}/storage/v1/object/public/voices`;
+
+const toStorageUrl = (filePath?: string | null): string | null => {
+  if (!filePath) return null;
+  const cleanPath = filePath.replace(/^\//, '');
+  return `${STORAGE_BASE}/${cleanPath}`;
+};
+
+const normalizeSubtitleTracks = (subtitleData: any): Array<{ srcLang: string; label: string; data: Array<{ start: number; end: number; text: string }> }> => {
+  if (!subtitleData) return [];
+
+  if (Array.isArray(subtitleData)) {
+    return subtitleData
+      .filter((track) => Array.isArray(track?.items) && track.items.length > 0)
+      .map((track) => ({
+        srcLang: track.lang || 'nl',
+        label: track.label || track.lang || 'Nederlands',
+        data: track.items
+      }));
+  }
+
+  if (Array.isArray(subtitleData.items) && subtitleData.items.length > 0) {
+    return [{
+      srcLang: subtitleData.lang || 'nl',
+      label: subtitleData.label || 'Nederlands',
+      data: subtitleData.items
+    }];
+  }
+
+  return [];
+};
+
 const LiquidBackground = nextDynamic(
   () => import("@/components/ui/LiquidBackground").then((mod) => mod.LiquidBackground),
   { ssr: false, loading: () => <div className="fixed inset-0 z-0 bg-va-off-white" /> }
@@ -47,6 +80,18 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function StudioPage() {
   // 🛡️ CHRIS-PROTOCOL: Nuclear Handshake (Direct DB access)
   const { workshops, instructors, faqs } = await getStudioWorkshopsData();
+  const heroWorkshop = workshops.find((workshop: any) => workshop?.video?.id === 722) || workshops.find((workshop: any) => workshop?.video?.file_path);
+  const subtitleWorkshop = (normalizeSubtitleTracks(heroWorkshop?.subtitle_data).length > 0
+    ? heroWorkshop
+    : workshops.find((workshop: any) => normalizeSubtitleTracks(workshop?.subtitle_data).length > 0)
+  ) || heroWorkshop;
+
+  const heroVideoUrl = toStorageUrl(heroWorkshop?.video?.file_path);
+  const heroPosterUrl = toStorageUrl(
+    heroWorkshop?.featured_image?.file_path ||
+    workshops.find((workshop: any) => workshop?.featured_image?.file_path)?.featured_image?.file_path
+  );
+  const heroSubtitles = normalizeSubtitleTracks(subtitleWorkshop?.subtitle_data);
 
   return (
     <PageWrapperInstrument className="bg-va-off-white min-h-screen" data-world="studio">
@@ -62,13 +107,20 @@ export default async function StudioPage() {
             {/* Left: Video Player Island */}
             <div className="relative group animate-in fade-in slide-in-from-left-8 duration-1000">
               <div className="absolute -inset-4 bg-primary/5 rounded-[30px] blur-2xl group-hover:bg-primary/10 transition-all duration-700" />
-              <VideoPlayer 
-                src="https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices/studio/workshops/videos/workshop_evta_aftermovie.mp4"
-                poster="https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices/assets/visuals/branding/branding-branding-photo-horizontal-1.webp"
-                className="w-full aspect-video rounded-[20px] shadow-aura-lg border border-white/20 relative z-10"
-                autoPlay={false}
-                muted={false}
-              />
+              {heroVideoUrl ? (
+                <VideoPlayer 
+                  src={heroVideoUrl}
+                  poster={heroPosterUrl || undefined}
+                  subtitles={heroSubtitles}
+                  className="w-full aspect-video rounded-[20px] shadow-aura-lg border border-white/20 relative z-10"
+                  autoPlay={false}
+                  muted={false}
+                />
+              ) : (
+                <ContainerInstrument className="w-full aspect-video rounded-[20px] border border-white/20 bg-va-off-white/80 backdrop-blur-sm shadow-aura-lg relative z-10 flex items-center justify-center">
+                  <TextInstrument className="text-va-black/50 text-sm tracking-wide">Studio video niet beschikbaar</TextInstrument>
+                </ContainerInstrument>
+              )}
               {/* Floating Decorative Element */}
               <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-primary/20 rounded-full blur-3xl animate-pulse" />
             </div>
