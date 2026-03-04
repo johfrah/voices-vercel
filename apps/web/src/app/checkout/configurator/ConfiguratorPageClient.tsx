@@ -1,5 +1,6 @@
 "use client";
 
+import { countWords } from '@/lib/utils/format-utils';
 import { TelephonySmartSuggestions } from '@/components/checkout/TelephonySmartSuggestions';
 import { BriefingSelector } from '@/components/studio/BriefingSelector';
 import { MusicSelector } from '@/components/studio/MusicSelector';
@@ -501,9 +502,7 @@ export default function ConfiguratorPageClient({
   };
 
   const wordCount = useMemo(() => {
-    const textWithoutRegie = localBriefing.replace(/\([^)]*\)/g, ' ');
-    const words = textWithoutRegie.trim().split(/\s+/).filter(Boolean);
-    return words.length;
+    return countWords(localBriefing);
   }, [localBriefing]);
   
   //  CHRIS-PROTOCOL: Sync MasterControl word filter with briefing word count
