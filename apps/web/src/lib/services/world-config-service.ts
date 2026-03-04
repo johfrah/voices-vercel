@@ -65,7 +65,7 @@ export async function getWorldConfig(worldId: number): Promise<WorldConfig | nul
       .select(`
         contact_id, actor_id,
         contacts(id, label, email, phone, address, vat_number, company_name, website, social_links, opening_hours, country_code),
-        actors(id, first_name, last_name, email, phone, bio, tagline, website, social_links)
+        actors(id, first_name, last_name, email, phone, bio, tagline, website)
       `)
       .eq('world_id', worldId)
       .eq('role', 'primary')
@@ -91,7 +91,7 @@ export async function getWorldConfig(worldId: number): Promise<WorldConfig | nul
       vat_number: null,
       company_name: `${actorData.first_name} ${actorData.last_name}`.trim(),
       website: actorData.website,
-      social_links: actorData.social_links,
+      social_links: null,
       opening_hours: null,
       country_code: 'BE',
     } : {};
