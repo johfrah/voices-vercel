@@ -29,7 +29,10 @@ import {
   RefreshCw,
   Search,
   ShoppingBag,
-  User
+  User,
+  Trash2,
+  CheckSquare,
+  Square
 } from 'lucide-react';
 import Link from 'next/link';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -61,6 +64,8 @@ export default function OrdersPage() {
   const [statusFilter, setStatusFilter] = useState('all');
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [selectedOrderIds, setSelectedOrderIds] = useState<number[]>([]);
+  const [isBulkUpdating, setIsBulkUpdating] = useState(false);
   const [expandedOrderId, setExpandedOrderId] = useState<number | null>(null);
   const [expandedOrderData, setExpandedOrderData] = useState<any | null>(null);
   const [isExpanding, setIsExpanding] = useState(false);
@@ -103,6 +108,7 @@ export default function OrdersPage() {
       if (data.orders) {
         setOrders(data.orders);
         setTotalPages(data.pagination?.totalPages || 1);
+        setSelectedOrderIds([]); // Reset selection on page change or filter
       }
     } catch (error) {
       console.error('Failed to fetch orders:', error);
@@ -110,6 +116,49 @@ export default function OrdersPage() {
       setIsLoading(false);
     }
   }, [page, searchQuery, statusFilter, activeWorld?.code]);
+
+  const toggleOrderSelection = (id: number) => {
+    setSelectedOrderIds(prev => 
+      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+    );
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedOrderIds.length === orders.length) {
+      setSelectedOrderIds([]);
+    } else {
+      setSelectedOrderIds(orders.map(o => o.id));
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedOrderIds.length === 0) return;
+    if (!confirm(`Weet je zeker dat je ${selectedOrderIds.length} bestellingen naar de prullenbak wilt verplaatsen?`)) return;
+
+    setIsBulkUpdating(true);
+    try {
+      const res = await fetch('/api/admin/orders', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ids: selectedOrderIds,
+          status: 'trash'
+        })
+      });
+
+      if (res.ok) {
+        await fetchOrders();
+        setSelectedOrderIds([]);
+      } else {
+        alert('Fout bij het verwijderen van bestellingen.');
+      }
+    } catch (error) {
+      console.error('Bulk delete failed:', error);
+      alert('Er is een fout opgetreden.');
+    } finally {
+      setIsBulkUpdating(false);
+    }
+  };
 
   useEffect(() => {
     fetchOrders();
@@ -206,7 +255,7 @@ export default function OrdersPage() {
         </SectionInstrument>
 
         <ContainerInstrument className="flex flex-wrap gap-4 mb-8">
-          {['all', 'Betaald', 'In behandeling', 'Wacht op betaling', 'Offerte', 'Mislukt'].map((status) => (
+          {['all', 'Betaald', 'In behandeling', 'Wacht op betaling', 'Offerte', 'Mislukt', 'trash'].map((status) => (
             <ButtonInstrument
               key={status}
               variant="pure"
@@ -219,7 +268,7 @@ export default function OrdersPage() {
                   : "bg-white text-va-black/40 border-black/5 hover:border-black/10"
               )}
             >
-              {status === 'all' ? 'Alle Status' : status}
+              {status === 'all' ? 'Alle Status' : status === 'trash' ? 'Prullenbak' : status}
             </ButtonInstrument>
           ))}
 
@@ -233,11 +282,62 @@ export default function OrdersPage() {
           </ButtonInstrument>
         </ContainerInstrument>
 
+        <AnimatePresence>
+          {selectedOrderIds.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 20 }}
+              className="mb-8 p-6 bg-va-black rounded-3xl flex items-center justify-between shadow-2xl"
+            >
+              <ContainerInstrument className="flex items-center gap-6">
+                <TextInstrument className="text-white text-[15px] font-light tracking-widest uppercase">
+                  <TextInstrument as="span" className="font-bold text-primary mr-2">{selectedOrderIds.length}</TextInstrument>
+                  Geselecteerd
+                </TextInstrument>
+                <ContainerInstrument className="h-8 w-px bg-white/10" />
+                <ButtonInstrument
+                  variant="pure"
+                  size="none"
+                  onClick={handleBulkDelete}
+                  disabled={isBulkUpdating}
+                  className="flex items-center gap-2 text-red-400 hover:text-red-300 transition-colors text-[13px] font-bold tracking-widest uppercase disabled:opacity-50"
+                >
+                  {isBulkUpdating ? <Loader2 className="animate-spin" size={16} /> : <Trash2 size={16} />}
+                  Verwijderen (Trash)
+                </ButtonInstrument>
+              </ContainerInstrument>
+              <ButtonInstrument
+                variant="pure"
+                size="none"
+                onClick={() => setSelectedOrderIds([])}
+                className="text-white/40 hover:text-white transition-colors text-[11px] font-bold tracking-widest uppercase"
+              >
+                Annuleren
+              </ButtonInstrument>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         <ContainerInstrument className="bg-white rounded-[32px] border border-black/[0.03] shadow-aura overflow-hidden">
           <ContainerInstrument className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="border-b border-black/[0.03]">
+                  <th className="px-8 py-6 w-12">
+                    <ButtonInstrument 
+                      variant="pure" 
+                      size="none" 
+                      onClick={toggleSelectAll}
+                      className="text-va-black/20 hover:text-primary transition-colors"
+                    >
+                      {selectedOrderIds.length === orders.length && orders.length > 0 ? (
+                        <CheckSquare size={20} className="text-primary" />
+                      ) : (
+                        <Square size={20} />
+                      )}
+                    </ButtonInstrument>
+                  </th>
                   <th className="px-8 py-6 text-[11px] font-black tracking-[0.2em] uppercase text-va-black/30">Order #</th>
                   <th className="px-8 py-6 text-[11px] font-black tracking-[0.2em] uppercase text-va-black/30">Datum</th>
                   <th className="px-8 py-6 text-[11px] font-black tracking-[0.2em] uppercase text-va-black/30">Klant</th>
@@ -254,9 +354,24 @@ export default function OrdersPage() {
                       onClick={() => toggleExpand(order.id)}
                       className={cn(
                         "group hover:bg-va-off-white/50 transition-colors cursor-pointer",
-                        expandedOrderId === order.id && "bg-va-off-white/80"
+                        expandedOrderId === order.id && "bg-va-off-white/80",
+                        selectedOrderIds.includes(order.id) && "bg-primary/[0.02]"
                       )}
                     >
+                      <td className="px-8 py-6" onClick={(e) => e.stopPropagation()}>
+                        <ButtonInstrument 
+                          variant="pure" 
+                          size="none" 
+                          onClick={() => toggleOrderSelection(order.id)}
+                          className="text-va-black/10 hover:text-primary transition-colors"
+                        >
+                          {selectedOrderIds.includes(order.id) ? (
+                            <CheckSquare size={18} className="text-primary" />
+                          ) : (
+                            <Square size={18} />
+                          )}
+                        </ButtonInstrument>
+                      </td>
                       <td className="px-8 py-6">
                         <TextInstrument as="span" className="text-[15px] font-bold tracking-tight text-va-black">#{order.orderNumber}</TextInstrument>
                       </td>
@@ -306,7 +421,7 @@ export default function OrdersPage() {
                     <AnimatePresence>
                       {expandedOrderId === order.id && (
                         <tr>
-                          <td colSpan={7} className="p-0 border-none">
+                          <td colSpan={8} className="p-0 border-none">
                             <motion.div
                               initial={{ height: 0, opacity: 0 }}
                               animate={{ height: 'auto', opacity: 1 }}
@@ -440,7 +555,7 @@ export default function OrdersPage() {
                   </React.Fragment>
                 )) : (
                   <tr>
-                    <td colSpan={7} className="px-8 py-20 text-center">
+                    <td colSpan={8} className="px-8 py-20 text-center">
                       <ContainerInstrument className="flex flex-col items-center gap-4">
                         <ContainerInstrument className="w-16 h-16 rounded-full bg-va-off-white flex items-center justify-center text-va-black/10">
                           <ShoppingBag size={32} />

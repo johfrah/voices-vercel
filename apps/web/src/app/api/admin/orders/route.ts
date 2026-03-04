@@ -302,6 +302,11 @@ export async function GET(request: NextRequest) {
     }
 
     const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+    
+    // Always exclude 'trash' unless specifically requested
+    const finalWhereClause = statusFilter === 'trash' 
+      ? whereClause 
+      : and(whereClause, sql`${orderStatuses.code} != 'trash'`);
 
     const countQuery = db
       .select({ value: count() })
@@ -338,9 +343,9 @@ export async function GET(request: NextRequest) {
       .leftJoin(journeys, eq(ordersV2.journeyId, journeys.id))
       .leftJoin(worlds, eq(ordersV2.worldId, worlds.id));
 
-    const countRows = whereClause ? await countQuery.where(whereClause) : await countQuery;
-    const rows = whereClause
-      ? await rowQuery.where(whereClause).orderBy(sql`${ordersV2.createdAt} desc`).limit(limit).offset(offset)
+    const countRows = finalWhereClause ? await countQuery.where(finalWhereClause) : await countQuery;
+    const rows = finalWhereClause
+      ? await rowQuery.where(finalWhereClause).orderBy(sql`${ordersV2.createdAt} desc`).limit(limit).offset(offset)
       : await rowQuery.orderBy(sql`${ordersV2.createdAt} desc`).limit(limit).offset(offset);
 
     const totalInDb = Number(countRows[0]?.value || 0);
@@ -597,11 +602,11 @@ export async function PATCH(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const id = Number(body.id);
+    const ids = Array.isArray(body.ids) ? body.ids.map(Number) : [Number(body.id)];
     const statusInput = String(body.status || '').trim();
 
-    if (!id || !statusInput) {
-      return NextResponse.json({ error: 'Missing id or status' }, { status: 400 });
+    if (!ids.length || !statusInput) {
+      return NextResponse.json({ error: 'Missing ids or status' }, { status: 400 });
     }
 
     const normalizedStatus = statusInput.toLowerCase().replace(/\s+/g, '_').replace(/-/g, '_');
@@ -635,27 +640,29 @@ export async function PATCH(request: NextRequest) {
         legacyInternalId: ordersV2.legacyInternalId,
       })
       .from(ordersV2)
-      .where(eq(ordersV2.id, id))
-      .limit(1);
+      .where(inArray(ordersV2.id, ids));
 
-    const foundOrder = orderRows[0];
-    if (!foundOrder) {
-      return NextResponse.json({ error: 'Order not found' }, { status: 404 });
+    if (!orderRows.length) {
+      return NextResponse.json({ error: 'No orders found' }, { status: 404 });
     }
 
     await db
       .update(ordersV2)
       .set({ statusId: statusRow.id })
-      .where(eq(ordersV2.id, id));
+      .where(inArray(ordersV2.id, ids));
 
-    if (foundOrder.legacyInternalId) {
+    const legacyIds = orderRows
+      .map((row: any) => row.legacyInternalId ? Number(row.legacyInternalId) : null)
+      .filter((id: number | null): id is number => id !== null);
+
+    if (legacyIds.length > 0) {
       await db
         .update(orders)
         .set({ status: mapStatusToLegacyStatus(statusRow.code) })
-        .where(eq(orders.id, Number(foundOrder.legacyInternalId)));
+        .where(inArray(orders.id, legacyIds));
     }
 
-    return NextResponse.json({ success: true, id, status: statusRow.code });
+    return NextResponse.json({ success: true, count: orderRows.length, status: statusRow.code });
   } catch (error) {
     console.error('[Admin Orders PATCH Error]:', error);
     return NextResponse.json({ error: 'Failed to update status' }, { status: 500 });
