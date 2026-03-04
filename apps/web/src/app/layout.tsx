@@ -41,6 +41,20 @@ const VoicyChat = dynamic(() => import("@/components/ui/VoicyChat").then(mod => 
   ssr: false,
   loading: () => null 
 });
+async function withTimeoutFallback<T>(executor: () => Promise<T>, timeoutMs: number, fallbackValue: T): Promise<T> {
+  let timeoutHandle: ReturnType<typeof setTimeout> | undefined;
+  const timeoutPromise = new Promise<T>((resolve) => {
+    timeoutHandle = setTimeout(() => {
+      resolve(fallbackValue);
+    }, timeoutMs);
+  });
+
+  try {
+    return await Promise.race([executor(), timeoutPromise]);
+  } finally {
+    if (timeoutHandle) clearTimeout(timeoutHandle);
+  }
+}
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -161,9 +175,8 @@ export async function generateMetadata(): Promise<Metadata> {
 
   // 🛡️ CHRIS-PROTOCOL: Parallel Pulse Fetching (v2.14.798)
   // We fetch market, locales and translations in parallel to minimize TTFB
-  const [market, worldConfig, alternateLanguages, studioTranslations] = await Promise.all([
+  const [market, alternateLanguages, studioTranslations] = await Promise.all([
     getMarketSafe(lookupHost),
-    ConfigBridge.getWorldConfig(worldId, languageId),
     (async () => {
       try {
         const localesPromise = MarketDatabaseService.getAllLocalesAsync();
@@ -317,7 +330,7 @@ export default async function RootLayout({
         return {};
       }
     })(),
-    (async () => {
+    withTimeoutFallback(async () => {
       try {
         const { data } = await supabase.from('world_languages').select('*');
         return data || [];
@@ -325,8 +338,8 @@ export default async function RootLayout({
         console.error(' RootLayout: Failed to load world languages:', err);
         return [];
       }
-    })(),
-    (async () => {
+    }, 2500, []),
+    withTimeoutFallback(async () => {
       try {
         const { data } = await supabase.from('languages').select('id, code, label');
         return data || [];
@@ -334,8 +347,8 @@ export default async function RootLayout({
         console.error(' RootLayout: Failed to load language registry:', err);
         return [];
       }
-    })(),
-    ConfigBridge.getWorldConfig(worldId, languageId)
+    }, 2500, []),
+    withTimeoutFallback(() => ConfigBridge.getWorldConfig(worldId, languageId), 2500, null)
   ]);
 
   if (!market) {
@@ -351,8 +364,6 @@ export default async function RootLayout({
   const isAcademyPage = pathname.startsWith('/academy/') || pathname === '/academy' || pathname.includes('/academy');
   
   const journeyKey = isStudioPage ? 'studio' : (isAcademyPage ? 'academy' : (market.market_code === 'ADEMING' ? 'ademing' : (market.market_code === 'PORTFOLIO' ? 'portfolio' : (market.market_code === 'ARTIST' ? 'artist' : 'agency'))));
-  const navConfig = await ConfigBridge.getNavConfig(journeyKey, normalizeLocale(langHeader || 'nl-be'));
-
   const initialJourney = isStudioPage ? 'studio' : (isAcademyPage ? 'academy' : (market.market_code === 'ADEMING' ? 'ademing' : (market.market_code === 'PORTFOLIO' ? 'portfolio' : (market.market_code === 'ARTIST' ? 'artist' : 'agency'))));
   const initialUsage = isStudioPage || isAcademyPage ? 'subscription' : (market.market_code === 'ADEMING' ? 'subscription' : 'unpaid');
 
@@ -406,6 +417,11 @@ export default async function RootLayout({
       </html>
     );
   }
+  const navConfig = await withTimeoutFallback(
+    () => ConfigBridge.getNavConfig(journeyKey, normalizeLocale(langHeader || 'nl-be')),
+    2500,
+    null
+  );
   
   // 🛡️ VISIONARY MANDATE: Journey logic exclusively from market data
   const isSpecialJourney = ['ADEMING', 'PORTFOLIO', 'ARTIST'].includes(market.market_code);

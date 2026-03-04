@@ -20,13 +20,28 @@ import { getStudioWorkshopsData } from "@/lib/services/studio-service";
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://vcbxyyjsxuquytcsskpj.supabase.co';
 const STORAGE_BASE = `${SUPABASE_URL.replace(/\/$/, '')}/storage/v1/object/public/voices`;
 
+async function withTimeoutFallback<T>(executor: () => Promise<T>, timeoutMs: number, fallbackValue: T): Promise<T> {
+  let timeoutHandle: ReturnType<typeof setTimeout> | undefined;
+  const timeoutPromise = new Promise<T>((resolve) => {
+    timeoutHandle = setTimeout(() => resolve(fallbackValue), timeoutMs);
+  });
+
+  try {
+    return await Promise.race([executor(), timeoutPromise]);
+  } finally {
+    if (timeoutHandle) clearTimeout(timeoutHandle);
+  }
+}
+
 const toStorageUrl = (filePath?: string | null): string | null => {
   if (!filePath) return null;
   const cleanPath = filePath.replace(/^\//, '');
   return `${STORAGE_BASE}/${cleanPath}`;
 };
 
-const normalizeSubtitleTracks = (workshop: any): Array<{ srcLang: string; label: string; src?: string; data?: Array<{ start: number; end: number; text: string }> }> => {
+type SubtitleTrack = { srcLang: string; label: string; src?: string; data?: Array<{ start: number; end: number; text: string }> };
+
+const normalizeSubtitleTracks = (workshop: any): SubtitleTrack[] => {
   const junctionTracks = Array.isArray(workshop?.subtitle_tracks) ? workshop.subtitle_tracks : [];
   const normalizedJunction = junctionTracks
     .map((track: any) => ({
@@ -35,7 +50,7 @@ const normalizeSubtitleTracks = (workshop: any): Array<{ srcLang: string; label:
       src: track.src || undefined,
       data: Array.isArray(track.data) ? track.data : undefined
     }))
-    .filter((track) => Boolean(track.src) || (Array.isArray(track.data) && track.data.length > 0));
+    .filter((track: SubtitleTrack) => Boolean(track.src) || (Array.isArray(track.data) && track.data.length > 0));
 
   if (normalizedJunction.length > 0) return normalizedJunction;
 
@@ -82,7 +97,7 @@ const StudioWorkshopsSection = nextDynamic(
 
 export async function generateMetadata(): Promise<Metadata> {
   const { getWorldConfig } = await import('@/lib/services/world-config-service');
-  const config = await getWorldConfig(2);
+  const config = await withTimeoutFallback(() => getWorldConfig(2), 2500, null);
   return {
     title: config?.meta_title || "Workshops | Voices Studio",
     description: config?.meta_description || "Professionele voice-over workshops en studio-opnames.",
@@ -92,7 +107,11 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function StudioPage() {
   // 🛡️ CHRIS-PROTOCOL: Nuclear Handshake (Direct DB access)
-  const { workshops, instructors, faqs } = await getStudioWorkshopsData();
+  const { workshops, instructors, faqs } = await withTimeoutFallback(
+    () => getStudioWorkshopsData(),
+    3000,
+    { workshops: [], instructors: [], faqs: [], _meta: { count: 0, fetched_at: new Date(0).toISOString() } }
+  );
   const workshopsWithVideo = workshops.filter((workshop: any) => workshop?.video?.file_path);
   const heroWorkshop =
     workshopsWithVideo.find((workshop: any) => normalizeSubtitleTracks(workshop).length > 0) ||
