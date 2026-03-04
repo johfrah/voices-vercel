@@ -15,6 +15,7 @@ import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { cn } from '@/lib/utils';
 import { formatWorkshopLocationLabel } from '@/lib/utils/workshop-location';
+import { normalizeWorkshopImageUrl, resolveWorkshopImageFromItem } from '@/lib/utils/workshop-image';
 import { VOICES_CONFIG } from '@/lib/core-internal/config';
 import { normalizeLocale } from '@/lib/system/locale-utils';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -81,13 +82,21 @@ export const PricingSummary: React.FC<{
           const rawFilePath = workshop?.featured_image?.file_path;
           if (!rawFilePath || typeof rawFilePath !== 'string') continue;
 
-          const normalizedUrl = rawFilePath.startsWith('http://') || rawFilePath.startsWith('https://') || rawFilePath.startsWith('/')
-            ? rawFilePath
-            : `https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices/${rawFilePath.replace(/^\/+/, '')}`;
+          const normalizedUrl = normalizeWorkshopImageUrl(rawFilePath);
+          if (!normalizedUrl) continue;
 
-          if (workshop.id) mappedThumbnails[`id:${String(workshop.id)}`] = normalizedUrl;
+          if (workshop.id) mappedThumbnails[`workshop:${String(workshop.id)}`] = normalizedUrl;
           if (workshop.slug) mappedThumbnails[`slug:${String(workshop.slug).toLowerCase()}`] = normalizedUrl;
           if (workshop.title) mappedThumbnails[`title:${String(workshop.title).trim().toLowerCase()}`] = normalizedUrl;
+
+          if (Array.isArray(workshop.upcoming_editions)) {
+            for (const edition of workshop.upcoming_editions) {
+              const editionId = edition?.id;
+              if (editionId !== null && editionId !== undefined) {
+                mappedThumbnails[`edition:${String(editionId)}`] = normalizedUrl;
+              }
+            }
+          }
         }
 
         if (!cancelled) {
@@ -242,41 +251,7 @@ export const PricingSummary: React.FC<{
   const studioCartPath = `${localePrefix}/studio/cart`;
   const defaultCartPath = `${localePrefix}/cart`;
   const resolveWorkshopImageSrc = (workshopItem: any): string => {
-    const workshopIdHint = String(
-      workshopItem?.workshop_id ||
-      workshopItem?.workshopId ||
-      workshopItem?.editionId ||
-      workshopItem?.id ||
-      ''
-    );
-    const workshopIdMatch = workshopIdHint.match(/workshop-(\d+)/i) || workshopIdHint.match(/^(\d+)$/);
-    const matchedWorkshopId = workshopIdMatch?.[1];
-    const workshopTitleKey = String(workshopItem?.name || '').trim().toLowerCase();
-
-    const rawSource =
-      workshopItem?.thumbnail_url ||
-      workshopItem?.featured_image_url ||
-      workshopItem?.image_url ||
-      workshopItem?.media_url ||
-      (matchedWorkshopId ? workshopThumbnailMap[`id:${matchedWorkshopId}`] : undefined) ||
-      (workshopTitleKey ? workshopThumbnailMap[`title:${workshopTitleKey}`] : undefined) ||
-      workshopItem?.featured_image?.file_path ||
-      workshopItem?.media?.file_path ||
-      workshopItem?.media?.filePath;
-
-    if (!rawSource || typeof rawSource !== 'string') {
-      return '/icon-workshop.svg';
-    }
-
-    if (
-      rawSource.startsWith('http://') ||
-      rawSource.startsWith('https://') ||
-      rawSource.startsWith('/')
-    ) {
-      return rawSource;
-    }
-
-    return `https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices/${rawSource.replace(/^\/+/, '')}`;
+    return resolveWorkshopImageFromItem(workshopItem as Record<string, unknown>, workshopThumbnailMap) || '/icon-workshop.svg';
   };
   const discountAmount = state.customer.active_coupon 
     ? (state.customer.active_coupon.type === 'percentage' 

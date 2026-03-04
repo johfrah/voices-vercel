@@ -11,6 +11,7 @@ import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-m
 import { AnimatePresence, motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { formatWorkshopLocationLabel } from '@/lib/utils/workshop-location';
+import { resolveWorkshopImageFromItem } from '@/lib/utils/workshop-image';
 import { 
   Bell, 
   Building2, 
@@ -930,6 +931,9 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
                     const workshopLocationLabel = item.type === 'workshop_edition'
                       ? formatWorkshopLocationLabel(item)
                       : null;
+                    const workshopImageSrc = item.type === 'workshop_edition'
+                      ? resolveWorkshopImageFromItem(item)
+                      : null;
                     return (
                     <ContainerInstrument
                       key={item.id || idx}
@@ -939,8 +943,8 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
                       <ContainerInstrument plain className="w-12 h-12 rounded-xl bg-va-off-white flex items-center justify-center shrink-0 border border-black/5 overflow-hidden relative shadow-sm">
                         {item.actor?.photo_url && item.actor.photo_url !== 'NULL' ? (
                           <Image src={item.actor.photo_url} alt={item.actor.display_name || 'Voice'} fill sizes="48px" className="object-cover" />
-                        ) : item.image_url ? (
-                          <Image src={item.image_url} alt={item.name || 'Workshop'} fill sizes="48px" className="object-cover" />
+                        ) : workshopImageSrc ? (
+                          <Image src={workshopImageSrc} alt={item.name || 'Workshop'} fill sizes="48px" className="object-cover" />
                         ) : item.type === 'workshop_edition' ? (
                           <GraduationCap size={18} className="text-primary/40" />
                         ) : (

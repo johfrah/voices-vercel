@@ -110,6 +110,7 @@ export const BookingFunnel: React.FC<BookingFunnelProps> = ({
         price: priceExclVatValue,
         date: selectedDate?.date_raw,
         ...locationPayload,
+        image_url: thumbnail_url || undefined,
         thumbnail_url: thumbnail_url || undefined,
         participant_info: {
           first_name: formData.first_name,

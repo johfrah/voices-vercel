@@ -83,6 +83,7 @@ export const WorkshopHeroIsland: React.FC<WorkshopHeroIslandProps> = ({ workshop
       date: nextEdition!.date,
       ...locationPayload,
       image_url: imageUrl,
+      thumbnail_url: imageUrl,
       participant_info: participantData,
       pricing: {
         total: priceValue,
