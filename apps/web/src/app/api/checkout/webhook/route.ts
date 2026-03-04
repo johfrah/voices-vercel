@@ -111,8 +111,30 @@ function buildWebhookOrderEmailItems(items: any[], host: string): Array<{
 
 export async function POST(request: NextRequest) {
   try {
-    const formData = await request.formData();
-    const paymentId = formData.get('id') as string;
+    const formRequest = request.clone();
+    let paymentId: string | null = null;
+
+    try {
+      const formData = await formRequest.formData();
+      paymentId = (formData.get('id') as string) || null;
+    } catch {
+      // no-op: webhook payload can be urlencoded or json
+    }
+
+    if (!paymentId) {
+      const bodyText = await request.text();
+      const asUrlEncoded = new URLSearchParams(bodyText);
+      paymentId = asUrlEncoded.get('id');
+
+      if (!paymentId) {
+        try {
+          const parsedJson = JSON.parse(bodyText || '{}');
+          paymentId = parsedJson?.id || parsedJson?.resource?.id || null;
+        } catch {
+          // no-op
+        }
+      }
+    }
 
     if (!paymentId) {
       // CHRIS-PROTOCOL: Log to Watchdog instead of crashing or sending error mails
@@ -149,7 +171,7 @@ export async function POST(request: NextRequest) {
     }
 
     const paymentMetadata = (payment?.metadata || {}) as Record<string, any>;
-    const orderId = parseInt(String(paymentMetadata.orderId || paymentMetadata.order_id || ''));
+    const orderId = parseInt(String(paymentMetadata.orderId || paymentMetadata.order_id || payment.orderNumber || ''), 10);
 
     if (!orderId) {
       console.warn('[Mollie Webhook] Invalid or missing Order ID in metadata:', paymentMetadata);
@@ -169,8 +191,13 @@ export async function POST(request: NextRequest) {
     await db.transaction(async (tx: any) => {
       // Haal de order op om te zien wat erin zit
       const [order] = await tx.select().from(orders).where(eq(orders.id, orderId)).limit(1);
+      if (!order) {
+        throw new Error(`Order ${orderId} not found for webhook ${paymentId}`);
+      }
+
+      const orderRawMeta = (order.rawMeta as any) || {};
       const orderLanguage = normalizeLocale(
-        (order?.rawMeta as any)?.language ||
+        orderRawMeta?.language ||
         paymentMetadata.language ||
         market.primary_language ||
         'nl-be'
@@ -254,20 +281,33 @@ export async function POST(request: NextRequest) {
       // 🔁 V2 status sync: keep orders_v2 aligned with webhook transitions.
       if (order?.wpOrderId) {
         const candidateCodes = v2StatusCandidates(finalStatus);
-        const statusRows = await tx
-          .select({ id: orderStatuses.id, code: orderStatuses.code })
-          .from(orderStatuses)
-          .where(inArray(orderStatuses.code, candidateCodes))
-          .limit(1);
-        const matchedStatus = statusRows[0];
+        let matchedStatus: { id: number; code: string } | undefined;
+
+        for (const candidateCode of candidateCodes) {
+          const statusRows = await tx
+            .select({ id: orderStatuses.id, code: orderStatuses.code })
+            .from(orderStatuses)
+            .where(eq(orderStatuses.code, candidateCode))
+            .limit(1);
+          if (statusRows[0]) {
+            matchedStatus = statusRows[0];
+            break;
+          }
+        }
+
         if (matchedStatus) {
-          await tx
+          const updatedV2Rows = await tx
             .update(ordersV2)
             .set({
               statusId: matchedStatus.id,
               legacyInternalId: order.id,
             })
-            .where(eq(ordersV2.id, Number(order.wpOrderId)));
+            .where(eq(ordersV2.id, Number(order.wpOrderId)))
+            .returning({ id: ordersV2.id });
+
+          if (!updatedV2Rows.length) {
+            console.warn(`[Mollie Webhook] orders_v2 sync missed for wp_order_id ${order.wpOrderId}`);
+          }
         }
       }
 
@@ -396,7 +436,7 @@ export async function POST(request: NextRequest) {
         // De admin triggert dit handmatig na controle.
 
         if (paymentMetadata.user_id) {
-          const userId = parseInt(String(paymentMetadata.user_id));
+          const userId = parseInt(String(paymentMetadata.user_id), 10);
           
           // Verhoog order count en spent in user DNA
           await tx.update(users)
@@ -422,7 +462,7 @@ export async function POST(request: NextRequest) {
 
         //  Notificatie naar Admin (HITL)
         try {
-          const isSameDay = (order.rawMeta as any)?.items?.some((i: any) => i.actor?.delivery_config?.type === 'sameday');
+          const isSameDay = orderRawMeta?.items?.some((i: any) => i.actor?.delivery_config?.type === 'sameday');
           const siteUrl = MarketManager.getMarketDomains()[market.market_code] || `https://${MarketManager.getMarketDomains()['BE']?.replace('https://', '') || 'www.voices.be'}`;
           const fetchUrl = `${siteUrl}/api/admin/notify`;
           
@@ -436,7 +476,7 @@ export async function POST(request: NextRequest) {
                 email: paymentMetadata.email || 'Gast',
                 amount: payment?.amount?.value || '0.00',
                 company: paymentMetadata.company,
-                items: (order.rawMeta as any)?.items || [],
+                items: orderRawMeta?.items || [],
                 customer: { first_name: paymentMetadata.givenName, last_name: paymentMetadata.familyName }
               }
             })

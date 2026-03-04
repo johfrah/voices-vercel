@@ -132,8 +132,46 @@ export class UCIService {
           })
             .catch(async (err: any) => {
               console.warn(' UCI Order stats Drizzle failed, falling back to SDK:', err.message);
-              const { data } = await supabase.from('orders').select('*, order_items(*)').eq('user_id', user.id).order('created_at', { ascending: false });
-              return (data || []).map(o => ({ ...o, items: o.order_items }));
+              const { data: orderRows, error: orderErr } = await supabase
+                .from('orders')
+                .select('*')
+                .eq('user_id', user.id)
+                .order('created_at', { ascending: false })
+                .limit(50);
+
+              if (orderErr || !orderRows) {
+                console.warn(' UCI SDK orders fallback failed:', orderErr?.message || 'No order rows');
+                return [];
+              }
+
+              const orderIds = orderRows
+                .map((row: any) => Number(row.id))
+                .filter((id: number) => Number.isFinite(id));
+
+              let itemsByOrderId = new Map<number, any[]>();
+              if (orderIds.length > 0) {
+                const { data: itemRows, error: itemErr } = await supabase
+                  .from('order_items')
+                  .select('*')
+                  .in('order_id', orderIds);
+
+                if (itemErr) {
+                  console.warn(' UCI SDK order_items fallback failed:', itemErr.message);
+                }
+
+                for (const item of itemRows || []) {
+                  const key = Number((item as any).order_id);
+                  if (!Number.isFinite(key)) continue;
+                  const current = itemsByOrderId.get(key) || [];
+                  current.push(item);
+                  itemsByOrderId.set(key, current);
+                }
+              }
+
+              return orderRows.map((row: any) => ({
+                ...row,
+                items: itemsByOrderId.get(Number(row.id)) || []
+              }));
             }),
           // UTM query - Optimized with index-ready userId filter
           db

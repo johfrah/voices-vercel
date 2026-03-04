@@ -80,6 +80,56 @@ export default function OrdersPage() {
     return '/agency/contact';
   };
 
+  const getOrderStatusMeta = (status?: string) => {
+    const normalized = String(status || 'pending').toLowerCase();
+    if (normalized === 'completed' || normalized === 'approved') {
+      return {
+        badgeClass: 'bg-green-50 text-green-600 border-green-100',
+        label: t('order.status.completed', 'Voltooid'),
+        isSuccess: true,
+        isIssue: false,
+      };
+    }
+    if (normalized === 'paid') {
+      return {
+        badgeClass: 'bg-blue-50 text-blue-600 border-blue-100',
+        label: t('order.status.paid', 'Betaald'),
+        isSuccess: false,
+        isIssue: false,
+      };
+    }
+    if (normalized === 'failed') {
+      return {
+        badgeClass: 'bg-red-50 text-red-600 border-red-100',
+        label: t('order.status.failed', 'Betaling mislukt'),
+        isSuccess: false,
+        isIssue: true,
+      };
+    }
+    if (normalized === 'cancelled') {
+      return {
+        badgeClass: 'bg-red-50 text-red-600 border-red-100',
+        label: t('order.status.cancelled', 'Geannuleerd'),
+        isSuccess: false,
+        isIssue: true,
+      };
+    }
+    if (normalized === 'expired') {
+      return {
+        badgeClass: 'bg-red-50 text-red-600 border-red-100',
+        label: t('order.status.expired', 'Betaling verlopen'),
+        isSuccess: false,
+        isIssue: true,
+      };
+    }
+    return {
+      badgeClass: 'bg-amber-50 text-amber-600 border-amber-100',
+      label: t('order.status.pending', 'Betaling in behandeling'),
+      isSuccess: false,
+      isIssue: false,
+    };
+  };
+
   useEffect(() => {
     if (isAuthLoading) return;
 
@@ -189,6 +239,7 @@ export default function OrdersPage() {
               const isExpanded = !!expandedOrders[order.id];
               const invoiceUrl = resolveInvoiceUrl(order);
               const helpPath = resolveHelpPath(order);
+              const statusMeta = getOrderStatusMeta(order.status);
               
               return (
                 <BentoCard 
@@ -205,9 +256,10 @@ export default function OrdersPage() {
                       <div className="flex items-center gap-3">
                         <TextInstrument className={cn(
                           "text-[13px] font-bold tracking-[0.2em] uppercase px-3 py-1 rounded-full border",
-                          order.status === 'completed' ? 'bg-green-50 text-green-600 border-green-100' : 'bg-primary/5 text-primary border-primary/10 animate-pulse'
+                          statusMeta.badgeClass,
+                          !statusMeta.isSuccess && !statusMeta.isIssue && 'animate-pulse'
                         )}>
-                          {order.status === 'completed' ? <VoiceglotText translationKey="order.status.completed" defaultText="Voltooid" /> : <VoiceglotText translationKey="order.status.processing" defaultText="In behandeling" />}
+                          {statusMeta.label}
                         </TextInstrument>
                         {order.isQuote && (
                           <span className="bg-blue-50 text-blue-600 text-[11px] font-bold tracking-widest uppercase px-3 py-1 rounded-full border border-blue-100">
@@ -390,7 +442,12 @@ export default function OrdersPage() {
                         </HeadingInstrument>
                       </div>
                       <TextInstrument className="text-[16px] text-va-black/60 font-light leading-relaxed">
-                        {order.paymentMethod === 'banktransfer' ? (
+                        {statusMeta.isIssue ? (
+                          <VoiceglotText
+                            translationKey="account.orders.next_steps.payment_issue"
+                            defaultText="De betaling is niet afgerond. Probeer opnieuw of neem contact op met ons team. Je order blijft veilig bewaard."
+                          />
+                        ) : order.paymentMethod === 'banktransfer' ? (
                           <VoiceglotText 
                             translationKey="account.orders.next_steps.banktransfer" 
                             defaultText="We hebben je bestelling ontvangen. Zodra de betaling is verwerkt, gaat de stemacteur direct voor je aan de slag. Je ontvangt een pushbericht bij elke update." 
@@ -409,12 +466,14 @@ export default function OrdersPage() {
                     <ContainerInstrument className="flex items-center gap-3">
                       <ContainerInstrument className={cn(
                         "w-2 h-2 rounded-full animate-pulse",
-                        order.status === 'completed' ? 'bg-green-500' : 'bg-primary'
+                        statusMeta.isSuccess ? 'bg-green-500' : statusMeta.isIssue ? 'bg-red-500' : 'bg-primary'
                       )} />
                       <TextInstrument className="text-[15px] font-light tracking-widest text-va-black/60">
-                        {order.status === 'completed' 
-                          ? <VoiceglotText translationKey="order.delivery.success" defaultText="Project succesvol opgeleverd" /> 
-                          : <VoiceglotText translationKey="order.delivery.expected" defaultText={`Verwachte oplevering: ${order.orderItems?.[0]?.metaData?.deliveryTime || 'binnen 48 uur'}`} />}
+                        {statusMeta.isSuccess
+                          ? <VoiceglotText translationKey="order.delivery.success" defaultText="Project succesvol opgeleverd" />
+                          : statusMeta.isIssue
+                            ? <VoiceglotText translationKey="order.delivery.payment_issue" defaultText="Betaling niet afgerond — actie vereist om productie te starten" />
+                            : <VoiceglotText translationKey="order.delivery.expected" defaultText={`Verwachte oplevering: ${order.orderItems?.[0]?.metaData?.deliveryTime || 'binnen 48 uur'}`} />}
                       </TextInstrument>
                     </ContainerInstrument>
                     <ContainerInstrument className="flex items-center gap-6">

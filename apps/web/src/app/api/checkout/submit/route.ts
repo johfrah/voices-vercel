@@ -260,7 +260,12 @@ export async function POST(request: Request) {
     const headersList = headers();
     const host = headersList.get('host') || MarketManager.getMarketDomains()['BE']?.replace('https://', '');
     const marketConfig = MarketManager.getCurrentMarket(host);
-    const baseUrl = MarketManager.getMarketDomains()[marketConfig.market_code] || `https://${host || MarketManager.getMarketDomains()['BE']?.replace('https://', '') || 'www.voices.be'}`;
+    const marketBaseUrl =
+      MarketManager.getMarketDomains()[marketConfig.market_code] ||
+      `https://${host || MarketManager.getMarketDomains()['BE']?.replace('https://', '') || 'www.voices.be'}`;
+    const isLocalHost = host.includes('localhost') || host.includes('127.0.0.1');
+    const baseUrl = isLocalHost ? `http://${host}` : marketBaseUrl;
+    const webhookBaseUrl = marketBaseUrl;
     const ip = headersList.get('x-forwarded-for') || 'unknown';
 
     // 1. Validatie van de payload
@@ -486,34 +491,45 @@ export async function POST(request: Request) {
     }
 
     // 4. User Management
-    let userId = metadata?.user_id;
+    let userId = metadata?.user_id ? Number(metadata.user_id) : null;
     if (email) {
-      const { data: user } = await sdkClient.from('users').select('id').eq('email', email).single();
-      if (user) {
-        userId = user.id;
+      const { data: existingUsers, error: existingUserErr } = await sdkClient
+        .from('users')
+        .select('id')
+        .eq('email', email)
+        .order('id', { ascending: false })
+        .limit(1);
+
+      if (existingUserErr) {
+        throw new Error(`User lookup failed: ${existingUserErr.message}`);
+      }
+
+      if (Array.isArray(existingUsers) && existingUsers.length > 0) {
+        userId = Number(existingUsers[0].id);
       } else {
-        const { data: newUser, error: newUserError } = await sdkClient.from('users').insert({
-          email,
-          first_name,
-          last_name,
-          phone: phone || null,
-          company_name: company || null,
-          vat_number: vat_number || null,
-          address_street: address_street || null,
-          address_zip: postal_code || null,
-          address_city: city || null,
-          address_country: country || 'BE',
-          role: 'customer',
-        }).select('id').single();
-        if (newUserError) {
-          await ServerWatchdog.report({
-            level: 'warn',
-            component: 'CheckoutAPI',
-            error: 'User insert failed, proceeding with guest order',
-            payload: { email, reason: newUserError.message },
-          });
+        const { data: newUser, error: newUserErr } = await sdkClient
+          .from('users')
+          .insert({
+            email,
+            first_name: first_name,
+            last_name: last_name,
+            phone: phone || null,
+            company_name: company || null,
+            vat_number: vat_number || null,
+            address_street: address_street || null,
+            address_zip: postal_code || null,
+            address_city: city || null,
+            address_country: country || 'BE',
+            role: 'customer'
+          })
+          .select('id')
+          .single();
+
+        if (newUserErr) {
+          throw new Error(`User creation failed: ${newUserErr.message}`);
         }
-        userId = newUser?.id;
+
+        userId = newUser?.id ? Number(newUser.id) : null;
       }
     }
 
@@ -737,8 +753,8 @@ export async function POST(request: Request) {
         vatAmount: { currency: 'EUR', value: (i.pricing?.tax || 0).toFixed(2) }
       })),
       billingAddress: { streetAndNumber: address_street || 'N/A', postalCode: postal_code || 'N/A', city: city || 'N/A', country: country || 'BE', givenName: first_name, familyName: last_name, email },
-      redirectUrl: `${baseUrl}/api/auth/magic-login?token=${secureToken}&redirect=/account/orders?orderId=${newOrder.id}`,
-      webhookUrl: `${baseUrl}/api/checkout/webhook`,
+      redirectUrl: `${baseUrl}/api/auth/magic-login?token=${secureToken}&redirect=/account/orders?orderId=${newOrder.id}&email=${encodeURIComponent(email)}`,
+      webhookUrl: `${webhookBaseUrl}/api/checkout/webhook`,
       locale: localeToMollie(normalizedLanguage) as any,
       metadata: {
         orderId: newOrder.id,
@@ -750,6 +766,39 @@ export async function POST(request: Request) {
         language: normalizedLanguage
       }
     });
+
+    // Customer receipt for Mollie checkout submit (pending payment),
+    // so the user always gets immediate confirmation of the action.
+    (async () => {
+      try {
+        const mollieSubject = languageShort === 'fr'
+          ? `Commande reçue (paiement en attente) : #${newOrder.id}`
+          : languageShort === 'en'
+            ? `Order received (payment pending): #${newOrder.id}`
+            : `Bestelling ontvangen (betaling in behandeling): #${newOrder.id}`;
+
+        await VumeEngine.send({
+          to: email,
+          subject: mollieSubject,
+          template: 'order-confirmation',
+          context: {
+            userName: first_name,
+            orderId: newOrder.id,
+            total: amount,
+            items: validatedItems.map((item: any) => ({
+              name: item.name || item.actor?.display_name || 'Voice Over',
+              price: Number(item.pricing?.total || item.pricing?.subtotal || 0),
+              deliveryTime: item.actor?.delivery_time || item.actor?.deliveryTime
+            })),
+            paymentMethod: payment_method || 'mollie',
+            language: normalizedLanguage
+          },
+          host
+        });
+      } catch (mailErr) {
+        console.warn('[Checkout] Failed to send Mollie submit confirmation:', mailErr);
+      }
+    })();
 
     return NextResponse.json({ success: true, orderId: newOrder.id, checkoutUrl: mollieOrder._links.checkout.href, token: secureToken });
   });
