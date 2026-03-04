@@ -59,6 +59,49 @@ const JOURNEY_USAGE_MAP: Record<string, UsageType> = {
   general: 'unpaid'
 };
 
+const COMMERCIAL_MEDIA_ALIAS_MAP: Record<string, string> = {
+  online: 'online',
+  podcast: 'podcast',
+  radio: 'radio_national',
+  radio_national: 'radio_national',
+  radio_regional: 'radio_regional',
+  radio_local: 'radio_local',
+  tv: 'tv_national',
+  tv_national: 'tv_national',
+  tv_regional: 'tv_regional',
+  tv_local: 'tv_local',
+  social: 'social_media',
+  socials: 'social_media',
+  social_media: 'social_media',
+  cinema: 'cinema',
+  pos: 'pos',
+};
+
+const DEFAULT_COMMERCIAL_MEDIA_CODE = 'online';
+
+const normalizeCommercialMediaCode = (rawCode: string | null | undefined): string | null => {
+  const normalized = String(rawCode || '').toLowerCase().trim();
+  if (!normalized) return null;
+  return COMMERCIAL_MEDIA_ALIAS_MAP[normalized] || null;
+};
+
+const sanitizeCommercialDetailMap = (
+  detailMap: Record<string, number> | undefined,
+  mediaCodes: string[],
+  fallbackValue: number
+): Record<string, number> => {
+  const sanitized: Record<string, number> = {};
+
+  mediaCodes.forEach((mediaCode) => {
+    const value = detailMap?.[mediaCode];
+    sanitized[mediaCode] = typeof value === 'number' && Number.isFinite(value) && value > 0
+      ? value
+      : fallbackValue;
+  });
+
+  return sanitized;
+};
+
 export const VoicesMasterControlContext = createContext<VoicesMasterControlContextType | undefined>(undefined);
 
 export const useMasterControl = () => {
@@ -155,6 +198,7 @@ export const VoicesMasterControlProvider: React.FC<{
         video: 'video',
         corporate: 'video',
         commercial: 'commercial',
+        advertentie: 'commercial',
         reclame: 'commercial',
         advertising: 'commercial',
       };
@@ -168,12 +212,15 @@ export const VoicesMasterControlProvider: React.FC<{
         const years_detail: Record<string, number> = {};
 
         segments.forEach((seg) => {
-          const normalized = String(seg || '').toLowerCase();
-          const encodedMatch = normalized.match(/^([a-z_]+)(\d+)x(\d+)$/i);
-          const mediaCode = encodedMatch ? encodedMatch[1] : normalized;
+          const normalizedSegment = String(seg || '').toLowerCase();
+          const encodedMatch = normalizedSegment.match(/^([a-z_]+)(\d+)x(\d+)$/i);
+          const rawMediaCode = encodedMatch ? encodedMatch[1] : normalizedSegment;
+          const mediaCode = normalizeCommercialMediaCode(rawMediaCode);
           if (!mediaCode) return;
 
-          media.push(mediaCode);
+          if (!media.includes(mediaCode)) {
+            media.push(mediaCode);
+          }
           const mediaId = MarketManager.getServiceId(mediaCode);
           if (mediaId != null) media_ids.push(mediaId);
 
@@ -193,14 +240,18 @@ export const VoicesMasterControlProvider: React.FC<{
 
       // 🛡️ CHRIS-PROTOCOL: Journey Resolution Priority (v2.28.24)
       // URL path wins, then query, then explicit user selection, then storage.
+      const queryJourney = searchParams?.get('journey') as JourneyType | null;
+      const queryJourneyId = searchParams?.get('journeyId') ? parseInt(searchParams.get('journeyId')!, 10) : null;
       const userSelectedJourney = voicesState?.current_journey && voicesState.current_journey !== 'general' && voicesState.current_journey !== 'agency'
         ? voicesState.current_journey as JourneyType
         : null;
-      const journey = (searchParams?.get('journey') as JourneyType) || journeyFromPath || userSelectedJourney || savedState.journey || initialJourney || 'video';
+      const journey = journeyFromPath || queryJourney || userSelectedJourney || savedState.journey || initialJourney || 'video';
 
-      const journeyId = searchParams?.get('journeyId')
-        ? parseInt(searchParams.get('journeyId')!)
-        : ((journeyFromPath ? MarketManager.getJourneyId(journeyFromPath) : null) || savedState.journeyId || MarketManager.getJourneyId(journey));
+      const journeyId =
+        (journeyFromPath ? MarketManager.getJourneyId(journeyFromPath) : null) ||
+        queryJourneyId ||
+        savedState.journeyId ||
+        MarketManager.getJourneyId(journey);
       const targetUsage = SlimmeKassa.getUsageFromJourneyId(journeyId || journey);
 
       const initialLanguageParam = searchParams?.get('language');
@@ -234,7 +285,9 @@ export const VoicesMasterControlProvider: React.FC<{
         ? parseInt(initialWordsParam) 
         : (savedState.filters?.words || (journey === 'telephony' ? 25 : (journey === 'commercial' ? 100 : 200)));
       
-      let initialMedia = (searchParams?.get('media') ? searchParams?.get('media')?.split(',') : (savedState.filters?.media || ['online']));
+      let initialMedia: string[] = (searchParams?.get('media')
+        ? (searchParams?.get('media')?.split(',') || [])
+        : (savedState.filters?.media || ['online'])) as string[];
       
       if (journey === 'commercial' && pathCommercialState?.media && pathCommercialState.media.length > 0) {
         initialMedia = pathCommercialState.media;
@@ -264,9 +317,34 @@ export const VoicesMasterControlProvider: React.FC<{
         if (mr) initialMediaRegion = JSON.parse(decodeURIComponent(mr));
       } catch (e) {}
 
-      let initialMediaIds = searchParams?.get('mediaIds') ? searchParams?.get('mediaIds')?.split(',').map(Number) : (savedState.filters?.mediaIds || [5]);
+      let initialMediaIds: number[] = (searchParams?.get('mediaIds')
+        ? (searchParams?.get('mediaIds')?.split(',').map(Number) || [])
+        : (savedState.filters?.mediaIds || [5])) as number[];
       if (journey === 'commercial' && pathCommercialState?.media_ids && pathCommercialState.media_ids.length > 0) {
         initialMediaIds = pathCommercialState.media_ids;
+      }
+
+      if (journey === 'commercial') {
+        const sanitizedMedia = Array.from(
+          new Set(
+            (initialMedia || [])
+              .map((mediaCode) => normalizeCommercialMediaCode(mediaCode))
+              .filter((mediaCode): mediaCode is string => !!mediaCode)
+          )
+        );
+
+        initialMedia = sanitizedMedia.length > 0 ? sanitizedMedia : [DEFAULT_COMMERCIAL_MEDIA_CODE];
+
+        const derivedMediaIds = initialMedia
+          .map((mediaCode) => MarketManager.getServiceId(mediaCode))
+          .filter((mediaId): mediaId is number => mediaId != null);
+
+        initialMediaIds = derivedMediaIds.length > 0
+          ? derivedMediaIds
+          : [MarketManager.getServiceId(DEFAULT_COMMERCIAL_MEDIA_CODE) || 5];
+
+        initialSpotsDetail = sanitizeCommercialDetailMap(initialSpotsDetail, initialMedia, 1);
+        initialYearsDetail = sanitizeCommercialDetailMap(initialYearsDetail, initialMedia, 1);
       }
 
       const newState: MasterControlState = {
@@ -383,10 +461,13 @@ export const VoicesMasterControlProvider: React.FC<{
 
           mediaSegments.forEach(seg => {
             const match = seg.match(/^([a-z_]+)(\d+)x(\d+)$/i);
+            const rawMediaCode = match ? match[1] : seg.toLowerCase();
+            const mediaCode = normalizeCommercialMediaCode(rawMediaCode);
+            if (!mediaCode) return;
+
             if (match) {
-              const [_, mCode, spots, years] = match;
-              const mediaCode = mCode.toLowerCase();
-              newMedia.push(mediaCode);
+              const [_, __, spots, years] = match;
+              if (!newMedia.includes(mediaCode)) newMedia.push(mediaCode);
               
               const mId = MarketManager.getServiceId(mediaCode);
               if (mId) newMediaIds.push(mId);
@@ -394,12 +475,19 @@ export const VoicesMasterControlProvider: React.FC<{
               newSpotsDetail[mediaCode] = parseInt(spots);
               newYearsDetail[mediaCode] = parseInt(years);
             } else {
-              const mediaCode = seg.toLowerCase();
-              newMedia.push(mediaCode);
+              if (!newMedia.includes(mediaCode)) newMedia.push(mediaCode);
               const mId = MarketManager.getServiceId(mediaCode);
               if (mId) newMediaIds.push(mId);
             }
           });
+
+          if (newMedia.length === 0 && mediaSegments.length > 0) {
+            newMedia.push(DEFAULT_COMMERCIAL_MEDIA_CODE);
+            const defaultMediaId = MarketManager.getServiceId(DEFAULT_COMMERCIAL_MEDIA_CODE);
+            if (defaultMediaId) newMediaIds.push(defaultMediaId);
+            newSpotsDetail[DEFAULT_COMMERCIAL_MEDIA_CODE] = 1;
+            newYearsDetail[DEFAULT_COMMERCIAL_MEDIA_CODE] = 1;
+          }
 
           if (newMedia.length > 0) {
             return { 
@@ -455,9 +543,8 @@ export const VoicesMasterControlProvider: React.FC<{
 
         setState(prev => {
           const journey = urlState.journey || (searchParams?.get('journey') as JourneyType) || savedState.journey || prev.journey;
-          const journeyId = searchParams?.get('journeyId')
-            ? parseInt(searchParams.get('journeyId')!)
-            : ((urlState as any).journeyId || (urlState.journey ? MarketManager.getJourneyId(urlState.journey) : null) || savedState.journeyId || MarketManager.getJourneyId(journey));
+          const queryJourneyId = searchParams?.get('journeyId') ? parseInt(searchParams.get('journeyId')!, 10) : null;
+          const journeyId = (urlState as any).journeyId || (urlState.journey ? MarketManager.getJourneyId(urlState.journey) : null) || queryJourneyId || savedState.journeyId || MarketManager.getJourneyId(journey);
           
           return {
             ...prev,
@@ -623,6 +710,7 @@ export const VoicesMasterControlProvider: React.FC<{
     const URL_EXCLUDED_KEYS = ['spotsDetail', 'yearsDetail', 'mediaRegion', 'media'];
     URL_EXCLUDED_KEYS.forEach(key => params.delete(key));
     params.delete('journey');
+    params.delete('journeyId');
     params.delete('language');
     params.delete('languages');
 
@@ -650,11 +738,24 @@ export const VoicesMasterControlProvider: React.FC<{
       
       if (state.journeyId) params.set('journeyId', state.journeyId.toString());
       
-      if (state.journey === 'commercial' && state.filters.media) {
-        state.filters.media.forEach(m => {
-          const spots = state.filters.spotsDetail?.[m] || 1;
-          const years = state.filters.yearsDetail?.[m] || 1;
-          targetUrl += m + spots + 'x' + years + '/';
+      if (state.journey === 'commercial') {
+        const normalizedEntriesMap = new Map<string, string>();
+        (state.filters.media || []).forEach((rawMediaCode) => {
+          const normalizedMediaCode = normalizeCommercialMediaCode(rawMediaCode);
+          if (!normalizedMediaCode) return;
+          if (!normalizedEntriesMap.has(normalizedMediaCode)) {
+            normalizedEntriesMap.set(normalizedMediaCode, rawMediaCode);
+          }
+        });
+
+        const normalizedEntries = normalizedEntriesMap.size > 0
+          ? Array.from(normalizedEntriesMap.entries())
+          : [[DEFAULT_COMMERCIAL_MEDIA_CODE, DEFAULT_COMMERCIAL_MEDIA_CODE] as [string, string]];
+
+        normalizedEntries.forEach(([normalizedMediaCode, rawMediaCode]) => {
+          const spots = state.filters.spotsDetail?.[normalizedMediaCode] || state.filters.spotsDetail?.[rawMediaCode] || 1;
+          const years = state.filters.yearsDetail?.[normalizedMediaCode] || state.filters.yearsDetail?.[rawMediaCode] || 1;
+          targetUrl += normalizedMediaCode + spots + 'x' + years + '/';
         });
       } else if ((state.journey === 'telephony' || state.journey === 'video') && state.filters.words) {
         targetUrl += state.filters.words + '/';
@@ -682,13 +783,12 @@ export const VoicesMasterControlProvider: React.FC<{
       return;
     }
 
-    const queryString = params.toString();
-    
     // 🛡️ CHRIS-PROTOCOL: Nuclear ID-First URL Sync (v2.14.711)
     // We append the languageId and genderId to the query string to ensure 
     // the API receives the strict IDs for filtering.
     if (state.filters.languageId) params.set('languageId', state.filters.languageId.toString());
     if (state.filters.genderId) params.set('genderId', state.filters.genderId.toString());
+    const queryString = params.toString();
     
     const finalUrl = targetUrl + (queryString ? '?' + queryString : '');
     
@@ -762,10 +862,37 @@ export const VoicesMasterControlProvider: React.FC<{
       }
       
       if (newFilters.media) {
-        if (prev.journey === 'commercial' && newFilters.media.length === 0) {
-          updatedFilters.media = ['online'];
-          updatedFilters.mediaIds = [5];
-          updatedFilters.spotsDetail = { online: 1 };
+        if (prev.journey === 'commercial') {
+          const normalizedMedia = Array.from(
+            new Set(
+              (newFilters.media || [])
+                .map((mediaCode) => normalizeCommercialMediaCode(mediaCode))
+                .filter((mediaCode): mediaCode is string => !!mediaCode)
+            )
+          );
+
+          const commercialMedia = normalizedMedia.length > 0 ? normalizedMedia : [DEFAULT_COMMERCIAL_MEDIA_CODE];
+          updatedFilters.media = commercialMedia;
+
+          const normalizedMediaIds = commercialMedia
+            .map((mediaCode) => MarketManager.getServiceId(mediaCode))
+            .filter((mediaId): mediaId is number => mediaId != null);
+
+          updatedFilters.mediaIds = normalizedMediaIds.length > 0
+            ? normalizedMediaIds
+            : [MarketManager.getServiceId(DEFAULT_COMMERCIAL_MEDIA_CODE) || 5];
+
+          updatedFilters.spotsDetail = sanitizeCommercialDetailMap(
+            updatedFilters.spotsDetail,
+            commercialMedia,
+            1
+          );
+
+          updatedFilters.yearsDetail = sanitizeCommercialDetailMap(
+            updatedFilters.yearsDetail,
+            commercialMedia,
+            1
+          );
         }
         updateMedia(updatedFilters.media || [], updatedFilters.mediaIds);
       }

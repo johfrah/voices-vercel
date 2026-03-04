@@ -1421,7 +1421,27 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
       const agencyJourney = MarketManager.getJourneyFromSegment(segments[1]);
 
       if (agencyJourney === "commercial" && segments[2]) {
-        filters.media = segments[2];
+        const commercialMediaMap: Record<string, string> = {
+          online: 'online',
+          podcast: 'podcast',
+          radio: 'radio_national',
+          radio_national: 'radio_national',
+          radio_regional: 'radio_regional',
+          radio_local: 'radio_local',
+          tv: 'tv_national',
+          tv_national: 'tv_national',
+          tv_regional: 'tv_regional',
+          tv_local: 'tv_local',
+          social: 'social_media',
+          socials: 'social_media',
+          social_media: 'social_media',
+          cinema: 'cinema',
+          pos: 'pos'
+        };
+        const normalizedMedia = commercialMediaMap[segments[2].toLowerCase()];
+        if (normalizedMedia) {
+          filters.media = normalizedMedia;
+        }
       }
 
       let searchResults;
