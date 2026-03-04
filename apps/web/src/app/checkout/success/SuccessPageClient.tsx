@@ -38,35 +38,45 @@ export default function SuccessPageClient() {
   const secureToken = searchParams?.get('token');
   const isVerificationFlow = searchParams?.get('verify') === 'true';
   const emailParam = searchParams?.get('email');
+  const deliveryParam = searchParams?.get('delivery');
+  const accountOrdersPath = orderId ? `/account/orders?orderId=${orderId}` : '/account/orders';
+  const accountOrdersPathWithDelivery = deliveryParam
+    ? `${accountOrdersPath}${accountOrdersPath.includes('?') ? '&' : '?'}delivery=${encodeURIComponent(deliveryParam)}`
+    : accountOrdersPath;
 
-  const [isVerifying, setIsVerifying] = useState(true);
+  // Prevent verify flows from defaulting to a perpetual loader when hydration/effects are delayed.
+  const [isVerifying, setIsVerifying] = useState(() => Boolean(orderId && !isVerificationFlow));
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [magicLinkSent, setMagicLinkSent] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (orderId) {
-      playClick('success');
-      
-      // CHRIS-PROTOCOL: Zero-Friction Redirection for new/logged-in users
-      // We only redirect if it's NOT a verification flow (existing unauthenticated user)
-      if (!isVerificationFlow || auth.isAuthenticated) {
-        const timer = setTimeout(() => {
-          const isValidToken = secureToken && secureToken !== 'undefined';
-          const targetUrl = isValidToken 
-            ? `/api/auth/magic-login?token=${secureToken}&redirect=/account/orders?orderId=${orderId}${searchParams?.get('delivery') ? `&delivery=${encodeURIComponent(searchParams.get('delivery')!)}` : ''}` 
-            : `/account/orders?orderId=${orderId}${searchParams?.get('delivery') ? `&delivery=${encodeURIComponent(searchParams.get('delivery')!)}` : ''}`;
-          
-          router.push(targetUrl);
-        }, 500);
-        
-        return () => clearTimeout(timer);
-      } else {
-        // Verification flow: show the static page
-        setIsVerifying(false);
-      }
+    if (!orderId) {
+      setIsVerifying(false);
+      return;
     }
-  }, [orderId, secureToken, router, playClick, searchParams, isVerificationFlow, auth.isAuthenticated]);
+
+    const shouldAutoRedirect = !isVerificationFlow || auth.isAuthenticated;
+    if (!shouldAutoRedirect) {
+      // Verification flow for existing logged-out users: show login CTA immediately.
+      setIsVerifying(false);
+      return;
+    }
+
+    setIsVerifying(true);
+    playClick('success');
+
+    const timer = setTimeout(() => {
+      const isValidToken = secureToken && secureToken !== 'undefined';
+      const targetUrl = isValidToken
+        ? `/api/auth/magic-login?token=${secureToken}&redirect=${encodeURIComponent(accountOrdersPathWithDelivery)}${emailParam ? `&email=${encodeURIComponent(emailParam)}` : ''}`
+        : accountOrdersPathWithDelivery;
+
+      router.push(targetUrl);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [orderId, secureToken, router, playClick, isVerificationFlow, auth.isAuthenticated, accountOrdersPathWithDelivery, emailParam]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -74,20 +84,20 @@ export default function SuccessPageClient() {
     
     setIsLoggingIn(true);
     setLoginError(null);
-    playClick('deep');
+    playClick('pro');
 
     try {
       const response = await fetch('/api/auth/send-magic-link/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: emailParam, redirect: `/account/orders?orderId=${orderId}` }),
+        body: JSON.stringify({ email: emailParam, redirect: accountOrdersPath }),
       });
 
       const result = await response.json();
 
       if (!response.ok) {
         setLoginError(result.error || t('checkout.login.error_send', 'Versturen mislukt.'));
-        playClick('error');
+        playClick('lock');
       } else {
         playClick('success');
         setMagicLinkSent(true);
@@ -99,7 +109,7 @@ export default function SuccessPageClient() {
     }
   };
 
-  if (isVerifying) return <LoadingScreenInstrument message={t('checkout.success.verifying', 'Bestelling verifiëren...')} />;
+  if (isVerifying) return <LoadingScreenInstrument text={t('checkout.success.verifying', 'Bestelling verifiëren...')} />;
 
   return (
     <PageWrapperInstrument className="min-h-screen flex flex-col items-center justify-center p-6 relative overflow-hidden bg-va-off-white">
@@ -121,7 +131,10 @@ export default function SuccessPageClient() {
           <TextInstrument className="text-[18px] md:text-[20px] text-va-black/40 font-light leading-relaxed max-w-xl mx-auto Raleway">
             <VoiceglotText  
               translationKey="checkout.success.subtitle" 
-              defaultText={`${t('checkout.success.subtitle_prefix', 'Je bestelling #')}${orderId} ${t('checkout.success.subtitle_suffix', 'is succesvol ontvangen. We sturen je direct een bevestigingsmail met alle details.')}`} 
+              defaultText={orderId
+                ? `${t('checkout.success.subtitle_prefix', 'Je bestelling #')}${orderId} ${t('checkout.success.subtitle_suffix', 'is succesvol ontvangen. We sturen je direct een bevestigingsmail met alle details.')}`
+                : t('checkout.success.subtitle_no_order', 'Je betaling is geregistreerd. Open je account om de status van je project te bekijken.')
+              } 
             />
           </TextInstrument>
         </ContainerInstrument>
@@ -133,8 +146,8 @@ export default function SuccessPageClient() {
               translationKey="checkout.success.delivery.info" 
               defaultText={searchParams?.get('delivery') 
                 ? `${t('checkout.success.delivery.label', "Verwachte levering:")} ${searchParams?.get('delivery')}` 
-                : state.selectedActor?.delivery_time 
-                  ? `${t('checkout.success.delivery.label', "Verwachte levering:")} ${state.selectedActor.delivery_time}`
+                : (state.selectedActor as any)?.delivery_time || (state.selectedActor as any)?.deliveryTime
+                  ? `${t('checkout.success.delivery.label', "Verwachte levering:")} ${(state.selectedActor as any)?.delivery_time || (state.selectedActor as any)?.deliveryTime}`
                   : `${t('checkout.success.delivery.label', "Verwachte levering:")} ${t('common.within_48_hours', "binnen 48 uur")}`} 
             />
           </TextInstrument>
@@ -176,25 +189,35 @@ export default function SuccessPageClient() {
                     >
                       <Mail size={24} />
                       <TextInstrument className="text-sm font-medium">
-                        Check je inbox! We hebben een inlog-link gestuurd naar {emailParam}.
+                        Check je inbox! We hebben een inlog-link gestuurd naar {emailParam || 'je e-mailadres'}.
                       </TextInstrument>
                     </motion.div>
                   ) : (
                     <form onSubmit={handleLogin} className="space-y-4">
                       <button  
-                        disabled={isLoggingIn}
+                        disabled={isLoggingIn || !emailParam}
                         className="va-btn-pro !bg-va-black !text-white !py-6 px-12 w-full text-center !rounded-[20px] font-bold tracking-widest uppercase text-[13px] hover:!bg-primary transition-all shadow-aura-lg group/btn flex items-center justify-center gap-3"
                       >
                         {isLoggingIn ? <Loader2 className="animate-spin" size={18} /> : <LogIn size={18} />}
                         <VoiceglotText translationKey="checkout.success.verify.cta" defaultText="Stuur mij een inlog-link" />
                       </button>
+                      {!emailParam && (
+                        <TextInstrument className="text-amber-600 text-xs">
+                          <VoiceglotText
+                            translationKey="checkout.success.verify.email_missing"
+                            defaultText="We missen je e-mailadres in deze sessie. Open de account login en vraag daar een magic link aan."
+                          />
+                        </TextInstrument>
+                      )}
                       {loginError && <TextInstrument className="text-red-500 text-xs">{loginError}</TextInstrument>}
                     </form>
                   )}
                 </div>
               ) : (
                 <Link  
-                  href={secureToken ? `/api/auth/magic-login?token=${secureToken}&redirect=/account/orders?orderId=${orderId}` : `/account/orders?orderId=${orderId}`} 
+                  href={secureToken
+                    ? `/api/auth/magic-login?token=${secureToken}&redirect=${encodeURIComponent(accountOrdersPathWithDelivery)}${emailParam ? `&email=${encodeURIComponent(emailParam)}` : ''}`
+                    : accountOrdersPathWithDelivery} 
                   className="va-btn-pro !bg-va-black !text-white !py-6 px-12 w-full text-center !rounded-[20px] font-bold tracking-widest uppercase text-[13px] hover:!bg-primary transition-all shadow-aura-lg group/btn"
                 >
                   <span className="flex items-center justify-center gap-3">

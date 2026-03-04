@@ -50,8 +50,32 @@ export async function POST(request: NextRequest) {
   let orderId: number | null = null;
 
   try {
-    const formData = await request.formData();
-    paymentId = formData.get('id') as string;
+    const formRequest = request.clone();
+    let webhookId: string | null = null;
+
+    try {
+      const formData = await formRequest.formData();
+      webhookId = (formData.get('id') as string) || null;
+    } catch {
+      // no-op: body might not be form-data
+    }
+
+    if (!webhookId) {
+      const bodyText = await request.text();
+      const asUrlEncoded = new URLSearchParams(bodyText);
+      webhookId = asUrlEncoded.get('id');
+
+      if (!webhookId) {
+        try {
+          const parsedJson = JSON.parse(bodyText || '{}');
+          webhookId = parsedJson?.id || parsedJson?.resource?.id || null;
+        } catch {
+          // no-op
+        }
+      }
+    }
+
+    paymentId = webhookId;
     const host = request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || MarketManager.getMarketDomains()['BE']?.replace('https://', ''));
     const market = MarketManager.getCurrentMarket(host);
     const siteUrl = MarketManager.getMarketDomains()[market.market_code] || `https://${MarketManager.getMarketDomains()['BE']?.replace('https://', '') || 'www.voices.be'}`;
@@ -68,9 +92,24 @@ export async function POST(request: NextRequest) {
     }
 
     // 1. Haal de status op bij Mollie
-    let payment;
+    let payment: any;
+    let webhookResourceType: 'payment' | 'order' = 'payment';
     try {
-      payment = await MollieService.getPayment(paymentId);
+      if (paymentId.startsWith('ord_')) {
+        webhookResourceType = 'order';
+        payment = await MollieService.getOrder(paymentId);
+      } else if (paymentId.startsWith('tr_')) {
+        webhookResourceType = 'payment';
+        payment = await MollieService.getPayment(paymentId);
+      } else {
+        try {
+          webhookResourceType = 'payment';
+          payment = await MollieService.getPayment(paymentId);
+        } catch {
+          webhookResourceType = 'order';
+          payment = await MollieService.getOrder(paymentId);
+        }
+      }
     } catch (mollieErr: any) {
       console.error('[Mollie Webhook] Failed to fetch payment:', mollieErr.message);
       await fireAdminNotify(siteUrl, 'webhook_error', {
@@ -82,7 +121,11 @@ export async function POST(request: NextRequest) {
       return new NextResponse('Payment Not Found', { status: 404 });
     }
 
-    orderId = parseInt(payment.metadata?.orderId);
+    orderId = parseInt(
+      payment.metadata?.orderId ||
+      payment.metadata?.order_id ||
+      payment.orderNumber
+    );
 
     if (!orderId) {
       console.warn('[Mollie Webhook] Invalid or missing Order ID in metadata:', payment.metadata);
@@ -99,10 +142,18 @@ export async function POST(request: NextRequest) {
 
     // 2. Update de order status op basis van Mollie
     let newStatus = 'pending';
-    if (payment.status === 'paid') newStatus = 'paid';
-    if (payment.status === 'canceled') newStatus = 'cancelled';
-    if (payment.status === 'expired') newStatus = 'expired';
-    if (payment.status === 'failed') newStatus = 'failed';
+    const mollieStatus = String(payment.status || '').toLowerCase();
+    if (webhookResourceType === 'order') {
+      if (['paid', 'authorized', 'completed'].includes(mollieStatus)) newStatus = 'paid';
+      if (mollieStatus === 'canceled') newStatus = 'cancelled';
+      if (mollieStatus === 'expired') newStatus = 'expired';
+      if (mollieStatus === 'failed') newStatus = 'failed';
+    } else {
+      if (mollieStatus === 'paid') newStatus = 'paid';
+      if (mollieStatus === 'canceled') newStatus = 'cancelled';
+      if (mollieStatus === 'expired') newStatus = 'expired';
+      if (mollieStatus === 'failed') newStatus = 'failed';
+    }
 
     //  NUCLEAR CONFIG: market context
     const adminEmail = process.env.ADMIN_EMAIL || market.email;
@@ -261,7 +312,7 @@ export async function POST(request: NextRequest) {
                         price: parseFloat(i.price || '0'),
                         deliveryTime: (i.metaData as any)?.deliveryTime
                       })),
-                      paymentMethod: payment.method || 'Online',
+                    paymentMethod: payment.method || payment.paymentMethod || 'Online',
                       language: orderLanguage
                     },
                     host: host
@@ -365,7 +416,7 @@ export async function POST(request: NextRequest) {
           await fireAdminNotify(siteUrl, isSameDay ? 'sameday_alert' : 'payment_received', {
             orderId: resolvedOrderId,
             email: payment.metadata.email || 'Gast',
-            amount: payment.amount.value,
+            amount: payment.amount?.value || order.total || '0',
             company: payment.metadata.company,
             items: (order.rawMeta as any)?.items || [],
             customer: { first_name: payment.metadata.givenName, last_name: payment.metadata.familyName }
@@ -387,7 +438,7 @@ export async function POST(request: NextRequest) {
           amount: payment.amount?.value || order?.total || '0',
           paymentStatus: newStatus,
           previousStatus: previousLegacyStatus,
-          source: 'MollieWebhook'
+          source: webhookResourceType === 'order' ? 'MollieOrderWebhook' : 'MolliePaymentWebhook'
         });
       }
     });

@@ -13,14 +13,35 @@ export async function GET(request: Request) {
   const token = searchParams.get('token')
   const type = searchParams.get('type') || 'magiclink'
   const redirectPath = searchParams.get('redirect') || '/account'
+  const email = searchParams.get('email')
   
   console.log(`[Auth Confirm] Processing ${type} for token: ${token?.substring(0, 5)}...`)
+
+  const orderIdFromRedirect = (() => {
+    try {
+      const parsed = redirectPath.startsWith('http')
+        ? new URL(redirectPath)
+        : new URL(redirectPath, 'http://voices.local');
+      return parsed.searchParams.get('orderId') || parsed.searchParams.get('orderid');
+    } catch {
+      return redirectPath.match(/orderId=(\d+)/i)?.[1] || null;
+    }
+  })();
+
+  const verificationFallbackUrl = (() => {
+    const params = new URLSearchParams();
+    params.set('verify', 'true');
+    params.set('reason', 'confirm_failed');
+    if (orderIdFromRedirect) params.set('orderId', orderIdFromRedirect);
+    if (email && email.includes('@')) params.set('email', email);
+    return `${origin}/checkout/success?${params.toString()}`;
+  })();
 
   if (token) {
     const supabase = createClient()
     if (!supabase) {
       console.error('[Auth Confirm] Supabase niet geconfigureerd')
-      return NextResponse.redirect(`${origin}/account?error=config`)
+      return NextResponse.redirect(verificationFallbackUrl)
     }
 
     // Gebruik de verifyOtp methode voor magic links en signups
@@ -68,6 +89,7 @@ export async function GET(request: Request) {
     } catch (e) {}
   }
 
-  // Bij een fout sturen we de gebruiker terug naar de login met de specifieke Supabase error
-  return NextResponse.redirect(`${origin}/account?error=auth-callback-failed`)
+  // Bij een fout sturen we de gebruiker naar de verificatie-flow.
+  // Dit voorkomt JSON/dead-end states en laat een snelle login-link opnieuw versturen.
+  return NextResponse.redirect(verificationFallbackUrl)
 }

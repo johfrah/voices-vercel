@@ -474,7 +474,7 @@ export async function POST(request: Request) {
         };
       }),
       billingAddress: { streetAndNumber: address_street || 'N/A', postalCode: postal_code || 'N/A', city: city || 'N/A', country: country || 'BE', givenName: first_name, familyName: last_name, email },
-      redirectUrl: `${baseUrl}/api/auth/magic-login?token=${secureToken}&redirect=/account/orders?orderId=${newOrder.id}`,
+      redirectUrl: `${baseUrl}/api/auth/magic-login?token=${secureToken}&redirect=/account/orders?orderId=${newOrder.id}&email=${encodeURIComponent(email)}`,
       webhookUrl: `${webhookBaseUrl}/api/checkout/webhook`,
       locale: localeToMollie(normalizedLanguage) as any,
       metadata: {

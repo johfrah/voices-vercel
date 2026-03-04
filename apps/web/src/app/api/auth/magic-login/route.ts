@@ -1,19 +1,59 @@
 import { db, users } from '@/lib/system/voices-config';
 import { createClient } from '@supabase/supabase-js';
 import { eq } from 'drizzle-orm';
-import { verify } from 'jsonwebtoken';
+import { decode, verify } from 'jsonwebtoken';
 import { NextResponse } from 'next/server';
 
 export const dynamic = 'force-dynamic';
 
+function extractOrderIdFromRedirect(redirectPath: string | null, payloadOrderId?: unknown): string | null {
+  if (payloadOrderId && Number.isFinite(Number(payloadOrderId))) {
+    return String(Number(payloadOrderId));
+  }
+
+  if (!redirectPath) return null;
+
+  try {
+    const parsed = redirectPath.startsWith('http')
+      ? new URL(redirectPath)
+      : new URL(redirectPath, 'http://voices.local');
+    const orderId = parsed.searchParams.get('orderId') || parsed.searchParams.get('orderid');
+    if (orderId && /^\d+$/.test(orderId)) return orderId;
+  } catch {
+    // no-op, we still have regex fallback
+  }
+
+  const regexMatch = redirectPath.match(/orderId=(\d+)/i);
+  return regexMatch?.[1] || null;
+}
+
+function buildVerificationUrl(baseUrl: string, redirectPath: string | null, email?: string | null, payloadOrderId?: unknown, reason: string = 'magic_login_failed'): string {
+  const orderId = extractOrderIdFromRedirect(redirectPath, payloadOrderId);
+  const params = new URLSearchParams();
+  params.set('verify', 'true');
+  params.set('reason', reason);
+  if (orderId) params.set('orderId', orderId);
+  if (email && email.includes('@')) params.set('email', email);
+  return `${baseUrl}/checkout/success?${params.toString()}`;
+}
+
 export async function GET(request: Request) {
+  const { MarketManagerServer: MarketManager } = require('@/lib/system/core/market-manager');
+  const host = request.headers.get('host') || MarketManager.getMarketDomains()['BE']?.replace('https://', '');
+  const market = MarketManager.getCurrentMarket(host);
+  const siteUrl = MarketManager.getMarketDomains()[market.market_code] || `https://${MarketManager.getMarketDomains()['BE']?.replace('https://', '') || 'www.voices.be'}`;
+  const currentBaseUrl = host.includes('localhost') ? `http://${host}` : siteUrl;
+
   try {
     const { searchParams } = new URL(request.url);
     const token = searchParams.get('token');
     const redirectPath = searchParams.get('redirect') || '/account';
+    const fallbackEmailParam = searchParams.get('email');
 
     if (!token || token === 'undefined') {
-      return NextResponse.json({ error: 'Token is required' }, { status: 400 });
+      return NextResponse.redirect(
+        buildVerificationUrl(currentBaseUrl, redirectPath, fallbackEmailParam, null, 'missing_token')
+      );
     }
 
     // 1. Verify JWT
@@ -21,8 +61,17 @@ export async function GET(request: Request) {
     let payload: any;
     try {
       payload = verify(token, secret);
-    } catch (e) {
-      return NextResponse.json({ error: 'Invalid or expired token' }, { status: 401 });
+    } catch {
+      const decodedPayload = decode(token) as any;
+      return NextResponse.redirect(
+        buildVerificationUrl(
+          currentBaseUrl,
+          redirectPath,
+          fallbackEmailParam || decodedPayload?.email || null,
+          decodedPayload?.orderId,
+          'invalid_or_expired_token'
+        )
+      );
     }
 
     let { userId, email: tokenEmail } = payload;
@@ -42,22 +91,26 @@ export async function GET(request: Request) {
     }
 
     if (!userRecord || !userRecord.email) {
-      return NextResponse.json({ error: 'User not found or invalid token payload' }, { status: 404 });
+      return NextResponse.redirect(
+        buildVerificationUrl(
+          currentBaseUrl,
+          redirectPath,
+          fallbackEmailParam || tokenEmail || null,
+          payload?.orderId,
+          'user_not_found'
+        )
+      );
     }
 
     // 3. Initialize Supabase Admin
     const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
     if (!url || !key) {
-      return NextResponse.json({ error: 'Auth service not configured' }, { status: 503 });
+      return NextResponse.redirect(
+        buildVerificationUrl(currentBaseUrl, redirectPath, userRecord.email, payload?.orderId, 'auth_service_unavailable')
+      );
     }
     const supabaseAdmin = createClient(url, key);
-
-    const { MarketManagerServer: MarketManager } = require('@/lib/system/core/market-manager');
-    const host = request.headers.get('host') || MarketManager.getMarketDomains()['BE']?.replace('https://', '');
-    const market = MarketManager.getCurrentMarket(host);
-    const siteUrl = MarketManager.getMarketDomains()[market.market_code] || `https://${MarketManager.getMarketDomains()['BE']?.replace('https://', '') || 'www.voices.be'}`;
-    const currentBaseUrl = host.includes('localhost') ? `http://${host}` : siteUrl;
 
     // 4. Generate Magic Link (Action Link) and always finalize via /account/confirm
     // to let server-side verifyOtp establish a stable session.
@@ -83,7 +136,9 @@ export async function GET(request: Request) {
 
     if (error || !data?.properties?.action_link) {
       console.error('Supabase GenerateLink Error:', error);
-      throw error || new Error('Failed to generate action link');
+      return NextResponse.redirect(
+        buildVerificationUrl(currentBaseUrl, redirectPath, userRecord.email, payload?.orderId, 'generate_link_failed')
+      );
     }
 
     const supabaseLink = new URL(data.properties.action_link);
@@ -91,19 +146,35 @@ export async function GET(request: Request) {
     const confirmType = supabaseLink.searchParams.get('type') || 'magiclink';
 
     if (!confirmToken) {
-      throw new Error('No token found in generated action link');
+      return NextResponse.redirect(
+        buildVerificationUrl(currentBaseUrl, redirectPath, userRecord.email, payload?.orderId, 'missing_confirm_token')
+      );
     }
 
     const confirmUrl =
       `${currentBaseUrl}/account/confirm?token=${encodeURIComponent(confirmToken)}` +
       `&type=${encodeURIComponent(confirmType)}` +
-      `&redirect=${encodeURIComponent(redirectPath)}`;
+      `&redirect=${encodeURIComponent(redirectPath)}` +
+      `&email=${encodeURIComponent(userRecord.email)}`;
 
     // 5. Redirect to our own confirm route for cookie-based session establishment.
     return NextResponse.redirect(confirmUrl);
 
   } catch (error: any) {
     console.error(' MAGIC LOGIN ERROR:', error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    const { searchParams } = new URL(request.url);
+    const redirectPath = searchParams.get('redirect');
+    const token = searchParams.get('token');
+    const fallbackEmailParam = searchParams.get('email');
+    const decodedPayload = token ? (decode(token) as any) : null;
+    return NextResponse.redirect(
+      buildVerificationUrl(
+        currentBaseUrl,
+        redirectPath,
+        fallbackEmailParam || decodedPayload?.email || null,
+        decodedPayload?.orderId,
+        'magic_login_exception'
+      )
+    );
   }
 }
