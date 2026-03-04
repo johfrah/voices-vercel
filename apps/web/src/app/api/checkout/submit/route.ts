@@ -237,17 +237,47 @@ export async function POST(request: Request) {
     // 3. Prijs Validatie
     let serverCalculatedSubtotal = 0;
     let isQuoteOnly = false;
+    const itemValidationErrors: Array<{ item_id: string; item_type: string; reason: string }> = [];
+    const validatedItems = (items || []).flatMap((item: any, index: number) => {
+      const itemId = String(item.id || `idx_${index}`);
+      const itemType = String(item.type || '');
 
-    const validatedItems = (items || []).map((item: any) => {
-      if (item.type === 'voice_over') {
-        const dbActor = actorMap.get(Number(item.actor?.id));
-        if (!dbActor) return item;
+      if (itemType === 'voice_over') {
+        const actorId = Number(item.actor?.id);
+        if (!Number.isFinite(actorId) || actorId <= 0) {
+          itemValidationErrors.push({
+            item_id: itemId,
+            item_type: itemType,
+            reason: 'Voice-over item mist een geldige actor_id',
+          });
+          return [];
+        }
+
+        const dbActor = actorMap.get(actorId);
+        if (!dbActor) {
+          itemValidationErrors.push({
+            item_id: itemId,
+            item_type: itemType,
+            reason: `Voice-over actor ${actorId} niet gevonden`,
+          });
+          return [];
+        }
+
+        const scriptText = String(item.briefing || item.script || '').trim();
+        if (!scriptText) {
+          itemValidationErrors.push({
+            item_id: itemId,
+            item_type: itemType,
+            reason: 'Voice-over item mist briefing/script',
+          });
+          return [];
+        }
+
         const mediaTypes = toCommercialMediaTypes(item.media);
         const countries = toStringArray(item.country);
         const primaryCountry = countries[0] || 'BE';
         const spotsByMedia = normalizeCommercialFactor(item.spots, mediaTypes);
         const yearsByMedia = normalizeCommercialFactor(item.years, mediaTypes);
-        const scriptText = String(item.briefing || item.script || '').trim();
         const result = SlimmeKassa.calculate({
           usage: item.usage,
           words: scriptText.split(/\s+/).filter(Boolean).length || 0,
@@ -259,21 +289,54 @@ export async function POST(request: Request) {
           liveSession: item.liveSession,
           actorRates: dbActor,
           music: item.music,
-          isVatExempt
+          isVatExempt,
         });
         if (result.isQuoteOnly) isQuoteOnly = true;
         serverCalculatedSubtotal += result.subtotal;
-        return { ...item, pricing: result };
+        return [{ ...item, pricing: result }];
       }
-      if (item.type === 'workshop_edition') {
+
+      if (itemType === 'workshop_edition') {
         const workshopId = extractWorkshopId(item as Record<string, unknown>);
         const dbWorkshop = workshopId ? workshopMap.get(workshopId) : null;
-        const price = dbWorkshop ? Number(dbWorkshop.price) : 0;
+        if (!workshopId || !dbWorkshop) {
+          itemValidationErrors.push({
+            item_id: itemId,
+            item_type: itemType,
+            reason: 'Workshop item mist een geldige workshop_id',
+          });
+          return [];
+        }
+        const price = Number(dbWorkshop.price || 0);
+        if (price <= 0) {
+          itemValidationErrors.push({
+            item_id: itemId,
+            item_type: itemType,
+            reason: `Workshop ${workshopId} heeft geen geldige prijs`,
+          });
+          return [];
+        }
         serverCalculatedSubtotal += price;
-        return { ...item, pricing: { total: price, subtotal: price, tax: price * taxRate } };
+        return [{ ...item, pricing: { total: price, subtotal: price, tax: price * taxRate } }];
       }
-      return item;
+
+      itemValidationErrors.push({
+        item_id: itemId,
+        item_type: itemType || 'unknown',
+        reason: `Onbekend item type '${itemType || 'unknown'}'`,
+      });
+      return [];
     });
+
+    if (itemValidationErrors.length > 0) {
+      return NextResponse.json(
+        {
+          error: 'Een of meer orderregels zijn ongeldig',
+          details: itemValidationErrors,
+        },
+        { status: 422 },
+      );
+    }
 
     if (validatedItems.length === 0) {
       return NextResponse.json({ error: 'Leeg mandje. Voeg eerst een voice-over toe.' }, { status: 400 });

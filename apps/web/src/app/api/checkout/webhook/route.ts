@@ -102,9 +102,15 @@ export async function POST(request: NextRequest) {
       
       // Update Order status
       let finalStatus: string = newStatus;
+      const existingStatus = String(order?.status || '').toLowerCase();
+      const settledStatuses = new Set(['paid', 'completed', 'in_productie']);
+      const isDuplicatePaidEvent = newStatus === 'paid' && settledStatuses.has(existingStatus);
+      if (isDuplicatePaidEvent) {
+        finalStatus = existingStatus;
+      }
       
       //  Als betaald: Check of het een "Music Only" of "Donation" order is
-      if (newStatus === 'paid' && order) {
+      if (newStatus === 'paid' && order && !isDuplicatePaidEvent) {
         const hasVoice = (order.rawMeta as any)?.actorId || (order.rawMeta as any)?.voiceId || (order.rawMeta as any)?.itemsCount > 0;
         const hasMusic = (order.rawMeta as any)?.music?.trackId;
         const isDonation = order.journey === 'artist_donation';
@@ -191,12 +197,12 @@ export async function POST(request: NextRequest) {
       // Log Note
       await tx.insert(orderNotes).values({
         orderId: orderId,
-        note: `Mollie Status Update: ${newStatus}${finalStatus === 'in_productie' ? ' (Auto-status: In Productie)' : finalStatus === 'completed' ? ' (Auto-completed: Music Only)' : ''} (${transactionSource} ID: ${paymentId})`,
+        note: `Mollie Status Update: ${newStatus}${isDuplicatePaidEvent ? ' (Duplicate callback ignored)' : finalStatus === 'in_productie' ? ' (Auto-status: In Productie)' : finalStatus === 'completed' ? ' (Auto-completed: Music Only)' : ''} (${transactionSource} ID: ${paymentId})`,
         isCustomerNote: false
       });
 
       //  Als betaald: Lever muziek en update DNA + Sales
-      if (newStatus === 'paid') {
+      if (newStatus === 'paid' && !isDuplicatePaidEvent && order) {
         // 1. Verhoog total_sales voor de betrokken acteurs
         try {
           const items = await tx.select({ actorId: orderItems.actorId, name: orderItems.name, price: orderItems.price, metaData: orderItems.metaData })
