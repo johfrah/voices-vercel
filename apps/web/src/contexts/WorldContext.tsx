@@ -49,7 +49,7 @@ export const WorldProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     let isActive = true;
     const fetchWorlds = async () => {
       try {
-        const res = await fetch('/api/admin/config?type=worlds', { signal: controller.signal });
+        const res = await fetch('/api/admin/config/?type=worlds', { signal: controller.signal });
         const data = await res.json();
         if (!isActive || controller.signal.aborted) return;
         if (data.results) {

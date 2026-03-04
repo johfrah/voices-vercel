@@ -113,7 +113,7 @@ export const VoicyChatV2: React.FC = () => {
     } catch (e) {}
   };
   const { t, language } = useTranslation();
-  const { user, isAuthenticated, isAdmin } = useAuth();
+  const { user, isAuthenticated, isAdmin, isLoading: isAuthLoading } = useAuth();
   const { isEditMode, toggleEditMode } = useEditMode();
   const pathname = usePathname();
 
@@ -130,6 +130,8 @@ export const VoicyChatV2: React.FC = () => {
   const isAcademyJourney = pathname?.includes('/academy');
   const isStudioJourney = pathname?.includes('/studio') && !isAcademyJourney;
   const isAgencyJourney = !isStudioJourney && !isAcademyJourney && !isPortfolioJourney && !isArtistPage;
+  const isAdminRoute = pathname?.startsWith('/admin');
+  const shouldDeferAdminBootstrap = Boolean(isAdminRoute) && (isAuthLoading || !isAdmin);
 
   const activeEmail = market.email;
   const activePhone = market.phone;
@@ -173,8 +175,9 @@ export const VoicyChatV2: React.FC = () => {
 
   //  CHRIS-PROTOCOL: Sync telephony config from DB
   useEffect(() => {
+    if (shouldDeferAdminBootstrap) return;
     const controller = new AbortController();
-    fetch('/api/admin/config?type=telephony', { signal: controller.signal })
+    fetch('/api/admin/config/?type=telephony', { signal: controller.signal })
       .then(res => res.json())
       .then(data => {
         if (!controller.signal.aborted && data.telephony_config) {
@@ -186,7 +189,7 @@ export const VoicyChatV2: React.FC = () => {
         console.error('Failed to fetch telephony config', err);
       });
     return () => controller.abort();
-  }, [isOpen]); // Re-check when chat opens
+  }, [isOpen, shouldDeferAdminBootstrap]); // Re-check when chat opens
 
   //  SENSOR MODE: Track visitor behavior and sync to DB
   useEffect(() => {
@@ -576,6 +579,7 @@ export const VoicyChatV2: React.FC = () => {
 
   //  Persist Conversation ID and Load History
   useEffect(() => {
+    if (shouldDeferAdminBootstrap) return;
     const controller = new AbortController();
     const savedId = localStorage.getItem('voicy_conversation_id');
     if (savedId) {
@@ -585,7 +589,7 @@ export const VoicyChatV2: React.FC = () => {
     }
 
     // Fetch system config for opening hours
-    fetch('/api/admin/config?type=general', { signal: controller.signal })
+    fetch('/api/admin/config/?type=general', { signal: controller.signal })
       .then(res => res.json())
       .then(data => {
         if (!controller.signal.aborted && data.general_settings) {
@@ -597,7 +601,7 @@ export const VoicyChatV2: React.FC = () => {
         console.error('Failed to fetch system config', err);
       });
     return () => controller.abort();
-  }, []);
+  }, [shouldDeferAdminBootstrap]);
 
   const loadHistory = async (id: number, externalSignal?: AbortSignal) => {
     historyAbortRef.current?.abort();
