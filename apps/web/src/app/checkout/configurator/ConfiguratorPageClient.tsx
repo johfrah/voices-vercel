@@ -2037,12 +2037,12 @@ export default function ConfiguratorPageClient({
                   type="button"
                   onClick={() => setMobileSection(item.id)}
                   className={cn(
-                    "flex flex-col items-center justify-center gap-1 rounded-lg py-2 transition-all",
+                    "flex flex-col items-center justify-center gap-1.5 rounded-xl min-h-[52px] py-2.5 px-1.5 transition-all touch-manipulation active:scale-[0.98]",
                     isActive ? "bg-va-black text-white shadow-md" : "text-va-black/45 bg-va-off-white/60"
                   )}
                 >
-                  <Icon size={14} strokeWidth={isActive ? 2.4 : 1.8} />
-                  <span className="text-[8px] font-bold uppercase tracking-[0.16em] leading-none">{item.label}</span>
+                  <Icon size={15} strokeWidth={isActive ? 2.4 : 1.8} />
+                  <span className="text-[9px] font-bold uppercase tracking-[0.14em] leading-none text-center">{item.label}</span>
                 </button>
               );
             })}
@@ -2060,7 +2060,7 @@ export default function ConfiguratorPageClient({
               onClick={() => handleAddToCartWithEmail('checkout')}
               disabled={!state.selectedActor || !hasOrderContent || isProcessing}
               className={cn(
-                "bg-va-black text-white px-6 py-3 rounded-xl font-bold text-[13px] tracking-widest uppercase active:scale-95 transition-all disabled:opacity-50",
+                "bg-va-black text-white px-6 py-3 rounded-xl min-h-11 font-bold text-[13px] tracking-widest uppercase touch-manipulation active:scale-95 transition-all disabled:opacity-50",
                 isProcessing && "cursor-wait opacity-50",
                 !isProcessing && (!state.selectedActor || !hasOrderContent) && "opacity-45 cursor-not-allowed"
               )}

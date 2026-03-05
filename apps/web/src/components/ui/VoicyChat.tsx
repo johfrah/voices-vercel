@@ -76,6 +76,7 @@ export const VoicyChatV2: React.FC = () => {
   const [clickedChips, setClickedChips] = useState<string[]>([]);
   const [isHoveringVoicy, setIsHoveringVoicy] = useState(false);
   const [showChips, setShowChips] = useState(false);
+  const [isMobileViewport, setIsMobileViewport] = useState(false);
   const [showLeadForm, setShowLeadForm] = useState(false);
   const [leadFormData, setLeadFormData] = useState({ name: '', email: '' });
   const [sensorData, setSensorData] = useState<any>({
@@ -138,6 +139,15 @@ export const VoicyChatV2: React.FC = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const lastIdRef = useRef<number>(0);
   const chatContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const mediaQuery = window.matchMedia('(max-width: 767px), (pointer: coarse)');
+    const syncViewportMode = () => setIsMobileViewport(mediaQuery.matches);
+    syncViewportMode();
+    mediaQuery.addEventListener('change', syncViewportMode);
+    return () => mediaQuery.removeEventListener('change', syncViewportMode);
+  }, []);
 
   //  FAQ tab: load journey-aware FAQs from Supabase (world/journey)
   const faqJourneyParam = faqWorldId === 2
@@ -774,6 +784,11 @@ export const VoicyChatV2: React.FC = () => {
 
   useEffect(() => {
     //  AUTO-SHOW CHIPS (CHRIS-PROTOCOL: Proactieve interactie)
+    if (isMobileViewport) {
+      setShowChips(false);
+      return;
+    }
+
     if (!isOpen) {
       const timer = setTimeout(() => {
         setShowChips(true);
@@ -790,13 +805,13 @@ export const VoicyChatV2: React.FC = () => {
     } else {
       setShowChips(false);
     }
-  }, [isOpen]);
+  }, [isMobileViewport, isOpen]);
 
   useEffect(() => {
-    if (isHoveringVoicy && !isOpen) {
+    if (!isMobileViewport && isHoveringVoicy && !isOpen) {
       setShowChips(true);
     }
-  }, [isHoveringVoicy, isOpen]);
+  }, [isHoveringVoicy, isMobileViewport, isOpen]);
 
   const toggleChat = () => {
     playClick(isOpen ? 'soft' : 'pro');
@@ -1119,15 +1134,14 @@ export const VoicyChatV2: React.FC = () => {
         "fixed z-[150] touch-manipulation transition-[bottom] duration-300",
         isCastingDockVisible ? "bottom-[calc(8.25rem+env(safe-area-inset-bottom))] md:bottom-8" : "bottom-[max(2rem,env(safe-area-inset-bottom))]",
         "right-[max(2rem,env(safe-area-inset-right))]",
-        "max-[420px]:right-auto max-[420px]:left-[max(2rem,env(safe-area-inset-left))]",
         isOpen && "z-[250]"
       )}
       onMouseEnter={() => setIsHoveringVoicy(true)}
       onMouseLeave={() => setIsHoveringVoicy(false)}
     >
       {/* Smart Chips (Floating above toggle) */}
-      {!isOpen && showChips && (
-        <ContainerInstrument className="absolute bottom-20 right-0 max-[420px]:right-auto max-[420px]:left-0 flex flex-col items-end max-[420px]:items-start gap-2 pointer-events-none">
+      {!isOpen && showChips && !isMobileViewport && (
+        <ContainerInstrument className="absolute bottom-20 right-0 flex flex-col items-end gap-2 pointer-events-none">
           <AnimatePresence>
             {getSmartChips().map((chip, i) => (
               <motion.button
@@ -1179,13 +1193,13 @@ export const VoicyChatV2: React.FC = () => {
 
       {/* Chat Window: van bovenrand tot onderkant viewport; chatbolletje verdwijnt als open, sluiten via X in header */}
       <ContainerInstrument plain className={cn(
-        "bg-white rounded-[32px] shadow-aura flex flex-col overflow-hidden transition-all duration-500 origin-bottom-right max-[420px]:origin-bottom-left",
+        "bg-white rounded-[32px] shadow-aura flex flex-col overflow-hidden transition-all duration-500 origin-bottom-right",
         isOpen ? 'scale-100 opacity-100' : 'scale-0 opacity-0 pointer-events-none',
         isFullMode
           ? 'fixed w-auto h-auto z-[260] top-[max(2rem,env(safe-area-inset-top))] right-[max(2rem,env(safe-area-inset-right))] bottom-[max(2rem,env(safe-area-inset-bottom))] left-[max(2rem,env(safe-area-inset-left))]'
           : isOpen
             ? 'fixed z-[260] top-[max(2rem,env(safe-area-inset-top))] right-[max(2rem,env(safe-area-inset-right))] bottom-[max(2rem,env(safe-area-inset-bottom))] left-[max(2rem,env(safe-area-inset-left))] md:left-auto md:top-[max(0px,env(safe-area-inset-top))] md:w-[400px] md:max-w-[calc(100vw-2rem)]'
-            : 'absolute bottom-20 right-0 max-[420px]:right-auto max-[420px]:left-0 w-[400px] max-w-[calc(100vw-2rem)] min-h-0',
+            : 'absolute bottom-20 right-0 w-[400px] max-w-[calc(100vw-2rem)] min-h-0',
         isJohfrah && "border border-primary/20"
       )}>
         {/* Header */}
