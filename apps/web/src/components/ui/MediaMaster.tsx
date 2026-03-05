@@ -79,6 +79,7 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
       if (cat.includes('telephony') || cat.includes('iv')) return 'Telefonie';
       if (cat.includes('corporate') || cat.includes('video')) return 'Corporate';
       if (cat.includes('commercial') || cat.includes('advertentie')) return 'Commercial';
+      if (cat.includes('online')) return 'Online';
     }
 
     if (!title) return '';
@@ -95,6 +96,17 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
     clean = clean.charAt(0).toUpperCase() + clean.slice(1).toLowerCase();
     
     return clean.trim();
+  };
+
+  //  CHRIS-PROTOCOL: Get icon for demo category (v2.28.50)
+  const getDemoIcon = (category?: string) => {
+    if (!category) return null;
+    const cat = category.toLowerCase();
+    if (cat.includes('telephony') || cat.includes('iv')) return <span className="mr-1">📞</span>;
+    if (cat.includes('corporate') || cat.includes('video')) return <span className="mr-1">🏢</span>;
+    if (cat.includes('commercial') || cat.includes('advertentie')) return <span className="mr-1">📢</span>;
+    if (cat.includes('online')) return <span className="mr-1">💻</span>;
+    return null;
   };
 
   const { playClick } = useSonicDNA();
@@ -306,7 +318,7 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
                         playDemo(p);
                       }}
                       className={cn(
-                        "px-1 py-0.5 rounded-md text-[10px] font-black tracking-widest uppercase transition-all whitespace-nowrap flex items-center gap-2",
+                        "px-1 py-0.5 rounded-md text-[10px] font-black tracking-widest uppercase transition-all whitespace-nowrap flex items-center gap-1",
                         p.id === demo.id 
                           ? "text-primary" 
                           : "text-white/40 hover:text-white"
@@ -325,7 +337,10 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
                           }}
                         />
                       ) : (
-                        cleanDemoTitle(p.title, p.category)
+                        <>
+                          {getDemoIcon(p.category)}
+                          {cleanDemoTitle(p.title, p.category)}
+                        </>
                       )}
                     </button>
 
