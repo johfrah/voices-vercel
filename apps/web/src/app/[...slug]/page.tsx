@@ -190,6 +190,14 @@ type ResolvedSlugEntry = {
   language_id?: number;
 };
 
+const ROUTING_TYPE_BY_ENTITY_TYPE_ID: Record<number, string> = {
+  1: 'actor',
+  3: 'article',
+  4: 'artist',
+  5: 'workshop',
+  6: 'casting_list',
+};
+
 function scoreSlugEntry(entry: any, marketCode: string, languageId?: number | null): number {
   let score = 0;
   const entryMarket = String(entry.market_code || 'ALL').toUpperCase();
@@ -227,7 +235,7 @@ async function resolveSlugFromRegistry(
 
     const { data: entries, error } = await supabase
       .from('slug_registry')
-      .select('slug, market_code, entity_id, journey, world_id, canonical_slug, metadata, entity_type_id, language_id, entity_types(code)')
+      .select('slug, market_code, entity_id, routing_type, journey, world_id, canonical_slug, metadata, entity_type_id, language_id')
       .eq('slug', normalizedSlug)
       .in('market_code', marketCandidates)
       .eq('is_active', true)
@@ -241,8 +249,10 @@ async function resolveSlugFromRegistry(
       });
       const entry = ranked[0];
 
-      // 🛡️ CHRIS-PROTOCOL: Map entity_type_id 5 to 'workshop' if code is missing (v2.16.097)
-      const routingType = (entry.entity_types as any)?.code || (entry.entity_type_id === 5 ? 'workshop' : 'article');
+      const routingType =
+        (typeof (entry as any).routing_type === 'string' && (entry as any).routing_type.trim()) ||
+        ROUTING_TYPE_BY_ENTITY_TYPE_ID[Number(entry.entity_type_id)] ||
+        'article';
       
       return {
         slug: entry.slug,
@@ -346,9 +356,9 @@ async function discoverAndRegisterSlug(slug: string, marketCode: string, journey
 
     if (actor) {
       console.error(` [SmartRouter] DISCOVERED Actor: ${actor.id}. Registering...`);
-      const { data: newEntry } = await supabase
+      const { error: registerError } = await supabase
         .from('slug_registry')
-        .insert({
+        .upsert({
           slug: slug.toLowerCase(),
           routing_type: 'actor',
           entity_id: actor.id,
@@ -358,11 +368,11 @@ async function discoverAndRegisterSlug(slug: string, marketCode: string, journey
           is_active: true,
           created_at: new Date(),
           updated_at: new Date()
-        })
-        .select('entity_id, journey')
-        .single();
-      
-      if (newEntry) return { entity_id: actor.id, routing_type: 'actor', journey: 'agency' };
+        }, { onConflict: 'slug,market_code', ignoreDuplicates: true });
+      if (registerError) {
+        console.warn(` [SmartRouter] Actor registry upsert failed: ${registerError.message}`);
+      }
+      return { entity_id: actor.id, routing_type: 'actor', journey: 'agency' };
     }
 
     // 2. Check Articles
@@ -375,9 +385,9 @@ async function discoverAndRegisterSlug(slug: string, marketCode: string, journey
 
     if (article) {
       console.error(` [SmartRouter] DISCOVERED Article: ${article.id}. Registering...`);
-      const { data: newEntry } = await supabase
+      const { error: registerError } = await supabase
         .from('slug_registry')
-        .insert({
+        .upsert({
           slug: slug.toLowerCase(),
           routing_type: 'article',
           entity_id: article.id,
@@ -387,11 +397,11 @@ async function discoverAndRegisterSlug(slug: string, marketCode: string, journey
           is_active: true,
           created_at: new Date(),
           updated_at: new Date()
-        })
-        .select('entity_id, journey')
-        .single();
-      
-      if (newEntry) return { entity_id: article.id, routing_type: 'article', journey: 'agency' };
+        }, { onConflict: 'slug,market_code', ignoreDuplicates: true });
+      if (registerError) {
+        console.warn(` [SmartRouter] Article registry upsert failed: ${registerError.message}`);
+      }
+      return { entity_id: article.id, routing_type: 'article', journey: 'agency' };
     }
 
     // 4. Check Workshops (v2.16.097)
@@ -405,9 +415,9 @@ async function discoverAndRegisterSlug(slug: string, marketCode: string, journey
 
     if (workshop) {
       console.error(` [SmartRouter] DISCOVERED Workshop: ${workshop.id}. Registering...`);
-      const { data: newEntry } = await supabase
+      const { error: registerError } = await supabase
         .from('slug_registry')
-        .insert({
+        .upsert({
           slug: slug.toLowerCase().startsWith('studio/') ? slug.toLowerCase() : `studio/${slug.toLowerCase()}`,
           routing_type: 'workshop',
           entity_id: workshop.id,
@@ -418,11 +428,11 @@ async function discoverAndRegisterSlug(slug: string, marketCode: string, journey
           is_active: true,
           created_at: new Date(),
           updated_at: new Date()
-        })
-        .select('entity_id, journey')
-        .single();
-      
-      if (newEntry) return { entity_id: workshop.id, routing_type: 'workshop', journey: 'studio', world_id: 2 };
+        }, { onConflict: 'slug,market_code', ignoreDuplicates: true });
+      if (registerError) {
+        console.warn(` [SmartRouter] Workshop registry upsert failed: ${registerError.message}`);
+      }
+      return { entity_id: workshop.id, routing_type: 'workshop', journey: 'studio', world_id: 2 };
     }
 
     // 5. Check Artists
@@ -434,9 +444,9 @@ async function discoverAndRegisterSlug(slug: string, marketCode: string, journey
 
     if (artist) {
       console.error(` [SmartRouter] DISCOVERED Artist: ${artist.id}. Registering...`);
-      const { data: newEntry } = await supabase
+      const { error: registerError } = await supabase
         .from('slug_registry')
-        .insert({
+        .upsert({
           slug: slug.toLowerCase(),
           routing_type: 'artist',
           entity_id: artist.id,
@@ -446,11 +456,11 @@ async function discoverAndRegisterSlug(slug: string, marketCode: string, journey
           is_active: true,
           created_at: new Date(),
           updated_at: new Date()
-        })
-        .select('entity_id, journey')
-        .single();
-      
-      if (newEntry) return { entity_id: artist.id, routing_type: 'artist', journey: 'artist' };
+        }, { onConflict: 'slug,market_code', ignoreDuplicates: true });
+      if (registerError) {
+        console.warn(` [SmartRouter] Artist registry upsert failed: ${registerError.message}`);
+      }
+      return { entity_id: artist.id, routing_type: 'artist', journey: 'artist' };
     }
 
     // 6. Pitch (Casting List) — ID-First: slug = pitch/{hash}, entity_id = casting_lists.id
@@ -463,9 +473,9 @@ async function discoverAndRegisterSlug(slug: string, marketCode: string, journey
           .eq('hash', hashPart)
           .maybeSingle();
         if (list) {
-          const { data: newEntry } = await supabase
+          const { error: registerError } = await supabase
             .from('slug_registry')
-            .insert({
+            .upsert({
               slug: slug.toLowerCase(),
               routing_type: 'casting_list',
               entity_id: list.id,
@@ -475,10 +485,11 @@ async function discoverAndRegisterSlug(slug: string, marketCode: string, journey
               is_active: true,
               created_at: new Date(),
               updated_at: new Date(),
-            })
-            .select('entity_id, journey')
-            .single();
-          if (newEntry) return { entity_id: list.id, routing_type: 'casting_list', journey: 'agency' };
+            }, { onConflict: 'slug,market_code', ignoreDuplicates: true });
+          if (registerError) {
+            console.warn(` [SmartRouter] Casting list registry upsert failed: ${registerError.message}`);
+          }
+          return { entity_id: list.id, routing_type: 'casting_list', journey: 'agency' };
         }
       }
     }

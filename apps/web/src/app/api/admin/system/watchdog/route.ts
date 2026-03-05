@@ -61,9 +61,25 @@ export async function POST(request: NextRequest) {
     }
 
     console.log(`[Watchdog] Error detected: ${error.substring(0, 100)}`);
+    const isKnownNoise =
+      error.includes('Minified React error #419') ||
+      error.includes('Server Components render') ||
+      error.includes('/api/translations/heal') ||
+      error.includes('Failed to fetch') ||
+      error.includes('Load failed') ||
+      error.includes('Self-healing failed') ||
+      error.includes('504') ||
+      error.includes('503') ||
+      error.includes('429') ||
+      error.includes('AbortError') ||
+      error.includes('TypeError: S is not a function') ||
+      error.includes('toggleActorSelection') ||
+      error.includes('/api/watchdog/404') ||
+      error.includes('Watchdog failed: SyntaxError') ||
+      error.includes('Unexpected end of JSON input');
 
     // 🛡️ CHRIS-PROTOCOL: Nuclear Telegram Alert for Critical Errors
-    if (level === 'critical' || level === 'error') {
+    if ((level === 'critical' || level === 'error') && !isKnownNoise) {
       try {
         await TelegramService.reportCriticalError({
           error,
@@ -183,7 +199,7 @@ export async function POST(request: NextRequest) {
       };
 
       // 🛡️ CHRIS-PROTOCOL: Filter out common noise to prevent mail spam
-      const isNoise = !aggressiveAlerts && (
+      const isNoise = isKnownNoise || (!aggressiveAlerts && (
         level === 'info' ||                           // Skip info logs
         error.includes('Minified React error #419') || // Hydration mismatch (common in Next.js/Browser extensions)
         error.includes('Server Components render') || // Generic Next.js error often paired with others
@@ -197,7 +213,7 @@ export async function POST(request: NextRequest) {
         error.includes('AbortError') ||               // Aborted requests
         error.includes('TypeError: S is not a function') || // Known auth noise
         error.includes('toggleActorSelection')        // Known UI noise
-      );
+      ));
 
       if (isNoise || skipEmails) {
         console.log(`[Watchdog] 🤫 Noise or Skip detected: "${error.substring(0, 50)}...". Logged to DB but no mail sent.`);

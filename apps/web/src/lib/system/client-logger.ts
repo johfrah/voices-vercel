@@ -71,6 +71,9 @@ export class ClientLogger {
         
         // Voorkom loops met onze eigen logs
         if (message.includes('/api/admin/system/')) return;
+        if (message.includes('[Watchdog] Client-side error caught:')) return;
+        if (message.includes('[Watchdog] Unhandled promise rejection:')) return;
+        if (message.includes('Watchdog failed:')) return;
 
         this.addBreadcrumb(level, message.substring(0, 500));
 
@@ -129,6 +132,9 @@ export class ClientLogger {
 
       // 🛡️ CHRIS-PROTOCOL: Safe includes check
       const isSystemApi = typeof url === 'string' && url.includes('/api/admin/system/');
+      const isWatchdogApi =
+        typeof url === 'string' &&
+        (url.includes('/api/watchdog/') || url.includes('/api/admin/system/watchdog'));
       
       if (url && !isSystemApi) {
         this.addBreadcrumb('fetch', `${method} ${url}`);
@@ -137,7 +143,7 @@ export class ClientLogger {
       try {
         const response = await originalFetch(...args);
         
-        if (!response.ok && url && !isSystemApi) {
+        if (!response.ok && url && !isSystemApi && !isWatchdogApi) {
           this.addBreadcrumb('error', `Fetch Failed: ${response.status} ${url}`);
           const clone = response.clone();
           clone.text().then(body => {
@@ -152,7 +158,7 @@ export class ClientLogger {
         
         return response;
       } catch (error: any) {
-        if (url && !isSystemApi) {
+        if (url && !isSystemApi && !isWatchdogApi) {
           this.addBreadcrumb('error', `Fetch Network Error: ${url}`);
           this.report('error', `Network Error: ${url}`, {
             url,
