@@ -48,7 +48,7 @@ export async function getWorldConfig(worldId: number): Promise<WorldConfig | nul
     const { data, error } = await supabase
       .from('world_configs')
       .select(`
-        world_id, name, social_links,
+        world_id, name, email, phone, address, vat_number, company_name, website, country_code, social_links, opening_hours,
         meta_title, meta_description, nav_theme,
         logo_media:logo_media_id(file_path),
         og_media:og_image_media_id(file_path),
@@ -59,55 +59,18 @@ export async function getWorldConfig(worldId: number): Promise<WorldConfig | nul
 
     if (error || !data) return null;
 
-    // Contact via junction table (ID-First) — resolves to contacts OR actors
-    const { data: contactMapping } = await supabase
-      .from('world_contact_mappings')
-      .select(`
-        contact_id, actor_id,
-        contacts(id, label, email, phone, address, vat_number, company_name, website, social_links, opening_hours, country_code),
-        actors(id, first_name, last_name, email, bio, tagline, website)
-      `)
-      .eq('world_id', worldId)
-      .eq('role', 'primary')
-      .maybeSingle();
-
-    const contactData = (contactMapping as any)?.contacts;
-    const actorData = (contactMapping as any)?.actors;
-    
-    const contact = contactData ? {
-      email: contactData.email,
-      phone: contactData.phone,
-      address: contactData.address,
-      vat_number: contactData.vat_number,
-      company_name: contactData.company_name,
-      website: contactData.website,
-      social_links: contactData.social_links,
-      opening_hours: contactData.opening_hours,
-      country_code: contactData.country_code,
-    } : actorData ? {
-      email: actorData.email,
-      phone: null,
-      address: null,
-      vat_number: null,
-      company_name: `${actorData.first_name} ${actorData.last_name}`.trim(),
-      website: actorData.website,
-      social_links: null,
-      opening_hours: null,
-      country_code: 'BE',
-    } : {};
-
     const config: WorldConfig = {
       world_id: data.world_id,
       name: data.name,
-      email: contact.email || '',
-      phone: contact.phone || '',
-      address: contact.address || null,
-      vat_number: contact.vat_number || null,
-      company_name: contact.company_name || null,
-      website: contact.website || null,
-      country_code: contact.country_code || 'BE',
-      social_links: contact.social_links || data.social_links || null,
-      opening_hours: contact.opening_hours || null,
+      email: data.email || '',
+      phone: data.phone || '',
+      address: data.address || null,
+      vat_number: data.vat_number || null,
+      company_name: data.company_name || null,
+      website: data.website || null,
+      country_code: data.country_code || 'BE',
+      social_links: data.social_links || null,
+      opening_hours: data.opening_hours || null,
       logo_url: (data as any).logo_media?.file_path 
         ? `${STORAGE_BASE}${(data as any).logo_media.file_path}` 
         : null,
