@@ -2,6 +2,7 @@ import { db, systemEvents } from '@/lib/system/voices-config';
 import { NextRequest, NextResponse } from 'next/server';
 import { VoicesMailEngine } from '@/lib/services/voices-mail-engine';
 import { TelegramService } from '@/lib/services/telegram-service';
+import { triggerWorkflow } from '@/lib/services/github-api';
 import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
 import { desc, gte, and, eq, sql } from 'drizzle-orm';
 import { createClient } from '@supabase/supabase-js';
@@ -14,6 +15,9 @@ import { createClient } from '@supabase/supabase-js';
  */
 
 export const dynamic = 'force-dynamic';
+const AUTO_HEAL_WORKFLOW_ID = process.env.AUTO_HEAL_WORKFLOW_ID || 'bob-concert.yml';
+const AUTO_HEAL_AGENT = process.env.AUTO_HEAL_AGENT || 'bob';
+const AUTO_HEAL_RATE_LIMIT_MINUTES = Number(process.env.AUTO_HEAL_RATE_LIMIT_MINUTES || '15');
 
 function resolveAdminRecipients(...candidates: Array<string | undefined | null>): string[] {
   const recipients = new Set<string>();
@@ -143,6 +147,118 @@ export async function POST(request: NextRequest) {
       process.env.ADMIN_EMAIL,
       market.email
     );
+
+    // 3. Volledig autonome self-heal: trigger workflow direct vanuit Watchdog.
+    // Geen klik, geen handmatige actie.
+    let autoHealTriggered = false;
+    let autoHealDispatchError: string | null = null;
+    let autoHealRateLimited = false;
+    if (isSafeAutoHeal) {
+      const safeRateLimitMinutes = Number.isFinite(AUTO_HEAL_RATE_LIMIT_MINUTES) && AUTO_HEAL_RATE_LIMIT_MINUTES > 0
+        ? AUTO_HEAL_RATE_LIMIT_MINUTES
+        : 15;
+      const autoHealThresholdDate = new Date(Date.now() - safeRateLimitMinutes * 60 * 1000);
+      const autoHealThresholdDateIso = autoHealThresholdDate.toISOString();
+      const dispatchMessage = `Auto-heal dispatch queued: ${error.substring(0, 80)}`;
+
+      try {
+        const recentDispatch = await db
+          .select()
+          .from(systemEvents)
+          .where(
+            and(
+              eq(systemEvents.source, 'AutoHealDispatch'),
+              gte(systemEvents.createdAt, autoHealThresholdDate),
+              eq(systemEvents.message, dispatchMessage)
+            )
+          )
+          .limit(1);
+
+        autoHealRateLimited = recentDispatch.length > 0;
+      } catch (dbAutoHealErr: any) {
+        console.warn('[Watchdog] Auto-heal Drizzle rate-check failed, trying SDK fallback:', dbAutoHealErr?.message || dbAutoHealErr);
+        try {
+          const { data: recentSdkDispatches } = await supabase
+            .from('system_events')
+            .select('id')
+            .eq('source', 'AutoHealDispatch')
+            .eq('message', dispatchMessage)
+            .gte('created_at', autoHealThresholdDateIso)
+            .limit(1);
+
+          autoHealRateLimited = (recentSdkDispatches?.length || 0) > 0;
+        } catch (sdkAutoHealErr: any) {
+          console.warn('[Watchdog] Auto-heal SDK rate-check failed, proceeding without rate lock:', sdkAutoHealErr?.message || sdkAutoHealErr);
+        }
+      }
+
+      if (!autoHealRateLimited) {
+        try {
+          await triggerWorkflow(AUTO_HEAL_WORKFLOW_ID, {
+            agent: AUTO_HEAL_AGENT,
+            event_id: String(eventId || ''),
+            level: String(level || 'error'),
+            source: String(component || 'Watchdog'),
+            error_message: String(error || '').substring(0, 240),
+            event_url: String(url || ''),
+            mode: 'auto_heal'
+          });
+          autoHealTriggered = true;
+
+          try {
+            await db.insert(systemEvents).values({
+              level: 'info',
+              source: 'AutoHealDispatch',
+              message: dispatchMessage,
+              details: {
+                workflowId: AUTO_HEAL_WORKFLOW_ID,
+                agent: AUTO_HEAL_AGENT,
+                eventId: eventId || null,
+                level,
+                sourceComponent: component || 'Watchdog',
+                url: url || null
+              },
+              createdAt: new Date()
+            });
+          } catch (dbLogErr: any) {
+            console.warn('[Watchdog] Auto-heal dispatch log failed in Drizzle, trying SDK fallback:', dbLogErr?.message || dbLogErr);
+            await supabase.from('system_events').insert({
+              level: 'info',
+              source: 'AutoHealDispatch',
+              message: dispatchMessage,
+              details: {
+                workflow_id: AUTO_HEAL_WORKFLOW_ID,
+                agent: AUTO_HEAL_AGENT,
+                event_id: eventId || null,
+                level,
+                source_component: component || 'Watchdog',
+                url: url || null
+              },
+              created_at: new Date()
+            });
+          }
+        } catch (dispatchErr: any) {
+          autoHealDispatchError = dispatchErr?.message || 'Unknown workflow dispatch error';
+          console.error('[Watchdog] Auto-heal workflow dispatch failed:', autoHealDispatchError);
+          try {
+            await db.insert(systemEvents).values({
+              level: 'error',
+              source: 'AutoHealDispatch',
+              message: `Auto-heal dispatch failed: ${String(autoHealDispatchError).substring(0, 120)}`,
+              details: {
+                workflowId: AUTO_HEAL_WORKFLOW_ID,
+                agent: AUTO_HEAL_AGENT,
+                eventId: eventId || null,
+                originalError: error
+              },
+              createdAt: new Date()
+            });
+          } catch (dbDispatchErrLogErr: any) {
+            console.warn('[Watchdog] Failed to persist auto-heal dispatch failure log:', dbDispatchErrLogErr?.message || dbDispatchErrLogErr);
+          }
+        }
+      }
+    }
     
     //  CHRIS-PROTOCOL: Safe Mail Engine initialization
     let mailEngine;
@@ -256,6 +372,11 @@ export async function POST(request: NextRequest) {
 
       if (isSafeAutoHeal) {
         console.log(`[Watchdog] 🛡️ SAFE AUTO-HEAL TRIGGERED for: ${error}`);
+        const autoHealStatusCopy = autoHealTriggered
+          ? 'De AI-Healer is autonoom gestart via GitHub Actions.'
+          : autoHealRateLimited
+            ? 'Een identieke auto-heal draaide recent al. Nieuwe dispatch overgeslagen.'
+            : `Auto-heal dispatch gaf een fout: ${autoHealDispatchError || 'onbekend'}.`;
         
         try {
           await sendMailToAdmins({
@@ -269,7 +390,7 @@ export async function POST(request: NextRequest) {
                   ${error}
                 </code>
               </div>
-              De AI-Healer analyseert de broncode en pusht binnen enkele minuten een fix naar GitHub. Geen actie vereist.
+              ${autoHealStatusCopy}
             `
           });
         } catch (mailErr: any) {
@@ -325,7 +446,17 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    return NextResponse.json({ success: true, eventId, mailSent: true });
+    return NextResponse.json({
+      success: true,
+      eventId,
+      mailSent: true,
+      autoHeal: {
+        candidate: isSafeAutoHeal,
+        triggered: autoHealTriggered,
+        rateLimited: autoHealRateLimited,
+        dispatchError: autoHealDispatchError
+      }
+    });
 
   } catch (err: any) {
     console.error('[Watchdog FATAL]:', err.message);
