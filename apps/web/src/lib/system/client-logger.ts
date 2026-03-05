@@ -166,12 +166,21 @@ export class ClientLogger {
         return response;
       } catch (error: any) {
         if (url && !isSystemApi) {
-          this.addBreadcrumb('error', `Fetch Network Error: ${url}`);
-          this.report('error', `Network Error: ${url}`, {
-            url,
-            error: error.message,
-            stack: error.stack
-          });
+          if (this.isRecoverableFetchNetworkError(url, error)) {
+            this.addBreadcrumb('warn', `Recoverable fetch network warning: ${url}`);
+            this.report('warn', `Recoverable network warning: ${url}`, {
+              url,
+              error: error?.message,
+              stack: error?.stack
+            });
+          } else {
+            this.addBreadcrumb('error', `Fetch Network Error: ${url}`);
+            this.report('error', `Network Error: ${url}`, {
+              url,
+              error: error?.message,
+              stack: error?.stack
+            });
+          }
         }
         throw error;
       }
@@ -187,6 +196,25 @@ export class ClientLogger {
     return normalizedBody.includes('pgrst205')
       || normalizedBody.includes("could not find the table 'public.notifications'")
       || normalizedBody.includes('public.notifications');
+  }
+
+  private static isRecoverableFetchNetworkError(url: string, error: unknown): boolean {
+    const normalizedUrl = (url || '').toLowerCase();
+    const errorName = ((error as any)?.name || '').toLowerCase();
+    const errorMessage = ((error as any)?.message || '').toLowerCase();
+    const combined = `${errorName} ${errorMessage}`;
+
+    const isAbort = combined.includes('abort');
+    if (isAbort) {
+      return true;
+    }
+
+    const isLocalhost = typeof window !== 'undefined'
+      && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+    const isConfigLookup = normalizedUrl.includes('/api/admin/config?type=');
+    const isFailedFetch = combined.includes('failed to fetch') || combined.includes('networkerror');
+
+    return isLocalhost && isConfigLookup && isFailedFetch;
   }
 
   private static interceptInteractions() {
