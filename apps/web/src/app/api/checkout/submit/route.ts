@@ -803,14 +803,27 @@ export async function POST(request: Request) {
     const mollieOrder = await MollieService.createOrder({
       amount: { currency: 'EUR', value: amount.toFixed(2) },
       orderNumber: newOrder.id.toString(),
-      lines: validatedItems.map((i: any) => ({
-        name: resolveCheckoutItemName(i),
-        quantity: 1,
-        unitPrice: { currency: 'EUR', value: (i.pricing?.total || 0).toFixed(2) },
-        totalAmount: { currency: 'EUR', value: (i.pricing?.total || 0).toFixed(2) },
-        vatRate: isVatExempt ? '0' : '21',
-        vatAmount: { currency: 'EUR', value: (i.pricing?.tax || 0).toFixed(2) }
-      })),
+      lines: validatedItems.map((i: any) => {
+        const quantity = Math.max(1, Number(i.quantity || 1));
+        const lineTotalGross = Number(i.pricing?.total || 0);
+        const explicitTax = Number(i.pricing?.tax);
+        // Mollie validates vatAmount against gross total (21/121 for BE).
+        // Fallback prevents 422 failures when upstream tax is missing.
+        const derivedTax = isVatExempt
+          ? 0
+          : Math.round((lineTotalGross * 21 / 121) * 100) / 100;
+        const vatAmount = Number.isFinite(explicitTax) && explicitTax > 0 ? explicitTax : derivedTax;
+        const unitGross = quantity > 0 ? lineTotalGross / quantity : lineTotalGross;
+
+        return {
+          name: resolveCheckoutItemName(i),
+          quantity,
+          unitPrice: { currency: 'EUR', value: unitGross.toFixed(2) },
+          totalAmount: { currency: 'EUR', value: lineTotalGross.toFixed(2) },
+          vatRate: isVatExempt ? '0.00' : '21.00',
+          vatAmount: { currency: 'EUR', value: vatAmount.toFixed(2) }
+        };
+      }),
       billingAddress: { streetAndNumber: address_street || 'N/A', postalCode: postal_code || 'N/A', city: city || 'N/A', country: country || 'BE', givenName: first_name, familyName: last_name, email },
       redirectUrl: `${baseUrl}/api/auth/magic-login?token=${secureToken}&redirect=/account/orders?orderId=${newOrder.id}&email=${encodeURIComponent(email)}`,
       webhookUrl: `${webhookBaseUrl}/api/checkout/webhook`,

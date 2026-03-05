@@ -3,11 +3,12 @@
 import { useCheckout } from '@/contexts/CheckoutContext';
 import { getMusicLibrary } from '@/lib/services/api';
 import { cn } from '@/lib/utils';
-import { Check, Info, Loader2, Music, Pause, Play } from 'lucide-react';
+import { Check, Info, Loader2, Music, Pause, Play, Upload } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import React, { useEffect, useState } from 'react';
 import { VoiceglotText } from './VoiceglotText';
 
-import { AudioUploadWithWaveform } from './audio/AudioUploadWithWaveform';
+import { AudioUploadWithWaveform } from '../audio/AudioUploadWithWaveform';
 
 export const MusicSelector: React.FC<{ context?: string }> = ({ context }) => {
   const { state, updateMusic, updateOwnMusicFile } = useCheckout();
@@ -169,7 +170,7 @@ export const MusicSelector: React.FC<{ context?: string }> = ({ context }) => {
                 uploadEndpoint="/api/media/upload"
                 value={state.ownMusicFile?.url || ''}
                 onUploadSuccess={(url, mediaId) => updateOwnMusicFile({ name: 'Eigen Muziek', url })}
-                replaceLabel={t('action.replace', 'Vervangen')}
+                replaceLabel="Vervangen"
               />
               <p className="text-[12px] text-va-black/40 italic">
                 <VoiceglotText translationKey="music.own.upload_hint" defaultText="Wij zorgen voor de perfecte mix met de gekozen stem." />

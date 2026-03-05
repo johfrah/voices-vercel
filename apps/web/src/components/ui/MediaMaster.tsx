@@ -3,12 +3,13 @@
 import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import { useGlobalAudio } from '@/contexts/GlobalAudioContext';
 import { useVoicesState } from '@/contexts/VoicesStateContext';
+import { useMasterControl } from '@/contexts/VoicesMasterControlContext';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { Demo } from '@/types';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Check, Edit2, Pause, Play, Save, Trash2, Volume2, X } from 'lucide-react';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import {
     ButtonInstrument,
@@ -59,6 +60,7 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
   const pathname = usePathname();
   const { state: voicesState } = useVoicesState();
   const { playlist, isPlaying, setIsPlaying, playDemo, activeDemo, setActiveDemo } = useGlobalAudio();
+  const { state: masterControlState } = useMasterControl();
   const { isAdmin } = useAuth();
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editTitle, setEditTitle] = useState('');
@@ -79,6 +81,7 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
       if (cat.includes('telephony') || cat.includes('iv')) return 'Telefonie';
       if (cat.includes('corporate') || cat.includes('video')) return 'Corporate';
       if (cat.includes('commercial') || cat.includes('advertentie')) return 'Commercial';
+      if (cat.includes('online')) return 'Online';
     }
 
     if (!title) return '';
@@ -95,6 +98,17 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
     clean = clean.charAt(0).toUpperCase() + clean.slice(1).toLowerCase();
     
     return clean.trim();
+  };
+
+  //  CHRIS-PROTOCOL: Get icon for demo category (v2.28.50)
+  const getDemoIcon = (category?: string) => {
+    if (!category) return null;
+    const cat = category.toLowerCase();
+    if (cat.includes('telephony') || cat.includes('iv')) return <span className="mr-1">📞</span>;
+    if (cat.includes('corporate') || cat.includes('video')) return <span className="mr-1">🏢</span>;
+    if (cat.includes('commercial') || cat.includes('advertentie')) return <span className="mr-1">📢</span>;
+    if (cat.includes('online')) return <span className="mr-1">💻</span>;
+    return null;
   };
 
   const { playClick } = useSonicDNA();
@@ -233,6 +247,20 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
     }
   };
 
+  //  CHRIS-PROTOCOL: Dynamic Journey-Aware Playlist Sorting (v2.28.51)
+  const sortedPlaylist = useMemo(() => {
+    if (!playlist || playlist.length === 0) return [];
+    const currentJourney = masterControlState.journey;
+    
+    return [...playlist].sort((a, b) => {
+      const aMatch = a.category === currentJourney;
+      const bMatch = b.category === currentJourney;
+      if (aMatch && !bMatch) return -1;
+      if (!aMatch && bMatch) return 1;
+      return 0;
+    });
+  }, [playlist, masterControlState.journey]);
+
   return (
     <motion.div 
       initial={{ y: 100, opacity: 0 }}
@@ -294,8 +322,8 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
           
           {/*  PLAYLIST / CATEGORIES (SPOTIFY STYLE) */}
           <div className="flex items-center gap-2 mt-1 overflow-x-auto no-scrollbar max-w-full">
-            {playlist.length > 0 ? (
-              playlist.map((p) => (
+            {sortedPlaylist.length > 0 ? (
+              sortedPlaylist.map((p) => (
                   <div
                     key={p.id}
                     className="group/item relative flex items-center gap-1 bg-white/5 rounded-md px-1"
@@ -306,7 +334,7 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
                         playDemo(p);
                       }}
                       className={cn(
-                        "px-1 py-0.5 rounded-md text-[10px] font-black tracking-widest uppercase transition-all whitespace-nowrap flex items-center gap-2",
+                        "px-1 py-0.5 rounded-md text-[10px] font-black tracking-widest uppercase transition-all whitespace-nowrap flex items-center gap-1",
                         p.id === demo.id 
                           ? "text-primary" 
                           : "text-white/40 hover:text-white"
@@ -325,7 +353,10 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
                           }}
                         />
                       ) : (
-                        cleanDemoTitle(p.title, p.category)
+                        <>
+                          {getDemoIcon(p.category)}
+                          {cleanDemoTitle(p.title, p.category)}
+                        </>
                       )}
                     </button>
 

@@ -1,5 +1,4 @@
-import { db, navMenus } from '@/lib/system/voices-config';
-import { eq } from 'drizzle-orm';
+import { ConfigBridge } from '@/lib/utils/config-bridge';
 import { NextResponse } from 'next/server';
 
 export async function GET(
@@ -7,10 +6,9 @@ export async function GET(
   { params }: { params: { key: string } }
 ) {
   try {
-    // Check if table exists by doing a raw query first or just catch the error
-    const menu = await db.query.navMenus.findFirst({
-      where: eq(navMenus.key, params.key)
-    });
+    const requestedKey = params.key;
+    const navKey = requestedKey.startsWith('nav_') ? requestedKey.slice(4) : requestedKey;
+    const menu = await ConfigBridge.getNavConfig(navKey, 'nl');
 
     return NextResponse.json(menu || { items: [] });
   } catch (error) {

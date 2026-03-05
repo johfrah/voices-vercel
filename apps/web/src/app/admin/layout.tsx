@@ -3,6 +3,7 @@ import { Metadata } from 'next';
 import nextDynamic from "next/dynamic";
 import { Suspense } from "react";
 import { AdminHeader } from '@/components/admin/AdminHeader';
+import { AdminMobileDock } from '@/components/admin/AdminMobileDock';
 import { LoadingScreenInstrument } from '@/components/ui/LayoutInstruments';
 
 //  NUCLEAR LOADING MANDATE
@@ -25,7 +26,7 @@ export default async function AdminLayout({
 }) {
   // 🛡️ CHRIS-PROTOCOL: No try/catch around redirect-throwing functions in Server Components
   // Next.js handles redirects via thrown errors, which must bubble up.
-  const user = await requireAdminRedirect();
+  const user = await requireAdminRedirect('/admin/mobile');
 
   return (
     <>
@@ -33,11 +34,12 @@ export default async function AdminLayout({
         <LiquidBackground />
       </Suspense>
       <AdminHeader />
-      <div className="relative z-10">
+      <div className="relative z-10 pb-24 md:pb-0">
         <Suspense fallback={<LoadingScreenInstrument text="Admin omgeving initialiseren..." />}>
           {children}
         </Suspense>
       </div>
+      <AdminMobileDock />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{

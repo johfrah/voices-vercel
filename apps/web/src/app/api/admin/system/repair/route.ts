@@ -3,6 +3,7 @@ import { systemEvents } from '@/lib/system/voices-config';
 import { eq } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth/api-auth';
+import { triggerWorkflow } from '@/lib/services/github-api';
 
 /**
  *  API: SYSTEM REPAIR (AI-HEALER 2026)
@@ -13,6 +14,8 @@ import { requireAdmin } from '@/lib/auth/api-auth';
  */
 
 export const dynamic = 'force-dynamic';
+const AUTO_HEAL_WORKFLOW_ID = process.env.AUTO_HEAL_WORKFLOW_ID || 'bob-concert.yml';
+const AUTO_HEAL_AGENT = process.env.AUTO_HEAL_AGENT || 'bob';
 
 export async function GET(request: NextRequest) {
   //  CHRIS-PROTOCOL: Build Safety
@@ -56,29 +59,39 @@ export async function GET(request: NextRequest) {
       createdAt: new Date()
     });
 
-    // 3. NUCLEAR ACTION: Trigger GitHub Workflow of Webhook
-    // In een volledige productie-omgeving zouden we hier een GitHub Repository Dispatch event sturen.
-    // Voor nu simuleren we de activatie van de agent.
-    
-    // TODO: Implementeer GitHub API call naar een 'self-healing' workflow
-    /*
-    await fetch(`https://api.github.com/repos/johfrah/voices-vercel/dispatches`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `token ${process.env.GITHUB_TOKEN}`,
-        'Accept': 'application/vnd.github.v3+json'
+    // 3. NUCLEAR ACTION: Trigger echte GitHub workflow voor autonome reparatie.
+    let dispatchSucceeded = false;
+    let dispatchError: string | null = null;
+    try {
+      await triggerWorkflow(AUTO_HEAL_WORKFLOW_ID, {
+        agent: AUTO_HEAL_AGENT,
+        event_id: String(event.id),
+        level: String(event.level || 'error'),
+        source: String(event.source || 'AI-Healer'),
+        error_message: String(event.message || '').substring(0, 240),
+        event_url: String((event.details as any)?.url || ''),
+        mode: 'manual_repair'
+      });
+      dispatchSucceeded = true;
+    } catch (workflowErr: any) {
+      dispatchError = workflowErr?.message || 'Onbekende workflow-fout';
+      console.error('[Repair Error] Workflow dispatch failed:', dispatchError);
+    }
+
+    await db.insert(systemEvents).values({
+      level: dispatchSucceeded ? 'info' : 'error',
+      source: 'AI-Healer',
+      message: dispatchSucceeded
+        ? `Reparatie-dispatch verzonden voor event #${eventId}`
+        : `Reparatie-dispatch mislukt voor event #${eventId}`,
+      details: {
+        workflow_id: AUTO_HEAL_WORKFLOW_ID,
+        agent: AUTO_HEAL_AGENT,
+        dispatch_succeeded: dispatchSucceeded,
+        dispatch_error: dispatchError
       },
-      body: JSON.stringify({
-        event_type: 'system_repair',
-        client_payload: {
-          eventId: event.id,
-          error: event.message,
-          stack: event.details?.stack,
-          component: event.source
-        }
-      })
+      createdAt: new Date()
     });
-    */
 
     return new NextResponse(`
       <html>
@@ -102,10 +115,12 @@ export async function GET(request: NextRequest) {
             <p>Het systeem analyseert momenteel de fout in <strong>${event.source}</strong>.</p>
             <div class="status">
               <div class="loader"></div>
-              Reparatie-signaal verzonden naar GitHub...
+              ${dispatchSucceeded ? 'Reparatie-signaal verzonden naar GitHub.' : `Dispatch mislukt: ${dispatchError || 'Onbekende fout'}`}
             </div>
             <p style="font-size: 12px; margin-top: 20px; color: #999;">
-              Je ontvangt een nieuwe mail zodra de patch is gepusht en de site opnieuw is gebouwd.
+              ${dispatchSucceeded
+                ? 'De workflow draait nu autonoom op GitHub. Je ontvangt een update na de run.'
+                : 'Controleer de workflow-token en GitHub Actions-configuratie voor herstel.'}
             </p>
           </div>
         </body>

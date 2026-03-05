@@ -1,4 +1,4 @@
-import { db } from './bridge.ts';
+import { db } from './bridge';
 import { sql } from 'drizzle-orm';
 
 async function migrate() {

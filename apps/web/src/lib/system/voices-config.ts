@@ -9,7 +9,7 @@
  * can resolve all database entities within the app source tree.
  */
 
-import { VOICES_CONFIG as REAL_CONFIG } from '../core-internal/config.ts';
+import { VOICES_CONFIG as REAL_CONFIG } from '../core-internal/config';
 export const VOICES_CONFIG = REAL_CONFIG;
 
 // 🛡️ CHRIS-PROTOCOL: Internalized Schema for Vercel
@@ -17,7 +17,7 @@ export const VOICES_CONFIG = REAL_CONFIG;
 // On the client, we export null to prevent the minifier from creating 'tl'/'tr' collisions
 // and to keep the bundle size at zero for database logic.
 const fullSchema = typeof window === 'undefined' 
-  ? require('../core-internal/database/schema/index.ts')
+  ? require('../core-internal/database/schema/index')
   : null;
 
 // 🛡️ NUCLEAR BUNDLE PROTECTION (v2.16.081)
@@ -37,6 +37,7 @@ export const faq = fullSchema?.faq || null;
 export const workshopMedia = fullSchema?.workshopMedia || null;
 export const media = fullSchema?.media || null;
 export const appConfigs = fullSchema?.appConfigs || null;
+export const app_configs = appConfigs;
 export const systemEvents = fullSchema?.systemEvents || null;
 export const languages = fullSchema?.languages || null;
 export const worlds = fullSchema?.worlds || null;
@@ -57,6 +58,7 @@ export const proficiencies = fullSchema?.proficiencies || null;
 export const actorDialects = fullSchema?.actorDialects || null;
 export const demoTypes = fullSchema?.demoTypes || null;
 export const actorDemos = fullSchema?.actorDemos || null;
+export const actorProfileProposals = (fullSchema as any)?.actorProfileProposals || null;
 export const actorVideos = fullSchema?.actorVideos || null;
 export const workshopInterest = fullSchema?.workshopInterest || null;
 export const workshopInterestProducts = fullSchema?.workshopInterestProducts || null;

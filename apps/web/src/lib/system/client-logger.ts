@@ -16,6 +16,12 @@ export class ClientLogger {
   private static isInitialized = false;
   private static breadcrumbs: Breadcrumb[] = [];
   private static readonly MAX_BREADCRUMBS = 20;
+  private static reportThrottle = new Map<string, number>();
+  private static readonly THROTTLE_MS: Record<'info' | 'warn' | 'error', number> = {
+    info: 30000,
+    warn: 15000,
+    error: 5000,
+  };
 
   static init() {
     if (this.isInitialized || typeof window === 'undefined') return;
@@ -77,11 +83,7 @@ export class ClientLogger {
 
         this.addBreadcrumb(level, message.substring(0, 500));
 
-        // 🛡️ CHRIS-PROTOCOL: Full Visibility Mode (v2.14.241)
-        // We loggen nu ALLES direct naar de server voor maximale debug-kracht.
-        const isVoicesLog = message.includes('[Voices]') || message.includes('[CheckoutContext]') || message.includes('[Watchdog]');
-        
-        if (level === 'error' || level === 'warn' || isVoicesLog) {
+        if (level === 'error' || level === 'warn') {
           const errorObj = args.find(arg => arg instanceof Error);
           this.report(level as any, `${level.toUpperCase()}: ${message.substring(0, 500)}`, {
             full_console_output: message,
@@ -135,6 +137,17 @@ export class ClientLogger {
       const isWatchdogApi =
         typeof url === 'string' &&
         (url.includes('/api/watchdog/') || url.includes('/api/admin/system/watchdog'));
+      const init = (args[1] && typeof args[1] === 'object' ? args[1] : undefined) as RequestInit | undefined;
+      const rawHeaders = init?.headers;
+      let versionCheckHeader = '';
+      if (rawHeaders && typeof Headers !== 'undefined' && rawHeaders instanceof Headers) {
+        versionCheckHeader = rawHeaders.get('X-Version-Check') || '';
+      } else if (rawHeaders && !Array.isArray(rawHeaders)) {
+        versionCheckHeader = String((rawHeaders as Record<string, string>)['X-Version-Check'] || (rawHeaders as Record<string, string>)['x-version-check'] || '');
+      } else if (Array.isArray(rawHeaders)) {
+        const headerTuple = rawHeaders.find(([k]) => k.toLowerCase() === 'x-version-check');
+        versionCheckHeader = headerTuple ? String(headerTuple[1]) : '';
+      }
       
       if (url && !isSystemApi) {
         this.addBreadcrumb('fetch', `${method} ${url}`);
@@ -159,11 +172,17 @@ export class ClientLogger {
         return response;
       } catch (error: any) {
         if (url && !isSystemApi && !isWatchdogApi) {
+          const isGeneralConfigPoll = url.includes('/api/admin/config') && url.includes('type=general');
+          const isVersionCheck = isGeneralConfigPoll && versionCheckHeader === 'true';
+          const isOffline = typeof navigator !== 'undefined' && navigator.onLine === false;
+          const isTransientConfigNetworkDrop = isOffline || isVersionCheck || isGeneralConfigPoll;
+          const reportLevel: 'warn' | 'error' = isTransientConfigNetworkDrop ? 'warn' : 'error';
           this.addBreadcrumb('error', `Fetch Network Error: ${url}`);
-          this.report('error', `Network Error: ${url}`, {
+          this.report(reportLevel, `Network Error: ${url}`, {
             url,
             error: error.message,
-            stack: error.stack
+            stack: error.stack,
+            is_transient_config_network_drop: isTransientConfigNetworkDrop
           });
         }
         throw error;
@@ -296,6 +315,18 @@ export class ClientLogger {
 
   static async report(level: 'info' | 'warn' | 'error', message: string, details: any = {}) {
     try {
+      if (!this.shouldReport(level, message)) {
+        return;
+      }
+
+      // Local/dev sessions can have transient API disconnects (e.g. stopped dev server).
+      // Do not escalate those to critical Watchdog alerts.
+      const isLocalSession = typeof window !== 'undefined' && (
+        window.location.hostname === 'localhost' ||
+        window.location.hostname === '127.0.0.1'
+      );
+      const shouldEscalateWatchdog = level === 'error' && !isLocalSession;
+
       const payload = JSON.stringify({
         level,
         message,
@@ -323,7 +354,7 @@ export class ClientLogger {
         navigator.sendBeacon('/api/admin/system/logs', blob);
         
         // Als het een error is, sturen we hem ook naar de Watchdog voor escalatie
-        if (level === 'error') {
+        if (shouldEscalateWatchdog) {
           navigator.sendBeacon('/api/admin/system/watchdog', blob);
         }
       } else {
@@ -336,12 +367,26 @@ export class ClientLogger {
         
         await fetch('/api/admin/system/logs', fetchOptions);
         
-        if (level === 'error') {
+        if (shouldEscalateWatchdog) {
           await fetch('/api/admin/system/watchdog', fetchOptions);
         }
       }
     } catch (e) {
       // Stille fail
     }
+  }
+
+  private static shouldReport(level: 'info' | 'warn' | 'error', message: string): boolean {
+    const key = `${level}:${message.slice(0, 180)}`;
+    const now = Date.now();
+    const previous = this.reportThrottle.get(key) || 0;
+    const cooldown = this.THROTTLE_MS[level] || 15000;
+
+    if (now - previous < cooldown) {
+      return false;
+    }
+
+    this.reportThrottle.set(key, now);
+    return true;
   }
 }

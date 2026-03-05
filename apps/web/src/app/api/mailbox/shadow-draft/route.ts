@@ -3,6 +3,7 @@ import { eq, sql, desc } from 'drizzle-orm';
 import { ShadowPersonaService } from '@/lib/services/shadow-persona-service';
 import { VectorService } from '@/lib/services/vector-service';
 import { NextResponse } from 'next/server';
+import { VOICES_CONFIG } from '@/lib/system/voices-config';
 
 /**
  *  NUCLEAR SHADOW DRAFT API (v2 - 2026)

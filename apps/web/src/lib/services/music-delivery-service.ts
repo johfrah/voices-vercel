@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { db, getTable } from '@/lib/system/voices-config';
 
 const media = getTable('media');

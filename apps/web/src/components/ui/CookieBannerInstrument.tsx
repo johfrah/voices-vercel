@@ -5,8 +5,8 @@ import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import { AnimatePresence, motion } from 'framer-motion';
 import { VoicesLinkInstrument as Link } from '@/components/ui/VoicesLinkInstrument';
 import React, { useEffect, useState } from 'react';
-import { ButtonInstrument, ContainerInstrument, TextInstrument } from '../LayoutInstruments';
-import { VoiceglotText } from '../VoiceglotText';
+import { ButtonInstrument, ContainerInstrument, TextInstrument } from './LayoutInstruments';
+import { VoiceglotText } from './VoiceglotText';
 
 const CONSENT_VERSION = '2026.2';
 

@@ -14,6 +14,7 @@ import { ClientLogger } from '@/lib/system/client-logger';
 import React, { ReactNode } from 'react';
 
 import { VersionGuard } from '@/components/system/VersionGuard';
+import { PwaBoot } from '@/components/system/PwaBoot';
 import { MarketConfig, MarketManager } from '@/lib/system/core/market-manager';
 import { Toaster } from 'react-hot-toast';
 
@@ -125,6 +126,7 @@ export function Providers({
               <VoicesMasterControlProvider initialJourney={initialJourney} initialUsage={initialUsage}>
                 <TranslationProvider lang={activeLang} market={market} initialTranslations={initialTranslations}>
                   <VersionGuard currentVersion={currentVersion} />
+                  <PwaBoot />
                   <Toaster
                     position="top-center"
                     reverseOrder={false}

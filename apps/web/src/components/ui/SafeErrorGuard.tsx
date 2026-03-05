@@ -43,21 +43,28 @@ export class SafeErrorGuard extends Component<Props, State> {
     const logger = isRecoverableChunkOrHydration ? console.warn : console.error;
     logger(` [Nuclear Guard] ${this.props.name || 'UI'} Crash caught:`, error, errorInfo);
     
-    // Log naar de watchdog
-    fetch('/api/admin/system/logs', {
+    // Log naar logs + watchdog zodat autonome heal altijd een trigger krijgt.
+    const payload = {
+      message: `UI Crash (${this.props.name || 'Unknown'}): ${error.message}`,
+      level,
+      source: 'SafeErrorGuard',
+      details: {
+        stack: error.stack,
+        componentStack: errorInfo.componentStack,
+        name: this.props.name
+      }
+    };
+
+    const requestOptions: RequestInit = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        message: `UI Crash (${this.props.name || 'Unknown'}): ${error.message}`,
-        level,
-        source: 'SafeErrorGuard',
-        details: { 
-          stack: error.stack, 
-          componentStack: errorInfo.componentStack,
-          name: this.props.name
-        }
-      })
-    }).catch(() => {});
+      body: JSON.stringify(payload)
+    };
+
+    void Promise.allSettled([
+      fetch('/api/admin/system/logs', requestOptions),
+      fetch('/api/admin/system/watchdog', requestOptions)
+    ]);
   }
 
   private handleRetry = () => {

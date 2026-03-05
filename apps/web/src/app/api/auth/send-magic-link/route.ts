@@ -82,6 +82,7 @@ async function processMagicLinkRequest(payload: MagicLinkRequestPayload) {
     const signup_result = await supabase.auth.admin.generateLink({
       type: 'signup',
       email,
+      password: `Temp!${Date.now()}Aa`,
       options: { redirectTo: supabase_redirect_to },
     });
 

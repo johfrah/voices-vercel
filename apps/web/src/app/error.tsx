@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import {
   ContainerInstrument,
   ButtonInstrument,
@@ -9,6 +9,45 @@ import {
 } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { AlertCircle, RefreshCw } from 'lucide-react';
+
+const TRANSIENT_RESET_BUDGET_KEY = 'voices_transient_reset_budget_v1';
+const TRANSIENT_RESET_WINDOW_MS = 60000;
+const MAX_TRANSIENT_RESETS = 2;
+
+function isTransientConnectionError(error: Error & { digest?: string }) {
+  const message = `${error?.message || ''} ${error?.name || ''}`.toLowerCase();
+  return (
+    message.includes('connection closed') ||
+    message.includes('failed to fetch') ||
+    message.includes('network error') ||
+    message.includes('load failed')
+  );
+}
+
+function consumeTransientResetBudget() {
+  if (typeof window === 'undefined') return false;
+  const now = Date.now();
+  let state = { window_start: now, count: 0 };
+  try {
+    const raw = sessionStorage.getItem(TRANSIENT_RESET_BUDGET_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw) as { window_start?: number; count?: number };
+      state = {
+        window_start: Number(parsed.window_start) || now,
+        count: Number(parsed.count) || 0
+      };
+    }
+  } catch {}
+
+  if (now - state.window_start > TRANSIENT_RESET_WINDOW_MS) {
+    state = { window_start: now, count: 0 };
+  }
+  if (state.count >= MAX_TRANSIENT_RESETS) return false;
+
+  state.count += 1;
+  sessionStorage.setItem(TRANSIENT_RESET_BUDGET_KEY, JSON.stringify(state));
+  return true;
+}
 
 /**
  *  APP ERROR (NUCLEAR 2026)
@@ -21,6 +60,8 @@ export default function Error({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const onlineListenerRegistered = useRef(false);
+
   useEffect(() => {
     console.error('App error:', error);
     
@@ -48,6 +89,27 @@ export default function Error({
       }
     }
 
+    if (isTransientConnectionError(error)) {
+      const attemptReset = () => {
+        if (consumeTransientResetBudget()) {
+          reset();
+        }
+      };
+
+      if (!navigator.onLine) {
+        if (!onlineListenerRegistered.current) {
+          const handleOnline = () => {
+            onlineListenerRegistered.current = false;
+            attemptReset();
+          };
+          onlineListenerRegistered.current = true;
+          window.addEventListener('online', handleOnline, { once: true });
+        }
+      } else {
+        attemptReset();
+      }
+    }
+
     //  WATCHDOG NOTIFICATION
     const notifyWatchdog = async () => {
       try {
@@ -68,7 +130,7 @@ export default function Error({
     };
 
     notifyWatchdog();
-  }, [error]);
+  }, [error, reset]);
 
   return (
     <ContainerInstrument className="min-h-[60vh] flex flex-col items-center justify-center gap-8 py-20 px-6">
