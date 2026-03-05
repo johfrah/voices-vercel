@@ -48,7 +48,7 @@ export async function getWorldConfig(worldId: number): Promise<WorldConfig | nul
     const { data, error } = await supabase
       .from('world_configs')
       .select(`
-        world_id, name, email, phone, address, vat_number, company_name, website, country_code, social_links, opening_hours,
+        world_id, name, email, phone, address, vat_number, social_links, legal, seo_data, localization,
         meta_title, meta_description, nav_theme,
         logo_media:logo_media_id(file_path),
         og_media:og_image_media_id(file_path),
@@ -66,11 +66,11 @@ export async function getWorldConfig(worldId: number): Promise<WorldConfig | nul
       phone: data.phone || '',
       address: data.address || null,
       vat_number: data.vat_number || null,
-      company_name: data.company_name || null,
-      website: data.website || null,
-      country_code: data.country_code || 'BE',
+      company_name: data.name || null,
+      website: (data as any)?.seo_data?.website || null,
+      country_code: (data as any)?.localization?.country_code || 'BE',
       social_links: data.social_links || null,
-      opening_hours: data.opening_hours || null,
+      opening_hours: (data as any)?.legal?.opening_hours || null,
       logo_url: (data as any).logo_media?.file_path 
         ? `${STORAGE_BASE}${(data as any).logo_media.file_path}` 
         : null,
