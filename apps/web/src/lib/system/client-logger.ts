@@ -74,15 +74,18 @@ export class ClientLogger {
         original.apply(console, args);
         
         const message = args.map(arg => this.stringify(arg)).join(' ');
+        const isRecoverableConnectionClosed =
+          level === 'error' && this.isRecoverableConsoleConnectionClosed(message);
         
         // Voorkom loops met onze eigen logs
         if (message.includes('/api/admin/system/')) return;
 
-        this.addBreadcrumb(level, message.substring(0, 500));
+        this.addBreadcrumb(isRecoverableConnectionClosed ? 'warn' : level, message.substring(0, 500));
 
         if (level === 'error' || level === 'warn') {
           const errorObj = args.find(arg => arg instanceof Error);
-          this.report(level as any, `${level.toUpperCase()}: ${message.substring(0, 500)}`, {
+          const reportLevel = isRecoverableConnectionClosed ? 'warn' : level;
+          this.report(reportLevel as 'warn' | 'error', `${reportLevel.toUpperCase()}: ${message.substring(0, 500)}`, {
             full_console_output: message,
             stack: errorObj?.stack || (level === 'error' ? new Error().stack : undefined),
             args: args.map(arg => this.serialize(arg))
@@ -217,6 +220,19 @@ export class ClientLogger {
     const isFailedFetch = combined.includes('failed to fetch') || combined.includes('networkerror');
 
     return isLocalhost && (isConfigLookup || isActorsLookup || isHomeConfigLookup) && isFailedFetch;
+  }
+
+  private static isRecoverableConsoleConnectionClosed(message: string): boolean {
+    const normalized = (message || '').toLowerCase().trim();
+    const isConnectionClosed = normalized.includes('error: connection closed.');
+
+    if (!isConnectionClosed) {
+      return false;
+    }
+
+    return normalized === 'error: connection closed.'
+      || normalized.includes('global error (root layout):')
+      || normalized.includes('root layout');
   }
 
   private static interceptInteractions() {

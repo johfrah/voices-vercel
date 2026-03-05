@@ -24,7 +24,14 @@ export default function GlobalError({
   reset: () => void;
 }) {
   useEffect(() => {
-    console.error('Global error (root layout):', error);
+    const normalizedMessage = String(error?.message || '').toLowerCase();
+    const isRecoverableConnectionClosed = normalizedMessage.includes('connection closed');
+
+    if (isRecoverableConnectionClosed) {
+      console.warn('Global warning (root layout, recoverable):', error);
+    } else {
+      console.error('Global error (root layout):', error);
+    }
   }, [error]);
 
   return (
