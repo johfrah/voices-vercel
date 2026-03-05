@@ -54,6 +54,58 @@ async function getStudioHeroVideo(): Promise<{ heroVideoPath: string | null; her
       heroVideoMediaId = (byNameData[0] as any).id;
     }
   }
+
+  if (!heroVideoPath) {
+    // Production fallback: some environments have Studio videos in Storage but not mirrored in media table.
+    const storageHero = await db.execute(sql`
+      SELECT name
+      FROM storage.objects
+      WHERE bucket_id = 'voices'
+        AND name ILIKE 'studio/workshops/videos/%'
+        AND (
+          lower(name) LIKE '%workshop_beginners_aftermovie%'
+          OR lower(name) LIKE '%workshop-beginners-aftermovie%'
+          OR lower(name) LIKE '%workshop_beginners%'
+          OR lower(name) LIKE '%workshop-beginners%'
+        )
+      ORDER BY
+        CASE
+          WHEN lower(name) LIKE '%workshop_beginners_aftermovie%' OR lower(name) LIKE '%workshop-beginners-aftermovie%' THEN 0
+          WHEN lower(name) LIKE '%workshop_beginners%' OR lower(name) LIKE '%workshop-beginners%' THEN 1
+          ELSE 10
+        END,
+        created_at DESC
+      LIMIT 1
+    `);
+
+    const storageHeroData = Array.isArray(storageHero) ? storageHero : (storageHero as any).rows ?? [];
+    if (storageHeroData.length > 0 && (storageHeroData[0] as any).name) {
+      heroVideoPath = (storageHeroData[0] as any).name;
+      heroVideoMediaId = null;
+    }
+  }
+
+  if (!heroVideoPath) {
+    const anyStudioVideo = await db.execute(sql`
+      SELECT name
+      FROM storage.objects
+      WHERE bucket_id = 'voices'
+        AND name ILIKE 'studio/workshops/videos/%'
+        AND (
+          lower(name) LIKE '%.mp4'
+          OR lower(name) LIKE '%.webm'
+          OR lower(name) LIKE '%.mov'
+        )
+      ORDER BY created_at DESC
+      LIMIT 1
+    `);
+    const anyStudioVideoData = Array.isArray(anyStudioVideo) ? anyStudioVideo : (anyStudioVideo as any).rows ?? [];
+    if (anyStudioVideoData.length > 0 && (anyStudioVideoData[0] as any).name) {
+      heroVideoPath = (anyStudioVideoData[0] as any).name;
+      heroVideoMediaId = null;
+    }
+  }
+
   return { heroVideoPath, heroVideoMediaId };
 }
 
