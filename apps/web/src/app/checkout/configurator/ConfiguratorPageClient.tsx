@@ -52,7 +52,9 @@ import {
     type LucideIcon
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+
+const useMemo = React.useMemo;
 
 /**
  *  CHRIS-PROTOCOL: Count-Up Component for Pricing
