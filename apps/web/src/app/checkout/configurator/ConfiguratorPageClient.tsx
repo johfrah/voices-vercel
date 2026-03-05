@@ -48,7 +48,8 @@ import {
     X,
     Zap,
     ShieldCheck,
-    Music as MusicIcon
+    Music as MusicIcon,
+    type LucideIcon
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -70,6 +71,9 @@ const PriceCountUp = ({ value }: { value: number }) => {
 
   return <TextInstrument as="span">{SlimmeKassa.format(displayValue)}</TextInstrument>;
 };
+
+type MobileSectionId = 'voice' | 'rights' | 'script' | 'extras' | 'price';
+type MobileSectionItem = { id: MobileSectionId; label: string; icon: LucideIcon };
 
 /**
  *  ULTIMATE CONFIGURATOR (2026) - 3 KOLOMMEN MASTERCLASS
@@ -210,7 +214,37 @@ export default function ConfiguratorPageClient({
   const [showEmailModal, setShowEmailModal] = useState(false);
   const [showMediaModal, setShowMediaModal] = useState(false);
   const [pendingAction, setPendingAction] = useState<'checkout' | 'cart' | null>(null);
+  const [mobileSection, setMobileSection] = useState<MobileSectionId>('rights');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const mobileSectionItems = useMemo<MobileSectionItem[]>(() => {
+    const items: MobileSectionItem[] = [];
+    if (!minimalMode && !hideVoiceCard) items.push({ id: 'voice', label: t('configurator.mobile.voice', 'Stem'), icon: Mic });
+    if (!hideMediaSelector) items.push({ id: 'rights', label: t('configurator.mobile.rights', 'Rechten'), icon: Megaphone });
+    items.push({ id: 'script', label: t('configurator.mobile.script', 'Script'), icon: Type });
+    items.push({ id: 'extras', label: t('configurator.mobile.extras', 'Extra'), icon: Paperclip });
+    if (!hidePriceBlock) items.push({ id: 'price', label: t('configurator.mobile.price', 'Prijs'), icon: ShoppingBag });
+    return items;
+  }, [hideMediaSelector, hidePriceBlock, hideVoiceCard, minimalMode, t]);
+
+  const mobileOrderTotal = useMemo(() => {
+    const cartTotal = state.items.reduce((sum, i) => sum + (i.pricing?.total ?? i.pricing?.subtotal ?? 0), 0);
+    return cartTotal + (state.step === 'briefing' ? state.pricing.total : 0);
+  }, [state.items, state.pricing.total, state.step]);
+
+  useEffect(() => {
+    if (!state.selectedActor) {
+      if (mobileSection !== 'voice' && mobileSectionItems.some((item) => item.id === 'voice')) {
+        setMobileSection('voice');
+      }
+      return;
+    }
+
+    const stillVisible = mobileSectionItems.some((item) => item.id === mobileSection);
+    if (!stillVisible && mobileSectionItems.length > 0) {
+      setMobileSection(mobileSectionItems[0].id);
+    }
+  }, [mobileSection, mobileSectionItems, state.selectedActor]);
   
   //  BUTLER-HAPER-DETECTIE: Monitor inactiviteit op de configurator
   const lastActivityRef = useRef<number>(Date.now());
@@ -1259,7 +1293,7 @@ export default function ConfiguratorPageClient({
   return (
     <ContainerInstrument className={cn(
       "relative overflow-hidden",
-      !isEmbedded && "min-h-screen bg-va-off-white pb-32"
+      !isEmbedded && "min-h-screen bg-va-off-white pb-44 lg:pb-32"
     )}>
       
       {!isEmbedded && (
@@ -1287,13 +1321,43 @@ export default function ConfiguratorPageClient({
           </ContainerInstrument>
         )}
 
+        {!minimalMode && mobileSectionItems.length > 0 && (
+          <div className="lg:hidden sticky top-3 z-40 mb-6">
+            <div className="bg-white/90 backdrop-blur-xl rounded-2xl border border-black/[0.06] p-2 shadow-aura">
+              <div className="grid gap-1" style={{ gridTemplateColumns: `repeat(${mobileSectionItems.length}, minmax(0, 1fr))` }}>
+                {mobileSectionItems.map((item) => {
+                  const isActive = mobileSection === item.id;
+                  const Icon = item.icon;
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => setMobileSection(item.id)}
+                      className={cn(
+                        "flex flex-col items-center justify-center gap-1 rounded-xl px-2 py-2.5 transition-all",
+                        isActive ? "bg-va-black text-white shadow-lg" : "bg-va-off-white/60 text-va-black/45"
+                      )}
+                    >
+                      <Icon size={15} strokeWidth={isActive ? 2.4 : 1.8} />
+                      <span className="text-[9px] font-bold uppercase tracking-[0.16em] leading-none">{item.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className={cn(
           "flex flex-col lg:grid lg:grid-cols-12 gap-8 items-start pt-0",
           isEmbedded ? "pt-0" : ""
         )}>
           
           {!minimalMode && !hideVoiceCard && (
-            <div className="w-full lg:col-span-3 space-y-6 lg:sticky lg:top-24 pt-0">
+            <div className={cn(
+              "w-full lg:col-span-3 space-y-6 lg:sticky lg:top-24 pt-0",
+              mobileSection !== 'voice' && "hidden lg:block"
+            )}>
               <LabelInstrument className="text-[11px] font-bold tracking-[0.2em] text-va-black/20 uppercase px-2">
                 <VoiceglotText translationKey="configurator.step1.label" defaultText="01. De Stem" />
               </LabelInstrument>
@@ -1317,7 +1381,10 @@ export default function ConfiguratorPageClient({
             (minimalMode || hideVoiceCard) ? "lg:col-span-12" : "lg:col-span-6"
           )}>
             {!hideMediaSelector && (
-              <div className="space-y-4 mb-8 relative">
+              <div className={cn(
+                "space-y-4 mb-8 relative",
+                mobileSection !== 'rights' && "hidden lg:block"
+              )}>
                 {!hideUsageSelector && (
                   <div className="space-y-4">
                     <LabelInstrument className="text-[11px] font-bold tracking-[0.2em] text-va-black/20 uppercase px-2">
@@ -1495,7 +1562,10 @@ export default function ConfiguratorPageClient({
               </div>
             )}
 
-            <ContainerInstrument className="bg-white rounded-[20px] shadow-aura border border-black/[0.03] overflow-hidden group/script mb-6 relative">
+            <ContainerInstrument className={cn(
+              "bg-white rounded-[20px] shadow-aura border border-black/[0.03] overflow-hidden group/script mb-6 relative",
+              mobileSection !== 'script' && "hidden lg:block"
+            )}>
               <div className="p-4 bg-va-off-white/50 border-b border-black/[0.03] flex items-center justify-between relative z-30">
                 <div className="flex items-center gap-4">
                   <div className="text-[11px] font-bold text-va-black/20 tracking-widest uppercase">
@@ -1754,7 +1824,7 @@ export default function ConfiguratorPageClient({
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
-                  className="mb-6"
+                  className={cn("mb-6", mobileSection !== 'script' && "hidden lg:block")}
                 >
                   <TelephonySmartSuggestions 
                     setLocalBriefing={setLocalBriefing} 
@@ -1767,7 +1837,7 @@ export default function ConfiguratorPageClient({
               )}
             </AnimatePresence>
 
-            <div className={cn("grid grid-cols-1 gap-4", !minimalMode && "mt-8")} ref={textSectionRef}>
+            <div className={cn("grid grid-cols-1 gap-4", !minimalMode && "mt-8", mobileSection !== 'extras' && mobileSection !== 'price' && "hidden lg:grid")} ref={textSectionRef}>
               <div className="space-y-4">
                 <button 
                   onClick={() => {
@@ -1930,14 +2000,14 @@ export default function ConfiguratorPageClient({
 
               {/*  CHRIS-PROTOCOL: Render Price Block inline for minimal mode (Agency page) */}
               {minimalMode && !hidePriceBlock && (
-                <div className="mt-8">
+                <div className={cn("mt-8", mobileSection !== 'price' && "hidden lg:block")}>
                   <PriceBlock />
                 </div>
               )}
               
               {/*  CHRIS-PROTOCOL: Render Price Block below script for non-minimal mode too (Mobile fallback) */}
               {!minimalMode && !hidePriceBlock && (
-                <div className="mt-8 lg:hidden">
+                <div className={cn("mt-8 lg:hidden", mobileSection !== 'price' && "hidden")}>
                   <PriceBlock />
                 </div>
               )}
@@ -1952,33 +2022,53 @@ export default function ConfiguratorPageClient({
         </div>
       </ContainerInstrument>
 
-      {/* MOBY'S STICKY MOBILE ACTION BAR */}
-      {isEmbedded && (
-        <div className="lg:hidden fixed bottom-0 left-0 right-0 z-[100] p-4 bg-white/80 backdrop-blur-xl border-t border-black/5 animate-in slide-in-from-bottom-full duration-500">
-          <div className="flex items-center justify-between gap-4">
-                <div className="flex flex-col">
-                  <span className="text-[10px] font-bold text-va-black/20 uppercase tracking-widest leading-none">
-                    <VoiceglotText translationKey="pricing.total" defaultText="Totaal" />
-                  </span>
-                  <span className="text-2xl font-light tracking-tighter text-va-black leading-none">
-                    <PriceCountUp value={state.items.reduce((sum, i) => sum + (i.pricing?.total ?? i.pricing?.subtotal ?? 0), 0) + (state.step === 'briefing' ? state.pricing.total : 0)} />
-                  </span>
-                </div>
-                  <button 
-                    onClick={() => handleAddToCartWithEmail('checkout')}
-                    disabled={!state.selectedActor || !hasOrderContent || isProcessing}
-                    className={cn(
-                      "bg-va-black text-white px-8 py-3 rounded-xl font-bold text-[13px] tracking-widest uppercase active:scale-95 transition-all disabled:opacity-50",
-                      isProcessing && "cursor-wait opacity-50",
-                      !isProcessing && (!state.selectedActor || !hasOrderContent) && "opacity-45 cursor-not-allowed"
-                    )}
-                  >
-                    {isProcessing ? (
-                      <Loader2 className="animate-spin" size={18} />
-                    ) : (
-                      <VoiceglotText translationKey="action.order" defaultText="Bestellen" />
-                    )}
-                  </button>
+      {/* MOBY'S MOBILE-FIRST WIZARD BAR */}
+      {!minimalMode && !hidePriceBlock && mobileSectionItems.length > 0 && (
+        <div className="lg:hidden fixed bottom-0 left-0 right-0 z-[100] px-4 pt-3 pb-[calc(env(safe-area-inset-bottom)+12px)] bg-white/90 backdrop-blur-xl border-t border-black/5 animate-in slide-in-from-bottom-full duration-500 space-y-3">
+          <div className="grid gap-1" style={{ gridTemplateColumns: `repeat(${mobileSectionItems.length}, minmax(0, 1fr))` }}>
+            {mobileSectionItems.map((item) => {
+              const isActive = mobileSection === item.id;
+              const Icon = item.icon;
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => setMobileSection(item.id)}
+                  className={cn(
+                    "flex flex-col items-center justify-center gap-1 rounded-lg py-2 transition-all",
+                    isActive ? "bg-va-black text-white shadow-md" : "text-va-black/45 bg-va-off-white/60"
+                  )}
+                >
+                  <Icon size={14} strokeWidth={isActive ? 2.4 : 1.8} />
+                  <span className="text-[8px] font-bold uppercase tracking-[0.16em] leading-none">{item.label}</span>
+                </button>
+              );
+            })}
+          </div>
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex flex-col min-w-0">
+              <span className="text-[10px] font-bold text-va-black/20 uppercase tracking-widest leading-none">
+                <VoiceglotText translationKey="pricing.total" defaultText="Totaal" />
+              </span>
+              <span className="text-2xl font-light tracking-tighter text-va-black leading-none truncate">
+                <PriceCountUp value={mobileOrderTotal} />
+              </span>
+            </div>
+            <button 
+              onClick={() => handleAddToCartWithEmail('checkout')}
+              disabled={!state.selectedActor || !hasOrderContent || isProcessing}
+              className={cn(
+                "bg-va-black text-white px-6 py-3 rounded-xl font-bold text-[13px] tracking-widest uppercase active:scale-95 transition-all disabled:opacity-50",
+                isProcessing && "cursor-wait opacity-50",
+                !isProcessing && (!state.selectedActor || !hasOrderContent) && "opacity-45 cursor-not-allowed"
+              )}
+            >
+              {isProcessing ? (
+                <Loader2 className="animate-spin" size={18} />
+              ) : (
+                <VoiceglotText translationKey="action.order" defaultText="Bestellen" />
+              )}
+            </button>
           </div>
         </div>
       )}
