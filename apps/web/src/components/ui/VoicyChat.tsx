@@ -124,6 +124,10 @@ export const VoicyChatV2: React.FC = () => {
   const isAcademyJourney = pathname?.includes('/academy');
   const isStudioJourney = pathname?.includes('/studio') && !isAcademyJourney;
   const isAgencyJourney = !isStudioJourney && !isAcademyJourney && !isPortfolioJourney && !isArtistPage;
+  const faqWorldId = MarketManager.resolveContext(
+    typeof window !== 'undefined' ? window.location.host : '',
+    pathname || '/'
+  ).worldId;
 
   const activeEmail = market.email;
   const activePhone = market.phone;
@@ -136,11 +140,27 @@ export const VoicyChatV2: React.FC = () => {
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
   //  FAQ tab: load journey-aware FAQs from Supabase (world/journey)
-  const faqJourneyParam = isStudioJourney ? 'studio' : isAcademyJourney ? 'academy' : 'agency';
+  const faqJourneyParam = faqWorldId === 2
+    ? 'studio'
+    : faqWorldId === 3
+      ? 'academy'
+      : faqWorldId === 5
+        ? 'portfolio'
+        : faqWorldId === 6
+          ? 'ademing'
+          : faqWorldId === 7
+            ? 'freelance'
+            : faqWorldId === 8
+              ? 'partners'
+              : faqWorldId === 10
+                ? 'johfrai'
+                : faqWorldId === 25
+                  ? 'artist'
+                  : 'agency';
   useEffect(() => {
     if (activeTab !== 'faq') return;
     setChatFaqsLoading(true);
-    fetch(`/api/faq?journey=${encodeURIComponent(faqJourneyParam)}&limit=10`)
+    fetch(`/api/faq?journey=${encodeURIComponent(faqJourneyParam)}&world_id=${faqWorldId}&limit=10`)
       .then((res) => (res.ok ? res.json() : []))
       .then((data: { id: number; question_nl?: string | null; question_en?: string | null; answer_nl?: string | null; answer_en?: string | null }[]) => {
         const langEn = (language || 'nl-BE').toLowerCase().startsWith('en');
@@ -152,7 +172,7 @@ export const VoicyChatV2: React.FC = () => {
       })
       .catch(() => setChatFaqs([]))
       .finally(() => setChatFaqsLoading(false));
-  }, [activeTab, faqJourneyParam, language]);
+  }, [activeTab, faqJourneyParam, faqWorldId, language]);
 
   //  CHRIS-PROTOCOL: Sync telephony config from DB
   useEffect(() => {
