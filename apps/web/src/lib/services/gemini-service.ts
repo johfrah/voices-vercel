@@ -71,6 +71,9 @@ ${prompt}
    * NU MET AGENT-MANDAAT: Kan gestructureerde acties voorstellen.
    */
   async generateText(prompt: string, options?: { jsonMode?: boolean, lang?: string, host?: string, priority?: 'high' | 'low' }): Promise<string> {
+    const normalizedPrompt = String(prompt || '').toLowerCase();
+    const shouldCaptureLead = /offerte|quote|bestel|bestellen|prijs|tarief|checkout|afreken|book|booking/.test(normalizedPrompt);
+
     if (!process.env.GOOGLE_API_KEY) {
       console.warn('[GeminiService] GOOGLE_API_KEY not configured. Returning helpful fallback.');
       return options?.jsonMode
@@ -80,7 +83,9 @@ ${prompt}
               { label: "Stemmen bekijken", action: "BROWSE_VOICES" },
               { label: "Offerte aanvragen", action: "SHOW_LEAD_FORM" }
             ],
-            suggestedAction: { type: "BROWSE_VOICES", params: {} }
+            suggestedAction: shouldCaptureLead
+              ? { type: "SHOW_LEAD_FORM", params: {} }
+              : { type: "BROWSE_VOICES", params: {} }
           })
         : "Welkom bij Voices! Bekijk onze stemmen, vraag een offerte aan, of neem contact op via +32 (0)2 793 19 91.";
     }
@@ -111,7 +116,9 @@ ${prompt}
                 { label: "Stemmen bekijken", action: "BROWSE_VOICES" },
                 { label: "Offerte aanvragen", action: "SHOW_LEAD_FORM" }
               ],
-              suggestedAction: { type: "BROWSE_VOICES", params: {} }
+              suggestedAction: shouldCaptureLead
+                ? { type: "SHOW_LEAD_FORM", params: {} }
+                : { type: "BROWSE_VOICES", params: {} }
             })
           : "Ik ben even druk bezet! Bekijk onze stemmen of vraag een vrijblijvende offerte aan. Of bel ons gerust op +32 (0)2 793 19 91.";
       }

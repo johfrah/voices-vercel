@@ -1,4 +1,4 @@
-import { DirectMailService } from '../../services/DirectMailService';
+import { DirectMailService } from '../services/direct-mail-service';
 import { MarketManagerServer } from "./core/market-manager";
 import { MarketDatabaseService } from './market-manager-db';
 

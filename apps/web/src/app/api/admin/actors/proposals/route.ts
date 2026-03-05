@@ -90,7 +90,7 @@ export async function PATCH(request: NextRequest) {
       
       if (data.extra_lang_ids) {
         await db.delete(actorLanguages).where(eq(actorLanguages.actorId, proposal.actorId));
-        const langInserts = [];
+        const langInserts: any[] = [];
         if (data.nativeLanguageId) {
           langInserts.push({ actorId: proposal.actorId, languageId: data.nativeLanguageId, isNative: true });
         }

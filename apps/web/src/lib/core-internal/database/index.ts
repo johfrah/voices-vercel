@@ -75,14 +75,16 @@ CMTyZKG3XEu5Ghl1LEnI3QmEKsqaCLv12BnVjbkSeZsMnevJPs1Ye6TjjJwdik5P
 o/bKiIz+Fq8=
 -----END CERTIFICATE-----`;
 
-      const poolSize = 10;
+      // Keep the pool intentionally small to avoid hitting Supabase connection ceilings
+      // during local hot-reloads and bursty route recompilations.
+      const poolSize = 3;
       
       if (!(globalThis as any).postgresClient) {
         (globalThis as any).postgresClient = postgres(connectionString, { 
           prepare: false, 
           ssl: { rejectUnauthorized: false },
           connect_timeout: 30,
-          idle_timeout: 10,
+          idle_timeout: 5,
           max: poolSize,
         });
       }

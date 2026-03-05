@@ -76,6 +76,7 @@ export const VoicyChatV2: React.FC = () => {
   const [clickedChips, setClickedChips] = useState<string[]>([]);
   const [isHoveringVoicy, setIsHoveringVoicy] = useState(false);
   const [showChips, setShowChips] = useState(false);
+  const [isMobileViewport, setIsMobileViewport] = useState(false);
   const [showLeadForm, setShowLeadForm] = useState(false);
   const [leadFormData, setLeadFormData] = useState({ name: '', email: '' });
   const [sensorData, setSensorData] = useState<any>({
@@ -124,6 +125,10 @@ export const VoicyChatV2: React.FC = () => {
   const isAcademyJourney = pathname?.includes('/academy');
   const isStudioJourney = pathname?.includes('/studio') && !isAcademyJourney;
   const isAgencyJourney = !isStudioJourney && !isAcademyJourney && !isPortfolioJourney && !isArtistPage;
+  const faqWorldId = MarketManager.resolveContext(
+    typeof window !== 'undefined' ? window.location.host : '',
+    pathname || '/'
+  ).worldId;
 
   const activeEmail = market.email;
   const activePhone = market.phone;
@@ -135,12 +140,37 @@ export const VoicyChatV2: React.FC = () => {
   const lastIdRef = useRef<number>(0);
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const mediaQuery = window.matchMedia('(max-width: 767px), (pointer: coarse)');
+    const syncViewportMode = () => setIsMobileViewport(mediaQuery.matches);
+    syncViewportMode();
+    mediaQuery.addEventListener('change', syncViewportMode);
+    return () => mediaQuery.removeEventListener('change', syncViewportMode);
+  }, []);
+
   //  FAQ tab: load journey-aware FAQs from Supabase (world/journey)
-  const faqJourneyParam = isStudioJourney ? 'studio' : isAcademyJourney ? 'academy' : 'agency';
+  const faqJourneyParam = faqWorldId === 2
+    ? 'studio'
+    : faqWorldId === 3
+      ? 'academy'
+      : faqWorldId === 5
+        ? 'portfolio'
+        : faqWorldId === 6
+          ? 'ademing'
+          : faqWorldId === 7
+            ? 'freelance'
+            : faqWorldId === 8
+              ? 'partners'
+              : faqWorldId === 10
+                ? 'johfrai'
+                : faqWorldId === 25
+                  ? 'artist'
+                  : 'agency';
   useEffect(() => {
     if (activeTab !== 'faq') return;
     setChatFaqsLoading(true);
-    fetch(`/api/faq?journey=${encodeURIComponent(faqJourneyParam)}&limit=10`)
+    fetch(`/api/faq?journey=${encodeURIComponent(faqJourneyParam)}&world_id=${faqWorldId}&limit=10`)
       .then((res) => (res.ok ? res.json() : []))
       .then((data: { id: number; question_nl?: string | null; question_en?: string | null; answer_nl?: string | null; answer_en?: string | null }[]) => {
         const langEn = (language || 'nl-BE').toLowerCase().startsWith('en');
@@ -152,7 +182,7 @@ export const VoicyChatV2: React.FC = () => {
       })
       .catch(() => setChatFaqs([]))
       .finally(() => setChatFaqsLoading(false));
-  }, [activeTab, faqJourneyParam, language]);
+  }, [activeTab, faqJourneyParam, faqWorldId, language]);
 
   //  CHRIS-PROTOCOL: Sync telephony config from DB
   useEffect(() => {
@@ -409,6 +439,7 @@ export const VoicyChatV2: React.FC = () => {
                 selectedActor: state.selectedActor,
                 briefing: params.briefing || state.briefing,
                 usage: state.usage,
+                journey: state.journey,
                 language: normalizeLocale(language),
                 payment_method: 'bancontact',
                 metadata: {
@@ -754,6 +785,11 @@ export const VoicyChatV2: React.FC = () => {
 
   useEffect(() => {
     //  AUTO-SHOW CHIPS (CHRIS-PROTOCOL: Proactieve interactie)
+    if (isMobileViewport) {
+      setShowChips(false);
+      return;
+    }
+
     if (!isOpen) {
       const timer = setTimeout(() => {
         setShowChips(true);
@@ -770,13 +806,13 @@ export const VoicyChatV2: React.FC = () => {
     } else {
       setShowChips(false);
     }
-  }, [isOpen]);
+  }, [isMobileViewport, isOpen]);
 
   useEffect(() => {
-    if (isHoveringVoicy && !isOpen) {
+    if (!isMobileViewport && isHoveringVoicy && !isOpen) {
       setShowChips(true);
     }
-  }, [isHoveringVoicy, isOpen]);
+  }, [isHoveringVoicy, isMobileViewport, isOpen]);
 
   const toggleChat = () => {
     playClick(isOpen ? 'soft' : 'pro');
@@ -1100,13 +1136,19 @@ export const VoicyChatV2: React.FC = () => {
     }
   };
 
+  type SmartChip = {
+    label: string;
+    action: string;
+    icon?: React.ElementType;
+  };
+
   //  Smart Chips logic
   const getSmartChips = () => {
     if (isAdmin) {
-      return []; //  ADMIN MANDATE: Geen zwevende chips voor admin (staan al in CMD+K)
+      return [] as SmartChip[]; //  ADMIN MANDATE: Geen zwevende chips voor admin (staan al in CMD+K)
     }
 
-    const chips = [];
+    const chips: SmartChip[] = [];
     
     //  Context-based chips (Journey Aware)
     if (isAgencyJourney) {
@@ -1149,15 +1191,14 @@ export const VoicyChatV2: React.FC = () => {
         "fixed z-[150] touch-manipulation transition-[bottom] duration-300",
         isCastingDockVisible ? "bottom-[calc(8.25rem+env(safe-area-inset-bottom))] md:bottom-8" : "bottom-[max(2rem,env(safe-area-inset-bottom))]",
         "right-[max(2rem,env(safe-area-inset-right))]",
-        "max-[420px]:right-auto max-[420px]:left-[max(2rem,env(safe-area-inset-left))]",
         isOpen && "z-[250]"
       )}
       onMouseEnter={() => setIsHoveringVoicy(true)}
       onMouseLeave={() => setIsHoveringVoicy(false)}
     >
       {/* Smart Chips (Floating above toggle) */}
-      {!isOpen && showChips && (
-        <ContainerInstrument className="absolute bottom-20 right-0 max-[420px]:right-auto max-[420px]:left-0 flex flex-col items-end max-[420px]:items-start gap-2 pointer-events-none">
+      {!isOpen && showChips && !isMobileViewport && (
+        <ContainerInstrument className="absolute bottom-20 right-0 flex flex-col items-end gap-2 pointer-events-none">
           <AnimatePresence>
             {getSmartChips().map((chip, i) => (
               <motion.button
@@ -1209,13 +1250,13 @@ export const VoicyChatV2: React.FC = () => {
 
       {/* Chat Window: van bovenrand tot onderkant viewport; chatbolletje verdwijnt als open, sluiten via X in header */}
       <ContainerInstrument plain className={cn(
-        "bg-white rounded-[32px] shadow-aura flex flex-col overflow-hidden transition-all duration-500 origin-bottom-right max-[420px]:origin-bottom-left",
+        "bg-white rounded-[32px] shadow-aura flex flex-col overflow-hidden transition-all duration-500 origin-bottom-right",
         isOpen ? 'scale-100 opacity-100' : 'scale-0 opacity-0 pointer-events-none',
         isFullMode
           ? 'fixed w-auto h-auto z-[260] top-[max(2rem,env(safe-area-inset-top))] right-[max(2rem,env(safe-area-inset-right))] bottom-[max(2rem,env(safe-area-inset-bottom))] left-[max(2rem,env(safe-area-inset-left))]'
           : isOpen
             ? 'fixed z-[260] top-[max(2rem,env(safe-area-inset-top))] right-[max(2rem,env(safe-area-inset-right))] bottom-[max(2rem,env(safe-area-inset-bottom))] left-[max(2rem,env(safe-area-inset-left))] md:left-auto md:top-[max(0px,env(safe-area-inset-top))] md:w-[400px] md:max-w-[calc(100vw-2rem)]'
-            : 'absolute bottom-20 right-0 max-[420px]:right-auto max-[420px]:left-0 w-[400px] max-w-[calc(100vw-2rem)] min-h-0',
+            : 'absolute bottom-20 right-0 w-[400px] max-w-[calc(100vw-2rem)] min-h-0',
         isJohfrah && "border border-primary/20"
       )}>
         {/* Header */}
@@ -1768,9 +1809,9 @@ export const VoicyChatV2: React.FC = () => {
                       key={item.id}
                       onClick={() => {
                         setActiveTab('chat');
-                        handleSend(undefined, item.question, 'faq');
+                        handleSend(undefined, item.question, 'chip');
                       }}
-                      className="w-full py-3 px-4 text-left bg-va-off-white hover:bg-va-black hover:text-white rounded-xl text-[15px] font-light transition-all flex items-center gap-2 border border-black/5"
+                      className="w-full py-3 px-4 text-left bg-va-off-white text-va-black hover:bg-va-black hover:text-white rounded-xl text-[15px] font-light transition-all flex items-center gap-2 border border-black/5"
                       aria-label={item.question}
                     >
                       <HelpCircle strokeWidth={1.5} size={18} className="shrink-0" />
@@ -1791,7 +1832,7 @@ export const VoicyChatV2: React.FC = () => {
                 <ButtonInstrument
                   as="a"
                   href="/contact"
-                  className="w-full py-3 bg-va-off-white hover:bg-va-black hover:text-white rounded-xl text-[15px] font-light tracking-widest transition-all flex items-center justify-center gap-2 border border-black/5"
+                  className="w-full py-3 bg-va-off-white text-va-black hover:bg-va-black hover:text-white rounded-xl text-[15px] font-light tracking-widest transition-all flex items-center justify-center gap-2 border border-black/5"
                 >
                   <Mail strokeWidth={1.5} size={18} />
                   <VoiceglotText translationKey="chat.faq.contact" defaultText="Contactpagina" />
@@ -1799,7 +1840,7 @@ export const VoicyChatV2: React.FC = () => {
                 <ButtonInstrument
                   as="a"
                   href={isStudioJourney ? '/studio' : isAcademyJourney ? '/academy' : '/tarieven'}
-                  className="w-full py-3 bg-va-off-white hover:bg-va-black hover:text-white rounded-xl text-[15px] font-light tracking-widest transition-all flex items-center justify-center gap-2 border border-black/5"
+                  className="w-full py-3 bg-va-off-white text-va-black hover:bg-va-black hover:text-white rounded-xl text-[15px] font-light tracking-widest transition-all flex items-center justify-center gap-2 border border-black/5"
                 >
                   <HelpCircle strokeWidth={1.5} size={18} />
                   <VoiceglotText translationKey="chat.faq.more_info" defaultText="Meer info" />

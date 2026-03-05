@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
       worldId: reviews.worldId,
     }).from(reviews);
 
-    const conditions = [];
+    const conditions: any[] = [];
 
     if (actorId) {
       // Gebruik de nieuwe koppeltabel of iapContext fallback

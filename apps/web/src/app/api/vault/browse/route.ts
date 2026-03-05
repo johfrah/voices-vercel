@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
   const offset = parseInt(searchParams.get('offset') || '0');
 
   try {
-    let conditions = [];
+    let conditions: any[] = [];
 
     if (projectId) {
       // Zoek op WP Order ID (6-cijferig) via de orders tabel link

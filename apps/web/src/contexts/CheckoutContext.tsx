@@ -21,7 +21,17 @@ import React, { createContext, useCallback, useContext, useEffect, useState } fr
 
 interface CheckoutState {
   step: 'briefing' | 'voice' | 'details' | 'payment' | 'done';
-  journey: 'studio' | 'academy' | 'agency' | 'johfrai-subscription';
+  journey:
+    | 'studio'
+    | 'academy'
+    | 'agency'
+    | 'johfrai-subscription'
+    | 'johfrai'
+    | 'portfolio'
+    | 'ademing'
+    | 'freelance'
+    | 'partner'
+    | 'artist';
   courseId?: number;
   editionId?: number;
   upsells: {
@@ -67,6 +77,11 @@ interface CheckoutState {
     postal_code: string;
     country: string;
     vat_verified?: boolean;
+    active_coupon?: {
+      code?: string;
+      discount_percent?: number;
+      discount_amount?: number;
+    } | null;
   };
   paymentMethod: string;
   paymentMethods: any[];
@@ -77,10 +92,11 @@ interface CheckoutState {
   isLocked: boolean;
   mediaCache: Record<string, string[]>; //  NEW: Cache media selections per journey
   briefingFiles: {
-    id: string;
+    id: string | number;
     name: string;
     type: 'audio' | 'video' | 'text';
     url: string;
+    rawFile?: File;
   }[];
   ownMusicFile?: {
     name: string;
@@ -133,8 +149,8 @@ interface CheckoutContextType {
   restoreItem: (item: any) => void;
   resetSelection: () => void;
   calculatePricing: () => void;
-  addBriefingFile: (file: { name: string, type: 'audio' | 'video' | 'text', url: string }) => void;
-  removeBriefingFile: (id: string) => void;
+  addBriefingFile: (file: { id?: string | number; name: string; type: 'audio' | 'video' | 'text'; url: string; rawFile?: File }) => void;
+  removeBriefingFile: (id: string | number) => void;
   updateOwnMusicFile: (file?: { name: string, url: string }) => void;
   lockPrice: () => void;
   unlockPrice: () => void;
@@ -233,7 +249,6 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       if (saved) {
         try {
           const parsed = JSON.parse(saved);
-          console.log(`[CheckoutContext] Restoring state from localStorage: ${parsed.items?.length || 0} items`);
           
           // 🛡️ CHRIS-PROTOCOL: World Isolation (v2.16.134)
           // If the saved journey doesn't match the current world context, we reset it.
@@ -243,17 +258,14 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           const isAcademyPath = currentPath.startsWith('/academy');
           
           if (isStudioPath && parsed.journey !== 'studio') {
-            console.log(`[CheckoutContext] Resetting journey to studio (was ${parsed.journey})`);
             parsed.journey = 'studio';
             parsed.journeyId = 1; // 🛡️ Handshake Truth: Studio World
             parsed.usage = 'subscription';
           } else if (isAcademyPath && parsed.journey !== 'academy') {
-            console.log(`[CheckoutContext] Resetting journey to academy (was ${parsed.journey})`);
             parsed.journey = 'academy';
             parsed.journeyId = 30; // 🛡️ Handshake Truth: Academy World
             parsed.usage = 'subscription';
           } else if (!isStudioPath && !isAcademyPath && (parsed.journey === 'studio' || parsed.journey === 'academy')) {
-            console.log(`[CheckoutContext] Resetting journey to agency (was ${parsed.journey})`);
             parsed.journey = 'agency';
             parsed.journeyId = 27; // 🛡️ Handshake Truth: Agency World
             parsed.usage = 'unpaid';
@@ -286,7 +298,6 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
               itemToCompare.music?.trackId === item.music?.trackId
             ));
           });
-
           // 🛡️ CHRIS-PROTOCOL: Exclude runtime-only checkout config from persisted spread
           // Older localStorage payloads may contain stale paymentMethods with broken local asset paths.
           const {
@@ -408,13 +419,22 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const setStep = useCallback((step: CheckoutState['step']) => setState(prev => ({ ...prev, step })), []);
   
   const setJourney = useCallback((journey: CheckoutState['journey'], courseId?: number) => {
-    const journeyId = (journey === 'agency') ? 27 : (journey === 'studio' ? 1 : (journey === 'academy' ? 30 : undefined));
+    const journeyIdMap: Partial<Record<CheckoutState['journey'], number>> = {
+      agency: 27,
+      studio: 1,
+      academy: 30,
+    };
+    const journeyId = journeyIdMap[journey];
+    const usage =
+      journey === 'studio' || journey === 'academy' || journey === 'johfrai' || journey === 'johfrai-subscription'
+        ? 'subscription'
+        : SlimmeKassa.getUsageFromJourneyId(journeyId || journey);
     setState(prev => {
       return {
         ...prev,
         journey,
         journeyId,
-        usage: SlimmeKassa.getUsageFromJourneyId(journeyId || journey),
+        usage,
         usageId: journeyId,
         courseId: journey === 'academy' ? courseId : undefined,
         editionId: journey === 'studio' ? courseId : undefined,
@@ -436,16 +456,16 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const updatePronunciation = useCallback((pronunciation: string) => setState(prev => ({ ...prev, pronunciation })), []);
   
   const updateUsage = useCallback((usage: CheckoutState['usage'], usageId?: number) => {
-    console.log(`[CheckoutContext] Updating usage to: ${usage} (ID: ${usageId})`);
     setState(prev => {
-      if (prev.usage === usage && prev.usageId === usageId) return prev;
+      if (prev.usage === usage && prev.usageId === usageId) {
+        return prev;
+      }
       return { ...prev, usage, usageId };
     });
   }, []);
 
   const updatePlan = useCallback((plan: PlanType) => setState(prev => ({ ...prev, plan })), []);
   const updateMedia = useCallback((media: CheckoutState['media'], mediaIds?: number[]) => {
-    console.log(`[CheckoutContext] Updating media to: ${JSON.stringify(media)} (IDs: ${JSON.stringify(mediaIds)})`);
     setState(prev => {
       const newState = { ...prev, media, mediaIds: mediaIds || prev.mediaIds };
       
@@ -509,7 +529,6 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       existing.liveSession === item.liveSession &&
       existing.music?.trackId === item.music?.trackId
     );
-
     if (itemPrice <= 0) {
       console.warn('[CheckoutContext] Attempted to add item with 0 price. Blocked.', item);
       return prev;
@@ -527,7 +546,6 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   }), []);
 
   const clearCart = useCallback(() => {
-    console.log('[CheckoutContext] Clearing cart items and resetting selection');
     setState(prev => ({
       ...prev,
       items: [],
@@ -550,7 +568,6 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   const removeItem = useCallback((itemId: string) => setState(prev => {
     const newItems = prev.items.filter((i: { id?: string }) => i.id !== itemId);
-    console.log(`[CheckoutContext] Removing item: ${itemId}. Remaining items: ${newItems.length}`);
     return {
       ...prev,
       items: newItems
@@ -558,7 +575,6 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   }), []);
 
   const restoreItem = useCallback((item: any) => {
-    console.log('[CheckoutContext] Restoring item for editing:', item.id, item);
     setState(prev => ({
       ...prev,
       selectedActor: item.actor,
@@ -612,14 +628,14 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }));
   }, []);
 
-  const addBriefingFile = useCallback((file: { name: string, type: 'audio' | 'video' | 'text', url: string }) => {
+  const addBriefingFile = useCallback((file: { id?: string | number; name: string; type: 'audio' | 'video' | 'text'; url: string; rawFile?: File }) => {
     setState(prev => ({
       ...prev,
-      briefingFiles: [...prev.briefingFiles, { ...file, id: `file-${Date.now()}` }]
+      briefingFiles: [...prev.briefingFiles, { ...file, id: file.id ?? `file-${Date.now()}` }]
     }));
   }, []);
 
-  const removeBriefingFile = useCallback((id: string) => {
+  const removeBriefingFile = useCallback((id: string | number) => {
     setState(prev => ({
       ...prev,
       briefingFiles: prev.briefingFiles.filter(f => f.id !== id)
@@ -635,8 +651,6 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   const calculatePricing = useCallback(() => {
     if (state.isLocked) return; //  KELLY'S LOCK: No recalculation if price is frozen
-
-    console.log(`[CheckoutContext] Calculating pricing for journey: ${state.journey}, usage: ${state.usage}`);
 
     // Academy pricing logic
     if (state.journey === 'academy') {
@@ -655,8 +669,6 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         }, state.pricingConfig || undefined);
         academySubtotal += workshopResult.total;
       }
-
-      console.log(`[CheckoutContext] Academy total: ${academySubtotal}`);
 
       setState(prev => ({
         ...prev,
@@ -698,8 +710,6 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     const yearsMap = state.usage === 'commercial' && Array.isArray(state.media)
       ? state.media.reduce((acc, m) => ({ ...acc, [m]: (state.yearsDetail && state.yearsDetail[m]) || state.years || 1 }), {})
       : undefined;
-
-    console.log(`[CheckoutContext] Calculating with media: ${JSON.stringify(state.media)}`);
 
     const result = SlimmeKassa.calculate({
       usage: state.usage,

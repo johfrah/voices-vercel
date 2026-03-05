@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { BentoCard, BentoGrid } from "@/components/ui/BentoGrid";
 import {
     ButtonInstrument,

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react';
 import { useAuth } from './AuthContext';
 import { createClient } from '@/utils/supabase/client';
 
@@ -30,11 +30,12 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const { user, isAuthenticated, isAdmin } = useAuth();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const supabase = createClient();
+  const [notificationsUnavailable, setNotificationsUnavailable] = useState(false);
+  const supabase = useMemo(() => createClient(), []);
 
   const fetchNotifications = useCallback(async () => {
     // CHRIS-PROTOCOL: Alleen klanten en admins laden hun eigen notificaties via dit systeem.
-    if (!isAuthenticated || !supabase) {
+    if (!isAuthenticated || !supabase || notificationsUnavailable) {
       setNotifications([]);
       return;
     }
@@ -56,6 +57,24 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
           .order('created_at', { ascending: false })
           .limit(20);
 
+        if (error) {
+          const loweredMessage = (error.message || '').toLowerCase();
+          const isMissingNotificationsTable =
+            loweredMessage.includes('notifications') &&
+            (
+              loweredMessage.includes('does not exist') ||
+              loweredMessage.includes('not found') ||
+              loweredMessage.includes('could not find') ||
+              loweredMessage.includes('404')
+            );
+
+          if (isMissingNotificationsTable) {
+            setNotifications([]);
+            setNotificationsUnavailable(true);
+            return;
+          }
+        }
+
         if (!error && data) {
           setNotifications(data.map(n => ({
             id: n.id,
@@ -74,13 +93,13 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     } finally {
       setIsLoading(false);
     }
-  }, [isAuthenticated, supabase, user?.email]);
+  }, [isAuthenticated, isAdmin, notificationsUnavailable, supabase, user?.email, user?.id]);
 
   useEffect(() => {
     fetchNotifications();
     
     // Real-time updates voor klanten
-    if (isAuthenticated && !isAdmin && supabase) {
+    if (isAuthenticated && !isAdmin && supabase && !notificationsUnavailable) {
       const channel = supabase
         .channel('public:notifications')
         .on('postgres_changes', { 
@@ -98,10 +117,10 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
         supabase.removeChannel(channel);
       };
     }
-  }, [isAuthenticated, isAdmin, supabase, user?.id, fetchNotifications]);
+  }, [isAuthenticated, isAdmin, notificationsUnavailable, supabase, user?.id, fetchNotifications]);
 
   const markAsRead = async (id: number) => {
-    if (!supabase) return;
+    if (!supabase || notificationsUnavailable) return;
     try {
       const { error } = await supabase
         .from('notifications')
@@ -117,7 +136,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
   };
 
   const markAllAsRead = async () => {
-    if (!supabase || (notifications || []).length === 0) return;
+    if (!supabase || notificationsUnavailable || (notifications || []).length === 0) return;
     try {
       const { data: userData } = await supabase
         .from('users')

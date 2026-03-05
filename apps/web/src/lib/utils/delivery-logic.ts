@@ -12,7 +12,7 @@
  * GEEN EXTERNE DEPENDENCIES (zoals date-fns) om build issues te voorkomen.
  */
 
-import { DeliveryConfig } from "../types";
+import { DeliveryConfig } from "@/types";
 
 export interface DeliveryInfo {
   dateMin: Date;
@@ -288,8 +288,8 @@ export function calculateDeliveryDate(
   
   //  CHRIS-PROTOCOL: Combine availability array with flat holiday fields
   const effectiveAvailability = [...(actor.availability || [])];
-  if (actor.holiday_from && actor.holiday_till) {
-    effectiveAvailability.push({ start: actor.holiday_from, end: actor.holiday_till });
+  if (actor.holidayFrom && actor.holidayTill) {
+    effectiveAvailability.push({ start: actor.holidayFrom, end: actor.holidayTill });
   }
 
   // NUCLEAR GOD MODE: Gebruik de nieuwe delivery_config indien aanwezig
@@ -324,6 +324,8 @@ export function calculateDeliveryDate(
     let date = new Date(effectiveStart);
     let remainingDays = totalDays;
     
+    //  CHRIS-PROTOCOL: Als we met harde maxima werken (min=max), 
+    //  is de leverdatum altijd gebaseerd op het aantal dagen vanaf nu.
     if (remainingDays === 0) return date;
 
     while (remainingDays > 0) {
@@ -344,8 +346,8 @@ export function calculateDeliveryDate(
     return date;
   };
 
-  // Map config type naar dagen indien niet expliciet opgegeven
-  let daysMin = actor.delivery_days_min;
+  //  CHRIS-PROTOCOL: Forceer gebruik van delivery_days_max voor de belofte (v2.28.52)
+  let daysMin = actor.delivery_days_max;
   let daysMax = actor.delivery_days_max;
 
   if (config.type === 'sameday') {
@@ -355,10 +357,10 @@ export function calculateDeliveryDate(
     daysMin = 1;
     daysMax = 1;
   } else if (config.type === '48h') {
-    daysMin = 1;
+    daysMin = 2;
     daysMax = 2;
   } else if (config.type === '72u') {
-    daysMin = 1;
+    daysMin = 3;
     daysMax = 3;
   }
 

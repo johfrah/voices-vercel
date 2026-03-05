@@ -103,4 +103,31 @@ describe('CheckoutPayloadSchema', () => {
     expect(parsed.billing_email_alt).toBe('boekhouding@voices.be');
     expect(parsed.payment_method).toBe('ideal');
   });
+
+  it('accepts a top-level journey field for world-aware checkout routing', () => {
+    const payload = {
+      pricing: { total: 149.5 },
+      items: [
+        {
+          id: 'workshop-42',
+          type: 'workshop_edition',
+          workshop_id: 42,
+          edition_id: 77,
+          pricing: { total: 149.5, subtotal: 123.55, tax: 25.95 },
+        },
+      ],
+      email: 'studio@voices.be',
+      first_name: 'Studio',
+      last_name: 'Tester',
+      postal_code: '2000',
+      city: 'Antwerpen',
+      country: 'BE',
+      usage: 'subscription',
+      journey: 'studio',
+      payment_method: 'bancontact',
+    };
+
+    const parsed = CheckoutPayloadSchema.parse(payload);
+    expect(parsed.journey).toBe('studio');
+  });
 });

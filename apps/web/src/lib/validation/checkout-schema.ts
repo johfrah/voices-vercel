@@ -108,6 +108,7 @@ export const CheckoutPayloadSchema = z.object({
 
   // 4. Project Context
   usage: z.enum(['unpaid', 'commercial', 'telefonie', 'subscription']).default('unpaid'),
+  journey: z.string().optional(),
   plan: z.string().optional(),
   briefing: z.string().default(''),
   quoteMessage: z.string().nullable().optional(),

@@ -48,6 +48,28 @@ function normalizeJourneyCode(value: unknown): string {
   return raw;
 }
 
+function normalizeJourneyAlias(value: unknown): string {
+  const normalized = normalizeJourneyCode(value);
+
+  if (normalized === 'johfrai-subscription' || normalized === 'johfrai_subscription') {
+    return 'johfrai';
+  }
+  if (normalized === 'partners') {
+    return 'partner';
+  }
+  if (normalized === 'artist_donation') {
+    return 'artist';
+  }
+  if (normalized === 'casting' || normalized === 'casting_list') {
+    return 'agency';
+  }
+  if (normalized.startsWith('agency_')) {
+    return 'agency';
+  }
+
+  return normalized;
+}
+
 function journeyCandidates(journeyCode: string): string[] {
   const candidates = new Set<string>([journeyCode]);
   if (journeyCode === 'agency') {
@@ -75,6 +97,24 @@ async function resolveLookupId(table: 'journeys' | 'order_statuses' | 'payment_m
 
   if (error || !data?.length) return null;
   return Number(data[0].id);
+}
+
+function paymentMethodCandidates(value: unknown): string[] {
+  const normalized = String(value || '').trim().toLowerCase();
+  if (!normalized) {
+    return ['mollie_bancontact', 'bancontact', 'mollie_ideal', 'ideal'];
+  }
+
+  const candidates = new Set<string>([normalized, `mollie_${normalized}`]);
+  if (normalized.startsWith('mollie_')) {
+    candidates.add(normalized.replace(/^mollie_/, ''));
+  }
+  if (normalized === 'banktransfer' || normalized === 'bank_transfer') {
+    candidates.add('mollie_banktransfer');
+    candidates.add('bank_transfer');
+  }
+
+  return Array.from(candidates).filter(Boolean);
 }
 
 function formatMusicTrackLabel(trackId: unknown): string {
@@ -305,7 +345,7 @@ export async function POST(request: Request) {
       pricing, items, selectedActor, step, first_name, last_name, email, 
       vat_number, postal_code, city, metadata, quoteMessage, phone, 
       company, address_street, usage, plan, music, ownMusicFile, country, payment_method, language,
-      billing_po, purchase_order, financial_email, billing_email_alt, is_quote
+      billing_po, purchase_order, financial_email, billing_email_alt, is_quote, journey
     } = data;
     const resolvedPurchaseOrder = String(billing_po || purchase_order || '').trim() || null;
     const resolvedBillingEmailAlt = String(financial_email || billing_email_alt || '').trim().toLowerCase() || null;
@@ -504,6 +544,25 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Kon geen geldige prijs berekenen voor deze bestelling.' }, { status: 400 });
     }
 
+    const payloadJourney = normalizeJourneyAlias(journey || (metadata as any)?.journey || rawBody?.journey);
+    const itemJourney = normalizeJourneyAlias(
+      validatedItems.find((item: any) => typeof item?.journey === 'string' && item.journey.trim().length > 0)?.journey ||
+      items.find((item: any) => typeof item?.journey === 'string' && item.journey.trim().length > 0)?.journey
+    );
+    const hasWorkshopItem = validatedItems.some((item: any) => item?.type === 'workshop_edition');
+    const resolvedJourneyCode = normalizeJourneyAlias(
+      itemJourney ||
+      payloadJourney ||
+      (hasWorkshopItem ? 'studio' : 'agency')
+    );
+    const resolvedWorldId = DEFAULT_WORLD_BY_JOURNEY[resolvedJourneyCode] || DEFAULT_WORLD_BY_JOURNEY.agency;
+
+    const [resolvedJourneyId, resolvedPaymentMethodId, resolvedStatusId] = await Promise.all([
+      resolveLookupId('journeys', journeyCandidates(resolvedJourneyCode)),
+      resolveLookupId('payment_methods', paymentMethodCandidates(payment_method)),
+      resolveLookupId('order_statuses', isQuote ? ['quote_pending', 'quote-pending', 'pending'] : ['pending', 'awaiting_payment', 'unpaid']),
+    ]);
+
     // 4. User Management
     let userId = metadata?.user_id ? Number(metadata.user_id) : null;
     if (email) {
@@ -557,7 +616,11 @@ export async function POST(request: Request) {
       total_tax: (amount - serverCalculatedSubtotal).toString(),
       status: isQuote ? 'quote-pending' : 'pending',
       user_id: userId || null,
-      journey: validatedItems[0]?.journey || 'agency',
+      world_id: resolvedWorldId,
+      journey_id: resolvedJourneyId,
+      status_id: resolvedStatusId,
+      payment_method_id: resolvedPaymentMethodId,
+      journey: resolvedJourneyCode,
       purchase_order: resolvedPurchaseOrder,
       billing_email_alt: resolvedBillingEmailAlt,
       billing_vat_number: vat_number || null,
@@ -568,6 +631,11 @@ export async function POST(request: Request) {
       raw_meta: {
         usage,
         plan,
+        world_id: resolvedWorldId,
+        journey: resolvedJourneyCode,
+        journey_id: resolvedJourneyId,
+        payment_method: payment_method || null,
+        payment_method_id: resolvedPaymentMethodId,
         language: normalizedLanguage,
         itemsCount: validatedItems.length,
         customer: {
@@ -608,6 +676,7 @@ export async function POST(request: Request) {
             billing_vat_number: vat_number || null,
             company_name: company || null,
             workshop_id: item.workshop_id || item.workshopId || null,
+            journey: resolvedJourneyCode,
             edition_id: item.edition_id || item.editionId || null,
             date: item.date || null,
             location: item.location || null,
@@ -731,7 +800,7 @@ export async function POST(request: Request) {
           },
           usage: item.usage || null,
           media: item.media || [],
-          journey: item.journey || null,
+          journey: item.journey || resolvedJourneyCode,
           country_id: countryId || item.countryId || item.country_id || null,
         },
         delivery_status: 'waiting'
@@ -803,14 +872,27 @@ export async function POST(request: Request) {
     const mollieOrder = await MollieService.createOrder({
       amount: { currency: 'EUR', value: amount.toFixed(2) },
       orderNumber: newOrder.id.toString(),
-      lines: validatedItems.map((i: any) => ({
-        name: resolveCheckoutItemName(i),
-        quantity: 1,
-        unitPrice: { currency: 'EUR', value: (i.pricing?.total || 0).toFixed(2) },
-        totalAmount: { currency: 'EUR', value: (i.pricing?.total || 0).toFixed(2) },
-        vatRate: isVatExempt ? '0' : '21',
-        vatAmount: { currency: 'EUR', value: (i.pricing?.tax || 0).toFixed(2) }
-      })),
+      lines: validatedItems.map((i: any) => {
+        const quantity = Math.max(1, Number(i.quantity || 1));
+        const lineTotalGross = Number(i.pricing?.total || 0);
+        const explicitTax = Number(i.pricing?.tax);
+        // Mollie validates vatAmount against gross total (21/121 for BE).
+        // Fallback prevents 422 failures when upstream tax is missing.
+        const derivedTax = isVatExempt
+          ? 0
+          : Math.round((lineTotalGross * 21 / 121) * 100) / 100;
+        const vatAmount = Number.isFinite(explicitTax) && explicitTax > 0 ? explicitTax : derivedTax;
+        const unitGross = quantity > 0 ? lineTotalGross / quantity : lineTotalGross;
+
+        return {
+          name: resolveCheckoutItemName(i),
+          quantity,
+          unitPrice: { currency: 'EUR', value: unitGross.toFixed(2) },
+          totalAmount: { currency: 'EUR', value: lineTotalGross.toFixed(2) },
+          vatRate: isVatExempt ? '0.00' : '21.00',
+          vatAmount: { currency: 'EUR', value: vatAmount.toFixed(2) }
+        };
+      }),
       billingAddress: { streetAndNumber: address_street || 'N/A', postalCode: postal_code || 'N/A', city: city || 'N/A', country: country || 'BE', givenName: first_name, familyName: last_name, email },
       redirectUrl: `${baseUrl}/api/auth/magic-login?token=${secureToken}&redirect=/account/orders?orderId=${newOrder.id}&email=${encodeURIComponent(email)}`,
       webhookUrl: `${webhookBaseUrl}/api/checkout/webhook`,
@@ -822,7 +904,9 @@ export async function POST(request: Request) {
         company: company || null,
         givenName: first_name,
         familyName: last_name,
-        language: normalizedLanguage
+        language: normalizedLanguage,
+        journey: resolvedJourneyCode,
+        world_id: resolvedWorldId,
       }
     });
 

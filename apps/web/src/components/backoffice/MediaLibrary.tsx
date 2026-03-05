@@ -295,7 +295,7 @@ export const MediaLibrary: React.FC = () => {
     const formData = new FormData();
     formData.append('action', 'bulk-visibility');
     formData.append('ids', JSON.stringify(selectedIds));
-    formData.append('isPublic', isPublic.toString());
+    formData.append('isPublic', is_public.toString());
 
     try {
       const res = await fetch('/api/backoffice/media', {

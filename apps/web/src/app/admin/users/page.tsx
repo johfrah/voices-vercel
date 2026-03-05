@@ -14,7 +14,7 @@ import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useAdminTracking } from '@/hooks/useAdminTracking';
 import { useAuth } from '@/contexts/AuthContext';
 import { useWorld } from '@/contexts/WorldContext';
-import { ArrowLeft, Edit3, Loader2, Mail, MoreHorizontal, Search as SearchIcon, Shield, UserPlus, Users, RefreshCw, Ghost, Eye, DollarSign, ShoppingBag, Mic2, BookOpen, GraduationCap, Bot, Briefcase, Wind, Layout, Music, HelpCircle, UserCheck } from 'lucide-react';
+import { ArrowLeft, Edit3, Loader2, Mail, MoreHorizontal, Search as SearchIcon, Shield, ShieldCheck, UserPlus, Users, RefreshCw, Ghost, Eye, DollarSign, ShoppingBag, Mic2, BookOpen, GraduationCap, Bot, Briefcase, Wind, Layout, Music, HelpCircle, UserCheck } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState, useCallback } from 'react';
 import { toast } from 'react-hot-toast';

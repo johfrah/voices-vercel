@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
     // 1. Bepaal doelpad en categorie
     let targetSubDir = './wp-core/wp-content/uploads/assets/content/general';
     let category = 'general';
-    let actor = null;
+    let actor: any = null;
 
     if (actorId) {
       // Haal actor data op voor specifieke plaatsing

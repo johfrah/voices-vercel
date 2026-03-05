@@ -1,5 +1,5 @@
 import { ActorProfileForm } from '@/components/forms/ActorProfileForm';
-import { ContainerInstrument, HeadingInstrument, PageWrapperInstrument, SectionInstrument, TextInstrument } from '@/components/ui/LayoutInstruments';
+import { ButtonInstrument, ContainerInstrument, HeadingInstrument, PageWrapperInstrument, SectionInstrument, TextInstrument } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { Sparkles, Loader2, AlertCircle } from 'lucide-react';
 import { db, users, actors, actorLanguages, actorTones } from '@/lib/system/voices-config';

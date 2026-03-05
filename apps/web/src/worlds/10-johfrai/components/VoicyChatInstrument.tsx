@@ -63,6 +63,7 @@ export const VoicyChatV2: React.FC = () => {
   const [clickedChips, setClickedChips] = useState<string[]>([]);
   const [isHoveringVoicy, setIsHoveringVoicy] = useState(false);
   const [showChips, setShowChips] = useState(false);
+  const [isMobileViewport, setIsMobileViewport] = useState(false);
   const [showLeadForm, setShowLeadForm] = useState(false);
   const [leadFormData, setLeadFormData] = useState({ name: '', email: '' });
   const [sensorData, setSensorData] = useState<any>({
@@ -113,6 +114,15 @@ export const VoicyChatV2: React.FC = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const lastIdRef = useRef<number>(0);
   const chatContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const mediaQuery = window.matchMedia('(max-width: 767px), (pointer: coarse)');
+    const syncViewportMode = () => setIsMobileViewport(mediaQuery.matches);
+    syncViewportMode();
+    mediaQuery.addEventListener('change', syncViewportMode);
+    return () => mediaQuery.removeEventListener('change', syncViewportMode);
+  }, []);
 
   //  CHRIS-PROTOCOL: Sync telephony config from DB
   useEffect(() => {
@@ -361,6 +371,7 @@ export const VoicyChatV2: React.FC = () => {
                 selectedActor: state.selectedActor,
                 briefing: params.briefing || state.briefing,
                 usage: state.usage,
+                journey: state.journey,
                 payment_method: 'bancontact',
                 metadata: {
                   words: (params.briefing || state.briefing || '').trim().split(/\s+/).filter(Boolean).length,
@@ -708,6 +719,11 @@ export const VoicyChatV2: React.FC = () => {
 
   useEffect(() => {
     //  AUTO-SHOW CHIPS (CHRIS-PROTOCOL: Proactieve interactie)
+    if (isMobileViewport) {
+      setShowChips(false);
+      return;
+    }
+
     if (!isOpen) {
       const timer = setTimeout(() => {
         setShowChips(true);
@@ -724,13 +740,13 @@ export const VoicyChatV2: React.FC = () => {
     } else {
       setShowChips(false);
     }
-  }, [isOpen]);
+  }, [isMobileViewport, isOpen]);
 
   useEffect(() => {
-    if (isHoveringVoicy && !isOpen) {
+    if (!isMobileViewport && isHoveringVoicy && !isOpen) {
       setShowChips(true);
     }
-  }, [isHoveringVoicy, isOpen]);
+  }, [isHoveringVoicy, isMobileViewport, isOpen]);
 
   const toggleChat = () => {
     playClick(isOpen ? 'soft' : 'pro');
@@ -992,13 +1008,19 @@ export const VoicyChatV2: React.FC = () => {
     }
   };
 
+  type SmartChip = {
+    label: string;
+    action: string;
+    icon?: React.ElementType;
+  };
+
   //  Smart Chips logic
   const getSmartChips = () => {
     if (isAdmin) {
-      return []; //  ADMIN MANDATE: Geen zwevende chips voor admin (staan al in CMD+K)
+      return [] as SmartChip[]; //  ADMIN MANDATE: Geen zwevende chips voor admin (staan al in CMD+K)
     }
 
-    const chips = [];
+    const chips: SmartChip[] = [];
     
     //  Context-based chips (Journey Aware)
     if (isAgencyJourney) {
@@ -1045,7 +1067,7 @@ export const VoicyChatV2: React.FC = () => {
       onMouseLeave={() => setIsHoveringVoicy(false)}
     >
       {/* Smart Chips (Floating above toggle) */}
-      {!isOpen && showChips && (
+      {!isOpen && showChips && !isMobileViewport && (
         <ContainerInstrument plain className="absolute bottom-20 right-0 flex flex-col items-end gap-2 pointer-events-none">
           <AnimatePresence>
             {getSmartChips().map((chip, i) => (
