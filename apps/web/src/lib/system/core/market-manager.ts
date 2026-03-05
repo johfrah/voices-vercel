@@ -140,37 +140,70 @@ export class MarketManager {
   public static get services() { return this.servicesRegistry; }
   public static get worldLanguages() { return this.worldLanguagesRegistry; }
 
-  private static LANGUAGE_ROUTE_SEGMENT_TO_CODE: Record<string, string> = {
-    flemish: 'nl-be',
-    vlaams: 'nl-be',
-    dutch: 'nl-nl',
-    nederlands: 'nl-nl',
-    french: 'fr-fr',
-    frans: 'fr-fr',
-    english: 'en-gb',
-    engels: 'en-gb',
-    german: 'de-de',
-    duits: 'de-de',
-    spanish: 'es-es',
-    spaans: 'es-es',
-    italian: 'it-it',
-    italiaans: 'it-it',
-    portuguese: 'pt-pt',
-    portugees: 'pt-pt',
-  };
+  private static toRouteSegment(value: string | null | undefined): string {
+    return String(value || '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .trim()
+      .replace(/&/g, ' and ')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+  }
 
-  private static LANGUAGE_CODE_TO_ROUTE_SEGMENT: Record<string, string> = {
-    'nl-be': 'flemish',
-    'nl-nl': 'dutch',
-    'fr-be': 'french',
-    'fr-fr': 'french',
-    'en-gb': 'english',
-    'en-us': 'english',
-    'de-de': 'german',
-    'es-es': 'spanish',
-    'it-it': 'italian',
-    'pt-pt': 'portuguese',
-  };
+  private static getEffectiveLanguagesRegistry(): Array<{ id: number; code: string; label: string; [key: string]: any }> {
+    if (this.languagesRegistry.length > 0) return this.languagesRegistry as any;
+    if (typeof global !== 'undefined' && Array.isArray((global as any).handshakeLanguages)) return (global as any).handshakeLanguages;
+    if (typeof window !== 'undefined' && Array.isArray((window as any).handshakeLanguages)) return (window as any).handshakeLanguages;
+    return [];
+  }
+
+  private static getEffectiveJourneysRegistry(): Array<{ id: number; code: string; label: string; [key: string]: any }> {
+    if (this.journeysRegistry.length > 0) return this.journeysRegistry as any;
+    if (typeof global !== 'undefined' && Array.isArray((global as any).handshakeJourneys)) return (global as any).handshakeJourneys;
+    if (typeof window !== 'undefined' && Array.isArray((window as any).handshakeJourneys)) return (window as any).handshakeJourneys;
+    return [];
+  }
+
+  private static getLanguageRouteCandidates(language: { code?: string; label?: string; [key: string]: any }): string[] {
+    const candidates = [
+      language.route_slug,
+      language.routeSegment,
+      language.url_slug,
+      language.slug,
+      language.label,
+      language.code,
+      String(language.code || '').split('-')[0],
+    ]
+      .map((item) => this.toRouteSegment(item))
+      .filter(Boolean);
+
+    return Array.from(new Set(candidates));
+  }
+
+  private static inferJourneyType(raw: string): 'commercial' | 'telephony' | 'video' | null {
+    const value = this.toRouteSegment(raw);
+    if (!value) return null;
+    if (/commercial|advertentie|reclame|publicite|werbung|ads|campaign|campagne/.test(value)) return 'commercial';
+    if (/telephony|telefonie|telefoon|ivr|phone/.test(value)) return 'telephony';
+    if (/video|voice-over|voiceover|corporate|agency-vo|agency/.test(value)) return 'video';
+    return null;
+  }
+
+  private static getJourneyRouteCandidates(journey: { code?: string; label?: string; [key: string]: any }): string[] {
+    const candidates = [
+      journey.route_slug,
+      journey.routeSegment,
+      journey.url_slug,
+      journey.slug,
+      journey.code,
+      journey.label,
+    ]
+      .map((item) => this.toRouteSegment(item))
+      .filter(Boolean);
+
+    return Array.from(new Set(candidates));
+  }
 
   static getServiceId(code: string): number | null {
     if (!code) return null;
@@ -439,29 +472,26 @@ export class MarketManager {
 
     const lowInput = String(input).toLowerCase().trim();
     const inputId = typeof input === 'number' ? input : (!isNaN(Number(input)) ? Number(input) : null);
+    const registry = this.getEffectiveLanguagesRegistry();
+    const normalizedInputSegment = this.toRouteSegment(lowInput);
+
+    const languageFromRegistry = inputId != null
+      ? registry.find((language) => language.id === inputId)
+      : registry.find((language) => this.getLanguageRouteCandidates(language).includes(normalizedInputSegment));
+
+    if (languageFromRegistry) {
+      const candidates = this.getLanguageRouteCandidates(languageFromRegistry);
+      if (candidates.length > 0) return candidates[0];
+    }
 
     if (inputId != null) {
-      const languageFromRegistry = this.languagesRegistry.find((language) => language.id === inputId);
-      if (languageFromRegistry?.code) {
-        return this.LANGUAGE_CODE_TO_ROUTE_SEGMENT[normalizeLocale(languageFromRegistry.code, 'nl-be')] || null;
-      }
+      const fallbackLabel = this.getLanguageLabel(inputId);
+      const fallbackSegment = this.toRouteSegment(fallbackLabel);
+      return fallbackSegment || null;
     }
 
-    const normalizedCode = normalizeLocale(lowInput, 'nl-be');
-    if (this.LANGUAGE_CODE_TO_ROUTE_SEGMENT[normalizedCode]) {
-      return this.LANGUAGE_CODE_TO_ROUTE_SEGMENT[normalizedCode];
-    }
-
-    if (this.LANGUAGE_ROUTE_SEGMENT_TO_CODE[lowInput]) {
-      return lowInput;
-    }
-
-    const fromLabel = this.languagesRegistry.find((language) => language.label.toLowerCase() === lowInput);
-    if (fromLabel?.code) {
-      return this.LANGUAGE_CODE_TO_ROUTE_SEGMENT[normalizeLocale(fromLabel.code, 'nl-be')] || null;
-    }
-
-    return null;
+    const fallbackSegment = this.toRouteSegment(lowInput);
+    return fallbackSegment || null;
   }
 
   static getLanguageFromRouteSegment(
@@ -470,14 +500,31 @@ export class MarketManager {
   ): { code: string; id: number | null } | null {
     if (!segment) return null;
 
-    const normalizedSegment = String(segment).toLowerCase().trim();
-    const code = this.LANGUAGE_ROUTE_SEGMENT_TO_CODE[normalizedSegment];
-    if (!code) return null;
+    const normalizedSegment = this.toRouteSegment(segment);
+    if (!normalizedSegment) return null;
 
-    return {
-      code,
-      id: this.getLanguageId(code, fallbackLocale),
-    };
+    const registry = this.getEffectiveLanguagesRegistry();
+    const fromRegistry = registry.find((language) =>
+      this.getLanguageRouteCandidates(language).includes(normalizedSegment)
+    );
+
+    if (fromRegistry) {
+      const code = normalizeLocale(fromRegistry.code || fromRegistry.label || fallbackLocale, fallbackLocale);
+      const id = typeof fromRegistry.id === 'number'
+        ? fromRegistry.id
+        : this.getLanguageId(code, fallbackLocale);
+      return { code, id };
+    }
+
+    const fallbackId = this.getLanguageId(normalizedSegment, fallbackLocale);
+    if (fallbackId == null) return null;
+
+    const fallbackLanguage = registry.find((language) => language.id === fallbackId);
+    const fallbackCode = normalizeLocale(
+      fallbackLanguage?.code || fallbackLocale,
+      fallbackLocale
+    );
+    return { code: fallbackCode, id: fallbackId };
   }
 
   static getLanguageLabel(input: string | number): string {
@@ -641,11 +688,67 @@ export class MarketManager {
     return emergencyMap[lowInput] || lowInput;
   }
 
+  static resolveJourneyTypeFromSegment(
+    segment: string | null | undefined
+  ): 'commercial' | 'telephony' | 'video' | undefined {
+    const normalizedSegment = this.toRouteSegment(segment);
+    if (!normalizedSegment) return undefined;
+
+    const registry = this.getEffectiveJourneysRegistry();
+    const registryMatch = registry.find((journey) =>
+      this.getJourneyRouteCandidates(journey).includes(normalizedSegment)
+    );
+
+    if (registryMatch) {
+      const fromRegistry = this.inferJourneyType(
+        `${registryMatch.code || ''} ${registryMatch.label || ''} ${normalizedSegment}`
+      );
+      if (fromRegistry) return fromRegistry;
+    }
+
+    return this.inferJourneyType(normalizedSegment) || undefined;
+  }
+
+  static getJourneyRouteSegment(
+    journeyInput: string | number | null | undefined
+  ): string | null {
+    if (journeyInput == null || journeyInput === '') return null;
+
+    const registry = this.getEffectiveJourneysRegistry();
+    const inputId = typeof journeyInput === 'number'
+      ? journeyInput
+      : (!isNaN(Number(journeyInput)) ? Number(journeyInput) : null);
+    const normalizedInput = this.toRouteSegment(String(journeyInput));
+
+    const journeyFromRegistry = inputId != null
+      ? registry.find((journey) => journey.id === inputId)
+      : registry.find((journey) => {
+          const candidates = this.getJourneyRouteCandidates(journey);
+          return candidates.includes(normalizedInput) ||
+            this.inferJourneyType(`${journey.code || ''} ${journey.label || ''}`) === normalizedInput;
+        });
+
+    const fallbackJourneyType =
+      (journeyFromRegistry
+        ? this.inferJourneyType(`${journeyFromRegistry.code || ''} ${journeyFromRegistry.label || ''}`)
+        : null) ||
+      this.resolveJourneyTypeFromSegment(String(journeyInput));
+
+    if (journeyFromRegistry) {
+      const explicitRouteSlug = this.toRouteSegment(
+        journeyFromRegistry.route_slug ||
+        journeyFromRegistry.routeSegment ||
+        journeyFromRegistry.url_slug ||
+        journeyFromRegistry.slug
+      );
+      if (explicitRouteSlug) return explicitRouteSlug;
+    }
+
+    return fallbackJourneyType || normalizedInput || null;
+  }
+
   static getJourneyFromSegment(segment: string): 'commercial' | 'telephony' | 'video' {
-    const s = segment?.toLowerCase();
-    if (['commercial', 'advertentie', 'reclame', 'publicité', 'werbung', 'ads'].includes(s)) return 'commercial';
-    if (['telephony', 'telefonie', 'telefoon', 'téléphonie'].includes(s)) return 'telephony';
-    return 'video';
+    return this.resolveJourneyTypeFromSegment(segment) || 'video';
   }
 
   static isAgencySegment(segment: string): boolean {

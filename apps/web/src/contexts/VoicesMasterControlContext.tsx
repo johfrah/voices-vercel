@@ -78,23 +78,6 @@ const COMMERCIAL_MEDIA_ALIAS_MAP: Record<string, string> = {
 
 const DEFAULT_COMMERCIAL_MEDIA_CODE = 'online';
 
-const JOURNEY_SEGMENT_MAP: Record<string, JourneyType> = {
-  telephony: 'telephony',
-  telefonie: 'telephony',
-  telefoon: 'telephony',
-  video: 'video',
-  corporate: 'video',
-  commercial: 'commercial',
-  advertentie: 'commercial',
-  reclame: 'commercial',
-  advertising: 'commercial',
-};
-
-const resolveAgencyJourney = (segment: string | null | undefined): JourneyType | undefined => {
-  if (!segment) return undefined;
-  return JOURNEY_SEGMENT_MAP[String(segment).toLowerCase()];
-};
-
 const resolveAgencyPathMeta = (segments: string[], fallbackLocale: string = 'nl-be') => {
   const isAgency = segments[0]?.toLowerCase() === 'agency';
   if (!isAgency) {
@@ -107,14 +90,14 @@ const resolveAgencyPathMeta = (segments: string[], fallbackLocale: string = 'nl-
 
   const segmentOne = segments[1]?.toLowerCase();
   const segmentTwo = segments[2]?.toLowerCase();
-  const journeyAtOne = resolveAgencyJourney(segmentOne);
-  const journeyAtTwo = resolveAgencyJourney(segmentTwo);
+  const journeyAtOne = MarketManager.resolveJourneyTypeFromSegment(segmentOne);
+  const journeyAtTwo = MarketManager.resolveJourneyTypeFromSegment(segmentTwo);
   const languageFromPath = !journeyAtOne && segmentOne
     ? MarketManager.getLanguageFromRouteSegment(segmentOne, fallbackLocale)
     : null;
   const journeySegmentIndex = journeyAtOne ? 1 : (journeyAtTwo ? 2 : -1);
   const journeyFromPath = journeySegmentIndex > -1
-    ? resolveAgencyJourney(segments[journeySegmentIndex])
+    ? MarketManager.resolveJourneyTypeFromSegment(segments[journeySegmentIndex])
     : undefined;
 
   return {
@@ -774,14 +757,14 @@ export const VoicesMasterControlProvider: React.FC<{
     // We only touch the URL if we are in a known dynamic flow.
     let targetUrl = '';
     if (isAgencyFilterPage) {
-      const jSlug = state.journey === 'telephony' ? 'telephony' : (state.journey === 'commercial' ? 'commercial' : 'video');
+      const jSlug = MarketManager.getJourneyRouteSegment(state.journey) || 'video';
       const locale = pathname.match(/^\/(nl|fr|en|de|es|it|pt)/)?.[0] || '';
       const languageSegment =
         MarketManager.getLanguageRouteSegment(
           state.filters.languageId ??
           state.filters.language ??
           (state.filters.languageIds && state.filters.languageIds.length > 0 ? state.filters.languageIds[0] : null)
-        ) || 'flemish';
+        ) || MarketManager.getLanguageRouteSegment(state.filters.language || 'nl-be') || 'nl';
       targetUrl = locale + '/agency/' + languageSegment + '/' + jSlug + '/';
       
       if (state.journey === 'commercial') {
@@ -957,8 +940,9 @@ export const VoicesMasterControlProvider: React.FC<{
             prev.filters.languageId ??
             prev.filters.language ??
             (prev.filters.languageIds && prev.filters.languageIds.length > 0 ? prev.filters.languageIds[0] : null)
-          ) || 'flemish';
-        const newUrl = isAgencyFilterPage ? '/agency/' + languageSegment + '/' + prev.journey : pathname;
+          ) || MarketManager.getLanguageRouteSegment(prev.filters.language || 'nl-be') || 'nl';
+        const journeySegment = MarketManager.getJourneyRouteSegment(prev.journey) || 'video';
+        const newUrl = isAgencyFilterPage ? '/agency/' + languageSegment + '/' + journeySegment : pathname;
         if (typeof window !== 'undefined' && newUrl !== pathname) {
           window.history.replaceState(null, '', newUrl);
         }

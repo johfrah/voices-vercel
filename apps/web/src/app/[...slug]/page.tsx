@@ -1441,18 +1441,9 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
 
       const segmentOne = segments[1]?.toLowerCase();
       const segmentTwo = segments[2]?.toLowerCase();
-      const knownAgencyJourneySegments = new Set([
-        'telephony',
-        'telefonie',
-        'telefoon',
-        'video',
-        'corporate',
-        'commercial',
-        'advertentie',
-        'reclame',
-        'advertising',
-      ]);
-      const hasJourneyAtSegmentOne = !!(segmentOne && knownAgencyJourneySegments.has(segmentOne));
+      const journeyAtSegmentOne = MarketManager.resolveJourneyTypeFromSegment(segmentOne);
+      const journeyAtSegmentTwo = MarketManager.resolveJourneyTypeFromSegment(segmentTwo);
+      const hasJourneyAtSegmentOne = !!journeyAtSegmentOne;
       const agencyJourneySegment = hasJourneyAtSegmentOne ? segmentOne : segmentTwo;
       const mediaStartIndex = hasJourneyAtSegmentOne ? 2 : 3;
 
@@ -1466,7 +1457,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
       }
 
       //  CHRIS-PROTOCOL: Map translated journey segments to internal journey types via MarketManager
-      const agencyJourney = MarketManager.getJourneyFromSegment(agencyJourneySegment || 'video');
+      const agencyJourney = MarketManager.resolveJourneyTypeFromSegment(agencyJourneySegment) || journeyAtSegmentTwo || 'video';
 
       if (agencyJourney === "commercial" && segments[mediaStartIndex]) {
         const commercialMediaMap: Record<string, string> = {
