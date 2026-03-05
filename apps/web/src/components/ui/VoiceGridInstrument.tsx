@@ -46,7 +46,7 @@ export const VoiceGrid: React.FC<VoiceGridProps> = ({ actors, featured = false, 
               : adaptiveGridClass
           )}
         >
-          <AnimatePresence initial={false}>
+          <AnimatePresence initial={false} mode="popLayout">
             {(actors || []).filter(Boolean).map((actor) => (
               <motion.div 
                 key={actor?.id || Math.random()}
