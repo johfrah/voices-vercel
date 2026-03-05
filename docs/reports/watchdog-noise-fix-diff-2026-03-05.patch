@@ -1,0 +1,170 @@
+commit 88b2d0255339fefe3e6e5899c269b93053dfd79c
+Author: Cursor Agent <cursoragent@cursor.com>
+Date:   Thu Mar 5 06:22:54 2026 +0000
+
+    fix: de-escalate browser network noise in watchdog
+
+diff --git a/apps/web/src/app/api/admin/system/watchdog/route.ts b/apps/web/src/app/api/admin/system/watchdog/route.ts
+index 7aaffaf0..5d7ac0ba 100644
+--- a/apps/web/src/app/api/admin/system/watchdog/route.ts
++++ b/apps/web/src/app/api/admin/system/watchdog/route.ts
+@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
+ import { VoicesMailEngine } from '@/lib/services/voices-mail-engine';
+ import { TelegramService } from '@/lib/services/telegram-service';
+ import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
++import { isExpectedBrowserNetworkNoise } from '@/lib/system/watchdog/noise-filter';
+ import { desc, gte, and, eq, sql } from 'drizzle-orm';
+ import { createClient } from '@supabase/supabase-js';
+ 
+@@ -41,11 +42,18 @@ export async function POST(request: NextRequest) {
+     const payload = body.payload || details.payload;
+ 
+     const normalizedError = String(error || '').toUpperCase();
++    const normalizedErrorLower = String(error || '').toLowerCase();
+     const detailsLocation = String(details?.location || '');
+     const detailsPathname = String(details?.pathname || '');
+     const normalizedUrl = String(url || '');
+     const isLocalDevEvent = [detailsLocation, detailsPathname, normalizedUrl, String(error)]
+       .some((value) => /localhost:3000|127\.0\.0\.1:3000/i.test(value));
++    const isBrowserNetworkNoise = isExpectedBrowserNetworkNoise({
++      error: String(error || ''),
++      stack: typeof stack === 'string' ? stack : undefined,
++      component: String(component || ''),
++      details: details as Record<string, unknown>
++    });
+ 
+     // Ignore expected not-found throws and local dev noise.
+     if (
+@@ -63,7 +71,7 @@ export async function POST(request: NextRequest) {
+     console.log(`[Watchdog] Error detected: ${error.substring(0, 100)}`);
+ 
+     // 🛡️ CHRIS-PROTOCOL: Nuclear Telegram Alert for Critical Errors
+-    if (level === 'critical' || level === 'error') {
++    if ((level === 'critical' || level === 'error') && !isBrowserNetworkNoise) {
+       try {
+         await TelegramService.reportCriticalError({
+           error,
+@@ -185,18 +193,19 @@ export async function POST(request: NextRequest) {
+       // 🛡️ CHRIS-PROTOCOL: Filter out common noise to prevent mail spam
+       const isNoise = !aggressiveAlerts && (
+         level === 'info' ||                           // Skip info logs
+-        error.includes('Minified React error #419') || // Hydration mismatch (common in Next.js/Browser extensions)
+-        error.includes('Server Components render') || // Generic Next.js error often paired with others
+-        error.includes('/api/translations/heal') ||   // Network noise/aborted requests
+-        error.includes('Failed to fetch') ||          // Network noise
+-        error.includes('Load failed') ||              // Network noise
+-        error.includes('Self-healing failed') ||      // Noise from the healer itself
+-        error.includes('504') ||                      // Timeout noise
+-        error.includes('503') ||                      // Service unavailable noise
+-        error.includes('429') ||                      // Rate limit noise
+-        error.includes('AbortError') ||               // Aborted requests
+-        error.includes('TypeError: S is not a function') || // Known auth noise
+-        error.includes('toggleActorSelection')        // Known UI noise
++        isBrowserNetworkNoise ||
++        normalizedErrorLower.includes('minified react error #419') || // Hydration mismatch (common in Next.js/Browser extensions)
++        normalizedErrorLower.includes('server components render') || // Generic Next.js error often paired with others
++        normalizedErrorLower.includes('/api/translations/heal') ||   // Network noise/aborted requests
++        normalizedErrorLower.includes('failed to fetch') ||          // Network noise
++        normalizedErrorLower.includes('load failed') ||              // Network noise
++        normalizedErrorLower.includes('self-healing failed') ||      // Noise from the healer itself
++        normalizedErrorLower.includes('504') ||                      // Timeout noise
++        normalizedErrorLower.includes('503') ||                      // Service unavailable noise
++        normalizedErrorLower.includes('429') ||                      // Rate limit noise
++        normalizedErrorLower.includes('aborterror') ||               // Aborted requests
++        normalizedErrorLower.includes('typeerror: s is not a function') || // Known auth noise
++        normalizedErrorLower.includes('toggleactorselection')        // Known UI noise
+       );
+ 
+       if (isNoise || skipEmails) {
+diff --git a/apps/web/src/lib/system/watchdog/noise-filter.ts b/apps/web/src/lib/system/watchdog/noise-filter.ts
+new file mode 100644
+index 00000000..f6509c91
+--- /dev/null
++++ b/apps/web/src/lib/system/watchdog/noise-filter.ts
+@@ -0,0 +1,86 @@
++interface WatchdogNoiseInput {
++  error?: string;
++  stack?: string;
++  component?: string;
++  details?: Record<string, unknown>;
++}
++
++function toSafeString(value: unknown): string {
++  return typeof value === 'string' ? value : '';
++}
++
++function serializeArgs(args: unknown): string {
++  if (!Array.isArray(args)) return '';
++  return args
++    .map((entry) => {
++      if (typeof entry === 'string') return entry;
++      if (!entry || typeof entry !== 'object') return '';
++      const candidate = entry as Record<string, unknown>;
++      return [toSafeString(candidate.name), toSafeString(candidate.message), toSafeString(candidate.stack)]
++        .filter(Boolean)
++        .join(' ');
++    })
++    .join(' ');
++}
++
++function serializeBreadcrumbs(breadcrumbs: unknown): string {
++  if (!Array.isArray(breadcrumbs)) return '';
++  return breadcrumbs
++    .map((entry) => {
++      if (!entry || typeof entry !== 'object') return '';
++      const candidate = entry as Record<string, unknown>;
++      return [toSafeString(candidate.type), toSafeString(candidate.message)].filter(Boolean).join(' ');
++    })
++    .join(' ');
++}
++
++export function isExpectedBrowserNetworkNoise({
++  error,
++  stack,
++  component,
++  details
++}: WatchdogNoiseInput): boolean {
++  const source = toSafeString(component).toLowerCase();
++  const eventDetails = details ?? {};
++  const looksLikeBrowserEvent =
++    source.includes('browser') ||
++    source.includes('client') ||
++    Boolean(eventDetails.userAgent) ||
++    Boolean(eventDetails.location) ||
++    Boolean(eventDetails.pathname);
++
++  if (!looksLikeBrowserEvent) {
++    return false;
++  }
++
++  const fingerprint = [
++    toSafeString(error),
++    toSafeString(stack),
++    toSafeString(eventDetails.full_console_output),
++    toSafeString(eventDetails.stack),
++    serializeArgs(eventDetails.args),
++    serializeBreadcrumbs(eventDetails.breadcrumbs)
++  ]
++    .filter(Boolean)
++    .join(' ')
++    .toLowerCase();
++
++  const networkSignals = [
++    'typeerror: network error',
++    'network error',
++    'failed to fetch',
++    'load failed',
++    'networkerror when attempting to fetch resource',
++    'the internet connection appears to be offline',
++    'aborterror'
++  ];
++
++  const hasNetworkSignal = networkSignals.some((signal) => fingerprint.includes(signal));
++  const hasFetchTrail =
++    fingerprint.includes(' fetch ') ||
++    fingerprint.startsWith('fetch ') ||
++    fingerprint.includes(' /api/') ||
++    fingerprint.includes(' https://');
++
++  return hasNetworkSignal && hasFetchTrail;
++}
