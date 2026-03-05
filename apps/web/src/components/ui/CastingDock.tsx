@@ -20,6 +20,7 @@ import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import { VoicesLink, useVoicesRouter } from '@/components/ui/VoicesLink';
 import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
 import { useAuth } from '@/contexts/AuthContext';
+import { useConsent } from '@/hooks/useConsent';
 import toast from 'react-hot-toast';
 
 /**
@@ -30,9 +31,10 @@ import toast from 'react-hot-toast';
 export function shouldShowCastingDock(
   selectedActorsCount: number,
   isExcludedPage: boolean,
-  isVoicyOpen: boolean
+  isVoicyOpen: boolean,
+  isConsentPending: boolean
 ): boolean {
-  return selectedActorsCount > 0 && !isExcludedPage && !isVoicyOpen;
+  return selectedActorsCount > 0 && !isExcludedPage && !isVoicyOpen && !isConsentPending;
 }
 
 export const CastingDock = () => {
@@ -41,6 +43,7 @@ export const CastingDock = () => {
   const { state, toggleActorSelection } = useVoicesState();
   const { playClick } = useSonicDNA();
   const { isAdmin } = useAuth();
+  const { consent, isLoaded: isConsentLoaded } = useConsent();
   const { t } = useTranslation();
   const [isGeneratingLink, setIsGeneratingLink] = useState(false);
   const [isVoicyOpen, setIsVoicyOpen] = useState(false);
@@ -52,7 +55,8 @@ export const CastingDock = () => {
   const isExcludedMarket = ['ARTIST', 'PORTFOLIO', 'ADEMING'].includes(market.market_code);
   const isExcludedPage = isExcludedMarket || 
                          pathname?.startsWith('/casting/launchpad');
-  const isVisible = shouldShowCastingDock(selectedActors.length, Boolean(isExcludedPage), isVoicyOpen);
+  const isConsentPending = isConsentLoaded && consent === 'none';
+  const isVisible = shouldShowCastingDock(selectedActors.length, Boolean(isExcludedPage), isVoicyOpen, isConsentPending);
 
   useEffect(() => {
     const handleVoicyState = (event: Event) => {

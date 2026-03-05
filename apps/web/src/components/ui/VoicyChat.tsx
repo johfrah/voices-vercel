@@ -133,7 +133,8 @@ export const VoicyChatV2: React.FC = () => {
   const activeEmail = market.email;
   const activePhone = market.phone;
 
-  const { hasFullConsent: hasConsent } = useConsent();
+  const { consent, hasFullConsent: hasConsent, isLoaded: isConsentLoaded } = useConsent();
+  const isConsentPending = isConsentLoaded && consent === 'none';
 
   const chipsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -1127,7 +1128,7 @@ export const VoicyChatV2: React.FC = () => {
     return chips.filter(chip => !clickedChips.includes(chip.label));
   };
 
-  if (isArtistPage) return null;
+  if (isArtistPage || isConsentPending) return null;
 
   return (
     <ContainerInstrument 
