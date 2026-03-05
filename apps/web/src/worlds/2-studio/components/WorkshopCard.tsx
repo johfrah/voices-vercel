@@ -322,14 +322,10 @@ export const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onUpdate }
             
             <ButtonInstrument 
               as={Link}
-              href={nextEdition ? `/studio/${workshop.slug}` : `/studio/doe-je-mee?workshop=${workshop.slug}`}
+              href={`/studio/${workshop.slug}`}
               onClick={(e) => {
                 e.preventDefault();
-                if (nextEdition) {
-                  router.push(`/studio/${workshop.slug}`);
-                } else {
-                  router.push(`/studio/doe-je-mee?workshop=${workshop.slug}`);
-                }
+                router.push(`/studio/${workshop.slug}`);
               }}
               className="flex items-center gap-3 text-[15px] font-light tracking-widest text-primary group/btn min-h-[44px] px-4 py-2 bg-primary/5 hover:bg-primary/10 rounded-[10px] transition-all"
             >
