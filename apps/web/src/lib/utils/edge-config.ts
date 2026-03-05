@@ -36,8 +36,9 @@ export const voicesConfig = {
   // Voor Anna: Check of de site in onderhoud is
   isMaintenanceMode: async () => await getVoicesConfig<boolean>('maintenanceMode') ?? false,
   
-  // Voor Kelly: Haal de actuele BSF (Base Session Fee) op
-  getBaseTariffBSF: async () => await getVoicesConfig<number>('baseTariffBSF') ?? 250,
+  // Voor Kelly: Haal de actuele BSF (Base Session Fee) op.
+  // Belangrijk: geen hardcoded fallback hier; pricing_config in Supabase blijft bron van waarheid.
+  getBaseTariffBSF: async () => await getVoicesConfig<number>('baseTariffBSF'),
   
   // Voor Mark: Haal de actuele campagne-tekst op voor de TopBar
   getCampaignMessage: async () => await getVoicesConfig<string>('campaignMessage'),

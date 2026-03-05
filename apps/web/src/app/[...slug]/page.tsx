@@ -219,7 +219,8 @@ async function resolveSlugFromRegistry(
   slug: string,
   marketCode: string = 'ALL',
   journey: string = 'agency',
-  languageId?: number | null
+  languageId?: number | null,
+  allowDiscovery: boolean = true
 ): Promise<ResolvedSlugEntry | null> {
   try {
     const normalizedSlug = slug.toLowerCase();
@@ -259,7 +260,7 @@ async function resolveSlugFromRegistry(
     }
 
     // 🛡️ NUCLEAR AUTO-HEALING: If not in registry, try to discover it
-    if (error || !entries || entries.length === 0) {
+    if (allowDiscovery && (error || !entries || entries.length === 0)) {
       console.warn(` [SmartRouter] Registry MISS for "${slug}". Triggering Lazy Discovery...`);
       return await discoverAndRegisterSlug(slug, marketCode, journey);
     }
@@ -334,68 +335,143 @@ function buildLocalizedRoutePath(currentSlug: string, matchedSlug: string, local
  * Zoekt in bron-tabellen en voegt ontbrekende entries toe aan de registry.
  */
 async function discoverAndRegisterSlug(slug: string, marketCode: string, journey: string): Promise<any> {
+  const normalizedSlug = slug.toLowerCase();
+
+  const isUniqueConstraintViolation = (error: unknown): boolean => {
+    const code = String((error as any)?.code || '');
+    const message = String((error as any)?.message || '').toLowerCase();
+    return (
+      code === '23505' ||
+      message.includes('duplicate key value violates unique constraint') ||
+      message.includes('slug_registry_unique') ||
+      message.includes('slug_market_unique')
+    );
+  };
+
+  const registerDiscoveredSlug = async (payload: {
+    slug: string;
+    routing_type: string;
+    entity_id: number;
+    entity_type_id: number;
+    market_code: string;
+    journey: string;
+    world_id?: number;
+  }): Promise<ResolvedSlugEntry | null> => {
+    const insertPayload = {
+      ...payload,
+      is_active: true,
+      created_at: new Date(),
+      updated_at: new Date(),
+    };
+
+    const { error: insertError } = await supabase
+      .from('slug_registry')
+      .insert(insertPayload);
+
+    if (insertError && !isUniqueConstraintViolation(insertError)) {
+      console.error(' [SmartRouter] Lazy Discovery register failed:', insertError);
+      return null;
+    }
+
+    const { data: registeredRows, error: selectError } = await supabase
+      .from('slug_registry')
+      .select('slug, market_code, entity_id, routing_type, journey, world_id')
+      .eq('slug', payload.slug)
+      .eq('market_code', payload.market_code)
+      .eq('is_active', true)
+      .limit(10);
+
+    if (!selectError && registeredRows && registeredRows.length > 0) {
+      const exactMatch = registeredRows.find(
+        (entry: any) =>
+          String(entry.routing_type || '') === payload.routing_type &&
+          String(entry.journey || '') === payload.journey
+      );
+      const fallbackMatch =
+        exactMatch ||
+        registeredRows.find((entry: any) => String(entry.journey || '') === payload.journey) ||
+        registeredRows[0];
+
+      return {
+        slug: fallbackMatch.slug,
+        market_code: fallbackMatch.market_code,
+        entity_id: Number(fallbackMatch.entity_id),
+        routing_type: String(fallbackMatch.routing_type || payload.routing_type),
+        journey: String(fallbackMatch.journey || payload.journey),
+        world_id: fallbackMatch.world_id ?? payload.world_id,
+      };
+    }
+
+    return {
+      slug: payload.slug,
+      market_code: payload.market_code,
+      entity_id: Number(payload.entity_id),
+      routing_type: payload.routing_type,
+      journey: payload.journey,
+      world_id: payload.world_id,
+    };
+  };
+
   try {
     // 1. Check Actors
     const { data: actor } = await supabase
       .from('actors')
       .select('id, slug, status, is_public')
-      .eq('slug', slug.toLowerCase())
+      .eq('slug', normalizedSlug)
       .eq('status', 'live')
       .eq('is_public', true)
       .maybeSingle();
 
     if (actor) {
       console.error(` [SmartRouter] DISCOVERED Actor: ${actor.id}. Registering...`);
-      const { data: newEntry } = await supabase
-        .from('slug_registry')
-        .insert({
-          slug: slug.toLowerCase(),
-          routing_type: 'actor',
-          entity_id: actor.id,
-          entity_type_id: 1, // actor
-          market_code: marketCode === 'ADEMING' ? 'BE' : marketCode,
-          journey: 'agency',
-          is_active: true,
-          created_at: new Date(),
-          updated_at: new Date()
-        })
-        .select('entity_id, journey')
-        .single();
-      
-      if (newEntry) return { entity_id: actor.id, routing_type: 'actor', journey: 'agency' };
+      const registered = await registerDiscoveredSlug({
+        slug: normalizedSlug,
+        routing_type: 'actor',
+        entity_id: actor.id,
+        entity_type_id: 1,
+        market_code: marketCode === 'ADEMING' ? 'BE' : marketCode,
+        journey: 'agency',
+      });
+      if (registered) {
+        return {
+          entity_id: registered.entity_id,
+          routing_type: registered.routing_type,
+          journey: registered.journey,
+          world_id: registered.world_id,
+        };
+      }
     }
 
     // 2. Check Articles
     const { data: article } = await supabase
       .from('content_articles')
       .select('id, slug, status')
-      .eq('slug', slug.toLowerCase())
+      .eq('slug', normalizedSlug)
       .eq('status', 'publish')
       .maybeSingle();
 
     if (article) {
       console.error(` [SmartRouter] DISCOVERED Article: ${article.id}. Registering...`);
-      const { data: newEntry } = await supabase
-        .from('slug_registry')
-        .insert({
-          slug: slug.toLowerCase(),
-          routing_type: 'article',
-          entity_id: article.id,
-          entity_type_id: 3, // article
-          market_code: 'ALL',
-          journey: 'agency',
-          is_active: true,
-          created_at: new Date(),
-          updated_at: new Date()
-        })
-        .select('entity_id, journey')
-        .single();
-      
-      if (newEntry) return { entity_id: article.id, routing_type: 'article', journey: 'agency' };
+      const registered = await registerDiscoveredSlug({
+        slug: normalizedSlug,
+        routing_type: 'article',
+        entity_id: article.id,
+        entity_type_id: 3,
+        market_code: 'ALL',
+        journey: 'agency',
+      });
+      if (registered) {
+        return {
+          entity_id: registered.entity_id,
+          routing_type: registered.routing_type,
+          journey: registered.journey,
+          world_id: registered.world_id,
+        };
+      }
     }
 
     // 4. Check Workshops (v2.16.097)
-    const workshopSlug = slug.toLowerCase().startsWith('studio/') ? slug.toLowerCase().replace('studio/', '') : slug.toLowerCase();
+    const workshopSlug = normalizedSlug.startsWith('studio/') ? normalizedSlug.replace('studio/', '') : normalizedSlug;
     const { data: workshop } = await supabase
       .from('workshops')
       .select('id, slug, status')
@@ -405,57 +481,55 @@ async function discoverAndRegisterSlug(slug: string, marketCode: string, journey
 
     if (workshop) {
       console.error(` [SmartRouter] DISCOVERED Workshop: ${workshop.id}. Registering...`);
-      const { data: newEntry } = await supabase
-        .from('slug_registry')
-        .insert({
-          slug: slug.toLowerCase().startsWith('studio/') ? slug.toLowerCase() : `studio/${slug.toLowerCase()}`,
-          routing_type: 'workshop',
-          entity_id: workshop.id,
-          entity_type_id: 5, // workshop
-          world_id: 2, // Studio
-          market_code: 'ALL',
-          journey: 'studio',
-          is_active: true,
-          created_at: new Date(),
-          updated_at: new Date()
-        })
-        .select('entity_id, journey')
-        .single();
-      
-      if (newEntry) return { entity_id: workshop.id, routing_type: 'workshop', journey: 'studio', world_id: 2 };
+      const registered = await registerDiscoveredSlug({
+        slug: normalizedSlug.startsWith('studio/') ? normalizedSlug : `studio/${normalizedSlug}`,
+        routing_type: 'workshop',
+        entity_id: workshop.id,
+        entity_type_id: 5,
+        world_id: 2,
+        market_code: 'ALL',
+        journey: 'studio',
+      });
+      if (registered) {
+        return {
+          entity_id: registered.entity_id,
+          routing_type: registered.routing_type,
+          journey: registered.journey,
+          world_id: registered.world_id ?? 2,
+        };
+      }
     }
 
     // 5. Check Artists
     const { data: artist } = await supabase
       .from('artists')
       .select('id, slug')
-      .eq('slug', slug.toLowerCase())
+      .eq('slug', normalizedSlug)
       .maybeSingle();
 
     if (artist) {
       console.error(` [SmartRouter] DISCOVERED Artist: ${artist.id}. Registering...`);
-      const { data: newEntry } = await supabase
-        .from('slug_registry')
-        .insert({
-          slug: slug.toLowerCase(),
-          routing_type: 'artist',
-          entity_id: artist.id,
-          entity_type_id: 4, // artist
-          market_code: 'ALL',
-          journey: 'artist',
-          is_active: true,
-          created_at: new Date(),
-          updated_at: new Date()
-        })
-        .select('entity_id, journey')
-        .single();
-      
-      if (newEntry) return { entity_id: artist.id, routing_type: 'artist', journey: 'artist' };
+      const registered = await registerDiscoveredSlug({
+        slug: normalizedSlug,
+        routing_type: 'artist',
+        entity_id: artist.id,
+        entity_type_id: 4,
+        market_code: 'ALL',
+        journey: 'artist',
+      });
+      if (registered) {
+        return {
+          entity_id: registered.entity_id,
+          routing_type: registered.routing_type,
+          journey: registered.journey,
+          world_id: registered.world_id,
+        };
+      }
     }
 
     // 6. Pitch (Casting List) — ID-First: slug = pitch/{hash}, entity_id = casting_lists.id
-    if (slug.startsWith('pitch/')) {
-      const hashPart = slug.replace('pitch/', '').trim();
+    if (normalizedSlug.startsWith('pitch/')) {
+      const hashPart = normalizedSlug.replace('pitch/', '').trim();
       if (hashPart) {
         const { data: list } = await supabase
           .from('casting_lists')
@@ -463,22 +537,22 @@ async function discoverAndRegisterSlug(slug: string, marketCode: string, journey
           .eq('hash', hashPart)
           .maybeSingle();
         if (list) {
-          const { data: newEntry } = await supabase
-            .from('slug_registry')
-            .insert({
-              slug: slug.toLowerCase(),
-              routing_type: 'casting_list',
-              entity_id: list.id,
-              entity_type_id: 6,
-              market_code: 'ALL',
-              journey: 'agency',
-              is_active: true,
-              created_at: new Date(),
-              updated_at: new Date(),
-            })
-            .select('entity_id, journey')
-            .single();
-          if (newEntry) return { entity_id: list.id, routing_type: 'casting_list', journey: 'agency' };
+          const registered = await registerDiscoveredSlug({
+            slug: normalizedSlug,
+            routing_type: 'casting_list',
+            entity_id: list.id,
+            entity_type_id: 6,
+            market_code: 'ALL',
+            journey: 'agency',
+          });
+          if (registered) {
+            return {
+              entity_id: registered.entity_id,
+              routing_type: registered.routing_type,
+              journey: registered.journey,
+              world_id: registered.world_id,
+            };
+          }
         }
       }
     }
@@ -552,7 +626,8 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
     lookupSlug,
     market.market_code,
     'agency',
-    activeLanguageId
+    activeLanguageId,
+    false
   );
 
   const alternateLanguages: Record<string, string> = {};
@@ -1438,11 +1513,28 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
     // Legacy Fallbacks (Agency, Casting, etc.)
     if (MarketManager.isAgencySegment(segments[0])) {
       const filters: Record<string, string> = {};
-      
-      //  CHRIS-PROTOCOL: Map translated journey segments to internal journey types via MarketManager
-      const agencyJourney = MarketManager.getJourneyFromSegment(segments[1]);
 
-      if (agencyJourney === "commercial" && segments[2]) {
+      const segmentOne = segments[1]?.toLowerCase();
+      const segmentTwo = segments[2]?.toLowerCase();
+      const journeyAtSegmentOne = MarketManager.resolveJourneyTypeFromSegment(segmentOne);
+      const journeyAtSegmentTwo = MarketManager.resolveJourneyTypeFromSegment(segmentTwo);
+      const hasJourneyAtSegmentOne = !!journeyAtSegmentOne;
+      const agencyJourneySegment = hasJourneyAtSegmentOne ? segmentOne : segmentTwo;
+      const mediaStartIndex = hasJourneyAtSegmentOne ? 2 : 3;
+
+      if (!hasJourneyAtSegmentOne && segmentOne) {
+        const languageFromPath = MarketManager.getLanguageFromRouteSegment(segmentOne, lang);
+        if (languageFromPath?.id != null) {
+          filters.languageId = String(languageFromPath.id);
+        } else if (languageFromPath?.code) {
+          filters.language = languageFromPath.code;
+        }
+      }
+
+      //  CHRIS-PROTOCOL: Map translated journey segments to internal journey types via MarketManager
+      const agencyJourney = MarketManager.resolveJourneyTypeFromSegment(agencyJourneySegment) || journeyAtSegmentTwo || 'video';
+
+      if (agencyJourney === "commercial" && segments[mediaStartIndex]) {
         const commercialMediaMap: Record<string, string> = {
           online: 'online',
           podcast: 'podcast',
@@ -1460,7 +1552,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
           cinema: 'cinema',
           pos: 'pos'
         };
-        const rawMediaSegment = segments[2].toLowerCase();
+        const rawMediaSegment = segments[mediaStartIndex].toLowerCase();
         const encodedSegmentMatch = rawMediaSegment.match(/^([a-z_]+)\d+x\d+$/i);
         const mediaLookupKey = encodedSegmentMatch ? encodedSegmentMatch[1] : rawMediaSegment;
         const normalizedMedia = commercialMediaMap[mediaLookupKey];

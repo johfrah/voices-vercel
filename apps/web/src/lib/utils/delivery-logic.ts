@@ -324,6 +324,8 @@ export function calculateDeliveryDate(
     let date = new Date(effectiveStart);
     let remainingDays = totalDays;
     
+    //  CHRIS-PROTOCOL: Als we met harde maxima werken (min=max), 
+    //  is de leverdatum altijd gebaseerd op het aantal dagen vanaf nu.
     if (remainingDays === 0) return date;
 
     while (remainingDays > 0) {
@@ -344,8 +346,8 @@ export function calculateDeliveryDate(
     return date;
   };
 
-  // Map config type naar dagen indien niet expliciet opgegeven
-  let daysMin = actor.delivery_days_min;
+  //  CHRIS-PROTOCOL: Forceer gebruik van delivery_days_max voor de belofte (v2.28.52)
+  let daysMin = actor.delivery_days_max;
   let daysMax = actor.delivery_days_max;
 
   if (config.type === 'sameday') {
@@ -355,10 +357,10 @@ export function calculateDeliveryDate(
     daysMin = 1;
     daysMax = 1;
   } else if (config.type === '48h') {
-    daysMin = 1;
+    daysMin = 2;
     daysMax = 2;
   } else if (config.type === '72u') {
-    daysMin = 1;
+    daysMin = 3;
     daysMax = 3;
   }
 

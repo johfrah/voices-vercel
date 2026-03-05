@@ -31,6 +31,31 @@ const languageLabelFromCode = (code: string | null | undefined): string => {
   return map[short] || code || 'Nederlands';
 };
 
+const tableExistsCache = new Map<string, { exists: boolean; ts: number }>();
+const TABLE_EXISTS_TTL_MS = 5 * 60 * 1000;
+
+async function tableExists(tableName: string): Promise<boolean> {
+  if (!db) return false;
+
+  const cached = tableExistsCache.get(tableName);
+  const now = Date.now();
+  if (cached && now - cached.ts < TABLE_EXISTS_TTL_MS) {
+    return cached.exists;
+  }
+
+  try {
+    const rows: any = await db.execute(sql`
+      SELECT to_regclass(${`public.${tableName}`}) AS table_name
+    `);
+    const exists = Boolean(rows?.[0]?.table_name);
+    tableExistsCache.set(tableName, { exists, ts: now });
+    return exists;
+  } catch {
+    // Fail-closed: introspectiefout mag geen ontbrekende-tabellen queries triggeren.
+    return false;
+  }
+}
+
 async function getStudioHeroVideo(): Promise<{ heroVideoPath: string | null; heroVideoMediaId: number | null }> {
   if (!db) return { heroVideoPath: null, heroVideoMediaId: null };
   let heroVideoPath: string | null = null;
@@ -237,13 +262,16 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
     `);
 
     // 3. Fetch Reviews (Hard Handshake via junction table)
-    const reviewsRows = await db.execute(sql`
-    SELECT wr.workshop_id, r.id, r.author_name, r.rating, r.text_nl, r.text_en, r.provider, r.author_photo_url
-    FROM workshop_reviews wr
-    JOIN reviews r ON r.id = wr.review_id
-    WHERE wr.workshop_id IN (${sql.join(workshopIds.map((id) => sql`${id}`), sql`, `)})
-    ORDER BY r.rating DESC, r.created_at DESC
-  `);
+    const hasWorkshopReviewsTable = await tableExists('workshop_reviews');
+    const reviewsRows = hasWorkshopReviewsTable
+      ? await db.execute(sql`
+          SELECT wr.workshop_id, r.id, r.author_name, r.rating, r.text_nl, r.text_en, r.provider, r.author_photo_url
+          FROM workshop_reviews wr
+          JOIN reviews r ON r.id = wr.review_id
+          WHERE wr.workshop_id IN (${sql.join(workshopIds.map((id) => sql`${id}`), sql`, `)})
+          ORDER BY r.rating DESC, r.created_at DESC
+        `)
+      : [];
 
   // 4. Fetch Global Instructors & FAQs
   const instructorsRows = await db.execute(sql`
@@ -254,13 +282,21 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
     ORDER BY i.name
   `);
 
-  const faqsRows = await db.execute(sql`
-    SELECT f.id, f.question_nl as question, f.answer_nl as answer, f.category, fm.workshop_id
-    FROM faq f
-    LEFT JOIN faq_mappings fm ON f.id = fm.faq_id
-    WHERE f.category = 'studio' OR fm.workshop_id IS NOT NULL
-    ORDER BY f.display_order ASC NULLS LAST
-  `);
+  const hasFaqMappingsTable = await tableExists('faq_mappings');
+  const faqsRows = hasFaqMappingsTable
+    ? await db.execute(sql`
+        SELECT f.id, f.question_nl as question, f.answer_nl as answer, f.category, fm.workshop_id
+        FROM faq f
+        LEFT JOIN faq_mappings fm ON f.id = fm.faq_id
+        WHERE f.category = 'studio' OR fm.workshop_id IS NOT NULL
+        ORDER BY f.display_order ASC NULLS LAST
+      `)
+    : await db.execute(sql`
+        SELECT f.id, f.question_nl as question, f.answer_nl as answer, f.category, NULL::integer as workshop_id
+        FROM faq f
+        WHERE f.category = 'studio'
+        ORDER BY f.display_order ASC NULLS LAST
+      `);
 
     // 4b. Fetch Related Journeys (Next Steps)
     const journeysRows = await db.execute(sql`
@@ -273,13 +309,16 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
     `);
 
     // 4c. Fetch Public Feedback Snippets
-    const feedbackRows = await db.execute(sql`
-      SELECT wf.workshop_id, wf.public_snippet, wf.public_rating
-      FROM workshop_feedback wf
-      WHERE wf.workshop_id IN (${sql.join(workshopIds.map((id) => sql`${id}`), sql`, `)})
-        AND wf.public_snippet IS NOT NULL
-      ORDER BY wf.public_rating DESC NULLS LAST, wf.submitted_at DESC
-    `);
+    const hasWorkshopFeedbackTable = await tableExists('workshop_feedback');
+    const feedbackRows = hasWorkshopFeedbackTable
+      ? await db.execute(sql`
+          SELECT wf.workshop_id, wf.public_snippet, wf.public_rating
+          FROM workshop_feedback wf
+          WHERE wf.workshop_id IN (${sql.join(workshopIds.map((id) => sql`${id}`), sql`, `)})
+            AND wf.public_snippet IS NOT NULL
+          ORDER BY wf.public_rating DESC NULLS LAST, wf.submitted_at DESC
+        `)
+      : [];
 
     // 4d. Fetch Video media paths (from meta.video_id)
     const videoIdCandidates = (workshopsList as any[])
@@ -310,7 +349,7 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
     // 4e. Fetch subtitle tracks via the ID-junction system
     let subtitleRowsData: any[] = [];
 
-    if (workshopIds.length > 0) {
+    if (workshopIds.length > 0 && await tableExists('workshop_video_subtitle_links')) {
       const subtitleRows = await db.execute(sql`
         SELECT
           l.id,
