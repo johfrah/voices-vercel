@@ -143,6 +143,17 @@ export class ClientLogger {
           this.addBreadcrumb('error', `Fetch Failed: ${response.status} ${url}`);
           const clone = response.clone();
           clone.text().then(body => {
+            if (this.isRecoverableNotificationsSchemaMiss(url, response.status, body)) {
+              this.addBreadcrumb('warn', `Recoverable fetch warning: ${response.status} ${url}`);
+              this.report('warn', `Recoverable API warning: ${response.status} ${url}`, {
+                url,
+                status: response.status,
+                statusText: response.statusText,
+                responseBody: body.substring(0, 1000)
+              });
+              return;
+            }
+
             this.report('error', `API Failure: ${response.status} ${url}`, {
               url,
               status: response.status,
@@ -165,6 +176,17 @@ export class ClientLogger {
         throw error;
       }
     };
+  }
+
+  private static isRecoverableNotificationsSchemaMiss(url: string, status: number, responseBody: string): boolean {
+    if (status !== 404 || !url.includes('/rest/v1/notifications')) {
+      return false;
+    }
+
+    const normalizedBody = (responseBody || '').toLowerCase();
+    return normalizedBody.includes('pgrst205')
+      || normalizedBody.includes("could not find the table 'public.notifications'")
+      || normalizedBody.includes('public.notifications');
   }
 
   private static interceptInteractions() {
