@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
   const response = NextResponse.redirect(new URL("/dashboard", request.url));
   
   // Zet een tijdelijke sessie cookie (Voices 2026 Standard)
-  cookies().set("voices_session", userId, {
+  cookies().set("voices_session", String(userId), {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",

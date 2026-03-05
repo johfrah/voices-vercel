@@ -124,6 +124,10 @@ export const VoicyChatV2: React.FC = () => {
   const isAcademyJourney = pathname?.includes('/academy');
   const isStudioJourney = pathname?.includes('/studio') && !isAcademyJourney;
   const isAgencyJourney = !isStudioJourney && !isAcademyJourney && !isPortfolioJourney && !isArtistPage;
+  const faqWorldId = MarketManager.resolveContext(
+    typeof window !== 'undefined' ? window.location.host : '',
+    pathname || '/'
+  ).worldId;
 
   const activeEmail = market.email;
   const activePhone = market.phone;
@@ -136,11 +140,27 @@ export const VoicyChatV2: React.FC = () => {
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
   //  FAQ tab: load journey-aware FAQs from Supabase (world/journey)
-  const faqJourneyParam = isStudioJourney ? 'studio' : isAcademyJourney ? 'academy' : 'agency';
+  const faqJourneyParam = faqWorldId === 2
+    ? 'studio'
+    : faqWorldId === 3
+      ? 'academy'
+      : faqWorldId === 5
+        ? 'portfolio'
+        : faqWorldId === 6
+          ? 'ademing'
+          : faqWorldId === 7
+            ? 'freelance'
+            : faqWorldId === 8
+              ? 'partners'
+              : faqWorldId === 10
+                ? 'johfrai'
+                : faqWorldId === 25
+                  ? 'artist'
+                  : 'agency';
   useEffect(() => {
     if (activeTab !== 'faq') return;
     setChatFaqsLoading(true);
-    fetch(`/api/faq?journey=${encodeURIComponent(faqJourneyParam)}&limit=10`)
+    fetch(`/api/faq?journey=${encodeURIComponent(faqJourneyParam)}&world_id=${faqWorldId}&limit=10`)
       .then((res) => (res.ok ? res.json() : []))
       .then((data: { id: number; question_nl?: string | null; question_en?: string | null; answer_nl?: string | null; answer_en?: string | null }[]) => {
         const langEn = (language || 'nl-BE').toLowerCase().startsWith('en');
@@ -152,7 +172,7 @@ export const VoicyChatV2: React.FC = () => {
       })
       .catch(() => setChatFaqs([]))
       .finally(() => setChatFaqsLoading(false));
-  }, [activeTab, faqJourneyParam, language]);
+  }, [activeTab, faqJourneyParam, faqWorldId, language]);
 
   //  CHRIS-PROTOCOL: Sync telephony config from DB
   useEffect(() => {
@@ -1044,13 +1064,19 @@ export const VoicyChatV2: React.FC = () => {
     }
   };
 
+  type SmartChip = {
+    label: string;
+    action: string;
+    icon?: React.ElementType;
+  };
+
   //  Smart Chips logic
   const getSmartChips = () => {
     if (isAdmin) {
-      return []; //  ADMIN MANDATE: Geen zwevende chips voor admin (staan al in CMD+K)
+      return [] as SmartChip[]; //  ADMIN MANDATE: Geen zwevende chips voor admin (staan al in CMD+K)
     }
 
-    const chips = [];
+    const chips: SmartChip[] = [];
     
     //  Context-based chips (Journey Aware)
     if (isAgencyJourney) {
@@ -1712,9 +1738,9 @@ export const VoicyChatV2: React.FC = () => {
                       key={item.id}
                       onClick={() => {
                         setActiveTab('chat');
-                        handleSend(undefined, item.question, 'faq');
+                        handleSend(undefined, item.question, 'chip');
                       }}
-                      className="w-full py-3 px-4 text-left bg-va-off-white hover:bg-va-black hover:text-white rounded-xl text-[15px] font-light transition-all flex items-center gap-2 border border-black/5"
+                      className="w-full py-3 px-4 text-left bg-va-off-white text-va-black hover:bg-va-black hover:text-white rounded-xl text-[15px] font-light transition-all flex items-center gap-2 border border-black/5"
                       aria-label={item.question}
                     >
                       <HelpCircle strokeWidth={1.5} size={18} className="shrink-0" />
@@ -1735,7 +1761,7 @@ export const VoicyChatV2: React.FC = () => {
                 <ButtonInstrument
                   as="a"
                   href="/contact"
-                  className="w-full py-3 bg-va-off-white hover:bg-va-black hover:text-white rounded-xl text-[15px] font-light tracking-widest transition-all flex items-center justify-center gap-2 border border-black/5"
+                  className="w-full py-3 bg-va-off-white text-va-black hover:bg-va-black hover:text-white rounded-xl text-[15px] font-light tracking-widest transition-all flex items-center justify-center gap-2 border border-black/5"
                 >
                   <Mail strokeWidth={1.5} size={18} />
                   <VoiceglotText translationKey="chat.faq.contact" defaultText="Contactpagina" />
@@ -1743,7 +1769,7 @@ export const VoicyChatV2: React.FC = () => {
                 <ButtonInstrument
                   as="a"
                   href={isStudioJourney ? '/studio' : isAcademyJourney ? '/academy' : '/tarieven'}
-                  className="w-full py-3 bg-va-off-white hover:bg-va-black hover:text-white rounded-xl text-[15px] font-light tracking-widest transition-all flex items-center justify-center gap-2 border border-black/5"
+                  className="w-full py-3 bg-va-off-white text-va-black hover:bg-va-black hover:text-white rounded-xl text-[15px] font-light tracking-widest transition-all flex items-center justify-center gap-2 border border-black/5"
                 >
                   <HelpCircle strokeWidth={1.5} size={18} />
                   <VoiceglotText translationKey="chat.faq.more_info" defaultText="Meer info" />

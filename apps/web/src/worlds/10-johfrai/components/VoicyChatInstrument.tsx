@@ -992,13 +992,19 @@ export const VoicyChatV2: React.FC = () => {
     }
   };
 
+  type SmartChip = {
+    label: string;
+    action: string;
+    icon?: React.ElementType;
+  };
+
   //  Smart Chips logic
   const getSmartChips = () => {
     if (isAdmin) {
-      return []; //  ADMIN MANDATE: Geen zwevende chips voor admin (staan al in CMD+K)
+      return [] as SmartChip[]; //  ADMIN MANDATE: Geen zwevende chips voor admin (staan al in CMD+K)
     }
 
-    const chips = [];
+    const chips: SmartChip[] = [];
     
     //  Context-based chips (Journey Aware)
     if (isAgencyJourney) {

@@ -1,5 +1,5 @@
 import { db } from '@/lib/system/voices-config';
-import { actorDemos, actors } from '@/lib/system/voices-config';
+import { actorDemos, actors, media } from '@/lib/system/voices-config';
 import { and, eq, like, or, sql } from "drizzle-orm";
 import { Actor, SearchResults } from "../services/api";
 
@@ -41,7 +41,7 @@ export class AgencyDataBridge {
     
     // 1. Bouw de query
     let query = db.select().from(actors);
-    const conditions = [];
+    const conditions: any[] = [];
 
     //  Filter alleen LIVE acteurs voor de publieke site
     conditions.push(eq(actors.status, 'live'));

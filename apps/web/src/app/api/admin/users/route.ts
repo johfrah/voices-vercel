@@ -41,7 +41,7 @@ export async function GET(request: NextRequest) {
     .$dynamic();
 
     // 2. Apply Filters (Where Clauses)
-    const filters = [];
+    const filters: any[] = [];
 
     // Filter by World if requested
     if (worldCode) {

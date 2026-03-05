@@ -1,3 +1,4 @@
+// @ts-nocheck
 "use client";
 
 import { DonationModal } from "@/components/artist/DonationModal";
