@@ -1513,11 +1513,28 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
     // Legacy Fallbacks (Agency, Casting, etc.)
     if (MarketManager.isAgencySegment(segments[0])) {
       const filters: Record<string, string> = {};
-      
-      //  CHRIS-PROTOCOL: Map translated journey segments to internal journey types via MarketManager
-      const agencyJourney = MarketManager.getJourneyFromSegment(segments[1]);
 
-      if (agencyJourney === "commercial" && segments[2]) {
+      const segmentOne = segments[1]?.toLowerCase();
+      const segmentTwo = segments[2]?.toLowerCase();
+      const journeyAtSegmentOne = MarketManager.resolveJourneyTypeFromSegment(segmentOne);
+      const journeyAtSegmentTwo = MarketManager.resolveJourneyTypeFromSegment(segmentTwo);
+      const hasJourneyAtSegmentOne = !!journeyAtSegmentOne;
+      const agencyJourneySegment = hasJourneyAtSegmentOne ? segmentOne : segmentTwo;
+      const mediaStartIndex = hasJourneyAtSegmentOne ? 2 : 3;
+
+      if (!hasJourneyAtSegmentOne && segmentOne) {
+        const languageFromPath = MarketManager.getLanguageFromRouteSegment(segmentOne, lang);
+        if (languageFromPath?.id != null) {
+          filters.languageId = String(languageFromPath.id);
+        } else if (languageFromPath?.code) {
+          filters.language = languageFromPath.code;
+        }
+      }
+
+      //  CHRIS-PROTOCOL: Map translated journey segments to internal journey types via MarketManager
+      const agencyJourney = MarketManager.resolveJourneyTypeFromSegment(agencyJourneySegment) || journeyAtSegmentTwo || 'video';
+
+      if (agencyJourney === "commercial" && segments[mediaStartIndex]) {
         const commercialMediaMap: Record<string, string> = {
           online: 'online',
           podcast: 'podcast',
@@ -1535,7 +1552,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
           cinema: 'cinema',
           pos: 'pos'
         };
-        const rawMediaSegment = segments[2].toLowerCase();
+        const rawMediaSegment = segments[mediaStartIndex].toLowerCase();
         const encodedSegmentMatch = rawMediaSegment.match(/^([a-z_]+)\d+x\d+$/i);
         const mediaLookupKey = encodedSegmentMatch ? encodedSegmentMatch[1] : rawMediaSegment;
         const normalizedMedia = commercialMediaMap[mediaLookupKey];

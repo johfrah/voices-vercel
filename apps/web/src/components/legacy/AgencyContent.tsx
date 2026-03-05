@@ -120,10 +120,17 @@ export function AgencyContent({ mappedActors, filters }: { mappedActors: any[], 
       // Terug naar agency overzicht in de URL als we terug gaan naar casting
       const currentPath = typeof window !== 'undefined' ? window.location.pathname : '';
       if (typeof window !== 'undefined' && !currentPath.startsWith('/agency') && !currentPath.startsWith('/voice/')) {
-        window.history.replaceState(null, '', `/agency/${state.journey}` + window.location.search);
+        const languageSegment =
+          MarketManager.getLanguageRouteSegment(
+            state.filters.languageId ??
+            state.filters.language ??
+            (state.filters.languageIds && state.filters.languageIds.length > 0 ? state.filters.languageIds[0] : null)
+          ) || MarketManager.getLanguageRouteSegment(state.filters.language || 'nl-be') || 'nl';
+        const journeySegment = MarketManager.getJourneyRouteSegment(state.journey) || 'video';
+        window.history.replaceState(null, '', `/agency/${languageSegment}/${journeySegment}` + window.location.search);
       }
     }
-  }, [state.currentStep, state.journey]);
+  }, [state.currentStep, state.journey, state.filters.languageId, state.filters.language, state.filters.languageIds]);
 
   const handleActorSelect = (actor: any) => {
     playClick('success');
