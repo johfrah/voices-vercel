@@ -1129,7 +1129,8 @@ export default function ConfiguratorPageClient({
               disabled={!state.selectedActor || !hasOrderContent || isProcessing} 
               className={cn(
                 "va-btn-pro w-full !bg-va-black !text-white flex items-center justify-center gap-2 group py-5 text-lg hover:!bg-primary transition-all rounded-[20px] font-bold",
-                isProcessing && "opacity-50 cursor-wait"
+                isProcessing && "opacity-50 cursor-wait",
+                !isProcessing && (!state.selectedActor || !hasOrderContent) && "opacity-45 cursor-not-allowed"
               )}
             >
               {isProcessing ? (
@@ -1866,7 +1867,8 @@ export default function ConfiguratorPageClient({
                     disabled={!state.selectedActor || !hasOrderContent || isProcessing}
                     className={cn(
                       "bg-va-black text-white px-8 py-3 rounded-xl font-bold text-[13px] tracking-widest uppercase active:scale-95 transition-all disabled:opacity-50",
-                      isProcessing && "cursor-wait opacity-50"
+                      isProcessing && "cursor-wait opacity-50",
+                      !isProcessing && (!state.selectedActor || !hasOrderContent) && "opacity-45 cursor-not-allowed"
                     )}
                   >
                     {isProcessing ? (
