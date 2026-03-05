@@ -1714,7 +1714,7 @@ export const VoicyChatV2: React.FC = () => {
                         setActiveTab('chat');
                         handleSend(undefined, item.question, 'faq');
                       }}
-                      className="w-full py-3 px-4 text-left bg-va-off-white hover:bg-va-black hover:text-white rounded-xl text-[15px] font-light transition-all flex items-center gap-2 border border-black/5"
+                      className="w-full py-3 px-4 text-left bg-va-off-white text-va-black hover:bg-va-black hover:text-white rounded-xl text-[15px] font-light transition-all flex items-center gap-2 border border-black/5"
                       aria-label={item.question}
                     >
                       <HelpCircle strokeWidth={1.5} size={18} className="shrink-0" />
@@ -1735,7 +1735,7 @@ export const VoicyChatV2: React.FC = () => {
                 <ButtonInstrument
                   as="a"
                   href="/contact"
-                  className="w-full py-3 bg-va-off-white hover:bg-va-black hover:text-white rounded-xl text-[15px] font-light tracking-widest transition-all flex items-center justify-center gap-2 border border-black/5"
+                  className="w-full py-3 bg-va-off-white text-va-black hover:bg-va-black hover:text-white rounded-xl text-[15px] font-light tracking-widest transition-all flex items-center justify-center gap-2 border border-black/5"
                 >
                   <Mail strokeWidth={1.5} size={18} />
                   <VoiceglotText translationKey="chat.faq.contact" defaultText="Contactpagina" />
@@ -1743,7 +1743,7 @@ export const VoicyChatV2: React.FC = () => {
                 <ButtonInstrument
                   as="a"
                   href={isStudioJourney ? '/studio' : isAcademyJourney ? '/academy' : '/tarieven'}
-                  className="w-full py-3 bg-va-off-white hover:bg-va-black hover:text-white rounded-xl text-[15px] font-light tracking-widest transition-all flex items-center justify-center gap-2 border border-black/5"
+                  className="w-full py-3 bg-va-off-white text-va-black hover:bg-va-black hover:text-white rounded-xl text-[15px] font-light tracking-widest transition-all flex items-center justify-center gap-2 border border-black/5"
                 >
                   <HelpCircle strokeWidth={1.5} size={18} />
                   <VoiceglotText translationKey="chat.faq.more_info" defaultText="Meer info" />
