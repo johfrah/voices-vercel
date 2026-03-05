@@ -10,7 +10,20 @@ import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { EditModeProvider } from '@/contexts/EditModeContext';
 import { TranslationProvider } from '@/contexts/TranslationContext';
 import { AlertCircle, RefreshCw } from 'lucide-react';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
+
+const MAX_NETWORK_AUTO_RESETS = 2;
+const NETWORK_RETRY_DELAY_MS = 900;
+
+function isTransientNetworkError(error: Error & { digest?: string }) {
+  const message = `${error?.message || ''} ${error?.name || ''}`.toLowerCase();
+  return (
+    message.includes('network error') ||
+    message.includes('failed to fetch') ||
+    message.includes('load failed') ||
+    message.includes('internet disconnected')
+  );
+}
 
 /**
  *  GLOBAL ERROR (NUCLEAR 2026)
@@ -23,9 +36,29 @@ export default function GlobalError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const autoResetCountRef = useRef(0);
+
   useEffect(() => {
     console.error('Global error (root layout):', error);
   }, [error]);
+
+  useEffect(() => {
+    if (!isTransientNetworkError(error)) return;
+    if (autoResetCountRef.current >= MAX_NETWORK_AUTO_RESETS) return;
+    autoResetCountRef.current += 1;
+
+    const retryHandle = window.setTimeout(() => {
+      reset();
+    }, NETWORK_RETRY_DELAY_MS);
+
+    const handleOnline = () => reset();
+    window.addEventListener('online', handleOnline);
+
+    return () => {
+      window.clearTimeout(retryHandle);
+      window.removeEventListener('online', handleOnline);
+    };
+  }, [error, reset]);
 
   return (
     <html lang="nl">
