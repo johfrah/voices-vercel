@@ -2,6 +2,51 @@ import { db, centralLeads, chatConversations, chatMessages } from '@/lib/system/
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
+type ContactContext = Record<string, unknown> & {
+  journey?: string;
+};
+let centralLeadsTableMissing = false;
+
+function normalizeContext(value: unknown): ContactContext {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return {};
+  }
+  return value as ContactContext;
+}
+
+function extractErrorMessage(error: unknown): string {
+  if (error instanceof Error) return error.message;
+  if (!error || typeof error !== 'object') return String(error ?? '');
+  if ('message' in error && typeof error.message === 'string') return error.message;
+  return String(error);
+}
+
+function extractErrorCode(error: unknown): string | undefined {
+  if (!error || typeof error !== 'object') return undefined;
+  if ('code' in error && typeof error.code === 'string') return error.code;
+  return undefined;
+}
+
+function isMissingCentralLeadsError(error: unknown): boolean {
+  const chain = [error];
+  if (error && typeof error === 'object' && 'cause' in error) {
+    chain.push(error.cause);
+  }
+  return chain.some((node) => {
+    const message = extractErrorMessage(node).toLowerCase();
+    const code = extractErrorCode(node);
+    if (code === '42P01' || code === 'PGRST205') {
+      return message.includes('central_leads');
+    }
+    return (
+      message.includes('central_leads') &&
+      (message.includes('does not exist') ||
+        message.includes('could not find the table') ||
+        message.includes('relation'))
+    );
+  });
+}
+
 /**
  *  CONTACT & LEAD CAPTURE API (2026)
  * 
@@ -11,82 +56,118 @@ import { createClient } from '@supabase/supabase-js';
  */
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    const { email, message, source = 'generic_contact', context = {} } = body;
+    const body = (await request.json()) as {
+      email?: unknown;
+      message?: unknown;
+      source?: unknown;
+      context?: unknown;
+    };
+    const email = typeof body.email === 'string' ? body.email.trim() : '';
+    const message = typeof body.message === 'string' ? body.message.trim() : '';
+    const source = typeof body.source === 'string' && body.source ? body.source : 'generic_contact';
+    const context = normalizeContext(body.context);
 
     if (!email || !message) {
       return NextResponse.json({ error: 'Missing email or message' }, { status: 400 });
     }
 
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    if (!supabaseUrl || !supabaseServiceRoleKey) {
+      throw new Error('Supabase server credentials are missing');
+    }
+
     const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
+      supabaseUrl,
+      supabaseServiceRoleKey
     );
 
     try {
-      return await db.transaction(async (tx) => {
-        // 1.  Capture Lead for Profiling
-        const [lead] = await tx.insert(centralLeads).values({
-          email,
-          sourceType: source,
-          leadVibe: 'warm', // Contact opnemen is een warme actie
-          iapContext: {
-            ...context,
-            last_message: message,
-            captured_via: 'voicy_contact_form'
-          },
-          createdAt: new Date()
-        }).returning();
+      let leadId: number | null = null;
 
-        // 2.  Create Conversation in Mailbox
-        const [conv] = await tx.insert(chatConversations).values({
-          guestEmail: email,
-          status: 'open',
-          journey: context.journey || 'agency',
-          intent: 'contact_request',
-          iapContext: {
-            lead_id: lead.id,
-            source: source
-          },
-          createdAt: new Date(),
-          updatedAt: new Date()
-        }).returning();
+      // Best-effort lead capture outside transaction to avoid poisoning mailbox writes.
+      if (!centralLeadsTableMissing) {
+        try {
+          const [lead] = await db.insert(centralLeads).values({
+            email,
+            sourceType: source,
+            leadVibe: 'warm',
+            iapContext: {
+              ...context,
+              last_message: message,
+              captured_via: 'voicy_contact_form'
+            },
+            createdAt: new Date()
+          }).returning({ id: centralLeads.id });
+          leadId = lead?.id ?? null;
+        } catch (leadError) {
+          if (!isMissingCentralLeadsError(leadError)) throw leadError;
+          centralLeadsTableMissing = true;
+          console.warn('[Contact API] central_leads missing, skipping lead capture.');
+        }
+      }
 
-        // 3.  Add the message
-        await tx.insert(chatMessages).values({
-          conversationId: conv.id,
-          senderType: 'user',
-          message: message,
-          createdAt: new Date()
-        });
+      const iapContext: Record<string, unknown> = { source };
+      if (leadId !== null) iapContext.lead_id = leadId;
 
-        return NextResponse.json({ 
-          success: true, 
-          leadId: lead.id, 
-          conversationId: conv.id 
-        });
+      // 2.  Create Conversation in Mailbox
+      const [conv] = await db.insert(chatConversations).values({
+        guestEmail: email,
+        status: 'open',
+        journey: context.journey || 'agency',
+        intent: 'contact_request',
+        iapContext,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      }).returning({ id: chatConversations.id });
+
+      // 3.  Add the message
+      await db.insert(chatMessages).values({
+        conversationId: conv.id,
+        senderType: 'user',
+        message: message,
+        createdAt: new Date()
+      });
+
+      return NextResponse.json({ 
+        success: true, 
+        leadId, 
+        conversationId: conv.id 
       });
     } catch (dbError) {
       console.warn('[Contact API] Drizzle failed, falling back to Supabase SDK:', dbError);
       
-      // 1. Capture Lead via SDK
-      const { data: lead, error: leadError } = await supabase
-        .from('central_leads')
-        .insert({
-          email,
-          source_type: source,
-          lead_vibe: 'warm',
-          iap_context: {
-            ...context,
-            last_message: message,
-            captured_via: 'voicy_contact_form'
-          },
-          created_at: new Date()
-        })
-        .select()
-        .single();
-      
-      if (leadError) throw leadError;
+      let leadId: number | null = null;
+
+      // 1. Capture Lead via SDK (optional when table is absent)
+      if (!centralLeadsTableMissing) {
+        const { data: lead, error: leadError } = await supabase
+          .from('central_leads')
+          .insert({
+            email,
+            source_type: source,
+            lead_vibe: 'warm',
+            iap_context: {
+              ...context,
+              last_message: message,
+              captured_via: 'voicy_contact_form'
+            },
+            created_at: new Date()
+          })
+          .select('id')
+          .single();
+        
+        if (leadError) {
+          if (!isMissingCentralLeadsError(leadError)) throw leadError;
+          centralLeadsTableMissing = true;
+          console.warn('[Contact API] central_leads missing in Supabase cache, skipping lead capture.');
+        } else {
+          leadId = lead?.id ?? null;
+        }
+      }
+
+      const iapContext: Record<string, unknown> = { source };
+      if (leadId !== null) iapContext.lead_id = leadId;
 
       // 2. Create Conversation via SDK
       const { data: conv, error: convError } = await supabase
@@ -96,17 +177,15 @@ export async function POST(request: NextRequest) {
           status: 'open',
           journey: context.journey || 'agency',
           intent: 'contact_request',
-          iap_context: {
-            lead_id: lead.id,
-            source: source
-          },
+          iap_context: iapContext,
           created_at: new Date(),
           updated_at: new Date()
         })
-        .select()
+        .select('id')
         .single();
       
       if (convError) throw convError;
+      if (!conv?.id) throw new Error('Conversation insert returned no id');
 
       // 3. Add message via SDK
       const { error: msgError } = await supabase
@@ -122,14 +201,14 @@ export async function POST(request: NextRequest) {
 
       return NextResponse.json({ 
         success: true, 
-        leadId: lead.id, 
+        leadId, 
         conversationId: conv.id,
         _source: 'supabase_sdk'
       });
     }
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('[Contact API Error]:', error);
-    return NextResponse.json({ error: error.message || 'Failed to process contact request' }, { status: 500 });
+    return NextResponse.json({ error: extractErrorMessage(error) || 'Failed to process contact request' }, { status: 500 });
   }
 }

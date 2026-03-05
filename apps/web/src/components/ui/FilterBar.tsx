@@ -60,7 +60,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({ filters, params: combinedP
     const filteredLangs = baseLangs.filter(l => l !== primaryLang && l !== secondaryLang);
     filteredLangs.sort((a, b) => a.localeCompare(b));
     
-    const result = [];
+    const result: string[] = [];
     if (baseLangs.includes(primaryLang)) result.push(primaryLang);
     if (baseLangs.includes(secondaryLang)) result.push(secondaryLang);
     

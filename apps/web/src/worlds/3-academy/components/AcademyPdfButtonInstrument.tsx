@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { FileText, Download, Loader2 } from 'lucide-react';
 import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
-import { VoiceglotText } from './VoiceglotText';
+import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useTranslation } from '@/contexts/TranslationContext';
 
 import { ButtonInstrument } from '@/components/ui/LayoutInstruments';

@@ -31,8 +31,8 @@ export async function GET() {
 
     const value = (config?.value as Record<string, any>) || DEFAULT_KASSA_CONFIG;
     
-    // Injecteer Edge Config waarden indien aanwezig
-    if (edgeBsf) {
+    // Injecteer Edge Config enkel als er expliciet een numerieke waarde staat.
+    if (typeof edgeBsf === 'number' && Number.isFinite(edgeBsf) && edgeBsf > 0) {
       value.basePrice = edgeBsf * 100; // Convert to cents for engine
     }
 

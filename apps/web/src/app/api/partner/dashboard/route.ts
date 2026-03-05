@@ -24,6 +24,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Partner not found' }, { status: 404 });
     }
 
+    const partnerSlug = (partner as any).slug || partner.email?.split('@')[0] || `partner-${partner.id}`;
+
     // 2. Bereken statistieken uit de orders tabel
     const statsResult = await db
       .select({

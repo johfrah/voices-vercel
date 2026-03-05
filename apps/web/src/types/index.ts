@@ -97,6 +97,7 @@ export interface Actor {
   starting_price?: number;
   native_lang?: string;
   native_lang_id?: number; //  Harde koppeling naar languages.id
+  native_language_id?: number; // Legacy alias
   extra_lang_ids?: number[]; //  Harde koppeling naar languages.id
   tone_ids?: number[]; //  Harde koppeling naar voice_tones.id
   country_id?: number; //  Harde koppeling naar countries.id
@@ -106,7 +107,12 @@ export interface Actor {
   ai_enabled?: boolean;
   ai_tags?: string;
   price_ivr?: number;
+  price_online?: number;
+  price_live_regie?: number;
   photo_url: string;
+  photoUrl?: string; // Legacy alias
+  photo_id?: number | null;
+  dropbox_url?: string | null;
   tone_of_voice?: string;
   clients?: string;
   demos: Demo[];
@@ -129,6 +135,7 @@ export interface Actor {
   tagline?: string;
   extra_langs?: string;
   native_lang_label?: string;
+  experience_level?: string;
   firstName?: string;
   lastName?: string;
   email?: string;
@@ -136,6 +143,35 @@ export interface Actor {
   experienceLevel?: string;
   holiday_from?: string | null;
   holiday_till?: string | null;
+  country?: string | null;
+  wp_product_id?: string | number | null;
+  delivery_config?: {
+    type?: string;
+    cutoff?: string;
+    weekly_on?: string[];
+  };
+  studio_specs?: {
+    microphone?: string;
+    preamp?: string;
+    interface?: string;
+    booth?: string;
+  };
+  connectivity?: {
+    source_connect?: boolean;
+    zoom?: boolean;
+    cleanfeed?: boolean;
+    session_link?: boolean;
+  };
+  portfolio_photos?: Array<{
+    id?: number;
+    url: string;
+    name: string;
+    type?: string;
+    status?: string;
+  }>;
+  portfolio_tier?: string;
+  pending_bio?: string | null;
+  pending_tagline?: string | null;
   video_url?: string;
   actor_videos?: Array<{ url: string; name: string }>;
   menu_order?: number;
@@ -146,6 +182,8 @@ export interface Demo {
   title: string;
   audio_url: string;
   category: string;
+  media_id?: number;
+  status?: string;
   actor_id?: number; // 🛡️ CHRIS-PROTOCOL: ID-First Handshake
   actor_name?: string;
   actor_photo?: string;

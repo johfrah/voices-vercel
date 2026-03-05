@@ -51,8 +51,8 @@ async function tableExists(tableName: string): Promise<boolean> {
     tableExistsCache.set(tableName, { exists, ts: now });
     return exists;
   } catch {
-    // Bij controle-fout voeren we bestaande query-flow uit i.p.v. data blind te onderdrukken.
-    return true;
+    // Fail-closed: introspectiefout mag geen ontbrekende-tabellen queries triggeren.
+    return false;
   }
 }
 
@@ -282,13 +282,21 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
     ORDER BY i.name
   `);
 
-  const faqsRows = await db.execute(sql`
-    SELECT f.id, f.question_nl as question, f.answer_nl as answer, f.category, fm.workshop_id
-    FROM faq f
-    LEFT JOIN faq_mappings fm ON f.id = fm.faq_id
-    WHERE f.category = 'studio' OR fm.workshop_id IS NOT NULL
-    ORDER BY f.display_order ASC NULLS LAST
-  `);
+  const hasFaqMappingsTable = await tableExists('faq_mappings');
+  const faqsRows = hasFaqMappingsTable
+    ? await db.execute(sql`
+        SELECT f.id, f.question_nl as question, f.answer_nl as answer, f.category, fm.workshop_id
+        FROM faq f
+        LEFT JOIN faq_mappings fm ON f.id = fm.faq_id
+        WHERE f.category = 'studio' OR fm.workshop_id IS NOT NULL
+        ORDER BY f.display_order ASC NULLS LAST
+      `)
+    : await db.execute(sql`
+        SELECT f.id, f.question_nl as question, f.answer_nl as answer, f.category, NULL::integer as workshop_id
+        FROM faq f
+        WHERE f.category = 'studio'
+        ORDER BY f.display_order ASC NULLS LAST
+      `);
 
     // 4b. Fetch Related Journeys (Next Steps)
     const journeysRows = await db.execute(sql`
