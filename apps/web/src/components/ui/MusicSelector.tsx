@@ -8,7 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import React, { useEffect, useState } from 'react';
 import { VoiceglotText } from './VoiceglotText';
 
-import { AudioUploadWithWaveform } from './audio/AudioUploadWithWaveform';
+import { AudioUploadWithWaveform } from '../audio/AudioUploadWithWaveform';
 
 export const MusicSelector: React.FC<{ context?: string }> = ({ context }) => {
   const { state, updateMusic, updateOwnMusicFile } = useCheckout();
@@ -170,6 +170,7 @@ export const MusicSelector: React.FC<{ context?: string }> = ({ context }) => {
                 uploadEndpoint="/api/media/upload"
                 value={state.ownMusicFile?.url || ''}
                 onUploadSuccess={(url, mediaId) => updateOwnMusicFile({ name: 'Eigen Muziek', url })}
+                replaceLabel="Vervangen"
                 replaceLabel="Vervangen"
               />
               <p className="text-[12px] text-va-black/40 italic">

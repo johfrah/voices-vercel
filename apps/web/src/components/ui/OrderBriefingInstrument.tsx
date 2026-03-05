@@ -3,7 +3,7 @@
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { FileCheck } from 'lucide-react';
 import React from 'react';
-import { BentoCard } from '../BentoGrid';
+import { BentoCard } from './BentoGrid';
 import { 
   ContainerInstrument, 
   TextInstrument,

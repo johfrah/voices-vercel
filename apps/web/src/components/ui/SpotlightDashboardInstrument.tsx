@@ -44,7 +44,8 @@ import {
     PieChart,
     Shield,
     Sparkles,
-    Smartphone
+    Smartphone,
+    Plus
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState, useCallback } from 'react';
@@ -122,10 +123,10 @@ const menuItems: MenuItem[] = [
   { title: 'Vertalingen', icon: Globe, href: '/admin/voiceglot', color: 'text-blue-600', group: 'Decor & Techniek', agent: 'CHATTY', journey: 'all' },
 
   //  🛡️ KWALITEIT & FOYER (Security & Support)
-  { title: 'Beveiliging & Locks', icon: Shield, href: '/admin/locks', color: 'text-red-500', group: 'KWALITEIT & FOYER', agent: 'WIM', journey: 'all' },
-  { title: 'Klantprofielen', icon: Users, href: '/admin/users', color: 'text-blue-400', group: 'KWALITEIT & FOYER', agent: 'WIM', journey: 'all' },
-  { title: 'Feedback', icon: MessageSquare, href: '/admin/feedback', color: 'text-yellow-500', group: 'KWALITEIT & FOYER', agent: 'LEX', journey: 'studio' },
-  { title: 'Deelnemers', icon: Smile, href: '/admin/participants', color: 'text-green-500', group: 'KWALITEIT & FOYER', agent: 'ANNA', journey: 'studio' },
+  { title: 'Beveiliging & Locks', icon: Shield, href: '/admin/locks', color: 'text-red-500', group: 'Kwaliteit & Foyer', agent: 'WIM', journey: 'all' },
+  { title: 'Klantprofielen', icon: Users, href: '/admin/users', color: 'text-blue-400', group: 'Kwaliteit & Foyer', agent: 'WIM', journey: 'all' },
+  { title: 'Feedback', icon: MessageSquare, href: '/admin/feedback', color: 'text-yellow-500', group: 'Kwaliteit & Foyer', agent: 'LEX', journey: 'studio' },
+  { title: 'Deelnemers', icon: Smile, href: '/admin/participants', color: 'text-green-500', group: 'Kwaliteit & Foyer', agent: 'ANNA', journey: 'studio' },
 ];
 
 export const SpotlightDashboard: React.FC = () => {

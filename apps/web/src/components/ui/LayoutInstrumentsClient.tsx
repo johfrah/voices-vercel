@@ -79,19 +79,21 @@ export const ContainerInstrument = forwardRef<HTMLElement, ContainerInstrumentPr
   plain = false,
   ...props
 }, ref) => {
-  const isStructural = Component === 'div' || Component === 'section' || Component === 'main' || Component === 'footer' || Component === 'header';
-  const isListOrNav = Component === 'ul' || Component === 'li' || Component === 'nav';
-  const hasManualPadding = /\bp[xy]?-\d+/.test(className) || className.includes('p-0') || className.includes('!px-0');
-  const hasMaxWidth = className.includes('max-w-');
-  const hasFlexLogic = className.includes('flex') || className.includes('grid') || className.includes('space-y-') || className.includes('space-x-');
+  const normalizedClassName = typeof className === 'string' ? className : '';
+  const ResolvedComponent = Component as ElementType;
+  const isStructural = ResolvedComponent === 'div' || ResolvedComponent === 'section' || ResolvedComponent === 'main' || ResolvedComponent === 'footer' || ResolvedComponent === 'header';
+  const isListOrNav = ResolvedComponent === 'ul' || ResolvedComponent === 'li' || ResolvedComponent === 'nav';
+  const hasManualPadding = /\bp[xy]?-\d+/.test(normalizedClassName) || normalizedClassName.includes('p-0') || normalizedClassName.includes('!px-0');
+  const hasMaxWidth = normalizedClassName.includes('max-w-');
+  const hasFlexLogic = normalizedClassName.includes('flex') || normalizedClassName.includes('grid') || normalizedClassName.includes('space-y-') || normalizedClassName.includes('space-x-');
   
   const shouldBePlain = plain || !isStructural || isListOrNav || hasManualPadding || hasMaxWidth || hasFlexLogic;
 
   return (
-    <Component 
+    <ResolvedComponent 
       ref={ref}
       className={cn(
-        shouldBePlain ? className : cn("va-container", className),
+        shouldBePlain ? normalizedClassName : cn("va-container", normalizedClassName),
         noTranslate && "notranslate"
       )} 
       translate={noTranslate ? "no" : undefined}
@@ -100,7 +102,7 @@ export const ContainerInstrument = forwardRef<HTMLElement, ContainerInstrumentPr
       {...props}
     >
       {children}
-    </Component>
+    </ResolvedComponent>
   );
 });
 ContainerInstrument.displayName = 'ContainerInstrument';
@@ -122,20 +124,21 @@ export const HeadingInstrument = forwardRef<HTMLHeadingElement, HeadingInstrumen
   ariaLabel,
   ...props
 }, ref) => {
-  const Tag = `h${level}` as keyof JSX.IntrinsicElements;
+  const Tag = (`h${level}` as unknown) as ElementType;
+  const normalizedClassName = typeof className === 'string' ? className : '';
   
   return (
     <Tag 
-      ref={ref}
+      ref={ref as any}
       className={cn(
-        !className.includes('font-') && "font-light",
+        !normalizedClassName.includes('font-') && "font-light",
         noTranslate && "notranslate",
-        className.includes('va-text-soft') && "text-va-black/60",
-        className
+        normalizedClassName.includes('va-text-soft') && "text-va-black/60",
+        normalizedClassName
       )} 
       translate={noTranslate ? "no" : undefined}
       aria-label={ariaLabel}
-      {...props}
+      {...(props as any)}
     >
       {children}
     </Tag>
@@ -162,14 +165,16 @@ export const TextInstrument = forwardRef<HTMLElement, TextInstrumentProps>(({
   ariaHidden,
   ...props
 }, ref) => {
+  const normalizedClassName = typeof className === 'string' ? className : '';
+  const ResolvedComponent = Component as ElementType;
   return (
-    <Component 
+    <ResolvedComponent 
       ref={ref}
       className={cn(
-        !className.includes('font-') && "font-light",
+        !normalizedClassName.includes('font-') && "font-light",
         noTranslate && "notranslate",
-        className.includes('va-text-soft') && "text-va-black/60",
-        className
+        normalizedClassName.includes('va-text-soft') && "text-va-black/60",
+        normalizedClassName
       )} 
       translate={noTranslate ? "no" : undefined}
       aria-label={ariaLabel}
@@ -177,7 +182,7 @@ export const TextInstrument = forwardRef<HTMLElement, TextInstrumentProps>(({
       {...props}
     >
       {children}
-    </Component>
+    </ResolvedComponent>
   );
 });
 TextInstrument.displayName = 'TextInstrument';

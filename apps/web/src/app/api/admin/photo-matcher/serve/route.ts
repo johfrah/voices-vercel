@@ -64,7 +64,7 @@ export async function GET(request: NextRequest) {
     const ext = path.extname(filePath).toLowerCase();
     const contentType = ext === '.png' ? 'image/png' : (ext === '.webp' ? 'image/webp' : 'image/jpeg');
 
-    return new NextResponse(stdout, {
+    return new NextResponse(new Uint8Array(stdout), {
       headers: {
         'Content-Type': contentType,
         'Cache-Control': 'public, max-age=31536000, immutable', // 1 jaar cache voor assets

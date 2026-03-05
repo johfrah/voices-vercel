@@ -9,7 +9,7 @@ import {
   ContainerInstrument, 
   HeadingInstrument, 
   TextInstrument 
-} from "../LayoutInstruments";
+} from "../../LayoutInstruments";
 
 const Sheet = SheetPrimitive.Root;
 const SheetTrigger = SheetPrimitive.Trigger;

@@ -40,7 +40,7 @@ export class AcademyDataBridge {
       const allLessons = await db.select().from(lessons).orderBy(asc(lessons.displayOrder));
       
       // 2. Haal voortgang op voor de gebruiker
-      const progress = await db.select().from(courseProgress).where(eq(courseProgress.user_id, userId));
+      const progress = await db.select().from(courseProgress).where(eq(courseProgress.user_id, user_id));
 
       const mappedLessons: Lesson[] = allLessons.map(lesson => {
         const userProgress = progress.find(p => p.lessonId === lesson.id);
@@ -80,7 +80,7 @@ export class AcademyDataBridge {
       const [allLessonsCount] = await db.select({ value: count() }).from(lessons);
       const [completedCount] = await db.select({ value: count() })
         .from(courseProgress)
-        .where(and(eq(courseProgress.user_id, userId), eq(courseProgress.status, 'completed')));
+        .where(and(eq(courseProgress.user_id, user_id), eq(courseProgress.status, 'completed')));
 
       const total = allLessonsCount.value || 1;
       const completed = completedCount.value || 0;
@@ -107,7 +107,7 @@ export class AcademyDataBridge {
    */
   static async getFeedback(user_id: number, lessonId?: number): Promise<SubmissionFeedback[]> {
     try {
-      let query = db.select().from(courseSubmissions).where(eq(courseSubmissions.user_id, userId));
+      let query = db.select().from(courseSubmissions).where(eq(courseSubmissions.user_id, user_id));
       
       if (lessonId) {
         // @ts-ignore
