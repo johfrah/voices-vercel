@@ -943,54 +943,6 @@ export default function ConfiguratorPageClient({
     { id: 'Lokaal', label: 'Lokaal', suffix: 'local' },
   ];
 
-  const countries = [
-    { id: 'AL', label: 'Albanië' },
-    { id: 'AD', label: 'Andorra' },
-    { id: 'AT', label: 'Oostenrijk' },
-    { id: 'BY', label: 'Wit-Rusland' },
-    { id: 'BE', label: 'België' },
-    { id: 'BA', label: 'Bosnië en Herzegovina' },
-    { id: 'BG', label: 'Bulgarije' },
-    { id: 'HR', label: 'Kroatië' },
-    { id: 'CY', label: 'Cyprus' },
-    { id: 'CZ', label: 'Tsjechië' },
-    { id: 'DK', label: 'Denemarken' },
-    { id: 'EE', label: 'Estland' },
-    { id: 'FI', label: 'Finland' },
-    { id: 'FR', label: 'Frankrijk' },
-    { id: 'DE', label: 'Duitsland' },
-    { id: 'GR', label: 'Griekenland' },
-    { id: 'HU', label: 'Hongarije' },
-    { id: 'IS', label: 'IJsland' },
-    { id: 'IE', label: 'Ierland' },
-    { id: 'IT', label: 'Italië' },
-    { id: 'LV', label: 'Letland' },
-    { id: 'LI', label: 'Liechtenstein' },
-    { id: 'LT', label: 'Litouwen' },
-    { id: 'LU', label: 'Luxemburg' },
-    { id: 'MT', label: 'Malta' },
-    { id: 'MD', label: 'Moldavië' },
-    { id: 'MC', label: 'Monaco' },
-    { id: 'ME', label: 'Montenegro' },
-    { id: 'NL', label: 'Nederland' },
-    { id: 'MK', label: 'Noord-Macedonië' },
-    { id: 'NO', label: 'Noorwegen' },
-    { id: 'PL', label: 'Polen' },
-    { id: 'PT', label: 'Portugal' },
-    { id: 'RO', label: 'Roemenië' },
-    { id: 'SM', label: 'San Marino' },
-    { id: 'RS', label: 'Servië' },
-    { id: 'SK', label: 'Slowakije' },
-    { id: 'SI', label: 'Slovenië' },
-    { id: 'ES', label: 'Spanje' },
-    { id: 'SE', label: 'Zweden' },
-    { id: 'CH', label: 'Zwitserland' },
-    { id: 'TR', label: 'Turkije' },
-    { id: 'UA', label: 'Oekraïne' },
-    { id: 'GB', label: 'Verenigd Koninkrijk' },
-    { id: 'VA', label: 'Vaticaanstad' },
-  ].sort((a, b) => a.label.localeCompare(b.label));
-
   const liveRegiePrice = useMemo(() => {
     const config = state.pricingConfig || SlimmeKassa.getDefaultConfig();
     const defaultLiveRegie = config.liveSessionSurcharge / 100;
@@ -1407,33 +1359,6 @@ export default function ConfiguratorPageClient({
 
                 {state.usage === 'commercial' && (
                   <div className="pt-4 space-y-6 animate-in fade-in slide-in-from-top-2 duration-500">
-                    <div className="space-y-3">
-                      <LabelInstrument className="text-[10px] font-bold tracking-[0.15em] text-va-black/30 uppercase px-2">
-                        <VoiceglotText translationKey="configurator.broadcast_country" defaultText="Land van uitzending" />
-                      </LabelInstrument>
-                      <div className="flex flex-wrap gap-2">
-                        {countries.map((c) => {
-                          const isSelected = Array.isArray(state.country) ? state.country.includes(c.id) : state.country === c.id;
-                          return (
-                            <button
-                              key={c.id}
-                              type="button"
-                              onClick={() => {
-                                updateCountry(c.id, parseInt(c.id));
-                                setTimeout(() => calculatePricing?.(), 50);
-                              }}
-                              className={cn(
-                                "px-4 py-2 rounded-full border text-[11px] font-bold transition-all",
-                                isSelected ? "bg-va-black text-white border-va-black shadow-md" : "bg-white border-black/[0.03] text-va-black/40 hover:border-black/10"
-                              )}
-                            >
-                              {c.label}
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </div>
-
                     <div className="space-y-3">
                       <LabelInstrument className="text-[10px] font-bold tracking-[0.15em] text-va-black/30 uppercase px-2">
                         <VoiceglotText translationKey="configurator.select_channels" defaultText="Selecteer kanalen" />
