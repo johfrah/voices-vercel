@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { VoicesMailEngine } from '@/lib/services/voices-mail-engine';
 import { TelegramService } from '@/lib/services/telegram-service';
 import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
+import { isExpectedBrowserNetworkNoise } from '@/lib/system/watchdog/noise-filter';
 import { desc, gte, and, eq, sql } from 'drizzle-orm';
 import { createClient } from '@supabase/supabase-js';
 
@@ -41,11 +42,18 @@ export async function POST(request: NextRequest) {
     const payload = body.payload || details.payload;
 
     const normalizedError = String(error || '').toUpperCase();
+    const normalizedErrorLower = String(error || '').toLowerCase();
     const detailsLocation = String(details?.location || '');
     const detailsPathname = String(details?.pathname || '');
     const normalizedUrl = String(url || '');
     const isLocalDevEvent = [detailsLocation, detailsPathname, normalizedUrl, String(error)]
       .some((value) => /localhost:3000|127\.0\.0\.1:3000/i.test(value));
+    const isBrowserNetworkNoise = isExpectedBrowserNetworkNoise({
+      error: String(error || ''),
+      stack: typeof stack === 'string' ? stack : undefined,
+      component: String(component || ''),
+      details: details as Record<string, unknown>
+    });
 
     // Ignore expected not-found throws and local dev noise.
     if (
@@ -63,7 +71,7 @@ export async function POST(request: NextRequest) {
     console.log(`[Watchdog] Error detected: ${error.substring(0, 100)}`);
 
     // 🛡️ CHRIS-PROTOCOL: Nuclear Telegram Alert for Critical Errors
-    if (level === 'critical' || level === 'error') {
+    if ((level === 'critical' || level === 'error') && !isBrowserNetworkNoise) {
       try {
         await TelegramService.reportCriticalError({
           error,
@@ -185,18 +193,19 @@ export async function POST(request: NextRequest) {
       // 🛡️ CHRIS-PROTOCOL: Filter out common noise to prevent mail spam
       const isNoise = !aggressiveAlerts && (
         level === 'info' ||                           // Skip info logs
-        error.includes('Minified React error #419') || // Hydration mismatch (common in Next.js/Browser extensions)
-        error.includes('Server Components render') || // Generic Next.js error often paired with others
-        error.includes('/api/translations/heal') ||   // Network noise/aborted requests
-        error.includes('Failed to fetch') ||          // Network noise
-        error.includes('Load failed') ||              // Network noise
-        error.includes('Self-healing failed') ||      // Noise from the healer itself
-        error.includes('504') ||                      // Timeout noise
-        error.includes('503') ||                      // Service unavailable noise
-        error.includes('429') ||                      // Rate limit noise
-        error.includes('AbortError') ||               // Aborted requests
-        error.includes('TypeError: S is not a function') || // Known auth noise
-        error.includes('toggleActorSelection')        // Known UI noise
+        isBrowserNetworkNoise ||
+        normalizedErrorLower.includes('minified react error #419') || // Hydration mismatch (common in Next.js/Browser extensions)
+        normalizedErrorLower.includes('server components render') || // Generic Next.js error often paired with others
+        normalizedErrorLower.includes('/api/translations/heal') ||   // Network noise/aborted requests
+        normalizedErrorLower.includes('failed to fetch') ||          // Network noise
+        normalizedErrorLower.includes('load failed') ||              // Network noise
+        normalizedErrorLower.includes('self-healing failed') ||      // Noise from the healer itself
+        normalizedErrorLower.includes('504') ||                      // Timeout noise
+        normalizedErrorLower.includes('503') ||                      // Service unavailable noise
+        normalizedErrorLower.includes('429') ||                      // Rate limit noise
+        normalizedErrorLower.includes('aborterror') ||               // Aborted requests
+        normalizedErrorLower.includes('typeerror: s is not a function') || // Known auth noise
+        normalizedErrorLower.includes('toggleactorselection')        // Known UI noise
       );
 
       if (isNoise || skipEmails) {
