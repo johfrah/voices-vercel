@@ -92,7 +92,15 @@ function mapToCarouselFormat(workshop: WorkshopApiItem) {
  * NUCLEAR LOADING: Rendered client-side (ssr: false) for 100ms LCP.
  */
 export const StudioWorkshopsSection: React.FC<StudioWorkshopsSectionProps> = ({ workshops, instructors, faqs }) => {
-  const carouselWorkshops = workshops.map(mapToCarouselFormat);
+  const carouselWorkshops = workshops
+    .map(mapToCarouselFormat)
+    .sort((a, b) => {
+      const nextDateA = a.editions?.[0]?.date ? new Date(a.editions[0].date).getTime() : Number.POSITIVE_INFINITY;
+      const nextDateB = b.editions?.[0]?.date ? new Date(b.editions[0].date).getTime() : Number.POSITIVE_INFINITY;
+
+      if (nextDateA !== nextDateB) return nextDateA - nextDateB;
+      return String(a.title || '').localeCompare(String(b.title || ''), 'nl');
+    });
   
   // Filter workshops into categories (Bob-methode: Vaste vs. Gast)
   const vasteWorkshops = carouselWorkshops.filter(w => 
