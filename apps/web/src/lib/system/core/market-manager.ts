@@ -176,7 +176,29 @@ export class MarketManager {
       const registry = this.servicesRegistry.length > 0 ? this.servicesRegistry : 
                       (typeof window !== 'undefined' && (window as any).handshakeServices ? (window as any).handshakeServices : []);
       const match = registry.find((s: any) => s.id === serviceCodeOrId);
-      if (match) serviceCode = match.code;
+      if (match) {
+        serviceCode = match.code;
+      } else {
+        // Fallback for client sessions where service registry is not hydrated yet.
+        const idToCode: Record<number, string> = {
+          1: 'live_regie',
+          2: 'ivr',
+          3: 'unpaid',
+          4: 'bsf',
+          5: 'online',
+          6: 'radio_national',
+          7: 'radio_regional',
+          8: 'radio_local',
+          9: 'tv_national',
+          10: 'tv_regional',
+          11: 'tv_local',
+          12: 'podcast',
+          13: 'social_media',
+          14: 'cinema',
+          15: 'pos'
+        };
+        serviceCode = idToCode[serviceCodeOrId] || serviceCode;
+      }
     }
 
     if (marketRates[serviceCode] !== undefined && marketRates[serviceCode] !== null && marketRates[serviceCode] !== '') {

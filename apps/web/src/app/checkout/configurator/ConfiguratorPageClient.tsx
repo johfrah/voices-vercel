@@ -51,7 +51,7 @@ import {
     Music as MusicIcon
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 /**
  *  CHRIS-PROTOCOL: Count-Up Component for Pricing
@@ -744,6 +744,7 @@ export default function ConfiguratorPageClient({
       const match = commercialMediaOptions.find(o => o.id === mediaId);
       if (match) targetCode = match.code;
     }
+    targetCode = normalizeCommercialMediaCode(targetCode);
 
     const baseId = targetCode.split('_')[0];
     const existingMedia = currentMedia.find(m => m.startsWith(baseId));
@@ -760,7 +761,7 @@ export default function ConfiguratorPageClient({
       newMedia = [...currentMedia, targetCode];
     }
     
-    const newMediaIds = newMedia.map(m => commercialMediaOptions.find(o => o.code === m)?.id).filter(Boolean) as number[];
+    const newMediaIds = newMedia.map(m => resolveMediaIdForCode(m)).filter(Boolean) as number[];
     updateMedia(newMedia, newMediaIds);
     setTimeout(() => {
       if (calculatePricing) calculatePricing();
@@ -778,7 +779,10 @@ export default function ConfiguratorPageClient({
     // We prioritize database-driven media types from dynamicConfig.
     if (dynamicConfig?.mediaTypes && dynamicConfig.mediaTypes.length > 0) {
       const baseIcons: Record<string, any> = { online: Video, podcast: Mic, radio: Radio, tv: Tv };
-      return dynamicConfig.mediaTypes.map((mt: any) => {
+      const allowedBases = new Set(['online', 'podcast', 'radio', 'tv']);
+      return dynamicConfig.mediaTypes
+      .filter((mt: any) => allowedBases.has(String(mt.code || '').split('_')[0]))
+      .map((mt: any) => {
         const baseId = mt.code.split('_')[0];
         return {
           id: mt.id,
@@ -795,15 +799,112 @@ export default function ConfiguratorPageClient({
     return [
       { id: 'online', code: 'online', label: 'Online / Social', icon: Video, description: 'Web, Social Media' },
       { id: 'radio_national', code: 'radio_national', label: 'Radio', icon: Radio, description: 'Landelijke Radio', hasRegions: true },
+      { id: 'radio_regional', code: 'radio_regional', label: 'Radio (Regionaal)', icon: Radio, description: 'Regionale Radio', hasRegions: true },
+      { id: 'radio_local', code: 'radio_local', label: 'Radio (Lokaal)', icon: Radio, description: 'Lokale Radio', hasRegions: true },
       { id: 'tv_national', code: 'tv_national', label: 'TV', icon: Tv, description: 'Landelijke TV', hasRegions: true },
+      { id: 'tv_regional', code: 'tv_regional', label: 'TV (Regionaal)', icon: Tv, description: 'Regionale TV', hasRegions: true },
+      { id: 'tv_local', code: 'tv_local', label: 'TV (Lokaal)', icon: Tv, description: 'Lokale TV', hasRegions: true },
       { id: 'podcast', code: 'podcast', label: 'Podcast', icon: Mic, description: 'In-podcast Ads' },
     ];
   }, [dynamicConfig]);
 
+  const mediaOptionByCode = useMemo(() => {
+    return new Map(commercialMediaOptions.map((opt) => [String(opt.code), opt]));
+  }, [commercialMediaOptions]);
+
+  const commercialMediaTopOptions = useMemo(() => {
+    const grouped = new Map<string, any[]>();
+    commercialMediaOptions.forEach((opt) => {
+      const base = String(opt.code || '').split('_')[0];
+      if (!grouped.has(base)) grouped.set(base, []);
+      grouped.get(base)!.push(opt);
+    });
+
+    return Array.from(grouped.entries()).map(([base, opts]) => {
+      const exactBase = opts.find((opt) => opt.code === base);
+      const national = opts.find((opt) => String(opt.code).endsWith('_national'));
+      const canonical = national || exactBase || opts[0];
+      const hasRegionalVariants = opts.some((opt) => /_(national|regional|local)$/.test(String(opt.code)));
+
+      return {
+        ...canonical,
+        label: base === 'tv' ? 'TV' : base === 'radio' ? 'Radio' : canonical.label,
+        hasRegions: Boolean(canonical.hasRegions || hasRegionalVariants),
+      };
+    });
+  }, [commercialMediaOptions]);
+
+  const commercialMediaFamilyMeta = useMemo(() => {
+    const grouped = new Map<string, any[]>();
+    commercialMediaOptions.forEach((opt) => {
+      const base = String(opt.code || '').split('_')[0];
+      if (!grouped.has(base)) grouped.set(base, []);
+      grouped.get(base)!.push(opt);
+    });
+
+    const familyMap = new Map<string, { hasRegions: boolean; preferredCode: string }>();
+    grouped.forEach((opts, base) => {
+      const exactBase = opts.find((opt) => opt.code === base);
+      const national = opts.find((opt) => String(opt.code).endsWith('_national'));
+      const regional = opts.find((opt) => String(opt.code).endsWith('_regional'));
+      const local = opts.find((opt) => String(opt.code).endsWith('_local'));
+      const preferred = national || regional || local || exactBase || opts[0];
+      const hasRegions = opts.some((opt) => Boolean(opt.hasRegions) || /_(national|regional|local)$/.test(String(opt.code)));
+      familyMap.set(base, {
+        hasRegions,
+        preferredCode: String(preferred?.code || base),
+      });
+    });
+    return familyMap;
+  }, [commercialMediaOptions]);
+
+  const resolveRegionalCommercialCode = useCallback((base: string, suffix: string) => {
+    const candidates = [`${base}_${suffix}`, `${base}_national`, `${base}_regional`, `${base}_local`, base];
+    const match = candidates.find((candidate) => mediaOptionByCode.has(candidate));
+    return match || `${base}_${suffix}`;
+  }, [mediaOptionByCode]);
+
+  const normalizeCommercialMediaCode = useCallback((code: string) => {
+    if (code.includes('_')) return code;
+    if (code === 'tv' || code === 'radio') {
+      const family = commercialMediaFamilyMeta.get(code);
+      if (family?.preferredCode) return family.preferredCode;
+    }
+    return code;
+  }, [commercialMediaFamilyMeta]);
+
+  const resolveMediaIdForCode = useCallback((code: string) => {
+    return commercialMediaOptions.find((o) => o.code === code)?.id;
+  }, [commercialMediaOptions]);
+
+  useEffect(() => {
+    if (state.usage !== 'commercial' || !Array.isArray(state.media) || state.media.length === 0) return;
+
+    let changed = false;
+    const normalized: string[] = [];
+    const seenBase = new Set<string>();
+
+    for (const rawCode of state.media) {
+      const normalizedCode = normalizeCommercialMediaCode(String(rawCode));
+      const base = normalizedCode.split('_')[0];
+      if (seenBase.has(base)) {
+        changed = true;
+        continue;
+      }
+      if (normalizedCode !== rawCode) changed = true;
+      seenBase.add(base);
+      normalized.push(normalizedCode);
+    }
+
+    if (!changed) return;
+    const normalizedIds = normalized.map((m) => resolveMediaIdForCode(m)).filter(Boolean) as number[];
+    updateMedia(normalized, normalizedIds);
+  }, [state.usage, state.media, updateMedia, normalizeCommercialMediaCode, resolveMediaIdForCode]);
+
   const regions = [
-    { id: 'Nationaal', label: 'Nationaal' },
-    { id: 'Regionaal', label: 'Regionaal' },
-    { id: 'Lokaal', label: 'Lokaal' },
+    { id: 'Nationaal', label: 'Nationaal', suffix: 'national' },
+    { id: 'Regionaal', label: 'Regionaal', suffix: 'regional' },
+    { id: 'Lokaal', label: 'Lokaal', suffix: 'local' },
   ];
 
   const countries = [
@@ -1269,7 +1370,7 @@ export default function ConfiguratorPageClient({
                         <VoiceglotText translationKey="configurator.select_channels" defaultText="Selecteer kanalen" />
                       </LabelInstrument>
                       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                        {commercialMediaOptions.map((opt) => {
+                        {commercialMediaTopOptions.map((opt) => {
                           const baseId = String(opt.code || '').split('_')[0];
                           const isSelected = state.media?.some(m => m.startsWith(baseId));
                           return (
@@ -1297,7 +1398,9 @@ export default function ConfiguratorPageClient({
                           const opt = commercialMediaOptions.find(o => o.code === mediaId || o.id === mediaId);
                           if (!opt) return null;
                           const isPodcast = mediaId === 'podcast';
-                          const hasRegions = (opt as any).hasRegions;
+                          const baseId = String(mediaId).split('_')[0];
+                          const familyMeta = commercialMediaFamilyMeta.get(baseId);
+                          const hasRegions = Boolean(familyMeta?.hasRegions || (opt as any).hasRegions);
                           const currentSpots = (state.spotsDetail && state.spotsDetail[mediaId]) || state.spots || 1;
                           const currentYears = (state.yearsDetail && state.yearsDetail[mediaId]) || state.years || 1;
 
@@ -1326,13 +1429,12 @@ export default function ConfiguratorPageClient({
                                       {regions.map(r => (
                                         <button key={r.id} onClick={() => {
                                           const baseId = mediaId.split('_')[0];
-                                          const rId = r.id.toLowerCase();
-                                          const newId = `${baseId}_${rId}`;
+                                          const newId = resolveRegionalCommercialCode(baseId, r.suffix);
                                           const newMedia = state.media.map(m => m === mediaId ? newId : m);
-                                          const newMediaIds = newMedia.map(m => commercialMediaOptions.find(o => o.code === m)?.id).filter(Boolean) as number[];
+                                          const newMediaIds = newMedia.map(m => resolveMediaIdForCode(m)).filter(Boolean) as number[];
                                           updateMedia(newMedia, newMediaIds);
                                           setTimeout(() => calculatePricing?.(), 50);
-                                        }} className={cn("flex-1 py-2 rounded-lg border text-[11px] font-bold transition-all", mediaId.includes(r.id.toLowerCase()) ? "bg-primary/10 border-primary/20 text-primary" : "bg-va-off-white/50 border-black/[0.03] text-va-black/40 hover:border-black/10")}>
+                                        }} className={cn("flex-1 py-2 rounded-lg border text-[11px] font-bold transition-all", mediaId.includes(`_${r.suffix}`) || mediaId.includes(r.id.toLowerCase()) ? "bg-primary/10 border-primary/20 text-primary" : "bg-va-off-white/50 border-black/[0.03] text-va-black/40 hover:border-black/10")}>
                                           <VoiceglotText translationKey={`common.region.${r.id.toLowerCase()}`} defaultText={r.label} />
                                         </button>
                                       ))}
