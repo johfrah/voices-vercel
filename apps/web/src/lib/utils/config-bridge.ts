@@ -1,7 +1,7 @@
 import { db, getTable } from '@/lib/system/voices-config';
 
 const navMenus = getTable('navMenus');
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { createClient } from "@supabase/supabase-js";
 
 //  CHRIS-PROTOCOL: SDK fallback voor als direct-connect faalt
@@ -59,6 +59,7 @@ export class ConfigBridge {
   //  CHRIS-PROTOCOL: In-memory cache for 0ms navigation loading (2026)
   private static navCache = new Map<string, { data: NavConfig | null, timestamp: number }>();
   private static worldConfigCache = new Map<string, { data: any, timestamp: number }>();
+  private static navMenusTableState: 'unknown' | 'available' | 'missing' = 'unknown';
   private static CACHE_TTL = 1000 * 60 * 5; // 5 minuten cache
   private static logThrottle = new Map<string, number>();
   private static LOG_COOLDOWN_MS = 1000 * 60;
@@ -189,7 +190,43 @@ export class ConfigBridge {
     this.navCache.set(key, { data, timestamp: Date.now() });
   }
 
+  private static isMissingNavMenusError(error: unknown): boolean {
+    const message = String((error as any)?.message || error || '').toLowerCase();
+    const code = String((error as any)?.code || '').toUpperCase();
+
+    return (
+      code === '42P01' ||
+      message.includes('relation "nav_menus" does not exist') ||
+      message.includes("could not find the table 'public.nav_menus'") ||
+      message.includes('nav_menus')
+    );
+  }
+
+  private static async hasNavMenusTable(): Promise<boolean> {
+    if (this.navMenusTableState === 'available') return true;
+    if (this.navMenusTableState === 'missing') return false;
+
+    try {
+      const rows: any = await db.execute(sql`select to_regclass('public.nav_menus') as table_name`);
+      const tableName = rows?.[0]?.table_name;
+      const exists = Boolean(tableName);
+      this.navMenusTableState = exists ? 'available' : 'missing';
+      return exists;
+    } catch {
+      // Bij check-failure laten we bestaande flow doorlopen voor maximale beschikbaarheid.
+      return true;
+    }
+  }
+
   private static async fetchFromSource(key: string): Promise<NavConfig | null> {
+    const hasNavMenusTable = await this.hasNavMenusTable();
+    if (!hasNavMenusTable) {
+      if (this.shouldLog(`nav_menus:missing:${key}`)) {
+        console.warn(`[ConfigBridge] nav_menus ontbreekt; nav_${key} overgeslagen.`);
+      }
+      return null;
+    }
+
     let menu: any = null;
     try {
       if (process.env.NEXT_RUNTIME !== 'edge') {
@@ -200,6 +237,14 @@ export class ConfigBridge {
         throw new Error('Drizzle not available on Edge');
       }
     } catch (dbError) {
+      if (this.isMissingNavMenusError(dbError)) {
+        this.navMenusTableState = 'missing';
+        if (this.shouldLog(`nav_menus:missing:db:${key}`)) {
+          console.warn(`[ConfigBridge] nav_menus ontbreekt in DB; SDK fallback overgeslagen voor ${key}.`);
+        }
+        return null;
+      }
+
       if (this.shouldLog(`drizzle:${key}`)) {
         console.warn(` ConfigBridge Drizzle failed for ${key}, falling back to SDK`);
       }
@@ -218,6 +263,14 @@ export class ConfigBridge {
           };
         }
       } catch (sdkErr: any) {
+        if (this.isMissingNavMenusError(sdkErr)) {
+          this.navMenusTableState = 'missing';
+          if (this.shouldLog(`nav_menus:missing:sdk:${key}`)) {
+            console.warn(`[ConfigBridge] nav_menus ontbreekt via SDK fallback voor ${key}.`);
+          }
+          return null;
+        }
+
         if (this.shouldLog(`sdk:${key}:${sdkErr?.message || 'unknown'}`)) {
           console.warn(`[ConfigBridge] SDK fallback failed for ${key}:`, sdkErr?.message || sdkErr);
         }
