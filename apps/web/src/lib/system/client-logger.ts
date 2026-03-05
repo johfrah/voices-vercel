@@ -212,9 +212,11 @@ export class ClientLogger {
     const isLocalhost = typeof window !== 'undefined'
       && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
     const isConfigLookup = normalizedUrl.includes('/api/admin/config?type=');
+    const isActorsLookup = normalizedUrl.includes('/api/actors/');
+    const isHomeConfigLookup = normalizedUrl.includes('/api/home/config');
     const isFailedFetch = combined.includes('failed to fetch') || combined.includes('networkerror');
 
-    return isLocalhost && isConfigLookup && isFailedFetch;
+    return isLocalhost && (isConfigLookup || isActorsLookup || isHomeConfigLookup) && isFailedFetch;
   }
 
   private static interceptInteractions() {

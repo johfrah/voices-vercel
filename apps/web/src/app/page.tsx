@@ -747,7 +747,16 @@ export default function Home() {
       .catch(err => {
         if (err.name === 'AbortError') return;
         clearTimeout(timeoutId);
-        console.error('Home Data Fetch Error:', err);
+        const recoverableLocalFetchError =
+          typeof window !== 'undefined'
+          && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+          && String(err?.message || '').toLowerCase().includes('failed to fetch');
+
+        if (recoverableLocalFetchError) {
+          console.warn('Home Data Fetch Warning (recoverable localhost network):', err);
+        } else {
+          console.error('Home Data Fetch Error:', err);
+        }
         setData(prev => prev || { actors: [], reviews: [], reviewStats: { averageRating: 4.9, totalCount: 392 } });
       })
       .finally(() => {
