@@ -126,6 +126,10 @@ export const notifications = fullSchema?.notifications || null;
 export const products = fullSchema?.products || null;
 export const castingListItems = fullSchema?.castingListItems || null;
 export const actorReviews = fullSchema?.actorReviews || null;
+export const actorProfileProposals =
+  fullSchema?.actorProfileProposals ||
+  fullSchema?.actor_profile_proposals ||
+  null;
 export const translationsTable = fullSchema?.translations || null;
 
 /**

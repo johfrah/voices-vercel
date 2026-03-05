@@ -8,8 +8,8 @@
     "packages/*"
   ],
   "scripts": {
-    "start": "cd apps/web && npm run dev",
-    "stop": "killall -9 node || true",
+    "start": "npm run serve",
+    "stop": "bash scripts/stop-dev-server.sh",
     "dev": "cd apps/web && npm run dev",
     "anna": "cd apps/web && npm run lint",
     "build": "cd apps/web && npm run build",
