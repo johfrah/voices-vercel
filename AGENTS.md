@@ -102,6 +102,32 @@ No raw `<div>`, `<h1>`, `<p>`, `<section>`, `<main>` in new components.
 - Reuse existing dev server/process state when possible.
 - Avoid running identical commands repeatedly with unchanged context.
 
+### Mobile UX Acceptance Checklist (Mandatory for UI Changes)
+
+When a task changes public UI or interaction flows, agents must validate both mobile and desktop behavior with explicit evidence.
+
+Required mobile routes (minimum scope):
+- `/agency/video`
+- `/agency/commercial`
+- `/checkout/configurator`
+- `/cart`
+- `/checkout`
+- `/studio`
+
+Acceptance criteria:
+- Minimum tap target for primary controls: 44px.
+- No overlay may block primary CTA buttons.
+- Chat launcher must not obstruct checkout controls.
+- Modal interactions must support close button + Escape + backdrop close.
+- Filter controls and order controls must be easy to tap on mobile.
+- Light and dark mode readability must be validated for changed controls.
+
+Required report format:
+- PASS/FAIL table per tested route.
+- List of fixed issues.
+- List of remaining risks/blockers.
+- Walkthrough artifacts: at least 1 video and 3 screenshots for UI-heavy tasks.
+
 ### Git Workflow Preference (User Override)
 
 - Default: direct push/merge to `main` is allowed.
