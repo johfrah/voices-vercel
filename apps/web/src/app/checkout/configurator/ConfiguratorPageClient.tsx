@@ -250,7 +250,7 @@ export default function ConfiguratorPageClient({
   const { updateCustomer } = useCheckout();
 
   const handleAddToCartWithEmail = (action: 'checkout' | 'cart') => {
-    if (!state.selectedActor || effectiveWordCount === 0 || isProcessing) return;
+    if (!state.selectedActor || !hasOrderContent || isProcessing) return;
     
     //  KELLY-MANDATE: Enforce media selection for commercial usage
     if (state.usage === 'commercial' && (!state.media || state.media.length === 0)) {
@@ -523,6 +523,10 @@ export default function ConfiguratorPageClient({
     if (wordCount > 0) return wordCount;
     return masterControlState.filters.words || 0;
   }, [wordCount, masterControlState.filters.words]);
+
+  const hasOrderContent = useMemo(() => {
+    return wordCount > 0 || state.briefingFiles.length > 0;
+  }, [wordCount, state.briefingFiles.length]);
 
   const estimatedTime = useMemo(() => {
     const wpm = state.pricingConfig?.wordsPerMinute || SlimmeKassa.getDefaultConfig().wordsPerMinute || 155;
@@ -868,7 +872,12 @@ export default function ConfiguratorPageClient({
   }, [state.selectedActor, state.country, state.pricingConfig]);
 
   const handleAddToCart = () => {
-    if (!state.selectedActor || effectiveWordCount === 0) {
+    if (!state.selectedActor) {
+      return;
+    }
+
+    if (!hasOrderContent) {
+      alert(t('configurator.error.script_required', "Voeg eerst je tekst of briefing toe voordat je bestelt."));
       return;
     }
 
@@ -1117,7 +1126,7 @@ export default function ConfiguratorPageClient({
           <ContainerInstrument plain className="pt-4 space-y-3">
             <button 
               onClick={() => handleAddToCartWithEmail('checkout')} 
-              disabled={!state.selectedActor || isProcessing} 
+              disabled={!state.selectedActor || !hasOrderContent || isProcessing} 
               className={cn(
                 "va-btn-pro w-full !bg-va-black !text-white flex items-center justify-center gap-2 group py-5 text-lg hover:!bg-primary transition-all rounded-[20px] font-bold",
                 isProcessing && "opacity-50 cursor-wait"
@@ -1854,7 +1863,7 @@ export default function ConfiguratorPageClient({
                 </div>
                   <button 
                     onClick={() => handleAddToCartWithEmail('checkout')}
-                    disabled={!state.selectedActor || isProcessing}
+                    disabled={!state.selectedActor || !hasOrderContent || isProcessing}
                     className={cn(
                       "bg-va-black text-white px-8 py-3 rounded-xl font-bold text-[13px] tracking-widest uppercase active:scale-95 transition-all disabled:opacity-50",
                       isProcessing && "cursor-wait opacity-50"
