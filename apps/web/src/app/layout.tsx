@@ -253,7 +253,19 @@ export async function generateMetadata(): Promise<Metadata> {
       template: `%s | ${market.name}`,
     },
     description,
+    manifest: "/manifest.webmanifest",
     icons,
+    appleWebApp: {
+      capable: true,
+      statusBarStyle: "default",
+      title: "Voices Admin",
+      startupImage: ["/favicon.svg"],
+    },
+    formatDetection: {
+      telephone: false,
+      email: false,
+      address: false,
+    },
     metadataBase: host ? new URL(new URL(canonicalUrl).origin) : undefined,
     alternates: {
       canonical: canonicalUrl,

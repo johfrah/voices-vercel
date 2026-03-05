@@ -118,10 +118,11 @@ export function isAdminUser(u: ServerUser | null): boolean {
  * Vereist admin. Redirect naar / als niet ingelogd of niet admin.
  * Gebruik in admin layout.
  */
-export async function requireAdminRedirect(): Promise<ServerUser> {
+export async function requireAdminRedirect(redirectPath: string = "/admin/dashboard"): Promise<ServerUser> {
   const user = await getServerUser();
   if (!user || !isAdminUser(user)) {
-    redirect('/');
+    const safeRedirect = redirectPath.startsWith("/") ? redirectPath : "/admin/dashboard";
+    redirect(`/account/login?redirect=${encodeURIComponent(safeRedirect)}`);
   }
   return user;
 }
