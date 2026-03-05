@@ -360,13 +360,20 @@ export class ClientLogger {
 
   static async report(level: 'info' | 'warn' | 'error', message: string, details: any = {}) {
     try {
-      if (!this.shouldReport(level, message)) {
+      const isRecoverableConnectionClosed =
+        level === 'error' && this.isRecoverableConnectionClosedMessage(message, details);
+      const effectiveLevel: 'info' | 'warn' | 'error' = isRecoverableConnectionClosed ? 'warn' : level;
+      const effectiveMessage = isRecoverableConnectionClosed
+        ? message.replace(/^ERROR:\s*/i, 'WARN: ')
+        : message;
+
+      if (!this.shouldReport(effectiveLevel, effectiveMessage)) {
         return;
       }
 
       const payload = JSON.stringify({
-        level,
-        message,
+        level: effectiveLevel,
+        message: effectiveMessage,
         source: 'browser',
         details: {
           ...details,
@@ -391,7 +398,7 @@ export class ClientLogger {
         navigator.sendBeacon('/api/admin/system/logs', blob);
         
         // Als het een error is, sturen we hem ook naar de Watchdog voor escalatie
-        if (level === 'error') {
+        if (effectiveLevel === 'error') {
           navigator.sendBeacon('/api/admin/system/watchdog', blob);
         }
       } else {
@@ -404,7 +411,7 @@ export class ClientLogger {
         
         await fetch('/api/admin/system/logs', fetchOptions);
         
-        if (level === 'error') {
+        if (effectiveLevel === 'error') {
           await fetch('/api/admin/system/watchdog', fetchOptions);
         }
       }
@@ -425,5 +432,26 @@ export class ClientLogger {
 
     this.reportThrottle.set(key, now);
     return true;
+  }
+
+  private static isRecoverableConnectionClosedMessage(message: string, details: any = {}): boolean {
+    const normalizedMessage = (message || '').toLowerCase();
+    if (!normalizedMessage.includes('connection closed')) {
+      return false;
+    }
+
+    const stack = String(details?.stack || '').toLowerCase();
+    const fullConsoleOutput = String(details?.full_console_output || '').toLowerCase();
+    const args = (() => {
+      try {
+        return JSON.stringify(details?.args || '').toLowerCase();
+      } catch {
+        return '';
+      }
+    })();
+
+    const evidence = `${normalizedMessage} ${stack} ${fullConsoleOutput} ${args}`;
+    return evidence.includes('error: connection closed.')
+      || evidence.includes('global error (root layout): error: connection closed.');
   }
 }
