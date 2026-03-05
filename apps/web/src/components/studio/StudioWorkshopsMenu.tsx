@@ -1,43 +1,24 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { ContainerInstrument, HeadingInstrument, TextInstrument } from "@/components/ui/LayoutInstruments";
+import { ContainerInstrument, TextInstrument } from "@/components/ui/LayoutInstruments";
 import { VoicesLinkInstrument } from "@/components/ui/VoicesLinkInstrument";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
-import { Calendar, BookOpen, Film, Mic, Radio, Heart, Sliders, Sparkles, Video, Smile, Eye, GraduationCap } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
-
-const ICON_MAP: Record<string, LucideIcon> = {
-  "book-open": BookOpen,
-  "film": Film,
-  "mic": Mic,
-  "radio": Radio,
-  "heart": Heart,
-  "sliders": Sliders,
-  "sparkles": Sparkles,
-  "video": Video,
-  "smile": Smile,
-  "eye": Eye,
-  "graduation-cap": GraduationCap,
-};
-
-interface WorkshopMenuItem {
-  id: number;
-  title: string;
-  slug: string;
-  lucide_icon: string | null;
-  taxonomy: { category: string; type: string };
-  upcoming_editions: Array<{ date: string; location: { city: string } | null }>;
-}
+import { Calendar } from "lucide-react";
+import {
+  getWorkshopIcon,
+  sortWorkshopsByUpcomingThenAlpha,
+  type StudioWorkshopNavItem
+} from "./studio-workshop-nav-utils";
 
 /**
  * Studio Workshops Mega Menu (2026)
  * 
  * Data-driven dropdown: haalt alle workshops op via de API.
- * Toont Vaste Waarden en Gastworkshops apart met Lucide icons.
+ * Sorteert op eerstvolgende editie, daarna alfabetisch.
  */
 export const StudioWorkshopsMenu: React.FC = () => {
-  const [workshops, setWorkshops] = useState<WorkshopMenuItem[]>([]);
+  const [workshops, setWorkshops] = useState<StudioWorkshopNavItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -45,7 +26,16 @@ export const StudioWorkshopsMenu: React.FC = () => {
       try {
         const res = await fetch("/api/studio/workshops/");
         const data = await res.json();
-        setWorkshops(data.workshops || []);
+        const rawItems = Array.isArray(data?.workshops) ? data.workshops : [];
+        const normalized: StudioWorkshopNavItem[] = rawItems.map((item: any) => ({
+          id: item.id,
+          title: item.title,
+          slug: item.slug,
+          description: item.short_description || item.description || null,
+          lucide_icon: item.lucide_icon || null,
+          upcoming_editions: Array.isArray(item.upcoming_editions) ? item.upcoming_editions : []
+        }));
+        setWorkshops(sortWorkshopsByUpcomingThenAlpha(normalized));
       } catch {
         setWorkshops([]);
       } finally {
@@ -54,23 +44,6 @@ export const StudioWorkshopsMenu: React.FC = () => {
     };
     fetchWorkshops();
   }, []);
-
-  const vasteWorkshops = workshops.filter(w =>
-    w.taxonomy.type === 'Vaste Workshop' || w.taxonomy.type === 'Anker (Maandelijks)'
-  );
-  const gastWorkshops = workshops.filter(w =>
-    w.taxonomy.type !== 'Vaste Workshop' && w.taxonomy.type !== 'Anker (Maandelijks)'
-  );
-
-  const getIcon = (iconName: string | null): LucideIcon => {
-    if (!iconName) return Sparkles;
-    return ICON_MAP[iconName] || Sparkles;
-  };
-
-  const nextEditions = workshops
-    .flatMap(w => w.upcoming_editions.map(e => ({ ...e, workshop: w })))
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-    .slice(0, 4);
 
   if (isLoading) {
     return (
@@ -84,75 +57,40 @@ export const StudioWorkshopsMenu: React.FC = () => {
 
   return (
     <ContainerInstrument plain className="p-4 space-y-4">
-      {/* Vaste Waarden */}
-      {vasteWorkshops.length > 0 && (
-        <ContainerInstrument plain>
-          <TextInstrument className="text-[10px] font-bold tracking-[0.25em] uppercase text-primary/60 px-3 mb-2">
-            <VoiceglotText translationKey="nav.studio.section.vaste" defaultText="Vaste Waarden" />
-          </TextInstrument>
-          {vasteWorkshops.map((w) => {
-            const Icon = getIcon(w.lucide_icon);
+      <ContainerInstrument plain>
+        <TextInstrument className="text-[10px] font-bold tracking-[0.25em] uppercase text-primary/60 px-3 mb-2">
+          <VoiceglotText translationKey="nav.studio.section.workshops_sorted" defaultText="Workshops (volgorde op datum)" />
+        </TextInstrument>
+        <ContainerInstrument plain className="max-h-[360px] overflow-y-auto no-scrollbar">
+          {workshops.map((workshop) => {
+            const Icon = getWorkshopIcon(workshop.lucide_icon);
+            const firstEdition = Array.isArray(workshop.upcoming_editions) ? workshop.upcoming_editions[0] : null;
+            const firstDate = firstEdition?.date ? new Date(firstEdition.date) : null;
+            const validDate = firstDate && Number.isFinite(firstDate.getTime()) ? firstDate : null;
             return (
-              <VoicesLinkInstrument key={w.id} href={`/studio/${w.slug}`} className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-primary/5 transition-all duration-300 group">
+              <VoicesLinkInstrument
+                key={workshop.id}
+                href={`/studio/${workshop.slug}`}
+                className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-primary/5 transition-all duration-300 group"
+              >
                 <ContainerInstrument plain className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary/20 transition-colors">
                   <Icon size={15} strokeWidth={1.5} className="text-primary" />
                 </ContainerInstrument>
-                <TextInstrument className="text-[14px] font-light text-va-black/70 group-hover:text-va-black transition-colors">
-                  {w.title}
-                </TextInstrument>
-              </VoicesLinkInstrument>
-            );
-          })}
-        </ContainerInstrument>
-      )}
-
-      {/* Gastworkshops */}
-      {gastWorkshops.length > 0 && (
-        <ContainerInstrument plain className="pt-2 border-t border-black/5">
-          <TextInstrument className="text-[10px] font-bold tracking-[0.25em] uppercase text-va-black/30 px-3 mb-2">
-            <VoiceglotText translationKey="nav.studio.section.gast" defaultText="Specialisaties" />
-          </TextInstrument>
-          <ContainerInstrument plain className="grid grid-cols-2 gap-x-2">
-            {gastWorkshops.map((w) => {
-              const Icon = getIcon(w.lucide_icon);
-              return (
-                <VoicesLinkInstrument key={w.id} href={`/studio/${w.slug}`} className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-primary/5 transition-all duration-300 group">
-                  <Icon size={14} strokeWidth={1.5} className="text-va-black/30 group-hover:text-primary transition-colors shrink-0" />
-                  <TextInstrument className="text-[13px] font-light text-va-black/50 group-hover:text-va-black transition-colors truncate">
-                    {w.title}
-                  </TextInstrument>
-                </VoicesLinkInstrument>
-              );
-            })}
-          </ContainerInstrument>
-        </ContainerInstrument>
-      )}
-
-      {/* Volgende data */}
-      {nextEditions.length > 0 && (
-        <ContainerInstrument plain className="pt-3 border-t border-black/5">
-          <TextInstrument className="text-[10px] font-bold tracking-[0.25em] uppercase text-va-black/30 px-3 mb-2">
-            <VoiceglotText translationKey="nav.studio.section.agenda" defaultText="Eerstvolgende" />
-          </TextInstrument>
-          {nextEditions.map((e, i) => {
-            const date = new Date(e.date);
-            const day = date.getDate();
-            const month = date.toLocaleDateString('nl-BE', { month: 'short' }).toUpperCase();
-            return (
-              <VoicesLinkInstrument key={i} href={`/studio/${e.workshop.slug}`} className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-primary/5 transition-all duration-300 group">
-                <ContainerInstrument plain className="w-8 h-8 rounded-lg bg-va-black text-white flex flex-col items-center justify-center shrink-0 text-center leading-none">
-                  <TextInstrument as="span" className="text-[11px] font-bold">{day}</TextInstrument>
-                  <TextInstrument as="span" className="text-[7px] font-bold tracking-wider opacity-60">{month}</TextInstrument>
-                </ContainerInstrument>
                 <ContainerInstrument plain className="min-w-0">
-                  <TextInstrument className="text-[13px] font-light text-va-black/70 group-hover:text-va-black truncate">{e.workshop.title}</TextInstrument>
-                  <TextInstrument className="text-[10px] text-va-black/30">{e.location?.city || ''}</TextInstrument>
+                  <TextInstrument className="text-[13px] font-light text-va-black/70 group-hover:text-va-black transition-colors truncate">
+                    {workshop.title}
+                  </TextInstrument>
+                  <TextInstrument className="text-[10px] text-va-black/35 font-light tracking-wide truncate">
+                    {validDate
+                      ? `${validDate.toLocaleDateString("nl-BE", { day: "2-digit", month: "short" })}${firstEdition?.location?.city ? ` · ${firstEdition.location.city}` : ""}`
+                      : "Nog geen editie gepland"}
+                  </TextInstrument>
                 </ContainerInstrument>
               </VoicesLinkInstrument>
             );
           })}
         </ContainerInstrument>
-      )}
+      </ContainerInstrument>
 
       {/* CTA */}
       <ContainerInstrument plain className="pt-2 border-t border-black/5 px-3">
