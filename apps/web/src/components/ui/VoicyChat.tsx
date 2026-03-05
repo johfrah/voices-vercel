@@ -439,6 +439,7 @@ export const VoicyChatV2: React.FC = () => {
                 selectedActor: state.selectedActor,
                 briefing: params.briefing || state.briefing,
                 usage: state.usage,
+                journey: state.journey,
                 language: normalizeLocale(language),
                 payment_method: 'bancontact',
                 metadata: {

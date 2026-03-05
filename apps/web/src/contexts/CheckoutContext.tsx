@@ -21,7 +21,17 @@ import React, { createContext, useCallback, useContext, useEffect, useState } fr
 
 interface CheckoutState {
   step: 'briefing' | 'voice' | 'details' | 'payment' | 'done';
-  journey: 'studio' | 'academy' | 'agency' | 'johfrai-subscription';
+  journey:
+    | 'studio'
+    | 'academy'
+    | 'agency'
+    | 'johfrai-subscription'
+    | 'johfrai'
+    | 'portfolio'
+    | 'ademing'
+    | 'freelance'
+    | 'partner'
+    | 'artist';
   courseId?: number;
   editionId?: number;
   upsells: {
@@ -409,13 +419,22 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const setStep = useCallback((step: CheckoutState['step']) => setState(prev => ({ ...prev, step })), []);
   
   const setJourney = useCallback((journey: CheckoutState['journey'], courseId?: number) => {
-    const journeyId = (journey === 'agency') ? 27 : (journey === 'studio' ? 1 : (journey === 'academy' ? 30 : undefined));
+    const journeyIdMap: Partial<Record<CheckoutState['journey'], number>> = {
+      agency: 27,
+      studio: 1,
+      academy: 30,
+    };
+    const journeyId = journeyIdMap[journey];
+    const usage =
+      journey === 'studio' || journey === 'academy' || journey === 'johfrai' || journey === 'johfrai-subscription'
+        ? 'subscription'
+        : SlimmeKassa.getUsageFromJourneyId(journeyId || journey);
     setState(prev => {
       return {
         ...prev,
         journey,
         journeyId,
-        usage: SlimmeKassa.getUsageFromJourneyId(journeyId || journey),
+        usage,
         usageId: journeyId,
         courseId: journey === 'academy' ? courseId : undefined,
         editionId: journey === 'studio' ? courseId : undefined,

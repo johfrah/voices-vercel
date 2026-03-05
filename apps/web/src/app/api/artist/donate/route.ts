@@ -1,5 +1,6 @@
 import { MollieService } from '@/lib/payments/mollie';
 import { db, orders } from '@/lib/system/voices-config';
+import { MarketManagerServer as MarketManager } from '@/lib/system/core/market-manager';
 import { NextResponse } from 'next/server';
 
 /**
@@ -13,6 +14,13 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     const { artistId, amount, donorName, donorEmail, message, returnUrl } = body;
+    const host = request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'www.voices.be');
+    const market = MarketManager.getCurrentMarket(host);
+    const protocol = host.includes('localhost') ? 'http' : 'https';
+    const normalizedReturnPath =
+      typeof returnUrl === 'string' && returnUrl.trim().startsWith('/')
+        ? returnUrl.trim()
+        : '/artist/youssef';
 
     if (!artistId || !amount || amount < 1) {
       return NextResponse.json({ error: 'Invalid donation data' }, { status: 400 });
@@ -24,7 +32,7 @@ export async function POST(request: Request) {
       total: amount.toString(),
       status: 'pending',
       journey: 'artist_donation',
-      market: 'BE',
+      market: market.market_code,
       iapContext: {
         artistId,
         donorName,
@@ -36,22 +44,19 @@ export async function POST(request: Request) {
     }).returning();
 
     // 2. Initialiseer Mollie betaling
-    const { MarketManagerServer: MarketManager } = require('@/lib/system/core/market-manager');
-    const host = request.headers.get('host') || (process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || MarketManager.getCurrentMarket().market_code.toLowerCase() + '.be');
-    const protocol = host.includes('localhost') ? 'http' : 'https';
-    
     const payment = await MollieService.request('POST', '/payments', {
       amount: {
         currency: 'EUR',
         value: parseFloat(amount).toFixed(2)
       },
       description: `Donatie voor artiest #${artistId} - ${donorName}`,
-      redirectUrl: `${protocol}://${host}/artist/youssef?donation=success&orderId=${order.id}`,
+      redirectUrl: `${protocol}://${host}${normalizedReturnPath}?donation=success&orderId=${order.id}`,
       webhookUrl: `${protocol}://${host}/api/checkout/webhook`,
       metadata: {
         orderId: order.id.toString(),
         artistId: artistId.toString(),
-        type: 'donation'
+        type: 'donation',
+        market: market.market_code,
       }
     });
 
