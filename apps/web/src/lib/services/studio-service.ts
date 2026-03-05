@@ -1,10 +1,34 @@
 import { db } from '@/lib/system/voices-config';
 import { sql } from 'drizzle-orm';
 
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://vcbxyyjsxuquytcsskpj.supabase.co';
+const STORAGE_BASE = `${SUPABASE_URL.replace(/\/$/, '')}/storage/v1/object/public/voices`;
+
 /** Media ID voor Studio hero video (workshop-beginners-aftermovie). Override via env STUDIO_HERO_VIDEO_MEDIA_ID. */
 const STUDIO_HERO_VIDEO_MEDIA_ID = process.env.STUDIO_HERO_VIDEO_MEDIA_ID
   ? parseInt(process.env.STUDIO_HERO_VIDEO_MEDIA_ID, 10)
   : null;
+
+function toPublicStorageUrl(filePath?: string | null): string | null {
+  if (!filePath) return null;
+  if (/^https?:\/\//i.test(filePath)) return filePath;
+  const cleanPath = filePath.replace(/^\/+/, '');
+  return `${STORAGE_BASE}/${cleanPath}`;
+}
+
+function languageLabelFromCode(code?: string | null): string {
+  const normalized = (code || '').toLowerCase();
+  const labels: Record<string, string> = {
+    'nl-be': 'Nederlands',
+    'nl-nl': 'Nederlands',
+    'fr-fr': 'Frans',
+    'en-gb': 'Engels',
+    'de-de': 'Duits',
+    'es-es': 'Spaans',
+    'it-it': 'Italiaans',
+  };
+  return labels[normalized] || code || 'Nederlands';
+}
 
 async function getStudioHeroVideo(): Promise<{ heroVideoPath: string | null; heroVideoMediaId: number | null }> {
   if (!db) return { heroVideoPath: null, heroVideoMediaId: null };
@@ -31,6 +55,17 @@ async function getStudioHeroVideo(): Promise<{ heroVideoPath: string | null; her
     }
   }
   return { heroVideoPath, heroVideoMediaId };
+}
+
+async function safeExecuteRows<T = any>(query: any, label: string): Promise<T[]> {
+  if (!db) return [];
+  try {
+    const rows = await db.execute(query);
+    return Array.isArray(rows) ? rows as T[] : ((rows as any).rows || []) as T[];
+  } catch (error: any) {
+    console.warn(`[getStudioWorkshopsData] ${label} failed, using empty fallback:`, error?.message || error);
+    return [];
+  }
 }
 
 export interface WorkshopApiResponse {
@@ -98,7 +133,7 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
     }
 
     // 2. Fetch Editions (The Planning)
-    const editionsRows = await db.execute(sql`
+    const editionsData = await safeExecuteRows(sql`
       SELECT
         we.id, we.workshop_id, we.date, we.capacity, we.status,
         we.start_time, we.end_time, we.price as edition_price,
@@ -113,52 +148,76 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
         AND we.date >= NOW()
         AND we.status != 'cancelled'
       ORDER BY we.date ASC
-    `);
+    `, 'Editions query');
 
-    // 3. Fetch Reviews (Hard Handshake via junction table)
-    const reviewsRows = await db.execute(sql`
-    SELECT wr.workshop_id, r.id, r.author_name, r.rating, r.text_nl, r.text_en, r.provider, r.author_photo_url
-    FROM workshop_reviews wr
-    JOIN reviews r ON r.id = wr.review_id
-    WHERE wr.workshop_id IN (${sql.join(workshopIds.map((id) => sql`${id}`), sql`, `)})
-    ORDER BY r.rating DESC, r.created_at DESC
-  `);
+    // 3. Fetch Reviews
+    let reviewsData = await safeExecuteRows(sql`
+      SELECT wr.workshop_id, r.id, r.author_name, r.rating, r.text_nl, r.text_en, r.provider, r.author_photo_url
+      FROM workshop_reviews wr
+      JOIN reviews r ON r.id = wr.review_id
+      WHERE wr.workshop_id IN (${sql.join(workshopIds.map((id) => sql`${id}`), sql`, `)})
+      ORDER BY r.rating DESC, r.created_at DESC
+    `, 'Workshop reviews mapping query');
 
-  // 4. Fetch Global Instructors & FAQs
-  const instructorsRows = await db.execute(sql`
-    SELECT i.id, i.name, i.tagline, i.bio, i.preparation_text_template, m.file_path as photo_url
-    FROM instructors i
-    LEFT JOIN media m ON m.id = i.photo_id
-    WHERE i.name IN ('Johfrah Lefebvre', 'Bernadette Timmermans', 'Goedele Wachters', 'Kristien Maes', 'Annemie Tweepenninckx', 'Lucas Derycke')
-    ORDER BY i.name
-  `);
+    // Fallback for schemas without workshop_reviews mapping table.
+    if (reviewsData.length === 0) {
+      const globalStudioReviews = await safeExecuteRows(sql`
+        SELECT id, author_name, rating, text_nl, text_en, provider, author_photo_url
+        FROM reviews
+        WHERE business_slug IN ('voices-studio', 'voices-be')
+        ORDER BY rating DESC, created_at DESC
+        LIMIT 24
+      `, 'Global studio reviews fallback query');
 
-  const faqsRows = await db.execute(sql`
-    SELECT f.id, f.question_nl as question, f.answer_nl as answer, f.category, fm.workshop_id
-    FROM faq f
-    LEFT JOIN faq_mappings fm ON f.id = fm.faq_id
-    WHERE f.category = 'studio' OR fm.workshop_id IS NOT NULL
-    ORDER BY f.display_order ASC NULLS LAST
-  `);
+      if (globalStudioReviews.length > 0) {
+        reviewsData = (workshopsList as any[]).flatMap((workshop) =>
+          (globalStudioReviews as any[]).map((review) => ({
+            workshop_id: workshop.id,
+            ...review,
+          }))
+        );
+      }
+    }
+
+    // 4. Fetch Global Instructors & FAQs
+    const instructorsData = await safeExecuteRows(sql`
+      SELECT i.id, i.name, i.tagline, i.bio, i.preparation_text_template, m.file_path as photo_url
+      FROM instructors i
+      LEFT JOIN media m ON m.id = i.photo_id
+      ORDER BY i.name
+    `, 'Instructors query');
+
+    // Fallback-safe FAQ query (faq_mappings table does not exist in current production schema).
+    const faqsData = await safeExecuteRows(sql`
+      SELECT
+        f.id,
+        f.question_nl as question,
+        f.answer_nl as answer,
+        f.category,
+        NULL::bigint as workshop_id
+      FROM faq f
+      WHERE lower(f.category) = 'studio'
+      ORDER BY f.display_order ASC NULLS LAST, f.id DESC
+    `, 'FAQ query');
 
     // 4b. Fetch Related Journeys (Next Steps)
-    const journeysRows = await db.execute(sql`
+    const journeysData = await safeExecuteRows(sql`
       SELECT wj.from_workshop_id, wj.to_workshop_id, wj.label_nl as label, wj.priority,
              w.title as to_title, w.slug as to_slug
       FROM workshop_journeys wj
       JOIN workshops w ON w.id = wj.to_workshop_id
       WHERE wj.from_workshop_id IN (${sql.join(workshopIds.map((id) => sql`${id}`), sql`, `)})
       ORDER BY wj.priority ASC NULLS LAST
-    `);
+    `, 'Workshop journeys query');
 
     // 4c. Fetch Public Feedback Snippets
-    const feedbackRows = await db.execute(sql`
+    const feedbackData = await safeExecuteRows(sql`
       SELECT wf.workshop_id, wf.public_snippet, wf.public_rating
       FROM workshop_feedback wf
       WHERE wf.workshop_id IN (${sql.join(workshopIds.map((id) => sql`${id}`), sql`, `)})
         AND wf.public_snippet IS NOT NULL
       ORDER BY wf.public_rating DESC NULLS LAST, wf.submitted_at DESC
-    `);
+    `, 'Workshop feedback query');
 
     // 4d. Fetch Video media paths (from meta.video_id)
     const videoIdCandidates = (workshopsList as any[])
@@ -176,10 +235,9 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
     
     let videoPathsMap: Record<number, string> = {};
     if (normalizedVideoIds.length > 0) {
-      const videoRows = await db.execute(sql`
+      const videoData = await safeExecuteRows(sql`
         SELECT id, file_path FROM media WHERE id IN (${sql.join(normalizedVideoIds.map((id) => sql`${id}`), sql`, `)})
-      `);
-      const videoData = Array.isArray(videoRows) ? videoRows : (videoRows as any).rows || [];
+      `, 'Workshop video lookup query');
       videoPathsMap = (videoData as any[]).reduce((acc, v) => {
         acc[v.id] = v.file_path;
         return acc;
@@ -190,7 +248,7 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
     let subtitleRowsData: any[] = [];
 
     if (workshopIds.length > 0) {
-      const subtitleRows = await db.execute(sql`
+      subtitleRowsData = await safeExecuteRows(sql`
         SELECT
           l.id,
           l.workshop_id,
@@ -208,9 +266,7 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
         WHERE l.workshop_id IN (${sql.join(workshopIds.map((id) => sql`${id}`), sql`, `)})
           AND l.is_enabled = true
         ORDER BY l.workshop_id ASC, l.video_media_id ASC, l.is_default DESC, l.id ASC
-      `);
-
-      subtitleRowsData = Array.isArray(subtitleRows) ? subtitleRows : (subtitleRows as any).rows || [];
+      `, 'Workshop subtitle links query');
     }
 
     // Include any video IDs found in subtitle links, even if missing/stale in workshop.meta
@@ -223,10 +279,9 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
     );
     const missingVideoIds = subtitleVideoIds.filter((id) => !videoPathsMap[id]);
     if (missingVideoIds.length > 0) {
-      const extraVideoRows = await db.execute(sql`
+      const extraVideoData = await safeExecuteRows(sql`
         SELECT id, file_path FROM media WHERE id IN (${sql.join(missingVideoIds.map((id) => sql`${id}`), sql`, `)})
-      `);
-      const extraVideoData = Array.isArray(extraVideoRows) ? extraVideoRows : (extraVideoRows as any).rows || [];
+      `, 'Subtitle fallback video lookup query');
       (extraVideoData as any[]).forEach((row) => {
         videoPathsMap[row.id] = row.file_path;
       });
@@ -271,12 +326,6 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
     }, {} as Record<string, any[]>);
 
     // 5. Processing & Mapping
-    const editionsData = Array.isArray(editionsRows) ? editionsRows : (editionsRows as any).rows || [];
-    const reviewsData = Array.isArray(reviewsRows) ? reviewsRows : (reviewsRows as any).rows || [];
-    const instructorsData = Array.isArray(instructorsRows) ? instructorsRows : (instructorsRows as any).rows || [];
-    const faqsData = Array.isArray(faqsRows) ? faqsRows : (faqsRows as any).rows || [];
-    const journeysData = Array.isArray(journeysRows) ? journeysRows : (journeysRows as any).rows || [];
-    const feedbackData = Array.isArray(feedbackRows) ? feedbackRows : (feedbackRows as any).rows || [];
 
     const editionsByWorkshop = (editionsData as any[]).reduce((acc, e) => {
     const wid = String(e.workshop_id);

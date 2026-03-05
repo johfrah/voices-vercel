@@ -88,12 +88,17 @@ export const StudioWorkshopsSection: React.FC<StudioWorkshopsSectionProps> = ({ 
   const carouselWorkshops = workshops.map(mapToCarouselFormat);
   
   // Filter workshops into categories (Bob-methode: Vaste vs. Gast)
-  const vasteWorkshops = carouselWorkshops.filter(w => 
-    w.taxonomy.type === 'Vaste Workshop' || w.taxonomy.type === 'Anker (Maandelijks)'
-  );
-  const gastWorkshops = carouselWorkshops.filter(w => 
-    w.taxonomy.type === 'Gastworkshop' || w.taxonomy.type === 'Gastworkshop (Expert)' || w.taxonomy.type === 'Specialisatie'
-  );
+  const hasTypedTaxonomy = carouselWorkshops.some((w) => typeof w.taxonomy?.type === 'string' && w.taxonomy.type.trim().length > 0);
+  const vasteWorkshops = hasTypedTaxonomy
+    ? carouselWorkshops.filter(w =>
+        w.taxonomy.type === 'Vaste Workshop' || w.taxonomy.type === 'Anker (Maandelijks)'
+      )
+    : carouselWorkshops;
+  const gastWorkshops = hasTypedTaxonomy
+    ? carouselWorkshops.filter(w =>
+        w.taxonomy.type === 'Gastworkshop' || w.taxonomy.type === 'Gastworkshop (Expert)' || w.taxonomy.type === 'Specialisatie'
+      )
+    : [];
 
   const allReviews = workshops.flatMap((w) => w.reviews);
   const uniqueReviews = Array.from(
