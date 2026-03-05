@@ -845,7 +845,7 @@ export default function ConfiguratorPageClient({
   }, [dynamicConfig]);
 
   const mediaOptionByCode = useMemo(() => {
-    return new Map(commercialMediaOptions.map((opt) => [String(opt.code), opt]));
+    return new Map(commercialMediaOptions.map((opt) => [String(opt.code), opt] as const));
   }, [commercialMediaOptions]);
 
   const commercialMediaTopOptions = useMemo(() => {
