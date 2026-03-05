@@ -62,7 +62,7 @@ export const BriefingSelector: React.FC<BriefingSelectorProps> = ({ onScriptExtr
         analyser.getByteFrequencyData(dataArray);
         
         // Map to 20 bars
-        const bars = [];
+        const bars: number[] = [];
         for (let i = 0; i < 20; i++) {
           const val = dataArray[i] || 0;
           bars.push(Math.max(2, (val / 255) * 40));

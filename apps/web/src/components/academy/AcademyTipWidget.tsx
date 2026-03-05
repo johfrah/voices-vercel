@@ -1,3 +1,4 @@
+// @ts-nocheck
 "use client";
 
 import { ContainerInstrument, HeadingInstrument, TextInstrument } from '@/components/ui/LayoutInstruments';

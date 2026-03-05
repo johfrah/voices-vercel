@@ -44,6 +44,19 @@ export interface MarketConfig {
     canonical_domain?: string;
     og_image?: string;
   };
+  hero_images?: Array<{ url: string; alt?: string; name?: string; role?: string }>;
+  hero_cta?: {
+    label?: string;
+    text?: string;
+    href?: string;
+  };
+  nav_links?: Array<{
+    icon?: unknown;
+    label: string;
+    href: string;
+    onClick?: () => void;
+    key?: string;
+  }>;
 }
 
 export class MarketManager {

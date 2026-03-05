@@ -26,7 +26,7 @@ export async function GET(request: Request) {
 
     try {
       let query = db.select().from(systemEvents);
-      let conditions = [];
+      let conditions: any[] = [];
 
       if (level && level !== 'all') {
         conditions.push(eq(systemEvents.level, level));

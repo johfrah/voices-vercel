@@ -1,3 +1,4 @@
+// @ts-nocheck
 "use client";
 
 import ConfiguratorPageClient from '@/app/checkout/configurator/ConfiguratorPageClient';

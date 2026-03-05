@@ -353,7 +353,7 @@ export const CommandPalette = () => {
   );
 };
 
-const Item = ({ children, onSelect }: { children: React.ReactNode; onSelect: () => void }) => (
+const Item = ({ children, onSelect }: { children: React.ReactNode; onSelect: () => void | Promise<void> }) => (
   <Command.Item
     onSelect={onSelect}
     className="flex items-center px-4 py-3 rounded-2xl cursor-pointer aria-selected:bg-va-black aria-selected:text-white transition-all group"

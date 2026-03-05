@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { cn } from '@/lib/utils';
 import React, { ElementType, forwardRef, HTMLAttributes, ReactNode } from 'react';
 

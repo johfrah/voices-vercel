@@ -1044,13 +1044,19 @@ export const VoicyChatV2: React.FC = () => {
     }
   };
 
+  type SmartChip = {
+    label: string;
+    action: string;
+    icon?: React.ElementType;
+  };
+
   //  Smart Chips logic
   const getSmartChips = () => {
     if (isAdmin) {
-      return []; //  ADMIN MANDATE: Geen zwevende chips voor admin (staan al in CMD+K)
+      return [] as SmartChip[]; //  ADMIN MANDATE: Geen zwevende chips voor admin (staan al in CMD+K)
     }
 
-    const chips = [];
+    const chips: SmartChip[] = [];
     
     //  Context-based chips (Journey Aware)
     if (isAgencyJourney) {
@@ -1712,7 +1718,7 @@ export const VoicyChatV2: React.FC = () => {
                       key={item.id}
                       onClick={() => {
                         setActiveTab('chat');
-                        handleSend(undefined, item.question, 'faq');
+                        handleSend(undefined, item.question, 'chip');
                       }}
                       className="w-full py-3 px-4 text-left bg-va-off-white hover:bg-va-black hover:text-white rounded-xl text-[15px] font-light transition-all flex items-center gap-2 border border-black/5"
                       aria-label={item.question}

@@ -16,7 +16,7 @@ export const AcademyTipsService = {
     // 1. Zoek het huidige hoofdstuk van de student
     const [latestProgress] = await db.select()
       .from(courseProgress)
-      .where(eq(courseProgress.user_id, userId))
+      .where(eq(courseProgress.user_id, user_id))
       .orderBy(sql`${courseProgress.lessonId} DESC`)
       .limit(1);
 

@@ -18,8 +18,8 @@ interface CustomerInstrumentProps {
 }
 
 export const CustomerInstrument: React.FC<CustomerInstrumentProps> = ({ 
-  firstName, 
-  lastName, 
+  first_name, 
+  last_name, 
   email, 
   company, 
   totalSpent 
@@ -32,10 +32,10 @@ export const CustomerInstrument: React.FC<CustomerInstrumentProps> = ({
     >
       <ContainerInstrument className="flex items-center gap-4 mt-4">
         <ContainerInstrument className="w-12 h-12 rounded-full bg-va-off-white flex items-center justify-center text-xl font-light">
-          <TextInstrument>{firstName[0]}{lastName[0]}</TextInstrument>
+          <TextInstrument>{first_name[0]}{last_name[0]}</TextInstrument>
         </ContainerInstrument>
         <ContainerInstrument>
-          <TextInstrument className="font-light text-lg">{firstName} {lastName}</TextInstrument>
+          <TextInstrument className="font-light text-lg">{first_name} {last_name}</TextInstrument>
           <TextInstrument className="text-va-black/40 font-light">{email}</TextInstrument>
         </ContainerInstrument>
       </ContainerInstrument>

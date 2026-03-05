@@ -88,7 +88,7 @@ export async function GET(
 
     if (download) {
       const pdfBuffer = buildCertificatePdf(certData);
-      return new NextResponse(pdfBuffer, {
+      return new NextResponse(new Uint8Array(pdfBuffer), {
         headers: {
           'Content-Type': 'application/pdf',
           'Content-Disposition': `attachment; filename=\"certificate-${orderItemId}.pdf\"`,

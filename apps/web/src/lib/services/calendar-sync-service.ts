@@ -25,7 +25,7 @@ export class CalendarSyncService {
 
       for (const k in events) {
         if (events.hasOwnProperty(k)) {
-          const ev = events[k];
+          const ev = events[k] as any;
           if (ev.type === 'VEVENT') {
             const summary = ev.summary || '';
             // Look for "Studio", "Available", or "Beschikbaar"

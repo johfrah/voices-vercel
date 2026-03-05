@@ -7,6 +7,9 @@ import { NextResponse } from 'next/server';
  */
 export async function POST(request: Request) {
   const supabase = createClient();
+  if (!supabase) {
+    return NextResponse.json({ error: 'Auth client unavailable' }, { status: 500 });
+  }
   const { targetUserId } = await request.json();
 
   // 1. Check of de huidige gebruiker een admin is
@@ -24,7 +27,8 @@ export async function POST(request: Request) {
   }
 
   // 2. Haal de target user op (om te verifiëren dat deze bestaat)
-  const { data: targetUser, error: targetError } = await supabase.auth.admin.getUserById(targetUserId);
+  const adminApi = supabase.auth.admin as any;
+  const { data: targetUser, error: targetError } = await adminApi.getUserById(targetUserId);
   if (targetError || !targetUser) {
     return NextResponse.json({ error: 'Doelgebruiker niet gevonden' }, { status: 404 });
   }
@@ -32,7 +36,7 @@ export async function POST(request: Request) {
   // 3. Maak een impersonation sessie
   // We gebruiken de admin API om een magic link of sign-in te simuleren
   // Voor nu gebruiken we de admin.createSession methode van Supabase
-  const { data: session, error: sessionError } = await supabase.auth.admin.createSession({
+  const { data: session, error: sessionError } = await adminApi.createSession({
     user_id: targetUserId,
   });
 

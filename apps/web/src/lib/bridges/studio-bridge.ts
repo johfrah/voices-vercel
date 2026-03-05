@@ -124,7 +124,7 @@ export class StudioDataBridge {
       if (!dbWorkshop) return null;
 
       // Haal instructeur op als die gekoppeld is
-      let instructor = null;
+      let instructor: any = null;
       if (dbWorkshop.instructorId) {
         const dbInstructor = await db.query.instructors.findFirst({
           where: eq(instructors.id, dbWorkshop.instructorId),
@@ -349,7 +349,7 @@ export class StudioDataBridge {
             totalRevenue += net;
           }
         } catch (e) {
-          console.warn(' [StudioBridge] Error parsing order:', o.id);
+          console.warn(' [StudioBridge] Error parsing order:', (o as any).id);
         }
       });
       

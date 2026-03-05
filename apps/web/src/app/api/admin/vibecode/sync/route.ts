@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
     // 1. Zorg dat de vibes map bestaat
     await fs.mkdir(vibesDir, { recursive: true });
 
-    let syncedFiles = [];
+    let syncedFiles: string[] = [];
 
     // 2. Sync .cursorrules (De Wet)
     if (await fileExists(rulesFile)) {
