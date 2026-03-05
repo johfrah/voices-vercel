@@ -37,7 +37,7 @@ export const WorkshopHeroIsland: React.FC<WorkshopHeroIslandProps> = ({ workshop
       router.push(`/studio/checkout?journey=studio&editionId=${nextEdition.id}`);
     } else {
       // Fallback to interest form if no edition is available
-      router.push(`/studio/doe-je-mee?workshopId=${workshop.id}`);
+      router.push(`/studio/${workshop.slug || workshop.id}#workshop-interest-form`);
     }
   };
 

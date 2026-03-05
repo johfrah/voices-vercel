@@ -199,8 +199,20 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(accountUrl)
   }
 
+  // REDIRECT LEGACY SHORT AUTH PATHS
+  if (pathname === '/login' || pathname === '/login/') {
+    const accountUrl = url.clone()
+    accountUrl.pathname = '/account/login/'
+    return NextResponse.redirect(accountUrl)
+  }
+
   // REDIRECT OLD SIGNUP TO UNIVERSAL ACCOUNT
   if (pathname === '/auth/signup-legacy' || pathname === '/auth/signup') {
+    url.pathname = '/account/signup/'
+    return NextResponse.redirect(url)
+  }
+
+  if (pathname === '/signup' || pathname === '/signup/') {
     url.pathname = '/account/signup/'
     return NextResponse.redirect(url)
   }

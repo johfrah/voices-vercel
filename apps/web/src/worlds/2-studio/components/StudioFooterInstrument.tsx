@@ -1,31 +1,42 @@
 "use client";
 
-import { useTranslation } from '@/contexts/TranslationContext';
-import { ContainerInstrument, HeadingInstrument, TextInstrument, ButtonInstrument } from '@/components/ui/LayoutInstruments';
+import { useEffect, useMemo, useState } from 'react';
+import { ContainerInstrument, HeadingInstrument, TextInstrument } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { VoicesLinkInstrument } from '@/components/ui/VoicesLinkInstrument';
 import { Phone, Mail, Calendar, BookOpen, GraduationCap } from 'lucide-react';
+import {
+  getWorkshopIcon,
+  sortWorkshopsByUpcomingThenAlpha,
+  type StudioWorkshopNavItem
+} from '@/components/studio/studio-workshop-nav-utils';
 
 export function StudioFooter({ market, activeSocials, activePhone, activeEmail }: any) {
-  const { t } = useTranslation();
+  const [workshops, setWorkshops] = useState<StudioWorkshopNavItem[]>([]);
 
-  // 🛡️ CHRIS-PROTOCOL: Exacte sync met Supabase Source of Truth
-  const workshops = [
-    { name: 'Perfect spreken in 1 dag', href: '/studio/perfect-spreken', description: 'Spreken met helderheid, warmte en impact.' },
-    { name: 'Voice-overs voor beginners', href: '/studio/voice-overs-voor-beginners', description: 'De start van je professionele traject.' },
-    { name: 'Maak je eigen podcast', href: '/studio/maak-je-eigen-podcast', description: 'Van concept tot professionele opname.' },
-    { name: 'Maak je eigen radioshow', href: '/studio/maak-je-eigen-radioshow', description: 'De dynamiek van live radio maken.' },
-    { name: 'Perfectie van intonatie', href: '/studio/perfectie-van-intonatie', description: 'De fijne kneepjes van de juiste klemtoon.' },
-    { name: 'Perfectie van articulatie', href: '/studio/perfectie-van-articulatie', description: 'Heldere uitspraak voor elke microfoon.' },
-    { name: 'Audioboeken inspreken', href: '/studio/audioboeken-inspreken', description: 'Urenlang boeien met je stem.' },
-    { name: 'Documentaires inspreken', href: '/studio/documentaires-inspreken', description: 'De kunst van de voice-over bij beeld.' },
-    { name: 'Speel een stemmetje in een tekenfilm', href: '/studio/tekenfilm-stemmetjes', description: 'Karakterstemmen en stemacteren.' },
-    { name: 'Meditatief spreken', href: '/studio/meditaties-inspreken', description: 'Rust en verbinding in je stem.' },
-    { name: 'Verwen je stem!', href: '/studio/verwen-je-stem', description: 'Onderhoud en verzorging van je instrument.' },
-    { name: 'Voice-over voor audio-descriptie', href: '/studio/audiodescriptie', description: 'Beeld vertalen naar stem.' },
-    { name: 'Opname en audio-nabewerking', href: '/studio/opname-en-nabewerking', description: 'De technische kant van professioneel opnemen.' },
-    { name: 'Presenteren in de camera', href: '/studio/presenteren-voor-camera', description: 'Zelfzeker voor de lens staan.' },
-  ];
+  useEffect(() => {
+    const fetchWorkshops = async () => {
+      try {
+        const res = await fetch('/api/studio/workshops/');
+        const data = await res.json();
+        const rawItems = Array.isArray(data?.workshops) ? data.workshops : [];
+        const normalized: StudioWorkshopNavItem[] = rawItems.map((item: any) => ({
+          id: item.id,
+          title: item.title,
+          slug: item.slug,
+          description: item.short_description || item.description || null,
+          lucide_icon: item.lucide_icon || null,
+          upcoming_editions: Array.isArray(item.upcoming_editions) ? item.upcoming_editions : []
+        }));
+        setWorkshops(sortWorkshopsByUpcomingThenAlpha(normalized));
+      } catch {
+        setWorkshops([]);
+      }
+    };
+    fetchWorkshops();
+  }, []);
+
+  const sortedWorkshops = useMemo(() => workshops.slice(0, 14), [workshops]);
 
   return (
     <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-12 gap-y-16 mb-24">
@@ -50,18 +61,26 @@ export function StudioFooter({ market, activeSocials, activePhone, activeEmail }
           <VoiceglotText translationKey="footer.section.studio.workshops" defaultText="Onze Workshops" />
         </HeadingInstrument>
         <ContainerInstrument plain className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 w-full">
-          {workshops.map((workshop, i) => (
-            <ContainerInstrument plain key={i}>
-              <VoicesLinkInstrument href={workshop.href} className="flex flex-col gap-0.5 group">
-                <TextInstrument className="text-[14px] font-medium text-va-black/70 group-hover:text-primary transition-colors">
-                  {workshop.name}
-                </TextInstrument>
-                <TextInstrument className="text-[11px] font-light text-va-black/40 leading-snug">
-                  {workshop.description}
-                </TextInstrument>
-              </VoicesLinkInstrument>
-            </ContainerInstrument>
-          ))}
+          {sortedWorkshops.map((workshop) => {
+            const Icon = getWorkshopIcon(workshop.lucide_icon);
+            return (
+              <ContainerInstrument plain key={workshop.id}>
+                <VoicesLinkInstrument href={`/studio/${workshop.slug}`} className="flex items-start gap-2.5 group">
+                  <ContainerInstrument plain className="w-6 h-6 rounded-md bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+                    <Icon size={13} strokeWidth={1.7} className="text-primary" />
+                  </ContainerInstrument>
+                  <ContainerInstrument plain className="min-w-0">
+                    <TextInstrument className="text-[14px] font-medium text-va-black/70 group-hover:text-primary transition-colors">
+                      {workshop.title}
+                    </TextInstrument>
+                    <TextInstrument className="text-[11px] font-light text-va-black/40 leading-snug line-clamp-2">
+                      {workshop.description || 'Workshop in de Voices Studio'}
+                    </TextInstrument>
+                  </ContainerInstrument>
+                </VoicesLinkInstrument>
+              </ContainerInstrument>
+            );
+          })}
         </ContainerInstrument>
         <ContainerInstrument className="pt-4 border-t border-black/5 w-full">
           <VoicesLinkInstrument href="/studio/workshops" className="flex items-center gap-2 text-[13px] font-bold text-primary hover:opacity-70 transition-opacity">

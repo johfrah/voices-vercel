@@ -191,6 +191,14 @@ type ResolvedSlugEntry = {
   language_id?: number;
 };
 
+const ROUTING_TYPE_BY_ENTITY_TYPE_ID: Record<number, string> = {
+  1: 'actor',
+  3: 'article',
+  4: 'artist',
+  5: 'workshop',
+  6: 'casting_list',
+};
+
 function scoreSlugEntry(entry: any, marketCode: string, languageId?: number | null): number {
   let score = 0;
   const entryMarket = String(entry.market_code || 'ALL').toUpperCase();
@@ -229,7 +237,7 @@ async function resolveSlugFromRegistry(
 
     const { data: entries, error } = await supabase
       .from('slug_registry')
-      .select('slug, market_code, entity_id, journey, world_id, canonical_slug, metadata, entity_type_id, language_id, entity_types(code)')
+      .select('slug, market_code, entity_id, routing_type, journey, world_id, canonical_slug, metadata, entity_type_id, language_id')
       .eq('slug', normalizedSlug)
       .in('market_code', marketCandidates)
       .eq('is_active', true)
@@ -243,8 +251,10 @@ async function resolveSlugFromRegistry(
       });
       const entry = ranked[0];
 
-      // 🛡️ CHRIS-PROTOCOL: Map entity_type_id 5 to 'workshop' if code is missing (v2.16.097)
-      const routingType = (entry.entity_types as any)?.code || (entry.entity_type_id === 5 ? 'workshop' : 'article');
+      const routingType =
+        (typeof (entry as any).routing_type === 'string' && (entry as any).routing_type.trim()) ||
+        ROUTING_TYPE_BY_ENTITY_TYPE_ID[Number(entry.entity_type_id)] ||
+        'article';
       
       return {
         slug: entry.slug,

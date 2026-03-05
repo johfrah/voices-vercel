@@ -33,12 +33,20 @@ export class SafeErrorGuard extends Component<Props, State> {
   }
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error(` [Nuclear Guard] ${this.props.name || 'UI'} Crash caught:`, error, errorInfo);
+    const message = error.message || '';
+    const isRecoverableChunkOrHydration =
+      /Loading chunk|ChunkLoadError|CSS_CHUNK_LOAD_FAILED|dynamically imported module/i.test(message) ||
+      message.includes('Minified React error #419') ||
+      message.includes('Server Components render');
+
+    const level = isRecoverableChunkOrHydration ? 'warn' : 'critical';
+    const logger = isRecoverableChunkOrHydration ? console.warn : console.error;
+    logger(` [Nuclear Guard] ${this.props.name || 'UI'} Crash caught:`, error, errorInfo);
     
     // Log naar logs + watchdog zodat autonome heal altijd een trigger krijgt.
     const payload = {
       message: `UI Crash (${this.props.name || 'Unknown'}): ${error.message}`,
-      level: 'critical',
+      level,
       source: 'SafeErrorGuard',
       details: {
         stack: error.stack,

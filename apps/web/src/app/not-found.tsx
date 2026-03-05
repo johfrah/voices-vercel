@@ -37,28 +37,44 @@ export default function NotFound() {
   const [ghostContent, setGhostContent] = useState<string | null>(null);
 
   useEffect(() => {
-    //  SELF-HEALING: Log de 404 silent op de achtergrond
-    const path = window.location.pathname;
-    const referrer = document.referrer;
-    setHealingStatus('searching');
-    
-    fetch('/api/watchdog/404', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ path, referrer })
-    })
-    .then(res => res.json())
-    .then(data => {
-      //  AUTOMATIC REDIRECT: Als er een match is gevonden, stuur direct door
-      if (data.type === 'redirect' && data.destination) {
-        router.push(data.destination);
-      } else if (data.type === 'ghost' && data.content) {
-        setGhostContent(data.content);
-        setHealingStatus('ghost-generated');
-      } else {
+    let timer: ReturnType<typeof setTimeout> | null = null;
+    let isUnmounted = false;
+
+    const runWatchdogHandshake = async () => {
+      //  SELF-HEALING: Log de 404 silent op de achtergrond
+      const path = window.location.pathname;
+      const referrer = document.referrer;
+      setHealingStatus('searching');
+
+      try {
+        const response = await fetch('/api/watchdog/404/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ path, referrer })
+        });
+
+        // Fail-soft: sommige edge-proxies sturen html/empty op fouten.
+        const contentType = response.headers.get('content-type') || '';
+        const hasJsonPayload = contentType.includes('application/json');
+        const data = hasJsonPayload ? await response.json().catch(() => null) : null;
+
+        if (isUnmounted) return;
+
+        const destination = data?.destination || data?.suggestion || null;
+        if (response.ok && typeof destination === 'string' && destination.length > 0 && destination !== path) {
+          router.push(destination);
+          return;
+        }
+
+        if (response.ok && data?.type === 'ghost' && data?.content) {
+          setGhostContent(data.content);
+          setHealingStatus('ghost-generated');
+          return;
+        }
+
         setHealingStatus('voicy-offered');
         //  VOICY INTERVENTION: Alleen als er GEEN automatische redirect is
-        const timer = setTimeout(() => {
+        timer = setTimeout(() => {
           const event = new CustomEvent('voicy:suggestion', {
             detail: {
               title: <VoiceglotText translationKey="404.voicy.suggestion.title" defaultText="Hulp nodig?" />,
@@ -68,13 +84,18 @@ export default function NotFound() {
           });
           window.dispatchEvent(event);
         }, 800);
-        return () => clearTimeout(timer);
+      } catch (err) {
+        console.error('Watchdog failed:', err);
+        if (!isUnmounted) setHealingStatus(null);
       }
-    })
-    .catch(err => {
-      console.error('Watchdog failed:', err);
-      setHealingStatus(null);
-    });
+    };
+
+    void runWatchdogHandshake();
+
+    return () => {
+      isUnmounted = true;
+      if (timer) clearTimeout(timer);
+    };
   }, [router]);
 
   return (

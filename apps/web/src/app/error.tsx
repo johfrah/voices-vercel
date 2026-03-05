@@ -65,18 +65,23 @@ export default function Error({
   useEffect(() => {
     console.error('App error:', error);
     
-    //  CHRIS-PROTOCOL: Self-Healing for Chunk Errors (Deployment Skew)
-    // Als een chunk niet geladen kan worden, is er waarschijnlijk een nieuwe versie gepusht.
-    // We herladen de pagina geforceerd om de nieuwste assets op te halen.
-    if (error.message?.includes('Loading chunk') && error.message?.includes('failed')) {
-      console.warn('[Nuclear] Chunk error detected. Triggering self-healing reload...');
+    //  CHRIS-PROTOCOL: Self-Healing for deploy skew / hydration drift.
+    // Bij chunk- en bekende RSC-hydrationfouten doen we één gecontroleerde reload.
+    const message = error.message || '';
+    const shouldSelfHealReload =
+      /Loading chunk|ChunkLoadError|CSS_CHUNK_LOAD_FAILED|dynamically imported module/i.test(message) ||
+      message.includes('Minified React error #419') ||
+      message.includes('Server Components render');
+
+    if (shouldSelfHealReload) {
+      console.warn('[Nuclear] Recoverable render/chunk error detected. Triggering self-healing reload...');
       
       // Voorkom oneindige reload loops
-      const lastReload = sessionStorage.getItem('voices_last_chunk_reload');
+      const lastReload = sessionStorage.getItem('voices_last_self_heal_reload');
       const now = Date.now();
       
-      if (!lastReload || (now - parseInt(lastReload)) > 30000) {
-        sessionStorage.setItem('voices_last_chunk_reload', now.toString());
+      if (!lastReload || (now - parseInt(lastReload, 10)) > 45000) {
+        sessionStorage.setItem('voices_last_self_heal_reload', now.toString());
         setTimeout(() => {
           window.location.reload();
         }, 1000);
@@ -135,7 +140,11 @@ export default function Error({
           <VoiceglotText translationKey="auto.error.diagnostic_info_.a840d6" defaultText="Diagnostic Info:" />
         </TextInstrument>
         <TextInstrument className="text-red-800 font-mono text-[15px]">{error.message || 'Unknown error'}</TextInstrument>
-        {Boolean(error.cause) && <TextInstrument className="text-red-600 font-mono text-[15px] mt-2 border-t border-red-100 pt-2">Cause: {String(error.cause)}</TextInstrument>}
+        {Boolean(error.cause) ? (
+          <TextInstrument className="text-red-600 font-mono text-[15px] mt-2 border-t border-red-100 pt-2">
+            Cause: {String(error.cause)}
+          </TextInstrument>
+        ) : null}
         <TextInstrument className="text-red-400 font-mono text-[15px] mt-2">Digest: {error.digest || 'no-digest'}</TextInstrument>
       </ContainerInstrument>
       <ContainerInstrument className="w-20 h-20 bg-primary/10 text-primary rounded-3xl flex items-center justify-center">

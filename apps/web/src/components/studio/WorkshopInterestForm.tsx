@@ -29,9 +29,18 @@ const SuccessWorkshopCalendar = dynamic(
   { ssr: false, loading: () => <div className="h-[320px] rounded-[20px] bg-va-off-white/50 animate-pulse" /> }
 );
 
-export const WorkshopInterestForm: React.FC = () => {
+interface WorkshopInterestFormProps {
+  preselectedWorkshopId?: number | string | null;
+  hideWorkshopSelection?: boolean;
+}
+
+export const WorkshopInterestForm: React.FC<WorkshopInterestFormProps> = ({
+  preselectedWorkshopId = null,
+  hideWorkshopSelection = false
+}) => {
   const { t } = useTranslation();
   const { playClick } = useSonicDNA();
+  const prefilledWorkshopId = preselectedWorkshopId != null ? String(preselectedWorkshopId) : null;
   const [workshops, setWorkshops] = useState<any[]>([]);
   const [skills, setSkills] = useState<{ id: number; slug: string; label_nl: string }[]>([]);
   const [selectedWorkshops, setSelectedWorkshops] = useState<string[]>([]);
@@ -50,15 +59,21 @@ export const WorkshopInterestForm: React.FC = () => {
     }
   }, [submitError]);
 
-  // 🛡️ CHRIS-PROTOCOL: Pre-select workshop from URL parameter (ID-First)
+  // 🛡️ CHRIS-PROTOCOL: Pre-select workshop from URL parameter (ID-First) or prop
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const params = new URLSearchParams(window.location.search);
-    const workshopId = params.get('workshopId');
-    if (workshopId) {
-      setSelectedWorkshops(prev => prev.includes(workshopId) ? prev : [...prev, workshopId]);
+    const workshopIdFromQuery = params.get('workshopId');
+    const selectedWorkshopId = workshopIdFromQuery || prefilledWorkshopId;
+    if (selectedWorkshopId) {
+      setSelectedWorkshops(prev => {
+        if (hideWorkshopSelection) {
+          return [selectedWorkshopId];
+        }
+        return prev.includes(selectedWorkshopId) ? prev : [...prev, selectedWorkshopId];
+      });
     }
-  }, []);
+  }, [prefilledWorkshopId, hideWorkshopSelection]);
 
   // 🛡️ CHRIS-PROTOCOL: Workshops uitsluitend van Studio API (Source of Truth, geen hardcoded fallback)
   const fetchWorkshops = React.useCallback(async () => {
@@ -129,6 +144,9 @@ export const WorkshopInterestForm: React.FC = () => {
   };
 
   const [step, setStep] = useState<1 | 2>(1);
+  const selectedWorkshopTitle = selectedWorkshops.length > 0
+    ? workshops.find((workshop) => workshop.id === selectedWorkshops[0])?.title
+    : null;
   const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
   const [formData, setFormData] = useState({
     first_name: '',
@@ -143,6 +161,10 @@ export const WorkshopInterestForm: React.FC = () => {
     preferred_dates: '',
     how_heard: ''
   });
+  const disableNextStep =
+    selectedWorkshops.length === 0 ||
+    !formData.email ||
+    (!hideWorkshopSelection && (isFetching || workshops.length === 0));
 
   const toggleSkill = (key: string) => {
     setSelectedSkills(prev =>
@@ -278,56 +300,71 @@ export const WorkshopInterestForm: React.FC = () => {
             <ContainerInstrument className="flex items-center gap-3 mb-6 sm:mb-8">
               <Info size={24} strokeWidth={1.5} className="text-va-black/40" />
               <HeadingInstrument level={3} className="text-xl font-light tracking-tight text-va-black">
-                <VoiceglotText  translationKey="workshop.interest.title" defaultText="Voor welke workshop(s) heb je interesse?" />
+                {hideWorkshopSelection ? (
+                  <VoiceglotText translationKey="workshop.interest.single_title" defaultText="Interesse in deze workshop" />
+                ) : (
+                  <VoiceglotText translationKey="workshop.interest.title" defaultText="Voor welke workshop(s) heb je interesse?" />
+                )}
               </HeadingInstrument>
             </ContainerInstrument>
-            
-            <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4" role="list" aria-label={t('workshop.interest.list_label', 'Workshops')}>
-              {isFetching ? (
-                [1, 2, 3, 4].map((i) => (
-                  <div key={i} className="h-16 bg-va-black/5 rounded-[20px] animate-pulse" />
-                ))
-              ) : fetchError ? (
-                <ContainerInstrument className="md:col-span-2 flex flex-col items-center gap-4 p-6 rounded-[20px] bg-va-black/5">
-                  <TextInstrument className="text-[15px] font-light text-va-black/70 text-center">{fetchError}</TextInstrument>
-                  <ButtonInstrument type="button" onClick={() => { playClick('light'); fetchWorkshops(); }} variant="outline" size="sm">
-                    <VoiceglotText translationKey="common.retry" defaultText="Opnieuw proberen" />
-                  </ButtonInstrument>
-                </ContainerInstrument>
-              ) : workshops.length === 0 ? (
-                <ContainerInstrument className="md:col-span-2 p-6 rounded-[20px] bg-va-black/5">
-                  <TextInstrument className="text-[15px] font-light text-va-black/60">
-                    <VoiceglotText translationKey="workshop.interest.no_workshops" defaultText="Er zijn momenteel geen workshops beschikbaar." />
-                  </TextInstrument>
-                </ContainerInstrument>
-              ) : (
-                workshops.map((w) => (
-                  <button
-                    key={w.id}
-                    type="button"
-                    onClick={() => { playClick('light'); toggleWorkshop(w.id); }}
-                    className={cn(
-                      "p-5 sm:p-6 rounded-[20px] border-2 transition-all duration-100 text-left flex items-center justify-between group min-h-[56px] active:scale-[0.99]",
-                      selectedWorkshops.includes(w.id)
-                        ? "bg-black border-black text-white shadow-aura scale-[1.01]"
-                        : "bg-white border-black/5 text-va-black hover:border-primary/30"
-                    )}
-                  >
-                    <TextInstrument className="font-light text-[15px] tracking-tight">
-                      <VoiceglotText translationKey={`workshop.${w.id}.title`} defaultText={w.title} noTranslate={true} />
+
+            {hideWorkshopSelection ? (
+              <ContainerInstrument className="p-6 rounded-[20px] bg-white border border-black/5 shadow-aura">
+                <TextInstrument className="text-[12px] uppercase tracking-[0.2em] text-va-black/40 mb-2">
+                  <VoiceglotText translationKey="workshop.interest.selected_workshop" defaultText="Geselecteerde workshop" />
+                </TextInstrument>
+                <TextInstrument className="text-[18px] font-light text-va-black">
+                  {selectedWorkshopTitle || t('common.loading', 'Laden...')}
+                </TextInstrument>
+              </ContainerInstrument>
+            ) : (
+              <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4" role="list" aria-label={t('workshop.interest.list_label', 'Workshops')}>
+                {isFetching ? (
+                  [1, 2, 3, 4].map((i) => (
+                    <div key={i} className="h-16 bg-va-black/5 rounded-[20px] animate-pulse" />
+                  ))
+                ) : fetchError ? (
+                  <ContainerInstrument className="md:col-span-2 flex flex-col items-center gap-4 p-6 rounded-[20px] bg-va-black/5">
+                    <TextInstrument className="text-[15px] font-light text-va-black/70 text-center">{fetchError}</TextInstrument>
+                    <ButtonInstrument type="button" onClick={() => { playClick('light'); fetchWorkshops(); }} variant="outline" size="sm">
+                      <VoiceglotText translationKey="common.retry" defaultText="Opnieuw proberen" />
+                    </ButtonInstrument>
+                  </ContainerInstrument>
+                ) : workshops.length === 0 ? (
+                  <ContainerInstrument className="md:col-span-2 p-6 rounded-[20px] bg-va-black/5">
+                    <TextInstrument className="text-[15px] font-light text-va-black/60">
+                      <VoiceglotText translationKey="workshop.interest.no_workshops" defaultText="Er zijn momenteel geen workshops beschikbaar." />
                     </TextInstrument>
-                    <ContainerInstrument className={cn(
-                      "w-6 h-6 rounded-[10px] border-2 flex items-center justify-center shrink-0 transition-all duration-100",
-                      selectedWorkshops.includes(w.id)
-                        ? "bg-primary border-primary"
-                        : "border-black/10 group-hover:border-primary/30"
-                    )}>
-                      {selectedWorkshops.includes(w.id) && <Check size={14} strokeWidth={3} className="text-white" />}
-                    </ContainerInstrument>
-                  </button>
-                ))
-              )}
-            </ContainerInstrument>
+                  </ContainerInstrument>
+                ) : (
+                  workshops.map((w) => (
+                    <button
+                      key={w.id}
+                      type="button"
+                      onClick={() => { playClick('light'); toggleWorkshop(w.id); }}
+                      className={cn(
+                        "p-5 sm:p-6 rounded-[20px] border-2 transition-all duration-100 text-left flex items-center justify-between group min-h-[56px] active:scale-[0.99]",
+                        selectedWorkshops.includes(w.id)
+                          ? "bg-black border-black text-white shadow-aura scale-[1.01]"
+                          : "bg-white border-black/5 text-va-black hover:border-primary/30"
+                      )}
+                    >
+                      <TextInstrument className="font-light text-[15px] tracking-tight">
+                        <VoiceglotText translationKey={`workshop.${w.id}.title`} defaultText={w.title} noTranslate={true} />
+                      </TextInstrument>
+                      <ContainerInstrument className={cn(
+                        "w-6 h-6 rounded-[10px] border-2 flex items-center justify-center shrink-0 transition-all duration-100",
+                        selectedWorkshops.includes(w.id)
+                          ? "bg-primary border-primary"
+                          : "border-black/10 group-hover:border-primary/30"
+                      )}>
+                        {selectedWorkshops.includes(w.id) && <Check size={14} strokeWidth={3} className="text-white" />}
+                      </ContainerInstrument>
+                    </button>
+                  ))
+                )}
+              </ContainerInstrument>
+            )}
           </ContainerInstrument>
 
           {/* Basic Info */}
@@ -378,7 +415,7 @@ export const WorkshopInterestForm: React.FC = () => {
 
             <ButtonInstrument
               type="submit"
-              disabled={isFetching || workshops.length === 0 || selectedWorkshops.length === 0 || !formData.email}
+              disabled={disableNextStep}
               className="w-full py-5 sm:py-6 rounded-[10px] bg-black text-white font-light tracking-tight text-[15px] hover:bg-primary transition-all duration-100 shadow-aura flex items-center justify-center gap-3 group min-h-[52px] active:scale-[0.99] disabled:opacity-50 disabled:active:scale-100"
             >
               <VoiceglotText  translationKey="common.next_step" defaultText="Volgende stap" />

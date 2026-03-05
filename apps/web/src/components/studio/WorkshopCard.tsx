@@ -3,9 +3,10 @@
 import { ContainerInstrument, HeadingInstrument, TextInstrument } from "@/components/ui/LayoutInstruments";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { WorkshopEditModal } from "@/components/ui/WorkshopEditModal";
+import { useAuth } from "@/contexts/AuthContext";
 import { useEditMode } from "@/contexts/EditModeContext";
 import { useSonicDNA } from "@/lib/engines/sonic-dna";
-import { Settings, Play, Pause, Calendar, ArrowRight } from "lucide-react";
+import { Edit3, Play, Pause, Calendar, ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -18,6 +19,7 @@ interface WorkshopCardProps {
 
 export const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onUpdate }) => {
   const { playClick } = useSonicDNA();
+  const { isAdmin } = useAuth();
   const { isEditMode } = useEditMode();
   const router = useRouter();
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -35,17 +37,23 @@ export const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onUpdate }
   const isVideo = mediaPath && /\.(mp4|webm|mov)$/i.test(mediaPath);
   const videoPath = isVideo ? mediaPath : null;
   const imagePath = !isVideo && mediaPath ? mediaPath : null;
+  const resolvedVideoSrc = videoPath
+    ? (videoPath.startsWith('http') ? videoPath : `https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices/${videoPath.replace(/^\/+/, '')}`)
+    : null;
 
   //  SMART AVAILABILITY LOGIC
   const getAvailabilityStatus = (edition: any) => {
     if (!edition) return null;
     const capacity = edition.capacity || 8;
-    const filled = edition.participants?.length || 0;
-    const remaining = capacity - filled;
+    const filledFromParticipants = Array.isArray(edition.participants) ? edition.participants.length : 0;
+    const filledFromCount = Number.isFinite(Number(edition.registered_count))
+      ? Number(edition.registered_count)
+      : (Number.isFinite(Number(edition.filled)) ? Number(edition.filled) : filledFromParticipants);
+    const remaining = Math.max(0, capacity - filledFromCount);
 
-    if (remaining <= 0) return { label: 'VOLZET', color: 'bg-va-black text-white' };
-    if (remaining <= 2) return { label: `LAATSTE ${remaining === 1 ? 'PLEK' : 'PLEKKEN'}`, color: 'bg-primary text-white animate-pulse' };
-    return { label: 'BESCHIKBAAR', color: 'bg-va-off-white text-va-black/40' };
+    if (remaining <= 0) return { label: 'VOLZET', color: 'bg-va-black text-white', remaining, capacity, seatLabel: `0/${capacity} vrij` };
+    if (remaining <= 2) return { label: `LAATSTE ${remaining === 1 ? 'PLEK' : 'PLEKKEN'}`, color: 'bg-primary text-white animate-pulse', remaining, capacity, seatLabel: `${remaining}/${capacity} vrij` };
+    return { label: 'BESCHIKBAAR', color: 'bg-va-off-white text-va-black/40', remaining, capacity, seatLabel: `${remaining}/${capacity} vrij` };
   };
 
   const availability = getAvailabilityStatus(nextEdition);
@@ -161,14 +169,14 @@ export const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onUpdate }
       plain
       className={`group relative bg-white rounded-[20px] overflow-hidden shadow-aura hover:shadow-aura-lg hover:scale-[1.01] active:scale-[0.99] transition-all duration-500 border border-black/[0.02] flex flex-col cursor-pointer touch-manipulation h-full ${isEditMode ? 'ring-2 ring-primary ring-inset' : ''}`}
     >
-      {/* ADMIN EDIT BUTTON */}
-      {isEditMode && (
+      {/* ADMIN EDIT BUTTON (voicecard-style hover pencil) */}
+      {isAdmin && (
         <button
           onClick={handleAdminClick}
-          className="absolute top-4 right-4 z-[60] w-10 h-10 rounded-full bg-primary text-white shadow-lg flex items-center justify-center hover:scale-110 active:scale-95 transition-all animate-in fade-in zoom-in duration-300"
+          className="absolute top-4 left-4 z-[60] w-10 h-10 rounded-full bg-va-black/40 backdrop-blur-md text-white border border-white/10 shadow-lg flex items-center justify-center hover:bg-primary hover:scale-110 active:scale-95 transition-all opacity-100 md:opacity-0 md:group-hover:opacity-100"
           title="Bewerk Workshop & Edities"
         >
-          <Settings size={20} strokeWidth={2} />
+          <Edit3 size={18} strokeWidth={2} className="transition-transform group-hover:rotate-12" />
         </button>
       )}
 
@@ -176,9 +184,14 @@ export const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onUpdate }
       {(videoPath || imagePath) && (
         <ContainerInstrument plain className="relative aspect-square w-full bg-va-black overflow-hidden">
           {availability && (
-            <div className={`absolute top-6 left-6 z-30 px-3 py-1.5 rounded-full text-[10px] font-black tracking-[0.2em] uppercase shadow-lg ${availability.color}`}>
-              {availability.label}
-            </div>
+            <ContainerInstrument plain className="absolute top-6 left-6 z-30 flex flex-wrap gap-2">
+              <ContainerInstrument plain className={`px-3 py-1.5 rounded-full text-[10px] font-black tracking-[0.2em] uppercase shadow-lg ${availability.color}`}>
+                {availability.label}
+              </ContainerInstrument>
+              <ContainerInstrument plain className="px-3 py-1.5 rounded-full text-[10px] font-black tracking-[0.12em] uppercase shadow-lg bg-white/90 text-va-black">
+                {availability.seatLabel}
+              </ContainerInstrument>
+            </ContainerInstrument>
           )}
 
           {videoPath ? (
@@ -186,7 +199,7 @@ export const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onUpdate }
               {shouldLoadVideo ? (
                 <video 
                   ref={videoRef}
-                  src={`/assets/${videoPath}`}
+                  src={resolvedVideoSrc || undefined}
                   className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-700"
                   muted
                   loop
@@ -328,6 +341,12 @@ export const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onUpdate }
                 <TextInstrument className="text-3xl font-light tracking-tighter text-va-black">
                    {nextEdition?.price ? parseFloat(nextEdition.price.toString()).toFixed(2) : parseFloat(workshop.price?.toString() || '0').toFixed(2)}
                 </TextInstrument>
+                {availability && (
+                  <TextInstrument className="text-[12px] font-light tracking-wide text-va-black/45 mt-1">
+                    {availability.remaining}/{availability.capacity}{' '}
+                    <VoiceglotText translationKey="studio.seats.remaining" defaultText="plaatsen vrij" />
+                  </TextInstrument>
+                )}
               </ContainerInstrument>
             ) : (
               <ContainerInstrument plain>
@@ -338,14 +357,10 @@ export const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onUpdate }
             )}
             
             <Link 
-              href={nextEdition ? `/studio/${workshop.slug}` : `/studio/doe-je-mee?workshop=${workshop.slug}`}
+              href={`/studio/${workshop.slug}`}
               onClick={(e) => {
                 e.preventDefault();
-                if (nextEdition) {
-                  router.push(`/studio/${workshop.slug}`);
-                } else {
-                  router.push(`/studio/doe-je-mee?workshop=${workshop.slug}`);
-                }
+                router.push(`/studio/${workshop.slug}`);
               }}
               className="flex items-center gap-3 text-[15px] font-light tracking-widest text-primary group/btn min-h-[44px] px-4 py-2 bg-primary/5 hover:bg-primary/10 rounded-[10px] transition-all"
             >
