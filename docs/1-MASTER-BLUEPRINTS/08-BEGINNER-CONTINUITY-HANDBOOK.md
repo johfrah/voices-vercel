@@ -391,6 +391,208 @@ Resultaat na 90 dagen:
 
 ---
 
+## 16) Bedrijfsbeheer: het stuurmodel
+
+Gebruik dit model om zonder chaos te besturen.
+
+### 16.1 Drie besturingslagen
+
+1. **Daglaag**: sales opvolgen, leveringen bewaken, issues oplossen.
+2. **Weeklaag**: KPI's, capaciteit, planning en risico afstemmen.
+3. **Maandlaag**: cash, winst, legal, investeringen en koers bijsturen.
+
+### 16.2 Vier vaste stuurvragen
+
+1. Waar verdienen we nu geld?
+2. Waar verliezen we nu tijd of marge?
+3. Welke world groeit, stagneert of lekt?
+4. Welke beslissing mag niet wachten?
+
+### 16.3 Bedrijfsritme in één schema
+
+- **Maandag**: planning + prioriteiten per world
+- **Woensdag**: kwaliteits- en capaciteitscheck
+- **Vrijdag**: financieel overzicht + beslislog
+
+---
+
+## 17) Workflowcatalogus bedrijfsbeheer
+
+Dit zijn de kernworkflows voor dagelijkse leiding.
+
+1. Lead naar offerte
+2. Offerte naar opdracht
+3. Opdracht naar levering
+4. Levering naar factuur
+5. Factuur naar opvolging
+6. Content naar publicatie
+7. Incident naar herstel
+8. Teamtaak naar rapportage
+
+Gebruik per workflow altijd:
+
+- Owner
+- Deadline
+- Verwachte output
+- Risico
+- Volgende stap
+
+---
+
+## 18) Actorbeheer workflow (SOP)
+
+Doel: actorprofielen betrouwbaar beheren, publicatiekwaliteit houden, fouten vermijden.
+
+### 18.1 Intake van een actor
+
+1. Basisgegevens verzamelen.
+2. Talen en marktcontext noteren.
+3. Demo's en foto's verzamelen.
+4. Status op intern concept zetten.
+
+### 18.2 Kwaliteitscontrole vóór publicatie
+
+1. Controleer audio op verstaanbaarheid en niveau.
+2. Controleer foto op professionele look en juiste framing.
+3. Controleer profieltekst op toon en helderheid.
+4. Controleer tags, categorie en vindbaarheid.
+
+### 18.3 Publicatiebeslissing
+
+Publiceer pas als:
+
+- profiel volledig is
+- media correct werkt
+- contactflow klopt
+- eigenaar akkoord heeft gegeven
+
+### 18.4 Wekelijks actoronderhoud
+
+1. Controleer live-profielen op volledigheid.
+2. Detecteer verouderde demo's.
+3. Update talen, stijlen en inzetbaarheid.
+4. Archiveer of deactiveer verouderde profielen.
+
+### 18.5 Kritieke fouten bij actorbeheer
+
+- Live zetten zonder kwaliteitscheck.
+- Onvolledige profielen publiceren.
+- Demo's wisselen zonder versiecheck.
+- Dubbele profielen laten bestaan.
+
+---
+
+## 19) Workshopbeheer workflow (SOP)
+
+Doel: workshops planbaar, winstgevend en professioneel laten lopen.
+
+### 19.1 Workshop opstart
+
+1. Bepaal thema, doelgroep en leerdoel.
+2. Bepaal datum, capaciteit en prijs.
+3. Publiceer editie met duidelijke voorwaarden.
+4. Koppel verantwoordelijke begeleider.
+
+### 19.2 Inschrijvingsbeheer
+
+1. Nieuwe inschrijving controleren.
+2. Betaalstatus valideren.
+3. Deelnemer bevestigen met praktische info.
+4. Wachtlijst beheren zodra capaciteit vol zit.
+
+### 19.3 Voorbereiding 72 uur vóór start
+
+1. Deelnemerslijst finaliseren.
+2. No-shows en annulaties afwerken.
+3. Lesmateriaal en locatie bevestigen.
+4. Teambriefing uitvoeren.
+
+### 19.4 Nazorg na workshop
+
+1. Aanwezigheid registreren.
+2. Feedback verzamelen.
+3. Upsell of vervolgpad voorstellen.
+4. Financiële afsluiting in weekrapport zetten.
+
+### 19.5 Kritieke fouten bij workshopbeheer
+
+- Geen capaciteitsgrens bewaken.
+- Geen duidelijke annulatieflow.
+- Geen opvolgmail na workshop.
+- Geen eigenaar op inschrijvingsvragen.
+
+---
+
+## 20) World-beheer workflow
+
+Doel: elke world behandelen als mini-bedrijf met eigen eigenaar en resultaat.
+
+### 20.1 Per world, elke week invullen
+
+1. Omzet of waarde-output
+2. Actieve pipeline
+3. Leveringskwaliteit
+4. Grootste blokkade
+5. Beslissing van deze week
+
+### 20.2 World scorecard (stoplicht)
+
+- **Groen**: KPI op koers, geen kritieke blokkade.
+- **Oranje**: KPI daalt of capaciteit knelt.
+- **Rood**: omzetlekkage, kwaliteitsfout of operationele stilstand.
+
+### 20.3 Verplichte actie bij rood
+
+1. Wijs één eigenaar aan.
+2. Start herstelplan met 48u deadline.
+3. Rapporteer dagelijks tot status terug oranje/groen is.
+
+---
+
+## 21) Bedrijfsworkflows in mensentaal per domein
+
+### Sales workflow
+
+1. Lead ontvangen.
+2. Kwalificeren op fit en budget.
+3. Voorstel sturen.
+4. Opvolgen binnen 48 uur.
+5. Beslissen: winnen, parkeren of afsluiten.
+
+### Delivery workflow
+
+1. Opdracht helder maken.
+2. Scope en deadline bevestigen.
+3. Productie uitvoeren.
+4. Kwaliteitscheck doen.
+5. Opleveren en bevestigen.
+
+### Finance workflow
+
+1. Factuur versturen.
+2. Betaaltermijn monitoren.
+3. Herinneren op vast ritme.
+4. Escaleren bij overschrijding.
+5. Afboeken en rapporteren.
+
+### Content workflow
+
+1. Input verzamelen.
+2. Structureren per world.
+3. Publiceren met kwaliteitscontrole.
+4. Resultaat meten.
+5. Bijsturen op conversie.
+
+### Incident workflow
+
+1. Detecteren.
+2. Impact afbakenen.
+3. Tijdelijk beperken.
+4. Structureel herstellen.
+5. Leren en checklist updaten.
+
+---
+
 ## Screenshot bijlage: front en back context
 
 ### Frontoffice voorbeelden
