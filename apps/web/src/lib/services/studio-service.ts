@@ -268,6 +268,24 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
       SELECT
         we.id, we.workshop_id, we.date, we.capacity, we.status,
         we.start_time, we.end_time, we.price as edition_price,
+        COALESCE((
+          SELECT SUM(COALESCE(oi.quantity, 1))
+          FROM order_items oi
+          LEFT JOIN orders o ON o.id = oi.order_id
+          WHERE oi.edition_id = we.id
+            AND (
+              o.id IS NULL
+              OR lower(COALESCE(o.status, '')) NOT IN (
+                'cancelled',
+                'wc-cancelled',
+                'refunded',
+                'wc-refunded',
+                'failed',
+                'wc-failed',
+                'trash'
+              )
+            )
+        ), 0)::int AS registered_count,
         l.id as location_id, l.name AS location_name, l.city AS location_city, l.address AS location_address, l.zip AS location_zip, l.country AS location_country, l.map_url, l.access_instructions,
         i.id as instructor_id, i.name as instructor_name, i.tagline as instructor_tagline, i.bio as instructor_bio,
         im.file_path as instructor_photo
@@ -493,6 +511,8 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
         bio: e.instructor_bio, photo_url: toPublicStorageUrl(e.instructor_photo)
       } : null,
       capacity: e.capacity ?? 8,
+      registered_count: Number(e.registered_count ?? 0),
+      available_seats: Math.max(0, Number(e.capacity ?? 8) - Number(e.registered_count ?? 0)),
       status: e.status
     });
     return acc;
@@ -564,7 +584,7 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
         : (inferredAftermoviePathByWorkshop[w.id] || mappedAftermoviePath);
     const videoSubtitleTracks = videoId ? (subtitleTracksByKey[`${w.id}:${videoId}:video`] || []) : [];
     const aftermovieSubtitleTracks = aftermovieVideoId ? (subtitleTracksByKey[`${w.id}:${aftermovieVideoId}:aftermovie`] || []) : [];
-    const primaryVideoTrack = videoSubtitleTracks.find((track) => track.is_default) || videoSubtitleTracks[0];
+    const primaryVideoTrack = videoSubtitleTracks.find((track: any) => track.is_default) || videoSubtitleTracks[0];
     const resolvedSubtitleData = primaryVideoTrack?.data
       ? {
           lang: primaryVideoTrack.src_lang,

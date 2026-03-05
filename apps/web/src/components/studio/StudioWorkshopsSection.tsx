@@ -9,6 +9,27 @@ import { ChevronDown, ArrowRight, Calendar, MapPin, User, ChevronRight } from "l
 import Link from "next/link";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
 
+const STORAGE_BASE = 'https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices';
+
+function toPublicMediaUrl(path?: string | null): string | null {
+  if (!path) return null;
+  if (path.startsWith('http')) return path;
+  return `${STORAGE_BASE}/${path.replace(/^\/+/, '')}`;
+}
+
+function resolveSeats(edition: {
+  capacity?: number | null;
+  registered_count?: number | null;
+  available_seats?: number | null;
+}) {
+  const capacity = Number(edition.capacity ?? 8);
+  const filled = Number(edition.registered_count ?? 0);
+  const available = Number.isFinite(Number(edition.available_seats))
+    ? Number(edition.available_seats)
+    : Math.max(0, capacity - filled);
+  return { capacity, filled, available };
+}
+
 export interface WorkshopApiItem {
   id: number;
   title: string;
@@ -25,9 +46,14 @@ export interface WorkshopApiItem {
   upcoming_editions: Array<{
     id: number;
     date: string;
+    start_time?: string | null;
+    end_time?: string | null;
+    price?: string | number | null;
     location: { id?: number; name: string; city: string | null; address: string | null } | null;
     instructor: { id?: number; name: string; photo_url: string | null } | null;
     capacity: number;
+    registered_count?: number;
+    available_seats?: number;
     status: string | null;
   }>;
 }
@@ -73,6 +99,8 @@ function mapToCarouselFormat(workshop: WorkshopApiItem) {
       location: e.location,
       instructor: e.instructor,
       capacity: e.capacity,
+      registered_count: e.registered_count,
+      available_seats: e.available_seats,
       status: e.status,
     })),
     taxonomy: workshop.taxonomy,
@@ -117,7 +145,16 @@ export const StudioWorkshopsSection: React.FC<StudioWorkshopsSectionProps> = ({ 
 
   // Flatten all upcoming editions for the calendar (Luxe Sectie)
   const allUpcomingEditions = workshops
-    .flatMap(w => w.upcoming_editions.map(e => ({ ...e, workshopTitle: w.title, workshopSlug: w.slug, workshopId: w.id })))
+    .flatMap(w =>
+      w.upcoming_editions.map((e) => ({
+        ...e,
+        workshopTitle: w.title,
+        workshopSlug: w.slug,
+        workshopId: w.id,
+        workshopImagePath: w.featured_image?.file_path || null,
+        workshopImageAlt: w.featured_image?.alt_text || w.title
+      }))
+    )
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
     .slice(0, 8);
 
@@ -181,14 +218,35 @@ export const StudioWorkshopsSection: React.FC<StudioWorkshopsSectionProps> = ({ 
           </div>
 
           <div className="space-y-4">
-            {allUpcomingEditions.map((edition) => (
-              <Link 
-                key={edition.id} 
-                href={`/studio/${edition.workshopSlug}`}
-                className="group block bg-white hover:bg-va-black p-6 md:p-8 rounded-[24px] border border-black/[0.03] shadow-aura hover:shadow-aura-lg transition-all duration-500"
-              >
+            {allUpcomingEditions.map((edition) => {
+              const seatInfo = resolveSeats(edition);
+              return (
+                <Link 
+                  key={edition.id} 
+                  href={`/studio/${edition.workshopSlug || edition.workshopId}`}
+                  className="group block bg-white hover:bg-va-black p-6 md:p-8 rounded-[24px] border border-black/[0.03] shadow-aura hover:shadow-aura-lg transition-all duration-500"
+                >
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-8">
                   <div className="flex items-center gap-8">
+                    {/* Workshop image */}
+                    {edition.workshopImagePath ? (
+                      <div className="relative w-24 h-24 rounded-[18px] overflow-hidden border border-black/5 group-hover:border-white/20 transition-colors shrink-0">
+                        <Image
+                          src={toPublicMediaUrl(edition.workshopImagePath) || ''}
+                          alt={edition.workshopImageAlt || edition.workshopTitle}
+                          fill
+                          sizes="96px"
+                          className="object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                      </div>
+                    ) : (
+                      <div className="w-24 h-24 bg-va-off-white group-hover:bg-white/10 rounded-[18px] flex flex-col items-center justify-center transition-colors shrink-0">
+                        <span className="text-[11px] font-bold uppercase tracking-widest text-va-black/30 group-hover:text-white/40">
+                          <VoiceglotText translationKey="studio.workshop.label" defaultText="Workshop" />
+                        </span>
+                      </div>
+                    )}
+
                     {/* Date Chip */}
                     <div className="w-20 h-20 bg-va-off-white group-hover:bg-white/10 rounded-[18px] flex flex-col items-center justify-center transition-colors">
                       <span className="text-2xl font-light tracking-tighter text-va-black group-hover:text-white leading-none">
@@ -219,6 +277,12 @@ export const StudioWorkshopsSection: React.FC<StudioWorkshopsSectionProps> = ({ 
                   </div>
 
                   <div className="flex items-center gap-6">
+                    <div className="px-4 py-2 bg-va-off-white/80 group-hover:bg-white/10 rounded-full transition-colors">
+                      <span className="text-[11px] font-bold tracking-widest uppercase text-va-black/50 group-hover:text-white/80">
+                        {seatInfo.available}/{seatInfo.capacity}{' '}
+                        <VoiceglotText translationKey="studio.seats.remaining" defaultText="plaatsen vrij" />
+                      </span>
+                    </div>
                     <div className="px-4 py-2 bg-primary/5 group-hover:bg-white/10 rounded-full transition-colors">
                       <span className="text-[11px] font-bold tracking-widest uppercase text-primary group-hover:text-white">
                         <VoiceglotText translationKey="studio.status.open" defaultText="Inschrijvingen Open" />
@@ -229,8 +293,9 @@ export const StudioWorkshopsSection: React.FC<StudioWorkshopsSectionProps> = ({ 
                     </div>
                   </div>
                 </div>
-              </Link>
-            ))}
+                </Link>
+              );
+            })}
           </div>
         </ContainerInstrument>
       </section>

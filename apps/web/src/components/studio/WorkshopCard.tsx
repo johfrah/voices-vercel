@@ -45,12 +45,15 @@ export const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onUpdate }
   const getAvailabilityStatus = (edition: any) => {
     if (!edition) return null;
     const capacity = edition.capacity || 8;
-    const filled = edition.participants?.length || 0;
-    const remaining = capacity - filled;
+    const filledFromParticipants = Array.isArray(edition.participants) ? edition.participants.length : 0;
+    const filledFromCount = Number.isFinite(Number(edition.registered_count))
+      ? Number(edition.registered_count)
+      : (Number.isFinite(Number(edition.filled)) ? Number(edition.filled) : filledFromParticipants);
+    const remaining = Math.max(0, capacity - filledFromCount);
 
-    if (remaining <= 0) return { label: 'VOLZET', color: 'bg-va-black text-white' };
-    if (remaining <= 2) return { label: `LAATSTE ${remaining === 1 ? 'PLEK' : 'PLEKKEN'}`, color: 'bg-primary text-white animate-pulse' };
-    return { label: 'BESCHIKBAAR', color: 'bg-va-off-white text-va-black/40' };
+    if (remaining <= 0) return { label: 'VOLZET', color: 'bg-va-black text-white', remaining, capacity, seatLabel: `0/${capacity} vrij` };
+    if (remaining <= 2) return { label: `LAATSTE ${remaining === 1 ? 'PLEK' : 'PLEKKEN'}`, color: 'bg-primary text-white animate-pulse', remaining, capacity, seatLabel: `${remaining}/${capacity} vrij` };
+    return { label: 'BESCHIKBAAR', color: 'bg-va-off-white text-va-black/40', remaining, capacity, seatLabel: `${remaining}/${capacity} vrij` };
   };
 
   const availability = getAvailabilityStatus(nextEdition);
@@ -181,9 +184,14 @@ export const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onUpdate }
       {(videoPath || imagePath) && (
         <ContainerInstrument plain className="relative aspect-square w-full bg-va-black overflow-hidden">
           {availability && (
-            <div className={`absolute top-6 left-6 z-30 px-3 py-1.5 rounded-full text-[10px] font-black tracking-[0.2em] uppercase shadow-lg ${availability.color}`}>
-              {availability.label}
-            </div>
+            <ContainerInstrument plain className="absolute top-6 left-6 z-30 flex flex-wrap gap-2">
+              <ContainerInstrument plain className={`px-3 py-1.5 rounded-full text-[10px] font-black tracking-[0.2em] uppercase shadow-lg ${availability.color}`}>
+                {availability.label}
+              </ContainerInstrument>
+              <ContainerInstrument plain className="px-3 py-1.5 rounded-full text-[10px] font-black tracking-[0.12em] uppercase shadow-lg bg-white/90 text-va-black">
+                {availability.seatLabel}
+              </ContainerInstrument>
+            </ContainerInstrument>
           )}
 
           {videoPath ? (
@@ -333,6 +341,12 @@ export const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onUpdate }
                 <TextInstrument className="text-3xl font-light tracking-tighter text-va-black">
                    {nextEdition?.price ? parseFloat(nextEdition.price.toString()).toFixed(2) : parseFloat(workshop.price?.toString() || '0').toFixed(2)}
                 </TextInstrument>
+                {availability && (
+                  <TextInstrument className="text-[12px] font-light tracking-wide text-va-black/45 mt-1">
+                    {availability.remaining}/{availability.capacity}{' '}
+                    <VoiceglotText translationKey="studio.seats.remaining" defaultText="plaatsen vrij" />
+                  </TextInstrument>
+                )}
               </ContainerInstrument>
             ) : (
               <ContainerInstrument plain>

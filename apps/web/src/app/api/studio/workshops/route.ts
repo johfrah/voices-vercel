@@ -60,6 +60,38 @@ export async function GET() {
             .order('date')
         : { data: [] };
 
+      const editionIds = (editionsData || []).map((edition) => edition.id).filter(Boolean);
+      const { data: orderItemsData } = editionIds.length > 0
+        ? await supabase
+            .from('order_items')
+            .select('edition_id, order_id, quantity')
+            .in('edition_id', editionIds)
+        : { data: [] };
+
+      const orderIds = Array.from(
+        new Set((orderItemsData || []).map((item: any) => item.order_id).filter(Boolean))
+      );
+      const { data: ordersData } = orderIds.length > 0
+        ? await supabase
+            .from('orders')
+            .select('id, status')
+            .in('id', orderIds)
+        : { data: [] };
+
+      const invalidStatuses = new Set(['cancelled', 'wc-cancelled', 'refunded', 'wc-refunded', 'failed', 'wc-failed', 'trash']);
+      const orderStatusById = new Map<number, string>(
+        (ordersData || []).map((order: any) => [Number(order.id), String(order.status || '').toLowerCase()])
+      );
+      const registeredByEdition = (orderItemsData || []).reduce((acc: Record<number, number>, item: any) => {
+        const editionId = Number(item.edition_id);
+        const orderId = Number(item.order_id);
+        const status = orderStatusById.get(orderId) || '';
+        if (invalidStatuses.has(status)) return acc;
+        const qty = Number(item.quantity ?? 1);
+        acc[editionId] = (acc[editionId] || 0) + (Number.isFinite(qty) && qty > 0 ? qty : 1);
+        return acc;
+      }, {});
+
       // Map to the expected format for the frontend
       const mappedWorkshops = (workshopsData || []).map(w => {
         const upcoming = (editionsData || [])
@@ -69,6 +101,9 @@ export async function GET() {
             date: e.date,
             location: e.locations,
             instructor: e.instructors,
+            capacity: Number(e.capacity ?? 8),
+            registered_count: Number(registeredByEdition[Number(e.id)] || 0),
+            available_seats: Math.max(0, Number(e.capacity ?? 8) - Number(registeredByEdition[Number(e.id)] || 0)),
             status: e.status
           }));
 
