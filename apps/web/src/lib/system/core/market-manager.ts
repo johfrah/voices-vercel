@@ -140,6 +140,38 @@ export class MarketManager {
   public static get services() { return this.servicesRegistry; }
   public static get worldLanguages() { return this.worldLanguagesRegistry; }
 
+  private static LANGUAGE_ROUTE_SEGMENT_TO_CODE: Record<string, string> = {
+    flemish: 'nl-be',
+    vlaams: 'nl-be',
+    dutch: 'nl-nl',
+    nederlands: 'nl-nl',
+    french: 'fr-fr',
+    frans: 'fr-fr',
+    english: 'en-gb',
+    engels: 'en-gb',
+    german: 'de-de',
+    duits: 'de-de',
+    spanish: 'es-es',
+    spaans: 'es-es',
+    italian: 'it-it',
+    italiaans: 'it-it',
+    portuguese: 'pt-pt',
+    portugees: 'pt-pt',
+  };
+
+  private static LANGUAGE_CODE_TO_ROUTE_SEGMENT: Record<string, string> = {
+    'nl-be': 'flemish',
+    'nl-nl': 'dutch',
+    'fr-be': 'french',
+    'fr-fr': 'french',
+    'en-gb': 'english',
+    'en-us': 'english',
+    'de-de': 'german',
+    'es-es': 'spanish',
+    'it-it': 'italian',
+    'pt-pt': 'portuguese',
+  };
+
   static getServiceId(code: string): number | null {
     if (!code) return null;
     const lowCode = code.toLowerCase().trim();
@@ -400,6 +432,52 @@ export class MarketManager {
 
   static getLanguageCode(label: string): string {
     return normalizeLocale(label, 'nl-be');
+  }
+
+  static getLanguageRouteSegment(input: string | number | null | undefined): string | null {
+    if (input == null || input === '') return null;
+
+    const lowInput = String(input).toLowerCase().trim();
+    const inputId = typeof input === 'number' ? input : (!isNaN(Number(input)) ? Number(input) : null);
+
+    if (inputId != null) {
+      const languageFromRegistry = this.languagesRegistry.find((language) => language.id === inputId);
+      if (languageFromRegistry?.code) {
+        return this.LANGUAGE_CODE_TO_ROUTE_SEGMENT[normalizeLocale(languageFromRegistry.code, 'nl-be')] || null;
+      }
+    }
+
+    const normalizedCode = normalizeLocale(lowInput, 'nl-be');
+    if (this.LANGUAGE_CODE_TO_ROUTE_SEGMENT[normalizedCode]) {
+      return this.LANGUAGE_CODE_TO_ROUTE_SEGMENT[normalizedCode];
+    }
+
+    if (this.LANGUAGE_ROUTE_SEGMENT_TO_CODE[lowInput]) {
+      return lowInput;
+    }
+
+    const fromLabel = this.languagesRegistry.find((language) => language.label.toLowerCase() === lowInput);
+    if (fromLabel?.code) {
+      return this.LANGUAGE_CODE_TO_ROUTE_SEGMENT[normalizeLocale(fromLabel.code, 'nl-be')] || null;
+    }
+
+    return null;
+  }
+
+  static getLanguageFromRouteSegment(
+    segment: string | null | undefined,
+    fallbackLocale: string = 'nl-be'
+  ): { code: string; id: number | null } | null {
+    if (!segment) return null;
+
+    const normalizedSegment = String(segment).toLowerCase().trim();
+    const code = this.LANGUAGE_ROUTE_SEGMENT_TO_CODE[normalizedSegment];
+    if (!code) return null;
+
+    return {
+      code,
+      id: this.getLanguageId(code, fallbackLocale),
+    };
   }
 
   static getLanguageLabel(input: string | number): string {
