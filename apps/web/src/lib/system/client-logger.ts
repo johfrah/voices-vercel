@@ -296,6 +296,14 @@ export class ClientLogger {
         return;
       }
 
+      // Local/dev sessions can have transient API disconnects (e.g. stopped dev server).
+      // Do not escalate those to critical Watchdog alerts.
+      const isLocalSession = typeof window !== 'undefined' && (
+        window.location.hostname === 'localhost' ||
+        window.location.hostname === '127.0.0.1'
+      );
+      const shouldEscalateWatchdog = level === 'error' && !isLocalSession;
+
       const payload = JSON.stringify({
         level,
         message,
@@ -323,7 +331,7 @@ export class ClientLogger {
         navigator.sendBeacon('/api/admin/system/logs', blob);
         
         // Als het een error is, sturen we hem ook naar de Watchdog voor escalatie
-        if (level === 'error') {
+        if (shouldEscalateWatchdog) {
           navigator.sendBeacon('/api/admin/system/watchdog', blob);
         }
       } else {
@@ -336,7 +344,7 @@ export class ClientLogger {
         
         await fetch('/api/admin/system/logs', fetchOptions);
         
-        if (level === 'error') {
+        if (shouldEscalateWatchdog) {
           await fetch('/api/admin/system/watchdog', fetchOptions);
         }
       }
