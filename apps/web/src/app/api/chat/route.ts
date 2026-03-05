@@ -99,6 +99,137 @@ const extractMessageFromJsonBuffer = (buffer: string): string | null => {
   return null;
 };
 
+type ChatAction = {
+  label: string;
+  action: string;
+  params?: Record<string, unknown>;
+  isButlerAction?: boolean;
+};
+
+const englishHintPattern = /\b(hello|hi|price|how|can you|thanks|thank you)\b/i;
+const dutchHintPattern = /\b(hallo|prijs|hoe|kan je|kun je|bedankt|offerte)\b/i;
+const accountSupportPattern = /\b(mijn\s+(bestelling|order|bestanden|factuur)|orderstatus|factuur|invoice|download|leverstatus|delivery\s+status)\b/i;
+const humanTakeoverPattern = /\b(medewerker|spreken|johfrah|human|contact)\b/i;
+
+const detectEnglishPreference = (language: string, message: string): boolean => {
+  const normalizedLanguage = String(language || '').toLowerCase();
+  if (normalizedLanguage.startsWith('en')) return true;
+  if (normalizedLanguage.startsWith('nl')) return false;
+  const hasEnglishHint = englishHintPattern.test(message);
+  const hasDutchHint = dutchHintPattern.test(message);
+  return hasEnglishHint && !hasDutchHint;
+};
+
+const normalizeJourney = (journey: string): string => {
+  const normalized = String(journey || 'agency').toLowerCase();
+  if (normalized.includes('studio')) return 'studio';
+  if (normalized.includes('academy')) return 'academy';
+  if (normalized.includes('ademing')) return 'ademing';
+  if (normalized.includes('artist')) return 'artist';
+  if (normalized.includes('partner')) return 'partner';
+  if (normalized.includes('johfrai')) return 'johfrai';
+  if (normalized.includes('freelance')) return 'freelance';
+  if (normalized.includes('portfolio')) return 'portfolio';
+  return 'agency';
+};
+
+const buildJourneyActions = (
+  journey: string,
+  isEnglish: boolean,
+  stage: 'presales' | 'sales' | 'aftersales',
+  message: string
+): ChatAction[] => {
+  const normalizedJourney = normalizeJourney(journey);
+  const actions: ChatAction[] = [];
+
+  if (stage === 'aftersales' || accountSupportPattern.test(message)) {
+    actions.push({ label: isEnglish ? 'My Orders' : 'Mijn Bestellingen', action: '/account/orders' });
+    actions.push({ label: isEnglish ? 'My Files' : 'Mijn Bestanden', action: '/account/vault' });
+  }
+
+  switch (normalizedJourney) {
+    case 'studio':
+      actions.push({ label: isEnglish ? 'View Workshops' : 'Bekijk Workshops', action: 'browse_workshops' });
+      if (stage === 'presales') {
+        actions.push({ label: isEnglish ? 'Get Started' : 'Aan de slag', action: 'book_session' });
+      }
+      break;
+    case 'academy':
+      actions.push({ label: isEnglish ? 'View Courses' : 'Bekijk Cursussen', action: 'browse_courses' });
+      if (stage === 'presales') {
+        actions.push({ label: isEnglish ? 'Start Free Lesson' : 'Start Gratis Les', action: 'start_free_lesson' });
+      }
+      break;
+    case 'ademing':
+      actions.push({ label: isEnglish ? 'Start Breath Session' : 'Start Ademsessie', action: '/ademing' });
+      actions.push({ label: isEnglish ? 'Ask a Coach' : 'Spreek een coach', action: '/ademing/contact' });
+      break;
+    case 'artist':
+      actions.push({ label: isEnglish ? 'Listen Releases' : 'Beluister releases', action: '/artist' });
+      actions.push({ label: isEnglish ? 'Support Artist' : 'Steun de artiest', action: '/contact' });
+      break;
+    case 'partner':
+      actions.push({ label: isEnglish ? 'Partner Overview' : 'Partner overzicht', action: '/partners' });
+      actions.push({ label: isEnglish ? 'Schedule Intro' : 'Plan intake', action: '/partners/contact' });
+      break;
+    case 'johfrai':
+      actions.push({ label: isEnglish ? 'Explore Johfrai' : 'Ontdek Johfrai', action: '/johfrai' });
+      actions.push({ label: isEnglish ? 'Request Demo' : 'Vraag demo aan', action: 'quote' });
+      break;
+    case 'freelance':
+      actions.push({ label: isEnglish ? 'Freelance Services' : 'Freelance diensten', action: '/freelance' });
+      actions.push({ label: isEnglish ? 'Talk to Johfrah' : 'Spreek Johfrah', action: 'johfrah_takeover' });
+      break;
+    case 'portfolio':
+      actions.push({ label: isEnglish ? 'Discuss Project' : 'Bespreek project', action: 'johfrah_takeover' });
+      actions.push({ label: isEnglish ? 'Request Proposal' : 'Vraag voorstel aan', action: 'quote' });
+      break;
+    default:
+      actions.push({ label: isEnglish ? 'Request Quote' : 'Offerte aanvragen', action: 'quote' });
+      actions.push({ label: isEnglish ? 'Browse Voices' : 'Stemmen bekijken', action: 'browse_voices' });
+      break;
+  }
+
+  return actions;
+};
+
+const normalizeActionKey = (action: ChatAction): string => {
+  const actionCode = String(action?.action || '').trim().toLowerCase();
+  if (!actionCode) return `label:${String(action?.label || '').trim().toLowerCase()}`;
+  if (actionCode === 'show_lead_form') return 'quote';
+  if (actionCode === '/agency') return 'quote';
+  return actionCode;
+};
+
+const dedupeAndTrimActions = (inputActions: ChatAction[], journey: string): ChatAction[] => {
+  const dedupedVisible: ChatAction[] = [];
+  const dedupedButler: ChatAction[] = [];
+  const seen = new Set<string>();
+  const normalizedJourney = normalizeJourney(journey);
+  const allowButlerActions = normalizedJourney !== 'artist' && normalizedJourney !== 'ademing';
+
+  for (const rawAction of inputActions) {
+    if (!rawAction || !rawAction.label || !rawAction.action) continue;
+    const normalizedAction: ChatAction = {
+      label: String(rawAction.label),
+      action: String(rawAction.action),
+      params: rawAction.params,
+      isButlerAction: rawAction.isButlerAction,
+    };
+    const key = normalizeActionKey(normalizedAction);
+    if (seen.has(key)) continue;
+    seen.add(key);
+    if (normalizedAction.isButlerAction) {
+      if (!allowButlerActions) continue;
+      dedupedButler.push(normalizedAction);
+    } else {
+      dedupedVisible.push(normalizedAction);
+    }
+  }
+
+  return [...dedupedVisible.slice(0, 3), ...dedupedButler.slice(0, 1)];
+};
+
 const createSendStreamResponse = (params: any, request: NextRequest, requestStartedAt: number) => {
   const encoder = new TextEncoder();
 
@@ -567,7 +698,7 @@ async function handleSendMessage(params: any, request?: NextRequest) {
 
     //  LANGUAGE ADAPTATION: Voicy past haar taal aan aan de gebruiker
     const { MarketManagerServer: MarketManager } = await import('@/lib/system/core/market-manager');
-    const isEnglish = language === 'en' || /hello|hi|price|how|can you/i.test(message);
+    const isEnglish = detectEnglishPreference(language, message);
     const journey = context?.journey || 'agency';
     
     //  CHRIS-PROTOCOL: Map language labels dynamically
@@ -585,7 +716,7 @@ async function handleSendMessage(params: any, request?: NextRequest) {
       console.log(`[Voicy API] Admin is active on chat #${conversationId}. AI response suppressed.`);
       return NextResponse.json({ success: true, message: "Admin is handling this chat." });
     }
-    let actions: any[] = [];
+    let actions: ChatAction[] = [];
     let aiContent: string = '';
 
     //  LIFECYCLE DETECTION (v2.16.029)
@@ -594,26 +725,7 @@ async function handleSendMessage(params: any, request?: NextRequest) {
     const stage = !isAuthenticated ? 'presales' : (hasOrders ? 'aftersales' : 'sales');
     console.log(`[Voicy API] Lifecycle stage detected: ${stage}`);
 
-    //  JOURNEY & STAGE AWARE ACTIONS
-    if (stage === 'aftersales') {
-      actions.push({ label: isEnglish ? "My Orders" : "Mijn Bestellingen", action: "/account/orders" });
-      actions.push({ label: isEnglish ? "The Vault" : "Mijn Bestanden", action: "/account/vault" });
-    }
-
-    if (journey === 'studio') {
-      actions.push({ label: isEnglish ? "View Workshops" : "Bekijk Workshops", action: "browse_workshops" });
-      if (stage === 'presales') {
-        actions.push({ label: isEnglish ? "Get Started" : "Aan de slag", action: "book_session" });
-      }
-    } else if (journey === 'academy') {
-      actions.push({ label: isEnglish ? "View Courses" : "Bekijk Cursussen", action: "browse_courses" });
-      if (stage === 'presales') {
-        actions.push({ label: isEnglish ? "Start Free Lesson" : "Start Gratis Les", action: "start_free_lesson" });
-      }
-    } else {
-      actions.push({ label: isEnglish ? "Request Quote" : "Offerte aanvragen", action: "quote" });
-      actions.push({ label: isEnglish ? "Browse Voices" : "Stemmen bekijken", action: "browse_voices" });
-    }
+    actions = buildJourneyActions(journey, isEnglish, stage, message);
 
     // 1. Check FAQ eerst (snelste)
     try {
@@ -636,7 +748,7 @@ async function handleSendMessage(params: any, request?: NextRequest) {
     }
 
     // 🛡️ CHRIS-PROTOCOL: Gemini response check (v2.15.026)
-    if (!aiContent || message.length > 50 || mode === 'agent' || previewLogic || /medewerker|spreken|johfrah|human|contact/i.test(message)) {
+    if (!aiContent || message.length > 50 || mode === 'agent' || previewLogic || humanTakeoverPattern.test(message)) {
       console.log('[Voicy API] Triggering Gemini Brain...', { mode, hasPreviewLogic: !!previewLogic });
       
       //  CHRIS-PROTOCOL: Haal chatgeschiedenis op voor context-bewustzijn (Anti-Goudvis Mandate)
@@ -660,12 +772,12 @@ async function handleSendMessage(params: any, request?: NextRequest) {
       }
 
       //  HUMAN TAKEOVER: Als de gebruiker vraagt om een medewerker
-      if (/medewerker|spreken|johfrah|human|contact/i.test(message)) {
+      if (humanTakeoverPattern.test(message)) {
         actions.push({ label: "Johfrah Spreken", action: "johfrah_takeover" });
       }
 
       //  MODERATION GUARD: Blokkeer misbruik of off-topic vragen
-      const forbiddenPatterns = /hack|exploit|password|admin|discount|free|gratis|korting|system|internal/i;
+      const forbiddenPatterns = /\b(hack|exploit|password|admin|discount|free|gratis|korting|system|internal)\b/i;
       if (forbiddenPatterns.test(message) && senderType !== 'admin') {
         console.log('[Voicy API] Moderation guard triggered.');
         aiContent = isEnglish 
@@ -853,7 +965,8 @@ ${workshopEditionsData.filter((ed: any) => ed.status === 'upcoming').map((ed: an
 
           Vakmanschap:
           - Wees warm, vakkundig en behulpzaam.
-          - Antwoord kort en krachtig (max 5 zinnen).
+          - Antwoord kort en krachtig (max 3 zinnen).
+          - Geef exact 1 duidelijke vervolgstap die de gebruiker direct kan nemen.
           - Gebruik Natural Capitalization.
         `;
         
@@ -941,6 +1054,7 @@ ${workshopEditionsData.filter((ed: any) => ed.status === 'upcoming').map((ed: an
 
     // 4. Sla op in DB indien mogelijk
     let saveResult: any = null;
+    actions = dedupeAndTrimActions(actions, journey);
     const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!
