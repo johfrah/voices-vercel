@@ -131,6 +131,17 @@ export class ClientLogger {
 
       // 🛡️ CHRIS-PROTOCOL: Safe includes check
       const isSystemApi = typeof url === 'string' && url.includes('/api/admin/system/');
+      const init = (args[1] && typeof args[1] === 'object' ? args[1] : undefined) as RequestInit | undefined;
+      const rawHeaders = init?.headers;
+      let versionCheckHeader = '';
+      if (rawHeaders && typeof Headers !== 'undefined' && rawHeaders instanceof Headers) {
+        versionCheckHeader = rawHeaders.get('X-Version-Check') || '';
+      } else if (rawHeaders && !Array.isArray(rawHeaders)) {
+        versionCheckHeader = String((rawHeaders as Record<string, string>)['X-Version-Check'] || (rawHeaders as Record<string, string>)['x-version-check'] || '');
+      } else if (Array.isArray(rawHeaders)) {
+        const headerTuple = rawHeaders.find(([k]) => k.toLowerCase() === 'x-version-check');
+        versionCheckHeader = headerTuple ? String(headerTuple[1]) : '';
+      }
       
       if (url && !isSystemApi) {
         this.addBreadcrumb('fetch', `${method} ${url}`);
@@ -155,11 +166,17 @@ export class ClientLogger {
         return response;
       } catch (error: any) {
         if (url && !isSystemApi) {
+          const isGeneralConfigPoll = url.includes('/api/admin/config') && url.includes('type=general');
+          const isVersionCheck = isGeneralConfigPoll && versionCheckHeader === 'true';
+          const isOffline = typeof navigator !== 'undefined' && navigator.onLine === false;
+          const isTransientConfigNetworkDrop = isOffline || isVersionCheck || isGeneralConfigPoll;
+          const reportLevel: 'warn' | 'error' = isTransientConfigNetworkDrop ? 'warn' : 'error';
           this.addBreadcrumb('error', `Fetch Network Error: ${url}`);
-          this.report('error', `Network Error: ${url}`, {
+          this.report(reportLevel, `Network Error: ${url}`, {
             url,
             error: error.message,
-            stack: error.stack
+            stack: error.stack,
+            is_transient_config_network_drop: isTransientConfigNetworkDrop
           });
         }
         throw error;
