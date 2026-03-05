@@ -3,9 +3,10 @@
 import { ContainerInstrument, HeadingInstrument, TextInstrument } from "@/components/ui/LayoutInstruments";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { WorkshopEditModal } from "@/components/ui/WorkshopEditModal";
+import { useAuth } from "@/contexts/AuthContext";
 import { useEditMode } from "@/contexts/EditModeContext";
 import { useSonicDNA } from "@/lib/engines/sonic-dna";
-import { Settings, Play, Pause, Calendar, ArrowRight } from "lucide-react";
+import { Edit3, Play, Pause, Calendar, ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -18,6 +19,7 @@ interface WorkshopCardProps {
 
 export const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onUpdate }) => {
   const { playClick } = useSonicDNA();
+  const { isAdmin } = useAuth();
   const { isEditMode } = useEditMode();
   const router = useRouter();
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -161,14 +163,14 @@ export const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onUpdate }
       plain
       className={`group relative bg-white rounded-[20px] overflow-hidden shadow-aura hover:shadow-aura-lg hover:scale-[1.01] active:scale-[0.99] transition-all duration-500 border border-black/[0.02] flex flex-col cursor-pointer touch-manipulation h-full ${isEditMode ? 'ring-2 ring-primary ring-inset' : ''}`}
     >
-      {/* ADMIN EDIT BUTTON */}
-      {isEditMode && (
+      {/* ADMIN EDIT BUTTON (voicecard-style hover pencil) */}
+      {isAdmin && (
         <button
           onClick={handleAdminClick}
-          className="absolute top-4 right-4 z-[60] w-10 h-10 rounded-full bg-primary text-white shadow-lg flex items-center justify-center hover:scale-110 active:scale-95 transition-all animate-in fade-in zoom-in duration-300"
+          className="absolute top-4 left-4 z-[60] w-10 h-10 rounded-full bg-va-black/40 backdrop-blur-md text-white border border-white/10 shadow-lg flex items-center justify-center hover:bg-primary hover:scale-110 active:scale-95 transition-all opacity-100 md:opacity-0 md:group-hover:opacity-100"
           title="Bewerk Workshop & Edities"
         >
-          <Settings size={20} strokeWidth={2} />
+          <Edit3 size={18} strokeWidth={2} className="transition-transform group-hover:rotate-12" />
         </button>
       )}
 

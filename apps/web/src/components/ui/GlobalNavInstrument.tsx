@@ -327,6 +327,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
   
   const [navConfig, setNavConfig] = useState<NavConfig | null>(initialNavConfig || null);
   const [links, setLinks] = useState<any[]>(initialNavConfig?.links || []);
+  const [logoFallbackTried, setLogoFallbackTried] = useState(false);
   const [isEditingLink, setIsEditingLink] = useState<number | null>(null);
   const [editValue, setEditValue] = useState('');
   const popoverRef = useRef<HTMLDivElement>(null);
@@ -364,6 +365,38 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
       default: return 'agency';
     }
   }, [market.market_code, pathname, worldId]);
+
+  const normalizedNavLogoSrc = useMemo(() => {
+    const rawSrc = navConfig?.logo?.src;
+    if (!rawSrc) return rawSrc;
+    if (rawSrc.includes('Voices_LOGO_STUDIO.svg')) {
+      return '/icon-workshop.svg';
+    }
+    return rawSrc;
+  }, [navConfig?.logo?.src]);
+
+  const emergencyNavLogoSrc = useMemo(() => {
+    return getJourneyKey() === 'studio' ? '/icon-workshop.svg' : '/assets/common/branding/Voices-LOGO-Animated.svg';
+  }, [getJourneyKey]);
+
+  useEffect(() => {
+    setLogoFallbackTried(false);
+  }, [normalizedNavLogoSrc, pathname]);
+
+  const handleNavLogoError = useCallback(() => {
+    if (!navConfig?.logo || logoFallbackTried) return;
+    setLogoFallbackTried(true);
+    setNavConfig((prev) => {
+      if (!prev?.logo) return prev;
+      return {
+        ...prev,
+        logo: {
+          ...prev.logo,
+          src: emergencyNavLogoSrc
+        }
+      };
+    });
+  }, [navConfig?.logo, logoFallbackTried, emergencyNavLogoSrc]);
 
   useEffect(() => {
     setMounted(true);
@@ -628,12 +661,13 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
         {navConfig?.logo?.src ? (
           <ContainerInstrument plain className="relative group/logo">
             <VoiceglotImage  
-              src={navConfig.logo.src} 
+              src={normalizedNavLogoSrc || navConfig.logo.src} 
               alt={navConfig.logo.alt || "Logo"} 
               width={navConfig.logo.width || 200} 
               height={navConfig.logo.height || 80}
               priority
               sizes="(max-width: 768px) 150px, 200px"
+              onError={handleNavLogoError}
               journey={getJourneyKey()}
               category="branding"
               onUpdate={(newSrc) => {

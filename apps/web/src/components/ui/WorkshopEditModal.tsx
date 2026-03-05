@@ -263,6 +263,25 @@ export const WorkshopEditModal: React.FC<WorkshopEditModalProps> = ({
     }
   };
 
+  const handleDeleteEdition = async (editionId: number) => {
+    const confirmed = window.confirm('Deze editie verwijderen? Deze actie kan niet ongedaan gemaakt worden.');
+    if (!confirmed) return;
+
+    try {
+      const response = await fetch(`/api/admin/studio/editions/${editionId}`, {
+        method: 'DELETE'
+      });
+
+      if (!response.ok) throw new Error('Failed to delete edition');
+
+      setEditions(prev => prev.filter((edition) => edition.id !== editionId));
+      playClick('success');
+    } catch (err) {
+      console.error("Failed to delete edition", err);
+      playClick('error');
+    }
+  };
+
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || e.target.files.length === 0) return;
     
@@ -723,17 +742,28 @@ export const WorkshopEditModal: React.FC<WorkshopEditModalProps> = ({
                                 <TextInstrument as="span" className="bg-red-500 text-white text-[8px] font-black uppercase px-1.5 py-0.5 rounded-full">Volzet</TextInstrument>
                               )}
                             </ContainerInstrument>
-                            <ButtonInstrument 
-                              variant="plain"
-                              size="none"
-                              onClick={() => handleDuplicateEdition(edition)}
-                              className="text-[9px] font-bold text-primary uppercase tracking-widest hover:opacity-70 transition-opacity"
-                            >
-                              Dupliceer Editie
-                            </ButtonInstrument>
+                            <ContainerInstrument plain className="flex items-center gap-3">
+                              <ButtonInstrument 
+                                variant="plain"
+                                size="none"
+                                onClick={() => handleDuplicateEdition(edition)}
+                                className="text-[9px] font-bold text-primary uppercase tracking-widest hover:opacity-70 transition-opacity"
+                              >
+                                Dupliceer Editie
+                              </ButtonInstrument>
+                              <ButtonInstrument
+                                variant="plain"
+                                size="none"
+                                onClick={() => handleDeleteEdition(edition.id)}
+                                className="text-[9px] font-bold text-red-500 uppercase tracking-widest hover:opacity-70 transition-opacity flex items-center gap-1"
+                              >
+                                <Trash2 size={11} />
+                                Verwijder
+                              </ButtonInstrument>
+                            </ContainerInstrument>
                           </ContainerInstrument>
 
-                          <ContainerInstrument plain className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <ContainerInstrument plain className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <ContainerInstrument plain className="space-y-1">
                               <LabelInstrument className="!ml-0 !mb-0 !text-[9px]">Datum & Tijd</LabelInstrument>
                               <InputInstrument 
@@ -753,6 +783,19 @@ export const WorkshopEditModal: React.FC<WorkshopEditModalProps> = ({
                                 <OptionInstrument value="">Selecteer locatie</OptionInstrument>
                                 {locations.map(loc => (
                                   <OptionInstrument key={loc.id} value={loc.id}>{loc.name}</OptionInstrument>
+                                ))}
+                              </SelectInstrument>
+                            </ContainerInstrument>
+                            <ContainerInstrument plain className="space-y-1">
+                              <LabelInstrument className="!ml-0 !mb-0 !text-[9px]">Workshopgever</LabelInstrument>
+                              <SelectInstrument
+                                value={edition.instructorId || ""}
+                                onChange={(e) => handleUpdateEdition(edition.id, { instructorId: e.target.value ? parseInt(e.target.value) : null })}
+                                className="w-full px-3 py-2 text-sm"
+                              >
+                                <OptionInstrument value="">Selecteer workshopgever</OptionInstrument>
+                                {instructors.map(ins => (
+                                  <OptionInstrument key={ins.id} value={ins.id}>{ins.name}</OptionInstrument>
                                 ))}
                               </SelectInstrument>
                             </ContainerInstrument>
