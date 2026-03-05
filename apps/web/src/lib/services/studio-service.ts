@@ -30,6 +30,85 @@ function languageLabelFromCode(code?: string | null): string {
   return labels[normalized] || code || 'Nederlands';
 }
 
+function normalizeVideoMatchValue(value?: string | null): string {
+  return (value || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim();
+}
+
+function getWorkshopVideoTokens(slug?: string | null, title?: string | null): string[] {
+  const stopwords = new Set(['voor', 'van', 'met', 'een', 'de', 'het', 'je', 'in', 'op', 'en', 'workshop', 'voice', 'over', 'overs']);
+  const source = `${slug || ''} ${title || ''}`;
+  const baseTokens = normalizeVideoMatchValue(source)
+    .split(/\s+/)
+    .filter((token) => token.length >= 3 && !stopwords.has(token));
+
+  const tokenSet = new Set(baseTokens);
+
+  // Workshop-specific synonyms for robust storage filename matching.
+  const normalizedSource = normalizeVideoMatchValue(source);
+  if (normalizedSource.includes('audioboek')) tokenSet.add('audioboeken');
+  if (normalizedSource.includes('documentaire')) tokenSet.add('documentaire');
+  if (normalizedSource.includes('podcast')) tokenSet.add('podcast');
+  if (normalizedSource.includes('radio')) tokenSet.add('radiomaken');
+  if (normalizedSource.includes('intonatie')) tokenSet.add('intonatie');
+  if (normalizedSource.includes('articulatie')) tokenSet.add('articulatie');
+  if (normalizedSource.includes('audiodescriptie')) tokenSet.add('audiodescriptie');
+  if (normalizedSource.includes('tekenfilm')) tokenSet.add('tekenfilm');
+  if (normalizedSource.includes('beginners') || normalizedSource.includes('basis')) tokenSet.add('beginners');
+  if (normalizedSource.includes('nabewerking') || normalizedSource.includes('opname')) tokenSet.add('audionabewerking');
+  if (normalizedSource.includes('perfect spreken')) tokenSet.add('perfect');
+  if (normalizedSource.includes('medit')) tokenSet.add('meditatie');
+
+  return Array.from(tokenSet);
+}
+
+function scoreStorageVideoCandidate(path: string, tokens: string[], preferAftermovie: boolean): number {
+  const lowerPath = path.toLowerCase();
+  let score = 0;
+
+  if (preferAftermovie) {
+    score += lowerPath.includes('aftermovie') ? 8 : -2;
+  } else {
+    score += lowerPath.includes('aftermovie') ? -3 : 1;
+  }
+
+  for (const token of tokens) {
+    if (lowerPath.includes(token)) score += 2;
+    if (lowerPath.includes(token.replace(/\s+/g, '_'))) score += 1;
+    if (lowerPath.includes(token.replace(/\s+/g, '-'))) score += 1;
+  }
+
+  return score;
+}
+
+function inferWorkshopStorageVideo(
+  workshop: { id: number; slug?: string | null; title?: string | null },
+  storageVideoPaths: string[],
+  preferAftermovie: boolean
+): string | null {
+  if (!Array.isArray(storageVideoPaths) || storageVideoPaths.length === 0) return null;
+
+  const tokens = getWorkshopVideoTokens(workshop.slug, workshop.title);
+  if (tokens.length === 0) return null;
+
+  let bestPath: string | null = null;
+  let bestScore = Number.NEGATIVE_INFINITY;
+
+  for (const path of storageVideoPaths) {
+    const score = scoreStorageVideoCandidate(path, tokens, preferAftermovie);
+    if (score > bestScore) {
+      bestScore = score;
+      bestPath = path;
+    }
+  }
+
+  return bestScore >= 2 ? bestPath : null;
+}
+
 async function getStudioHeroVideo(): Promise<{ heroVideoPath: string | null; heroVideoMediaId: number | null }> {
   if (!db) return { heroVideoPath: null, heroVideoMediaId: null };
   let heroVideoPath: string | null = null;
@@ -296,7 +375,24 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
       }, {} as Record<number, string>);
     }
 
-    // 4e. Fetch subtitle tracks via the ID-junction system
+    // 4e. Storage fallback lookup when media IDs are stale/missing.
+    const storageVideoRows = await safeExecuteRows<{ name: string }>(sql`
+      SELECT name
+      FROM storage.objects
+      WHERE bucket_id = 'voices'
+        AND name ILIKE 'studio/workshops/videos/%'
+        AND (
+          lower(name) LIKE '%.mp4'
+          OR lower(name) LIKE '%.webm'
+          OR lower(name) LIKE '%.mov'
+        )
+      ORDER BY created_at DESC
+    `, 'Studio storage videos fallback query');
+    const storageVideoPaths = (storageVideoRows as any[])
+      .map((row) => row.name)
+      .filter((name) => typeof name === 'string' && name.length > 0);
+
+    // 4f. Fetch subtitle tracks via the ID-junction system
     let subtitleRowsData: any[] = [];
 
     if (workshopIds.length > 0) {
@@ -439,11 +535,33 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
     return acc;
   }, {} as Record<string, any[]>);
 
+    const inferredVideoPathByWorkshop = (workshopsList as any[]).reduce((acc, w) => {
+      const inferred = inferWorkshopStorageVideo({ id: w.id, slug: w.slug, title: w.title }, storageVideoPaths, false);
+      if (inferred) acc[w.id] = inferred;
+      return acc;
+    }, {} as Record<number, string>);
+
+    const inferredAftermoviePathByWorkshop = (workshopsList as any[]).reduce((acc, w) => {
+      const inferred = inferWorkshopStorageVideo({ id: w.id, slug: w.slug, title: w.title }, storageVideoPaths, true);
+      if (inferred) acc[w.id] = inferred;
+      return acc;
+    }, {} as Record<number, string>);
+
     const workshops = (workshopsList as any[]).map((w) => {
     const meta = (w.meta as Record<string, any>) || {};
     const wid = String(w.id);
     const videoId = meta.video_id ? Number(meta.video_id) : null;
     const aftermovieVideoId = meta.aftermovie_video_id ? Number(meta.aftermovie_video_id) : null;
+    const mappedVideoPath = videoId && videoPathsMap[videoId] ? videoPathsMap[videoId] : null;
+    const mappedAftermoviePath = aftermovieVideoId && videoPathsMap[aftermovieVideoId] ? videoPathsMap[aftermovieVideoId] : null;
+    const preferredVideoPath =
+      mappedVideoPath && mappedVideoPath.toLowerCase().includes('studio/workshops/videos/')
+        ? mappedVideoPath
+        : (inferredVideoPathByWorkshop[w.id] || mappedVideoPath);
+    const preferredAftermoviePath =
+      mappedAftermoviePath && mappedAftermoviePath.toLowerCase().includes('studio/workshops/videos/')
+        ? mappedAftermoviePath
+        : (inferredAftermoviePathByWorkshop[w.id] || mappedAftermoviePath);
     const videoSubtitleTracks = videoId ? (subtitleTracksByKey[`${w.id}:${videoId}:video`] || []) : [];
     const aftermovieSubtitleTracks = aftermovieVideoId ? (subtitleTracksByKey[`${w.id}:${aftermovieVideoId}:aftermovie`] || []) : [];
     const primaryVideoTrack = videoSubtitleTracks.find((track) => track.is_default) || videoSubtitleTracks[0];
@@ -480,11 +598,11 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
       short_description: meta.short_description || w.description || null,
       workshop_content_detail: meta.workshop_content_detail || null,
       aftermovie_description: meta.aftermovie_description || null,
-      video: videoId && videoPathsMap[videoId]
-        ? { id: videoId, file_path: videoPathsMap[videoId] }
+      video: preferredVideoPath
+        ? { id: videoId || null, file_path: preferredVideoPath }
         : null,
-      aftermovie_video: aftermovieVideoId && videoPathsMap[aftermovieVideoId]
-        ? { id: aftermovieVideoId, file_path: videoPathsMap[aftermovieVideoId] }
+      aftermovie_video: preferredAftermoviePath
+        ? { id: aftermovieVideoId || null, file_path: preferredAftermoviePath }
         : null,
       subtitle_tracks: videoSubtitleTracks,
       aftermovie_subtitle_tracks: aftermovieSubtitleTracks,

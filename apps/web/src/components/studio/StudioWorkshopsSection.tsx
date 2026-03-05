@@ -18,6 +18,7 @@ export interface WorkshopApiItem {
   taxonomy: { category: string | null; type: string | null };
   skill_dna: Record<string, number>;
   featured_image: { file_path: string; alt_text: string | null } | null;
+  video?: { id: number | null; file_path: string } | null;
   expert_note: string | null;
   preparation_template: string | null;
   reviews: ReviewItem[];
@@ -53,14 +54,15 @@ interface StudioWorkshopsSectionProps {
  * CHRIS-PROTOCOL: snake_case in API, camelCase for legacy components.
  */
 function mapToCarouselFormat(workshop: WorkshopApiItem) {
+  const preferredMediaPath = workshop.video?.file_path || workshop.featured_image?.file_path || null;
   return {
     id: workshop.id,
     title: workshop.title,
     slug: workshop.slug,
     description: workshop.description,
     price: workshop.price,
-    media: workshop.featured_image
-      ? { file_path: workshop.featured_image.file_path, filePath: workshop.featured_image.file_path }
+    media: preferredMediaPath
+      ? { file_path: preferredMediaPath, filePath: preferredMediaPath }
       : null,
     editions: workshop.upcoming_editions.map((e) => ({
       id: e.id,

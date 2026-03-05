@@ -37,6 +37,9 @@ export const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onUpdate }
   const isVideo = mediaPath && /\.(mp4|webm|mov)$/i.test(mediaPath);
   const videoPath = isVideo ? mediaPath : null;
   const imagePath = !isVideo && mediaPath ? mediaPath : null;
+  const resolvedVideoSrc = videoPath
+    ? (videoPath.startsWith('http') ? videoPath : `https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices/${videoPath.replace(/^\/+/, '')}`)
+    : null;
 
   //  SMART AVAILABILITY LOGIC
   const getAvailabilityStatus = (edition: any) => {
@@ -188,7 +191,7 @@ export const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onUpdate }
               {shouldLoadVideo ? (
                 <video 
                   ref={videoRef}
-                  src={`/assets/${videoPath}`}
+                  src={resolvedVideoSrc || undefined}
                   className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-700"
                   muted
                   loop
