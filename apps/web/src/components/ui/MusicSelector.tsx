@@ -171,7 +171,6 @@ export const MusicSelector: React.FC<{ context?: string }> = ({ context }) => {
                 value={state.ownMusicFile?.url || ''}
                 onUploadSuccess={(url, mediaId) => updateOwnMusicFile({ name: 'Eigen Muziek', url })}
                 replaceLabel="Vervangen"
-                replaceLabel="Vervangen"
               />
               <p className="text-[12px] text-va-black/40 italic">
                 <VoiceglotText translationKey="music.own.upload_hint" defaultText="Wij zorgen voor de perfecte mix met de gekozen stem." />
