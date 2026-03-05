@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils';
 import { Demo } from '@/types';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Check, Edit2, Pause, Play, Save, Trash2, Volume2, X } from 'lucide-react';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import {
     ButtonInstrument,
