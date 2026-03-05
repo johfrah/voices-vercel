@@ -24,6 +24,7 @@ import nextDynamic from "next/dynamic";
 import { JourneyType } from '@/contexts/VoicesMasterControlContext';
 import { buildCanonicalActorPath, normalizeSlug, stripLanguagePrefix } from '@/lib/system/slug';
 import { localeToBcp47, normalizeLocale, stripLocalePrefix, withLocalePrefix } from '@/lib/system/locale-utils';
+import { normalizeCommercialMediaCode } from '@/lib/system/constants/commercial-media';
 import { BentoGrid, BentoCard } from '@/components/ui/BentoGrid';
 import { createClient } from "@supabase/supabase-js";
 
@@ -1545,27 +1546,10 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
       const agencyJourney = MarketManager.resolveJourneyTypeFromSegment(agencyJourneySegment) || journeyAtSegmentTwo || 'video';
 
       if (agencyJourney === "commercial" && segments[mediaStartIndex]) {
-        const commercialMediaMap: Record<string, string> = {
-          online: 'online',
-          podcast: 'podcast',
-          radio: 'radio_national',
-          radio_national: 'radio_national',
-          radio_regional: 'radio_regional',
-          radio_local: 'radio_local',
-          tv: 'tv_national',
-          tv_national: 'tv_national',
-          tv_regional: 'tv_regional',
-          tv_local: 'tv_local',
-          social: 'social_media',
-          socials: 'social_media',
-          social_media: 'social_media',
-          cinema: 'cinema',
-          pos: 'pos'
-        };
         const rawMediaSegment = segments[mediaStartIndex].toLowerCase();
         const encodedSegmentMatch = rawMediaSegment.match(/^([a-z_]+)\d+x\d+$/i);
         const mediaLookupKey = encodedSegmentMatch ? encodedSegmentMatch[1] : rawMediaSegment;
-        const normalizedMedia = commercialMediaMap[mediaLookupKey];
+        const normalizedMedia = normalizeCommercialMediaCode(mediaLookupKey);
         if (normalizedMedia) {
           filters.media = normalizedMedia;
         }

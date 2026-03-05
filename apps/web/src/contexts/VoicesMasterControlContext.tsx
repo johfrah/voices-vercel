@@ -7,6 +7,11 @@ import React, { createContext, useCallback, useContext, useEffect, useState } fr
 import { useCheckout } from './CheckoutContext';
 import { useVoicesState } from './VoicesStateContext';
 import { normalizeLocale } from '@/lib/system/locale-utils';
+import {
+  DEFAULT_COMMERCIAL_MEDIA_CODE,
+  normalizeCommercialMediaCode,
+  sanitizeCommercialDetailMap,
+} from '@/lib/system/constants/commercial-media';
 
 export type JourneyType = 'telephony' | 'video' | 'commercial' | 'agency' | 'general';
 
@@ -58,26 +63,6 @@ const JOURNEY_USAGE_MAP: Record<string, UsageType> = {
   general: 'unpaid'
 };
 
-const COMMERCIAL_MEDIA_ALIAS_MAP: Record<string, string> = {
-  online: 'online',
-  podcast: 'podcast',
-  radio: 'radio_national',
-  radio_national: 'radio_national',
-  radio_regional: 'radio_regional',
-  radio_local: 'radio_local',
-  tv: 'tv_national',
-  tv_national: 'tv_national',
-  tv_regional: 'tv_regional',
-  tv_local: 'tv_local',
-  social: 'social_media',
-  socials: 'social_media',
-  social_media: 'social_media',
-  cinema: 'cinema',
-  pos: 'pos',
-};
-
-const DEFAULT_COMMERCIAL_MEDIA_CODE = 'online';
-
 const resolveAgencyPathMeta = (segments: string[], fallbackLocale: string = 'nl-be') => {
   const isAgency = segments[0]?.toLowerCase() === 'agency';
   if (!isAgency) {
@@ -106,30 +91,6 @@ const resolveAgencyPathMeta = (segments: string[], fallbackLocale: string = 'nl-
     payloadStartIndex: journeySegmentIndex > -1 ? journeySegmentIndex + 1 : -1,
   };
 };
-
-const normalizeCommercialMediaCode = (rawCode: string | null | undefined): string | null => {
-  const normalized = String(rawCode || '').toLowerCase().trim();
-  if (!normalized) return null;
-  return COMMERCIAL_MEDIA_ALIAS_MAP[normalized] || null;
-};
-
-const sanitizeCommercialDetailMap = (
-  detailMap: Record<string, number> | undefined,
-  mediaCodes: string[],
-  fallbackValue: number
-): Record<string, number> => {
-  const sanitized: Record<string, number> = {};
-
-  mediaCodes.forEach((mediaCode) => {
-    const value = detailMap?.[mediaCode];
-    sanitized[mediaCode] = typeof value === 'number' && Number.isFinite(value) && value > 0
-      ? value
-      : fallbackValue;
-  });
-
-  return sanitized;
-};
-
 export const VoicesMasterControlContext = createContext<VoicesMasterControlContextType | undefined>(undefined);
 
 export const useMasterControl = () => {

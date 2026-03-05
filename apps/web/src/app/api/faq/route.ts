@@ -5,6 +5,7 @@ import { sql } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
 
 export const dynamic = 'force-dynamic';
+const MAX_FAQ_PER_WORLD = 15;
 
 /** BOB: strict journey + world handshake (category + world_id). */
 /** CHRIS-PROTOCOL: API payloads snake_case (200-CODE-INTEGRITY) */
@@ -62,12 +63,13 @@ export async function GET(request: NextRequest) {
   const requestedJourney = (searchParams.get('journey') || 'general').toLowerCase().trim();
   const journey = ALLOWED_JOURNEYS.has(requestedJourney) ? requestedJourney : 'general';
   const worldIdParam = searchParams.get('world_id');
-  const limit = parseInt(searchParams.get('limit') || '3');
+  const requestedLimit = parseInt(searchParams.get('limit') || '3');
   const parsedWorldId = worldIdParam ? Number.parseInt(worldIdParam, 10) : null;
   const inferredWorldId = journey === 'general' ? null : (JOURNEY_TO_WORLD[journey] ?? null);
   const resolvedWorldId = parsedWorldId ?? inferredWorldId;
+  const limit = Math.min(requestedLimit, MAX_FAQ_PER_WORLD);
 
-  if (isNaN(limit) || limit < 1 || limit > 50) {
+  if (isNaN(requestedLimit) || requestedLimit < 1) {
     return NextResponse.json({ error: 'Invalid limit parameter' }, { status: 400 });
   }
   if (worldIdParam && (Number.isNaN(parsedWorldId ?? NaN) || (parsedWorldId ?? 0) < 0)) {

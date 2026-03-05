@@ -282,7 +282,6 @@ export async function POST(request: NextRequest) {
       });
 
     return NextResponse.json({ success: true, _version: '2.28.59' });
-    return NextResponse.json({ success: true, _version: '2.28.59' });
   } catch (error) {
     console.error('[Admin Config POST Error]:', error);
     return NextResponse.json({ error: 'Failed to update config' }, { status: 500 });

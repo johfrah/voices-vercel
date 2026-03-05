@@ -63,6 +63,7 @@ export const VoicyChatV2: React.FC = () => {
   const [clickedChips, setClickedChips] = useState<string[]>([]);
   const [isHoveringVoicy, setIsHoveringVoicy] = useState(false);
   const [showChips, setShowChips] = useState(false);
+  const [isMobileViewport, setIsMobileViewport] = useState(false);
   const [showLeadForm, setShowLeadForm] = useState(false);
   const [leadFormData, setLeadFormData] = useState({ name: '', email: '' });
   const [sensorData, setSensorData] = useState<any>({
@@ -113,6 +114,15 @@ export const VoicyChatV2: React.FC = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const lastIdRef = useRef<number>(0);
   const chatContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const mediaQuery = window.matchMedia('(max-width: 767px), (pointer: coarse)');
+    const syncViewportMode = () => setIsMobileViewport(mediaQuery.matches);
+    syncViewportMode();
+    mediaQuery.addEventListener('change', syncViewportMode);
+    return () => mediaQuery.removeEventListener('change', syncViewportMode);
+  }, []);
 
   //  CHRIS-PROTOCOL: Sync telephony config from DB
   useEffect(() => {
@@ -708,6 +718,11 @@ export const VoicyChatV2: React.FC = () => {
 
   useEffect(() => {
     //  AUTO-SHOW CHIPS (CHRIS-PROTOCOL: Proactieve interactie)
+    if (isMobileViewport) {
+      setShowChips(false);
+      return;
+    }
+
     if (!isOpen) {
       const timer = setTimeout(() => {
         setShowChips(true);
@@ -724,13 +739,13 @@ export const VoicyChatV2: React.FC = () => {
     } else {
       setShowChips(false);
     }
-  }, [isOpen]);
+  }, [isMobileViewport, isOpen]);
 
   useEffect(() => {
-    if (isHoveringVoicy && !isOpen) {
+    if (!isMobileViewport && isHoveringVoicy && !isOpen) {
       setShowChips(true);
     }
-  }, [isHoveringVoicy, isOpen]);
+  }, [isHoveringVoicy, isMobileViewport, isOpen]);
 
   const toggleChat = () => {
     playClick(isOpen ? 'soft' : 'pro');
@@ -1051,7 +1066,7 @@ export const VoicyChatV2: React.FC = () => {
       onMouseLeave={() => setIsHoveringVoicy(false)}
     >
       {/* Smart Chips (Floating above toggle) */}
-      {!isOpen && showChips && (
+      {!isOpen && showChips && !isMobileViewport && (
         <ContainerInstrument plain className="absolute bottom-20 right-0 flex flex-col items-end gap-2 pointer-events-none">
           <AnimatePresence>
             {getSmartChips().map((chip, i) => (

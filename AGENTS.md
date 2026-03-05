@@ -102,6 +102,11 @@ No raw `<div>`, `<h1>`, `<p>`, `<section>`, `<main>` in new components.
 - Reuse existing dev server/process state when possible.
 - Avoid running identical commands repeatedly with unchanged context.
 
+### Git Workflow Preference (User Override)
+
+- Default: direct push/merge to `main` is allowed.
+- Only use branch-first safe deploy when the user explicitly asks for it.
+
 ### Known Gotchas
 
 - If `next lint` asks setup questions, create `apps/web/.eslintrc.json` with:
