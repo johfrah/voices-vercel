@@ -3,6 +3,7 @@
 import { useSonicDNA } from '@/lib/engines/sonic-dna';
 import { useGlobalAudio } from '@/contexts/GlobalAudioContext';
 import { useVoicesState } from '@/contexts/VoicesStateContext';
+import { useMasterControl } from '@/contexts/VoicesMasterControlContext';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { Demo } from '@/types';
@@ -59,6 +60,7 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
   const pathname = usePathname();
   const { state: voicesState } = useVoicesState();
   const { playlist, isPlaying, setIsPlaying, playDemo, activeDemo, setActiveDemo } = useGlobalAudio();
+  const { state: masterControlState } = useMasterControl();
   const { isAdmin } = useAuth();
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editTitle, setEditTitle] = useState('');
@@ -245,6 +247,20 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
     }
   };
 
+  //  CHRIS-PROTOCOL: Dynamic Journey-Aware Playlist Sorting (v2.28.51)
+  const sortedPlaylist = useMemo(() => {
+    if (!playlist || playlist.length === 0) return [];
+    const currentJourney = masterControlState.journey;
+    
+    return [...playlist].sort((a, b) => {
+      const aMatch = a.category === currentJourney;
+      const bMatch = b.category === currentJourney;
+      if (aMatch && !bMatch) return -1;
+      if (!aMatch && bMatch) return 1;
+      return 0;
+    });
+  }, [playlist, masterControlState.journey]);
+
   return (
     <motion.div 
       initial={{ y: 100, opacity: 0 }}
@@ -306,8 +322,8 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
           
           {/*  PLAYLIST / CATEGORIES (SPOTIFY STYLE) */}
           <div className="flex items-center gap-2 mt-1 overflow-x-auto no-scrollbar max-w-full">
-            {playlist.length > 0 ? (
-              playlist.map((p) => (
+            {sortedPlaylist.length > 0 ? (
+              sortedPlaylist.map((p) => (
                   <div
                     key={p.id}
                     className="group/item relative flex items-center gap-1 bg-white/5 rounded-md px-1"
