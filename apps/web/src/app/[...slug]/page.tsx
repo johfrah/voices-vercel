@@ -1901,6 +1901,12 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
 function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: string, extraData?: any }) {
   const iapContext = page.iapContext as { journey?: string; lang?: string } | null;
   const journey = iapContext?.journey || 'agency';
+  const pageSubtitle =
+    (typeof page?.excerpt === 'string' && page.excerpt.trim().length > 0
+      ? page.excerpt
+      : (typeof page?.metadata?.subtitle === 'string' && page.metadata.subtitle.trim().length > 0
+          ? page.metadata.subtitle
+          : '')) || '';
 
   const getIcon = (cat: string) => {
     const c = cat.toLowerCase();
@@ -2342,18 +2348,18 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
       case 'Juridisch':
       case 'Service':
         return (
-          <section key={block.id} className="grid grid-cols-1 lg:grid-cols-12 gap-24 items-start group py-32 border-b border-black/[0.03] last:border-none animate-in fade-in slide-in-from-bottom-8 duration-1000 fill-mode-both">
-            <ContainerInstrument className="lg:col-span-5 sticky top-40">
-              <ContainerInstrument className="mb-10 transform group-hover:scale-110 transition-transform duration-1000 ease-va-bezier">{getIcon(block.type)}</ContainerInstrument>
-              <HeadingInstrument level={2} className="text-5xl font-light tracking-tight mb-8 text-va-black leading-none">
+          <section key={block.id} className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start group py-12 border-b border-black/[0.03] last:border-none animate-in fade-in slide-in-from-bottom-8 duration-1000 fill-mode-both">
+            <ContainerInstrument className="lg:col-span-5 lg:sticky lg:top-28">
+              <ContainerInstrument className="mb-6 transform group-hover:scale-105 transition-transform duration-700 ease-va-bezier">{getIcon(block.type)}</ContainerInstrument>
+              <HeadingInstrument level={2} className="text-3xl font-light tracking-tight mb-4 text-va-black leading-none">
                 {block.type}
               </HeadingInstrument>
-              <TextInstrument className="text-3xl text-va-black/20 font-medium leading-tight tracking-tight">
+              <TextInstrument className="text-xl text-va-black/30 font-medium leading-tight tracking-tight">
                 {title}
               </TextInstrument>
             </ContainerInstrument>
             <ContainerInstrument className="lg:col-span-7 pt-4">
-              <ContainerInstrument className="prose prose-2xl text-va-black/40 font-medium leading-relaxed tracking-tight selection:bg-primary/10">
+              <ContainerInstrument className="text-[17px] text-va-black/50 font-medium leading-relaxed tracking-tight selection:bg-primary/10">
                 {body}
               </ContainerInstrument>
             </ContainerInstrument>
@@ -2362,9 +2368,9 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
 
       default:
         return (
-          <section key={block.id} className="py-32 max-w-4xl mx-auto animate-in fade-in duration-1000 fill-mode-both">
-            {title && <HeadingInstrument level={2} className="text-6xl font-light mb-16 tracking-tight leading-tight text-va-black">{title}</HeadingInstrument>}
-            <ContainerInstrument className="prose prose-2xl text-va-black/50 font-medium leading-relaxed tracking-tight">
+          <section key={block.id} className="py-12 max-w-3xl mx-auto animate-in fade-in duration-1000 fill-mode-both">
+            {title && <HeadingInstrument level={2} className="text-4xl font-light mb-8 tracking-tight leading-tight text-va-black">{title}</HeadingInstrument>}
+            <ContainerInstrument className="text-[17px] text-va-black/50 font-medium leading-relaxed tracking-tight">
               {body}
             </ContainerInstrument>
           </section>
@@ -2372,51 +2378,65 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
     }
   };
 
+  const hasInstrumentBlocks = Array.isArray(page?.blocks) && page.blocks.some((block: any) => !!block?.settings);
+  const legacyBlocks = Array.isArray(page?.blocks) ? page.blocks.filter((block: any) => !block?.settings) : [];
+  const hasAnyContent = hasInstrumentBlocks || legacyBlocks.length > 0;
+
   return (
     <PageWrapperInstrument className="bg-va-off-white">
       <Suspense fallback={null}>
         <LiquidBackground />
       </Suspense>
-      <ContainerInstrument className="py-48 relative z-10 max-w-5xl mx-auto px-6">
-        <header className="mb-64 animate-in fade-in slide-in-from-bottom-12 duration-1000">
-          <TextInstrument className="text-[11px] font-bold tracking-[0.4em] text-primary/60 mb-12 block uppercase">
+      <ContainerInstrument className="pt-40 pb-12 relative z-10 max-w-5xl mx-auto px-6 text-center">
+        <ContainerInstrument as="header" className="max-w-4xl mx-auto">
+          <TextInstrument className="text-[11px] font-bold tracking-[0.4em] text-primary/60 mb-6 block uppercase">
             Projecttype
           </TextInstrument>
-          <HeadingInstrument level={1} className="text-[10vw] lg:text-[120px] font-light tracking-tighter mb-20 leading-[0.85] text-va-black" suppressHydrationWarning>
+          <HeadingInstrument level={1} className="text-[8vw] lg:text-[80px] font-extralight tracking-tighter mb-6 leading-[0.85] text-va-black" suppressHydrationWarning>
             <VoiceglotText translationKey={`page.${page.slug}.title`} defaultText={page.title} />
           </HeadingInstrument>
-          <ContainerInstrument className="w-48 h-1 bg-black/5 rounded-full" />
-        </header>
-        
-        {/* 🛡️ DNA-ROUTING: Render instruments from database if settings exist */}
-        <InstrumentRenderer blocks={page.blocks} extraData={extraData} />
-
-        <ContainerInstrument className="space-y-24">
-          {page.blocks && page.blocks.length > 0 ? (
-            page.blocks.filter((b: any) => !b.settings).map((block: any, index: number) => renderBlock(block, index))
-          ) : (
-            <TextInstrument className="text-va-black/40 text-center py-32">
-              Content wordt binnenkort toegevoegd.
+          {pageSubtitle ? (
+            <TextInstrument className="text-xl lg:text-2xl text-va-black/40 font-light tracking-tight max-w-2xl mx-auto leading-tight mb-6">
+              {pageSubtitle}
             </TextInstrument>
-          )}
+          ) : null}
+          <ContainerInstrument className="w-16 h-1 bg-primary/20 rounded-full mx-auto mt-4" />
         </ContainerInstrument>
-        <footer className="mt-80 text-center">
+      </ContainerInstrument>
+
+      <ContainerInstrument className="relative z-20 max-w-6xl mx-auto px-6 pb-24">
+        <ContainerInstrument className="p-10 bg-white/80 backdrop-blur-xl rounded-[30px] border border-white/20 shadow-aura space-y-12">
+          {/* 🛡️ DNA-ROUTING: Render instruments from database if settings exist */}
+          <InstrumentRenderer blocks={page.blocks} extraData={extraData} />
+
+          <ContainerInstrument className="space-y-12">
+            {legacyBlocks.length > 0 ? (
+              legacyBlocks.map((block: any, index: number) => renderBlock(block, index))
+            ) : !hasAnyContent ? (
+              <TextInstrument className="text-va-black/40 text-center py-12">
+                Content wordt binnenkort toegevoegd.
+              </TextInstrument>
+            ) : null}
+          </ContainerInstrument>
+
           {journey !== 'portfolio' && (
-            <ContainerInstrument className="bg-va-black text-white p-32 rounded-[20px] shadow-aura-lg relative overflow-hidden group">
+            <ContainerInstrument className="pt-8 border-t border-black/5">
+            <ContainerInstrument className="bg-va-black text-white p-10 rounded-[20px] shadow-aura-lg relative overflow-hidden group text-center">
               <ContainerInstrument className="relative z-10">
-                <TextInstrument className="text-[15px] font-medium tracking-[0.4em] text-primary/60 mb-10 block uppercase"><VoiceglotText  translationKey="cta.next_step" defaultText="volgende stap" /></TextInstrument>
-                <HeadingInstrument level={2} className="text-7xl lg:text-8xl font-light tracking-tighter mb-16 leading-[0.9] text-white"><VoiceglotText  translationKey="cta.ready_title" defaultText="Klaar om jouw stem te vinden?" /></HeadingInstrument>
-                <ContainerInstrument className="flex flex-col sm:flex-row items-center justify-center gap-10">
-                  <VoicesLink  href="/agency" className="bg-va-off-white text-va-black px-20 py-10 rounded-[10px] font-medium text-base tracking-widest hover:scale-105 transition-all duration-700 shadow-2xl hover:bg-white uppercase"><VoiceglotText  translationKey="cta.find_voice" defaultText="vind jouw stem" /></VoicesLink>
-                  <VoicesLink  href="/contact" className="text-white/30 hover:text-white font-medium text-base tracking-widest flex items-center gap-4 group transition-all duration-700 uppercase">
+                <TextInstrument className="text-[11px] font-bold tracking-[0.3em] text-primary/60 mb-4 block uppercase"><VoiceglotText translationKey="cta.next_step" defaultText="volgende stap" /></TextInstrument>
+                <HeadingInstrument level={2} className="text-3xl lg:text-4xl font-light tracking-tight mb-8 leading-tight text-white"><VoiceglotText translationKey="cta.ready_title" defaultText="Klaar om jouw stem te vinden?" /></HeadingInstrument>
+                <ContainerInstrument className="flex flex-col sm:flex-row items-center justify-center gap-6">
+                  <VoicesLink href="/agency" className="bg-va-off-white text-va-black px-10 py-4 rounded-[10px] font-medium text-sm tracking-widest hover:scale-105 transition-all duration-500 shadow-2xl hover:bg-white uppercase"><VoiceglotText translationKey="cta.find_voice" defaultText="vind jouw stem" /></VoicesLink>
+                  <VoicesLink href="/contact" className="text-white/60 hover:text-white font-medium text-sm tracking-widest flex items-center gap-3 group transition-all duration-500 uppercase">
                     <VoiceglotText  translationKey="cta.ask_question" defaultText="stel een vraag" />
-                    <ArrowRight strokeWidth={1.5} size={24} className="group-hover:translate-x-3 transition-transform duration-700" />
+                    <ArrowRight strokeWidth={1.5} size={18} className="group-hover:translate-x-2 transition-transform duration-500" />
                   </VoicesLink>
                 </ContainerInstrument>
               </ContainerInstrument>
             </ContainerInstrument>
+            </ContainerInstrument>
           )}
-        </footer>
+        </ContainerInstrument>
       </ContainerInstrument>
     </PageWrapperInstrument>
   );
