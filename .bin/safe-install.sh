@@ -11,6 +11,9 @@ echo "📦 Installing npm workspaces from root package-lock.json..."
 
 npm ci --include-workspace-root --workspaces --no-audit --fund=false
 
+echo "🎭 Ensuring Playwright Chromium is available in cloud agents..."
+npx playwright install chromium
+
 echo "🔍 Validating workspace lock consistency..."
 node scripts/verify-workspace-lock.mjs
 
