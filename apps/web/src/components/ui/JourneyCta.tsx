@@ -18,7 +18,7 @@ export const JourneyCta: React.FC<JourneyCtaProps> = ({ journey }) => {
       title: 'Klaar voor een warm onthaal?',
       text: 'Start direct met onze IVR-configurator of bereken je prijs voor een complete telefonieset.',
       cta: 'Start configuratie',
-      href: '/configurator',
+      href: '/agency/',
       icon: Phone,
       color: 'bg-blue-600',
       key: 'telephony'

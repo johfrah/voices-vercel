@@ -71,7 +71,7 @@ export const BentoShowcaseInstrument: React.FC<{ customerDNA?: any }> = ({ custo
               /></TextInstrument></HeadingInstrument>
           </ContainerInstrument>
           <ContainerInstrument plain className="relative z-10 flex gap-4">
-            <Link  href="/ivr" className="va-btn-pro flex items-center gap-3 !bg-primary !text-va-black !rounded-[10px] !font-light !tracking-widest !"><VoiceglotText  translationKey="home.showcase.telephony.cta" defaultText="Configureer je keuzemenu" /><ArrowRight size={18} strokeWidth={1.5} /></Link>
+            <Link  href="/agency/" className="va-btn-pro flex items-center gap-3 !bg-primary !text-va-black !rounded-[10px] !font-light !tracking-widest !"><VoiceglotText  translationKey="home.showcase.telephony.cta" defaultText="Configureer je keuzemenu" /><ArrowRight size={18} strokeWidth={1.5} /></Link>
           </ContainerInstrument>
         </BentoCard>
       ) : (
