@@ -85,9 +85,10 @@ No raw `<div>`, `<h1>`, `<p>`, `<section>`, `<main>` in new components.
 
 ### Standard Commands
 
+- Cloud setup: `npm run setup:cloud`
 - Dev: `npm run dev`
 - Lint: `npm run lint`
-- Type-check: `cd apps/web && npx tsc --noEmit`
+- Type-check: `npm run type-check`
 - Build: `npm run build`
 
 ### Execution Lanes

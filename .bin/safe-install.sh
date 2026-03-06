@@ -1,21 +1,17 @@
-#!/bin/bash
-# 🛡️ VOICES DROPBOX PROTECTOR
-# Draai dit script om node_modules te negeren in Dropbox en installatie-fouten te voorkomen.
+#!/usr/bin/env bash
+set -euo pipefail
 
-echo "🚀 Optimaliseren van werkomgeving..."
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
-# Ga naar de next-experience folder
-cd "$(dirname "$0")/../next-experience"
+cd "${REPO_ROOT}"
 
-# 1. Vertel Dropbox om node_modules te negeren (macOS specifieke vlag)
-if [ -d "node_modules" ]; then
-    echo "📦 node_modules gevonden, negeren voor Dropbox..."
-    xattr -w com.dropbox.ignored 1 node_modules
-else
-    echo "📁 node_modules nog niet aanwezig, maken en negeren..."
-    mkdir node_modules
-    xattr -w com.dropbox.ignored 1 node_modules
-fi
+echo "☁️ Voices Cloud setup: workspace bootstrap"
+echo "📦 Installing npm workspaces from root package-lock.json..."
 
-echo "✅ Dropbox negeert nu node_modules."
-echo "💡 Je kunt nu veilig 'npm install' draaien zonder file-locks."
+npm ci --include-workspace-root --workspaces --no-audit --fund=false
+
+echo "🔍 Validating workspace lock consistency..."
+node scripts/verify-workspace-lock.mjs
+
+echo "✅ Cloud setup complete. Root + apps/web are lock-consistent."
