@@ -66,6 +66,8 @@ export const AgencyCalculator = ({
   const { t, language, market } = useTranslation();
   const router = useRouter();
   const { playClick } = useSonicDNA();
+  const [fallbackActors, setFallbackActors] = useState<any[]>([]);
+  const [isFallbackLoading, setIsFallbackLoading] = useState(false);
   const [calcUsage, setCalcUsage] = useState<"telefonie" | "unpaid" | "paid">(initialJourney);
   const [calcType, setCalcType] = useState<"webvideo" | "social" | "radio" | "tv" | "ivr" | "podcast">("social");
   const [calcSpots, setCalcSpots] = useState(1);
@@ -99,6 +101,51 @@ export const AgencyCalculator = ({
       fetchConfig();
     }
   }, [externalPricingConfig]);
+
+  useEffect(() => {
+    let isCancelled = false;
+
+    if (actors && actors.length > 0) {
+      setFallbackActors([]);
+      setIsFallbackLoading(false);
+      return;
+    }
+
+    const fetchFallbackActors = async () => {
+      setIsFallbackLoading(true);
+      try {
+        const params = new URLSearchParams({ lang: 'all' });
+        if (market?.market_code) {
+          params.set('market', market.market_code);
+        }
+
+        const res = await fetch(`/api/actors/?${params.toString()}`, { cache: 'no-store' });
+        if (!res.ok) {
+          throw new Error('actors_fetch_failed');
+        }
+
+        const data = await res.json();
+        const results = Array.isArray(data?.results) ? data.results : [];
+        if (!isCancelled) {
+          setFallbackActors(results);
+        }
+      } catch {
+        if (!isCancelled) {
+          setFallbackActors([]);
+        }
+      } finally {
+        if (!isCancelled) {
+          setIsFallbackLoading(false);
+        }
+      }
+    };
+
+    fetchFallbackActors();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [actors, market?.market_code]);
 
   const calculatorRates: Record<string, { label: string, sub: string, icon: any, national: number, regional?: number, usage: "unpaid" | "paid" | "telefonie" }> = {
     webvideo: { 
@@ -169,13 +216,16 @@ export const AgencyCalculator = ({
     return finalValue.toFixed(2);
   };
 
-  const filteredActors = useMemo(() => {
-    if (!actors || actors.length === 0) return [];
-    return actors.filter(a => {
+  const tableActors = useMemo(() => {
+    const sourceActors = (actors && actors.length > 0) ? actors : fallbackActors;
+    if (!sourceActors || sourceActors.length === 0) return [];
+    return sourceActors.filter(a => {
       const matchesLang = selectedLanguageId ? a.native_lang_id === selectedLanguageId : true;
       return matchesLang;
     }).sort((a, b) => (a.menu_order || 0) - (b.menu_order || 0)).slice(0, 5);
-  }, [actors, selectedLanguageId]);
+  }, [actors, fallbackActors, selectedLanguageId]);
+
+  const isTableLoading = isLoading || (actors.length === 0 && isFallbackLoading);
 
   const getUsageSteps = () => {
     const config = pricingConfig || SlimmeKassa.getDefaultConfig();
@@ -547,7 +597,7 @@ export const AgencyCalculator = ({
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-black/[0.03]">
-                      {isLoading ? (
+                      {isTableLoading ? (
                         <tr>
                           <td colSpan={3} className="px-6 py-12 text-center">
                             <div className="flex flex-col items-center gap-3">
@@ -558,8 +608,8 @@ export const AgencyCalculator = ({
                             </div>
                           </td>
                         </tr>
-                      ) : actors.length > 0 ? (
-                        actors.map((a) => (
+                      ) : tableActors.length > 0 ? (
+                        tableActors.map((a) => (
                           <tr key={a.id} className="group hover:bg-primary/[0.01] transition-colors">
                             <td className="px-6 py-4">
                               <div className="flex items-center gap-3">
