@@ -180,9 +180,14 @@ Required report format:
    - `apps/web/src/app/Providers.tsx`
    - `apps/web/src/app/api/admin/config/route.ts`
 2. Run `npm run check:pre-vercel`.
-3. Commit using `vX.Y.Z: [Message]`.
-4. Push to `main` to trigger Vercel deployment.
-5. Verify deployment status using:
+3. Main branch is hard-gated by Husky (`.husky/pre-push` + `.husky/pre-merge-commit`) and must pass:
+   - `npm run verify:workspace-lock`
+   - `npm run type-check`
+   - `npm run lint`
+   - `npm run check:pre-vercel`
+4. Commit using `vX.Y.Z: [Message]`.
+5. Push to `main` to trigger Vercel deployment.
+6. Verify deployment status using:
    - `gh api repos/johfrah/voices-vercel/commits/<sha>/status`
    - or `npx vercel ls --token "$VERCEL_TOKEN"`
 
