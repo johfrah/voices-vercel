@@ -75,6 +75,9 @@ export default function AdminSettingsPage() {
       ai_enabled: true,
       system_working_days: ['mon', 'tue', 'wed', 'thu', 'fri']
     },
+    temporary_light_mode: {
+      enabled: false
+    },
     vacation_rules: {
       is_active: false,
       start_date: '',
@@ -354,6 +357,33 @@ export default function AdminSettingsPage() {
                 className={`w-10 h-6 rounded-full relative transition-all ${configs.general_settings.ai_enabled ? 'bg-primary' : 'bg-black/10'}`}
               >
                 <ContainerInstrument className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${configs.general_settings.ai_enabled ? 'left-5' : 'left-1'}`} />
+              </ButtonInstrument>
+            </ContainerInstrument>
+
+            <ContainerInstrument className="p-4 bg-va-off-white rounded-[10px] space-y-4 border border-black/[0.03]">
+              <ContainerInstrument className="flex items-center justify-between">
+                <ContainerInstrument className="space-y-1">
+                  <TextInstrument as="span" className="text-[13px] font-light tracking-widest text-va-black/60 uppercase">
+                    Tijdelijke light versie
+                  </TextInstrument>
+                  <TextInstrument className="text-[12px] text-va-black/40 font-light">
+                    Niet-admin bezoekers zien enkel de voice onepager.
+                  </TextInstrument>
+                </ContainerInstrument>
+                <ButtonInstrument
+                  onClick={() => updateConfig('temporary_light_mode', 'enabled', !configs.temporary_light_mode?.enabled)}
+                  disabled={!isEditMode}
+                  className={`w-10 h-6 rounded-full relative transition-all ${configs.temporary_light_mode?.enabled ? 'bg-primary' : 'bg-black/10'}`}
+                >
+                  <ContainerInstrument className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${configs.temporary_light_mode?.enabled ? 'left-5' : 'left-1'}`} />
+                </ButtonInstrument>
+              </ContainerInstrument>
+              <ButtonInstrument
+                onClick={() => handleSave('temporary_light_mode')}
+                disabled={!isEditMode || saving}
+                className="w-full bg-va-black text-white rounded-[10px] py-2 text-[12px] uppercase tracking-widest"
+              >
+                Light modus opslaan
               </ButtonInstrument>
             </ContainerInstrument>
 

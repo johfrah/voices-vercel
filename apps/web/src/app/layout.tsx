@@ -13,7 +13,7 @@ import { MarketDatabaseService } from "@/lib/system/market-manager-db";
 import { createClient } from "@supabase/supabase-js";
 import type { Metadata, Viewport } from "next";
 import { Inter, Raleway, Cormorant_Garamond } from "next/font/google";
-import { headers } from "next/headers";
+import { cookies, headers } from "next/headers";
 import Link from "next/link";
 import { Suspense } from "react";
 import dynamic from "next/dynamic";
@@ -25,6 +25,8 @@ import { cn } from "@/lib/utils";
 import { SafeErrorGuard } from "@/components/ui/SafeErrorGuard";
 import { ConfigBridge } from "@/lib/utils/config-bridge";
 import { localeToBcp47, normalizeLocale, stripLocalePrefix, withLocalePrefix } from "@/lib/system/locale-utils";
+import { getServerUser, isAdminUser } from "@/lib/auth/server-auth";
+import { TemporaryLightMode } from "@/components/light/temporary-light-mode";
 
 //  NUCLEAR LOADING MANDATE: Zware instrumenten dynamisch laden (ssr: false) voor 100ms LCP
 const JohfrahActionDock = dynamic(() => import("@/components/portfolio/JohfrahActionDock").then(mod => mod.JohfrahActionDock), { ssr: false, loading: () => null });
@@ -323,7 +325,7 @@ export default async function RootLayout({
 
   // CHRIS-PROTOCOL: `world_languages` ontbreekt momenteel in production schema.
   // Vermijd per-request 404 storm; language switcher gebruikt dan de bestaande market fallback.
-  const [market, studioTranslations, handshakeLanguages, worldConfig] = await Promise.all([
+  const [market, studioTranslations, handshakeLanguages, worldConfig, temporaryLightModeRaw] = await Promise.all([
     getMarketSafe(marketHost),
     (async () => {
       try {
@@ -346,7 +348,22 @@ export default async function RootLayout({
         return [];
       }
     }, 2500, []),
-    withTimeoutFallback(() => ConfigBridge.getWorldConfig(worldId, languageId), 2500, null)
+    withTimeoutFallback(() => ConfigBridge.getWorldConfig(worldId, languageId), 2500, null),
+    withTimeoutFallback(async () => {
+      try {
+        const { data, error } = await supabase
+          .from('app_configs')
+          .select('value')
+          .eq('key', 'temporary_light_mode')
+          .maybeSingle();
+
+        if (error) throw error;
+        return data?.value ?? null;
+      } catch (err) {
+        console.error(' RootLayout: Failed to load temporary light mode config:', err);
+        return null;
+      }
+    }, 2500, null)
   ]);
 
   const worldLanguages: Array<{ world_id: number; language_id: number; is_primary: boolean; is_popular: boolean }> = [];
@@ -373,6 +390,19 @@ export default async function RootLayout({
   const isAdeming = market.market_code === 'ADEMING';
   const isOffline = process.env.ADEMING_OFFLINE === 'true';
   const isAdmin = isAdminRoute; // Simple check for layout logic
+  const isAuthRoute = pathname.startsWith('/account') || pathname.startsWith('/auth');
+  const isTemporaryLightModeEnabled =
+    temporaryLightModeRaw === true ||
+    (typeof temporaryLightModeRaw === 'object' &&
+      temporaryLightModeRaw !== null &&
+      (temporaryLightModeRaw as { enabled?: boolean }).enabled === true);
+  const serverUser = isTemporaryLightModeEnabled ? await getServerUser() : null;
+  const cookieStore = cookies();
+  const hasLegacyAdminCookieBridge =
+    process.env.VOICES_ENABLE_LEGACY_ADMIN_BRIDGE === 'true' &&
+    cookieStore.get('voices_role')?.value === 'admin' &&
+    Boolean(cookieStore.get('sb-access-token')?.value);
+  const isAdminViewer = isAdminUser(serverUser) || hasLegacyAdminCookieBridge;
   
   const htmlClass = `${isAdeming ? cormorant.className : raleway.className} ${inter.className} ${cormorant.variable} theme-${isAdeming ? 'ademing' : market.theme} ${raleway.variable}`;
   const bodyClass = cn(
@@ -411,6 +441,35 @@ export default async function RootLayout({
             <SafeErrorGuard>
               <Suspense fallback={isAdeming && isOffline ? null : <LoadingScreenInstrument text={isAdminRoute ? "Beheer laden..." : "Studio laden..."} />}>
                 {children}
+              </Suspense>
+            </SafeErrorGuard>
+          </Providers>
+        </body>
+      </html>
+    );
+  }
+
+  if (isTemporaryLightModeEnabled && !isAdminViewer && !isAuthRoute) {
+    const lightBodyClass = cn(
+      "pb-[calc(6rem+env(safe-area-inset-bottom))] md:pb-0 touch-manipulation va-main-layout overflow-x-hidden",
+      "pt-0"
+    );
+
+    return (
+      <html lang={htmlLang} className={htmlClass} suppressHydrationWarning>
+        <body className={lightBodyClass} suppressHydrationWarning>
+          <Providers
+            lang={lang}
+            market={market}
+            initialTranslations={studioTranslations}
+            initialJourney={initialJourney}
+            initialUsage={initialUsage}
+            handshakeContext={handshakeContext}
+            handshakeLanguages={handshakeLanguages}
+          >
+            <SafeErrorGuard>
+              <Suspense fallback={<LoadingScreenInstrument text="Light modus laden..." />}>
+                <TemporaryLightMode />
               </Suspense>
             </SafeErrorGuard>
           </Providers>
