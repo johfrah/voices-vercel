@@ -91,7 +91,7 @@ export const BentoShowcaseInstrument: React.FC<{ customerDNA?: any }> = ({ custo
             <HeadingInstrument level={3} className="text-5xl font-light tracking-tighter mb-6 leading-none text-va-black "><VoiceglotText  translationKey="home.showcase.casting.title" defaultText="Gratis proefopname" /><TextInstrument className="text-va-black/40 font-light max-w-sm text-lg leading-relaxed"><VoiceglotText  translationKey="home.showcase.casting.description" defaultText="Luister naar demo's. Filter op karakter. Ontvang een gratis proefopname voor jouw project." /></TextInstrument></HeadingInstrument>
           </ContainerInstrument>
           <ContainerInstrument plain className="relative z-10 flex gap-4">
-            <Link  href="/agency" className="va-btn-pro flex items-center gap-3 !bg-va-dark-soft !rounded-[10px] !font-light !tracking-widest !"><VoiceglotText  translationKey="home.showcase.casting.cta" defaultText="Start jouw zoektocht" /><ArrowRight size={18} strokeWidth={1.5} /></Link>
+            <Link  href="/" className="va-btn-pro flex items-center gap-3 !bg-va-dark-soft !rounded-[10px] !font-light !tracking-widest !"><VoiceglotText  translationKey="home.showcase.casting.cta" defaultText="Start jouw zoektocht" /><ArrowRight size={18} strokeWidth={1.5} /></Link>
           </ContainerInstrument>
         </BentoCard>
       )}
