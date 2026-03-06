@@ -18,8 +18,8 @@ interface CommercialMediaSelectionModalProps {
 
 const mediaOptions = [
   { id: 'online', label: 'Online / Social', icon: Video, description: 'Web, Social Media' },
-  { id: 'radio_national', label: 'Radio', icon: Radio, description: 'Landelijke Radio' },
-  { id: 'tv_national', label: 'TV', icon: Tv, description: 'Landelijke TV' },
+  { id: 'radio_national', label: 'Radio spot', icon: Radio, description: 'Landelijk, regionaal, lokaal' },
+  { id: 'tv_national', label: 'TV commercial', icon: Tv, description: 'Landelijk, regionaal, lokaal' },
   { id: 'podcast', label: 'Podcast', icon: Mic, description: 'In-podcast Ads' },
 ];
 

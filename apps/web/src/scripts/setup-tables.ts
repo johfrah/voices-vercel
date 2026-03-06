@@ -81,10 +81,12 @@ async function setupTables() {
       VALUES 
         ('online', 'Online & Socials', 'YouTube, Meta, LinkedIn', 'globe', FALSE),
         ('podcast', 'Podcast', 'Pre-roll, Mid-roll', 'mic-2', FALSE),
-        ('radio_national', 'Radio (Nationaal)', 'Landelijke zenders', 'radio', FALSE),
-        ('radio_regional', 'Radio (Regionaal)', 'Regionale zenders', 'radio', TRUE),
-        ('tv_national', 'TV (Nationaal)', 'Landelijke zenders', 'tv', FALSE),
-        ('tv_regional', 'TV (Regionaal)', 'Regionale zenders', 'tv', TRUE)
+        ('radio_national', 'Radio spot', 'Landelijk', 'radio', TRUE),
+        ('radio_regional', 'Radio spot', 'Regionaal', 'radio', TRUE),
+        ('radio_local', 'Radio spot', 'Lokaal', 'radio', TRUE),
+        ('tv_national', 'TV commercial', 'Landelijk', 'tv', TRUE),
+        ('tv_regional', 'TV commercial', 'Regionaal', 'tv', TRUE),
+        ('tv_local', 'TV commercial', 'Lokaal', 'tv', TRUE)
       ON CONFLICT (code) DO NOTHING
     `);
 

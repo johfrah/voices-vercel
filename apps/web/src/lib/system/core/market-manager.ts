@@ -718,7 +718,13 @@ export class MarketManager {
     }
 
     const emergencyMap: Record<string, string> = {
-      'online': 'Online / Social Media', 'radio_national': 'Landelijke Radio', 'tv_national': 'Landelijke TV'
+      'online': 'Online / Social Media',
+      'radio_national': 'Radio spot (landelijk)',
+      'radio_regional': 'Radio spot (regionaal)',
+      'radio_local': 'Radio spot (lokaal)',
+      'tv_national': 'TV commercial (landelijk)',
+      'tv_regional': 'TV commercial (regionaal)',
+      'tv_local': 'TV commercial (lokaal)'
     };
     return emergencyMap[lowInput] || lowInput;
   }

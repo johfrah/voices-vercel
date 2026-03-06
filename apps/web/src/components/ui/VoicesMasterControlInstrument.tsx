@@ -781,14 +781,28 @@ export const VoicesMasterControlContext: React.FC<VoicesMasterControlContextProp
                             options={mediaTypesData.length > 0 
                               ? mediaTypesData.map(fmt => {
                                   const baseId = fmt.code.split('_')[0];
+                                  const suffix = fmt.code.split('_')[1] || '';
                                   const baseIcons: Record<string, any> = { online: Globe, podcast: Mic2, radio: Radio, tv: Tv };
+                                  const isRadioOrTv = baseId === 'radio' || baseId === 'tv';
+                                  const label = isRadioOrTv
+                                    ? (baseId === 'radio' ? t('common.media.radio_spot', 'Radio spot') : t('common.media.tv_commercial', 'TV commercial'))
+                                    : fmt.label;
+                                  const subLabel = isRadioOrTv
+                                    ? (suffix === 'national'
+                                        ? t('common.region.landelijk', 'Landelijk')
+                                        : suffix === 'regional'
+                                          ? t('common.region.regionaal', 'Regionaal')
+                                          : suffix === 'local'
+                                            ? t('common.region.lokaal', 'Lokaal')
+                                            : t('common.media.region_options', 'Landelijk, regionaal, lokaal'))
+                                    : fmt.description;
                                   return {
                                     id: fmt.id,
-                                    label: fmt.label,
+                                    label,
                                     value: fmt.id, //  CHRIS-PROTOCOL: Use ID for Handshake Truth
                                     code: fmt.code, // Used by dropdown event payload normalization
                                     icon: baseIcons[baseId] || Globe,
-                                    subLabel: fmt.description,
+                                    subLabel,
                                     hasRegions: fmt.has_regions
                                   };
                                 })

@@ -161,7 +161,11 @@ export default function ConfiguratorPageClient({
         const mediumMap: Record<string, string> = {
           'online': 'online',
           'radio_national': 'radio',
+          'radio_regional': 'radio',
+          'radio_local': 'radio',
           'tv_national': 'tv',
+          'tv_regional': 'tv',
+          'tv_local': 'tv',
           'podcast': 'podcast'
         };
         const medium = mediumMap[state.media[0]];
@@ -820,12 +824,26 @@ export default function ConfiguratorPageClient({
       .filter((mt: any) => allowedBases.has(String(mt.code || '').split('_')[0]))
       .map((mt: any) => {
         const baseId = mt.code.split('_')[0];
+        const suffix = String(mt.code || '').split('_')[1] || '';
+        const isRadioOrTv = baseId === 'radio' || baseId === 'tv';
+        const regionDescription =
+          suffix === 'national'
+            ? t('common.region.landelijk', 'Landelijk')
+            : suffix === 'regional'
+              ? t('common.region.regionaal', 'Regionaal')
+              : suffix === 'local'
+                ? t('common.region.lokaal', 'Lokaal')
+                : t('common.media.region_options', 'Landelijk, regionaal, lokaal');
         return {
           id: mt.id,
           code: mt.code,
-          label: mt.label,
+          label: isRadioOrTv
+            ? (baseId === 'radio'
+                ? t('common.media.radio_spot', 'Radio spot')
+                : t('common.media.tv_commercial', 'TV commercial'))
+            : mt.label,
           icon: baseIcons[baseId] || Video,
-          description: mt.description,
+          description: isRadioOrTv ? regionDescription : mt.description,
           hasRegions: mt.has_regions
         };
       });
@@ -834,15 +852,15 @@ export default function ConfiguratorPageClient({
     // Emergency Fallback
     return [
       { id: 'online', code: 'online', label: 'Online / Social', icon: Video, description: 'Web, Social Media' },
-      { id: 'radio_national', code: 'radio_national', label: 'Radio', icon: Radio, description: 'Landelijke Radio', hasRegions: true },
-      { id: 'radio_regional', code: 'radio_regional', label: 'Radio (Regionaal)', icon: Radio, description: 'Regionale Radio', hasRegions: true },
-      { id: 'radio_local', code: 'radio_local', label: 'Radio (Lokaal)', icon: Radio, description: 'Lokale Radio', hasRegions: true },
-      { id: 'tv_national', code: 'tv_national', label: 'TV', icon: Tv, description: 'Landelijke TV', hasRegions: true },
-      { id: 'tv_regional', code: 'tv_regional', label: 'TV (Regionaal)', icon: Tv, description: 'Regionale TV', hasRegions: true },
-      { id: 'tv_local', code: 'tv_local', label: 'TV (Lokaal)', icon: Tv, description: 'Lokale TV', hasRegions: true },
+      { id: 'radio_national', code: 'radio_national', label: 'Radio spot', icon: Radio, description: 'Landelijk, regionaal, lokaal', hasRegions: true },
+      { id: 'radio_regional', code: 'radio_regional', label: 'Radio spot', icon: Radio, description: 'Regionaal', hasRegions: true },
+      { id: 'radio_local', code: 'radio_local', label: 'Radio spot', icon: Radio, description: 'Lokaal', hasRegions: true },
+      { id: 'tv_national', code: 'tv_national', label: 'TV commercial', icon: Tv, description: 'Landelijk, regionaal, lokaal', hasRegions: true },
+      { id: 'tv_regional', code: 'tv_regional', label: 'TV commercial', icon: Tv, description: 'Regionaal', hasRegions: true },
+      { id: 'tv_local', code: 'tv_local', label: 'TV commercial', icon: Tv, description: 'Lokaal', hasRegions: true },
       { id: 'podcast', code: 'podcast', label: 'Podcast', icon: Mic, description: 'In-podcast Ads' },
     ];
-  }, [dynamicConfig]);
+  }, [dynamicConfig, t]);
 
   const mediaOptionByCode = useMemo(() => {
     return new Map(commercialMediaOptions.map((opt) => [String(opt.code), opt] as const));
@@ -864,11 +882,15 @@ export default function ConfiguratorPageClient({
 
       return {
         ...canonical,
-        label: base === 'tv' ? 'TV' : base === 'radio' ? 'Radio' : canonical.label,
+        label: base === 'tv'
+          ? t('common.media.tv_commercial', 'TV commercial')
+          : base === 'radio'
+            ? t('common.media.radio_spot', 'Radio spot')
+            : canonical.label,
         hasRegions: Boolean(canonical.hasRegions || hasRegionalVariants),
       };
     });
-  }, [commercialMediaOptions]);
+  }, [commercialMediaOptions, t]);
 
   const commercialMediaFamilyMeta = useMemo(() => {
     const grouped = new Map<string, any[]>();
@@ -937,11 +959,11 @@ export default function ConfiguratorPageClient({
     updateMedia(normalized, normalizedIds);
   }, [state.usage, state.media, updateMedia, normalizeCommercialMediaCode, resolveMediaIdForCode]);
 
-  const regions = [
-    { id: 'Nationaal', label: 'Nationaal', suffix: 'national' },
-    { id: 'Regionaal', label: 'Regionaal', suffix: 'regional' },
-    { id: 'Lokaal', label: 'Lokaal', suffix: 'local' },
-  ];
+  const regions = useMemo(() => ([
+    { id: 'landelijk', label: t('common.region.landelijk', 'Landelijk'), suffix: 'national' },
+    { id: 'regionaal', label: t('common.region.regionaal', 'Regionaal'), suffix: 'regional' },
+    { id: 'lokaal', label: t('common.region.lokaal', 'Lokaal'), suffix: 'local' },
+  ]), [t]);
 
   const liveRegiePrice = useMemo(() => {
     const config = state.pricingConfig || SlimmeKassa.getDefaultConfig();
@@ -1129,13 +1151,21 @@ export default function ConfiguratorPageClient({
                     const isPodcast = mediaId === 'podcast';
                     
                     let fullLabel = opt?.label || mediaId;
-                    if (mediaId.includes('_national')) fullLabel = `TV (Nationaal)`;
-                    else if (mediaId.includes('_regional')) fullLabel = `TV (Regionaal)`;
-                    else if (mediaId.includes('_local')) fullLabel = `TV (Lokaal)`;
-                    else if (mediaId.startsWith('radio_')) {
-                      if (mediaId.includes('_national')) fullLabel = `Radio (Nationaal)`;
-                      else if (mediaId.includes('_regional')) fullLabel = `Radio (Regionaal)`;
-                      else if (mediaId.includes('_local')) fullLabel = `Radio (Lokaal)`;
+                    const baseId = mediaId.split('_')[0];
+                    const suffix = mediaId.split('_')[1] || '';
+                    const regionLabel =
+                      suffix === 'national'
+                        ? t('common.region.landelijk', 'landelijk')
+                        : suffix === 'regional'
+                          ? t('common.region.regionaal', 'regionaal')
+                          : suffix === 'local'
+                            ? t('common.region.lokaal', 'lokaal')
+                            : '';
+
+                    if (baseId === 'tv' && regionLabel) {
+                      fullLabel = `${t('common.media.tv_commercial', 'TV commercial')} (${regionLabel})`;
+                    } else if (baseId === 'radio' && regionLabel) {
+                      fullLabel = `${t('common.media.radio_spot', 'Radio spot')} (${regionLabel})`;
                     }
 
                     const breakdown = state.pricing.mediaBreakdown?.[mediaId];
@@ -1406,7 +1436,22 @@ export default function ConfiguratorPageClient({
                                     <opt.icon size={14} strokeWidth={2.5} />
                                   </div>
                                   <span className="text-[13px] font-bold text-va-black uppercase tracking-tight">
-                                    <VoiceglotText translationKey={`common.media.${opt.code}`} defaultText={opt.label} />
+                                    <VoiceglotText
+                                      translationKey={
+                                        baseId === 'radio'
+                                          ? 'common.media.radio_spot'
+                                          : baseId === 'tv'
+                                            ? 'common.media.tv_commercial'
+                                            : `common.media.${opt.code}`
+                                      }
+                                      defaultText={
+                                        baseId === 'radio'
+                                          ? t('common.media.radio_spot', 'Radio spot')
+                                          : baseId === 'tv'
+                                            ? t('common.media.tv_commercial', 'TV commercial')
+                                            : opt.label
+                                      }
+                                    />
                                   </span>
                                 </div>
                                 <div className="text-[10px] font-black text-primary/40 uppercase tracking-widest bg-primary/5 px-2 py-1 rounded-md">
@@ -1428,8 +1473,8 @@ export default function ConfiguratorPageClient({
                                           const newMediaIds = newMedia.map(m => resolveMediaIdForCode(m)).filter(Boolean) as number[];
                                           updateMedia(newMedia, newMediaIds);
                                           setTimeout(() => calculatePricing?.(), 50);
-                                        }} className={cn("flex-1 py-2 rounded-lg border text-[11px] font-bold transition-all", mediaId.includes(`_${r.suffix}`) || mediaId.includes(r.id.toLowerCase()) ? "bg-primary/10 border-primary/20 text-primary" : "bg-va-off-white/50 border-black/[0.03] text-va-black/40 hover:border-black/10")}>
-                                          <VoiceglotText translationKey={`common.region.${r.id.toLowerCase()}`} defaultText={r.label} />
+                                        }} className={cn("flex-1 py-2 rounded-lg border text-[11px] font-bold transition-all", mediaId.includes(`_${r.suffix}`) ? "bg-primary/10 border-primary/20 text-primary" : "bg-va-off-white/50 border-black/[0.03] text-va-black/40 hover:border-black/10")}>
+                                          <VoiceglotText translationKey={`common.region.${r.id}`} defaultText={r.label} />
                                         </button>
                                       ))}
                                     </div>
