@@ -12,11 +12,16 @@ interface RateCardProps {
 }
 
 export const RateCard: React.FC<RateCardProps> = ({ journey, className }) => {
+  const defaultConfig = SlimmeKassa.getDefaultConfig();
+  const telephonyBase = Math.round((defaultConfig.telephonyBasePrice || 8900) / 100);
+  const videoBase = Math.round((defaultConfig.videoBasePrice || 24900) / 100);
+  const commercialBase = Math.round((defaultConfig.basePrice || 19900) / 100);
+
   const configs = {
     telephony: {
       title: 'Telefonie & Onthaal',
       icon: Phone,
-      price: '89',
+      price: `${telephonyBase}`,
       unit: 'voor de eerste 25 woorden',
       features: [
         'Exacte prijs via woord-slider',
@@ -30,7 +35,7 @@ export const RateCard: React.FC<RateCardProps> = ({ journey, className }) => {
       video: {
       title: 'Video & E-learning',
       icon: Video,
-      price: '175',
+      price: `${videoBase}`,
       unit: 'basis tarief',
       features: [
         'Bereken tot op de euro',
@@ -44,13 +49,13 @@ export const RateCard: React.FC<RateCardProps> = ({ journey, className }) => {
     commercial: {
       title: 'Commercials',
       icon: Megaphone,
-      price: '250',
-      unit: 'excl. buy-out',
+      price: `${commercialBase}`,
+      unit: 'BSF excl. buy-out',
       features: [
-        'Radio, TV of Social Ads',
+        'Radio spot, TV commercial of social ad',
         'Inclusief Live Regie',
         'Broadcast mastering',
-        'Flexibele buy-outs'
+        'Buy-out per medium, spot en duurtijd'
       ],
       color: 'bg-primary/10 text-primary',
       badge: 'Impact'
