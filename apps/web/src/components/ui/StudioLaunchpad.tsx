@@ -81,11 +81,57 @@ export function StudioLaunchpad({ initialActors = [], initialJourney }: StudioLa
   const [calcWords, setCalcWords] = useState(200);
   
   const mediaOptions = useMemo(() => [
-    { id: 'online', label: t('common.media.online', 'Online & Socials'), sub: t('common.media.online.desc', 'YouTube, Meta, LinkedIn'), icon: Globe },
-    { id: 'podcast', label: t('common.media.podcast', 'Podcast'), sub: t('common.media.podcast.desc', 'Pre-roll, Mid-roll'), icon: Mic2 },
-    { id: 'radio_national', label: t('common.media.radio', 'Radio'), sub: t('common.media.radio.desc', 'Landelijke Radio'), icon: Radio },
-    { id: 'tv_national', label: t('common.media.tv', 'TV'), sub: t('common.media.tv.desc', 'Landelijke TV'), icon: Tv }
+    {
+      id: 'online',
+      label: t('common.media.online', 'Online & Socials'),
+      sub: t('common.media.online.desc', 'YouTube, Meta, LinkedIn'),
+      titleKey: 'common.media.online',
+      subKey: 'common.media.online.desc',
+      icon: Globe,
+      hasRegions: false
+    },
+    {
+      id: 'podcast',
+      label: t('common.media.podcast', 'Podcast'),
+      sub: t('common.media.podcast.desc', 'Pre-roll, Mid-roll'),
+      titleKey: 'common.media.podcast',
+      subKey: 'common.media.podcast.desc',
+      icon: Mic2,
+      hasRegions: false
+    },
+    {
+      id: 'radio_national',
+      label: t('common.media.radio_spot', 'Radio spot'),
+      sub: t('common.media.radio_spot.regions', 'Landelijk, regionaal, lokaal'),
+      titleKey: 'common.media.radio_spot',
+      subKey: 'common.media.radio_spot.regions',
+      icon: Radio,
+      hasRegions: true
+    },
+    {
+      id: 'tv_national',
+      label: t('common.media.tv_commercial', 'TV commercial'),
+      sub: t('common.media.tv_commercial.regions', 'Landelijk, regionaal, lokaal'),
+      titleKey: 'common.media.tv_commercial',
+      subKey: 'common.media.tv_commercial.regions',
+      icon: Tv,
+      hasRegions: true
+    }
   ], [t]);
+
+  const commercialRegions = useMemo(
+    () => [
+      { suffix: 'national' as const, key: 'common.region.landelijk', label: t('common.region.landelijk', 'Landelijk') },
+      { suffix: 'regional' as const, key: 'common.region.regionaal', label: t('common.region.regionaal', 'Regionaal') },
+      { suffix: 'local' as const, key: 'common.region.lokaal', label: t('common.region.lokaal', 'Lokaal') },
+    ],
+    [t]
+  );
+
+  const resolveRegionalMediaId = useCallback((baseId: string, suffix: 'national' | 'regional' | 'local'): CommercialMediaType => {
+    if (baseId !== 'radio' && baseId !== 'tv') return baseId as CommercialMediaType;
+    return `${baseId}_${suffix}` as CommercialMediaType;
+  }, []);
   
   useEffect(() => {
     const fetchConfig = async () => {
@@ -264,14 +310,27 @@ export function StudioLaunchpad({ initialActors = [], initialJourney }: StudioLa
                   </label>
                   <div className="space-y-3">
                     {mediaOptions.map((m) => {
-                      const isActive = selectedMedia.includes(m.id as any);
+                      const baseId = String(m.id).split('_')[0];
+                      const activeMediaId =
+                        selectedMedia.find((media) => String(media).split('_')[0] === baseId) || (m.id as CommercialMediaType);
+                      const isActive = selectedMedia.some((media) => String(media).split('_')[0] === baseId);
+                      const currentSpots = spotsDetail[activeMediaId] || 1;
+                      const currentYears = yearsDetail[activeMediaId] || 1;
                       return (
                         <div key={m.id} className={cn(
                           "p-4 rounded-2xl border-2 transition-all duration-500 bg-white",
                           isActive ? "border-primary/20 shadow-aura-sm" : "border-black/5 opacity-60"
                         )}>
                           <button
-                            onClick={() => setSelectedMedia((prev) => prev.includes(m.id as any) ? (prev.length > 1 ? prev.filter((i) => i !== m.id) : prev) : [...prev, m.id as any])}
+                            onClick={() =>
+                              setSelectedMedia((prev) => {
+                                const existing = prev.find((item) => String(item).split('_')[0] === baseId);
+                                if (existing) {
+                                  return prev.length > 1 ? prev.filter((item) => String(item).split('_')[0] !== baseId) : prev;
+                                }
+                                return [...prev, m.id as CommercialMediaType];
+                              })
+                            }
                             className="w-full flex items-center justify-between mb-3"
                           >
                             <div className="flex items-center gap-4">
@@ -280,10 +339,10 @@ export function StudioLaunchpad({ initialActors = [], initialJourney }: StudioLa
                               </div>
                               <div className="text-left">
                                 <div className="text-[14px] font-bold text-va-black">
-                                  <VoiceglotText translationKey={`common.media.${m.id}`} defaultText={m.label} />
+                                  <VoiceglotText translationKey={m.titleKey} defaultText={m.label} />
                                 </div>
                                 <div className="text-[11px] text-va-black/30 font-light">
-                                  <VoiceglotText translationKey={`common.media.${m.id}.desc`} defaultText={m.sub} />
+                                  <VoiceglotText translationKey={m.subKey} defaultText={m.sub} />
                                 </div>
                               </div>
                             </div>
@@ -293,25 +352,72 @@ export function StudioLaunchpad({ initialActors = [], initialJourney }: StudioLa
                           </button>
                           
                           {isActive && (
-                            <div className="grid grid-cols-2 gap-4 pt-3 border-t border-black/5">
-                              <div className="space-y-2">
-                                <label className="text-[9px] font-bold text-va-black/30 uppercase tracking-[0.2em]">
-                                  <VoiceglotText translationKey="common.spots" defaultText="Spots" />
-                                </label>
-                                <div className="flex items-center justify-between bg-va-off-white rounded-lg p-1">
-                                  <button onClick={() => setSpotsDetail((prev) => ({ ...prev, [m.id]: Math.max(1, (prev[m.id] || 1) - 1) }))} className="w-6 h-6 flex items-center justify-center text-va-black/40 hover:text-primary"><Minus size={12} /></button>
-                                  <span className="text-[12px] font-bold text-primary">{spotsDetail[m.id] || 1}</span>
-                                  <button onClick={() => setSpotsDetail((prev) => ({ ...prev, [m.id]: (prev[m.id] || 1) + 1 }))} className="w-6 h-6 flex items-center justify-center text-va-black/40 hover:text-primary"><Plus size={12} /></button>
+                            <div className="space-y-4">
+                              {m.hasRegions && (
+                                <div className="space-y-2 pt-3 border-t border-black/5">
+                                  <label className="text-[9px] font-bold text-va-black/30 uppercase tracking-[0.2em]">
+                                    <VoiceglotText translationKey="common.region" defaultText="Regio" />
+                                  </label>
+                                  <div className="grid grid-cols-3 gap-2">
+                                    {commercialRegions.map((region) => {
+                                      const regionMediaId = resolveRegionalMediaId(baseId, region.suffix);
+                                      const isRegionActive = activeMediaId === regionMediaId;
+                                      return (
+                                        <button
+                                          key={`${m.id}-${region.suffix}`}
+                                          onClick={() => {
+                                            setSelectedMedia((prev) => {
+                                              const existing = prev.find((item) => String(item).split('_')[0] === baseId);
+                                              if (!existing) return [...prev, regionMediaId];
+                                              return prev.map((item) => (String(item).split('_')[0] === baseId ? regionMediaId : item)) as CommercialMediaType[];
+                                            });
+                                            setSpotsDetail((prev) => {
+                                              if (activeMediaId === regionMediaId) return prev;
+                                              const next = { ...prev, [regionMediaId]: prev[activeMediaId] || 1 };
+                                              delete next[activeMediaId];
+                                              return next;
+                                            });
+                                            setYearsDetail((prev) => {
+                                              if (activeMediaId === regionMediaId) return prev;
+                                              const next = { ...prev, [regionMediaId]: prev[activeMediaId] || 1 };
+                                              delete next[activeMediaId];
+                                              return next;
+                                            });
+                                          }}
+                                          className={cn(
+                                            "rounded-lg border py-1.5 text-[10px] font-bold transition-all",
+                                            isRegionActive
+                                              ? "bg-primary/10 border-primary/20 text-primary"
+                                              : "bg-va-off-white/60 border-black/5 text-va-black/40 hover:border-black/10"
+                                          )}
+                                        >
+                                          <VoiceglotText translationKey={region.key} defaultText={region.label} />
+                                        </button>
+                                      );
+                                    })}
+                                  </div>
                                 </div>
-                              </div>
-                              <div className="space-y-2">
-                                <label className="text-[9px] font-bold text-va-black/30 uppercase tracking-[0.2em]">
-                                  <VoiceglotText translationKey="common.duration" defaultText="Looptijd" />
-                                </label>
-                                <div className="flex items-center justify-between bg-va-off-white rounded-lg p-1">
-                                  <button onClick={() => setYearsDetail((prev) => ({ ...prev, [m.id]: Math.max(1, (prev[m.id] || 1) - 1) }))} className="w-6 h-6 flex items-center justify-center text-va-black/40 hover:text-primary"><Minus size={12} /></button>
-                                  <span className="text-[12px] font-bold text-primary">{yearsDetail[m.id] || 1}j</span>
-                                  <button onClick={() => setYearsDetail((prev) => ({ ...prev, [m.id]: (prev[m.id] || 1) + 1 }))} className="w-6 h-6 flex items-center justify-center text-va-black/40 hover:text-primary"><Plus size={12} /></button>
+                              )}
+                              <div className={cn("grid grid-cols-2 gap-4", !m.hasRegions && "pt-3 border-t border-black/5")}>
+                                <div className="space-y-2">
+                                  <label className="text-[9px] font-bold text-va-black/30 uppercase tracking-[0.2em]">
+                                    <VoiceglotText translationKey="common.spots" defaultText="Spots" />
+                                  </label>
+                                  <div className="flex items-center justify-between bg-va-off-white rounded-lg p-1">
+                                    <button onClick={() => setSpotsDetail((prev) => ({ ...prev, [activeMediaId]: Math.max(1, (prev[activeMediaId] || 1) - 1) }))} className="w-6 h-6 flex items-center justify-center text-va-black/40 hover:text-primary"><Minus size={12} /></button>
+                                    <span className="text-[12px] font-bold text-primary">{currentSpots}</span>
+                                    <button onClick={() => setSpotsDetail((prev) => ({ ...prev, [activeMediaId]: (prev[activeMediaId] || 1) + 1 }))} className="w-6 h-6 flex items-center justify-center text-va-black/40 hover:text-primary"><Plus size={12} /></button>
+                                  </div>
+                                </div>
+                                <div className="space-y-2">
+                                  <label className="text-[9px] font-bold text-va-black/30 uppercase tracking-[0.2em]">
+                                    <VoiceglotText translationKey="common.duration" defaultText="Looptijd" />
+                                  </label>
+                                  <div className="flex items-center justify-between bg-va-off-white rounded-lg p-1">
+                                    <button onClick={() => setYearsDetail((prev) => ({ ...prev, [activeMediaId]: Math.max(1, (prev[activeMediaId] || 1) - 1) }))} className="w-6 h-6 flex items-center justify-center text-va-black/40 hover:text-primary"><Minus size={12} /></button>
+                                    <span className="text-[12px] font-bold text-primary">{currentYears}j</span>
+                                    <button onClick={() => setYearsDetail((prev) => ({ ...prev, [activeMediaId]: (prev[activeMediaId] || 1) + 1 }))} className="w-6 h-6 flex items-center justify-center text-va-black/40 hover:text-primary"><Plus size={12} /></button>
+                                  </div>
                                 </div>
                               </div>
                             </div>

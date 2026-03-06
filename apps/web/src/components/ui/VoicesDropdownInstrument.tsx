@@ -519,7 +519,7 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
                                 <span className="text-[11px] font-bold text-primary min-w-[65px] text-center uppercase tracking-tight">
                                   {(() => {
                                     const r = mediaRegion[item.value] || 'national';
-                                    if (r === 'national') return t('common.national', 'Nationaal');
+                                    if (r === 'national') return t('common.region.landelijk', 'Landelijk');
                                     if (r === 'regional') return t('common.regional', 'Regionaal');
                                     return t('common.local', 'Lokaal');
                                   })()}

@@ -1659,8 +1659,8 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
                             {[
                               { id: 'online', label: 'Online & Socials', sub: 'YouTube, Meta, LinkedIn', icon: Globe },
                               { id: 'podcast', label: 'Podcast', sub: 'Pre-roll, Mid-roll', icon: Mic2 },
-                              { id: 'radio', label: 'Radio', sub: 'Landelijke of regionale zenders', icon: Radio, hasRegions: true },
-                              { id: 'tv', label: 'TV', sub: 'Landelijke of regionale zenders', icon: Tv, hasRegions: true }
+                              { id: 'radio', label: 'Radio spot', sub: 'Landelijk, regionaal, lokaal', icon: Radio, hasRegions: true },
+                              { id: 'tv', label: 'TV commercial', sub: 'Landelijk, regionaal, lokaal', icon: Tv, hasRegions: true }
                             ].map((m) => {
                               const isActive = simulatorMedia.includes(m.id);
                               return (

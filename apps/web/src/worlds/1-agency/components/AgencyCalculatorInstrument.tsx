@@ -47,6 +47,19 @@ interface AgencyCalculatorProps {
   onPageChange?: (page: number) => void;
 }
 
+type CommercialRegion = "national" | "regional" | "local";
+
+const resolveCommercialMediaType = (
+  calcType: "webvideo" | "social" | "radio" | "tv" | "ivr" | "podcast",
+  calcRegion: CommercialRegion
+) => {
+  if (calcType === "social") return "online";
+  if (calcType === "podcast") return "podcast";
+  if (calcType === "radio") return `radio_${calcRegion}` as "radio_national" | "radio_regional" | "radio_local";
+  if (calcType === "tv") return `tv_${calcRegion}` as "tv_national" | "tv_regional" | "tv_local";
+  return "online";
+};
+
 /**
  * SLIMME INPAGE KASSA (2026)
  * Voldoet aan het Voices Configurator Pattern (Exploratief).
@@ -69,7 +82,7 @@ export const AgencyCalculator = ({
   const [calcUsage, setCalcUsage] = useState<"telefonie" | "unpaid" | "paid">(initialJourney);
   const [calcType, setCalcType] = useState<"webvideo" | "social" | "radio" | "tv" | "ivr" | "podcast">("social");
   const [calcSpots, setCalcSpots] = useState(1);
-  const [calcRegion, setCalcRegion] = useState("national");
+  const [calcRegion, setCalcRegion] = useState<CommercialRegion>("national");
   const [calcYears, setCalcYears] = useState(1);
   const [calcWords, setCalcWords] = useState(25);
   const [calcMusic, setCalcMusic] = useState(false);
@@ -100,50 +113,42 @@ export const AgencyCalculator = ({
     }
   }, [externalPricingConfig]);
 
-  const calculatorRates: Record<string, { label: string, sub: string, icon: any, national: number, regional?: number, usage: "unpaid" | "paid" | "telefonie" }> = {
+  const calculatorRates: Record<string, { label: string, sub: string, icon: any, usage: "unpaid" | "paid" | "telefonie" }> = {
     webvideo: { 
       label: t('common.webvideo', "Webvideo"), 
       sub: t('common.webvideo.sub', "Corporate & Web"),
       icon: Video,
-      usage: "unpaid",
-      national: (pricingConfig?.videoBasePrice / 100) || pricingConfig?.unpaid_base || 0
+      usage: "unpaid"
     },
     social: { 
       label: t('common.social_ad', "Social Ad"), 
       sub: t('common.social_ad.sub', "Social Ads"),
       icon: Megaphone,
-      usage: "paid",
-      national: ((pricingConfig?.videoBasePrice / 100) || pricingConfig?.unpaid_base || 0) + 50
+      usage: "paid"
     },
     radio: { 
-      label: t('common.radio', "Radio"), 
-      sub: t('common.radio.sub', "Radio Ads"),
+      label: t('common.media.radio_spot', "Radio spot"), 
+      sub: t('common.media.radio_spot.regions', "Landelijk, regionaal, lokaal"),
       icon: Radio,
-      usage: "paid",
-      national: ((pricingConfig?.basePrice / 100) || pricingConfig?.entry_price_base || 0) + 150,
-      regional: ((pricingConfig?.basePrice / 100) || pricingConfig?.entry_price_base || 0)
+      usage: "paid"
     },
     tv: { 
-      label: t('common.tv_ad', "TV Ad"), 
-      sub: t('common.tv_ad.sub', "TV Ads"),
+      label: t('common.media.tv_commercial', "TV commercial"), 
+      sub: t('common.media.tv_commercial.regions', "Landelijk, regionaal, lokaal"),
       icon: Tv,
-      usage: "paid",
-      national: ((pricingConfig?.basePrice / 100) || pricingConfig?.entry_price_base || 0) + 250,
-      regional: ((pricingConfig?.basePrice / 100) || pricingConfig?.entry_price_base || 0) + 50
+      usage: "paid"
     },
     podcast: { 
       label: t('common.podcast_ad', "Podcast Ad"), 
       sub: t('common.podcast_ad.sub', "Pre-roll"),
       icon: Mic2,
-      usage: "paid",
-      national: (pricingConfig?.videoBasePrice / 100) || pricingConfig?.unpaid_base || 0
+      usage: "paid"
     },
     ivr: { 
       label: t('common.telephony', "Telefoon"), 
       sub: t('common.telephony.sub', "Voicemail & IVR"),
       icon: Phone,
-      usage: "telefonie",
-      national: (pricingConfig?.telephonyBasePrice / 100) || pricingConfig?.ivr_base || 0
+      usage: "telefonie"
     },
   };
 
@@ -151,15 +156,20 @@ export const AgencyCalculator = ({
     const config = pricingConfig || SlimmeKassa.getDefaultConfig();
     const wordCount = calcWords;
     const promptCount = Math.ceil(calcWords / 8); // Geschat aantal prompts voor IVR
+    const resolvedUsage = calcUsage === 'paid' ? 'commercial' : calcUsage;
+    const selectedCommercialMedia = calcUsage === 'paid'
+      ? resolveCommercialMediaType(calcType, calcRegion)
+      : null;
 
     const result = SlimmeKassa.calculate({
-      usage: calcUsage,
+      usage: resolvedUsage,
       words: wordCount,
       prompts: promptCount,
-      mediaTypes: calcUsage === 'paid' ? [calcType as any] : [],
-      country: calcRegion === 'regional' ? 'BE-REGIONAL' : 'BE', // Simuleer regio via landcode voor globale kassa
-      spots: { [calcType]: calcSpots },
-      years: { [calcType]: calcYears },
+      mediaTypes: selectedCommercialMedia ? [selectedCommercialMedia as any] : [],
+      countries: ['BE'],
+      country: 'BE',
+      spots: selectedCommercialMedia ? { [selectedCommercialMedia]: calcSpots } : undefined,
+      years: selectedCommercialMedia ? { [selectedCommercialMedia]: calcYears } : undefined,
       liveSession: calcLive,
       music: { asBackground: calcMusic, asHoldMusic: calcMusic },
       actorRates: actorRates || {} // Gebruik specifieke actor tarieven indien meegegeven
@@ -287,7 +297,7 @@ export const AgencyCalculator = ({
                           size="none"
                           onClick={() => {
                             setCalcType(key as any);
-                            if (key === 'social' || key === 'podcast') setCalcRegion('national');
+                            setCalcRegion('national');
                             setCalcYears(key === 'podcast' ? 0.25 : 1);
                           }}
                           className={cn(
@@ -318,6 +328,34 @@ export const AgencyCalculator = ({
                       ))}
                     </ContainerInstrument>
                   </div>
+
+                  {(calcType === 'radio' || calcType === 'tv') && (
+                    <div className="space-y-4">
+                      <LabelInstrument className="text-va-black/40 ml-0 tracking-[0.2em] text-[11px] font-bold uppercase">
+                        <VoiceglotText translationKey="common.broadcast_area" defaultText="Uitzendgebied" />
+                      </LabelInstrument>
+                      <ContainerInstrument plain className="flex p-1 bg-white rounded-2xl border border-black/5 shadow-sm h-[64px]">
+                        {([
+                          { id: 'national', label: t('common.region.landelijk', 'Landelijk') },
+                          { id: 'regional', label: t('common.region.regionaal', 'Regionaal') },
+                          { id: 'local', label: t('common.region.lokaal', 'Lokaal') }
+                        ] as const).map((region) => (
+                          <ButtonInstrument
+                            key={region.id}
+                            variant="pure"
+                            size="none"
+                            onClick={() => setCalcRegion(region.id)}
+                            className={cn(
+                              "flex-1 rounded-xl text-[13px] font-bold transition-all",
+                              calcRegion === region.id ? "bg-va-off-white text-primary shadow-inner" : "text-va-black/30 hover:text-va-black"
+                            )}
+                          >
+                            {region.label}
+                          </ButtonInstrument>
+                        ))}
+                      </ContainerInstrument>
+                    </div>
+                  )}
 
                   {/* Spots Grid */}
                   <div className="space-y-4">
@@ -490,7 +528,7 @@ export const AgencyCalculator = ({
                     playClick('pro');
                     const params = new URLSearchParams();
                     params.set('usage', calcUsage);
-                    if (calcUsage === 'paid') params.set('medium', calcType);
+                    if (calcUsage === 'paid') params.set('medium', resolveCommercialMediaType(calcType, calcRegion));
                     router.push(`/agency?${params.toString()}`);
                   }} 
                   className="va-btn-pro !bg-va-black !text-white !rounded-2xl px-10 py-6 text-lg shadow-xl hover:scale-105 transition-transform flex items-center gap-3"
@@ -513,7 +551,7 @@ export const AgencyCalculator = ({
                       playClick('soft');
                       const params = new URLSearchParams();
                       params.set('usage', calcUsage);
-                      if (calcUsage === 'paid') params.set('medium', calcType);
+                      if (calcUsage === 'paid') params.set('medium', resolveCommercialMediaType(calcType, calcRegion));
                       router.push(`/agency?${params.toString()}`);
                     }} 
                     className="text-[11px] font-bold text-primary uppercase tracking-widest hover:opacity-70 transition-opacity"
