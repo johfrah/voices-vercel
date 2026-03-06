@@ -2004,10 +2004,10 @@ function CmsPageContent({
 
   const extractTitle = (content: string = '') => {
     if (!content) return { title: null, body: '' };
-    const match = content.match(/^(?:###|#####)\s+(.+)$/m);
+    const match = content.match(/^(?:#{2,5})\s*(.+)$/m);
     return {
       title: match ? match[1] : null,
-      body: content.replace(/^(?:###|#####)\s+.+$/m, '').replace(/\\/g, '').replace(/\*\*/g, '').trim()
+      body: content.replace(/^(?:#{2,5})\s*.+$/m, '').replace(/\\/g, '').replace(/\*\*/g, '').trim()
     };
   };
 
