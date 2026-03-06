@@ -1,0 +1,191 @@
+# Route classification scan (2026-03-06)
+
+## Summary
+- Total active routes: 430
+- Classified as action_page: 342
+- Classified as blog_article: 88
+- Article routes in registry: 207
+- Unique content_articles IDs referenced: 185
+
+## Routing type distribution
+- article: 207
+- actor: 205
+- lesson: 17
+- artist: 1
+
+## Top blog candidates (max 50)
+- machteld-van-der-gaag-studio | rt=article | conf=99 | iap_context.theme indicates story/blog; editorial block types present
+- in-de-studio-bij-ilari-hoevenaars | rt=article | conf=99 | iap_context.theme indicates story/blog; editorial block types present
+- story-jokershop | rt=article | conf=99 | iap_context.theme indicates story/blog; editorial block types present
+- story-skygge | rt=article | conf=99 | iap_context.theme indicates story/blog; editorial block types present
+- 5-tips-om-voice-stem-worden | rt=article | conf=99 | slug starts with numbered-post pattern; editorial block types present
+- slv-belgium | rt=article | conf=99 | iap_context.theme indicates story/blog; editorial block types present
+- story-nkc | rt=article | conf=99 | iap_context.theme indicates story/blog; editorial block types present
+- story-creo | rt=article | conf=99 | iap_context.theme indicates story/blog; editorial block types present
+- 31-voicemail-teksten-zakelijk | rt=article | conf=99 | slug starts with numbered-post pattern; iap_context.theme indicates story/blog; policy default: non-blog article => action page
+- story-slv-belgium | rt=article | conf=99 | iap_context.theme indicates story/blog; editorial block types present
+- sean-gray-digital-nomad | rt=article | conf=99 | iap_context.theme indicates story/blog; editorial block types present
+- voorbeeldteksten-telefooncentrale | rt=article | conf=99 | iap_context.theme indicates story/blog; editorial block types present
+- story-aclvb | rt=article | conf=99 | iap_context.theme indicates story/blog; editorial block types present
+- 6-voorbeeldberichten-zakelijke-voicemail | rt=article | conf=99 | slug starts with numbered-post pattern; iap_context.theme indicates story/blog; policy default: non-blog article => action page
+- trends-in-audio-branding | rt=article | conf=99 | iap_context.theme indicates story/blog; editorial block types present
+- jokershop-be-investeert-in-een-warm-onthaal | rt=article | conf=99 | iap_context.theme indicates story/blog; editorial block types present
+- 5-tips-om-te-scoren-met-voicemail | rt=article | conf=99 | slug starts with numbered-post pattern; iap_context.theme indicates story/blog; policy default: non-blog article => action page
+- story-ticket-team | rt=article | conf=99 | iap_context.theme indicates story/blog; editorial block types present
+- coolblue-story | rt=article | conf=99 | iap_context.theme indicates story/blog; editorial block types present
+- nkc | rt=article | conf=99 | iap_context.theme indicates story/blog; editorial block types present
+- jokershop | rt=article | conf=99 | iap_context.theme indicates story/blog; editorial block types present
+- ticketteam | rt=article | conf=99 | iap_context.theme indicates story/blog; editorial block types present
+- academy/geheim-voor-betere-voice-overs | rt=article | conf=80 | editorial block types present
+- academy/hoe-benoem-je-jouw-voice-over-demos | rt=article | conf=80 | editorial block types present
+- academy/eerste-stap-voice-over | rt=article | conf=80 | editorial block types present
+- academy/vind-voice-werk | rt=article | conf=80 | editorial block types present
+- academy/equalizen-professional-iann | rt=article | conf=80 | editorial block types present
+- academy/trucje-stressvrije-audities | rt=article | conf=80 | editorial block types present
+- academy/start-met-jezelf-zijn | rt=article | conf=80 | editorial block types present
+- academy/motivatie-voice-over | rt=article | conf=80 | editorial block types present
+- academy/verbeter-je-akoestiek | rt=article | conf=80 | editorial block types present
+- academy/beginnen-als-voice-over | rt=article | conf=80 | editorial block types present
+- academy/opnames-beter-laten-klinken-iann | rt=article | conf=80 | editorial block types present
+- academy/hoe-doe-je-voice-over-pickups | rt=article | conf=80 | editorial block types present
+- academy/5-tips-om-voice-stem-worden | rt=article | conf=80 | editorial block types present
+- academy/online-boeken-voice-over | rt=article | conf=80 | editorial block types present
+- academy/welke-microfoon-is-geschikt-voor-voice-overs | rt=article | conf=80 | editorial block types present
+- academy/wat-is-goede-voice-over | rt=article | conf=80 | editorial block types present
+- academy/stoppen-met-voice-over | rt=article | conf=80 | editorial block types present
+- geheim-voor-betere-voice-overs | rt=article | conf=80 | editorial block types present
+- johfrah-lefebvre-stem-achter-het-verhaal | rt=article | conf=80 | editorial block types present
+- hoe-benoem-je-jouw-voice-over-demos | rt=article | conf=80 | editorial block types present
+- beginnen-als-voice-over | rt=article | conf=80 | editorial block types present
+- trucje-stressvrije-audities | rt=article | conf=80 | editorial block types present
+- wat-is-goede-voice-over | rt=article | conf=80 | editorial block types present
+- eerste-stap-voice-over | rt=article | conf=80 | editorial block types present
+- motivatie-voice-over | rt=article | conf=80 | editorial block types present
+- opnames-beter-laten-klinken-iann | rt=article | conf=80 | editorial block types present
+- verbeter-je-akoestiek | rt=article | conf=80 | editorial block types present
+- technical-specs | rt=article | conf=80 | editorial block types present
+
+## Top article routes that should be action pages (max 120)
+- price | conf=99 | action block types present
+- ivr | conf=99 | action block types present
+- ademing | conf=70 | policy default: non-blog article => action page
+- artist/youssef | conf=70 | policy default: non-blog article => action page
+- studio/faq | conf=70 | policy default: non-blog article => action page
+- ademing/aarde-dummy | conf=70 | policy default: non-blog article => action page
+- tarieven | conf=70 | policy default: non-blog article => action page
+- ademing/contact | conf=70 | policy default: non-blog article => action page
+- ademing/bibliotheek | conf=70 | policy default: non-blog article => action page
+- ademing/aarde-1 | conf=70 | policy default: non-blog article => action page
+- academy/voice-over-worden-stappenplan | conf=70 | policy default: non-blog article => action page
+- studio | conf=70 | policy default: non-blog article => action page
+- studio/contact | conf=70 | policy default: non-blog article => action page
+- ademing/faq | conf=70 | policy default: non-blog article => action page
+- ademing/favorieten | conf=70 | policy default: non-blog article => action page
+- ademing/aarde-2 | conf=70 | policy default: non-blog article => action page
+- academy | conf=70 | policy default: non-blog article => action page
+- academy/voice-over-masterclass | conf=70 | policy default: non-blog article => action page
+- agency | conf=70 | policy default: non-blog article => action page
+- johfrai/contact | conf=70 | policy default: non-blog article => action page
+- ademing/vuur-1 | conf=70 | policy default: non-blog article => action page
+- academy/academy | conf=70 | policy default: non-blog article => action page
+- johfrai/faq | conf=70 | policy default: non-blog article => action page
+- ademing/stiltemeditatie | conf=70 | policy default: non-blog article => action page
+- terms | conf=70 | policy default: non-blog article => action page
+- artist/youssef/contact | conf=70 | policy default: non-blog article => action page
+- our-reviews | conf=70 | policy default: non-blog article => action page
+- showroom | conf=70 | policy default: non-blog article => action page
+- cookieverklaring | conf=70 | policy default: non-blog article => action page
+- afspraak | conf=70 | policy default: non-blog article => action page
+- cursus | conf=70 | policy default: non-blog article => action page
+- kalender | conf=70 | policy default: non-blog article => action page
+- deelnemer | conf=70 | policy default: non-blog article => action page
+- uitspraak | conf=70 | policy default: non-blog article => action page
+- guarantees | conf=70 | policy default: non-blog article => action page
+- voice-over-worden-stappenplan | conf=70 | policy default: non-blog article => action page
+- johfrai | conf=70 | policy default: non-blog article => action page
+- bedankt | conf=70 | policy default: non-blog article => action page
+- storytelling | conf=70 | policy default: non-blog article => action page
+- feedback | conf=70 | policy default: non-blog article => action page
+- algemene-voorwaarden-voices-studio | conf=70 | policy default: non-blog article => action page
+- voices-journey-telefonie | conf=70 | policy default: non-blog article => action page
+- meeting | conf=70 | policy default: non-blog article => action page
+- veelgestelde-vragen | conf=70 | policy default: non-blog article => action page
+- download | conf=70 | policy default: non-blog article => action page
+- voice-over | conf=70 | policy default: non-blog article => action page
+- doe-je-mee | conf=70 | policy default: non-blog article => action page
+- contact | conf=70 | policy default: non-blog article => action page
+- freelance | conf=70 | policy default: non-blog article => action page
+- blog | conf=70 | policy default: non-blog article => action page
+- account | conf=70 | policy default: non-blog article => action page
+- reschedule | conf=70 | policy default: non-blog article => action page
+- drop | conf=70 | policy default: non-blog article => action page
+- music-on-hold | conf=70 | policy default: non-blog article => action page
+- tekstgenerator | conf=70 | policy default: non-blog article => action page
+- voices-journey-paid | conf=70 | policy default: non-blog article => action page
+- privacy | conf=70 | policy default: non-blog article => action page
+- portfolio | conf=70 | policy default: non-blog article => action page
+- voorwaarden-studio | conf=70 | policy default: non-blog article => action page
+- cart | conf=70 | policy default: non-blog article => action page
+- test | conf=70 | policy default: non-blog article => action page
+- search | conf=70 | policy default: non-blog article => action page
+- artists | conf=70 | policy default: non-blog article => action page
+- onboarding | conf=70 | policy default: non-blog article => action page
+- voicemail-laten-inspreken-voice-over | conf=70 | policy default: non-blog article => action page
+- success | conf=70 | policy default: non-blog article => action page
+- voices-journey-unpaid | conf=70 | policy default: non-blog article => action page
+- tips-klantenservice | conf=70 | policy default: non-blog article => action page
+- gesloten-paasvakantie-out-of-office-voicemail | conf=70 | policy default: non-blog article => action page
+- telefooncentrale-keuzemenu-schrijven | conf=70 | policy default: non-blog article => action page
+- kluis | conf=70 | policy default: non-blog article => action page
+- workshops | conf=70 | policy default: non-blog article => action page
+- contacteer-ons | conf=70 | policy default: non-blog article => action page
+- uitschrijven | conf=70 | policy default: non-blog article => action page
+- frequently-asked-questions | conf=70 | policy default: non-blog article => action page
+- profiel | conf=70 | policy default: non-blog article => action page
+- inschrijvingen | conf=70 | policy default: non-blog article => action page
+- paid | conf=70 | policy default: non-blog article => action page
+- x-price | conf=70 | policy default: non-blog article => action page
+- workshopgever | conf=70 | policy default: non-blog article => action page
+- signup-voice | conf=70 | policy default: non-blog article => action page
+- how | conf=70 | policy default: non-blog article => action page
+- algemene-voorwaarden-academy | conf=70 | policy default: non-blog article => action page
+- enquete | conf=70 | policy default: non-blog article => action page
+- livechat | conf=70 | policy default: non-blog article => action page
+- voorbeeldteksten | conf=70 | policy default: non-blog article => action page
+- demos | conf=70 | policy default: non-blog article => action page
+- unpaid | conf=70 | policy default: non-blog article => action page
+- developers-of-ai-consumers | conf=70 | policy default: non-blog article => action page
+- onze-belofte | conf=70 | policy default: non-blog article => action page
+- partners | conf=70 | policy default: non-blog article => action page
+- zakelijke-voicemail-inspreken | conf=70 | policy default: non-blog article => action page
+- gesloten-feestdag-out-of-office-voicemail | conf=70 | policy default: non-blog article => action page
+- commercial-journey | conf=70 | policy default: non-blog article => action page
+- over-ons | conf=70 | policy default: non-blog article => action page
+- gesloten-hemelvaart-out-of-office | conf=70 | policy default: non-blog article => action page
+- microsoft-teams-on-hold | conf=70 | policy default: non-blog article => action page
+- configurator | conf=70 | policy default: non-blog article => action page
+- prijzen | conf=70 | policy default: non-blog article => action page
+- studio/veelgestelde-vragen | conf=70 | policy default: non-blog article => action page
+- dos-en-donts-wachtcentrale | conf=70 | policy default: non-blog article => action page
+- holidays-voicemail-greetings | conf=70 | policy default: non-blog article => action page
+- professional-voicemail-menu-how-to | conf=70 | policy default: non-blog article => action page
+- scripts | conf=70 | policy default: non-blog article => action page
+- garanties | conf=70 | policy default: non-blog article => action page
+- cookies | conf=70 | policy default: non-blog article => action page
+- perfect-voicemail-greetings | conf=70 | policy default: non-blog article => action page
+- make-money-with-your-voicemail | conf=70 | policy default: non-blog article => action page
+- video-journey | conf=70 | policy default: non-blog article => action page
+- zo-werkt-het | conf=70 | policy default: non-blog article => action page
+- afwezigheidsmeldingen-telefooncentrale | conf=70 | policy default: non-blog article => action page
+- professional-holiday-voicemail-scripts | conf=70 | policy default: non-blog article => action page
+- telefoonstemmen | conf=70 | policy default: non-blog article => action page
+- voorwaarden | conf=70 | policy default: non-blog article => action page
+- keuzemenu-configurator | conf=70 | policy default: non-blog article => action page
+- waarom-professioneel-laten-inspreken | conf=70 | policy default: non-blog article => action page
+- telefonie | conf=70 | policy default: non-blog article => action page
+- checkout | conf=70 | policy default: non-blog article => action page
+- johfrai | conf=70 | policy default: non-blog article => action page
+
+## Notes
+- Policy used in this scan: non-blog article routes default to action_page.
+- Blog classification uses routing_type=blog first, then slug/theme/block heuristics.

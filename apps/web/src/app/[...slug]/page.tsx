@@ -199,6 +199,68 @@ const ROUTING_TYPE_BY_ENTITY_TYPE_ID: Record<number, string> = {
   6: 'casting_list',
 };
 
+type CmsRenderVariant = 'action' | 'blog';
+
+const BLOG_PREFIX_PATTERN = /^(blog|nieuws|news|insights)\//i;
+const BLOG_NUMBERED_PATTERN = /^\d+-/;
+const BLOG_THEME_PATTERN = /(stories|story|inspiratie|blog|news)/i;
+const EDITORIAL_BLOCK_TYPES = new Set(['story-layout', 'lifestyle-overlay', 'founder', 'carousel', 'thematic']);
+const ACTION_BLOCK_TYPES = new Set([
+  'hero',
+  'pricing',
+  'cta',
+  'how_it_works',
+  'faq',
+  'calculator',
+  'journey_cta',
+  'workshop_hero',
+  'workshop_carousel',
+  'workshop_calendar',
+  'academy_pricing',
+  'academy_faq',
+  'lesson_grid',
+  'track_grid',
+  'interest_form',
+]);
+
+function deriveCmsRenderVariant({
+  routingType,
+  slug,
+  page,
+  blocks,
+}: {
+  routingType?: string | null;
+  slug: string;
+  page: any;
+  blocks: any[];
+}): CmsRenderVariant {
+  const normalizedRoutingType = String(routingType || '').toLowerCase();
+  if (normalizedRoutingType === 'blog') {
+    return 'blog';
+  }
+
+  const normalizedSlug = String(slug || '').toLowerCase();
+  const normalizedTheme = String(page?.iap_context?.theme || page?.iapContext?.theme || '').toLowerCase();
+  const blockTypes = (blocks || []).map((block: any) => String(block?.type || '').toLowerCase());
+  const hasEditorialBlocks = blockTypes.some((type) => EDITORIAL_BLOCK_TYPES.has(type));
+  const hasActionBlocks = blockTypes.some((type) => ACTION_BLOCK_TYPES.has(type));
+
+  const looksLikeBlog =
+    BLOG_PREFIX_PATTERN.test(normalizedSlug) ||
+    BLOG_NUMBERED_PATTERN.test(normalizedSlug) ||
+    BLOG_THEME_PATTERN.test(normalizedTheme);
+
+  if (looksLikeBlog && !hasActionBlocks) {
+    return 'blog';
+  }
+
+  if (hasEditorialBlocks && !hasActionBlocks) {
+    return 'blog';
+  }
+
+  return 'action';
+}
+
 function scoreSlugEntry(entry: any, marketCode: string, languageId?: number | null): number {
   let score = 0;
   const entryMarket = String(entry.market_code || 'ALL').toUpperCase();
@@ -767,7 +829,7 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
   }
 
     // 3. Probeer een CMS Artikel te vinden
-    if (resolved?.routing_type === 'article') {
+    if (resolved?.routing_type === 'article' || resolved?.routing_type === 'blog') {
       try {
         const { db: directDb, contentArticles: articlesTable } = await import('@/lib/system/voices-config');
         if (directDb) {
@@ -1273,6 +1335,12 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
           article = await getArticle(articleLookupSlug, lang);
         }
         if (article) {
+      const renderVariant = deriveCmsRenderVariant({
+        routingType: resolved.routing_type,
+        slug: articleLookupSlug,
+        page: article,
+        blocks: article.blocks || [],
+      });
       // 🛡️ CHRIS-PROTOCOL: Dynamic Extra Data based on Journey/World (v2.16.095)
           let extraData: any = {};
           
@@ -1398,7 +1466,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
             }
           }
 
-          return <CmsPageContent page={article} slug={articleLookupSlug} extraData={extraData} />;
+          return <CmsPageContent page={article} slug={articleLookupSlug} extraData={extraData} renderVariant={renderVariant} />;
         }
       }
 
@@ -1868,7 +1936,14 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
             }
           }
 
-          return <CmsPageContent page={{ ...page, blocks: blocks || [] }} slug={cmsSlug} extraData={extraData} />;
+          const legacyPage = { ...page, blocks: blocks || [] };
+          const renderVariant = deriveCmsRenderVariant({
+            routingType: 'article',
+            slug: cmsSlug,
+            page: legacyPage,
+            blocks: legacyPage.blocks || [],
+          });
+          return <CmsPageContent page={legacyPage} slug={cmsSlug} extraData={extraData} renderVariant={renderVariant} />;
         }
       } catch (e: any) {
         console.error("[SmartRouter] CMS check failed:", e.message);
@@ -1898,9 +1973,20 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
 /**
  *  CMS Page Renderer (Gekopieerd uit de originele [slug]/page.tsx)
  */
-function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: string, extraData?: any }) {
+function CmsPageContent({
+  page,
+  slug,
+  extraData = {},
+  renderVariant = 'action',
+}: {
+  page: any;
+  slug: string;
+  extraData?: any;
+  renderVariant?: CmsRenderVariant;
+}) {
   const iapContext = page.iapContext as { journey?: string; lang?: string } | null;
   const journey = iapContext?.journey || 'agency';
+  const isBlogVariant = renderVariant === 'blog';
   const pageSubtitle =
     (typeof page?.excerpt === 'string' && page.excerpt.trim().length > 0
       ? page.excerpt
@@ -2387,25 +2473,25 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
       <Suspense fallback={null}>
         <LiquidBackground />
       </Suspense>
-      <ContainerInstrument className="pt-40 pb-12 relative z-10 max-w-5xl mx-auto px-6 text-center">
-        <ContainerInstrument as="header" className="max-w-4xl mx-auto">
+      <ContainerInstrument className={`pt-40 pb-12 relative z-10 px-6 ${isBlogVariant ? 'max-w-4xl mx-auto' : 'max-w-5xl mx-auto text-center'}`}>
+        <ContainerInstrument as="header" className={`${isBlogVariant ? 'max-w-3xl' : 'max-w-4xl mx-auto'}`}>
           <TextInstrument className="text-[11px] font-bold tracking-[0.4em] text-primary/60 mb-6 block uppercase">
-            Projecttype
+            {isBlogVariant ? 'Artikel' : 'Projecttype'}
           </TextInstrument>
-          <HeadingInstrument level={1} className="text-[8vw] lg:text-[80px] font-extralight tracking-tighter mb-6 leading-[0.85] text-va-black" suppressHydrationWarning>
+          <HeadingInstrument level={1} className={`${isBlogVariant ? 'text-5xl lg:text-6xl font-light leading-[1.05]' : 'text-[8vw] lg:text-[80px] font-extralight leading-[0.85]'} tracking-tighter mb-6 text-va-black`} suppressHydrationWarning>
             <VoiceglotText translationKey={`page.${page.slug}.title`} defaultText={page.title} />
           </HeadingInstrument>
           {pageSubtitle ? (
-            <TextInstrument className="text-xl lg:text-2xl text-va-black/40 font-light tracking-tight max-w-2xl mx-auto leading-tight mb-6">
+            <TextInstrument className={`text-va-black/40 font-light tracking-tight leading-tight mb-6 ${isBlogVariant ? 'text-lg lg:text-xl max-w-2xl' : 'text-xl lg:text-2xl max-w-2xl mx-auto'}`}>
               {pageSubtitle}
             </TextInstrument>
           ) : null}
-          <ContainerInstrument className="w-16 h-1 bg-primary/20 rounded-full mx-auto mt-4" />
+          <ContainerInstrument className={`w-16 h-1 bg-primary/20 rounded-full mt-4 ${isBlogVariant ? '' : 'mx-auto'}`} />
         </ContainerInstrument>
       </ContainerInstrument>
 
-      <ContainerInstrument className="relative z-20 max-w-6xl mx-auto px-6 pb-24">
-        <ContainerInstrument className="p-10 bg-white/80 backdrop-blur-xl rounded-[30px] border border-white/20 shadow-aura space-y-12">
+      <ContainerInstrument className={`relative z-20 px-6 pb-24 ${isBlogVariant ? 'max-w-5xl mx-auto' : 'max-w-6xl mx-auto'}`}>
+        <ContainerInstrument className={`backdrop-blur-xl border border-white/20 shadow-aura space-y-12 ${isBlogVariant ? 'p-8 md:p-10 bg-white/70 rounded-[24px]' : 'p-10 bg-white/80 rounded-[30px]'}`}>
           {/* 🛡️ DNA-ROUTING: Render instruments from database if settings exist */}
           <InstrumentRenderer blocks={page.blocks} extraData={extraData} />
 
@@ -2419,7 +2505,7 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
             ) : null}
           </ContainerInstrument>
 
-          {journey !== 'portfolio' && (
+          {!isBlogVariant && journey !== 'portfolio' && (
             <ContainerInstrument className="pt-8 border-t border-black/5">
             <ContainerInstrument className="bg-va-black text-white p-10 rounded-[20px] shadow-aura-lg relative overflow-hidden group text-center">
               <ContainerInstrument className="relative z-10">
