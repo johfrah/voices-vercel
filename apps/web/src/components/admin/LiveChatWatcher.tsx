@@ -158,6 +158,7 @@ export const LiveChatWatcher = () => {
 
   // Check Push Status op mount
   useEffect(() => {
+    if (process.env.NODE_ENV !== 'production') return;
     if ('serviceWorker' in navigator && 'PushManager' in window) {
       navigator.serviceWorker.register('/sw.js').then(registration => {
         registration.pushManager.getSubscription().then(subscription => {
@@ -168,6 +169,11 @@ export const LiveChatWatcher = () => {
   }, []);
 
   const togglePush = async () => {
+    if (process.env.NODE_ENV !== 'production') {
+      alert('Push notificaties zijn alleen actief in productie.');
+      return;
+    }
+
     if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
       alert('Push notificaties worden niet ondersteund op dit toestel.');
       return;
