@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/LayoutInstruments";
 import Image from "next/image";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
-import { useEffect, useState, useMemo } from "react";
+import { useContext, useEffect, useState, useMemo } from "react";
 import { cn } from "@/lib/utils";
 import { 
   CheckCircle2, 
@@ -33,6 +33,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { SlimmeKassa } from "@/lib/engines/pricing-engine";
 import { useSonicDNA } from '@/lib/engines/sonic-dna';
+import { VoicesMasterControlContext } from "@/contexts/VoicesMasterControlContext";
 
 interface AgencyCalculatorProps {
   initialJourney?: "telefonie" | "unpaid" | "paid";
@@ -54,7 +55,7 @@ interface AgencyCalculatorProps {
  */
 export const AgencyCalculator = ({ 
   initialJourney = "paid", 
-  actors = [], 
+  actors,
   pricingConfig: externalPricingConfig,
   selectedLanguageId,
   onJourneyChange,
@@ -66,6 +67,7 @@ export const AgencyCalculator = ({
   const { t, language, market } = useTranslation();
   const router = useRouter();
   const { playClick } = useSonicDNA();
+  const masterControl = useContext(VoicesMasterControlContext);
   const [brokenPhotoActorIds, setBrokenPhotoActorIds] = useState<Record<string | number, boolean>>({});
   const [fallbackActors, setFallbackActors] = useState<any[]>([]);
   const [isFallbackLoading, setIsFallbackLoading] = useState(false);
@@ -77,6 +79,8 @@ export const AgencyCalculator = ({
   const [calcWords, setCalcWords] = useState(25);
   const [calcMusic, setCalcMusic] = useState(false);
   const [calcLive, setCalcLive] = useState(false);
+  const providedActors = useMemo(() => (Array.isArray(actors) ? actors : []), [actors]);
+  const hasProvidedActors = providedActors.length > 0;
 
   // Sync interne state met prop indien gewijzigd (voor URL navigatie)
   useEffect(() => {
@@ -84,6 +88,33 @@ export const AgencyCalculator = ({
       setCalcUsage(initialJourney);
     }
   }, [initialJourney, calcUsage]);
+
+  const effectiveLanguageIds = useMemo(() => {
+    if (selectedLanguageId != null) {
+      return [selectedLanguageId];
+    }
+
+    const singleMasterId = Number(masterControl?.state?.filters?.languageId);
+    if (Number.isFinite(singleMasterId) && singleMasterId > 0) {
+      return [singleMasterId];
+    }
+
+    const idsFromMaster =
+      (masterControl?.state?.filters?.languageIds || [])
+        .map((id) => Number(id))
+        .filter((id) => Number.isFinite(id) && id > 0);
+
+    if (idsFromMaster.length > 0) {
+      return idsFromMaster;
+    }
+
+    return [];
+  }, [
+    selectedLanguageId,
+    masterControl?.state?.filters?.languageId,
+    (masterControl?.state?.filters?.languageIds || []).join(','),
+  ]);
+  const effectiveLanguageIdsKey = effectiveLanguageIds.join(',');
 
   const [internalPricingConfig, setInternalPricingConfig] = useState<any>(null);
   const pricingConfig = externalPricingConfig || internalPricingConfig;
@@ -106,7 +137,7 @@ export const AgencyCalculator = ({
   useEffect(() => {
     let isCancelled = false;
 
-    if (actors && actors.length > 0) {
+    if (hasProvidedActors) {
       setFallbackActors([]);
       setIsFallbackLoading(false);
       return;
@@ -118,6 +149,9 @@ export const AgencyCalculator = ({
         const params = new URLSearchParams({ lang: 'all' });
         if (market?.market_code) {
           params.set('market', market.market_code);
+        }
+        if (effectiveLanguageIds.length === 1) {
+          params.set('languageId', String(effectiveLanguageIds[0]));
         }
 
         const res = await fetch(`/api/actors/?${params.toString()}`, { cache: 'no-store' });
@@ -146,7 +180,7 @@ export const AgencyCalculator = ({
     return () => {
       isCancelled = true;
     };
-  }, [actors, market?.market_code]);
+  }, [hasProvidedActors, market?.market_code, effectiveLanguageIdsKey]);
 
   const paidMediaTypeForKassa = useMemo(() => {
     if (calcType === 'social') return 'social_media';
@@ -228,20 +262,23 @@ export const AgencyCalculator = ({
   };
 
   const tableActors = useMemo(() => {
-    const sourceActors = (actors && actors.length > 0) ? actors : fallbackActors;
+    const sourceActors = hasProvidedActors ? providedActors : fallbackActors;
     if (!sourceActors || sourceActors.length === 0) return [];
     return sourceActors
       .filter((a) => {
-        const matchesLang = selectedLanguageId ? a.native_lang_id === selectedLanguageId : true;
+        const nativeLangId = Number(a.native_lang_id);
+        const matchesLang = effectiveLanguageIds.length > 0
+          ? Number.isFinite(nativeLangId) && effectiveLanguageIds.includes(nativeLangId)
+          : true;
         if (!matchesLang) return false;
         if (calcUsage !== 'paid') return true;
         return SlimmeKassa.isAvailable(a, [paidMediaTypeForKassa as any], 'BE');
       })
       .sort((a, b) => (a.menu_order || 0) - (b.menu_order || 0))
       .slice(0, 5);
-  }, [actors, fallbackActors, selectedLanguageId, calcUsage, paidMediaTypeForKassa]);
+  }, [hasProvidedActors, providedActors, fallbackActors, effectiveLanguageIdsKey, calcUsage, paidMediaTypeForKassa]);
 
-  const isTableLoading = isLoading || (actors.length === 0 && isFallbackLoading);
+  const isTableLoading = isLoading || (!hasProvidedActors && isFallbackLoading);
 
   const getUsageSteps = () => {
     const config = pricingConfig || SlimmeKassa.getDefaultConfig();
