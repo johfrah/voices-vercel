@@ -73,6 +73,26 @@ const STATUS_SORT_ORDER = [
   'refunded',
 ];
 
+async function resolveWithTimeout<T>(
+  promise: Promise<T>,
+  timeoutMs: number,
+  fallback: T,
+  label: string
+): Promise<T> {
+  let timeoutHandle: ReturnType<typeof setTimeout> | null = null;
+  try {
+    const timeoutPromise = new Promise<T>((resolve) => {
+      timeoutHandle = setTimeout(() => resolve(fallback), timeoutMs);
+    });
+    return await Promise.race([promise, timeoutPromise]);
+  } catch (error) {
+    console.error(`[Admin Order Detail] ${label} failed:`, error);
+    return fallback;
+  } finally {
+    if (timeoutHandle) clearTimeout(timeoutHandle);
+  }
+}
+
 export async function GET(request: Request, { params }: { params: { id: string } }) {
   const idStr = params.id ? String(params.id).replace(/\/$/, '') : '';
   const id = parseInt(idStr);
@@ -122,109 +142,124 @@ export async function GET(request: Request, { params }: { params: { id: string }
       return NextResponse.json({ error: 'Order not found' }, { status: 404 });
     }
 
-    const [statusCatalogRows, paymentCatalogRows] = await Promise.all([
-      db
-        .select({
-          id: orderStatuses.id,
-          code: orderStatuses.code,
-          label: orderStatuses.label,
-        })
-        .from(orderStatuses),
-      db
-        .select({
-          id: paymentMethods.id,
-          code: paymentMethods.code,
-          label: paymentMethods.label,
-        })
-        .from(paymentMethods),
-    ]);
-
     // 🛡️ CHRIS-PROTOCOL: Robust Type Casting
     const orderPk = Number(order.id);
     const userId = order.userId ? Number(order.userId) : null;
     const legacyInternalId = order.legacyInternalId ? Number(order.legacyInternalId) : null;
     const sourceOrderId = legacyInternalId || orderPk;
+    const [statusCatalogRows, paymentCatalogRows, itemRows, recordingRows, notesRows, dbUser] = await Promise.all([
+      resolveWithTimeout(
+        db
+          .select({
+            id: orderStatuses.id,
+            code: orderStatuses.code,
+            label: orderStatuses.label,
+          })
+          .from(orderStatuses),
+        2500,
+        [] as any[],
+        'status catalog query'
+      ),
+      resolveWithTimeout(
+        db
+          .select({
+            id: paymentMethods.id,
+            code: paymentMethods.code,
+            label: paymentMethods.label,
+          })
+          .from(paymentMethods),
+        2500,
+        [] as any[],
+        'payment catalog query'
+      ),
+      resolveWithTimeout(
+        db.execute(sql`
+          select
+            oi.id,
+            oi.order_id,
+            oi.actor_id,
+            oi.name,
+            oi.quantity,
+            oi.price,
+            oi.cost,
+            oi.tax,
+            oi.delivery_status,
+            oi.delivery_file_url,
+            oi.invoice_file_url,
+            oi.payout_status,
+            oi.meta_data,
+            oi.created_at,
+            oi.wp_order_id,
+            a.first_name as actor_first_name,
+            a.last_name as actor_last_name,
+            a.email as actor_email
+          from order_items oi
+          left join actors a on a.id = oi.actor_id
+          where oi.order_id = ${sourceOrderId}
+             or oi.wp_order_id = ${orderPk}
+          order by oi.id desc
+        `).then((rows: any) => (Array.isArray(rows) ? rows : rows?.rows || [])),
+        4000,
+        [] as any[],
+        'order items query'
+      ),
+      resolveWithTimeout(
+        db.execute(sql`
+          select
+            rs.id,
+            rs.order_id,
+            rs.order_item_id,
+            rs.status,
+            rs.conversation_id,
+            rs.settings,
+            rs.created_at
+          from recording_sessions rs
+          where rs.order_id = ${sourceOrderId}
+             or rs.order_id = ${orderPk}
+          order by rs.created_at desc
+          limit 20
+        `).then((rows: any) => (Array.isArray(rows) ? rows : rows?.rows || [])),
+        3000,
+        [] as any[],
+        'recording sessions query'
+      ),
+      resolveWithTimeout(
+        db.execute(sql`
+          select id, note, is_customer_note, created_at
+          from order_notes
+          where order_id = ${sourceOrderId}
+             or order_id = ${orderPk}
+          order by created_at desc
+          limit 50
+        `).then((rows: any) => (Array.isArray(rows) ? rows : rows?.rows || [])),
+        2500,
+        [] as any[],
+        'order notes query'
+      ),
+      userId
+        ? resolveWithTimeout(
+            db
+              .select()
+              .from(users)
+              .where(eq(users.id, userId))
+              .limit(1)
+              .then((rows: any[]) => rows[0] || null),
+            2500,
+            null,
+            'customer query'
+          )
+        : Promise.resolve(null),
+    ]);
 
-    // 🛡️ SCHEMA-DRIFT SAFE ITEM FETCH:
-    // Raw SQL avoids selecting non-existing drifted columns from the Drizzle table object.
-    const itemRowsRaw = await db.execute(sql`
-      select
-        oi.id,
-        oi.order_id,
-        oi.actor_id,
-        oi.name,
-        oi.quantity,
-        oi.price,
-        oi.cost,
-        oi.tax,
-        oi.delivery_status,
-        oi.delivery_file_url,
-        oi.invoice_file_url,
-        oi.payout_status,
-        oi.meta_data,
-        oi.created_at,
-        a.first_name as actor_first_name,
-        a.last_name as actor_last_name,
-        a.email as actor_email
-      from order_items oi
-      left join actors a on a.id = oi.actor_id
-      where oi.order_id = ${sourceOrderId}
-      order by oi.id desc
-    `).catch((itemError: any) => {
-      console.error('[Admin Order Detail] Item query failed:', itemError);
-      return [];
-    });
-    const itemRows: any[] = Array.isArray(itemRowsRaw) ? itemRowsRaw : ((itemRowsRaw as any)?.rows || []);
-
-    const recordingRowsRaw = await db.execute(sql`
-      select
-        rs.id,
-        rs.order_id,
-        rs.order_item_id,
-        rs.status,
-        rs.conversation_id,
-        rs.settings,
-        rs.created_at,
-        (
-          select count(*)
-          from recording_scripts scr
-          where scr.session_id = rs.id
-        ) as scripts_count,
-        (
-          select count(*)
-          from recording_feedback fb
-          where fb.session_id = rs.id
-        ) as feedback_count
-      from recording_sessions rs
-      where rs.order_id = ${sourceOrderId}
-      order by rs.created_at desc
-      limit 20
-    `).catch(() => []);
-    const recordingRows: any[] = Array.isArray(recordingRowsRaw) ? recordingRowsRaw : ((recordingRowsRaw as any)?.rows || []);
-
-    const notesRowsRaw = await db.execute(sql`
-      select id, note, is_customer_note, created_at
-      from order_notes
-      where order_id = ${sourceOrderId}
-      order by created_at desc
-      limit 50
-    `).catch(() => []);
-    const notesRows: any[] = Array.isArray(notesRowsRaw) ? notesRowsRaw : ((notesRowsRaw as any)?.rows || []);
-
-    // Resolve User
-    let customerInfo = null;
-    if (userId) {
-      const dbUser = await db.select().from(users).where(eq(users.id, userId)).limit(1).then((res: any[]) => res[0]).catch(() => null);
-      if (dbUser) {
-        customerInfo = {
+    const customerInfo = dbUser
+      ? {
           id: dbUser.id,
           first_name: dbUser.first_name,
           last_name: dbUser.last_name,
           email: dbUser.email,
-          companyName: dbUser.companyName
-        };
-      }
-    }
+          companyName: dbUser.companyName,
+        }
+      : null;
 
     // 🤝 DE HANDDRUK (Human-Centric Mapping)
     const rawMeta = order.rawMeta || order.legacyRawMeta || {};

@@ -2,7 +2,6 @@
 
 import { 
   PageWrapperInstrument, 
-  SectionInstrument, 
   ContainerInstrument, 
   HeadingInstrument, 
   TextInstrument, 
@@ -13,8 +12,6 @@ import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useAdminTracking } from '@/hooks/useAdminTracking';
 import { 
   ArrowLeft, 
-  CircleDollarSign,
-  FileText,
   Loader2,
   User,
   ShoppingBag,
@@ -36,12 +33,33 @@ import { nl } from 'date-fns/locale';
 import { useParams } from 'next/navigation';
 
 type DetailTab = 'overview' | 'production' | 'items' | 'finance' | 'timeline';
+const RETRYABLE_DETAIL_STATUSES = new Set([401, 403, 429, 500, 502, 503, 504]);
+
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+async function getErrorMessageFromResponse(res: Response): Promise<string> {
+  try {
+    const payload = await res.json();
+    if (typeof payload?.error === 'string' && payload.error.trim()) {
+      return payload.error;
+    }
+    if (typeof payload?.message === 'string' && payload.message.trim()) {
+      return payload.message;
+    }
+  } catch {
+    // Ignore non-JSON responses.
+  }
+  return `Order laden mislukt (${res.status}).`;
+}
 
 export default function OrderDetailPage() {
-  const { id } = useParams();
+  const params = useParams<{ id?: string | string[] }>();
+  const orderId = Array.isArray(params.id) ? params.id[0] : params.id;
   const { logAction } = useAdminTracking();
   const [order, setOrder] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isNotFound, setIsNotFound] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [actionBusy, setActionBusy] = useState<string | null>(null);
   const [actionMessage, setActionMessage] = useState<string | null>(null);
@@ -77,18 +95,70 @@ export default function OrderDetailPage() {
 
   const fetchOrder = useCallback(async () => {
     setIsLoading(true);
-    try {
-      const res = await fetch(`/api/admin/orders/${id}`); 
-      if (res.ok) {
+    setErrorMessage(null);
+    setIsNotFound(false);
+
+    if (!orderId) {
+      setOrder(null);
+      setIsNotFound(true);
+      setErrorMessage('Order-ID ontbreekt in de URL.');
+      setIsLoading(false);
+      return;
+    }
+
+    const maxAttempts = 3;
+    for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 12000);
+      try {
+        const res = await fetch(`/api/admin/orders/${orderId}`, {
+          cache: 'no-store',
+          credentials: 'include',
+          signal: controller.signal,
+        });
+
+        if (res.status === 404) {
+          setOrder(null);
+          setIsNotFound(true);
+          setIsLoading(false);
+          return;
+        }
+
+        if (!res.ok) {
+          const isRetryable = RETRYABLE_DETAIL_STATUSES.has(res.status);
+          const message = await getErrorMessageFromResponse(res);
+          if (isRetryable && attempt < maxAttempts) {
+            await sleep(350 * attempt);
+            continue;
+          }
+          setOrder(null);
+          setErrorMessage(message);
+          setIsLoading(false);
+          return;
+        }
+
         const found = await res.json();
         setOrder(found || null);
+        if (!found) {
+          setIsNotFound(true);
+        }
+        setIsLoading(false);
+        return;
+      } catch (e) {
+        if (attempt < maxAttempts) {
+          await sleep(350 * attempt);
+          continue;
+        }
+        console.error('Failed to fetch order details:', e);
+        setOrder(null);
+        setErrorMessage('Orderdetails konden niet geladen worden door een timeout of netwerkfout.');
+        setIsLoading(false);
+        return;
+      } finally {
+        clearTimeout(timeoutId);
       }
-    } catch (e) {
-      console.error('Failed to fetch order details:', e);
-    } finally {
-      setIsLoading(false);
     }
-  }, [id]);
+  }, [orderId]);
 
   useEffect(() => {
     fetchOrder();
@@ -122,20 +192,24 @@ export default function OrderDetailPage() {
   }, [currentOrderStatusCode]);
 
   const saveOrderStatus = async () => {
+    if (!orderId) {
+      setActionMessage('Order-ID ontbreekt. Vernieuw de pagina.');
+      return;
+    }
     setIsUpdating(true);
     setActionMessage(null);
     try {
       const res = await fetch('/api/admin/orders', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, status: selectedStatusCode }),
+        body: JSON.stringify({ id: orderId, status: selectedStatusCode }),
       });
       const data = await res.json();
       if (!res.ok) {
         setActionMessage(data.error || 'Status kon niet bijgewerkt worden.');
         return;
       }
-      logAction('order_status_update', { id, status: selectedStatusCode });
+      logAction('order_status_update', { id: orderId, status: selectedStatusCode });
       setActionMessage('Orderstatus succesvol bijgewerkt.');
       await fetchOrder();
     } catch (e) {
@@ -147,11 +221,15 @@ export default function OrderDetailPage() {
   };
 
   const runOrderAction = async (action: 'request_po' | 'mark_in_production' | 'mark_delivered' | 'generate_payment_link') => {
+    if (!orderId) {
+      setActionMessage('Order-ID ontbreekt. Vernieuw de pagina.');
+      return;
+    }
     setIsUpdating(true);
     setActionBusy(action);
     setActionMessage(null);
     try {
-      const res = await fetch(`/api/admin/orders/${id}/actions`, {
+      const res = await fetch(`/api/admin/orders/${orderId}/actions`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action }),
@@ -164,7 +242,7 @@ export default function OrderDetailPage() {
       if (data.checkoutUrl) {
         window.open(data.checkoutUrl, '_blank', 'noopener,noreferrer');
       }
-      logAction('order_action', { id, action });
+      logAction('order_action', { id: orderId, action });
       setActionMessage('Actie succesvol uitgevoerd.');
       await fetchOrder();
     } catch (e) {
@@ -195,7 +273,10 @@ export default function OrderDetailPage() {
     itemId: number,
     draft: { deliveryStatus: string; payoutStatus: string; deliveryFileUrl: string; invoiceFileUrl: string }
   ) => {
-    const res = await fetch(`/api/admin/orders/${id}/items/${itemId}`, {
+    if (!orderId) {
+      throw new Error('Order-ID ontbreekt.');
+    }
+    const res = await fetch(`/api/admin/orders/${orderId}/items/${itemId}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -219,7 +300,7 @@ export default function OrderDetailPage() {
     setActionMessage(null);
     try {
       await patchOrderItem(itemId, draft);
-      logAction('order_item_update', { id, itemId });
+      logAction('order_item_update', { id: orderId, itemId });
       setActionMessage(`Item #${itemId} bijgewerkt.`);
       await fetchOrder();
     } catch (e) {
@@ -317,7 +398,7 @@ export default function OrderDetailPage() {
       }
     }
 
-    logAction('order_items_bulk_update', { id, count: selectedItemIds.length });
+    logAction('order_items_bulk_update', { id: orderId, count: selectedItemIds.length });
 
     if (failedItemIds.length === 0) {
       setActionMessage(`Alle ${selectedItemIds.length} item(s) succesvol bijgewerkt.`);
@@ -339,7 +420,36 @@ export default function OrderDetailPage() {
   ];
 
   if (isLoading) return <LoadingScreenInstrument text="Order details laden..." />;
-  if (!order) return <div className="p-20 text-center">Order niet gevonden.</div>;
+  if (!order) {
+    return (
+      <PageWrapperInstrument className="min-h-screen bg-va-off-white p-8 pt-24">
+        <ContainerInstrument className="max-w-3xl mx-auto space-y-6">
+          <Link href="/admin/orders" className="inline-flex items-center gap-2 text-va-black/40 hover:text-primary transition-colors text-[13px] tracking-widest uppercase">
+            <ArrowLeft size={12} />
+            Terug naar bestellingen
+          </Link>
+          <ContainerInstrument className="rounded-[18px] border border-black/[0.06] bg-white p-8 space-y-4 shadow-sm">
+            <HeadingInstrument level={2} className="text-2xl font-light tracking-tight text-va-black">
+              {isNotFound ? 'Order niet gevonden' : 'Orderdetails tijdelijk niet beschikbaar'}
+            </HeadingInstrument>
+            <TextInstrument className="text-[14px] font-light text-va-black/60">
+              {isNotFound
+                ? `Er werd geen order gevonden voor ID ${orderId || '-'}.`
+                : (errorMessage || 'De detail-API gaf geen bruikbare data terug.')}
+            </TextInstrument>
+            <ContainerInstrument className="flex flex-wrap gap-3 pt-2">
+              <ButtonInstrument onClick={fetchOrder} className="va-btn-pro !bg-va-black">
+                Opnieuw proberen
+              </ButtonInstrument>
+              <ButtonInstrument as={Link} href="/admin/orders" className="va-btn-pro !bg-va-off-white !text-va-black/70 hover:!text-va-black">
+                Naar overzicht
+              </ButtonInstrument>
+            </ContainerInstrument>
+          </ContainerInstrument>
+        </ContainerInstrument>
+      </PageWrapperInstrument>
+    );
+  }
   const recordingSessions = order.production?.recordingSessions || [];
   const timelineNotes = order.timeline?.notes || [];
 
