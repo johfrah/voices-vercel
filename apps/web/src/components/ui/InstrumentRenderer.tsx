@@ -169,7 +169,7 @@ export const InstrumentRenderer = ({ blocks, extraData = {} }: InstrumentRendere
                         {parsed.title}
                       </HeadingInstrument>
                     ) : null}
-                    <TextInstrument className="text-[16px] md:text-[17px] text-va-black/60 font-light leading-relaxed whitespace-pre-line">
+                    <TextInstrument className="text-[17px] md:text-[18px] text-va-black/80 dark:text-white/85 font-normal leading-[1.8] whitespace-pre-line">
                       {parsed.body || rawContent}
                     </TextInstrument>
                   </ContainerInstrument>
