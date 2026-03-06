@@ -20,6 +20,7 @@ import { ArtistDetailClient } from "@/components/legacy/ArtistDetailClient";
 import { AgencyContent } from "@/components/legacy/AgencyContent";
 import { AgencyHeroInstrument } from "@/components/ui/AgencyHeroInstrument";
 import { InstrumentRenderer } from "@/components/ui/InstrumentRenderer";
+import HomeFrontpage from "@/app/page";
 import nextDynamic from "next/dynamic";
 import { JourneyType } from '@/contexts/VoicesMasterControlContext';
 import { buildCanonicalActorPath, normalizeSlug, stripLanguagePrefix } from '@/lib/system/slug';
@@ -1523,13 +1524,24 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
 
     // Legacy Fallbacks (Agency, Casting, etc.)
     if (MarketManager.isAgencySegment(segments[0])) {
-      const filters: Record<string, string> = {};
-
       const segmentOne = segments[1]?.toLowerCase();
       const segmentTwo = segments[2]?.toLowerCase();
+      const hasJourneyAtSegmentOne = !!MarketManager.resolveJourneyTypeFromSegment(segmentOne);
+      const hasJourneyAtSegmentTwo = !!MarketManager.resolveJourneyTypeFromSegment(segmentTwo);
+
+      const shouldRenderFrontpageTemplate =
+        segments.length === 1 ||
+        hasJourneyAtSegmentOne ||
+        hasJourneyAtSegmentTwo;
+
+      if (shouldRenderFrontpageTemplate) {
+        return <HomeFrontpage />;
+      }
+
+      const filters: Record<string, string> = {};
+
       const journeyAtSegmentOne = MarketManager.resolveJourneyTypeFromSegment(segmentOne);
       const journeyAtSegmentTwo = MarketManager.resolveJourneyTypeFromSegment(segmentTwo);
-      const hasJourneyAtSegmentOne = !!journeyAtSegmentOne;
       const agencyJourneySegment = hasJourneyAtSegmentOne ? segmentOne : segmentTwo;
       const mediaStartIndex = hasJourneyAtSegmentOne ? 2 : 3;
 
