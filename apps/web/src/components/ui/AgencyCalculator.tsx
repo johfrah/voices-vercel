@@ -66,6 +66,7 @@ export const AgencyCalculator = ({
   const { t, language, market } = useTranslation();
   const router = useRouter();
   const { playClick } = useSonicDNA();
+  const [brokenPhotoActorIds, setBrokenPhotoActorIds] = useState<Record<string | number, boolean>>({});
   const [fallbackActors, setFallbackActors] = useState<any[]>([]);
   const [isFallbackLoading, setIsFallbackLoading] = useState(false);
   const [calcUsage, setCalcUsage] = useState<"telefonie" | "unpaid" | "paid">(initialJourney);
@@ -147,6 +148,16 @@ export const AgencyCalculator = ({
     };
   }, [actors, market?.market_code]);
 
+  const paidMediaTypeForKassa = useMemo(() => {
+    if (calcType === 'social') return 'social_media';
+    if (calcType === 'radio') return 'radio_national';
+    if (calcType === 'tv') return 'tv_national';
+    if (calcType === 'podcast') return 'podcast';
+    return 'online';
+  }, [calcType]);
+
+  const usageForKassa = calcUsage === 'paid' ? 'commercial' : calcUsage;
+
   const calculatorRates: Record<string, { label: string, sub: string, icon: any, national: number, regional?: number, usage: "unpaid" | "paid" | "telefonie" }> = {
     webvideo: { 
       label: t('common.webvideo', "Webvideo"), 
@@ -200,10 +211,10 @@ export const AgencyCalculator = ({
     const promptCount = Math.ceil(calcWords / 8); // Geschat aantal prompts voor IVR
 
     const result = SlimmeKassa.calculate({
-      usage: calcUsage,
+      usage: usageForKassa as any,
       words: wordCount,
       prompts: promptCount,
-      mediaTypes: calcUsage === 'paid' ? [calcType as any] : [],
+      mediaTypes: calcUsage === 'paid' ? [paidMediaTypeForKassa as any] : [],
       country: calcRegion === 'regional' ? 'BE-REGIONAL' : 'BE', // Simuleer regio via landcode voor globale kassa
       spots: { [calcType]: calcSpots },
       years: { [calcType]: calcYears },
@@ -219,11 +230,16 @@ export const AgencyCalculator = ({
   const tableActors = useMemo(() => {
     const sourceActors = (actors && actors.length > 0) ? actors : fallbackActors;
     if (!sourceActors || sourceActors.length === 0) return [];
-    return sourceActors.filter(a => {
-      const matchesLang = selectedLanguageId ? a.native_lang_id === selectedLanguageId : true;
-      return matchesLang;
-    }).sort((a, b) => (a.menu_order || 0) - (b.menu_order || 0)).slice(0, 5);
-  }, [actors, fallbackActors, selectedLanguageId]);
+    return sourceActors
+      .filter((a) => {
+        const matchesLang = selectedLanguageId ? a.native_lang_id === selectedLanguageId : true;
+        if (!matchesLang) return false;
+        if (calcUsage !== 'paid') return true;
+        return SlimmeKassa.isAvailable(a, [paidMediaTypeForKassa as any], 'BE');
+      })
+      .sort((a, b) => (a.menu_order || 0) - (b.menu_order || 0))
+      .slice(0, 5);
+  }, [actors, fallbackActors, selectedLanguageId, calcUsage, paidMediaTypeForKassa]);
 
   const isTableLoading = isLoading || (actors.length === 0 && isFallbackLoading);
 
@@ -614,15 +630,16 @@ export const AgencyCalculator = ({
                             <td className="px-6 py-4">
                               <div className="flex items-center gap-3">
                                 <div className="relative w-10 h-10 rounded-full overflow-hidden bg-va-off-white border border-black/5">
-                                  {a.photo_url ? (
+                                  {a.photo_url && !brokenPhotoActorIds[a.id] ? (
                                     <Image 
                                       src={a.photo_url.startsWith('http') || a.photo_url.startsWith('/') ? a.photo_url : `/api/proxy/?path=${encodeURIComponent(a.photo_url)}`} 
                                       alt={a.display_name} 
                                       fill 
-                                      className="object-cover" 
+                                      className="object-cover"
+                                      onError={() => setBrokenPhotoActorIds((prev) => ({ ...prev, [a.id]: true }))}
                                     />
                                   ) : (
-                                    <div className="w-full h-full flex items-center justify-center text-va-black/20 font-bold">{a.display_name?.[0]}</div>
+                                    <div className="w-full h-full flex items-center justify-center text-va-black/40 font-bold">{a.display_name?.[0]}</div>
                                   )}
                                 </div>
                                 <div>
