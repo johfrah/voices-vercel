@@ -61,6 +61,10 @@ async function withTimeoutFallback<T>(executor: () => Promise<T>, timeoutMs: num
   }
 }
 
+function isTimeoutError(error: unknown): boolean {
+  return error instanceof Error && /timeout/i.test(error.message);
+}
+
 const inter = Inter({ subsets: ["latin"] });
 
 const FALLBACK_LOCALE_DOMAINS: Record<string, string> = {
@@ -137,7 +141,11 @@ async function getMarketSafe(host: string) {
     
     return market;
   } catch (err) {
-    console.error(' getMarketSafe: Failed or timed out:', err);
+    if (isTimeoutError(err)) {
+      console.warn(' getMarketSafe: timed out, using fallback host');
+    } else {
+      console.error(' getMarketSafe: Failed:', err);
+    }
     const fallbackHost = process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be';
     return MarketManagerServer.getCurrentMarket(fallbackHost);
   }
@@ -184,7 +192,11 @@ export async function generateMetadata(): Promise<Metadata> {
         );
         return await Promise.race([localesPromise, timeoutPromise]) as any;
       } catch (err) {
-        console.error(' generateMetadata: Failed to load locales:', err);
+        if (isTimeoutError(err)) {
+          console.warn(' generateMetadata: locales timeout, using static domains fallback');
+        } else {
+          console.error(' generateMetadata: Failed to load locales:', err);
+        }
         const staticDomains = MarketManagerServer.getMarketDomains();
         return {
           'nl-BE': staticDomains['BE'],
@@ -202,7 +214,11 @@ export async function generateMetadata(): Promise<Metadata> {
         );
         return await Promise.race([translationPromise, timeoutPromise]) as any;
       } catch (err) {
-        console.error(' generateMetadata: Failed to load translations:', err);
+        if (isTimeoutError(err)) {
+          console.warn(' generateMetadata: translations timeout, using empty fallback');
+        } else {
+          console.error(' generateMetadata: Failed to load translations:', err);
+        }
         return {};
       }
     })()
@@ -335,7 +351,11 @@ export default async function RootLayout({
         );
         return await Promise.race([translationPromise, timeoutPromise]) as any;
       } catch (err) {
-        console.error(' RootLayout: Failed to load translations:', err);
+        if (isTimeoutError(err)) {
+          console.warn(' RootLayout: translations timeout, using empty fallback');
+        } else {
+          console.error(' RootLayout: Failed to load translations:', err);
+        }
         return {};
       }
     })(),
@@ -344,7 +364,11 @@ export default async function RootLayout({
         const { data } = await supabase.from('languages').select('id, code, label');
         return data || [];
       } catch (err) {
-        console.error(' RootLayout: Failed to load language registry:', err);
+        if (isTimeoutError(err)) {
+          console.warn(' RootLayout: language registry timeout, using empty fallback');
+        } else {
+          console.error(' RootLayout: Failed to load language registry:', err);
+        }
         return [];
       }
     }, 2500, []),
@@ -360,7 +384,11 @@ export default async function RootLayout({
         if (error) throw error;
         return data?.value ?? null;
       } catch (err) {
-        console.error(' RootLayout: Failed to load temporary light mode config:', err);
+        if (isTimeoutError(err)) {
+          console.warn(' RootLayout: temporary light mode config timeout, using null fallback');
+        } else {
+          console.error(' RootLayout: Failed to load temporary light mode config:', err);
+        }
         return null;
       }
     }, 2500, null)
