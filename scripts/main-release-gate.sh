@@ -16,4 +16,7 @@ npm run lint
 echo "🚦 Main release gate: pre-vercel"
 npm run check:pre-vercel
 
+echo "🚦 Main release gate: console audit (${CONSOLE_AUDIT_SCOPE:-critical})"
+npm run audit:console
+
 echo "✅ Main release gate passed."
