@@ -161,15 +161,12 @@ export async function GET(request: NextRequest) {
         return encodeURIComponent(segment);
       });
       
-      //  CHRIS-PROTOCOL: Forensische fix voor dubbele taal-segments (bijv. nl/nl/)
-      // Sommige legacy paths in de DB hebben per ongeluk dubbele segments.
-      let finalSegments = pathSegments;
-      if (pathSegments[0] === 'agency' && pathSegments[1] === 'voices') {
-        // Check voor patronen als agency/voices/nl/nl/
-        if (pathSegments[2] === pathSegments[3] && pathSegments[2].length === 2) {
-          console.log(`[Proxy Fix] Removing duplicate language segment: ${pathSegments[2]}`);
-          finalSegments = [pathSegments[0], pathSegments[1], pathSegments[2], ...pathSegments.slice(4)];
-        }
+      // Keep the original path first. Some assets intentionally use duplicated locale segments
+      // (e.g. agency/voices/nl/nl/...) and stripping them unconditionally breaks valid files.
+      const primarySegments = pathSegments;
+      let fallbackSegments: string[] | null = null;
+      if (pathSegments[0] === 'agency' && pathSegments[1] === 'voices' && pathSegments[2] === pathSegments[3] && pathSegments[2]?.length === 2) {
+        fallbackSegments = [pathSegments[0], pathSegments[1], pathSegments[2], ...pathSegments.slice(4)];
       }
 
       const isImage = !!cleanPath.match(/\.(jpg|jpeg|png|webp|gif)$/i);
@@ -178,11 +175,13 @@ export async function GET(request: NextRequest) {
       //  CHRIS-PROTOCOL: Smart WebP Transformation with Fallback
       // If it's already a WebP, we fetch raw to avoid redundant transformation latency.
       // If it's NOT an image (e.g. .mp3), we MUST fetch raw from the object storage.
-      const optimizedUrl = (isAlreadyWebP || !isImage)
-        ? `${SUPABASE_STORAGE_URL}/object/public/voices/${finalSegments.join('/')}`
-        : `${SUPABASE_STORAGE_URL}/render/image/public/voices/${finalSegments.join('/')}?width=1080&format=webp&quality=75`;
-      
-      const rawUrl = `${SUPABASE_STORAGE_URL}/object/public/voices/${finalSegments.join('/')}`;
+      const makeOptimizedUrl = (segments: string[]) =>
+        (isAlreadyWebP || !isImage)
+          ? `${SUPABASE_STORAGE_URL}/object/public/voices/${segments.join('/')}`
+          : `${SUPABASE_STORAGE_URL}/render/image/public/voices/${segments.join('/')}?width=1080&format=webp&quality=75`;
+      const makeRawUrl = (segments: string[]) => `${SUPABASE_STORAGE_URL}/object/public/voices/${segments.join('/')}`;
+      const optimizedUrl = makeOptimizedUrl(primarySegments);
+      const rawUrl = makeRawUrl(primarySegments);
       
       let response = await fetch(optimizedUrl, {
         headers: {
@@ -202,6 +201,29 @@ export async function GET(request: NextRequest) {
           },
           next: { revalidate: 0 }
         });
+      }
+
+      if (!response.ok && fallbackSegments) {
+        const fallbackOptimizedUrl = makeOptimizedUrl(fallbackSegments);
+        const fallbackRawUrl = makeRawUrl(fallbackSegments);
+        console.log(`[Proxy Fallback] Retrying without duplicated locale segment: ${fallbackRawUrl}`);
+        response = await fetch(fallbackOptimizedUrl, {
+          headers: {
+            'User-Agent': 'Voices-Asset-Proxy/1.0',
+            'Cache-Control': 'no-cache'
+          },
+          next: { revalidate: 0 }
+        });
+
+        if (!response.ok && isImage && !isAlreadyWebP) {
+          response = await fetch(fallbackRawUrl, {
+            headers: {
+              'User-Agent': 'Voices-Asset-Proxy/1.0',
+              'Cache-Control': 'no-cache'
+            },
+            next: { revalidate: 0 }
+          });
+        }
       }
 
       if (!response.ok) {

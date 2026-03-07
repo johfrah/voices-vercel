@@ -200,6 +200,68 @@ const ROUTING_TYPE_BY_ENTITY_TYPE_ID: Record<number, string> = {
   6: 'casting_list',
 };
 
+type CmsRenderVariant = 'action' | 'blog';
+
+const BLOG_PREFIX_PATTERN = /^(blog|nieuws|news|insights)\//i;
+const BLOG_NUMBERED_PATTERN = /^\d+-/;
+const BLOG_THEME_PATTERN = /(stories|story|inspiratie|blog|news)/i;
+const EDITORIAL_BLOCK_TYPES = new Set(['story-layout', 'lifestyle-overlay', 'founder', 'carousel', 'thematic']);
+const ACTION_BLOCK_TYPES = new Set([
+  'hero',
+  'pricing',
+  'cta',
+  'how_it_works',
+  'faq',
+  'calculator',
+  'journey_cta',
+  'workshop_hero',
+  'workshop_carousel',
+  'workshop_calendar',
+  'academy_pricing',
+  'academy_faq',
+  'lesson_grid',
+  'track_grid',
+  'interest_form',
+]);
+
+function deriveCmsRenderVariant({
+  routingType,
+  slug,
+  page,
+  blocks,
+}: {
+  routingType?: string | null;
+  slug: string;
+  page: any;
+  blocks: any[];
+}): CmsRenderVariant {
+  const normalizedRoutingType = String(routingType || '').toLowerCase();
+  if (normalizedRoutingType === 'blog') {
+    return 'blog';
+  }
+
+  const normalizedSlug = String(slug || '').toLowerCase();
+  const normalizedTheme = String(page?.iap_context?.theme || page?.iapContext?.theme || '').toLowerCase();
+  const blockTypes = (blocks || []).map((block: any) => String(block?.type || '').toLowerCase());
+  const hasEditorialBlocks = blockTypes.some((type) => EDITORIAL_BLOCK_TYPES.has(type));
+  const hasActionBlocks = blockTypes.some((type) => ACTION_BLOCK_TYPES.has(type));
+
+  const looksLikeBlog =
+    BLOG_PREFIX_PATTERN.test(normalizedSlug) ||
+    BLOG_NUMBERED_PATTERN.test(normalizedSlug) ||
+    BLOG_THEME_PATTERN.test(normalizedTheme);
+
+  if (looksLikeBlog && !hasActionBlocks) {
+    return 'blog';
+  }
+
+  if (hasEditorialBlocks && !hasActionBlocks) {
+    return 'blog';
+  }
+
+  return 'action';
+}
+
 function scoreSlugEntry(entry: any, marketCode: string, languageId?: number | null): number {
   let score = 0;
   const entryMarket = String(entry.market_code || 'ALL').toUpperCase();
@@ -768,7 +830,7 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
   }
 
     // 3. Probeer een CMS Artikel te vinden
-    if (resolved?.routing_type === 'article') {
+    if (resolved?.routing_type === 'article' || resolved?.routing_type === 'blog') {
       try {
         const { db: directDb, contentArticles: articlesTable } = await import('@/lib/system/voices-config');
         if (directDb) {
@@ -1274,6 +1336,12 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
           article = await getArticle(articleLookupSlug, lang);
         }
         if (article) {
+      const renderVariant = deriveCmsRenderVariant({
+        routingType: resolved.routing_type,
+        slug: articleLookupSlug,
+        page: article,
+        blocks: article.blocks || [],
+      });
       // 🛡️ CHRIS-PROTOCOL: Dynamic Extra Data based on Journey/World (v2.16.095)
           let extraData: any = {};
           
@@ -1399,7 +1467,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
             }
           }
 
-          return <CmsPageContent page={article} slug={articleLookupSlug} extraData={extraData} />;
+          return <CmsPageContent page={article} slug={articleLookupSlug} extraData={extraData} renderVariant={renderVariant} />;
         }
       }
 
@@ -1880,7 +1948,14 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
             }
           }
 
-          return <CmsPageContent page={{ ...page, blocks: blocks || [] }} slug={cmsSlug} extraData={extraData} />;
+          const legacyPage = { ...page, blocks: blocks || [] };
+          const renderVariant = deriveCmsRenderVariant({
+            routingType: 'article',
+            slug: cmsSlug,
+            page: legacyPage,
+            blocks: legacyPage.blocks || [],
+          });
+          return <CmsPageContent page={legacyPage} slug={cmsSlug} extraData={extraData} renderVariant={renderVariant} />;
         }
       } catch (e: any) {
         console.error("[SmartRouter] CMS check failed:", e.message);
@@ -1910,9 +1985,26 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
 /**
  *  CMS Page Renderer (Gekopieerd uit de originele [slug]/page.tsx)
  */
-function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: string, extraData?: any }) {
+function CmsPageContent({
+  page,
+  slug,
+  extraData = {},
+  renderVariant = 'action',
+}: {
+  page: any;
+  slug: string;
+  extraData?: any;
+  renderVariant?: CmsRenderVariant;
+}) {
   const iapContext = page.iapContext as { journey?: string; lang?: string } | null;
   const journey = iapContext?.journey || 'agency';
+  const isBlogVariant = renderVariant === 'blog';
+  const pageSubtitle =
+    (typeof page?.excerpt === 'string' && page.excerpt.trim().length > 0
+      ? page.excerpt
+      : (typeof page?.metadata?.subtitle === 'string' && page.metadata.subtitle.trim().length > 0
+          ? page.metadata.subtitle
+          : '')) || '';
 
   const getIcon = (cat: string) => {
     const c = cat.toLowerCase();
@@ -1924,10 +2016,10 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
 
   const extractTitle = (content: string = '') => {
     if (!content) return { title: null, body: '' };
-    const match = content.match(/^(?:###|#####)\s+(.+)$/m);
+    const match = content.match(/^(?:#{2,5})\s*(.+)$/m);
     return {
       title: match ? match[1] : null,
-      body: content.replace(/^(?:###|#####)\s+.+$/m, '').replace(/\\/g, '').replace(/\*\*/g, '').trim()
+      body: content.replace(/^(?:#{2,5})\s*.+$/m, '').replace(/\\/g, '').replace(/\*\*/g, '').trim()
     };
   };
 
@@ -2317,19 +2409,25 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
 
       case 'thematic':
         const steps = body.split('\n\n').filter(s => s.trim().length > 0);
-        const gridCols = steps.length === 2 ? 'lg:grid-cols-2' : steps.length === 3 ? 'lg:grid-cols-3' : 'lg:grid-cols-4';
+        const gridCols = isBlogVariant
+          ? 'lg:grid-cols-2'
+          : steps.length === 2
+            ? 'lg:grid-cols-2'
+            : steps.length === 3
+              ? 'lg:grid-cols-3'
+              : 'lg:grid-cols-4';
         return (
-          <section key={block.id} className="py-24 animate-in fade-in slide-in-from-bottom-8 duration-1000 fill-mode-both">
+          <section key={block.id} className={`${isBlogVariant ? 'py-14 md:py-16' : 'py-24'} animate-in fade-in slide-in-from-bottom-8 duration-1000 fill-mode-both`}>
             <ContainerInstrument className={`grid grid-cols-1 md:grid-cols-2 ${gridCols} gap-8`}>
               {steps.map((step, i) => {
                 const { title: stepTitle, body: stepBody } = extractTitle(step);
                 return (
-                  <ContainerInstrument key={i} className="p-10 bg-white rounded-[20px] border border-black/[0.03] shadow-aura hover:shadow-aura-lg transition-all duration-700 hover:-translate-y-2 group/step">
-                    <ContainerInstrument className="w-16 h-16 bg-va-off-white rounded-full flex items-center justify-center mb-8 group-hover/step:bg-primary/10 transition-colors duration-700">
-                      <TextInstrument className="text-va-black/20 font-light text-2xl group-hover/step:text-primary transition-colors">0{i + 1}</TextInstrument>
+                  <ContainerInstrument key={i} className={`${isBlogVariant ? 'p-8 md:p-10 bg-white/95 dark:bg-va-black/35' : 'p-10 bg-white dark:bg-va-black/35'} rounded-[20px] border border-black/[0.05] dark:border-white/10 shadow-aura hover:shadow-aura-lg transition-all duration-700 hover:-translate-y-2 group/step`}>
+                    <ContainerInstrument className={`${isBlogVariant ? 'w-14 h-14 mb-6' : 'w-16 h-16 mb-8'} bg-va-off-white dark:bg-white/10 rounded-full flex items-center justify-center group-hover/step:bg-primary/10 transition-colors duration-700`}>
+                      <TextInstrument className={`${isBlogVariant ? 'text-va-black/45 dark:text-white/55 font-medium text-xl' : 'text-va-black/20 dark:text-white/40 font-light text-2xl'} group-hover/step:text-primary transition-colors`}>0{i + 1}</TextInstrument>
                     </ContainerInstrument>
-                    {stepTitle && <HeadingInstrument level={3} className="text-2xl font-light mb-4 tracking-tight text-va-black">{stepTitle}</HeadingInstrument>}
-                    <TextInstrument className="text-lg text-va-black/40 font-medium leading-relaxed tracking-tight">
+                    {stepTitle && <HeadingInstrument level={3} className={`${isBlogVariant ? 'text-[28px] md:text-[32px] leading-tight mb-5' : 'text-2xl mb-4'} font-light tracking-tight text-va-black dark:text-white`}>{stepTitle}</HeadingInstrument>}
+                    <TextInstrument className={`${isBlogVariant ? 'text-[18px] text-va-black/80 dark:text-white/85 font-normal leading-[1.8]' : 'text-lg text-va-black/40 dark:text-white/75 font-medium leading-relaxed'} tracking-tight`}>
                       {stepBody}
                     </TextInstrument>
                   </ContainerInstrument>
@@ -2354,18 +2452,18 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
       case 'Juridisch':
       case 'Service':
         return (
-          <section key={block.id} className="grid grid-cols-1 lg:grid-cols-12 gap-24 items-start group py-32 border-b border-black/[0.03] last:border-none animate-in fade-in slide-in-from-bottom-8 duration-1000 fill-mode-both">
-            <ContainerInstrument className="lg:col-span-5 sticky top-40">
-              <ContainerInstrument className="mb-10 transform group-hover:scale-110 transition-transform duration-1000 ease-va-bezier">{getIcon(block.type)}</ContainerInstrument>
-              <HeadingInstrument level={2} className="text-5xl font-light tracking-tight mb-8 text-va-black leading-none">
+          <section key={block.id} className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start group py-12 border-b border-black/[0.03] last:border-none animate-in fade-in slide-in-from-bottom-8 duration-1000 fill-mode-both">
+            <ContainerInstrument className="lg:col-span-5 lg:sticky lg:top-28">
+              <ContainerInstrument className="mb-6 transform group-hover:scale-105 transition-transform duration-700 ease-va-bezier">{getIcon(block.type)}</ContainerInstrument>
+              <HeadingInstrument level={2} className="text-3xl font-light tracking-tight mb-4 text-va-black leading-none">
                 {block.type}
               </HeadingInstrument>
-              <TextInstrument className="text-3xl text-va-black/20 font-medium leading-tight tracking-tight">
+              <TextInstrument className={`text-xl ${isBlogVariant ? 'text-va-black/60 dark:text-white/70' : 'text-va-black/30 dark:text-white/65'} font-medium leading-tight tracking-tight`}>
                 {title}
               </TextInstrument>
             </ContainerInstrument>
             <ContainerInstrument className="lg:col-span-7 pt-4">
-              <ContainerInstrument className="prose prose-2xl text-va-black/40 font-medium leading-relaxed tracking-tight selection:bg-primary/10">
+              <ContainerInstrument className={`text-[17px] ${isBlogVariant ? 'text-va-black/80 dark:text-white/85 font-normal' : 'text-va-black/50 dark:text-white/75 font-medium'} leading-relaxed tracking-tight selection:bg-primary/10`}>
                 {body}
               </ContainerInstrument>
             </ContainerInstrument>
@@ -2374,9 +2472,9 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
 
       default:
         return (
-          <section key={block.id} className="py-32 max-w-4xl mx-auto animate-in fade-in duration-1000 fill-mode-both">
-            {title && <HeadingInstrument level={2} className="text-6xl font-light mb-16 tracking-tight leading-tight text-va-black">{title}</HeadingInstrument>}
-            <ContainerInstrument className="prose prose-2xl text-va-black/50 font-medium leading-relaxed tracking-tight">
+          <section key={block.id} className="py-12 max-w-3xl mx-auto animate-in fade-in duration-1000 fill-mode-both">
+            {title && <HeadingInstrument level={2} className="text-4xl font-light mb-8 tracking-tight leading-tight text-va-black">{title}</HeadingInstrument>}
+            <ContainerInstrument className={`text-[17px] ${isBlogVariant ? 'text-va-black/80 dark:text-white/85 font-normal' : 'text-va-black/50 dark:text-white/75 font-medium'} leading-relaxed tracking-tight`}>
               {body}
             </ContainerInstrument>
           </section>
@@ -2384,51 +2482,65 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
     }
   };
 
+  const hasInstrumentBlocks = Array.isArray(page?.blocks) && page.blocks.some((block: any) => !!block?.settings);
+  const legacyBlocks = Array.isArray(page?.blocks) ? page.blocks.filter((block: any) => !block?.settings) : [];
+  const hasAnyContent = hasInstrumentBlocks || legacyBlocks.length > 0;
+
   return (
     <PageWrapperInstrument className="bg-va-off-white">
       <Suspense fallback={null}>
         <LiquidBackground />
       </Suspense>
-      <ContainerInstrument className="py-48 relative z-10 max-w-5xl mx-auto px-6">
-        <header className="mb-64 animate-in fade-in slide-in-from-bottom-12 duration-1000">
-          <TextInstrument className="text-[11px] font-bold tracking-[0.4em] text-primary/60 mb-12 block uppercase">
-            Projecttype
+      <ContainerInstrument className={`pt-40 pb-12 relative z-10 px-6 ${isBlogVariant ? 'max-w-4xl mx-auto' : 'max-w-5xl mx-auto text-center'}`}>
+        <ContainerInstrument as="header" className={`${isBlogVariant ? 'max-w-3xl' : 'max-w-4xl mx-auto'}`}>
+          <TextInstrument className="text-[11px] font-bold tracking-[0.4em] text-primary/60 mb-6 block uppercase">
+            {isBlogVariant ? 'Artikel' : 'Projecttype'}
           </TextInstrument>
-          <HeadingInstrument level={1} className="text-[10vw] lg:text-[120px] font-light tracking-tighter mb-20 leading-[0.85] text-va-black" suppressHydrationWarning>
+          <HeadingInstrument level={1} className={`${isBlogVariant ? 'text-5xl lg:text-6xl font-light leading-[1.05]' : 'text-[8vw] lg:text-[80px] font-extralight leading-[0.85]'} tracking-tighter mb-6 text-va-black`} suppressHydrationWarning>
             <VoiceglotText translationKey={`page.${page.slug}.title`} defaultText={page.title} />
           </HeadingInstrument>
-          <ContainerInstrument className="w-48 h-1 bg-black/5 rounded-full" />
-        </header>
-        
-        {/* 🛡️ DNA-ROUTING: Render instruments from database if settings exist */}
-        <InstrumentRenderer blocks={page.blocks} extraData={extraData} />
-
-        <ContainerInstrument className="space-y-24">
-          {page.blocks && page.blocks.length > 0 ? (
-            page.blocks.filter((b: any) => !b.settings).map((block: any, index: number) => renderBlock(block, index))
-          ) : (
-            <TextInstrument className="text-va-black/40 text-center py-32">
-              Content wordt binnenkort toegevoegd.
+          {pageSubtitle ? (
+            <TextInstrument className={`text-va-black/40 font-light tracking-tight leading-tight mb-6 ${isBlogVariant ? 'text-lg lg:text-xl max-w-2xl' : 'text-xl lg:text-2xl max-w-2xl mx-auto'}`}>
+              {pageSubtitle}
             </TextInstrument>
-          )}
+          ) : null}
+          <ContainerInstrument className={`w-16 h-1 bg-primary/20 rounded-full mt-4 ${isBlogVariant ? '' : 'mx-auto'}`} />
         </ContainerInstrument>
-        <footer className="mt-80 text-center">
-          {journey !== 'portfolio' && (
-            <ContainerInstrument className="bg-va-black text-white p-32 rounded-[20px] shadow-aura-lg relative overflow-hidden group">
+      </ContainerInstrument>
+
+      <ContainerInstrument className={`relative z-20 px-6 pb-24 ${isBlogVariant ? 'max-w-5xl mx-auto' : 'max-w-6xl mx-auto'}`}>
+        <ContainerInstrument className={`backdrop-blur-xl border border-white/20 dark:border-white/10 shadow-aura space-y-12 ${isBlogVariant ? 'p-8 md:p-10 bg-white/90 dark:bg-va-black/35 rounded-[24px]' : 'p-10 bg-white/80 dark:bg-va-black/35 rounded-[30px]'}`}>
+          {/* 🛡️ DNA-ROUTING: Render instruments from database if settings exist */}
+          <InstrumentRenderer blocks={page.blocks} extraData={extraData} />
+
+          <ContainerInstrument className="space-y-12">
+            {legacyBlocks.length > 0 ? (
+              legacyBlocks.map((block: any, index: number) => renderBlock(block, index))
+            ) : !hasAnyContent ? (
+              <TextInstrument className="text-va-black/40 text-center py-12">
+                Content wordt binnenkort toegevoegd.
+              </TextInstrument>
+            ) : null}
+          </ContainerInstrument>
+
+          {!isBlogVariant && journey !== 'portfolio' && (
+            <ContainerInstrument className="pt-8 border-t border-black/5">
+            <ContainerInstrument className="bg-va-black text-white p-10 rounded-[20px] shadow-aura-lg relative overflow-hidden group text-center">
               <ContainerInstrument className="relative z-10">
-                <TextInstrument className="text-[15px] font-medium tracking-[0.4em] text-primary/60 mb-10 block uppercase"><VoiceglotText  translationKey="cta.next_step" defaultText="volgende stap" /></TextInstrument>
-                <HeadingInstrument level={2} className="text-7xl lg:text-8xl font-light tracking-tighter mb-16 leading-[0.9] text-white"><VoiceglotText  translationKey="cta.ready_title" defaultText="Klaar om jouw stem te vinden?" /></HeadingInstrument>
-                <ContainerInstrument className="flex flex-col sm:flex-row items-center justify-center gap-10">
-                  <VoicesLink  href="/agency" className="bg-va-off-white text-va-black px-20 py-10 rounded-[10px] font-medium text-base tracking-widest hover:scale-105 transition-all duration-700 shadow-2xl hover:bg-white uppercase"><VoiceglotText  translationKey="cta.find_voice" defaultText="vind jouw stem" /></VoicesLink>
-                  <VoicesLink  href="/contact" className="text-white/30 hover:text-white font-medium text-base tracking-widest flex items-center gap-4 group transition-all duration-700 uppercase">
+                <TextInstrument className="text-[11px] font-bold tracking-[0.3em] text-primary/60 mb-4 block uppercase"><VoiceglotText translationKey="cta.next_step" defaultText="volgende stap" /></TextInstrument>
+                <HeadingInstrument level={2} className="text-3xl lg:text-4xl font-light tracking-tight mb-8 leading-tight text-white"><VoiceglotText translationKey="cta.ready_title" defaultText="Klaar om jouw stem te vinden?" /></HeadingInstrument>
+                <ContainerInstrument className="flex flex-col sm:flex-row items-center justify-center gap-6">
+                  <VoicesLink href="/agency" className="bg-va-off-white text-va-black px-10 py-4 rounded-[10px] font-medium text-sm tracking-widest hover:scale-105 transition-all duration-500 shadow-2xl hover:bg-white uppercase"><VoiceglotText translationKey="cta.find_voice" defaultText="vind jouw stem" /></VoicesLink>
+                  <VoicesLink href="/contact" className="text-white/60 hover:text-white font-medium text-sm tracking-widest flex items-center gap-3 group transition-all duration-500 uppercase">
                     <VoiceglotText  translationKey="cta.ask_question" defaultText="stel een vraag" />
-                    <ArrowRight strokeWidth={1.5} size={24} className="group-hover:translate-x-3 transition-transform duration-700" />
+                    <ArrowRight strokeWidth={1.5} size={18} className="group-hover:translate-x-2 transition-transform duration-500" />
                   </VoicesLink>
                 </ContainerInstrument>
               </ContainerInstrument>
             </ContainerInstrument>
+            </ContainerInstrument>
           )}
-        </footer>
+        </ContainerInstrument>
       </ContainerInstrument>
     </PageWrapperInstrument>
   );

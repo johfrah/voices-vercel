@@ -129,7 +129,7 @@ const HeaderIcon = ({
   const content = (
     <ContainerInstrument 
       plain
-      className="relative"
+      className="relative pointer-events-auto"
       onMouseEnter={() => { handleMouseEnter(); }}
       onMouseLeave={() => { handleMouseLeave(); }}
     >
@@ -849,7 +849,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
       )}
     </ContainerInstrument>
 
-      <ContainerInstrument plain className="flex-1 flex gap-4 items-center justify-end relative z-50">
+      <ContainerInstrument plain className="flex-1 flex gap-4 items-center justify-end relative z-50 pointer-events-none">
         {/*  PAAS ADMIN TRIGGER (Invisible for visitors) */}
         {showPortfolioAdmin && (
           <HeaderIcon 
@@ -1199,7 +1199,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
 
         {/*  LANGUAGE ICON */}
         {showLanguage && (
-          <LanguageSwitcher className={`w-10 h-10 rounded-full transition-all duration-500 cursor-pointer group flex items-center justify-center relative ${
+          <LanguageSwitcher className={`w-10 h-10 rounded-full transition-all duration-500 cursor-pointer group flex items-center justify-center relative pointer-events-auto ${
             pathname.includes('/lang/') ? 'bg-primary text-white shadow-aura-sm' : 'hover:bg-va-black/5 text-va-black/40 hover:text-va-black'
           }`} />
         )}
