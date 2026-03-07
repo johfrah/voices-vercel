@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/LayoutInstruments";
 import Image from "next/image";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
-import { useEffect, useState, useMemo } from "react";
+import { useContext, useEffect, useState, useMemo } from "react";
 import { cn } from "@/lib/utils";
 import { 
   CheckCircle2, 
@@ -33,6 +33,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { SlimmeKassa } from "@/lib/engines/pricing-engine";
 import { useSonicDNA } from '@/lib/engines/sonic-dna';
+import { VoicesMasterControlContext } from "@/contexts/VoicesMasterControlContext";
 
 interface AgencyCalculatorProps {
   initialJourney?: "telefonie" | "unpaid" | "paid";
@@ -54,7 +55,7 @@ interface AgencyCalculatorProps {
  */
 export const AgencyCalculator = ({ 
   initialJourney = "paid", 
-  actors = [], 
+  actors,
   pricingConfig: externalPricingConfig,
   selectedLanguageId,
   onJourneyChange,
@@ -66,6 +67,10 @@ export const AgencyCalculator = ({
   const { t, language, market } = useTranslation();
   const router = useRouter();
   const { playClick } = useSonicDNA();
+  const masterControl = useContext(VoicesMasterControlContext);
+  const [brokenPhotoActorIds, setBrokenPhotoActorIds] = useState<Record<string | number, boolean>>({});
+  const [fallbackActors, setFallbackActors] = useState<any[]>([]);
+  const [isFallbackLoading, setIsFallbackLoading] = useState(false);
   const [calcUsage, setCalcUsage] = useState<"telefonie" | "unpaid" | "paid">(initialJourney);
   const [calcType, setCalcType] = useState<"webvideo" | "social" | "radio" | "tv" | "ivr" | "podcast">("social");
   const [calcSpots, setCalcSpots] = useState(1);
@@ -74,6 +79,8 @@ export const AgencyCalculator = ({
   const [calcWords, setCalcWords] = useState(25);
   const [calcMusic, setCalcMusic] = useState(false);
   const [calcLive, setCalcLive] = useState(false);
+  const providedActors = useMemo(() => (Array.isArray(actors) ? actors : []), [actors]);
+  const hasProvidedActors = providedActors.length > 0;
 
   // Sync interne state met prop indien gewijzigd (voor URL navigatie)
   useEffect(() => {
@@ -81,6 +88,33 @@ export const AgencyCalculator = ({
       setCalcUsage(initialJourney);
     }
   }, [initialJourney, calcUsage]);
+
+  const effectiveLanguageIds = useMemo(() => {
+    if (selectedLanguageId != null) {
+      return [selectedLanguageId];
+    }
+
+    const singleMasterId = Number(masterControl?.state?.filters?.languageId);
+    if (Number.isFinite(singleMasterId) && singleMasterId > 0) {
+      return [singleMasterId];
+    }
+
+    const idsFromMaster =
+      (masterControl?.state?.filters?.languageIds || [])
+        .map((id) => Number(id))
+        .filter((id) => Number.isFinite(id) && id > 0);
+
+    if (idsFromMaster.length > 0) {
+      return idsFromMaster;
+    }
+
+    return [];
+  }, [
+    selectedLanguageId,
+    masterControl?.state?.filters?.languageId,
+    (masterControl?.state?.filters?.languageIds || []).join(','),
+  ]);
+  const effectiveLanguageIdsKey = effectiveLanguageIds.join(',');
 
   const [internalPricingConfig, setInternalPricingConfig] = useState<any>(null);
   const pricingConfig = externalPricingConfig || internalPricingConfig;
@@ -99,6 +133,64 @@ export const AgencyCalculator = ({
       fetchConfig();
     }
   }, [externalPricingConfig]);
+
+  useEffect(() => {
+    let isCancelled = false;
+
+    if (hasProvidedActors) {
+      setFallbackActors([]);
+      setIsFallbackLoading(false);
+      return;
+    }
+
+    const fetchFallbackActors = async () => {
+      setIsFallbackLoading(true);
+      try {
+        const params = new URLSearchParams({ lang: 'all' });
+        if (market?.market_code) {
+          params.set('market', market.market_code);
+        }
+        if (effectiveLanguageIds.length === 1) {
+          params.set('languageId', String(effectiveLanguageIds[0]));
+        }
+
+        const res = await fetch(`/api/actors/?${params.toString()}`, { cache: 'no-store' });
+        if (!res.ok) {
+          throw new Error('actors_fetch_failed');
+        }
+
+        const data = await res.json();
+        const results = Array.isArray(data?.results) ? data.results : [];
+        if (!isCancelled) {
+          setFallbackActors(results);
+        }
+      } catch {
+        if (!isCancelled) {
+          setFallbackActors([]);
+        }
+      } finally {
+        if (!isCancelled) {
+          setIsFallbackLoading(false);
+        }
+      }
+    };
+
+    fetchFallbackActors();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [hasProvidedActors, market?.market_code, effectiveLanguageIdsKey]);
+
+  const paidMediaTypeForKassa = useMemo(() => {
+    if (calcType === 'social') return 'social_media';
+    if (calcType === 'radio') return 'radio_national';
+    if (calcType === 'tv') return 'tv_national';
+    if (calcType === 'podcast') return 'podcast';
+    return 'online';
+  }, [calcType]);
+
+  const usageForKassa = calcUsage === 'paid' ? 'commercial' : calcUsage;
 
   const calculatorRates: Record<string, { label: string, sub: string, icon: any, national: number, regional?: number, usage: "unpaid" | "paid" | "telefonie" }> = {
     webvideo: { 
@@ -153,10 +245,10 @@ export const AgencyCalculator = ({
     const promptCount = Math.ceil(calcWords / 8); // Geschat aantal prompts voor IVR
 
     const result = SlimmeKassa.calculate({
-      usage: calcUsage,
+      usage: usageForKassa as any,
       words: wordCount,
       prompts: promptCount,
-      mediaTypes: calcUsage === 'paid' ? [calcType as any] : [],
+      mediaTypes: calcUsage === 'paid' ? [paidMediaTypeForKassa as any] : [],
       country: calcRegion === 'regional' ? 'BE-REGIONAL' : 'BE', // Simuleer regio via landcode voor globale kassa
       spots: { [calcType]: calcSpots },
       years: { [calcType]: calcYears },
@@ -169,13 +261,24 @@ export const AgencyCalculator = ({
     return finalValue.toFixed(2);
   };
 
-  const filteredActors = useMemo(() => {
-    if (!actors || actors.length === 0) return [];
-    return actors.filter(a => {
-      const matchesLang = selectedLanguageId ? a.native_lang_id === selectedLanguageId : true;
-      return matchesLang;
-    }).sort((a, b) => (a.menu_order || 0) - (b.menu_order || 0)).slice(0, 5);
-  }, [actors, selectedLanguageId]);
+  const tableActors = useMemo(() => {
+    const sourceActors = hasProvidedActors ? providedActors : fallbackActors;
+    if (!sourceActors || sourceActors.length === 0) return [];
+    return sourceActors
+      .filter((a) => {
+        const nativeLangId = Number(a.native_lang_id);
+        const matchesLang = effectiveLanguageIds.length > 0
+          ? Number.isFinite(nativeLangId) && effectiveLanguageIds.includes(nativeLangId)
+          : true;
+        if (!matchesLang) return false;
+        if (calcUsage !== 'paid') return true;
+        return SlimmeKassa.isAvailable(a, [paidMediaTypeForKassa as any], 'BE');
+      })
+      .sort((a, b) => (a.menu_order || 0) - (b.menu_order || 0))
+      .slice(0, 5);
+  }, [hasProvidedActors, providedActors, fallbackActors, effectiveLanguageIdsKey, calcUsage, paidMediaTypeForKassa]);
+
+  const isTableLoading = isLoading || (!hasProvidedActors && isFallbackLoading);
 
   const getUsageSteps = () => {
     const config = pricingConfig || SlimmeKassa.getDefaultConfig();
@@ -547,7 +650,7 @@ export const AgencyCalculator = ({
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-black/[0.03]">
-                      {isLoading ? (
+                      {isTableLoading ? (
                         <tr>
                           <td colSpan={3} className="px-6 py-12 text-center">
                             <div className="flex flex-col items-center gap-3">
@@ -558,21 +661,22 @@ export const AgencyCalculator = ({
                             </div>
                           </td>
                         </tr>
-                      ) : actors.length > 0 ? (
-                        actors.map((a) => (
+                      ) : tableActors.length > 0 ? (
+                        tableActors.map((a) => (
                           <tr key={a.id} className="group hover:bg-primary/[0.01] transition-colors">
                             <td className="px-6 py-4">
                               <div className="flex items-center gap-3">
                                 <div className="relative w-10 h-10 rounded-full overflow-hidden bg-va-off-white border border-black/5">
-                                  {a.photo_url ? (
+                                  {a.photo_url && !brokenPhotoActorIds[a.id] ? (
                                     <Image 
                                       src={a.photo_url.startsWith('http') || a.photo_url.startsWith('/') ? a.photo_url : `/api/proxy/?path=${encodeURIComponent(a.photo_url)}`} 
                                       alt={a.display_name} 
                                       fill 
-                                      className="object-cover" 
+                                      className="object-cover"
+                                      onError={() => setBrokenPhotoActorIds((prev) => ({ ...prev, [a.id]: true }))}
                                     />
                                   ) : (
-                                    <div className="w-full h-full flex items-center justify-center text-va-black/20 font-bold">{a.display_name?.[0]}</div>
+                                    <div className="w-full h-full flex items-center justify-center text-va-black/40 font-bold">{a.display_name?.[0]}</div>
                                   )}
                                 </div>
                                 <div>
