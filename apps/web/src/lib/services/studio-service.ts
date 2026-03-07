@@ -199,6 +199,72 @@ async function safeExecuteRows<T = any>(query: any, label: string): Promise<T[]>
   }
 }
 
+interface StudioOptionalTableFlags {
+  has_taxonomy_tables: boolean;
+  has_workshop_reviews_table: boolean;
+  has_workshop_feedback_table: boolean;
+  has_workshop_video_subtitle_links_table: boolean;
+}
+
+const DEFAULT_STUDIO_OPTIONAL_TABLE_FLAGS: StudioOptionalTableFlags = {
+  has_taxonomy_tables: true,
+  has_workshop_reviews_table: true,
+  has_workshop_feedback_table: true,
+  has_workshop_video_subtitle_links_table: true,
+};
+
+let studioOptionalTableFlagsPromise: Promise<StudioOptionalTableFlags> | null = null;
+
+function toDbBoolean(value: unknown): boolean {
+  return value === true || value === 't' || value === 1 || value === '1';
+}
+
+async function getStudioOptionalTableFlags(): Promise<StudioOptionalTableFlags> {
+  if (!db) return DEFAULT_STUDIO_OPTIONAL_TABLE_FLAGS;
+  if (studioOptionalTableFlagsPromise) return studioOptionalTableFlagsPromise;
+
+  studioOptionalTableFlagsPromise = (async () => {
+    const probeRaw = await db.execute(sql`
+      SELECT
+        to_regclass('public.workshop_taxonomy_mappings') IS NOT NULL AS has_workshop_taxonomy_mappings,
+        to_regclass('public.workshop_categories') IS NOT NULL AS has_workshop_categories,
+        to_regclass('public.workshop_types') IS NOT NULL AS has_workshop_types,
+        to_regclass('public.experience_levels') IS NOT NULL AS has_experience_levels,
+        to_regclass('public.workshop_level_mappings') IS NOT NULL AS has_workshop_level_mappings,
+        to_regclass('public.workshop_reviews') IS NOT NULL AS has_workshop_reviews,
+        to_regclass('public.workshop_feedback') IS NOT NULL AS has_workshop_feedback,
+        to_regclass('public.workshop_video_subtitle_links') IS NOT NULL AS has_workshop_video_subtitle_links
+    `);
+
+    const probeRows = Array.isArray(probeRaw) ? probeRaw : (probeRaw as any).rows ?? [];
+    const row = (probeRows[0] || {}) as Record<string, unknown>;
+
+    const hasTaxonomyTables = [
+      row.has_workshop_taxonomy_mappings,
+      row.has_workshop_categories,
+      row.has_workshop_types,
+      row.has_experience_levels,
+      row.has_workshop_level_mappings,
+    ].every(toDbBoolean);
+
+    return {
+      has_taxonomy_tables: hasTaxonomyTables,
+      has_workshop_reviews_table: toDbBoolean(row.has_workshop_reviews),
+      has_workshop_feedback_table: toDbBoolean(row.has_workshop_feedback),
+      has_workshop_video_subtitle_links_table: toDbBoolean(row.has_workshop_video_subtitle_links),
+    };
+  })().catch((error) => {
+    studioOptionalTableFlagsPromise = null;
+    console.warn(
+      '[getStudioWorkshopsData] Optional table probe failed, defaulting to legacy query mode:',
+      (error as Error)?.message || error
+    );
+    return DEFAULT_STUDIO_OPTIONAL_TABLE_FLAGS;
+  });
+
+  return studioOptionalTableFlagsPromise;
+}
+
 export interface WorkshopApiResponse {
   workshops: any[];
   instructors: any[];
@@ -221,26 +287,43 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
   if (!db) throw new Error('Database not available');
 
   try {
+    const optionalTableFlags = await getStudioOptionalTableFlags();
     let workshopsRaw: unknown;
-    try {
-      workshopsRaw = await db.execute(sql`
-        WITH workshop_data AS (
+
+    if (optionalTableFlags.has_taxonomy_tables) {
+      try {
+        workshopsRaw = await db.execute(sql`
+          WITH workshop_data AS (
+            SELECT
+              w.id, w.title, w.slug, w.description, w.price, w.status, w.media_id, w.meta,
+              m.file_path AS media_file_path, m.alt_text AS media_alt_text,
+              (SELECT label_nl FROM workshop_categories wc JOIN workshop_taxonomy_mappings wtm ON wc.id = wtm.category_id WHERE wtm.workshop_id = w.id LIMIT 1) as category_label,
+              (SELECT label_nl FROM workshop_types wt JOIN workshop_taxonomy_mappings wtm ON wt.id = wtm.type_id WHERE wtm.workshop_id = w.id LIMIT 1) as type_label,
+              (SELECT label FROM experience_levels el JOIN workshop_level_mappings wlm ON el.id = wlm.level_id WHERE wlm.workshop_id = w.id LIMIT 1) as level_label
+            FROM workshops w
+            LEFT JOIN media m ON m.id = w.media_id
+            WHERE w.status IN ('publish', 'live') AND w.world_id = 2
+          )
+          SELECT * FROM workshop_data
+          ORDER BY title
+        `);
+      } catch (taxonomyError: any) {
+        // Legacy environments may miss taxonomy tables; keep Studio live with base workshop payload.
+        console.warn('[getStudioWorkshopsData] Taxonomy lookup failed, falling back to base workshop query:', taxonomyError?.message || taxonomyError);
+        workshopsRaw = await db.execute(sql`
           SELECT
             w.id, w.title, w.slug, w.description, w.price, w.status, w.media_id, w.meta,
             m.file_path AS media_file_path, m.alt_text AS media_alt_text,
-            (SELECT label_nl FROM workshop_categories wc JOIN workshop_taxonomy_mappings wtm ON wc.id = wtm.category_id WHERE wtm.workshop_id = w.id LIMIT 1) as category_label,
-            (SELECT label_nl FROM workshop_types wt JOIN workshop_taxonomy_mappings wtm ON wt.id = wtm.type_id WHERE wtm.workshop_id = w.id LIMIT 1) as type_label,
-            (SELECT label FROM experience_levels el JOIN workshop_level_mappings wlm ON el.id = wlm.level_id WHERE wlm.workshop_id = w.id LIMIT 1) as level_label
+            NULL::text AS category_label,
+            NULL::text AS type_label,
+            NULL::text AS level_label
           FROM workshops w
           LEFT JOIN media m ON m.id = w.media_id
           WHERE w.status IN ('publish', 'live') AND w.world_id = 2
-        )
-        SELECT * FROM workshop_data
-        ORDER BY title
-      `);
-    } catch (taxonomyError: any) {
-      // Legacy environments may miss taxonomy tables; keep Studio live with base workshop payload.
-      console.warn('[getStudioWorkshopsData] Taxonomy lookup failed, falling back to base workshop query:', taxonomyError?.message || taxonomyError);
+          ORDER BY w.title
+        `);
+      }
+    } else {
       workshopsRaw = await db.execute(sql`
         SELECT
           w.id, w.title, w.slug, w.description, w.price, w.status, w.media_id, w.meta,
@@ -300,13 +383,16 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
     `, 'Editions query');
 
     // 3. Fetch Reviews
-    let reviewsData = await safeExecuteRows(sql`
-      SELECT wr.workshop_id, r.id, r.author_name, r.rating, r.text_nl, r.text_en, r.provider, r.author_photo_url
-      FROM workshop_reviews wr
-      JOIN reviews r ON r.id = wr.review_id
-      WHERE wr.workshop_id IN (${sql.join(workshopIds.map((id) => sql`${id}`), sql`, `)})
-      ORDER BY r.rating DESC, r.created_at DESC
-    `, 'Workshop reviews mapping query');
+    let reviewsData: any[] = [];
+    if (optionalTableFlags.has_workshop_reviews_table) {
+      reviewsData = await safeExecuteRows(sql`
+        SELECT wr.workshop_id, r.id, r.author_name, r.rating, r.text_nl, r.text_en, r.provider, r.author_photo_url
+        FROM workshop_reviews wr
+        JOIN reviews r ON r.id = wr.review_id
+        WHERE wr.workshop_id IN (${sql.join(workshopIds.map((id) => sql`${id}`), sql`, `)})
+        ORDER BY r.rating DESC, r.created_at DESC
+      `, 'Workshop reviews mapping query');
+    }
 
     // Fallback for schemas without workshop_reviews mapping table.
     if (reviewsData.length === 0) {
@@ -360,13 +446,15 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
     `, 'Workshop journeys query');
 
     // 4c. Fetch Public Feedback Snippets
-    const feedbackData = await safeExecuteRows(sql`
-      SELECT wf.workshop_id, wf.public_snippet, wf.public_rating
-      FROM workshop_feedback wf
-      WHERE wf.workshop_id IN (${sql.join(workshopIds.map((id) => sql`${id}`), sql`, `)})
-        AND wf.public_snippet IS NOT NULL
-      ORDER BY wf.public_rating DESC NULLS LAST, wf.submitted_at DESC
-    `, 'Workshop feedback query');
+    const feedbackData = optionalTableFlags.has_workshop_feedback_table
+      ? await safeExecuteRows(sql`
+        SELECT wf.workshop_id, wf.public_snippet, wf.public_rating
+        FROM workshop_feedback wf
+        WHERE wf.workshop_id IN (${sql.join(workshopIds.map((id) => sql`${id}`), sql`, `)})
+          AND wf.public_snippet IS NOT NULL
+        ORDER BY wf.public_rating DESC NULLS LAST, wf.submitted_at DESC
+      `, 'Workshop feedback query')
+      : [];
 
     // 4d. Fetch Video media paths (from meta.video_id)
     const videoIdCandidates = (workshopsList as any[])
@@ -413,7 +501,7 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
     // 4f. Fetch subtitle tracks via the ID-junction system
     let subtitleRowsData: any[] = [];
 
-    if (workshopIds.length > 0) {
+    if (workshopIds.length > 0 && optionalTableFlags.has_workshop_video_subtitle_links_table) {
       subtitleRowsData = await safeExecuteRows(sql`
         SELECT
           l.id,
