@@ -12,6 +12,7 @@ import { db } from '@/lib/system/voices-config';
 import { users } from '@/lib/system/voices-config';
 import { sql, desc } from 'drizzle-orm';
 import { cookies } from 'next/headers';
+import { verifyAdminBridgeToken } from './admin-bridge-token';
 
 //  CHRIS-PROTOCOL: SDK fallback voor als direct-connect faalt
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -111,33 +112,20 @@ async function getRoleByUserId(userId: number): Promise<string | null> {
  * Bepaal of de gebruiker admin is. Haalt role op uit users table.
  */
 async function checkIsAdmin(user: User | null): Promise<boolean> {
-  // 🛡️ CHRIS-PROTOCOL: Legacy Auto-Login Bridge Fallback (v2.31)
-  // Als er geen Supabase user is, maar wel de voices_role=admin cookie, 
-  // dan laten we de admin door (specifiek voor de Johfrah bridge).
   const cookieStore = await cookies();
   const voicesRole = cookieStore.get('voices_role')?.value;
   const bridgeToken = cookieStore.get('sb-access-token')?.value || '';
-  const hasAccessToken = bridgeToken.length > 0;
-  const allowLegacyCookieBridge = process.env.VOICES_ENABLE_LEGACY_ADMIN_BRIDGE === 'true';
-  const bridgeAdminId = bridgeToken.startsWith('admin-bridge-')
-    ? Number.parseInt(bridgeToken.replace('admin-bridge-', ''), 10)
-    : Number.NaN;
+  const verifiedBridge = verifyAdminBridgeToken(bridgeToken);
 
-  // Legacy mode: snelle doorgang zonder extra DB-latency.
-  if (!user && allowLegacyCookieBridge && voicesRole === 'admin' && hasAccessToken) {
-    console.log(' NUCLEAR AUTH: Admin access granted via Legacy Bridge Cookie.');
-    return true;
-  }
-
-  // Nieuwe standaard bridge-validatie: alleen geldig met geverifieerde admin-bridge token.
-  if (!user && voicesRole === 'admin' && Number.isFinite(bridgeAdminId)) {
-    const bridgeRole = await getRoleByUserId(bridgeAdminId);
+  // Cookie bridge blijft beschikbaar, maar alleen met cryptografisch ondertekend token.
+  if (!user && voicesRole === 'admin' && verifiedBridge) {
+    const bridgeRole = await getRoleByUserId(verifiedBridge.adminId);
     if (bridgeRole === 'admin' || bridgeRole === 'superadmin' || bridgeRole === 'ademing_admin') {
       return true;
     }
   }
-  if (!user && !allowLegacyCookieBridge && (voicesRole === 'admin' || hasAccessToken)) {
-    console.warn(' NUCLEAR AUTH: Legacy admin cookie bridge blocked (disabled by policy).');
+  if (!user && (voicesRole === 'admin' || bridgeToken.length > 0)) {
+    console.warn(' NUCLEAR AUTH: Blocked unsigned or invalid admin bridge token.');
   }
 
   if (!user?.email) return false;

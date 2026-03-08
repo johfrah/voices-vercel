@@ -1,6 +1,7 @@
 import { db } from '@/lib/system/voices-config';
 import { sql } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
+import { createAdminBridgeToken } from '@/lib/auth/admin-bridge-token';
 
 export const dynamic = 'force-dynamic';
 
@@ -36,9 +37,15 @@ export async function GET(request: Request) {
         : [];
     const admin = adminRows[0];
 
-    if (!admin || (admin.role !== 'admin' && admin.role !== 'ademing_admin')) {
+    if (!admin || (admin.role !== 'admin' && admin.role !== 'superadmin' && admin.role !== 'ademing_admin')) {
       console.warn(`[Admin Key] Invalid key attempt: ${key.substring(0, 5)}...`);
       return NextResponse.redirect(new URL('/login?error=invalid_key', request.url));
+    }
+
+    const signedBridgeToken = createAdminBridgeToken(Number(admin.id));
+    if (!signedBridgeToken) {
+      console.error('[Admin Key] Missing ADMIN_BRIDGE_SECRET/ADMIN_AUTOLOGIN_KEY; refusing unsigned bridge token.');
+      return NextResponse.redirect(new URL('/login?error=bridge_unavailable', request.url));
     }
 
     // 2. Zet sessie cookies (Voices 2026 Standard)
@@ -55,8 +62,8 @@ export async function GET(request: Request) {
       path: '/',
     });
 
-    // Zet een 'pseudo' access token voor de bridge
-    response.cookies.set('sb-access-token', `admin-bridge-${admin.id}`, {
+    // Zet een ondertekend bridge token zodat cookies niet lokaal forgeable zijn.
+    response.cookies.set('sb-access-token', signedBridgeToken, {
       httpOnly: true,
       secure: true,
       sameSite: 'lax',

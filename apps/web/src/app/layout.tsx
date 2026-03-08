@@ -13,7 +13,7 @@ import { MarketDatabaseService } from "@/lib/system/market-manager-db";
 import { createClient } from "@supabase/supabase-js";
 import type { Metadata, Viewport } from "next";
 import { Inter, Raleway, Cormorant_Garamond } from "next/font/google";
-import { cookies, headers } from "next/headers";
+import { headers } from "next/headers";
 import Link from "next/link";
 import { Suspense } from "react";
 import dynamic from "next/dynamic";
@@ -425,12 +425,7 @@ export default async function RootLayout({
       temporaryLightModeRaw !== null &&
       (temporaryLightModeRaw as { enabled?: boolean }).enabled === true);
   const serverUser = isTemporaryLightModeEnabled ? await getServerUser() : null;
-  const cookieStore = cookies();
-  const hasLegacyAdminCookieBridge =
-    process.env.VOICES_ENABLE_LEGACY_ADMIN_BRIDGE === 'true' &&
-    cookieStore.get('voices_role')?.value === 'admin' &&
-    Boolean(cookieStore.get('sb-access-token')?.value);
-  const isAdminViewer = isAdminUser(serverUser) || hasLegacyAdminCookieBridge;
+  const isAdminViewer = isAdminUser(serverUser);
   
   const htmlClass = `${isAdeming ? cormorant.className : raleway.className} ${inter.className} ${cormorant.variable} theme-${isAdeming ? 'ademing' : market.theme} ${raleway.variable}`;
   const bodyClass = cn(

@@ -8,6 +8,7 @@ import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { createClient as createServerClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
+import { verifyAdminBridgeToken } from './admin-bridge-token';
 
 //  CHRIS-PROTOCOL: SDK fallback voor als direct-connect faalt
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -27,26 +28,23 @@ export async function getServerUser(): Promise<ServerUser | null> {
   const cookieStore = cookies();
   const roleCookie = cookieStore.get('voices_role');
   const bridgeToken = cookieStore.get('sb-access-token');
+  const verifiedBridge = verifyAdminBridgeToken(bridgeToken?.value || '');
 
-  // 🛡️ CHRIS-PROTOCOL: Admin Bridge Support (v2.14.785)
-  // Als we een geldige admin-bridge token hebben, valideren we deze direct via de SDK
-  if (roleCookie?.value === 'admin' && bridgeToken?.value?.startsWith('admin-bridge-')) {
-    const adminId = parseInt(bridgeToken.value.replace('admin-bridge-', ''));
-    if (!isNaN(adminId)) {
-      try {
-        const { data, error } = await sdkClient
-          .from('users')
-          .select('id, email, role')
-          .eq('id', adminId)
-          .maybeSingle();
-        
-        if (data && !error && (data.role === 'admin' || data.role === 'ademing_admin')) {
-          console.log(`[Auth] Admin Bridge session verified for: ${data.email}`);
-          return { id: data.id, email: data.email, role: data.role };
-        }
-      } catch (e) {
-        console.warn('[Auth] Admin Bridge validation failed');
+  // Bridge auth is only accepted with a signed token.
+  if (roleCookie?.value === 'admin' && verifiedBridge) {
+    try {
+      const { data, error } = await sdkClient
+        .from('users')
+        .select('id, email, role')
+        .eq('id', verifiedBridge.adminId)
+        .maybeSingle();
+
+      if (data && !error && (data.role === 'admin' || data.role === 'superadmin' || data.role === 'ademing_admin')) {
+        console.log(`[Auth] Signed admin bridge session verified for: ${data.email}`);
+        return { id: data.id, email: data.email, role: data.role };
       }
+    } catch (e) {
+      console.warn('[Auth] Signed admin bridge validation failed');
     }
   }
 
