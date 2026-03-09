@@ -145,6 +145,8 @@ Required report format:
 - Package manager: npm (single lockfile at root).
 - For port 3000 cleanup, use `netstat -tlnp | grep 3000` and kill by PID.
 - Keep root React overrides in `package.json`; do not remove.
+- `npm run setup:cloud` may fail at the `verify-workspace-lock` step if `package.json` versions drift from the lockfile; `npm ci` still installs all deps correctly. If blocked, run `npm ci` directly instead.
+- `.env.local` must be created from injected environment variables at `apps/web/.env.local`. Required vars: `NEXT_PUBLIC_SUPABASE_URL` (hardcoded to `https://vcbxyyjsxuquytcsskpj.supabase.co`), `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `DATABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`. Copy them from the shell environment into the file.
 
 ## Product and Routing Rules
 
