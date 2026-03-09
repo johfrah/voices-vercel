@@ -1889,8 +1889,12 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
 
     return notFound();
   } catch (err: any) {
-    const notFoundFingerprint = `${String(err?.digest || '')} ${String(err?.message || '')} ${String(err?.stack || '')} ${String(err || '')}`.toUpperCase();
-    if (notFoundFingerprint.includes('NEXT_NOT_FOUND') || notFoundFingerprint.includes('NEXT_HTTP_ERROR_FALLBACK')) {
+    const nextControlFlowFingerprint = `${String(err?.digest || '')} ${String(err?.message || '')} ${String(err?.stack || '')} ${String(err || '')}`.toUpperCase();
+    if (
+      nextControlFlowFingerprint.includes('NEXT_NOT_FOUND') ||
+      nextControlFlowFingerprint.includes('NEXT_HTTP_ERROR_FALLBACK') ||
+      nextControlFlowFingerprint.includes('NEXT_REDIRECT')
+    ) {
       throw err;
     }
 
