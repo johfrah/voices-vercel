@@ -788,12 +788,12 @@ export const VoicyChatV2: React.FC = () => {
       //  Check for active Cody Preview Logic
       const previewLogic = typeof window !== 'undefined' ? sessionStorage.getItem('cody_preview_logic') : null;
 
-      //  CHRIS-PROTOCOL: Timeout na 30 seconden om "vastlopen" te voorkomen (Gemini kan traag zijn)
+      //  CHRIS-PROTOCOL: Timeout na 60 seconden om server-side AI fallback kans te geven
       const controller = new AbortController();
       const timeoutId = setTimeout(() => {
-        console.warn(" Voicy: Chat request timed out after 30s");
+        console.warn(" Voicy: Chat request timed out after 60s");
         controller.abort();
-      }, 30000);
+      }, 60000);
 
       console.log("[Voicy] Sending message to API...", { message: userMessage.content });
       

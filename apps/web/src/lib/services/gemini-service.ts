@@ -96,13 +96,16 @@ ${prompt}
       }
       
       //  CHRIS-PROTOCOL: Voeg een timeout toe aan de Gemini call (Next.js Edge compatibel)
-      //  GEMINI 2026: Timeout verhoogd naar 90s voor zware bulk-taken
+      //  GEMINI HARD LIMITS: Guard both model generation and text extraction to prevent hanging requests.
       const result = await Promise.race([
         model.generateContent(options?.jsonMode ? `${finalPrompt}\n\nANTWOORD UITSLUITEND IN STRIKT JSON FORMAAT.` : finalPrompt),
-        new Promise((_, reject) => setTimeout(() => reject(new Error('Gemini Timeout')), 90000))
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Gemini Timeout:generation')), 35000))
       ]) as any;
 
-      const text = result.response.text();
+      const text = await Promise.race<string>([
+        Promise.resolve(result.response.text()),
+        new Promise<string>((_, reject) => setTimeout(() => reject(new Error('Gemini Timeout:response_text')), 8000)),
+      ]);
       return options?.jsonMode ? text.replace(/```json|```/g, '').trim() : text;
     } catch (error: any) {
       const status = error?.status ?? error?.statusCode;
@@ -123,7 +126,7 @@ ${prompt}
             })
           : "Ik ben even druk bezet! Bekijk onze stemmen of vraag een vrijblijvende offerte aan. Of bel ons gerust op +32 (0)2 793 19 91.";
       }
-      if (error.message === 'Gemini Timeout') {
+      if (typeof error?.message === 'string' && error.message.startsWith('Gemini Timeout')) {
         return options?.jsonMode ? JSON.stringify({ message: "Ik heb even wat meer tijd nodig om na te denken." }) : "Ik heb even wat meer tijd nodig om na te denken. Probeer je het zo nog eens?";
       }
       console.error(' Gemini Text Generation Error:', error);

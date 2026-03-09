@@ -14,6 +14,50 @@ const CONVERSATION_CACHE_TTL_MS = 5000;
 const conversationsCache = new Map<string, { ts: number; data: any[] }>();
 const HISTORY_CACHE_TTL_MS = 3000;
 const historyCache = new Map<number, { ts: number; data: any[] }>();
+const SEND_HARD_TIMEOUT_MS = 55000;
+
+type TimedFetchResult<T> = {
+  value: T;
+  source: 'ok' | 'timeout' | 'error';
+  duration_ms: number;
+};
+
+const withTimeoutFallback = async <T>(
+  label: string,
+  task: Promise<T>,
+  fallback: T,
+  timeoutMs: number
+): Promise<TimedFetchResult<T>> => {
+  const startedAt = Date.now();
+  try {
+    const raced = await Promise.race<{ kind: 'ok'; value: T } | { kind: 'timeout' }>([
+      task.then((value) => ({ kind: 'ok', value })),
+      new Promise<{ kind: 'timeout' }>((resolve) => setTimeout(() => resolve({ kind: 'timeout' }), timeoutMs)),
+    ]);
+
+    if (raced.kind === 'timeout') {
+      console.warn(`[Voicy API] Knowledge fetch timed out: ${label} (${timeoutMs}ms)`);
+      return {
+        value: fallback,
+        source: 'timeout',
+        duration_ms: Date.now() - startedAt,
+      };
+    }
+
+    return {
+      value: raced.value,
+      source: 'ok',
+      duration_ms: Date.now() - startedAt,
+    };
+  } catch (error: any) {
+    console.warn(`[Voicy API] Knowledge fetch failed: ${label}`, error?.message || error);
+    return {
+      value: fallback,
+      source: 'error',
+      duration_ms: Date.now() - startedAt,
+    };
+  }
+};
 
 const buildConversationSnapshots = async (conversationIds: number[]) => {
   const snapshots = new Map<number, { message_count: number; lastMessage: string; latest_message_id: number }>();
@@ -83,7 +127,27 @@ export async function POST(request: NextRequest) {
 
     switch (action) {
       case 'send':
-        return finalize('send', await handleSendMessage(params, request));
+        return finalize(
+          'send',
+          await Promise.race<Response | NextResponse>([
+            handleSendMessage(params, request),
+            new Promise<Response | NextResponse>((resolve) =>
+              setTimeout(
+                () =>
+                  resolve(
+                    NextResponse.json({
+                      success: true,
+                      content: 'Ik ben er nog. Het duurt iets langer dan normaal. Probeer je vraag opnieuw in een kortere vorm.',
+                      actions: [],
+                      _db_error: true,
+                      _timed_out: true,
+                    }),
+                  ),
+                SEND_HARD_TIMEOUT_MS,
+              ),
+            ),
+          ]),
+        );
       case 'conversations': {
         const { userId, filter = 'active', search = '', limit = 180 } = params;
         const safeFilter: 'active' | 'archived' | 'all' =
@@ -474,8 +538,13 @@ async function handleSendMessage(params: any, request?: NextRequest) {
     //  Als de status 'admin_active' is, mag Voicy niet antwoorden
     let conv: any = null;
     if (conversationId) {
-      const [existing] = await db.select().from(chatConversations).where(eq(chatConversations.id, conversationId));
-      conv = existing;
+      const convLookup = await withTimeoutFallback(
+        'conversation_lookup',
+        db.select().from(chatConversations).where(eq(chatConversations.id, conversationId)).then((rows: any[]) => rows[0] || null),
+        null,
+        3000
+      );
+      conv = convLookup.value;
     }
     if (conv?.status === 'admin_active' && senderType !== 'admin') {
       console.log(`[Voicy API] Admin is active on chat #${conversationId}. AI response suppressed.`);
@@ -483,6 +552,7 @@ async function handleSendMessage(params: any, request?: NextRequest) {
     }
     let actions: any[] = [];
     let aiContent: string = '';
+    let shouldSkipDbWrites = false;
 
     //  LIFECYCLE DETECTION (v2.16.029)
     const isAuthenticated = !!(senderId || context?.userId);
@@ -514,12 +584,22 @@ async function handleSendMessage(params: any, request?: NextRequest) {
     // 1. Check FAQ eerst (snelste)
     try {
       console.log('[Voicy API] Checking FAQ...');
-      const faqResults = await db.select().from(faq).where(
-        or(
-          ilike(faq.questionNl, `%${message}%`),
-          ilike(faq.questionEn, `%${message}%`)
-        )
-      ).limit(1);
+      const faqLookup = await withTimeoutFallback(
+        'faq_lookup',
+        db
+          .select()
+          .from(faq)
+          .where(
+            or(
+              ilike(faq.questionNl, `%${message}%`),
+              ilike(faq.questionEn, `%${message}%`)
+            )
+          )
+          .limit(1),
+        [],
+        3000
+      );
+      const faqResults = Array.isArray(faqLookup.value) ? faqLookup.value : [];
 
       if (faqResults.length > 0 && message.length < 100) { // Alleen FAQ gebruiken voor korte, specifieke vragen
         aiContent = (isEnglish ? faqResults[0].answerEn : faqResults[0].answerNl) || "";
@@ -539,12 +619,18 @@ async function handleSendMessage(params: any, request?: NextRequest) {
       let historyContext = "";
       if (conversationId) {
         try {
-          const history = await db
-            .select()
-            .from(chatMessages)
-            .where(eq(chatMessages.conversationId, conversationId))
-            .orderBy(desc(chatMessages.id))
-            .limit(15);
+          const historyLookup = await withTimeoutFallback(
+            'history_context',
+            db
+              .select()
+              .from(chatMessages)
+              .where(eq(chatMessages.conversationId, conversationId))
+              .orderBy(desc(chatMessages.id))
+              .limit(15),
+            [],
+            3000
+          );
+          const history = Array.isArray(historyLookup.value) ? historyLookup.value : [];
           
           if (history.length > 0) {
             historyContext = "\n\nRECENTE CHATGESCHIEDENIS (Context):\n" + 
@@ -572,17 +658,53 @@ async function handleSendMessage(params: any, request?: NextRequest) {
         console.log('[Voicy API] Injecting knowledge...');
         const knowledge = KnowledgeService.getInstance();
         
-        //  CHRIS-PROTOCOL: Parallel knowledge injection to save time
-        const [coreBriefing, journeyBriefing, toolBriefing, fullBriefing, dbPricing, faqsData, workshopEditionsData, workshopsData] = await Promise.all([
-          knowledge.getCoreBriefing(),
-          knowledge.getJourneyContext(context?.journey || 'agency'),
-          knowledge.getJourneyContext('TOOL-ORCHESTRATION'),
-          knowledge.getFullVoicyBriefing(),
-          knowledge.getPricingConfig(),
-          knowledge.getFaqs(),
-          knowledge.getWorkshopEditions(),
-          knowledge.getWorkshops()
+        //  CHRIS-PROTOCOL: Parallel knowledge injection with hard time-bounds to prevent hanging requests
+        const [
+          coreBriefingResult,
+          journeyBriefingResult,
+          toolBriefingResult,
+          fullBriefingResult,
+          pricingResult,
+          workshopEditionsResult,
+          workshopsResult,
+        ] = await Promise.all([
+          withTimeoutFallback('core_briefing', knowledge.getCoreBriefing(), '', 3500),
+          withTimeoutFallback('journey_briefing', knowledge.getJourneyContext(context?.journey || 'agency'), '', 3500),
+          withTimeoutFallback('tool_briefing', knowledge.getJourneyContext('TOOL-ORCHESTRATION'), '', 3500),
+          withTimeoutFallback('full_briefing', knowledge.getFullVoicyBriefing(), '', 4500),
+          withTimeoutFallback('pricing_config', knowledge.getPricingConfig(), {}, 3500),
+          withTimeoutFallback('workshop_editions', knowledge.getWorkshopEditions(), [], 3500),
+          withTimeoutFallback('workshops', knowledge.getWorkshops(), [], 3500),
         ]);
+
+        const coreBriefing = coreBriefingResult.value;
+        const journeyBriefing = journeyBriefingResult.value;
+        const toolBriefing = toolBriefingResult.value;
+        const fullBriefing = fullBriefingResult.value;
+        const dbPricingRaw = pricingResult.value as any;
+        const workshopEditionsData = workshopEditionsResult.value as any[];
+        const workshopsData = workshopsResult.value as any[];
+        shouldSkipDbWrites = [
+          coreBriefingResult.source,
+          journeyBriefingResult.source,
+          toolBriefingResult.source,
+          fullBriefingResult.source,
+          pricingResult.source,
+          workshopEditionsResult.source,
+          workshopsResult.source,
+        ].some((source) => source !== 'ok');
+        const dbPricing = {
+          videoBasePrice: 0,
+          telephonyBasePrice: 0,
+          academyPrice: 0,
+          workshopPrice: 0,
+          basePrice: 0,
+          videoWordRate: 20,
+          musicSurcharge: 0,
+          vatRate: 0.21,
+          wordsPerMinute: 155,
+          ...(dbPricingRaw || {}),
+        };
 
         console.log('[Voicy API] Requesting Gemini generation...');
         const gemini = GeminiService.getInstance();
@@ -752,8 +874,14 @@ ${workshopEditionsData.filter((ed: any) => ed.status === 'upcoming').map((ed: an
           - Antwoord kort en krachtig (max 5 zinnen).
           - Gebruik Natural Capitalization.
         `;
-        
-        aiContent = await gemini.generateText(prompt, { jsonMode: true, lang: language, priority: 'high' });
+        aiContent = await Promise.race<string>([
+          gemini.generateText(prompt, { jsonMode: true, lang: language, priority: 'high' }),
+          new Promise<string>((resolve) =>
+            setTimeout(() => {
+              resolve(JSON.stringify({ message: 'Ik heb even wat meer tijd nodig om na te denken.' }));
+            }, 40000),
+          ),
+        ]);
         console.log('[Voicy API] Gemini Response received:', aiContent.substring(0, 50));
 
         //  BUTLER BRIDGE: Parse JSON en extraheer acties
@@ -832,7 +960,9 @@ ${workshopEditionsData.filter((ed: any) => ed.status === 'upcoming').map((ed: an
       process.env.SUPABASE_SERVICE_ROLE_KEY!
     );
 
-    try {
+    if (shouldSkipDbWrites) {
+      console.warn('[Voicy API] Skipping DB save because upstream knowledge sources degraded.');
+    } else try {
       console.log('[Voicy API] Attempting to save to DB...');
       
       // 🛡️ CHRIS-PROTOCOL: Lead Identification (v2.15.035)
