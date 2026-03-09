@@ -11,8 +11,8 @@ import {
 const QUICK_FLOWS = [
   {
     title: "Bestellen op smartphone",
-    subtitle: "Open de configurator en ga direct naar checkout.",
-    href: "/checkout/configurator",
+    subtitle: "Open de bestelflow en ga daarna naar checkout.",
+    href: "/agency",
     icon: ShoppingBag,
   },
   {
