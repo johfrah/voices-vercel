@@ -5,76 +5,27 @@ import { ArrowRight, Megaphone, Mic2, Phone, Video, Zap, GraduationCap } from 'l
 import { VoicesLink } from './VoicesLink';
 import React from 'react';
 import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
+import { JourneyCtaJourney, resolveJourneyCtaConfig } from './journey-cta-config';
 
 import { VoiceglotText } from './VoiceglotText';
 
 interface JourneyCtaProps {
-  journey: 'telephony' | 'video' | 'commercial' | 'general';
+  journey: JourneyCtaJourney;
 }
 
 export const JourneyCta: React.FC<JourneyCtaProps> = ({ journey }) => {
-  const configs = {
-    telephony: {
-      title: 'Klaar voor een warm onthaal?',
-      text: 'Start direct met onze IVR-configurator of bereken je prijs voor een complete telefonieset.',
-      cta: 'Start configuratie',
-      href: '/agency/',
-      icon: Phone,
-      color: 'bg-blue-600',
-      key: 'telephony'
-    },
-    video: {
-      title: 'Breng je beelden tot leven',
-      text: 'Ontdek onze narratieve stemmen en vraag direct een offerte aan voor je e-learning of bedrijfsfilm.',
-      cta: 'Bekijk stemmen',
-      href: '/agency?category=video',
-      icon: Video,
-      color: 'bg-purple-600',
-      key: 'video'
-    },
-    commercial: {
-      title: 'Maak impact met je campagne',
-      text: 'Boek een top-stem voor je radiospot of tv-commercial inclusief live-regie en buy-out.',
-      cta: 'Bereken campagne-prijs',
-      href: '/tarieven?journey=commercial',
-      icon: Megaphone,
-      color: 'bg-primary',
-      key: 'commercial'
-    },
-    general: {
-      title: 'De perfecte stem gevonden?',
-      text: 'Bereken direct je tarief of neem contact op voor advies op maat van onze experts.',
-      cta: 'Bereken tarief',
-      href: '/tarieven',
-      icon: Zap,
-      color: 'bg-primary',
-      key: 'general'
-    },
-    studio: {
-      title: 'Klaar om je stem te laten horen?',
-      text: 'Ontdek onze workshops of start direct met de online Academy en ontwikkel je ambacht.',
-      cta: 'Bekijk aanbod',
-      href: '/studio',
-      icon: Mic2,
-      color: 'bg-primary',
-      key: 'studio'
-    },
-    academy: {
-      title: 'Klaar om het ambacht te leren?',
-      text: 'Ontdek de online Academy en leer stap voor stap hoe je een luisteraar echt bereikt.',
-      cta: 'Bekijk het traject',
-      href: '/academy',
-      icon: GraduationCap,
-      color: 'bg-[#6366f1]',
-      key: 'academy'
-    }
-  };
+  const iconsByKey = {
+    telephony: Phone,
+    video: Video,
+    commercial: Megaphone,
+    general: Zap,
+    studio: Mic2,
+    academy: GraduationCap,
+  } as const;
 
   const market = MarketManager.getCurrentMarket();
-  const isStudio = market.market_code === 'STUDIO';
-  const isAcademy = market.market_code === 'ACADEMY';
-  const config = isStudio ? configs.studio : isAcademy ? configs.academy : (configs[journey] || configs.general);
-  const Icon = config.icon;
+  const config = resolveJourneyCtaConfig(journey, market.market_code);
+  const Icon = iconsByKey[config.key as keyof typeof iconsByKey] ?? Zap;
 
   return (
     <div className={cn("rounded-[20px] p-8 md:p-12 text-white flex flex-col md:flex-row items-center justify-between gap-8 my-12 relative overflow-hidden shadow-aura-lg", config.color)}>
