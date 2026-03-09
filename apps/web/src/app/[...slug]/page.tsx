@@ -47,6 +47,7 @@ const supabase = createClient(supabaseUrl, supabaseKey, {
   const VideoPlayer = nextDynamic(() => import("@/components/academy/VideoPlayer").then(mod => mod.VideoPlayer), { ssr: false });
 
 const AgencyCalculator = nextDynamic(() => import("@/components/ui/AgencyCalculator").then(mod => mod.AgencyCalculator), { ssr: false });
+const PricingInstrument = nextDynamic(() => import("@/components/ui/PricingInstrument").then(mod => mod.PricingInstrument), { ssr: false });
 
 // Workshop Components
 const WorkshopCarousel = nextDynamic(() => import("@/components/studio/WorkshopCarousel").then(mod => mod.WorkshopCarousel), { ssr: false });
@@ -176,6 +177,24 @@ function buildLocaleUrl(locale: string, pathname: string, localeDomainMap: Recor
   const cleanPath = stripLocalePrefix(pathname || '/');
   const localizedPath = withLocalePrefix(cleanPath, normalizedLocale, primaryLocale);
   return `${domain.replace(/\/$/, '')}${localizedPath === '/' ? '/' : localizedPath}`;
+}
+
+const LOCKED_TARIEVEN_CANONICAL = 'tarieven';
+const LOCKED_TARIEVEN_ALIASES = new Set(['price', 'agency/tarieven', 'agency/price']);
+
+function renderLockedTarievenActionPage() {
+  return (
+    <PageWrapperInstrument className="bg-va-off-white">
+      <Suspense fallback={null}>
+        <LiquidBackground />
+      </Suspense>
+      <ContainerInstrument className="py-24 relative z-10 max-w-6xl mx-auto px-6">
+        <Suspense fallback={<ContainerInstrument className="h-96 w-full bg-va-black/5 animate-pulse rounded-[20px]" />}>
+          <PricingInstrument />
+        </Suspense>
+      </ContainerInstrument>
+    </PageWrapperInstrument>
+  );
 }
 
 type ResolvedSlugEntry = {
@@ -944,6 +963,16 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
       MarketManager.getLanguageId(lang, market.primary_language) ||
       market.primary_language_id ||
       null;
+
+    // 🛡️ CHRIS-PROTOCOL: Hard lock tarieven as action flow (v2.28.61)
+    // Never let /tarieven drift through CMS article rendering.
+    if (lookupSlug === LOCKED_TARIEVEN_CANONICAL) {
+      return renderLockedTarievenActionPage();
+    }
+    if (LOCKED_TARIEVEN_ALIASES.has(lookupSlug)) {
+      const canonicalPath = withLocalePrefix(`/${LOCKED_TARIEVEN_CANONICAL}`, lang, market.primary_language);
+      return permanentRedirect(canonicalPath);
+    }
 
     // 🛡️ CHRIS-PROTOCOL: Pre-Registry Special Routes (v2.28.1)
     // Handle known hardcoded routes BEFORE registry lookup so they work
