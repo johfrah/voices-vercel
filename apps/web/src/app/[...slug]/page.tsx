@@ -1898,6 +1898,19 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
             } catch (err) {
               console.error("[SmartRouter] Failed to fetch lessons for academy page:", err);
             }
+          } else if (currentWorldId === 1) {
+            // 🛡️ CHRIS-PROTOCOL: Agency World Data Handshake (v2.28.74)
+            // We pre-fetch a small set of actors for the calculator to prevent empty states.
+            try {
+              const { getActors } = await import('@/lib/services/api-server');
+              const searchResults = await getActors({ 
+                languageId: String(market.primary_language_id),
+                limit: '5'
+              }, lang);
+              extraData.actors = searchResults?.results || [];
+            } catch (err) {
+              console.error("[SmartRouter] Failed to fetch actors for agency page:", err);
+            }
           } else if (resolved?.journey === 'ademing' || market.market_code === 'ADEMING') {
             try {
               const { data: tracks } = await supabase.from('ademing_tracks').select('*').eq('is_public', true).limit(6);
@@ -2374,7 +2387,7 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
         return (
           <section key={block.id} className="py-24 animate-in fade-in duration-1000 fill-mode-both">
             <Suspense fallback={<div className="h-96 w-full bg-va-black/5 animate-pulse rounded-[20px]" />}>
-              <AgencyCalculator />
+              <AgencyCalculator actors={extraData.actors || []} />
             </Suspense>
           </section>
         );
