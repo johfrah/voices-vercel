@@ -88,21 +88,24 @@ export async function GET(request: NextRequest) {
     // Formatteer resultaten voor de UI
     const results = [
       ...foundActors.map(a => ({
-        type: 'actor',
+        type: 'action',
+        kind: 'actor',
         title: `${a.first_name} ${a.last_name || ''}`,
         subtitle: `Stemacteur • ${a.status}`,
         href: `/admin/voices?id=${a.id}`,
         id: a.id
       })),
       ...foundOrders.map(o => ({
-        type: 'order',
+        type: 'action',
+        kind: 'order',
         title: `Order #${o.displayOrderId || o.wpOrderId}`,
         subtitle: `Transactie • ${o.journey} • ${o.status}`,
         href: `/admin/orders?id=${o.id}`,
         id: o.id
       })),
       ...foundUsers.map(u => ({
-        type: 'user',
+        type: 'action',
+        kind: 'user',
         title: u.companyName || `${u.first_name} ${u.last_name || ''}`,
         subtitle: `Klant • ${u.email}`,
         href: `/admin/users?id=${u.id}`,
@@ -110,6 +113,7 @@ export async function GET(request: NextRequest) {
       })),
       ...foundArticles.map(art => ({
         type: 'article',
+        kind: 'article',
         title: art.title,
         subtitle: `Content • ${art.status}`,
         href: `/admin/articles?slug=${art.slug}`,

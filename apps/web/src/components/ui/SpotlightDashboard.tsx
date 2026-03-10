@@ -67,7 +67,8 @@ interface MenuItem {
 }
 
 interface DataResult {
-  type: 'actor' | 'order' | 'user' | 'article';
+  type: 'action' | 'article';
+  kind?: 'actor' | 'order' | 'user' | 'article';
   title: string;
   subtitle: string;
   href: string;
@@ -338,7 +339,7 @@ export const SpotlightDashboard: React.FC = () => {
                         onMouseEnter={() => playSwell()}
                         onClick={() => {
                           playClick('pro');
-                          if (item.type === 'user') {
+                          if (item.kind === 'user') {
                             handleImpersonate(item.id as string);
                           } else {
                             router.push(item.href);
@@ -348,9 +349,9 @@ export const SpotlightDashboard: React.FC = () => {
                         className="flex items-center gap-4 p-4 md:p-5 rounded-[15px] md:rounded-[20px] bg-va-off-white/50 border border-black/[0.02] hover:border-primary/30 hover:bg-white hover:shadow-[0_15px_30px_rgba(0,0,0,0.04)] transition-all group text-left relative overflow-hidden touch-manipulation"
                       >
                         <div className={`w-10 h-10 md:w-12 md:h-12 rounded-[10px] bg-white flex items-center justify-center shadow-sm group-hover:bg-primary group-hover:text-white transition-all duration-500`}>
-                          {item.type === 'actor' && <Mic size={18} className="text-purple-500 group-hover:text-white" />}
-                          {item.type === 'order' && <ShoppingBag size={18} className="text-blue-600 group-hover:text-white" />}
-                          {item.type === 'user' && <Ghost size={18} className="text-emerald-500 group-hover:text-white" />}
+                          {(item.kind === 'actor') && <Mic size={18} className="text-purple-500 group-hover:text-white" />}
+                          {(item.kind === 'order') && <ShoppingBag size={18} className="text-blue-600 group-hover:text-white" />}
+                          {(item.kind === 'user') && <Ghost size={18} className="text-emerald-500 group-hover:text-white" />}
                           {item.type === 'article' && <FileText size={18} className="text-orange-500 group-hover:text-white" />}
                         </div>
                         <div className="flex-1 min-w-0">
@@ -358,14 +359,14 @@ export const SpotlightDashboard: React.FC = () => {
                             <h4 className="font-light tracking-tight text-[14px] md:text-[15px] text-va-black/80 Raleway truncate">
                               {item.title}
                             </h4>
-                            {item.type === 'user' && (
+                            {item.kind === 'user' && (
                               <span className="text-[8px] md:text-[9px] font-bold tracking-[0.2em] text-va-black/20 uppercase shrink-0">
                                 WIM
                               </span>
                             )}
                           </div>
                           <p className="text-[10px] md:text-[11px] font-light tracking-widest text-va-black/30 uppercase truncate">
-                            {item.type === 'user' ? `Ghost Mode • ${item.subtitle.split(' • ')[1]}` : item.subtitle}
+                            {item.kind === 'user' ? `Ghost Mode • ${item.subtitle.split(' • ')[1]}` : item.subtitle}
                           </p>
                         </div>
                         <ArrowRight strokeWidth={1.5} size={14} className="text-va-black/10 group-hover:text-primary group-hover:translate-x-1 transition-all" />
