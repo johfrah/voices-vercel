@@ -1096,6 +1096,33 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
       }
 
       // Route based on type (ID-First Handshake)
+      if (resolved.routing_type === 'action' && (lookupSlug === 'tarieven' || lookupSlug === 'tarifs' || lookupSlug === 'rates' || lookupSlug === 'preise')) {
+        const { getActors } = await import('@/lib/services/api-server');
+        const searchResults = await getActors({ 
+          languageId: String(market.primary_language_id),
+          limit: '5'
+        }, lang);
+        const actors = searchResults?.results || [];
+
+        return (
+          <PageWrapperInstrument className="bg-va-off-white">
+            <Suspense fallback={null}><LiquidBackground /></Suspense>
+            <ContainerInstrument className="py-48 relative z-10 max-w-5xl mx-auto px-6">
+              <header className="mb-64 animate-in fade-in slide-in-from-bottom-12 duration-1000">
+                <TextInstrument className="text-[11px] font-bold tracking-[0.4em] text-primary/60 mb-12 block uppercase">
+                  <VoiceglotText translationKey="common.pricing" defaultText="Tarieven" />
+                </TextInstrument>
+                <HeadingInstrument level={1} className="text-[10vw] lg:text-[120px] font-light tracking-tighter mb-20 leading-[0.85] text-va-black" suppressHydrationWarning>
+                  <VoiceglotText translationKey="page.pricing.title" defaultText="Bereken je tarief" />
+                </HeadingInstrument>
+                <ContainerInstrument className="w-48 h-1 bg-black/5 rounded-full" />
+              </header>
+              <AgencyCalculator actors={actors} />
+            </ContainerInstrument>
+          </PageWrapperInstrument>
+        );
+      }
+
       if (resolved.routing_type === 'casting_list') {
         const { data: list, error: listError } = await supabase
           .from('casting_lists')
@@ -1900,16 +1927,18 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
             }
           } else if (currentWorldId === 1) {
             // 🛡️ CHRIS-PROTOCOL: Agency World Data Handshake (v2.28.74)
-            // We pre-fetch a small set of actors for the calculator to prevent empty states.
-            try {
-              const { getActors } = await import('@/lib/services/api-server');
-              const searchResults = await getActors({ 
-                languageId: String(market.primary_language_id),
-                limit: '5'
-              }, lang);
-              extraData.actors = searchResults?.results || [];
-            } catch (err) {
-              console.error("[SmartRouter] Failed to fetch actors for agency page:", err);
+            // We skip this for 'action' pages as they handle their own handshake.
+            if (page.routing_type !== 'action') {
+              try {
+                const { getActors } = await import('@/lib/services/api-server');
+                const searchResults = await getActors({ 
+                  languageId: String(market.primary_language_id),
+                  limit: '5'
+                }, lang);
+                extraData.actors = searchResults?.results || [];
+              } catch (err) {
+                console.error("[SmartRouter] Failed to fetch actors for agency page:", err);
+              }
             }
           } else if (resolved?.journey === 'ademing' || market.market_code === 'ADEMING') {
             try {
