@@ -80,11 +80,13 @@ export class VoiceFilterEngine {
 
     // 2. STRICT NATIVE LANGUAGE MATCHING (ID-First Mandate 2026)
     // 🛡️ CHRIS-PROTOCOL: Use languageId (singular) OR languageIds[0] (v2.28.1)
-    const effectiveLangId = criteria.languageId ?? (criteria.languageIds && criteria.languageIds.length === 1 ? criteria.languageIds[0] : null);
     if (effectiveLangId != null) {
       result = result.filter(actor => {
-        // 🛡️ CHRIS-PROTOCOL: NATIVE-ONLY LOGIC (v2.14.740)
-return actor.native_lang_id === effectiveLangId || actor.native_language_id === effectiveLangId;
+        // 🛡️ CHRIS-PROTOCOL: NATIVE-ONLY LOGIC (v2.28.79)
+        // We check both the resolved relation ID and the fallback column for maximum integrity.
+        return actor.native_lang_id === effectiveLangId || 
+               actor.native_language_id === effectiveLangId ||
+               (actor as any).nativeLangId === effectiveLangId;
       });
     }
 

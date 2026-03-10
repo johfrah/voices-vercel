@@ -536,6 +536,7 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
         gender_id: actor.gender_id, // 🛡️ CHRIS-PROTOCOL: Handshake Truth (v2.14.740)
         gender: actor.gender,
         native_lang_id: nativeLangId,
+        native_language_id: actor.native_language_id || nativeLangId, // 🛡️ Handshake Truth
         native_lang: nativeLangInfo?.code || '',
         native_lang_label: nativeLangInfo?.label || '',
         photo_url: photoUrl,
