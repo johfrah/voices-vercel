@@ -209,7 +209,7 @@ export default function AccountDashboardClient() {
                         <VoiceglotText translationKey="account.welcome.subtitle" defaultText="Je account is nu actief. Als klant kun je direct stemmen zoeken, favorieten opslaan en gratis proefopnames aanvragen." />
                       </TextInstrument>
                       <ContainerInstrument className="flex flex-wrap gap-4 pt-2">
-                        <ButtonInstrument as={Link} href="/agency/" className="va-btn-pro !rounded-xl">
+                        <ButtonInstrument as={Link} href="/" className="va-btn-pro !rounded-xl">
                           <VoiceglotText translationKey="account.welcome.cta_find" defaultText="Vind de perfecte stem" />
                           <ArrowRight size={16} className="ml-2" />
                         </ButtonInstrument>

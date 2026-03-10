@@ -80,6 +80,7 @@ export class VoiceFilterEngine {
 
     // 2. STRICT NATIVE LANGUAGE MATCHING (ID-First Mandate 2026)
     // 🛡️ CHRIS-PROTOCOL: Use languageId (singular) OR languageIds[0] (v2.28.1)
+    const effectiveLangId = criteria.languageId || (criteria.languageIds && criteria.languageIds.length > 0 ? criteria.languageIds[0] : null);
     if (effectiveLangId != null) {
       result = result.filter(actor => {
         // 🛡️ CHRIS-PROTOCOL: NATIVE-ONLY LOGIC (v2.28.79)

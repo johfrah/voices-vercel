@@ -608,7 +608,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
           <LanguageSwitcher className="w-10 h-10 rounded-[10px] bg-white/5 text-white/40 hover:text-[#FFC421] hover:bg-white/10 transition-all flex items-center justify-center" />
           <ButtonInstrument 
             as={Link} 
-            href="/agency/"
+            href="/"
             variant="plain"
             size="none"
             className="text-[11px] font-black uppercase tracking-widest text-white/20 hover:text-[#FFC421] transition-colors hidden lg:block border border-white/5 px-3 py-1.5 rounded-full"
@@ -1468,7 +1468,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
                     <div className="mt-4 px-1">
                       <ButtonInstrument 
                         as={VoicesLinkInstrument}
-                        href="/agency/"
+                        href="/"
                         variant="default"
                         className="flex items-center justify-center gap-2 w-full py-4 bg-va-black text-white rounded-xl text-[15px] font-light tracking-widest hover:bg-primary transition-all shadow-lg"
                       >
