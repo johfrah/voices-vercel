@@ -15,7 +15,7 @@ import { VoicesMasterControl } from "@/components/ui/VoicesMasterControl";
 import { buildCanonicalActorPath } from "@/lib/system/slug";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, Suspense, useState } from 'react';
+import { useEffect, Suspense, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from "next/dynamic";
 
@@ -62,9 +62,14 @@ export function VoiceDetailClient({
   const { updateJourney } = useMasterControl();
   const router = useRouter();
   const canonicalActorPath = buildCanonicalActorPath(actor?.slug, actor?.display_name || actor?.first_name);
+  const routeSyncKeyRef = useRef<string | null>(null);
 
   // Sync with checkout context on mount and when actor changes
   useEffect(() => {
+    const syncKey = `${actor?.id ?? 'unknown'}|${initialJourney ?? ''}|${initialMedium ?? ''}`;
+    if (routeSyncKeyRef.current === syncKey) return;
+    routeSyncKeyRef.current = syncKey;
+
     selectActor(actor);
     
     //  BOB-METHODE: URL-gebaseerde configuratie sync

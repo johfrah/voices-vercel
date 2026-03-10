@@ -230,8 +230,8 @@ export const VoicesMasterControlProvider: React.FC<{
       const journeyId =
         (journeyFromPath ? MarketManager.getJourneyId(journeyFromPath) : null) ||
         queryJourneyId ||
-        savedState.journeyId ||
-        MarketManager.getJourneyId(journey);
+        MarketManager.getJourneyId(journey) ||
+        savedState.journeyId;
       const targetUsage = SlimmeKassa.getUsageFromJourneyId(journeyId || journey);
 
       const initialLanguageParam = searchParams?.get('language');
@@ -543,7 +543,12 @@ export const VoicesMasterControlProvider: React.FC<{
         setState(prev => {
           const journey = urlState.journey || (searchParams?.get('journey') as JourneyType) || savedState.journey || prev.journey;
           const queryJourneyId = searchParams?.get('journeyId') ? parseInt(searchParams.get('journeyId')!, 10) : null;
-          const journeyId = (urlState as any).journeyId || (urlState.journey ? MarketManager.getJourneyId(urlState.journey) : null) || queryJourneyId || savedState.journeyId || MarketManager.getJourneyId(journey);
+          const journeyId =
+            (urlState as any).journeyId ||
+            (urlState.journey ? MarketManager.getJourneyId(urlState.journey) : null) ||
+            queryJourneyId ||
+            MarketManager.getJourneyId(journey) ||
+            savedState.journeyId;
           
           return {
             ...prev,
