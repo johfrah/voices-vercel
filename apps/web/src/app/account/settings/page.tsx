@@ -9,7 +9,7 @@ import { VoicesLink as Link } from '@/components/ui/VoicesLink';
 import { ActorProfileForm } from '@/components/forms/ActorProfileForm';
 import nextDynamic from 'next/dynamic';
 
-const LiquidBackground = nextDynamic(() => import('@/components/ui/LiquidBackground').then(mod => mod.LiquidBackground), { ssr: false });
+const LiquidBackground = nextDynamic(() => import('@/components/ui/LiquidBackground').then(mod => mod.LiquidBackground), { });
 
 export const dynamic = 'force-dynamic';
 

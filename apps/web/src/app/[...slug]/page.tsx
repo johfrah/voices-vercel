@@ -42,26 +42,25 @@ const supabase = createClient(supabaseUrl, supabaseKey, {
 
   //  NUCLEAR LOADING MANDATE
   const LiquidBackground = nextDynamic(() => import("@/components/ui/LiquidBackground").then(mod => mod.LiquidBackground), { 
-    ssr: false,
     loading: () => <ContainerInstrument className="fixed inset-0 z-0 bg-va-off-white" />
   });
-  const VideoPlayer = nextDynamic(() => import("@/components/academy/VideoPlayer").then(mod => mod.VideoPlayer), { ssr: false });
+  const VideoPlayer = nextDynamic(() => import("@/components/academy/VideoPlayer").then(mod => mod.VideoPlayer), { });
 
-const AgencyCalculator = nextDynamic(() => import("@/components/ui/AgencyCalculator").then(mod => mod.AgencyCalculator), { ssr: false });
+const AgencyCalculator = nextDynamic(() => import("@/components/ui/AgencyCalculator").then(mod => mod.AgencyCalculator), { });
 
 // Workshop Components
-const WorkshopCarousel = nextDynamic(() => import("@/components/studio/WorkshopCarousel").then(mod => mod.WorkshopCarousel), { ssr: false });
-const WorkshopCalendar = nextDynamic(() => import("@/components/studio/WorkshopCalendar").then(mod => mod.WorkshopCalendar), { ssr: false });
-const VideoPlayerIsland = nextDynamic(() => import("@/components/ui/VideoPlayer").then(mod => mod.VideoPlayer), { ssr: false });
-const JourneyCta = nextDynamic(() => import("@/components/ui/JourneyCta").then(mod => mod.JourneyCta), { ssr: false });
-const StudioLaunchpad = nextDynamic(() => import("@/components/ui/StudioLaunchpad").then(mod => mod.StudioLaunchpad), { ssr: false });
-const WorkshopQuiz = nextDynamic(() => import("@/components/studio/WorkshopQuiz").then(mod => mod.WorkshopQuiz), { ssr: false });
-const WorkshopInterestForm = nextDynamic(() => import("@/components/studio/WorkshopInterestForm").then(mod => mod.WorkshopInterestForm), { ssr: false });
+const WorkshopCarousel = nextDynamic(() => import("@/components/studio/WorkshopCarousel").then(mod => mod.WorkshopCarousel), { });
+const WorkshopCalendar = nextDynamic(() => import("@/components/studio/WorkshopCalendar").then(mod => mod.WorkshopCalendar), { });
+const VideoPlayerIsland = nextDynamic(() => import("@/components/ui/VideoPlayer").then(mod => mod.VideoPlayer), { });
+const JourneyCta = nextDynamic(() => import("@/components/ui/JourneyCta").then(mod => mod.JourneyCta), { });
+const StudioLaunchpad = nextDynamic(() => import("@/components/ui/StudioLaunchpad").then(mod => mod.StudioLaunchpad), { });
+const WorkshopQuiz = nextDynamic(() => import("@/components/studio/WorkshopQuiz").then(mod => mod.WorkshopQuiz), { });
+const WorkshopInterestForm = nextDynamic(() => import("@/components/studio/WorkshopInterestForm").then(mod => mod.WorkshopInterestForm), { });
 
 // Ademing Components
-const AdemingBento = nextDynamic(() => import("@/components/ui/ademing/AdemingBento").then(mod => mod.AdemingBento), { ssr: false });
-const MeditationPlayerInstrument = nextDynamic(() => import("@/components/ui/ademing/MeditationPlayerInstrument").then(mod => mod.MeditationPlayerInstrument), { ssr: false });
-const BreathingInstrument = nextDynamic(() => import("@/components/ui/ademing/BreathingInstrument").then(mod => mod.BreathingInstrument), { ssr: false });
+const AdemingBento = nextDynamic(() => import("@/components/ui/ademing/AdemingBento").then(mod => mod.AdemingBento), { });
+const MeditationPlayerInstrument = nextDynamic(() => import("@/components/ui/ademing/MeditationPlayerInstrument").then(mod => mod.MeditationPlayerInstrument), { });
+const BreathingInstrument = nextDynamic(() => import("@/components/ui/ademing/BreathingInstrument").then(mod => mod.BreathingInstrument), { });
 
 /**
  *  SUZY-MANDATE: Generate Structured Data (JSON-LD) for Voice Actors
@@ -1190,11 +1189,11 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
           
           if (workshop) {
             // 🛡️ CHRIS-PROTOCOL: Workshop Detail Handshake (v2.16.097)
-            const WorkshopHeroIsland = nextDynamic(() => import("@/components/studio/WorkshopHeroIsland").then(mod => mod.WorkshopHeroIsland), { ssr: false });
-            const SkillDNAIsland = nextDynamic(() => import("@/components/studio/SkillDNAIsland").then(mod => mod.SkillDNAIsland), { ssr: false });
-            const DayScheduleIsland = nextDynamic(() => import("@/components/studio/DayScheduleIsland").then(mod => mod.DayScheduleIsland), { ssr: false });
-            const InstructorLocationIsland = nextDynamic(() => import("@/components/studio/InstructorLocationIsland").then(mod => mod.InstructorLocationIsland), { ssr: false });
-            const ReviewGrid = nextDynamic(() => import("@/components/studio/ReviewGrid").then(mod => mod.ReviewGrid), { ssr: false });
+            const WorkshopHeroIsland = nextDynamic(() => import("@/components/studio/WorkshopHeroIsland").then(mod => mod.WorkshopHeroIsland), { });
+            const SkillDNAIsland = nextDynamic(() => import("@/components/studio/SkillDNAIsland").then(mod => mod.SkillDNAIsland), { });
+            const DayScheduleIsland = nextDynamic(() => import("@/components/studio/DayScheduleIsland").then(mod => mod.DayScheduleIsland), { });
+            const InstructorLocationIsland = nextDynamic(() => import("@/components/studio/InstructorLocationIsland").then(mod => mod.InstructorLocationIsland), { });
+            const ReviewGrid = nextDynamic(() => import("@/components/studio/ReviewGrid").then(mod => mod.ReviewGrid), { });
 
   return (
     <PageWrapperInstrument className="bg-va-off-white min-h-screen pb-32">
@@ -1469,8 +1468,8 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
       {/* 🎭 JOHFRAI WORLD: AI Mixer Entry (v2.16.101) */}
       {lookupSlug === 'johfrai' && (
         (() => {
-          const LiveMixer = nextDynamic(() => import("@/components/johfrai/LiveMixerInstrument").then(mod => mod.LiveMixerInstrument), { ssr: false });
-          const SmartDemoExplorer = nextDynamic(() => import("@/components/johfrai/SmartDemoExplorer").then(mod => mod.SmartDemoExplorer), { ssr: false });
+          const LiveMixer = nextDynamic(() => import("@/components/johfrai/LiveMixerInstrument").then(mod => mod.LiveMixerInstrument), { });
+          const SmartDemoExplorer = nextDynamic(() => import("@/components/johfrai/SmartDemoExplorer").then(mod => mod.SmartDemoExplorer), { });
           
           return (
             <PageWrapperInstrument className="bg-va-black min-h-screen text-white">

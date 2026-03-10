@@ -7,7 +7,7 @@ import { AdminMobileDock } from '@/components/admin/AdminMobileDock';
 import { LoadingScreenInstrument } from '@/components/ui/LayoutInstruments';
 
 //  NUCLEAR LOADING MANDATE
-const LiquidBackground = nextDynamic(() => import('@/components/ui/LiquidBackground').then(mod => mod.LiquidBackground), { ssr: false });
+const LiquidBackground = nextDynamic(() => import('@/components/ui/LiquidBackground').then(mod => mod.LiquidBackground), { });
 
 export const metadata: Metadata = {
   title: 'Voices Admin | Admin',

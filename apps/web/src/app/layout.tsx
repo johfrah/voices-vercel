@@ -28,19 +28,18 @@ import { localeToBcp47, normalizeLocale, stripLocalePrefix, withLocalePrefix } f
 import { getServerUser, isAdminUser } from "@/lib/auth/server-auth";
 import { TemporaryLightMode } from "@/components/light/temporary-light-mode";
 
-//  NUCLEAR LOADING MANDATE: Zware instrumenten dynamisch laden (ssr: false) voor 100ms LCP
-const JohfrahActionDock = dynamic(() => import("@/components/portfolio/JohfrahActionDock").then(mod => mod.JohfrahActionDock), { ssr: false, loading: () => null });
-const JohfrahConfiguratorSPA = dynamic(() => import("@/components/portfolio/JohfrahConfiguratorSPA").then(mod => mod.JohfrahConfiguratorSPA), { ssr: false, loading: () => null });
-const CastingDock = dynamic(() => import("@/components/ui/CastingDock").then(mod => mod.CastingDock), { ssr: false, loading: () => null });
-const SonicDNAHandler = dynamic(() => import("@/components/ui/SonicDNA").then(mod => mod.SonicDNAHandler), { ssr: false, loading: () => null });
-const GlobalAudioOrchestrator = dynamic(() => import("@/components/ui/GlobalAudioOrchestrator").then(mod => mod.GlobalAudioOrchestrator), { ssr: false, loading: () => null });
-const TopBar = dynamic(() => import("@/components/ui/TopBar").then(mod => mod.TopBar), { ssr: false, loading: () => <div className="h-[80px] bg-va-off-white/50 backdrop-blur-md" /> });
-const GlobalNav = dynamic(() => import("@/components/ui/GlobalNav"), { ssr: false, loading: () => <div className="h-[60px] bg-va-off-white/50 backdrop-blur-md" /> });
-const FooterWrapper = dynamic(() => import("@/components/ui/FooterWrapper"), { ssr: false, loading: () => null });
-const VoicejarTracker = dynamic(() => import("@/components/ui/VoicejarTracker").then(mod => mod.VoicejarTracker), { ssr: false, loading: () => null });
-const VoicyBridge = dynamic(() => import("@/components/ui/VoicyBridge").then(mod => mod.VoicyBridge), { ssr: false, loading: () => null });
+//  NUCLEAR LOADING MANDATE: Zware instrumenten dynamisch laden () voor 100ms LCP
+const JohfrahActionDock = dynamic(() => import("@/components/portfolio/JohfrahActionDock").then(mod => mod.JohfrahActionDock), { loading: () => null });
+const JohfrahConfiguratorSPA = dynamic(() => import("@/components/portfolio/JohfrahConfiguratorSPA").then(mod => mod.JohfrahConfiguratorSPA), { loading: () => null });
+const CastingDock = dynamic(() => import("@/components/ui/CastingDock").then(mod => mod.CastingDock), { loading: () => null });
+const SonicDNAHandler = dynamic(() => import("@/components/ui/SonicDNA").then(mod => mod.SonicDNAHandler), { loading: () => null });
+const GlobalAudioOrchestrator = dynamic(() => import("@/components/ui/GlobalAudioOrchestrator").then(mod => mod.GlobalAudioOrchestrator), { loading: () => null });
+const TopBar = dynamic(() => import("@/components/ui/TopBar").then(mod => mod.TopBar), { loading: () => <div className="h-[80px] bg-va-off-white/50 backdrop-blur-md" /> });
+const GlobalNav = dynamic(() => import("@/components/ui/GlobalNav"), { loading: () => <div className="h-[60px] bg-va-off-white/50 backdrop-blur-md" /> });
+const FooterWrapper = dynamic(() => import("@/components/ui/FooterWrapper"), { loading: () => null });
+const VoicejarTracker = dynamic(() => import("@/components/ui/VoicejarTracker").then(mod => mod.VoicejarTracker), { loading: () => null });
+const VoicyBridge = dynamic(() => import("@/components/ui/VoicyBridge").then(mod => mod.VoicyBridge), { loading: () => null });
 const VoicyChat = dynamic(() => import("@/components/ui/VoicyChat").then(mod => ({ default: mod.VoicyChatV2 })), { 
-  ssr: false,
   loading: () => null 
 });
 async function withTimeoutFallback<T>(executor: () => Promise<T>, timeoutMs: number, fallbackValue: T): Promise<T> {

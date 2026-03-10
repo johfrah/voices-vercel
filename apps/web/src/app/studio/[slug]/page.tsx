@@ -4,7 +4,7 @@
  * ID-First Handshake: Resolves via slug_registry FIRST.
  * Routing: workshop → detail page, article → InstrumentRenderer/specific component.
  * Sub-Foyer: doe-je-mee, quiz, faq, contact (World 2 info pages).
- * Nuclear Loading: Islands loaded dynamically (ssr: false).
+ * Nuclear Loading: Islands loaded dynamically ().
  */
 
 import { ContainerInstrument, HeadingInstrument, PageWrapperInstrument, TextInstrument } from "@/components/ui/LayoutInstruments";
@@ -16,16 +16,16 @@ import nextDynamic from "next/dynamic";
 import { getStudioWorkshopsData, WorkshopApiResponse } from "@/lib/services/studio-service";
 import { createClient } from "@supabase/supabase-js";
 
-// NUCLEAR ISLANDS (ssr: false)
-const WorkshopHeroIsland = nextDynamic(() => import("@/components/studio/WorkshopHeroIsland").then(mod => mod.WorkshopHeroIsland), { ssr: false });
-const SkillDNAIsland = nextDynamic(() => import("@/components/studio/SkillDNAIsland").then(mod => mod.SkillDNAIsland), { ssr: false });
-const DayScheduleIsland = nextDynamic(() => import("@/components/studio/DayScheduleIsland").then(mod => mod.DayScheduleIsland), { ssr: false });
-const InstructorLocationIsland = nextDynamic(() => import("@/components/studio/InstructorLocationIsland").then(mod => mod.InstructorLocationIsland), { ssr: false });
-const ReviewGrid = nextDynamic(() => import("@/components/studio/ReviewGrid").then(mod => mod.ReviewGrid), { ssr: false });
-const LiquidBackground = nextDynamic(() => import("@/components/ui/LiquidBackground").then(mod => mod.LiquidBackground), { ssr: false });
-const VideoPlayerDynamic = nextDynamic(() => import("@/components/ui/VideoPlayer").then(mod => mod.VideoPlayer), { ssr: false });
-const WorkshopInterestForm = nextDynamic(() => import("@/components/studio/WorkshopInterestForm").then(mod => mod.WorkshopInterestForm), { ssr: false });
-const WorkshopQuiz = nextDynamic(() => import("@/components/studio/WorkshopQuiz").then(mod => mod.WorkshopQuiz), { ssr: false });
+// NUCLEAR ISLANDS ()
+const WorkshopHeroIsland = nextDynamic(() => import("@/components/studio/WorkshopHeroIsland").then(mod => mod.WorkshopHeroIsland), { });
+const SkillDNAIsland = nextDynamic(() => import("@/components/studio/SkillDNAIsland").then(mod => mod.SkillDNAIsland), { });
+const DayScheduleIsland = nextDynamic(() => import("@/components/studio/DayScheduleIsland").then(mod => mod.DayScheduleIsland), { });
+const InstructorLocationIsland = nextDynamic(() => import("@/components/studio/InstructorLocationIsland").then(mod => mod.InstructorLocationIsland), { });
+const ReviewGrid = nextDynamic(() => import("@/components/studio/ReviewGrid").then(mod => mod.ReviewGrid), { });
+const LiquidBackground = nextDynamic(() => import("@/components/ui/LiquidBackground").then(mod => mod.LiquidBackground), { });
+const VideoPlayerDynamic = nextDynamic(() => import("@/components/ui/VideoPlayer").then(mod => mod.VideoPlayer), { });
+const WorkshopInterestForm = nextDynamic(() => import("@/components/studio/WorkshopInterestForm").then(mod => mod.WorkshopInterestForm), { });
+const WorkshopQuiz = nextDynamic(() => import("@/components/studio/WorkshopQuiz").then(mod => mod.WorkshopQuiz), { });
 
 // 🛡️ CHRIS-PROTOCOL: SDK for slug_registry resolution
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;

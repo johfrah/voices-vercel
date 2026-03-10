@@ -2,8 +2,8 @@
  * Studio Page (2026)
  *
  * Fetches workshops directly via getStudioWorkshopsData and renders:
- * - WorkshopCarousel (next/dynamic ssr: false)
- * - ReviewGrid (next/dynamic ssr: false)
+ * - WorkshopCarousel (next/dynamic )
+ * - ReviewGrid (next/dynamic )
  *
  * @protocol BOB-METHODE: Islands, Nuclear Loading
  * @protocol CHRIS-PROTOCOL: Direct DB access via StudioService (v2.16.103)
@@ -83,13 +83,12 @@ const normalizeSubtitleTracks = (workshop: any): SubtitleTrack[] => {
 
 const LiquidBackground = nextDynamic(
   () => import("@/components/ui/LiquidBackground").then((mod) => mod.LiquidBackground),
-  { ssr: false, loading: () => <div className="fixed inset-0 z-0 bg-va-off-white" /> }
+  { loading: () => <div className="fixed inset-0 z-0 bg-va-off-white" /> }
 );
 
 const StudioWorkshopsSection = nextDynamic(
   () => import("@/components/studio/StudioWorkshopsSection").then((mod) => mod.StudioWorkshopsSection),
   {
-    ssr: false,
     loading: () => (
       <div className="py-24 flex items-center justify-center">
         <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />

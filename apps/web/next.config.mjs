@@ -74,9 +74,7 @@ const nextConfig = {
       typescript: {
         ignoreBuildErrors: true, // 🛡️ CHRIS-PROTOCOL: Tijdelijk terug op true om Vercel build te laten slagen, maar we fixen de slop in de achtergrond.
       },
-  experimental: {
-    serverComponentsExternalPackages: ['soap', 'get-stream'],
-  },
+  serverExternalPackages: ['soap', 'get-stream'],
   images: {
     remotePatterns: [
       {
