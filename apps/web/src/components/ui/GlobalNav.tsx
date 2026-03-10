@@ -665,13 +665,13 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
 
   return (
     <ContainerInstrument as="nav" className={`w-full px-4 md:px-6 py-1 flex items-center bg-va-off-white/80 backdrop-blur-3xl border-b border-black/5 golden-curve relative`}>
-      <ContainerInstrument plain className="flex-1 flex justify-start">
+      <ContainerInstrument plain className="flex-1 flex justify-start pointer-events-none">
         <ButtonInstrument 
           as={VoicesLink}
           href="/" 
           variant="plain"
           size="none"
-          className="flex items-center gap-2 md:gap-3 group"
+          className="flex items-center gap-2 md:gap-3 group pointer-events-auto"
           onClick={() => { playClick('soft'); }}
           onMouseEnter={() => { 
             if (!masterState.isMuted) {
@@ -715,7 +715,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
       </ButtonInstrument>
     </ContainerInstrument>
 
-        <ContainerInstrument plain className="hidden md:flex gap-8 absolute left-1/2 -translate-x-1/2 items-center z-50">
+        <ContainerInstrument plain className="hidden md:flex gap-8 absolute left-1/2 -translate-x-1/2 items-center z-[120]">
       {activeLinks.slice(0, 6).map((link: any, idx: number) => {
         const isActive = pathname.startsWith(link.href) && link.href !== '#';
         const hasSubmenu = link.submenu && link.submenu.length > 0;
