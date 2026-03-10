@@ -1408,7 +1408,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
             isActive={isMobile}
           >
             <ContainerInstrument plain className="p-1 space-y-1">
-              if (isMobile && !isStudioJourney) (
+              {isMobile && !isStudioJourney && (
                 <>
                   <ContainerInstrument plain className="px-4 py-3 border-b border-black/5 mb-1">
                     <TextInstrument className="text-[11px] font-bold text-va-black/40 tracking-[0.2em] uppercase">
