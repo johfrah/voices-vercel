@@ -113,7 +113,7 @@
     "drizzle-kit": "^0.31.8",
     "eslint": "^8.57.0",
     "eslint-config-next": "^15.5.10",
-    "postcss": "^8",
+    "postcss": "^8.4.31",
     "tailwindcss": "^3.4.1",
     "tsx": "^4.21.0",
     "typescript": "^5",

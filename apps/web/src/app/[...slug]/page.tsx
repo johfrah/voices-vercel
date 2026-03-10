@@ -610,7 +610,7 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
     return {};
   }
 
-  const headersList = headers();
+  const headersList = await headers();
   const host = (headersList.get('host') || (MarketManager.getMarketDomains()['BE']?.replace('https://', '') || MarketManager.getMarketDomains()['BE']?.replace('https://', ''))).replace(/^https?:\/\//, '');
   const market = MarketManager.getCurrentMarket(host);
   const lang = normalizeLocale(headersList.get('x-voices-lang') || 'nl-be');
@@ -843,7 +843,7 @@ export default async function SmartRoutePage({ params }: { params: SmartRoutePar
 
 async function SmartRouteContent({ segments }: { segments: string[] }) {
   const normalizedSlug = normalizeSlug(segments);
-  const headersList = headers();
+  const headersList = await headers();
   const lang = normalizeLocale(headersList.get('x-voices-lang') || 'nl-be');
   
   // 🛡️ CHRIS-PROTOCOL: Strip language prefix if present (e.g. /nl/johfrah -> johfrah)

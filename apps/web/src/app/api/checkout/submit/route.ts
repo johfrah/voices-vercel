@@ -311,7 +311,7 @@ function resolveCheckoutItemName(item: any): string {
 export async function POST(request: Request) {
   return await ServerWatchdog.atomic('CheckoutAPI', 'SubmitOrder', {}, async () => {
     let rawBody: any = null;
-    const headersList = headers();
+    const headersList = await headers();
     const host = headersList.get('host') || MarketManager.getMarketDomains()['BE']?.replace('https://', '');
     const marketConfig = MarketManager.getCurrentMarket(host);
     const marketBaseUrl =

@@ -21,7 +21,7 @@ export interface AuthSession {
  */
 export async function getAuthSession(): Promise<AuthSession> {
   // In een echte implementatie halen we dit uit een JWT of Supabase Auth
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const role = cookieStore.get('voices_role')?.value as UserRole || 'guest';
   const isEditMode = cookieStore.get('voices_edit_mode')?.value === 'true';
   

@@ -171,7 +171,7 @@ export const viewport: Viewport = {
 };
 
 export async function generateMetadata(): Promise<Metadata> {
-  const headersList = headers();
+  const headersList = await headers();
   const langHeader = headersList.get('x-voices-lang');
   const activeLocale = normalizeLocale(langHeader || 'nl-be');
   const pathname = headersList.get('x-voices-pathname') || '';
@@ -324,7 +324,7 @@ export default async function RootLayout({
   children: React.ReactNode;
   params: { slug?: string[] };
 }) {
-  const headersList = headers();
+  const headersList = await headers();
   const langHeader = headersList.get('x-voices-lang');
   const pathname = headersList.get('x-voices-pathname') || '';
   const host = headersList.get("x-voices-host") || headersList.get("host") || process.env.NEXT_PUBLIC_SITE_URL || MarketManagerServer.getMarketDomains()['BE'].replace('https://', '');
@@ -425,7 +425,7 @@ export default async function RootLayout({
       temporaryLightModeRaw !== null &&
       (temporaryLightModeRaw as { enabled?: boolean }).enabled === true);
   const serverUser = isTemporaryLightModeEnabled ? await getServerUser() : null;
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const hasLegacyAdminCookieBridge =
     process.env.VOICES_ENABLE_LEGACY_ADMIN_BRIDGE === 'true' &&
     cookieStore.get('voices_role')?.value === 'admin' &&

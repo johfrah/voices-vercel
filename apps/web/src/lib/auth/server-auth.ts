@@ -24,7 +24,7 @@ export interface ServerUser {
  * Haal de huidige user op (Supabase + users table). Null als niet ingelogd.
  */
 export async function getServerUser(): Promise<ServerUser | null> {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const roleCookie = cookieStore.get('voices_role');
   const bridgeToken = cookieStore.get('sb-access-token');
 

@@ -22,7 +22,8 @@ export function createClientSafe(): SupabaseClient | null {
     return null
   }
 
-  const cookieStore = cookies()
+  type CookieStore = Awaited<ReturnType<typeof cookies>>
+  const cookieStore = cookies() as unknown as CookieStore
 
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
