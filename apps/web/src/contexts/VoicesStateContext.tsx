@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useCallback } from 'react';
 import { Actor } from '@/types';
 import { VoicesState, VoicesStateContext, VoicesStateContextType, initialState } from './VoicesStateContextCore';
 import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
@@ -93,10 +93,10 @@ export const VoicesStateProvider: React.FC<{ children: React.ReactNode }> = ({ c
   
   const updateSector = (current_sector: string | null) => setState(prev => ({ ...prev, current_sector }));
   
-  const updateJourney = (current_journey: VoicesState['current_journey']) => {
+  const updateJourney = useCallback((current_journey: VoicesState['current_journey']) => {
     const current_journey_id = MarketManager.getJourneyId(current_journey);
     setState(prev => ({ ...prev, current_journey, current_journey_id }));
-  };
+  }, []);
 
   const updateIntent = (intent: Partial<VoicesState['intent']>) => 
     setState(prev => ({ ...prev, intent: { ...prev.intent, ...intent } }));
