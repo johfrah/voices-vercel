@@ -270,7 +270,7 @@ export default function ActorProposalsPage() {
                       Biografie
                     </h5>
                     <div className="p-6 bg-va-off-white rounded-3xl border border-black/5 text-sm font-light leading-relaxed text-va-black/70 italic">
-                      "{selectedProposal.proposalData.bio || 'Geen biografie opgegeven'}"
+                      &ldquo;{selectedProposal.proposalData.bio || 'Geen biografie opgegeven'}&rdquo;
                     </div>
                   </div>
 

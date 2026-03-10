@@ -7,6 +7,9 @@ import { NextResponse } from 'next/server';
  */
 export async function POST() {
   const supabase = createClient();
+  if (!supabase) {
+    return NextResponse.json({ success: false, error: 'Auth client unavailable' }, { status: 500 });
+  }
   
   // We signen de huidige (geïmpersoneerde) gebruiker uit
   await supabase.auth.signOut();

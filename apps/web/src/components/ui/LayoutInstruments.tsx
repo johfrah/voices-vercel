@@ -9,7 +9,7 @@
 
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
-import React, { ButtonHTMLAttributes, ElementType, FormHTMLAttributes, forwardRef, HTMLAttributes, InputHTMLAttributes, ReactNode, SelectHTMLAttributes, TextareaHTMLAttributes } from 'react';
+import React, { ButtonHTMLAttributes, ElementType, FormHTMLAttributes, forwardRef, HTMLAttributes, InputHTMLAttributes, LabelHTMLAttributes, ReactNode, SelectHTMLAttributes, TextareaHTMLAttributes } from 'react';
 
 // Re-export server components
 export { 
@@ -136,7 +136,7 @@ export const LabelInstrument = ({
   children, 
   className = '',
   ...props
-}: HTMLAttributes<HTMLLabelElement>) => {
+}: LabelHTMLAttributes<HTMLLabelElement>) => {
   return (
     <label 
       className={cn("text-[13px] font-light tracking-widest text-va-black/40 ml-4 mb-2 block relative z-0", className)} 

@@ -32,7 +32,7 @@ class SonicDNA {
   /**
    * De 'Signature Click' - Gebruikt voor knoppen en selecties.
    */
-  async playClick(type: 'soft' | 'pro' | 'pop' | 'success' | 'lock' | 'unlock' = 'soft') {
+  async playClick(type: 'soft' | 'pro' | 'pop' | 'success' | 'lock' | 'unlock' | 'light' | 'deep' | 'error' | 'warning' | 'swell' = 'soft') {
     if (this.isMuted) return;
     
     // 🛡️ CHRIS-PROTOCOL: Only initialize for high-intent actions (v2.15.086)
@@ -159,7 +159,7 @@ export const useSonicDNA = () => {
   const masterControl = useContext(VoicesMasterControlContext);
   const state = masterControl?.state;
   
-  const playClick = useCallback((type: 'soft' | 'pro' | 'pop' | 'success' | 'lock' | 'unlock' = 'soft') => {
+  const playClick = useCallback((type: 'soft' | 'pro' | 'pop' | 'success' | 'lock' | 'unlock' | 'light' | 'deep' | 'error' | 'warning' | 'swell' = 'soft') => {
     if (state?.isMuted) return;
     return sonicDNA.playClick(type);
   }, [state?.isMuted]);

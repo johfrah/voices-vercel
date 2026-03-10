@@ -21,6 +21,7 @@ import { VoicesLinkInstrument, useVoicesRouter } from '@/components/ui/VoicesLin
 import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
 import { useAuth } from '@/contexts/AuthContext';
 import { useMasterControl } from '@/contexts/VoicesMasterControlContext';
+import { useConsent } from '@/hooks/useConsent';
 import toast from 'react-hot-toast';
 
 /**
@@ -34,6 +35,7 @@ export const CastingDock = () => {
   const { state, toggleActorSelection } = useVoicesState();
   const { playClick } = useSonicDNA();
   const { isAdmin } = useAuth();
+  const { consent, isLoaded: isConsentLoaded } = useConsent();
   const { t } = useTranslation();
   const { state: masterState } = useMasterControl();
   const isTelephony = masterState?.journey === 'telephony';
@@ -46,7 +48,8 @@ export const CastingDock = () => {
   const isExcludedMarket = ['ARTIST', 'PORTFOLIO', 'ADEMING'].includes(market.market_code);
   const isExcludedPage = isExcludedMarket || 
                          pathname?.startsWith('/casting/launchpad');
-  const isVisible = selectedActors.length > 0 && !isExcludedPage;
+  const isConsentPending = isConsentLoaded && consent === 'none';
+  const isVisible = selectedActors.length > 0 && !isExcludedPage && !isConsentPending;
 
   const removeActor = (e: React.MouseEvent, actor: any) => {
     e.stopPropagation();

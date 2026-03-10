@@ -12,7 +12,13 @@ export async function POST(request: NextRequest) {
   try {
     const { path, referrer } = await request.json();
     const result = await SelfHealingService.handle404(path, referrer);
-    return NextResponse.json({ success: true, ...result });
+    const destination = typeof result?.suggestion === 'string' ? result.suggestion : null;
+    return NextResponse.json({
+      success: true,
+      type: destination ? 'redirect' : 'none',
+      destination,
+      suggestion: destination
+    });
   } catch (error) {
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }

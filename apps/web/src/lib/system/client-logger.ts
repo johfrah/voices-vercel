@@ -77,6 +77,9 @@ export class ClientLogger {
         
         // Voorkom loops met onze eigen logs
         if (message.includes('/api/admin/system/')) return;
+        if (message.includes('[Watchdog] Client-side error caught:')) return;
+        if (message.includes('[Watchdog] Unhandled promise rejection:')) return;
+        if (message.includes('Watchdog failed:')) return;
 
         this.addBreadcrumb(level, message.substring(0, 500));
 
@@ -131,6 +134,20 @@ export class ClientLogger {
 
       // 🛡️ CHRIS-PROTOCOL: Safe includes check
       const isSystemApi = typeof url === 'string' && url.includes('/api/admin/system/');
+      const isWatchdogApi =
+        typeof url === 'string' &&
+        (url.includes('/api/watchdog/') || url.includes('/api/admin/system/watchdog'));
+      const init = (args[1] && typeof args[1] === 'object' ? args[1] : undefined) as RequestInit | undefined;
+      const rawHeaders = init?.headers;
+      let versionCheckHeader = '';
+      if (rawHeaders && typeof Headers !== 'undefined' && rawHeaders instanceof Headers) {
+        versionCheckHeader = rawHeaders.get('X-Version-Check') || '';
+      } else if (rawHeaders && !Array.isArray(rawHeaders)) {
+        versionCheckHeader = String((rawHeaders as Record<string, string>)['X-Version-Check'] || (rawHeaders as Record<string, string>)['x-version-check'] || '');
+      } else if (Array.isArray(rawHeaders)) {
+        const headerTuple = rawHeaders.find(([k]) => k.toLowerCase() === 'x-version-check');
+        versionCheckHeader = headerTuple ? String(headerTuple[1]) : '';
+      }
       
       if (url && !isSystemApi) {
         this.addBreadcrumb('fetch', `${method} ${url}`);
@@ -139,7 +156,7 @@ export class ClientLogger {
       try {
         const response = await originalFetch(...args);
         
-        if (!response.ok && url && !isSystemApi) {
+        if (!response.ok && url && !isSystemApi && !isWatchdogApi) {
           this.addBreadcrumb('error', `Fetch Failed: ${response.status} ${url}`);
           const clone = response.clone();
           clone.text().then(body => {
@@ -154,12 +171,18 @@ export class ClientLogger {
         
         return response;
       } catch (error: any) {
-        if (url && !isSystemApi) {
+        if (url && !isSystemApi && !isWatchdogApi) {
+          const isGeneralConfigPoll = url.includes('/api/admin/config') && url.includes('type=general');
+          const isVersionCheck = isGeneralConfigPoll && versionCheckHeader === 'true';
+          const isOffline = typeof navigator !== 'undefined' && navigator.onLine === false;
+          const isTransientConfigNetworkDrop = isOffline || isVersionCheck || isGeneralConfigPoll;
+          const reportLevel: 'warn' | 'error' = isTransientConfigNetworkDrop ? 'warn' : 'error';
           this.addBreadcrumb('error', `Fetch Network Error: ${url}`);
-          this.report('error', `Network Error: ${url}`, {
+          this.report(reportLevel, `Network Error: ${url}`, {
             url,
             error: error.message,
-            stack: error.stack
+            stack: error.stack,
+            is_transient_config_network_drop: isTransientConfigNetworkDrop
           });
         }
         throw error;
@@ -296,6 +319,14 @@ export class ClientLogger {
         return;
       }
 
+      // Local/dev sessions can have transient API disconnects (e.g. stopped dev server).
+      // Do not escalate those to critical Watchdog alerts.
+      const isLocalSession = typeof window !== 'undefined' && (
+        window.location.hostname === 'localhost' ||
+        window.location.hostname === '127.0.0.1'
+      );
+      const shouldEscalateWatchdog = level === 'error' && !isLocalSession;
+
       const payload = JSON.stringify({
         level,
         message,
@@ -323,7 +354,7 @@ export class ClientLogger {
         navigator.sendBeacon('/api/admin/system/logs', blob);
         
         // Als het een error is, sturen we hem ook naar de Watchdog voor escalatie
-        if (level === 'error') {
+        if (shouldEscalateWatchdog) {
           navigator.sendBeacon('/api/admin/system/watchdog', blob);
         }
       } else {
@@ -336,7 +367,7 @@ export class ClientLogger {
         
         await fetch('/api/admin/system/logs', fetchOptions);
         
-        if (level === 'error') {
+        if (shouldEscalateWatchdog) {
           await fetch('/api/admin/system/watchdog', fetchOptions);
         }
       }

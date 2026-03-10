@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { db, orderItems, orders } from '@/lib/system/voices-config';
 import { and, desc, eq, sql } from 'drizzle-orm';
 

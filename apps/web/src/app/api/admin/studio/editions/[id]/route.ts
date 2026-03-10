@@ -46,3 +46,24 @@ export async function PATCH(
     return NextResponse.json({ error: 'Failed to update edition' }, { status: 500 });
   }
 }
+
+export async function DELETE(
+  _request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  const auth = await requireAdmin();
+  if (auth instanceof NextResponse) return auth;
+
+  const id = parseInt(params.id);
+  if (isNaN(id)) {
+    return NextResponse.json({ error: 'Invalid ID' }, { status: 400 });
+  }
+
+  try {
+    await db.delete(workshopEditions).where(eq(workshopEditions.id, id));
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('[Admin Studio Edition DELETE Error]:', error);
+    return NextResponse.json({ error: 'Failed to delete edition' }, { status: 500 });
+  }
+}

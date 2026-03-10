@@ -188,6 +188,8 @@ export default async function StudioSlugPage({ params }: { params: { slug: strin
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 function renderWorkshopDetail(workshop: WorkshopApiResponse['workshops'][number]) {
+  const hasUpcomingEdition = Array.isArray(workshop.upcoming_editions) && workshop.upcoming_editions.length > 0;
+
   return (
     <PageWrapperInstrument className="bg-va-off-white min-h-screen pb-32">
       <Suspense fallback={<ContainerInstrument className="h-[600px] bg-va-black animate-pulse" />}>
@@ -337,6 +339,26 @@ function renderWorkshopDetail(workshop: WorkshopApiResponse['workshops'][number]
               </ContainerInstrument>
             ))}
           </ContainerInstrument>
+        </ContainerInstrument>
+      )}
+
+      {!hasUpcomingEdition && (
+        <ContainerInstrument id="workshop-interest-form" className="max-w-5xl mx-auto px-6 mt-24">
+          <ContainerInstrument plain className="text-center mb-12">
+            <TextInstrument className="text-[11px] font-bold tracking-[0.3em] uppercase text-primary mb-4">
+              <VoiceglotText translationKey="studio.detail.interest_label" defaultText="Interesselijst" />
+            </TextInstrument>
+            <HeadingInstrument level={2} className="text-3xl md:text-4xl font-light tracking-tighter text-va-black mb-4">
+              <VoiceglotText translationKey="studio.detail.interest_title" defaultText="Nog geen datum? Zet je op de lijst." />
+            </HeadingInstrument>
+            <TextInstrument className="text-va-black/50 font-light leading-relaxed max-w-2xl mx-auto">
+              <VoiceglotText
+                translationKey="studio.detail.interest_subtitle"
+                defaultText="Laat je gegevens achter en we contacteren je als er een nieuwe editie voor deze workshop gepland staat."
+              />
+            </TextInstrument>
+          </ContainerInstrument>
+          <WorkshopInterestForm preselectedWorkshopId={workshop.id} hideWorkshopSelection />
         </ContainerInstrument>
       )}
 

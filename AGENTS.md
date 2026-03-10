@@ -85,9 +85,10 @@ No raw `<div>`, `<h1>`, `<p>`, `<section>`, `<main>` in new components.
 
 ### Standard Commands
 
+- Cloud setup: `npm run setup:cloud`
 - Dev: `npm run dev`
 - Lint: `npm run lint`
-- Type-check: `cd apps/web && npx tsc --noEmit`
+- Type-check: `npm run type-check`
 - Build: `npm run build`
 
 ### Execution Lanes
@@ -101,6 +102,37 @@ No raw `<div>`, `<h1>`, `<p>`, `<section>`, `<main>` in new components.
 - Use non-overlapping scopes per worker.
 - Reuse existing dev server/process state when possible.
 - Avoid running identical commands repeatedly with unchanged context.
+
+### Mobile UX Acceptance Checklist (Mandatory for UI Changes)
+
+When a task changes public UI or interaction flows, agents must validate both mobile and desktop behavior with explicit evidence.
+
+Required mobile routes (minimum scope):
+- `/agency/video`
+- `/agency/commercial`
+- `/checkout/configurator`
+- `/cart`
+- `/checkout`
+- `/studio`
+
+Acceptance criteria:
+- Minimum tap target for primary controls: 44px.
+- No overlay may block primary CTA buttons.
+- Chat launcher must not obstruct checkout controls.
+- Modal interactions must support close button + Escape + backdrop close.
+- Filter controls and order controls must be easy to tap on mobile.
+- Light and dark mode readability must be validated for changed controls.
+
+Required report format:
+- PASS/FAIL table per tested route.
+- List of fixed issues.
+- List of remaining risks/blockers.
+- Walkthrough artifacts: at least 1 video and 3 screenshots for UI-heavy tasks.
+
+### Git Workflow Preference (User Override)
+
+- Default: direct push/merge to `main` is allowed.
+- Only use branch-first safe deploy when the user explicitly asks for it.
 
 ### Known Gotchas
 
@@ -148,9 +180,14 @@ No raw `<div>`, `<h1>`, `<p>`, `<section>`, `<main>` in new components.
    - `apps/web/src/app/Providers.tsx`
    - `apps/web/src/app/api/admin/config/route.ts`
 2. Run `npm run check:pre-vercel`.
-3. Commit using `vX.Y.Z: [Message]`.
-4. Push to `main` to trigger Vercel deployment.
-5. Verify deployment status using:
+3. Main branch is hard-gated by Husky (`.husky/pre-push` + `.husky/pre-merge-commit`) and must pass:
+   - `npm run verify:workspace-lock`
+   - `npm run type-check`
+   - `npm run lint`
+   - `npm run check:pre-vercel`
+4. Commit using `vX.Y.Z: [Message]`.
+5. Push to `main` to trigger Vercel deployment.
+6. Verify deployment status using:
    - `gh api repos/johfrah/voices-vercel/commits/<sha>/status`
    - or `npx vercel ls --token "$VERCEL_TOKEN"`
 

@@ -14,6 +14,7 @@ import { WorkshopParticipantForm } from "./WorkshopParticipantForm";
 interface WorkshopHeroIslandProps {
   workshop: {
     id: number;
+    slug?: string;
     title: string;
     price: number | string;
     expert_note?: string;
@@ -86,7 +87,14 @@ export const WorkshopHeroIsland: React.FC<WorkshopHeroIslandProps> = ({ workshop
     if (hasEdition) {
       setShowParticipantForm(true);
     } else {
-      router.push(`/studio/doe-je-mee?workshopId=${workshop.id}`);
+      const interestForm = typeof document !== 'undefined'
+        ? document.getElementById('workshop-interest-form')
+        : null;
+      if (interestForm) {
+        interestForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        return;
+      }
+      router.push(`/studio/${workshop.slug || workshop.id}#workshop-interest-form`);
     }
   };
 

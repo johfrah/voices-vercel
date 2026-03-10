@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import {
   ContainerInstrument,
   ButtonInstrument,
@@ -9,6 +9,45 @@ import {
 } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { AlertCircle, RefreshCw } from 'lucide-react';
+
+const TRANSIENT_RESET_BUDGET_KEY = 'voices_transient_reset_budget_v1';
+const TRANSIENT_RESET_WINDOW_MS = 60000;
+const MAX_TRANSIENT_RESETS = 2;
+
+function isTransientConnectionError(error: Error & { digest?: string }) {
+  const message = `${error?.message || ''} ${error?.name || ''}`.toLowerCase();
+  return (
+    message.includes('connection closed') ||
+    message.includes('failed to fetch') ||
+    message.includes('network error') ||
+    message.includes('load failed')
+  );
+}
+
+function consumeTransientResetBudget() {
+  if (typeof window === 'undefined') return false;
+  const now = Date.now();
+  let state = { window_start: now, count: 0 };
+  try {
+    const raw = sessionStorage.getItem(TRANSIENT_RESET_BUDGET_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw) as { window_start?: number; count?: number };
+      state = {
+        window_start: Number(parsed.window_start) || now,
+        count: Number(parsed.count) || 0
+      };
+    }
+  } catch {}
+
+  if (now - state.window_start > TRANSIENT_RESET_WINDOW_MS) {
+    state = { window_start: now, count: 0 };
+  }
+  if (state.count >= MAX_TRANSIENT_RESETS) return false;
+
+  state.count += 1;
+  sessionStorage.setItem(TRANSIENT_RESET_BUDGET_KEY, JSON.stringify(state));
+  return true;
+}
 
 /**
  *  APP ERROR (NUCLEAR 2026)
@@ -21,25 +60,53 @@ export default function Error({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const onlineListenerRegistered = useRef(false);
+
   useEffect(() => {
     console.error('App error:', error);
     
-    //  CHRIS-PROTOCOL: Self-Healing for Chunk Errors (Deployment Skew)
-    // Als een chunk niet geladen kan worden, is er waarschijnlijk een nieuwe versie gepusht.
-    // We herladen de pagina geforceerd om de nieuwste assets op te halen.
-    if (error.message?.includes('Loading chunk') && error.message?.includes('failed')) {
-      console.warn('[Nuclear] Chunk error detected. Triggering self-healing reload...');
+    //  CHRIS-PROTOCOL: Self-Healing for deploy skew / hydration drift.
+    // Bij chunk- en bekende RSC-hydrationfouten doen we één gecontroleerde reload.
+    const message = error.message || '';
+    const shouldSelfHealReload =
+      /Loading chunk|ChunkLoadError|CSS_CHUNK_LOAD_FAILED|dynamically imported module/i.test(message) ||
+      message.includes('Minified React error #419') ||
+      message.includes('Server Components render');
+
+    if (shouldSelfHealReload) {
+      console.warn('[Nuclear] Recoverable render/chunk error detected. Triggering self-healing reload...');
       
       // Voorkom oneindige reload loops
-      const lastReload = sessionStorage.getItem('voices_last_chunk_reload');
+      const lastReload = sessionStorage.getItem('voices_last_self_heal_reload');
       const now = Date.now();
       
-      if (!lastReload || (now - parseInt(lastReload)) > 30000) {
-        sessionStorage.setItem('voices_last_chunk_reload', now.toString());
+      if (!lastReload || (now - parseInt(lastReload, 10)) > 45000) {
+        sessionStorage.setItem('voices_last_self_heal_reload', now.toString());
         setTimeout(() => {
           window.location.reload();
         }, 1000);
         return;
+      }
+    }
+
+    if (isTransientConnectionError(error)) {
+      const attemptReset = () => {
+        if (consumeTransientResetBudget()) {
+          reset();
+        }
+      };
+
+      if (!navigator.onLine) {
+        if (!onlineListenerRegistered.current) {
+          const handleOnline = () => {
+            onlineListenerRegistered.current = false;
+            attemptReset();
+          };
+          onlineListenerRegistered.current = true;
+          window.addEventListener('online', handleOnline, { once: true });
+        }
+      } else {
+        attemptReset();
       }
     }
 
@@ -63,7 +130,7 @@ export default function Error({
     };
 
     notifyWatchdog();
-  }, [error]);
+  }, [error, reset]);
 
   return (
     <ContainerInstrument className="min-h-[60vh] flex flex-col items-center justify-center gap-8 py-20 px-6">
@@ -73,7 +140,11 @@ export default function Error({
           <VoiceglotText translationKey="auto.error.diagnostic_info_.a840d6" defaultText="Diagnostic Info:" />
         </TextInstrument>
         <TextInstrument className="text-red-800 font-mono text-[15px]">{error.message || 'Unknown error'}</TextInstrument>
-        {error.cause && <TextInstrument className="text-red-600 font-mono text-[15px] mt-2 border-t border-red-100 pt-2">Cause: {String(error.cause)}</TextInstrument>}
+        {Boolean(error.cause) ? (
+          <TextInstrument className="text-red-600 font-mono text-[15px] mt-2 border-t border-red-100 pt-2">
+            Cause: {String(error.cause)}
+          </TextInstrument>
+        ) : null}
         <TextInstrument className="text-red-400 font-mono text-[15px] mt-2">Digest: {error.digest || 'no-digest'}</TextInstrument>
       </ContainerInstrument>
       <ContainerInstrument className="w-20 h-20 bg-primary/10 text-primary rounded-3xl flex items-center justify-center">

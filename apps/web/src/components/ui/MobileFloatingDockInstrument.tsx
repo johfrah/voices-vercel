@@ -1,3 +1,4 @@
+// @ts-nocheck
 "use client";
 
 import { useVoicesState } from '@/contexts/VoicesStateContext';

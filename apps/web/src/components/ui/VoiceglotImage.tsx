@@ -30,6 +30,7 @@ export const VoiceglotImage: React.FC<VoiceglotImageProps> = ({
   onUpdate,
   className,
   alt,
+  onError: externalOnError,
   ...props 
 }) => {
   const { isEditMode } = useEditMode();
@@ -46,7 +47,7 @@ export const VoiceglotImage: React.FC<VoiceglotImageProps> = ({
     setError(false);
   }, [src]);
 
-  const handleError = () => {
+  const handleError: React.ReactEventHandler<HTMLImageElement> = (event) => {
     if (error) return; // Prevent infinite loop
     setError(true);
     
@@ -75,6 +76,10 @@ export const VoiceglotImage: React.FC<VoiceglotImageProps> = ({
       //  CHRIS-PROTOCOL: No Voicy fallback for branding/system assets
       // We prefer a broken image icon over a confusing avatar
       console.warn(`[VoiceglotImage] Asset failed to load: ${currentSrc}`);
+    }
+
+    if (typeof externalOnError === 'function') {
+      externalOnError(event);
     }
   };
 

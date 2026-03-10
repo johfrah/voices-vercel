@@ -61,6 +61,29 @@ import { LanguageSwitcher } from './LanguageSwitcher';
 
 import { useMasterControl } from '@/contexts/VoicesMasterControlContext';
 
+function getJourneyDefaultLinks(journeyKey: string) {
+  if (journeyKey === 'studio') {
+    return [
+      { name: 'Maak een afspraak', href: '/studio/doe-je-mee', key: 'nav.studio.appointment' },
+      {
+        name: 'Workshops',
+        href: '/studio#workshops',
+        key: 'nav.studio.workshops',
+        submenu: [{ name: 'Alle workshops', href: '/studio#workshops', key: 'nav.studio.workshops.all' }]
+      },
+      { name: 'Doe je mee?', href: '/studio/doe-je-mee', key: 'nav.studio.join' },
+      { name: 'FAQ', href: '/studio/faq', key: 'nav.studio.faq' }
+    ];
+  }
+
+  return [
+    { name: 'Onze Stemmen', href: '/agency/', key: 'nav.my_voice' },
+    { name: 'Gratis Proefopname', href: '/casting/video/', key: 'nav.free_demo' },
+    { name: 'Tarieven', href: '/tarieven/', key: 'nav.pricing' },
+    { name: 'Contact', href: '/contact/', key: 'nav.contact' }
+  ];
+}
+
 /**
  *  HEADER ICON INSTRUMENT
  * Focus: High-End Interactie & Duidelijkheid
@@ -327,12 +350,21 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
   
   const [navConfig, setNavConfig] = useState<NavConfig | null>(initialNavConfig || null);
   const [links, setLinks] = useState<any[]>(initialNavConfig?.links || []);
+  const [logoFallbackTried, setLogoFallbackTried] = useState(false);
   const [isEditingLink, setIsEditingLink] = useState<number | null>(null);
   const [editValue, setEditValue] = useState('');
   const popoverRef = useRef<HTMLDivElement>(null);
 
   const getJourneyKey = useCallback(() => {
-    // 🛡️ CHRIS-PROTOCOL: ID-First Journey Detection (v3.0.0)
+    // URL-first: shared domains like voices.be must respect /studio path.
+    if (pathname.startsWith('/studio') || pathname.includes('/studio')) return 'studio';
+    if (pathname.startsWith('/academy') || pathname.includes('/academy')) return 'academy';
+    if (pathname.startsWith('/ademing')) return 'ademing';
+    if (pathname.startsWith('/johfrai')) return 'johfrai';
+    if (pathname.startsWith('/freelance')) return 'freelance';
+    if (pathname.startsWith('/partner')) return 'partner';
+
+    // Fallback to handshake world when path does not indicate a journey.
     if (worldId === 1) return 'agency';
     if (worldId === 2) return 'studio';
     if (worldId === 3) return 'academy';
@@ -342,15 +374,6 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
     if (worldId === 10) return 'johfrai';
     if (worldId === 7) return 'freelance';
     if (worldId === 8) return 'partner';
-
-    // 🛡️ CHRIS-PROTOCOL: URL-First Journey Detection (v2.25.0)
-    // Ensures the header matches the current world context even on shared domains.
-    if (pathname.startsWith('/studio') || pathname.includes('/studio')) return 'studio';
-    if (pathname.startsWith('/academy') || pathname.includes('/academy')) return 'academy';
-    if (pathname.startsWith('/ademing')) return 'ademing';
-    if (pathname.startsWith('/johfrai')) return 'johfrai';
-    if (pathname.startsWith('/freelance')) return 'freelance';
-    if (pathname.startsWith('/partner')) return 'partner';
     
     switch (market.market_code) {
       case 'ADEMING': return 'ademing';
@@ -365,43 +388,62 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
     }
   }, [market.market_code, pathname, worldId]);
 
+  const normalizedNavLogoSrc = useMemo(() => {
+    const rawSrc = navConfig?.logo?.src;
+    if (!rawSrc) return rawSrc;
+    if (rawSrc.includes('Voices_LOGO_STUDIO.svg')) {
+      return '/icon-workshop.svg';
+    }
+    return rawSrc;
+  }, [navConfig?.logo?.src]);
+
+  const emergencyNavLogoSrc = useMemo(() => {
+    return getJourneyKey() === 'studio' ? '/icon-workshop.svg' : '/assets/common/branding/Voices-LOGO-Animated.svg';
+  }, [getJourneyKey]);
+
+  useEffect(() => {
+    setLogoFallbackTried(false);
+  }, [normalizedNavLogoSrc, pathname]);
+
+  const handleNavLogoError = useCallback(() => {
+    if (!navConfig?.logo || logoFallbackTried) return;
+    setLogoFallbackTried(true);
+    setNavConfig((prev) => {
+      if (!prev?.logo) return prev;
+      return {
+        ...prev,
+        logo: {
+          ...prev.logo,
+          src: emergencyNavLogoSrc
+        }
+      };
+    });
+  }, [navConfig?.logo, logoFallbackTried, emergencyNavLogoSrc]);
+
   useEffect(() => {
     setMounted(true);
     
     const fetchNavConfig = async () => {
-      // 🛡️ CHRIS-PROTOCOL: Skip fetch if we already have initial config from server
-      if (initialNavConfig && links.length > 0) return;
+      const journeyKey = getJourneyKey();
+      if (journeyKey === 'agency' && initialNavConfig && links.length > 0) return;
 
       try {
-        const journeyKey = getJourneyKey();
         console.log(`[GlobalNav] Fetching nav for journey: ${journeyKey}`);
         const res = await fetch(`/api/admin/config?type=navigation&journey=${journeyKey}&lang=${language}`);
         if (!res.ok) {
           throw new Error(`Nav fetch failed with status: ${res.status}`);
         }
         const data = await res.json();
-        if (data && data.links) {
+        if (data && Array.isArray(data.links) && data.links.length > 0) {
           setNavConfig(data);
           setLinks(data.links);
         } else {
-          // Fallback naar defaults als er geen database config is
-          const defaultLinks = [
-            { name: 'Onze Stemmen', href: '/agency/', key: 'nav.my_voice' },
-            { name: 'Gratis Proefopname', href: '/casting/video/', key: 'nav.free_demo' },
-            { name: 'Tarieven', href: '/tarieven/', key: 'nav.pricing' },
-            { name: 'Contact', href: '/contact/', key: 'nav.contact' }
-          ];
+          const defaultLinks = getJourneyDefaultLinks(journeyKey);
           setLinks(defaultLinks);
         }
       } catch (error) {
         console.error('Failed to fetch nav config:', error);
-        // Fallback bij error
-        const defaultLinks = [
-          { name: 'Onze Stemmen', href: '/agency/', key: 'nav.my_voice' },
-          { name: 'Gratis Proefopname', href: '/casting/video/', key: 'nav.free_demo' },
-          { name: 'Tarieven', href: '/tarieven/', key: 'nav.pricing' },
-          { name: 'Contact', href: '/contact/', key: 'nav.contact' }
-        ];
+        const defaultLinks = getJourneyDefaultLinks(journeyKey);
         setLinks(defaultLinks);
       }
     };
@@ -472,9 +514,8 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
   const [loginMessage, setLoginMessage] = useState('');
 
   const activeLinks = useMemo(() => {
-    // 🛡️ VISIONARY MANDATE: Links exclusively from database config
-    return navConfig?.links || [];
-  }, [navConfig]);
+    return links.length > 0 ? links : (navConfig?.links || []);
+  }, [links, navConfig]);
 
   const resolveLinkTranslationKey = useCallback((link: any, idx: number): string => {
     if (link?.key && String(link.key).trim()) return String(link.key).trim();
@@ -628,12 +669,13 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
         {navConfig?.logo?.src ? (
           <ContainerInstrument plain className="relative group/logo">
             <VoiceglotImage  
-              src={navConfig.logo.src} 
+              src={normalizedNavLogoSrc || navConfig.logo.src} 
               alt={navConfig.logo.alt || "Logo"} 
               width={navConfig.logo.width || 200} 
               height={navConfig.logo.height || 80}
               priority
               sizes="(max-width: 768px) 150px, 200px"
+              onError={handleNavLogoError}
               journey={getJourneyKey()}
               category="branding"
               onUpdate={(newSrc) => {
@@ -664,6 +706,10 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
       {activeLinks.slice(0, 6).map((link: any, idx: number) => {
         const isActive = pathname.startsWith(link.href) && link.href !== '#';
         const hasSubmenu = link.submenu && link.submenu.length > 0;
+        const isStudioWorkshopsLink =
+          getJourneyKey() === 'studio' &&
+          (String(link?.href || '').includes('/studio#workshops') ||
+            String(link?.name || '').toLowerCase().includes('workshop'));
 
         return (
           <ContainerInstrument plain key={idx} className="relative group/link flex items-center gap-1">
@@ -708,7 +754,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
 
             {hasSubmenu && (
               <ContainerInstrument plain className="absolute top-full left-1/2 -translate-x-1/2 pt-4 opacity-0 translate-y-2 pointer-events-none group-hover/link:opacity-100 group-hover/link:translate-y-0 group-hover/link:pointer-events-auto transition-all duration-500 z-[250]">
-                {(pathname.startsWith('/studio') && idx === 0) ? (
+                {isStudioWorkshopsLink ? (
                   <ContainerInstrument plain className="bg-va-off-white rounded-[20px] shadow-aura border border-black/5 w-[480px] overflow-hidden">
                     <StudioWorkshopsMenu />
                   </ContainerInstrument>

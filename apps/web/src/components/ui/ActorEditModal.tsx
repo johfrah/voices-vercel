@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Save, Loader2, AlertCircle, CheckCircle2, Play, Pause, Music, Tag, Briefcase, Globe, Clock, Camera, Tv, Radio, Mic, Mic2, Info as InfoIcon, ChevronDown, Sparkles, Zap, Award, Coffee, Settings, Video, Star, Calendar, Upload, Home, Image as ImageIcon } from 'lucide-react';
+import { X, Save, Loader2, AlertCircle, CheckCircle2, Play, Pause, Music, Tag, Briefcase, Globe, Clock, Camera, Tv, Radio, Mic, Mic2, Info as InfoIcon, ChevronDown, Sparkles, Zap, Award, Coffee, Settings, Video, Star, Calendar, Upload, Home, Image as ImageIcon, Share2 } from 'lucide-react';
 import { 
   ContainerInstrument, 
   HeadingInstrument, 
@@ -37,7 +37,7 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
   const { playClick } = useSonicDNA();
   const [taxonomies, setTaxonomies] = useState<{ tones: any[], languages: any[] }>({ tones: [], languages: [] });
   const [systemWorkingDays, setSystemWorkingDays] = useState<string[]>(['mon', 'tue', 'wed', 'thu', 'fri']);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<any>({
     display_name: actor.display_name || '',
     tagline: actor.tagline || '',
     bio: actor.bio || '',

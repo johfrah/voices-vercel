@@ -29,8 +29,27 @@ interface VoicesLinkProps extends LinkProps {
   routingType?: string;
 }
 
+const IN_APP_WEBVIEW_UA = /(instagram|fban|fbav|fb_iab|line\/|;\swv\))/i;
+
 function isModifiedNavigationEvent(event: React.MouseEvent<HTMLAnchorElement>) {
   return event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0;
+}
+
+function canUseAggressivePrefetch() {
+  if (typeof navigator === 'undefined') return true;
+  if (IN_APP_WEBVIEW_UA.test(navigator.userAgent || '')) return false;
+  const connection = (navigator as any).connection;
+  if (connection?.saveData) return false;
+  const effectiveType = String(connection?.effectiveType || '').toLowerCase();
+  if (effectiveType.includes('2g')) return false;
+  return true;
+}
+
+function getPrefetchRegistry() {
+  if (typeof window === 'undefined') return null;
+  const g = window as any;
+  if (!g.__voices_prefetched_links) g.__voices_prefetched_links = new Set<string>();
+  return g.__voices_prefetched_links as Set<string>;
 }
 
 export const VoicesLink = ({ 
@@ -103,15 +122,22 @@ export const VoicesLink = ({
 
   const localizedHref = getLocalizedHref();
   const isInternalHref = localizedHref.startsWith('/');
-
-  React.useEffect(() => {
-    if (!isInternalHref) return;
-    router.prefetch(localizedHref);
-  }, [isInternalHref, localizedHref, router]);
+  const canAggressivelyPrefetch = canUseAggressivePrefetch();
+  const nativePrefetchEnabled = isInternalHref && prefetch === true && canAggressivelyPrefetch;
 
   const triggerWarmup = (eventTargetHref: string) => {
     if (!eventTargetHref.startsWith('/')) return;
-    router.prefetch(eventTargetHref);
+    if (!canAggressivelyPrefetch) return;
+    if (pathname === eventTargetHref) return;
+
+    const registry = getPrefetchRegistry();
+    if (registry?.has(eventTargetHref)) return;
+    registry?.add(eventTargetHref);
+    try {
+      router.prefetch(eventTargetHref);
+    } catch {
+      registry?.delete(eventTargetHref);
+    }
   };
 
   const handleClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
@@ -144,7 +170,7 @@ export const VoicesLink = ({
     <Link 
       href={localizedHref} 
       className={className}
-      prefetch={isInternalHref ? (prefetch ?? true) : false}
+      prefetch={nativePrefetchEnabled}
       onClick={handleClick}
       onMouseEnter={handleMouseEnter}
       onTouchStart={handleTouchStart}

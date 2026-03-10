@@ -21,7 +21,17 @@ import React, { createContext, useCallback, useContext, useEffect, useState } fr
 
 interface CheckoutState {
   step: 'briefing' | 'voice' | 'details' | 'payment' | 'done';
-  journey: 'studio' | 'academy' | 'agency' | 'johfrai-subscription';
+  journey:
+    | 'studio'
+    | 'academy'
+    | 'agency'
+    | 'johfrai-subscription'
+    | 'johfrai'
+    | 'portfolio'
+    | 'ademing'
+    | 'freelance'
+    | 'partner'
+    | 'artist';
   courseId?: number;
   editionId?: number;
   upsells: {
@@ -67,6 +77,11 @@ interface CheckoutState {
     postal_code: string;
     country: string;
     vat_verified?: boolean;
+    active_coupon?: {
+      code?: string;
+      discount_percent?: number;
+      discount_amount?: number;
+    } | null;
   };
   paymentMethod: string;
   paymentMethods: any[];
@@ -77,10 +92,11 @@ interface CheckoutState {
   isLocked: boolean;
   mediaCache: Record<string, string[]>; //  NEW: Cache media selections per journey
   briefingFiles: {
-    id: string;
+    id: string | number;
     name: string;
     type: 'audio' | 'video' | 'text';
     url: string;
+    rawFile?: File;
   }[];
   ownMusicFile?: {
     name: string;
@@ -133,8 +149,8 @@ interface CheckoutContextType {
   restoreItem: (item: any) => void;
   resetSelection: () => void;
   calculatePricing: () => void;
-  addBriefingFile: (file: { name: string, type: 'audio' | 'video' | 'text', url: string }) => void;
-  removeBriefingFile: (id: string) => void;
+  addBriefingFile: (file: { id?: string | number; name: string; type: 'audio' | 'video' | 'text'; url: string; rawFile?: File }) => void;
+  removeBriefingFile: (id: string | number) => void;
   updateOwnMusicFile: (file?: { name: string, url: string }) => void;
   lockPrice: () => void;
   unlockPrice: () => void;
@@ -403,13 +419,22 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const setStep = useCallback((step: CheckoutState['step']) => setState(prev => ({ ...prev, step })), []);
   
   const setJourney = useCallback((journey: CheckoutState['journey'], courseId?: number) => {
-    const journeyId = (journey === 'agency') ? 27 : (journey === 'studio' ? 1 : (journey === 'academy' ? 30 : undefined));
+    const journeyIdMap: Partial<Record<CheckoutState['journey'], number>> = {
+      agency: 27,
+      studio: 1,
+      academy: 30,
+    };
+    const journeyId = journeyIdMap[journey];
+    const usage =
+      journey === 'studio' || journey === 'academy' || journey === 'johfrai' || journey === 'johfrai-subscription'
+        ? 'subscription'
+        : SlimmeKassa.getUsageFromJourneyId(journeyId || journey);
     setState(prev => {
       return {
         ...prev,
         journey,
         journeyId,
-        usage: SlimmeKassa.getUsageFromJourneyId(journeyId || journey),
+        usage,
         usageId: journeyId,
         courseId: journey === 'academy' ? courseId : undefined,
         editionId: journey === 'studio' ? courseId : undefined,
@@ -603,14 +628,14 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }));
   }, []);
 
-  const addBriefingFile = useCallback((file: { name: string, type: 'audio' | 'video' | 'text', url: string }) => {
+  const addBriefingFile = useCallback((file: { id?: string | number; name: string; type: 'audio' | 'video' | 'text'; url: string; rawFile?: File }) => {
     setState(prev => ({
       ...prev,
-      briefingFiles: [...prev.briefingFiles, { ...file, id: `file-${Date.now()}` }]
+      briefingFiles: [...prev.briefingFiles, { ...file, id: file.id ?? `file-${Date.now()}` }]
     }));
   }, []);
 
-  const removeBriefingFile = useCallback((id: string) => {
+  const removeBriefingFile = useCallback((id: string | number) => {
     setState(prev => ({
       ...prev,
       briefingFiles: prev.briefingFiles.filter(f => f.id !== id)

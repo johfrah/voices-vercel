@@ -12,7 +12,7 @@
  * GEEN EXTERNE DEPENDENCIES (zoals date-fns) om build issues te voorkomen.
  */
 
-import { DeliveryConfig } from "../types";
+import { DeliveryConfig } from "@/types";
 
 export interface DeliveryInfo {
   dateMin: Date;
@@ -288,8 +288,8 @@ export function calculateDeliveryDate(
   
   //  CHRIS-PROTOCOL: Combine availability array with flat holiday fields
   const effectiveAvailability = [...(actor.availability || [])];
-  if (actor.holiday_from && actor.holiday_till) {
-    effectiveAvailability.push({ start: actor.holiday_from, end: actor.holiday_till });
+  if (actor.holidayFrom && actor.holidayTill) {
+    effectiveAvailability.push({ start: actor.holidayFrom, end: actor.holidayTill });
   }
 
   // NUCLEAR GOD MODE: Gebruik de nieuwe delivery_config indien aanwezig

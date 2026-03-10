@@ -14,6 +14,7 @@ import { ClientLogger } from '@/lib/system/client-logger';
 import React, { ReactNode } from 'react';
 
 import { VersionGuard } from '@/components/system/VersionGuard';
+import { PwaBoot } from '@/components/system/PwaBoot';
 import { MarketConfig, MarketManager } from '@/lib/system/core/market-manager';
 import { Toaster } from 'react-hot-toast';
 
@@ -70,7 +71,7 @@ export function Providers({
 
   // 🛡️ CHRIS-PROTOCOL: Version Sync Mandate (v2.27.8)
   // Major Refactor: ID-First Handshake Architecture
-  const currentVersion = '2.28.56';
+  const currentVersion = '2.28.70';
 
   // 🛡️ CHRIS-PROTOCOL: Language is now strictly passed from Server (Source of Truth)
   // to prevent Hydration Mismatch errors (#419, #425).
@@ -80,7 +81,7 @@ export function Providers({
 
   // 🛡️ CHRIS-PROTOCOL: Prime MarketManager on the client with the server-provided market data
   // This prevents the client from falling back to static defaults during hydration.
-    if (typeof window !== 'undefined' && market) {
+  if (typeof window !== 'undefined' && market) {
     // We use a ref-like pattern to only prime once per mount
     const g = window as any;
     if (!g.__marketPrimed) {
@@ -125,6 +126,7 @@ export function Providers({
               <VoicesMasterControlProvider initialJourney={initialJourney} initialUsage={initialUsage}>
                 <TranslationProvider lang={activeLang} market={market} initialTranslations={initialTranslations}>
                   <VersionGuard currentVersion={currentVersion} />
+                  <PwaBoot />
                   <Toaster
                     position="top-center"
                     reverseOrder={false}

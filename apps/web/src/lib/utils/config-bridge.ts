@@ -203,6 +203,7 @@ export class ConfigBridge {
   }
 
   private static async hasNavMenusTable(): Promise<boolean> {
+    if (!db) return false;
     if (this.navMenusTableState === 'available') return true;
     if (this.navMenusTableState === 'missing') return false;
 
@@ -213,8 +214,8 @@ export class ConfigBridge {
       this.navMenusTableState = exists ? 'available' : 'missing';
       return exists;
     } catch {
-      // Bij check-failure laten we bestaande flow doorlopen voor maximale beschikbaarheid.
-      return true;
+      // Fail-closed: bij introspectiefout geen query-spam op ontbrekende tabel.
+      return false;
     }
   }
 
@@ -286,6 +287,14 @@ export class ConfigBridge {
    */
   static async saveNavConfig(key: string, config: NavConfig) {
     try {
+      const hasNavMenusTable = await this.hasNavMenusTable();
+      if (!hasNavMenusTable) {
+        if (this.shouldLog(`nav_menus:missing:save:${key}`)) {
+          console.warn(`[ConfigBridge] saveNavConfig overgeslagen: nav_menus ontbreekt voor ${key}.`);
+        }
+        return { success: false, error: new Error('nav_menus table missing') };
+      }
+
       const existing = await db.query.navMenus.findFirst({
         where: eq(navMenus.key, `nav_${key}`)
       });

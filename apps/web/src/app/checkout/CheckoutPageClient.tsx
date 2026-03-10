@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import {
     ButtonInstrument,
     ContainerInstrument,
@@ -28,6 +28,7 @@ const LiquidBackground = nextDynamic(() => import('@/components/ui/LiquidBackgro
 export default function CheckoutPageClient() {
   const { state, setJourney, addItem, removeItem, selectActor, isHydrated } = useCheckout();
   const pathname = usePathname();
+  type JourneyKey = Parameters<typeof setJourney>[0];
   const didMaterializeSelectedActorRef = useRef(false);
   const hasWorkshopItem = useMemo(
     () => (state.items || []).some((item: any) => item?.type === 'workshop_edition'),
@@ -47,14 +48,60 @@ export default function CheckoutPageClient() {
     return new URLSearchParams(window.location.search);
   }, []);
 
+  const resolveJourneyAlias = useCallback((value: string | null): JourneyKey | null => {
+    const normalized = String(value || '').trim().toLowerCase();
+    if (!normalized) return null;
+
+    const aliasMap: Record<string, JourneyKey> = {
+      agency: 'agency',
+      studio: 'studio',
+      academy: 'academy',
+      portfolio: 'portfolio',
+      ademing: 'ademing',
+      freelance: 'freelance',
+      partner: 'partner',
+      partners: 'partner',
+      johfrai: 'johfrai',
+      'johfrai-subscription': 'johfrai-subscription',
+      johfrai_subscription: 'johfrai-subscription',
+      artist: 'artist',
+    };
+
+    return aliasMap[normalized] || null;
+  }, []);
+
+  const journeyFromPath = useMemo<JourneyKey | null>(() => {
+    const path = (pathname || '').toLowerCase();
+    if (path.includes('/studio')) return 'studio';
+    if (path.includes('/academy')) return 'academy';
+    if (path.includes('/portfolio')) return 'portfolio';
+    if (path.includes('/ademing')) return 'ademing';
+    if (path.includes('/freelance')) return 'freelance';
+    if (path.includes('/partners')) return 'partner';
+    if (path.includes('/johfrai')) return 'johfrai';
+    if (path.includes('/artist')) return 'artist';
+    return null;
+  }, [pathname]);
+
   useEffect(() => {
-    const editionId = searchParams?.get('editionId');
-    const journey = searchParams?.get('journey');
-    
-    if (editionId && journey === 'studio') {
-      setJourney('studio', parseInt(editionId));
+    const editionIdRaw = searchParams?.get('editionId') || '';
+    const editionId = Number(editionIdRaw);
+    const queryJourney = resolveJourneyAlias(searchParams?.get('journey'));
+
+    if (queryJourney === 'studio' && Number.isFinite(editionId) && editionId > 0) {
+      setJourney('studio', editionId);
+      return;
     }
-  }, [searchParams, setJourney]);
+
+    if (queryJourney && state.journey !== queryJourney) {
+      setJourney(queryJourney);
+      return;
+    }
+
+    if (!queryJourney && journeyFromPath && state.journey !== journeyFromPath) {
+      setJourney(journeyFromPath);
+    }
+  }, [searchParams, setJourney, state.journey, journeyFromPath, resolveJourneyAlias]);
 
   useEffect(() => {
     if (!isHydrated || !pathname) return;
@@ -160,7 +207,7 @@ export default function CheckoutPageClient() {
     state.briefing,
     state.country,
     state.countryId,
-    state.items.length,
+    state.items,
     state.journeyId,
     state.liveSession,
     state.media,

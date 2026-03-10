@@ -59,10 +59,34 @@ import {
 import { VoiceglotImage } from './VoiceglotImage';
 import { VoiceglotText } from './VoiceglotText';
 import { VoicesLink, useVoicesRouter } from './VoicesLink';
+import { StudioWorkshopsMenu } from '@/components/studio/StudioWorkshopsMenu';
 
 import { LanguageSwitcher } from './LanguageSwitcher';
 
 import { useMasterControl } from '@/contexts/VoicesMasterControlContext';
+
+function getJourneyDefaultLinks(journeyKey: string) {
+  if (journeyKey === 'studio') {
+    return [
+      { name: 'Maak een afspraak', href: '/studio/doe-je-mee', key: 'nav.studio.appointment' },
+      {
+        name: 'Workshops',
+        href: '/studio#workshops',
+        key: 'nav.studio.workshops',
+        submenu: [{ name: 'Alle workshops', href: '/studio#workshops', key: 'nav.studio.workshops.all' }]
+      },
+      { name: 'Doe je mee?', href: '/studio/doe-je-mee', key: 'nav.studio.join' },
+      { name: 'FAQ', href: '/studio/faq', key: 'nav.studio.faq' }
+    ];
+  }
+
+  return [
+    { name: 'Onze Stemmen', href: '/agency/', key: 'nav.my_voice' },
+    { name: 'Gratis Proefopname', href: '/casting/video/', key: 'nav.free_demo' },
+    { name: 'Tarieven', href: '/tarieven/', key: 'nav.pricing' },
+    { name: 'Contact', href: '/contact/', key: 'nav.contact' }
+  ];
+}
 
 /**
  *  HEADER ICON INSTRUMENT
@@ -330,6 +354,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
   
   const [navConfig, setNavConfig] = useState<NavConfig | null>(initialNavConfig || null);
   const [links, setLinks] = useState<any[]>(initialNavConfig?.links || []);
+  const [logoFallbackTried, setLogoFallbackTried] = useState(false);
   const [isEditingLink, setIsEditingLink] = useState<number | null>(null);
   const [editValue, setEditValue] = useState('');
   const popoverRef = useRef<HTMLDivElement>(null);
@@ -369,6 +394,41 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
     }
   }, [market.market_code, pathname, worldId]);
 
+  const normalizedNavLogoSrc = useMemo(() => {
+    const rawSrc = navConfig?.logo?.src;
+    if (!rawSrc) return rawSrc;
+
+    // Legacy studio alias that frequently 404s in storage snapshots.
+    if (rawSrc.includes('Voices_LOGO_STUDIO.svg')) {
+      return '/icon-workshop.svg';
+    }
+
+    return rawSrc;
+  }, [navConfig?.logo?.src]);
+
+  const emergencyNavLogoSrc = useMemo(() => {
+    return getJourneyKey() === 'studio' ? '/icon-workshop.svg' : '/assets/common/branding/Voices-LOGO-Animated.svg';
+  }, [getJourneyKey]);
+
+  useEffect(() => {
+    setLogoFallbackTried(false);
+  }, [normalizedNavLogoSrc, pathname]);
+
+  const handleNavLogoError = useCallback(() => {
+    if (!navConfig?.logo || logoFallbackTried) return;
+    setLogoFallbackTried(true);
+    setNavConfig((prev) => {
+      if (!prev?.logo) return prev;
+      return {
+        ...prev,
+        logo: {
+          ...prev.logo,
+          src: emergencyNavLogoSrc
+        }
+      };
+    });
+  }, [navConfig?.logo, logoFallbackTried, emergencyNavLogoSrc]);
+
   useEffect(() => {
     setMounted(true);
     
@@ -385,28 +445,16 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
           throw new Error(`Nav fetch failed with status: ${res.status}`);
         }
         const data = await res.json();
-        if (data && data.links) {
+        if (data && Array.isArray(data.links) && data.links.length > 0) {
           setNavConfig(data);
           setLinks(data.links);
         } else {
-          // Fallback naar defaults als er geen database config is
-          const defaultLinks = [
-            { name: 'Onze Stemmen', href: '/agency/', key: 'nav.my_voice' },
-            { name: 'Gratis Proefopname', href: '/casting/video/', key: 'nav.free_demo' },
-            { name: 'Tarieven', href: '/tarieven/', key: 'nav.pricing' },
-            { name: 'Contact', href: '/contact/', key: 'nav.contact' }
-          ];
+          const defaultLinks = getJourneyDefaultLinks(journeyKey);
           setLinks(defaultLinks);
         }
       } catch (error) {
         console.error('Failed to fetch nav config:', error);
-        // Fallback bij error
-        const defaultLinks = [
-          { name: 'Onze Stemmen', href: '/agency/', key: 'nav.my_voice' },
-          { name: 'Gratis Proefopname', href: '/casting/video/', key: 'nav.free_demo' },
-          { name: 'Tarieven', href: '/tarieven/', key: 'nav.pricing' },
-          { name: 'Contact', href: '/contact/', key: 'nav.contact' }
-        ];
+        const defaultLinks = getJourneyDefaultLinks(journeyKey);
         setLinks(defaultLinks);
       }
     };
@@ -478,9 +526,9 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
   const [loginMessage, setLoginMessage] = useState('');
 
   const activeLinks = useMemo(() => {
-    // 🛡️ VISIONARY MANDATE: Links exclusively from database config
-    return navConfig?.links || [];
-  }, [navConfig]);
+    // Prefer fetched/fallback state links; fall back to config snapshot.
+    return links.length > 0 ? links : (navConfig?.links || []);
+  }, [links, navConfig]);
 
   const resolveLinkTranslationKey = useCallback((link: any, idx: number): string => {
     if (link?.key && String(link.key).trim()) return String(link.key).trim();
@@ -634,12 +682,13 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
         {navConfig?.logo?.src ? (
           <ContainerInstrument plain className="relative group/logo">
             <VoiceglotImage  
-              src={navConfig.logo.src} 
+              src={normalizedNavLogoSrc || navConfig.logo.src} 
               alt={navConfig.logo.alt || "Logo"} 
               width={navConfig.logo.width || 200} 
               height={navConfig.logo.height || 80}
               priority
               sizes="(max-width: 768px) 150px, 200px"
+              onError={handleNavLogoError}
               journey={getJourneyKey()}
               category="branding"
               onUpdate={(newSrc) => {
@@ -670,6 +719,10 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
       {activeLinks.slice(0, 6).map((link: any, idx: number) => {
         const isActive = pathname.startsWith(link.href) && link.href !== '#';
         const hasSubmenu = link.submenu && link.submenu.length > 0;
+        const isStudioWorkshopsLink =
+          getJourneyKey() === 'studio' &&
+          (String(link?.href || '').includes('/studio#workshops') ||
+            String(link?.name || '').toLowerCase().includes('workshop'));
 
         return (
           <ContainerInstrument plain key={idx} className="relative group/link flex items-center gap-1">
@@ -721,16 +774,22 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
 
             {hasSubmenu && (
               <ContainerInstrument plain className="absolute top-full left-1/2 -translate-x-1/2 pt-4 opacity-0 translate-y-2 pointer-events-none group-hover/link:opacity-100 group-hover/link:translate-y-0 group-hover/link:pointer-events-auto transition-all duration-500 z-[250]">
-                <ContainerInstrument plain className="bg-va-off-white rounded-[20px] shadow-aura border border-black/5 p-2 w-64 overflow-hidden">
-                  {link.submenu.map((sub: any, subIdx: number) => (
-                    <DropdownItem 
-                      key={subIdx}
-                      icon={ChevronRight}
-                      label={<VoiceglotText translationKey={sub.key} defaultText={sub.name} />}
-                      href={sub.href}
-                    />
-                  ))}
-                </ContainerInstrument>
+                {isStudioWorkshopsLink ? (
+                  <ContainerInstrument plain className="bg-va-off-white rounded-[20px] shadow-aura border border-black/5 w-[480px] overflow-hidden">
+                    <StudioWorkshopsMenu />
+                  </ContainerInstrument>
+                ) : (
+                  <ContainerInstrument plain className="bg-va-off-white rounded-[20px] shadow-aura border border-black/5 p-2 w-64 overflow-hidden">
+                    {link.submenu.map((sub: any, subIdx: number) => (
+                      <DropdownItem 
+                        key={subIdx}
+                        icon={ChevronRight}
+                        label={<VoiceglotText translationKey={sub.key} defaultText={sub.name} />}
+                        href={sub.href}
+                      />
+                    ))}
+                  </ContainerInstrument>
+                )}
               </ContainerInstrument>
             )}
 

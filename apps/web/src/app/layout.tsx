@@ -13,7 +13,7 @@ import { MarketDatabaseService } from "@/lib/system/market-manager-db";
 import { createClient } from "@supabase/supabase-js";
 import type { Metadata, Viewport } from "next";
 import { Inter, Raleway, Cormorant_Garamond } from "next/font/google";
-import { headers } from "next/headers";
+import { cookies, headers } from "next/headers";
 import Link from "next/link";
 import { Suspense } from "react";
 import dynamic from "next/dynamic";
@@ -25,6 +25,8 @@ import { cn } from "@/lib/utils";
 import { SafeErrorGuard } from "@/components/ui/SafeErrorGuard";
 import { ConfigBridge } from "@/lib/utils/config-bridge";
 import { localeToBcp47, normalizeLocale, stripLocalePrefix, withLocalePrefix } from "@/lib/system/locale-utils";
+import { getServerUser, isAdminUser } from "@/lib/auth/server-auth";
+import { TemporaryLightMode } from "@/components/light/temporary-light-mode";
 
 //  NUCLEAR LOADING MANDATE: Zware instrumenten dynamisch laden (ssr: false) voor 100ms LCP
 const JohfrahActionDock = dynamic(() => import("@/components/portfolio/JohfrahActionDock").then(mod => mod.JohfrahActionDock), { ssr: false, loading: () => null });
@@ -57,6 +59,10 @@ async function withTimeoutFallback<T>(executor: () => Promise<T>, timeoutMs: num
   } finally {
     if (timeoutHandle) clearTimeout(timeoutHandle);
   }
+}
+
+function isTimeoutError(error: unknown): boolean {
+  return error instanceof Error && /timeout/i.test(error.message);
 }
 
 const inter = Inter({ subsets: ["latin"] });
@@ -135,7 +141,11 @@ async function getMarketSafe(host: string) {
     
     return market;
   } catch (err) {
-    console.error(' getMarketSafe: Failed or timed out:', err);
+    if (isTimeoutError(err)) {
+      console.warn(' getMarketSafe: timed out, using fallback host');
+    } else {
+      console.error(' getMarketSafe: Failed:', err);
+    }
     const fallbackHost = process.env.NEXT_PUBLIC_SITE_URL?.replace('https://', '') || 'voices.be';
     return MarketManagerServer.getCurrentMarket(fallbackHost);
   }
@@ -182,7 +192,11 @@ export async function generateMetadata(): Promise<Metadata> {
         );
         return await Promise.race([localesPromise, timeoutPromise]) as any;
       } catch (err) {
-        console.error(' generateMetadata: Failed to load locales:', err);
+        if (isTimeoutError(err)) {
+          console.warn(' generateMetadata: locales timeout, using static domains fallback');
+        } else {
+          console.error(' generateMetadata: Failed to load locales:', err);
+        }
         const staticDomains = MarketManagerServer.getMarketDomains();
         return {
           'nl-BE': staticDomains['BE'],
@@ -200,7 +214,11 @@ export async function generateMetadata(): Promise<Metadata> {
         );
         return await Promise.race([translationPromise, timeoutPromise]) as any;
       } catch (err) {
-        console.error(' generateMetadata: Failed to load translations:', err);
+        if (isTimeoutError(err)) {
+          console.warn(' generateMetadata: translations timeout, using empty fallback');
+        } else {
+          console.error(' generateMetadata: Failed to load translations:', err);
+        }
         return {};
       }
     })()
@@ -253,7 +271,19 @@ export async function generateMetadata(): Promise<Metadata> {
       template: `%s | ${market.name}`,
     },
     description,
+    manifest: "/manifest.webmanifest",
     icons,
+    appleWebApp: {
+      capable: true,
+      statusBarStyle: "default",
+      title: "Voices Admin",
+      startupImage: ["/favicon.svg"],
+    },
+    formatDetection: {
+      telephone: false,
+      email: false,
+      address: false,
+    },
     metadataBase: host ? new URL(new URL(canonicalUrl).origin) : undefined,
     alternates: {
       canonical: canonicalUrl,
@@ -311,7 +341,7 @@ export default async function RootLayout({
 
   // CHRIS-PROTOCOL: `world_languages` ontbreekt momenteel in production schema.
   // Vermijd per-request 404 storm; language switcher gebruikt dan de bestaande market fallback.
-  const [market, studioTranslations, handshakeLanguages, worldConfig] = await Promise.all([
+  const [market, studioTranslations, handshakeLanguages, worldConfig, temporaryLightModeRaw] = await Promise.all([
     getMarketSafe(marketHost),
     (async () => {
       try {
@@ -321,7 +351,11 @@ export default async function RootLayout({
         );
         return await Promise.race([translationPromise, timeoutPromise]) as any;
       } catch (err) {
-        console.error(' RootLayout: Failed to load translations:', err);
+        if (isTimeoutError(err)) {
+          console.warn(' RootLayout: translations timeout, using empty fallback');
+        } else {
+          console.error(' RootLayout: Failed to load translations:', err);
+        }
         return {};
       }
     })(),
@@ -330,11 +364,34 @@ export default async function RootLayout({
         const { data } = await supabase.from('languages').select('id, code, label');
         return data || [];
       } catch (err) {
-        console.error(' RootLayout: Failed to load language registry:', err);
+        if (isTimeoutError(err)) {
+          console.warn(' RootLayout: language registry timeout, using empty fallback');
+        } else {
+          console.error(' RootLayout: Failed to load language registry:', err);
+        }
         return [];
       }
     }, 2500, []),
-    withTimeoutFallback(() => ConfigBridge.getWorldConfig(worldId, languageId), 2500, null)
+    withTimeoutFallback(() => ConfigBridge.getWorldConfig(worldId, languageId), 2500, null),
+    withTimeoutFallback(async () => {
+      try {
+        const { data, error } = await supabase
+          .from('app_configs')
+          .select('value')
+          .eq('key', 'temporary_light_mode')
+          .maybeSingle();
+
+        if (error) throw error;
+        return data?.value ?? null;
+      } catch (err) {
+        if (isTimeoutError(err)) {
+          console.warn(' RootLayout: temporary light mode config timeout, using null fallback');
+        } else {
+          console.error(' RootLayout: Failed to load temporary light mode config:', err);
+        }
+        return null;
+      }
+    }, 2500, null)
   ]);
 
   const worldLanguages: Array<{ world_id: number; language_id: number; is_primary: boolean; is_popular: boolean }> = [];
@@ -361,6 +418,19 @@ export default async function RootLayout({
   const isAdeming = market.market_code === 'ADEMING';
   const isOffline = process.env.ADEMING_OFFLINE === 'true';
   const isAdmin = isAdminRoute; // Simple check for layout logic
+  const isAuthRoute = pathname.startsWith('/account') || pathname.startsWith('/auth');
+  const isTemporaryLightModeEnabled =
+    temporaryLightModeRaw === true ||
+    (typeof temporaryLightModeRaw === 'object' &&
+      temporaryLightModeRaw !== null &&
+      (temporaryLightModeRaw as { enabled?: boolean }).enabled === true);
+  const serverUser = isTemporaryLightModeEnabled ? await getServerUser() : null;
+  const cookieStore = cookies();
+  const hasLegacyAdminCookieBridge =
+    process.env.VOICES_ENABLE_LEGACY_ADMIN_BRIDGE === 'true' &&
+    cookieStore.get('voices_role')?.value === 'admin' &&
+    Boolean(cookieStore.get('sb-access-token')?.value);
+  const isAdminViewer = isAdminUser(serverUser) || hasLegacyAdminCookieBridge;
   
   const htmlClass = `${isAdeming ? cormorant.className : raleway.className} ${inter.className} ${cormorant.variable} theme-${isAdeming ? 'ademing' : market.theme} ${raleway.variable}`;
   const bodyClass = cn(
@@ -399,6 +469,35 @@ export default async function RootLayout({
             <SafeErrorGuard>
               <Suspense fallback={isAdeming && isOffline ? null : <LoadingScreenInstrument text={isAdminRoute ? "Beheer laden..." : "Studio laden..."} />}>
                 {children}
+              </Suspense>
+            </SafeErrorGuard>
+          </Providers>
+        </body>
+      </html>
+    );
+  }
+
+  if (isTemporaryLightModeEnabled && !isAdminViewer && !isAuthRoute) {
+    const lightBodyClass = cn(
+      "pb-[calc(6rem+env(safe-area-inset-bottom))] md:pb-0 touch-manipulation va-main-layout overflow-x-hidden",
+      "pt-0"
+    );
+
+    return (
+      <html lang={htmlLang} className={htmlClass} suppressHydrationWarning>
+        <body className={lightBodyClass} suppressHydrationWarning>
+          <Providers
+            lang={lang}
+            market={market}
+            initialTranslations={studioTranslations}
+            initialJourney={initialJourney}
+            initialUsage={initialUsage}
+            handshakeContext={handshakeContext}
+            handshakeLanguages={handshakeLanguages}
+          >
+            <SafeErrorGuard>
+              <Suspense fallback={<LoadingScreenInstrument text="Light modus laden..." />}>
+                <TemporaryLightMode />
               </Suspense>
             </SafeErrorGuard>
           </Providers>

@@ -1,35 +1,113 @@
 import { db } from '@/lib/system/voices-config';
 import { sql } from 'drizzle-orm';
-import { createClient } from '@supabase/supabase-js';
+
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://vcbxyyjsxuquytcsskpj.supabase.co';
+const STORAGE_BASE = `${SUPABASE_URL.replace(/\/$/, '')}/storage/v1/object/public/voices`;
 
 /** Media ID voor Studio hero video (workshop-beginners-aftermovie). Override via env STUDIO_HERO_VIDEO_MEDIA_ID. */
 const STUDIO_HERO_VIDEO_MEDIA_ID = process.env.STUDIO_HERO_VIDEO_MEDIA_ID
   ? parseInt(process.env.STUDIO_HERO_VIDEO_MEDIA_ID, 10)
   : null;
 
-const STORAGE_BASE_URL = `${(process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://vcbxyyjsxuquytcsskpj.supabase.co').replace(/\/$/, '')}/storage/v1/object/public/voices`;
-
-const toPublicStorageUrl = (filePath: string | null | undefined): string | null => {
+function toPublicStorageUrl(filePath?: string | null): string | null {
   if (!filePath) return null;
-  if (filePath.startsWith('http://') || filePath.startsWith('https://')) return filePath;
-  const normalized = filePath.replace(/^\/+/, '');
-  return `${STORAGE_BASE_URL}/${normalized}`;
-};
+  if (/^https?:\/\//i.test(filePath)) return filePath;
+  const cleanPath = filePath.replace(/^\/+/, '');
+  return `${STORAGE_BASE}/${cleanPath}`;
+}
 
-const languageLabelFromCode = (code: string | null | undefined): string => {
-  const normalized = String(code || 'nl-BE').toLowerCase();
-  const short = normalized.split('-')[0];
-  const map: Record<string, string> = {
-    nl: 'Nederlands',
-    fr: 'Frans',
-    en: 'Engels',
-    de: 'Duits',
-    es: 'Spaans',
-    it: 'Italiaans',
-    pt: 'Portugees'
+function languageLabelFromCode(code?: string | null): string {
+  const normalized = (code || '').toLowerCase();
+  const labels: Record<string, string> = {
+    'nl-be': 'Nederlands',
+    'nl-nl': 'Nederlands',
+    'fr-fr': 'Frans',
+    'en-gb': 'Engels',
+    'de-de': 'Duits',
+    'es-es': 'Spaans',
+    'it-it': 'Italiaans',
   };
-  return map[short] || code || 'Nederlands';
-};
+  return labels[normalized] || code || 'Nederlands';
+}
+
+function normalizeVideoMatchValue(value?: string | null): string {
+  return (value || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim();
+}
+
+function getWorkshopVideoTokens(slug?: string | null, title?: string | null): string[] {
+  const stopwords = new Set(['voor', 'van', 'met', 'een', 'de', 'het', 'je', 'in', 'op', 'en', 'workshop', 'voice', 'over', 'overs']);
+  const source = `${slug || ''} ${title || ''}`;
+  const baseTokens = normalizeVideoMatchValue(source)
+    .split(/\s+/)
+    .filter((token) => token.length >= 3 && !stopwords.has(token));
+
+  const tokenSet = new Set(baseTokens);
+
+  // Workshop-specific synonyms for robust storage filename matching.
+  const normalizedSource = normalizeVideoMatchValue(source);
+  if (normalizedSource.includes('audioboek')) tokenSet.add('audioboeken');
+  if (normalizedSource.includes('documentaire')) tokenSet.add('documentaire');
+  if (normalizedSource.includes('podcast')) tokenSet.add('podcast');
+  if (normalizedSource.includes('radio')) tokenSet.add('radiomaken');
+  if (normalizedSource.includes('intonatie')) tokenSet.add('intonatie');
+  if (normalizedSource.includes('articulatie')) tokenSet.add('articulatie');
+  if (normalizedSource.includes('audiodescriptie')) tokenSet.add('audiodescriptie');
+  if (normalizedSource.includes('tekenfilm')) tokenSet.add('tekenfilm');
+  if (normalizedSource.includes('beginners') || normalizedSource.includes('basis')) tokenSet.add('beginners');
+  if (normalizedSource.includes('nabewerking') || normalizedSource.includes('opname')) tokenSet.add('audionabewerking');
+  if (normalizedSource.includes('perfect spreken')) tokenSet.add('perfect');
+  if (normalizedSource.includes('medit')) tokenSet.add('meditatie');
+
+  return Array.from(tokenSet);
+}
+
+function scoreStorageVideoCandidate(path: string, tokens: string[], preferAftermovie: boolean): number {
+  const lowerPath = path.toLowerCase();
+  let score = 0;
+
+  if (preferAftermovie) {
+    score += lowerPath.includes('aftermovie') ? 8 : -2;
+  } else {
+    score += lowerPath.includes('aftermovie') ? -3 : 1;
+  }
+
+  for (const token of tokens) {
+    if (lowerPath.includes(token)) score += 2;
+    if (lowerPath.includes(token.replace(/\s+/g, '_'))) score += 1;
+    if (lowerPath.includes(token.replace(/\s+/g, '-'))) score += 1;
+  }
+
+  return score;
+}
+
+function inferWorkshopStorageVideo(
+  workshop: { id: number; slug?: string | null; title?: string | null },
+  storageVideoPaths: string[],
+  preferAftermovie: boolean
+): string | null {
+  if (!Array.isArray(storageVideoPaths) || storageVideoPaths.length === 0) return null;
+
+  const tokens = getWorkshopVideoTokens(workshop.slug, workshop.title);
+  if (tokens.length === 0) return null;
+
+  let bestPath: string | null = null;
+  let bestScore = Number.NEGATIVE_INFINITY;
+
+  for (const path of storageVideoPaths) {
+    const score = scoreStorageVideoCandidate(path, tokens, preferAftermovie);
+    if (score > bestScore) {
+      bestScore = score;
+      bestPath = path;
+    }
+  }
+
+  return bestScore >= 2 ? bestPath : null;
+}
 
 async function getStudioHeroVideo(): Promise<{ heroVideoPath: string | null; heroVideoMediaId: number | null }> {
   if (!db) return { heroVideoPath: null, heroVideoMediaId: null };
@@ -55,124 +133,136 @@ async function getStudioHeroVideo(): Promise<{ heroVideoPath: string | null; her
       heroVideoMediaId = (byNameData[0] as any).id;
     }
   }
+
+  if (!heroVideoPath) {
+    // Production fallback: some environments have Studio videos in Storage but not mirrored in media table.
+    const storageHero = await db.execute(sql`
+      SELECT name
+      FROM storage.objects
+      WHERE bucket_id = 'voices'
+        AND name ILIKE 'studio/workshops/videos/%'
+        AND (
+          lower(name) LIKE '%workshop_beginners_aftermovie%'
+          OR lower(name) LIKE '%workshop-beginners-aftermovie%'
+          OR lower(name) LIKE '%workshop_beginners%'
+          OR lower(name) LIKE '%workshop-beginners%'
+        )
+      ORDER BY
+        CASE
+          WHEN lower(name) LIKE '%workshop_beginners_aftermovie%' OR lower(name) LIKE '%workshop-beginners-aftermovie%' THEN 0
+          WHEN lower(name) LIKE '%workshop_beginners%' OR lower(name) LIKE '%workshop-beginners%' THEN 1
+          ELSE 10
+        END,
+        created_at DESC
+      LIMIT 1
+    `);
+
+    const storageHeroData = Array.isArray(storageHero) ? storageHero : (storageHero as any).rows ?? [];
+    if (storageHeroData.length > 0 && (storageHeroData[0] as any).name) {
+      heroVideoPath = (storageHeroData[0] as any).name;
+      heroVideoMediaId = null;
+    }
+  }
+
+  if (!heroVideoPath) {
+    const anyStudioVideo = await db.execute(sql`
+      SELECT name
+      FROM storage.objects
+      WHERE bucket_id = 'voices'
+        AND name ILIKE 'studio/workshops/videos/%'
+        AND (
+          lower(name) LIKE '%.mp4'
+          OR lower(name) LIKE '%.webm'
+          OR lower(name) LIKE '%.mov'
+        )
+      ORDER BY created_at DESC
+      LIMIT 1
+    `);
+    const anyStudioVideoData = Array.isArray(anyStudioVideo) ? anyStudioVideo : (anyStudioVideo as any).rows ?? [];
+    if (anyStudioVideoData.length > 0 && (anyStudioVideoData[0] as any).name) {
+      heroVideoPath = (anyStudioVideoData[0] as any).name;
+      heroVideoMediaId = null;
+    }
+  }
+
   return { heroVideoPath, heroVideoMediaId };
 }
 
-async function getStudioWorkshopsFallback(): Promise<WorkshopApiResponse> {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-  const hero = await getStudioHeroVideo();
-
-  if (!supabaseUrl || !serviceRoleKey) {
-    return {
-      workshops: [],
-      instructors: [],
-      faqs: [],
-      ...hero,
-      _meta: { count: 0, fetched_at: new Date().toISOString() }
-    };
+async function safeExecuteRows<T = any>(query: any, label: string): Promise<T[]> {
+  if (!db) return [];
+  try {
+    const rows = await db.execute(query);
+    return Array.isArray(rows) ? rows as T[] : ((rows as any).rows || []) as T[];
+  } catch (error: any) {
+    console.warn(`[getStudioWorkshopsData] ${label} failed, using empty fallback:`, error?.message || error);
+    return [];
   }
+}
 
-  const supabase = createClient(supabaseUrl, serviceRoleKey);
+interface StudioOptionalTableFlags {
+  has_taxonomy_tables: boolean;
+  has_workshop_reviews_table: boolean;
+  has_workshop_feedback_table: boolean;
+  has_workshop_video_subtitle_links_table: boolean;
+}
 
-  const { data: workshopsData, error: workshopsError } = await supabase
-    .from('workshops')
-    .select(`
-      *,
-      media:media_id(file_path, alt_text)
-    `)
-    .eq('status', 'live')
-    .eq('world_id', 2)
-    .order('title');
+const DEFAULT_STUDIO_OPTIONAL_TABLE_FLAGS: StudioOptionalTableFlags = {
+  has_taxonomy_tables: true,
+  has_workshop_reviews_table: true,
+  has_workshop_feedback_table: true,
+  has_workshop_video_subtitle_links_table: true,
+};
 
-  if (workshopsError) throw workshopsError;
+let studioOptionalTableFlagsPromise: Promise<StudioOptionalTableFlags> | null = null;
 
-  const workshopIds = (workshopsData || []).map((workshop: any) => workshop.id);
-  const { data: editionsData, error: editionsError } = workshopIds.length > 0
-    ? await supabase
-        .from('workshop_editions')
-        .select('*, locations(*), instructors(*)')
-        .in('workshop_id', workshopIds)
-        .gte('date', new Date().toISOString())
-        .neq('status', 'cancelled')
-        .order('date')
-    : { data: [], error: null as any };
+function toDbBoolean(value: unknown): boolean {
+  return value === true || value === 't' || value === 1 || value === '1';
+}
 
-  if (editionsError) throw editionsError;
+async function getStudioOptionalTableFlags(): Promise<StudioOptionalTableFlags> {
+  if (!db) return DEFAULT_STUDIO_OPTIONAL_TABLE_FLAGS;
+  if (studioOptionalTableFlagsPromise) return studioOptionalTableFlagsPromise;
 
-  const editionsByWorkshop = (editionsData || []).reduce((acc: Record<string, any[]>, edition: any) => {
-    const workshopId = String(edition.workshop_id);
-    if (!acc[workshopId]) acc[workshopId] = [];
-    acc[workshopId].push({
-      id: edition.id,
-      date: edition.date,
-      start_time: edition.start_time || null,
-      end_time: edition.end_time || null,
-      price: edition.price || null,
-      location: edition.locations || null,
-      instructor: edition.instructors || null,
-      capacity: edition.capacity ?? 8,
-      status: edition.status
-    });
-    return acc;
-  }, {});
+  studioOptionalTableFlagsPromise = (async () => {
+    const probeRaw = await db.execute(sql`
+      SELECT
+        to_regclass('public.workshop_taxonomy_mappings') IS NOT NULL AS has_workshop_taxonomy_mappings,
+        to_regclass('public.workshop_categories') IS NOT NULL AS has_workshop_categories,
+        to_regclass('public.workshop_types') IS NOT NULL AS has_workshop_types,
+        to_regclass('public.experience_levels') IS NOT NULL AS has_experience_levels,
+        to_regclass('public.workshop_level_mappings') IS NOT NULL AS has_workshop_level_mappings,
+        to_regclass('public.workshop_reviews') IS NOT NULL AS has_workshop_reviews,
+        to_regclass('public.workshop_feedback') IS NOT NULL AS has_workshop_feedback,
+        to_regclass('public.workshop_video_subtitle_links') IS NOT NULL AS has_workshop_video_subtitle_links
+    `);
 
-  const workshops = (workshopsData || []).map((workshop: any) => {
-    const workshopMeta = workshop.meta || {};
+    const probeRows = Array.isArray(probeRaw) ? probeRaw : (probeRaw as any).rows ?? [];
+    const row = (probeRows[0] || {}) as Record<string, unknown>;
+
+    const hasTaxonomyTables = [
+      row.has_workshop_taxonomy_mappings,
+      row.has_workshop_categories,
+      row.has_workshop_types,
+      row.has_experience_levels,
+      row.has_workshop_level_mappings,
+    ].every(toDbBoolean);
+
     return {
-      id: workshop.id,
-      title: workshop.title,
-      slug: workshop.slug,
-      description: workshop.description,
-      price: workshop.price,
-      status: workshop.status,
-      is_public: true,
-      taxonomy: {
-        category: workshopMeta.category || 'Voice-over',
-        type: workshopMeta.type || 'Gastworkshop'
-      },
-      level: workshopMeta.level || 'Starter',
-      lucide_icon: workshopMeta.lucide_icon || null,
-      skill_dna: workshopMeta.skill_dna || {},
-      day_schedule: (workshopMeta.day_schedule?.items || []).map((item: any) => ({
-        time: item.time,
-        title: item.label,
-        description: item.description || '',
-        icon: item.icon
-      })),
-      expert_note: workshop.expert_note || workshopMeta.expert_note,
-      short_description: workshopMeta.short_description || workshop.description || null,
-      workshop_content_detail: workshopMeta.workshop_content_detail || null,
-      aftermovie_description: workshopMeta.aftermovie_description || null,
-      video: null,
-      aftermovie_video: null,
-      subtitle_tracks: [],
-      aftermovie_subtitle_tracks: [],
-      subtitle_coverage: {
-        video: { total: 0, ready: 0, missing: 0 },
-        aftermovie: { total: 0, ready: 0, missing: 0 }
-      },
-      subtitle_data: null,
-      featured_image: workshop.media?.file_path
-        ? { file_path: workshop.media.file_path, alt_text: workshop.media.alt_text || null }
-        : null,
-      has_demo_bundle: false,
-      upcoming_editions: editionsByWorkshop[String(workshop.id)] || [],
-      reviews: [],
-      faqs: [],
-      next_steps: [],
-      feedback_snippets: []
+      has_taxonomy_tables: hasTaxonomyTables,
+      has_workshop_reviews_table: toDbBoolean(row.has_workshop_reviews),
+      has_workshop_feedback_table: toDbBoolean(row.has_workshop_feedback),
+      has_workshop_video_subtitle_links_table: toDbBoolean(row.has_workshop_video_subtitle_links),
     };
+  })().catch((error) => {
+    studioOptionalTableFlagsPromise = null;
+    console.warn(
+      '[getStudioWorkshopsData] Optional table probe failed, defaulting to legacy query mode:',
+      (error as Error)?.message || error
+    );
+    return DEFAULT_STUDIO_OPTIONAL_TABLE_FLAGS;
   });
 
-  return {
-    workshops,
-    instructors: [],
-    faqs: [],
-    ...hero,
-    _meta: { count: workshops.length, fetched_at: new Date().toISOString() }
-  };
+  return studioOptionalTableFlagsPromise;
 }
 
 export interface WorkshopApiResponse {
@@ -197,18 +287,56 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
   if (!db) throw new Error('Database not available');
 
   try {
-    const workshopsRaw = await db.execute(sql`
-      WITH workshop_data AS (
+    const optionalTableFlags = await getStudioOptionalTableFlags();
+    let workshopsRaw: unknown;
+
+    if (optionalTableFlags.has_taxonomy_tables) {
+      try {
+        workshopsRaw = await db.execute(sql`
+          WITH workshop_data AS (
+            SELECT
+              w.id, w.title, w.slug, w.description, w.price, w.status, w.media_id, w.meta,
+              m.file_path AS media_file_path, m.alt_text AS media_alt_text,
+              (SELECT label_nl FROM workshop_categories wc JOIN workshop_taxonomy_mappings wtm ON wc.id = wtm.category_id WHERE wtm.workshop_id = w.id LIMIT 1) as category_label,
+              (SELECT label_nl FROM workshop_types wt JOIN workshop_taxonomy_mappings wtm ON wt.id = wtm.type_id WHERE wtm.workshop_id = w.id LIMIT 1) as type_label,
+              (SELECT label FROM experience_levels el JOIN workshop_level_mappings wlm ON el.id = wlm.level_id WHERE wlm.workshop_id = w.id LIMIT 1) as level_label
+            FROM workshops w
+            LEFT JOIN media m ON m.id = w.media_id
+            WHERE w.status IN ('publish', 'live') AND w.world_id = 2
+          )
+          SELECT * FROM workshop_data
+          ORDER BY title
+        `);
+      } catch (taxonomyError: any) {
+        // Legacy environments may miss taxonomy tables; keep Studio live with base workshop payload.
+        console.warn('[getStudioWorkshopsData] Taxonomy lookup failed, falling back to base workshop query:', taxonomyError?.message || taxonomyError);
+        workshopsRaw = await db.execute(sql`
+          SELECT
+            w.id, w.title, w.slug, w.description, w.price, w.status, w.media_id, w.meta,
+            m.file_path AS media_file_path, m.alt_text AS media_alt_text,
+            NULL::text AS category_label,
+            NULL::text AS type_label,
+            NULL::text AS level_label
+          FROM workshops w
+          LEFT JOIN media m ON m.id = w.media_id
+          WHERE w.status IN ('publish', 'live') AND w.world_id = 2
+          ORDER BY w.title
+        `);
+      }
+    } else {
+      workshopsRaw = await db.execute(sql`
         SELECT
           w.id, w.title, w.slug, w.description, w.price, w.status, w.media_id, w.meta,
-          m.file_path AS media_file_path, m.alt_text AS media_alt_text
+          m.file_path AS media_file_path, m.alt_text AS media_alt_text,
+          NULL::text AS category_label,
+          NULL::text AS type_label,
+          NULL::text AS level_label
         FROM workshops w
         LEFT JOIN media m ON m.id = w.media_id
         WHERE w.status IN ('publish', 'live') AND w.world_id = 2
-      )
-      SELECT * FROM workshop_data
-      ORDER BY title
-    `);
+        ORDER BY w.title
+      `);
+    }
 
     const workshopsList = Array.isArray(workshopsRaw) ? workshopsRaw : (workshopsRaw as any).rows ?? [];
     const workshopIds = (workshopsList as any[]).map((r) => r.id).filter(Boolean);
@@ -219,10 +347,28 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
     }
 
     // 2. Fetch Editions (The Planning)
-    const editionsRows = await db.execute(sql`
+    const editionsData = await safeExecuteRows(sql`
       SELECT
         we.id, we.workshop_id, we.date, we.capacity, we.status,
         we.start_time, we.end_time, we.price as edition_price,
+        COALESCE((
+          SELECT SUM(COALESCE(oi.quantity, 1))
+          FROM order_items oi
+          LEFT JOIN orders o ON o.id = oi.order_id
+          WHERE oi.edition_id = we.id
+            AND (
+              o.id IS NULL
+              OR lower(COALESCE(o.status, '')) NOT IN (
+                'cancelled',
+                'wc-cancelled',
+                'refunded',
+                'wc-refunded',
+                'failed',
+                'wc-failed',
+                'trash'
+              )
+            )
+        ), 0)::int AS registered_count,
         l.id as location_id, l.name AS location_name, l.city AS location_city, l.address AS location_address, l.zip AS location_zip, l.country AS location_country, l.map_url, l.access_instructions,
         i.id as instructor_id, i.name as instructor_name, i.tagline as instructor_tagline, i.bio as instructor_bio,
         im.file_path as instructor_photo
@@ -234,52 +380,81 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
         AND we.date >= NOW()
         AND we.status != 'cancelled'
       ORDER BY we.date ASC
-    `);
+    `, 'Editions query');
 
-    // 3. Fetch Reviews (Hard Handshake via junction table)
-    const reviewsRows = await db.execute(sql`
-    SELECT wr.workshop_id, r.id, r.author_name, r.rating, r.text_nl, r.text_en, r.provider, r.author_photo_url
-    FROM workshop_reviews wr
-    JOIN reviews r ON r.id = wr.review_id
-    WHERE wr.workshop_id IN (${sql.join(workshopIds.map((id) => sql`${id}`), sql`, `)})
-    ORDER BY r.rating DESC, r.created_at DESC
-  `);
+    // 3. Fetch Reviews
+    let reviewsData: any[] = [];
+    if (optionalTableFlags.has_workshop_reviews_table) {
+      reviewsData = await safeExecuteRows(sql`
+        SELECT wr.workshop_id, r.id, r.author_name, r.rating, r.text_nl, r.text_en, r.provider, r.author_photo_url
+        FROM workshop_reviews wr
+        JOIN reviews r ON r.id = wr.review_id
+        WHERE wr.workshop_id IN (${sql.join(workshopIds.map((id) => sql`${id}`), sql`, `)})
+        ORDER BY r.rating DESC, r.created_at DESC
+      `, 'Workshop reviews mapping query');
+    }
 
-  // 4. Fetch Global Instructors & FAQs
-  const instructorsRows = await db.execute(sql`
-    SELECT i.id, i.name, i.tagline, i.bio, i.preparation_text_template, m.file_path as photo_url
-    FROM instructors i
-    LEFT JOIN media m ON m.id = i.photo_id
-    WHERE i.name IN ('Johfrah Lefebvre', 'Bernadette Timmermans', 'Goedele Wachters', 'Kristien Maes', 'Annemie Tweepenninckx', 'Lucas Derycke')
-    ORDER BY i.name
-  `);
+    // Fallback for schemas without workshop_reviews mapping table.
+    if (reviewsData.length === 0) {
+      const globalStudioReviews = await safeExecuteRows(sql`
+        SELECT id, author_name, rating, text_nl, text_en, provider, author_photo_url
+        FROM reviews
+        WHERE business_slug IN ('voices-studio', 'voices-be')
+        ORDER BY rating DESC, created_at DESC
+        LIMIT 24
+      `, 'Global studio reviews fallback query');
 
-  const faqsRows = await db.execute(sql`
-    SELECT f.id, f.question_nl as question, f.answer_nl as answer, f.category, fm.workshop_id
-    FROM faq f
-    LEFT JOIN faq_mappings fm ON f.id = fm.faq_id
-    WHERE f.category = 'studio' OR fm.workshop_id IS NOT NULL
-    ORDER BY f.display_order ASC NULLS LAST
-  `);
+      if (globalStudioReviews.length > 0) {
+        reviewsData = (workshopsList as any[]).flatMap((workshop) =>
+          (globalStudioReviews as any[]).map((review) => ({
+            workshop_id: workshop.id,
+            ...review,
+          }))
+        );
+      }
+    }
+
+    // 4. Fetch Global Instructors & FAQs
+    const instructorsData = await safeExecuteRows(sql`
+      SELECT i.id, i.name, i.tagline, i.bio, i.preparation_text_template, m.file_path as photo_url
+      FROM instructors i
+      LEFT JOIN media m ON m.id = i.photo_id
+      ORDER BY i.name
+    `, 'Instructors query');
+
+    // Fallback-safe FAQ query (faq_mappings table does not exist in current production schema).
+    const faqsData = await safeExecuteRows(sql`
+      SELECT
+        f.id,
+        f.question_nl as question,
+        f.answer_nl as answer,
+        f.category,
+        NULL::bigint as workshop_id
+      FROM faq f
+      WHERE lower(f.category) = 'studio'
+      ORDER BY f.display_order ASC NULLS LAST, f.id DESC
+    `, 'FAQ query');
 
     // 4b. Fetch Related Journeys (Next Steps)
-    const journeysRows = await db.execute(sql`
+    const journeysData = await safeExecuteRows(sql`
       SELECT wj.from_workshop_id, wj.to_workshop_id, wj.label_nl as label, wj.priority,
              w.title as to_title, w.slug as to_slug
       FROM workshop_journeys wj
       JOIN workshops w ON w.id = wj.to_workshop_id
       WHERE wj.from_workshop_id IN (${sql.join(workshopIds.map((id) => sql`${id}`), sql`, `)})
       ORDER BY wj.priority ASC NULLS LAST
-    `);
+    `, 'Workshop journeys query');
 
     // 4c. Fetch Public Feedback Snippets
-    const feedbackRows = await db.execute(sql`
-      SELECT wf.workshop_id, wf.public_snippet, wf.public_rating
-      FROM workshop_feedback wf
-      WHERE wf.workshop_id IN (${sql.join(workshopIds.map((id) => sql`${id}`), sql`, `)})
-        AND wf.public_snippet IS NOT NULL
-      ORDER BY wf.public_rating DESC NULLS LAST, wf.submitted_at DESC
-    `);
+    const feedbackData = optionalTableFlags.has_workshop_feedback_table
+      ? await safeExecuteRows(sql`
+        SELECT wf.workshop_id, wf.public_snippet, wf.public_rating
+        FROM workshop_feedback wf
+        WHERE wf.workshop_id IN (${sql.join(workshopIds.map((id) => sql`${id}`), sql`, `)})
+          AND wf.public_snippet IS NOT NULL
+        ORDER BY wf.public_rating DESC NULLS LAST, wf.submitted_at DESC
+      `, 'Workshop feedback query')
+      : [];
 
     // 4d. Fetch Video media paths (from meta.video_id)
     const videoIdCandidates = (workshopsList as any[])
@@ -297,21 +472,37 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
     
     let videoPathsMap: Record<number, string> = {};
     if (normalizedVideoIds.length > 0) {
-      const videoRows = await db.execute(sql`
+      const videoData = await safeExecuteRows(sql`
         SELECT id, file_path FROM media WHERE id IN (${sql.join(normalizedVideoIds.map((id) => sql`${id}`), sql`, `)})
-      `);
-      const videoData = Array.isArray(videoRows) ? videoRows : (videoRows as any).rows || [];
+      `, 'Workshop video lookup query');
       videoPathsMap = (videoData as any[]).reduce((acc, v) => {
         acc[v.id] = v.file_path;
         return acc;
       }, {} as Record<number, string>);
     }
 
-    // 4e. Fetch subtitle tracks via the ID-junction system
+    // 4e. Storage fallback lookup when media IDs are stale/missing.
+    const storageVideoRows = await safeExecuteRows<{ name: string }>(sql`
+      SELECT name
+      FROM storage.objects
+      WHERE bucket_id = 'voices'
+        AND name ILIKE 'studio/workshops/videos/%'
+        AND (
+          lower(name) LIKE '%.mp4'
+          OR lower(name) LIKE '%.webm'
+          OR lower(name) LIKE '%.mov'
+        )
+      ORDER BY created_at DESC
+    `, 'Studio storage videos fallback query');
+    const storageVideoPaths = (storageVideoRows as any[])
+      .map((row) => row.name)
+      .filter((name) => typeof name === 'string' && name.length > 0);
+
+    // 4f. Fetch subtitle tracks via the ID-junction system
     let subtitleRowsData: any[] = [];
 
-    if (workshopIds.length > 0) {
-      const subtitleRows = await db.execute(sql`
+    if (workshopIds.length > 0 && optionalTableFlags.has_workshop_video_subtitle_links_table) {
+      subtitleRowsData = await safeExecuteRows(sql`
         SELECT
           l.id,
           l.workshop_id,
@@ -329,9 +520,7 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
         WHERE l.workshop_id IN (${sql.join(workshopIds.map((id) => sql`${id}`), sql`, `)})
           AND l.is_enabled = true
         ORDER BY l.workshop_id ASC, l.video_media_id ASC, l.is_default DESC, l.id ASC
-      `);
-
-      subtitleRowsData = Array.isArray(subtitleRows) ? subtitleRows : (subtitleRows as any).rows || [];
+      `, 'Workshop subtitle links query');
     }
 
     // Include any video IDs found in subtitle links, even if missing/stale in workshop.meta
@@ -344,10 +533,9 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
     );
     const missingVideoIds = subtitleVideoIds.filter((id) => !videoPathsMap[id]);
     if (missingVideoIds.length > 0) {
-      const extraVideoRows = await db.execute(sql`
+      const extraVideoData = await safeExecuteRows(sql`
         SELECT id, file_path FROM media WHERE id IN (${sql.join(missingVideoIds.map((id) => sql`${id}`), sql`, `)})
-      `);
-      const extraVideoData = Array.isArray(extraVideoRows) ? extraVideoRows : (extraVideoRows as any).rows || [];
+      `, 'Subtitle fallback video lookup query');
       (extraVideoData as any[]).forEach((row) => {
         videoPathsMap[row.id] = row.file_path;
       });
@@ -392,12 +580,6 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
     }, {} as Record<string, any[]>);
 
     // 5. Processing & Mapping
-    const editionsData = Array.isArray(editionsRows) ? editionsRows : (editionsRows as any).rows || [];
-    const reviewsData = Array.isArray(reviewsRows) ? reviewsRows : (reviewsRows as any).rows || [];
-    const instructorsData = Array.isArray(instructorsRows) ? instructorsRows : (instructorsRows as any).rows || [];
-    const faqsData = Array.isArray(faqsRows) ? faqsRows : (faqsRows as any).rows || [];
-    const journeysData = Array.isArray(journeysRows) ? journeysRows : (journeysRows as any).rows || [];
-    const feedbackData = Array.isArray(feedbackRows) ? feedbackRows : (feedbackRows as any).rows || [];
 
     const editionsByWorkshop = (editionsData as any[]).reduce((acc, e) => {
     const wid = String(e.workshop_id);
@@ -417,6 +599,8 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
         bio: e.instructor_bio, photo_url: toPublicStorageUrl(e.instructor_photo)
       } : null,
       capacity: e.capacity ?? 8,
+      registered_count: Number(e.registered_count ?? 0),
+      available_seats: Math.max(0, Number(e.capacity ?? 8) - Number(e.registered_count ?? 0)),
       status: e.status
     });
     return acc;
@@ -459,11 +643,33 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
     return acc;
   }, {} as Record<string, any[]>);
 
+    const inferredVideoPathByWorkshop = (workshopsList as any[]).reduce((acc, w) => {
+      const inferred = inferWorkshopStorageVideo({ id: w.id, slug: w.slug, title: w.title }, storageVideoPaths, false);
+      if (inferred) acc[w.id] = inferred;
+      return acc;
+    }, {} as Record<number, string>);
+
+    const inferredAftermoviePathByWorkshop = (workshopsList as any[]).reduce((acc, w) => {
+      const inferred = inferWorkshopStorageVideo({ id: w.id, slug: w.slug, title: w.title }, storageVideoPaths, true);
+      if (inferred) acc[w.id] = inferred;
+      return acc;
+    }, {} as Record<number, string>);
+
     const workshops = (workshopsList as any[]).map((w) => {
     const meta = (w.meta as Record<string, any>) || {};
     const wid = String(w.id);
     const videoId = meta.video_id ? Number(meta.video_id) : null;
     const aftermovieVideoId = meta.aftermovie_video_id ? Number(meta.aftermovie_video_id) : null;
+    const mappedVideoPath = videoId && videoPathsMap[videoId] ? videoPathsMap[videoId] : null;
+    const mappedAftermoviePath = aftermovieVideoId && videoPathsMap[aftermovieVideoId] ? videoPathsMap[aftermovieVideoId] : null;
+    const preferredVideoPath =
+      mappedVideoPath && mappedVideoPath.toLowerCase().includes('studio/workshops/videos/')
+        ? mappedVideoPath
+        : (inferredVideoPathByWorkshop[w.id] || mappedVideoPath);
+    const preferredAftermoviePath =
+      mappedAftermoviePath && mappedAftermoviePath.toLowerCase().includes('studio/workshops/videos/')
+        ? mappedAftermoviePath
+        : (inferredAftermoviePathByWorkshop[w.id] || mappedAftermoviePath);
     const videoSubtitleTracks = videoId ? (subtitleTracksByKey[`${w.id}:${videoId}:video`] || []) : [];
     const aftermovieSubtitleTracks = aftermovieVideoId ? (subtitleTracksByKey[`${w.id}:${aftermovieVideoId}:aftermovie`] || []) : [];
     const primaryVideoTrack = videoSubtitleTracks.find((track: any) => track.is_default) || videoSubtitleTracks[0];
@@ -496,15 +702,15 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
         description: item.description || '',
         icon: item.icon
       })),
-      expert_note: meta.expert_note || null,
+      expert_note: w.expert_note || meta.expert_note,
       short_description: meta.short_description || w.description || null,
       workshop_content_detail: meta.workshop_content_detail || null,
       aftermovie_description: meta.aftermovie_description || null,
-      video: videoId && videoPathsMap[videoId]
-        ? { id: videoId, file_path: videoPathsMap[videoId] }
+      video: preferredVideoPath
+        ? { id: videoId || null, file_path: preferredVideoPath }
         : null,
-      aftermovie_video: aftermovieVideoId && videoPathsMap[aftermovieVideoId]
-        ? { id: aftermovieVideoId, file_path: videoPathsMap[aftermovieVideoId] }
+      aftermovie_video: preferredAftermoviePath
+        ? { id: aftermovieVideoId || null, file_path: preferredAftermoviePath }
         : null,
       subtitle_tracks: videoSubtitleTracks,
       aftermovie_subtitle_tracks: aftermovieSubtitleTracks,
@@ -541,10 +747,13 @@ export async function getStudioWorkshopsData(): Promise<WorkshopApiResponse> {
     };
   } catch (error: any) {
     console.error('[getStudioWorkshopsData] Database Error:', error);
-    try {
-      return await getStudioWorkshopsFallback();
-    } catch (fallbackError: any) {
-      throw new Error(`Database query failed: ${fallbackError?.message || error?.message || 'Unknown error'}`);
-    }
+    const hero = await getStudioHeroVideo().catch(() => ({ heroVideoPath: null, heroVideoMediaId: null }));
+    return {
+      workshops: [],
+      instructors: [],
+      faqs: [],
+      ...hero,
+      _meta: { count: 0, fetched_at: new Date().toISOString() },
+    };
   }
 }

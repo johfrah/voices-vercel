@@ -36,9 +36,9 @@ export async function GET(request: Request) {
     }
 
     // 2. Fetch User from DB
-    let user = null;
+    let user: any = null;
     try {
-      const results = await db.select().from(users).where(eq(users.email, email)).limit(1).catch(async (err: any) => {
+      const results: any[] = await db.select().from(users).where(eq(users.email, email)).limit(1).catch(async (err: any) => {
         console.warn(' ADMIN LOOKUP Drizzle failed, falling back to SDK:', err.message);
         const { createClient } = await import('@supabase/supabase-js');
         const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!);

@@ -7,6 +7,11 @@ import React, { createContext, useCallback, useContext, useEffect, useState } fr
 import { useCheckout } from './CheckoutContext';
 import { useVoicesState } from './VoicesStateContext';
 import { normalizeLocale } from '@/lib/system/locale-utils';
+import {
+  DEFAULT_COMMERCIAL_MEDIA_CODE,
+  normalizeCommercialMediaCode,
+  sanitizeCommercialDetailMap,
+} from '@/lib/system/constants/commercial-media';
 
 export type JourneyType = 'telephony' | 'video' | 'commercial' | 'agency' | 'general';
 
@@ -58,49 +63,34 @@ const JOURNEY_USAGE_MAP: Record<string, UsageType> = {
   general: 'unpaid'
 };
 
-const COMMERCIAL_MEDIA_ALIAS_MAP: Record<string, string> = {
-  online: 'online',
-  podcast: 'podcast',
-  radio: 'radio_national',
-  radio_national: 'radio_national',
-  radio_regional: 'radio_regional',
-  radio_local: 'radio_local',
-  tv: 'tv_national',
-  tv_national: 'tv_national',
-  tv_regional: 'tv_regional',
-  tv_local: 'tv_local',
-  social: 'social_media',
-  socials: 'social_media',
-  social_media: 'social_media',
-  cinema: 'cinema',
-  pos: 'pos',
+const resolveAgencyPathMeta = (segments: string[], fallbackLocale: string = 'nl-be') => {
+  const isAgency = segments[0]?.toLowerCase() === 'agency';
+  if (!isAgency) {
+    return {
+      languageFromPath: null as { code: string; id: number | null } | null,
+      journeyFromPath: undefined as JourneyType | undefined,
+      payloadStartIndex: -1,
+    };
+  }
+
+  const segmentOne = segments[1]?.toLowerCase();
+  const segmentTwo = segments[2]?.toLowerCase();
+  const journeyAtOne = MarketManager.resolveJourneyTypeFromSegment(segmentOne);
+  const journeyAtTwo = MarketManager.resolveJourneyTypeFromSegment(segmentTwo);
+  const languageFromPath = !journeyAtOne && segmentOne
+    ? MarketManager.getLanguageFromRouteSegment(segmentOne, fallbackLocale)
+    : null;
+  const journeySegmentIndex = journeyAtOne ? 1 : (journeyAtTwo ? 2 : -1);
+  const journeyFromPath = journeySegmentIndex > -1
+    ? MarketManager.resolveJourneyTypeFromSegment(segments[journeySegmentIndex])
+    : undefined;
+
+  return {
+    languageFromPath,
+    journeyFromPath,
+    payloadStartIndex: journeySegmentIndex > -1 ? journeySegmentIndex + 1 : -1,
+  };
 };
-
-const DEFAULT_COMMERCIAL_MEDIA_CODE = 'online';
-
-const normalizeCommercialMediaCode = (rawCode: string | null | undefined): string | null => {
-  const normalized = String(rawCode || '').toLowerCase().trim();
-  if (!normalized) return null;
-  return COMMERCIAL_MEDIA_ALIAS_MAP[normalized] || null;
-};
-
-const sanitizeCommercialDetailMap = (
-  detailMap: Record<string, number> | undefined,
-  mediaCodes: string[],
-  fallbackValue: number
-): Record<string, number> => {
-  const sanitized: Record<string, number> = {};
-
-  mediaCodes.forEach((mediaCode) => {
-    const value = detailMap?.[mediaCode];
-    sanitized[mediaCode] = typeof value === 'number' && Number.isFinite(value) && value > 0
-      ? value
-      : fallbackValue;
-  });
-
-  return sanitized;
-};
-
 export const VoicesMasterControlContext = createContext<VoicesMasterControlContextType | undefined>(undefined);
 
 export const useMasterControl = () => {
@@ -175,9 +165,6 @@ export const VoicesMasterControlProvider: React.FC<{
       const handshakeLangCode = handshakeLangId != null && MarketManager.languages?.length
         ? (MarketManager.languages.find((l: { id: number; code: string }) => l.id === handshakeLangId)?.code)
         : null;
-      const defaultLang = localeFromPath || handshakeLangCode || market?.primary_language || 'nl-be';
-      const defaultLangId = localeIdFromPath ?? handshakeLangId ?? market?.primary_language_id ?? 1;
-      
       const saved = localStorage.getItem('voices_master_control');
       let savedState: any = {};
       try {
@@ -188,21 +175,15 @@ export const VoicesMasterControlProvider: React.FC<{
       const rawSegments = currentPath.split('/').filter(Boolean);
       const pathSegments = localePrefixMatch ? rawSegments.slice(1) : rawSegments;
 
-      // 🛡️ CHRIS-PROTOCOL: URL-First Journey/Media parse (v2.28.24)
-      // Deep links like /agency/commercial/online must override stale localStorage.
-      const pathJourneyMap: Record<string, JourneyType> = {
-        telephony: 'telephony',
-        telefonie: 'telephony',
-        telefoon: 'telephony',
-        video: 'video',
-        corporate: 'video',
-        commercial: 'commercial',
-        advertentie: 'commercial',
-        reclame: 'commercial',
-        advertising: 'commercial',
-      };
-      const pathJourneySegment = pathSegments[0] === 'agency' ? pathSegments[1]?.toLowerCase() : undefined;
-      const journeyFromPath = pathJourneySegment ? pathJourneyMap[pathJourneySegment] : undefined;
+      // URL-first parse for clean agency routes:
+      // /agency/{language}/{journey}/...
+      // /agency/{journey}/... (legacy)
+      const agencyPathMeta = resolveAgencyPathMeta(pathSegments, market?.primary_language || 'nl-be');
+      const journeyFromPath = agencyPathMeta.journeyFromPath;
+      const pathLanguageCode = agencyPathMeta.languageFromPath?.code || null;
+      const pathLanguageId = agencyPathMeta.languageFromPath?.id ?? null;
+      const defaultLang = pathLanguageCode || localeFromPath || handshakeLangCode || market?.primary_language || 'nl-be';
+      const defaultLangId = pathLanguageId ?? localeIdFromPath ?? handshakeLangId ?? market?.primary_language_id ?? 1;
 
       const parseCommercialMediaSegments = (segments: string[]) => {
         const media: string[] = [];
@@ -234,7 +215,7 @@ export const VoicesMasterControlProvider: React.FC<{
 
       const pathCommercialState =
         journeyFromPath === 'commercial'
-          ? parseCommercialMediaSegments(pathSegments.slice(2))
+          ? parseCommercialMediaSegments(pathSegments.slice(agencyPathMeta.payloadStartIndex))
           : null;
 
       // 🛡️ CHRIS-PROTOCOL: Journey Resolution Priority (v2.28.24)
@@ -256,13 +237,17 @@ export const VoicesMasterControlProvider: React.FC<{
       const initialLanguageParam = searchParams?.get('language');
       const initialLanguageIdParam = searchParams?.get('languageId');
       
-      let initialLanguage = initialLanguageParam 
-        ? MarketManager.getLanguageCode(initialLanguageParam)
-        : (localeFromPath || savedState.filters?.language || defaultLang);
-      
-      let initialLanguageId = initialLanguageIdParam 
-        ? parseInt(initialLanguageIdParam) 
-        : (localeIdFromPath || savedState.filters?.languageId || defaultLangId);
+      let initialLanguage = pathLanguageCode || (
+        initialLanguageParam
+          ? MarketManager.getLanguageCode(initialLanguageParam)
+          : (localeFromPath || savedState.filters?.language || defaultLang)
+      );
+
+      let initialLanguageId = pathLanguageId ?? (
+        initialLanguageIdParam
+          ? parseInt(initialLanguageIdParam)
+          : (localeIdFromPath || savedState.filters?.languageId || defaultLangId)
+      );
         
       const initialLanguages = searchParams?.get('languages')
         ? searchParams?.get('languages')?.split(',')
@@ -451,27 +436,22 @@ export const VoicesMasterControlProvider: React.FC<{
     
     if (isAgency) {
       step = 'voice';
-      const jSegment = segments[1]?.toLowerCase();
-      
-      const jMap: Record<string, JourneyType> = { 
-        'telefonie': 'telephony', 
-        'telephony': 'telephony',
-        'telefoon': 'telephony',
-        'video': 'video', 
-        'corporate': 'video',
-        'commercial': 'commercial', 
-        'advertentie': 'commercial',
-        'reclame': 'commercial',
-        'advertising': 'commercial'
-      };
-      
-      if (jSegment && jMap[jSegment]) {
-        journey = jMap[jSegment];
+      const host = typeof window !== 'undefined' ? window.location.host : '';
+      const market = MarketManager.getCurrentMarket(host, url);
+      const agencyPathMeta = resolveAgencyPathMeta(segments, market?.primary_language || 'nl-be');
+
+      if (agencyPathMeta.languageFromPath) {
+        language = agencyPathMeta.languageFromPath.code;
+        languageId = agencyPathMeta.languageFromPath.id;
+      }
+
+      if (agencyPathMeta.journeyFromPath) {
+        journey = agencyPathMeta.journeyFromPath;
         journeyId = MarketManager.getJourneyId(journey) || undefined;
       }
 
       if (journey === 'commercial') {
-        const mediaSegments = segments.slice(2);
+        const mediaSegments = segments.slice(agencyPathMeta.payloadStartIndex);
         if (mediaSegments.length > 0) {
           const newMedia: string[] = [];
           const newMediaIds: number[] = [];
@@ -526,7 +506,7 @@ export const VoicesMasterControlProvider: React.FC<{
         }
       } 
       else if (journey === 'telephony' || journey === 'video') {
-        const wordSegment = segments[2];
+        const wordSegment = segments[agencyPathMeta.payloadStartIndex];
         if (wordSegment && /^\d+$/.test(wordSegment)) {
           const words = parseInt(wordSegment);
           return { step, journey, journeyId, language, languageId, gender, genderId, words };
@@ -720,6 +700,18 @@ export const VoicesMasterControlProvider: React.FC<{
     params.delete('journeyId');
     params.delete('language');
     params.delete('languages');
+    params.delete('languageId');
+    params.delete('gender');
+    params.delete('genderId');
+    params.delete('country');
+    params.delete('countryId');
+    params.delete('style');
+    params.delete('sortBy');
+    params.delete('words');
+    params.delete('mediaIds');
+    params.delete('spots');
+    params.delete('years');
+    params.delete('liveSession');
 
     const cleanPath = pathname.replace(/^\/(nl|fr|en|de|es|it|pt)/, '') || '/';
     const isAgencyFilterPage = (cleanPath.startsWith('/agency/') || cleanPath === '/agency') && 
@@ -739,11 +731,15 @@ export const VoicesMasterControlProvider: React.FC<{
     // We only touch the URL if we are in a known dynamic flow.
     let targetUrl = '';
     if (isAgencyFilterPage) {
-      const jSlug = state.journey === 'telephony' ? 'telephony' : (state.journey === 'commercial' ? 'commercial' : 'video');
+      const jSlug = MarketManager.getJourneyRouteSegment(state.journey) || 'video';
       const locale = pathname.match(/^\/(nl|fr|en|de|es|it|pt)/)?.[0] || '';
-      targetUrl = locale + '/agency/' + jSlug + '/';
-      
-      if (state.journeyId) params.set('journeyId', state.journeyId.toString());
+      const languageSegment =
+        MarketManager.getLanguageRouteSegment(
+          state.filters.languageId ??
+          state.filters.language ??
+          (state.filters.languageIds && state.filters.languageIds.length > 0 ? state.filters.languageIds[0] : null)
+        ) || MarketManager.getLanguageRouteSegment(state.filters.language || 'nl-be') || 'nl';
+      targetUrl = locale + '/agency/' + languageSegment + '/' + jSlug + '/';
       
       if (state.journey === 'commercial') {
         const normalizedEntriesMap = new Map<string, string>();
@@ -790,11 +786,7 @@ export const VoicesMasterControlProvider: React.FC<{
       return;
     }
 
-    // 🛡️ CHRIS-PROTOCOL: Nuclear ID-First URL Sync (v2.14.711)
-    // We append the languageId and genderId to the query string to ensure 
-    // the API receives the strict IDs for filtering.
-    if (state.filters.languageId) params.set('languageId', state.filters.languageId.toString());
-    if (state.filters.genderId) params.set('genderId', state.filters.genderId.toString());
+    // Keep agency URLs path-based and clean.
     const queryString = params.toString();
     
     const finalUrl = targetUrl + (queryString ? '?' + queryString : '');
@@ -917,7 +909,14 @@ export const VoicesMasterControlProvider: React.FC<{
     setState(prev => {
       if (step === 'voice') {
         const isAgencyFilterPage = pathname.startsWith('/agency/') || pathname === '/agency';
-        const newUrl = isAgencyFilterPage ? '/agency/' + prev.journey : pathname;
+        const languageSegment =
+          MarketManager.getLanguageRouteSegment(
+            prev.filters.languageId ??
+            prev.filters.language ??
+            (prev.filters.languageIds && prev.filters.languageIds.length > 0 ? prev.filters.languageIds[0] : null)
+          ) || MarketManager.getLanguageRouteSegment(prev.filters.language || 'nl-be') || 'nl';
+        const journeySegment = MarketManager.getJourneyRouteSegment(prev.journey) || 'video';
+        const newUrl = isAgencyFilterPage ? '/agency/' + languageSegment + '/' + journeySegment : pathname;
         if (typeof window !== 'undefined' && newUrl !== pathname) {
           window.history.replaceState(null, '', newUrl);
         }

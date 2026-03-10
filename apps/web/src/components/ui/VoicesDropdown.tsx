@@ -30,7 +30,8 @@ import {
   FlagSE,
   FlagTR,
   FlagUK,
-  FlagUS
+  FlagUS,
+  TextInstrument
 } from './LayoutInstruments';
 import { VoiceglotImage } from './VoiceglotImage';
 import { VoiceglotText } from './VoiceglotText';
@@ -544,7 +545,7 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
                           {/* Aantal Spots */}
                           <div className="flex items-center justify-between">
                             <span className="text-[10px] font-bold text-va-black/30 uppercase tracking-widest">
-                              <VoiceglotText translationKey="common.spots_count" defaultText="Nombre de spots" />
+                              <VoiceglotText translationKey="common.spots_count" defaultText="Aantal spots" />
                             </span>
                             <div className="flex items-center gap-3">
                               <button

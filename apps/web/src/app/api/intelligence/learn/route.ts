@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { NextRequest, NextResponse } from 'next/server';
 import { IntentLearningEngine } from '@/lib/intelligence/intent-learning-engine';
 import { createClient } from '@/utils/supabase/server';

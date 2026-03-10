@@ -1,5 +1,4 @@
-import { db } from '@/lib/database';
-import { worlds } from '@/schema';
+import { db, worlds } from '@/lib/system/voices-config';
 import { MarketManagerServer } from "./core/market-manager";
 
 /**

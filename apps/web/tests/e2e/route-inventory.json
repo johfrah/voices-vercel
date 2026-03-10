@@ -1,0 +1,72 @@
+{
+  "source_files": [
+    "/workspace/apps/web/.next/routes-manifest.json",
+    "/workspace/apps/web/.next/app-path-routes-manifest.json"
+  ],
+  "critical_routes": [
+    "/",
+    "/academy/contact",
+    "/ademing/contact",
+    "/agency/commercial",
+    "/agency/contact",
+    "/agency/video",
+    "/artist/youssef",
+    "/cart",
+    "/checkout",
+    "/checkout/configurator",
+    "/freelance/contact",
+    "/johfrai/contact",
+    "/partners/contact",
+    "/studio",
+    "/studio/contact",
+    "/studio/workshop-beginners"
+  ],
+  "extended_routes": [
+    "/",
+    "/academy/contact",
+    "/ademing/contact",
+    "/ademing/offline",
+    "/agency/commercial",
+    "/agency/contact",
+    "/agency/video",
+    "/artist/youssef",
+    "/cart",
+    "/checkout",
+    "/checkout/configurator",
+    "/checkout/success",
+    "/demos",
+    "/freelance/contact",
+    "/johfrai/contact",
+    "/light",
+    "/mobile",
+    "/partners/contact",
+    "/studio",
+    "/studio/cart",
+    "/studio/checkout",
+    "/studio/contact",
+    "/studio/workshop-beginners",
+    "/under-construction"
+  ],
+  "dynamic_templates": [
+    "/[...slug]",
+    "/studio/[slug]"
+  ],
+  "generated_dynamic_routes": [
+    "/academy/contact",
+    "/ademing/contact",
+    "/agency/commercial",
+    "/agency/contact",
+    "/agency/video",
+    "/artist/youssef",
+    "/freelance/contact",
+    "/johfrai/contact",
+    "/partners/contact",
+    "/studio/contact",
+    "/studio/workshop-beginners"
+  ],
+  "totals": {
+    "critical": 16,
+    "extended": 24,
+    "dynamic_templates": 2
+  }
+}

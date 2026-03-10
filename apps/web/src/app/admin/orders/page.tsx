@@ -24,7 +24,6 @@ import {
   ExternalLink,
   FileText,
   Loader2,
-  Mic,
   Plus,
   RefreshCw,
   Search,
@@ -35,7 +34,8 @@ import {
   Square
 } from 'lucide-react';
 import Link from 'next/link';
-import React, { useCallback, useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useCallback, useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 
 export const dynamic = 'force-dynamic';
@@ -58,6 +58,7 @@ interface Order {
 
 export default function OrdersPage() {
   useAdminTracking();
+  const router = useRouter();
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -66,32 +67,7 @@ export default function OrdersPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [selectedOrderIds, setSelectedOrderIds] = useState<number[]>([]);
   const [isBulkUpdating, setIsBulkUpdating] = useState(false);
-  const [expandedOrderId, setExpandedOrderId] = useState<number | null>(null);
-  const [expandedOrderData, setExpandedOrderData] = useState<any | null>(null);
-  const [isExpanding, setIsExpanding] = useState(false);
   const { activeWorld } = useWorld();
-
-  const toggleExpand = async (orderId: number) => {
-    if (expandedOrderId === orderId) {
-      setExpandedOrderId(null);
-      setExpandedOrderData(null);
-      return;
-    }
-
-    setExpandedOrderId(orderId);
-    setIsExpanding(true);
-    try {
-      const res = await fetch(`/api/admin/orders/${orderId}`);
-      if (res.ok) {
-        const data = await res.json();
-        setExpandedOrderData(data);
-      }
-    } catch (e) {
-      console.error('Failed to fetch expanded order data:', e);
-    } finally {
-      setIsExpanding(false);
-    }
-  };
 
   const fetchOrders = useCallback(async () => {
     setIsLoading(true);
@@ -179,24 +155,6 @@ export default function OrdersPage() {
       default:
         return <TextInstrument as="span" className="px-2.5 py-1 rounded-full bg-gray-50 text-gray-500 text-[11px] font-medium tracking-widest uppercase">{status}</TextInstrument>;
     }
-  };
-
-  const renderTaggedText = (text: string, keyPrefix: string) => {
-    return text.split(/(\(.*?\))/g).map((part, index) =>
-      part.startsWith('(') && part.endsWith(')') ? (
-        <TextInstrument as="span" key={`${keyPrefix}-tag-${index}`} className="text-primary font-semibold bg-primary/5 px-1 rounded">
-          {part}
-        </TextInstrument>
-      ) : (
-        <TextInstrument as="span" key={`${keyPrefix}-txt-${index}`}>{part}</TextInstrument>
-      )
-    );
-  };
-
-  const scriptSnippet = (value: string, maxLength = 380) => {
-    const clean = String(value || '').replace(/\s+/g, ' ').trim();
-    if (!clean) return '';
-    return clean.length > maxLength ? `${clean.slice(0, maxLength)}…` : clean;
   };
 
   if (isLoading) {
@@ -349,210 +307,73 @@ export default function OrdersPage() {
               </thead>
               <tbody className="divide-y divide-black/[0.03]">
                 {orders.length > 0 ? orders.map((order) => (
-                  <React.Fragment key={order.id}>
-                    <tr 
-                      onClick={() => toggleExpand(order.id)}
-                      className={cn(
-                        "group hover:bg-va-off-white/50 transition-colors cursor-pointer",
-                        expandedOrderId === order.id && "bg-va-off-white/80",
-                        selectedOrderIds.includes(order.id) && "bg-primary/[0.02]"
-                      )}
-                    >
-                      <td className="px-8 py-6" onClick={(e) => e.stopPropagation()}>
-                        <ButtonInstrument 
-                          variant="pure" 
-                          size="none" 
-                          onClick={() => toggleOrderSelection(order.id)}
-                          className="text-va-black/10 hover:text-primary transition-colors"
-                        >
-                          {selectedOrderIds.includes(order.id) ? (
-                            <CheckSquare size={18} className="text-primary" />
-                          ) : (
-                            <Square size={18} />
-                          )}
-                        </ButtonInstrument>
-                      </td>
-                      <td className="px-8 py-6">
-                        <TextInstrument as="span" className="text-[15px] font-bold tracking-tight text-va-black">#{order.orderNumber}</TextInstrument>
-                      </td>
-                      <td className="px-8 py-6">
+                  <tr
+                    key={order.id}
+                    onClick={() => router.push(`/admin/orders/${order.id}`)}
+                    className={cn(
+                      "group hover:bg-va-off-white/50 transition-colors cursor-pointer",
+                      selectedOrderIds.includes(order.id) && "bg-primary/[0.02]"
+                    )}
+                  >
+                    <td className="px-8 py-6" onClick={(e) => e.stopPropagation()}>
+                      <ButtonInstrument
+                        variant="pure"
+                        size="none"
+                        onClick={() => toggleOrderSelection(order.id)}
+                        className="text-va-black/10 hover:text-primary transition-colors"
+                      >
+                        {selectedOrderIds.includes(order.id) ? (
+                          <CheckSquare size={18} className="text-primary" />
+                        ) : (
+                          <Square size={18} />
+                        )}
+                      </ButtonInstrument>
+                    </td>
+                    <td className="px-8 py-6">
+                      <TextInstrument as="span" className="text-[15px] font-bold tracking-tight text-va-black">#{order.orderNumber}</TextInstrument>
+                    </td>
+                    <td className="px-8 py-6">
+                      <ContainerInstrument className="flex flex-col">
+                        <TextInstrument as="span" className="text-[14px] font-medium text-va-black/60">{format(new Date(order.date), 'd MMM yyyy', { locale: nl })}</TextInstrument>
+                        <TextInstrument as="span" className="text-[11px] text-va-black/30">{format(new Date(order.date), 'HH:mm')}</TextInstrument>
+                      </ContainerInstrument>
+                    </td>
+                    <td className="px-8 py-6">
+                      <ContainerInstrument className="flex items-center gap-3">
+                        <ContainerInstrument className="w-10 h-10 rounded-full bg-va-black/5 flex items-center justify-center text-va-black/20">
+                          <User size={18} />
+                        </ContainerInstrument>
                         <ContainerInstrument className="flex flex-col">
-                          <TextInstrument as="span" className="text-[14px] font-medium text-va-black/60">{format(new Date(order.date), 'd MMM yyyy', { locale: nl })}</TextInstrument>
-                          <TextInstrument as="span" className="text-[11px] text-va-black/30">{format(new Date(order.date), 'HH:mm')}</TextInstrument>
+                          <TextInstrument as="span" className="text-[14px] font-bold text-va-black">{order.customer?.name || 'Onbekende Klant'}</TextInstrument>
+                          <TextInstrument as="span" className="text-[12px] text-va-black/40">{order.customer?.company || order.customer?.email}</TextInstrument>
                         </ContainerInstrument>
-                      </td>
-                      <td className="px-8 py-6">
-                        <ContainerInstrument className="flex items-center gap-3">
-                          <ContainerInstrument className="w-10 h-10 rounded-full bg-va-black/5 flex items-center justify-center text-va-black/20">
-                            <User size={18} />
-                          </ContainerInstrument>
-                          <ContainerInstrument className="flex flex-col">
-                            <TextInstrument as="span" className="text-[14px] font-bold text-va-black">{order.customer?.name || 'Onbekende Klant'}</TextInstrument>
-                            <TextInstrument as="span" className="text-[12px] text-va-black/40">{order.customer?.company || order.customer?.email}</TextInstrument>
-                          </ContainerInstrument>
-                        </ContainerInstrument>
-                      </td>
-                      <td className="px-8 py-6">
-                        <TextInstrument as="span" className="text-[11px] font-black tracking-widest uppercase text-va-black/40">{order.unit}</TextInstrument>
-                      </td>
-                      <td className="px-8 py-6">
-                        {getStatusBadge(order.status)}
-                      </td>
-                      <td className="px-8 py-6 text-right">
-                        <TextInstrument as="span" className="text-[16px] font-extralight tracking-tighter text-va-black">
-                          {new Intl.NumberFormat('nl-BE', { style: 'currency', currency: order.currency || 'EUR' }).format(order.total)}
-                        </TextInstrument>
-                      </td>
-                      <td className="px-8 py-6 text-right">
-                        <ContainerInstrument className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <ButtonInstrument variant="pure" size="none">
-                            <Link
-                              href={`/admin/orders/${order.id}`}
-                              onClick={(e) => e.stopPropagation()}
-                              className="w-10 h-10 rounded-full bg-white border border-black/5 flex items-center justify-center text-va-black/40 hover:text-primary hover:border-primary/20 transition-all"
-                            >
-                              <ExternalLink size={16} />
-                            </Link>
-                          </ButtonInstrument>
-                        </ContainerInstrument>
-                      </td>
-                    </tr>
-                    
-                    <AnimatePresence>
-                      {expandedOrderId === order.id && (
-                        <tr>
-                          <td colSpan={8} className="p-0 border-none">
-                            <motion.div
-                              initial={{ height: 0, opacity: 0 }}
-                              animate={{ height: 'auto', opacity: 1 }}
-                              exit={{ height: 0, opacity: 0 }}
-                              className="overflow-hidden bg-va-off-white/30 border-b border-black/[0.03]"
-                            >
-                              <ContainerInstrument className="px-8 py-10">
-                                {isExpanding ? (
-                                  <ContainerInstrument className="flex items-center gap-3 text-va-black/20 font-light tracking-widest uppercase text-[10px]">
-                                    <Loader2 className="animate-spin" size={14} /> Intelligence laden...
-                                  </ContainerInstrument>
-                                ) : expandedOrderData ? (
-                                  <ContainerInstrument className="space-y-8">
-                                    <ContainerInstrument className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                                      <ContainerInstrument className="lg:col-span-4 space-y-4">
-                                        <HeadingInstrument level={4} className="text-[11px] font-black tracking-[0.2em] uppercase text-va-black/30">Financieel Overzicht</HeadingInstrument>
-                                        <ContainerInstrument className="bg-white rounded-2xl border border-black/5 shadow-sm p-5 space-y-2">
-                                          <ContainerInstrument className="flex justify-between text-[14px]">
-                                            <TextInstrument className="text-va-black/40">Netto</TextInstrument>
-                                            <TextInstrument className="font-medium">€{expandedOrderData.finance?.net}</TextInstrument>
-                                          </ContainerInstrument>
-                                          <ContainerInstrument className="flex justify-between text-[14px]">
-                                            <TextInstrument className="text-va-black/40">Inkoop</TextInstrument>
-                                            <TextInstrument className="font-medium">€{expandedOrderData.finance?.cost}</TextInstrument>
-                                          </ContainerInstrument>
-                                          <ContainerInstrument className="flex justify-between text-[14px] pt-2 border-t border-black/5">
-                                            <TextInstrument className="font-bold">Marge</TextInstrument>
-                                            <TextInstrument className="font-bold text-primary">€{expandedOrderData.finance?.margin} ({expandedOrderData.finance?.marginPercentage})</TextInstrument>
-                                          </ContainerInstrument>
-                                          <ContainerInstrument className="pt-3 border-t border-black/5 text-[12px] font-light text-va-black/50 space-y-1">
-                                            <TextInstrument>Items: {expandedOrderData.production?.items?.length || 0}</TextInstrument>
-                                            <TextInstrument>Status: {expandedOrderData.status || '-'}</TextInstrument>
-                                          </ContainerInstrument>
-                                        </ContainerInstrument>
-                                      </ContainerInstrument>
-
-                                      <ContainerInstrument className="lg:col-span-8 space-y-4">
-                                        <HeadingInstrument level={4} className="text-[11px] font-black tracking-[0.2em] uppercase text-va-black/30">Bestelling Inhoud (Snelle Check)</HeadingInstrument>
-                                        <ContainerInstrument className="bg-white p-6 rounded-2xl border border-black/5 shadow-sm space-y-5">
-                                          {(expandedOrderData.production?.items || []).length > 0 ? (
-                                            <ContainerInstrument className="space-y-4">
-                                              {expandedOrderData.production.items.map((item: any, index: number) => {
-                                                const isMusicItem = item?.itemType === 'music';
-                                                const itemScript = scriptSnippet(item?.briefing?.script || '');
-                                                const itemNotes = scriptSnippet(item?.briefing?.notes || '', 220);
-                                                return (
-                                                  <ContainerInstrument key={`quick-item-${item.id}-${index}`} className="rounded-xl border border-black/5 p-4 space-y-3">
-                                                    <ContainerInstrument className="flex items-start justify-between gap-4">
-                                                      <ContainerInstrument className="space-y-1">
-                                                        <ContainerInstrument className="flex items-center gap-2">
-                                                          <Mic size={14} className="text-primary" />
-                                                          <TextInstrument className="text-[14px] font-semibold text-va-black">{item?.name || 'Onbekend item'}</TextInstrument>
-                                                        </ContainerInstrument>
-                                                        <TextInstrument className="text-[12px] text-va-black/45 font-light">
-                                                          {isMusicItem
-                                                            ? `Muziekitem • Aantal: ${item?.quantity || 1} • Subtotaal: €${item?.subtotal || item?.price || '0.00'}`
-                                                            : `Stem: ${item?.actorName || 'Geen stem gekoppeld'} • Aantal: ${item?.quantity || 1} • Subtotaal: €${item?.subtotal || item?.price || '0.00'}`}
-                                                        </TextInstrument>
-                                                      </ContainerInstrument>
-                                                      <TextInstrument className="text-[10px] uppercase tracking-widest text-va-black/30">
-                                                        Item #{item?.id || '-'}
-                                                      </TextInstrument>
-                                                    </ContainerInstrument>
-
-                                                    {isMusicItem ? (
-                                                      <ContainerInstrument className="text-[12px] font-light text-va-black/65 whitespace-pre-wrap space-y-1">
-                                                        <TextInstrument>
-                                                          <TextInstrument as="span" className="font-medium text-va-black/75">Muziek: </TextInstrument>
-                                                          {item?.music?.trackLabel || item?.name || '-'}
-                                                          {item?.music?.trackId ? ` (${item.music.trackId})` : ''}
-                                                        </TextInstrument>
-                                                        <TextInstrument>
-                                                          <TextInstrument as="span" className="font-medium text-va-black/75">Keuze: </TextInstrument>
-                                                          {(item?.music?.modeLabels || []).length > 0 ? item.music.modeLabels.join(' • ') : 'Los muziekitem'}
-                                                        </TextInstrument>
-                                                      </ContainerInstrument>
-                                                    ) : itemScript ? (
-                                                      <ContainerInstrument className="text-[13px] font-light text-va-black/75 leading-relaxed whitespace-pre-wrap">
-                                                        {renderTaggedText(itemScript, `item-${item.id}-script`)}
-                                                      </ContainerInstrument>
-                                                    ) : (
-                                                      <TextInstrument className="text-[12px] italic text-va-black/30">Geen script op dit item.</TextInstrument>
-                                                    )}
-
-                                                    {itemNotes ? (
-                                                      <ContainerInstrument className="text-[12px] font-light text-va-black/55 whitespace-pre-wrap">
-                                                        <TextInstrument as="span" className="font-medium text-va-black/70">Notities: </TextInstrument>
-                                                        {renderTaggedText(itemNotes, `item-${item.id}-notes`)}
-                                                      </ContainerInstrument>
-                                                    ) : null}
-                                                  </ContainerInstrument>
-                                                );
-                                              })}
-                                            </ContainerInstrument>
-                                          ) : (
-                                            <TextInstrument className="text-[13px] text-va-black/30 italic">Geen bestelde items gevonden voor deze order.</TextInstrument>
-                                          )}
-
-                                          {expandedOrderData.production?.briefing?.text ? (
-                                            <ContainerInstrument className="rounded-xl border border-black/5 p-4 bg-va-off-white/30 space-y-2">
-                                              <TextInstrument className="text-[10px] uppercase tracking-[0.2em] text-va-black/30">Orderniveau notitie</TextInstrument>
-                                              <TextInstrument className="text-[13px] font-light text-va-black/65 whitespace-pre-wrap leading-relaxed">
-                                                {renderTaggedText(scriptSnippet(expandedOrderData.production.briefing.text), `order-${order.id}-briefing`)}
-                                              </TextInstrument>
-                                            </ContainerInstrument>
-                                          ) : null}
-                                        </ContainerInstrument>
-                                      </ContainerInstrument>
-                                    </ContainerInstrument>
-
-                                    <ContainerInstrument className="flex flex-wrap gap-3">
-                                      <ButtonInstrument variant="pure" size="none">
-                                        <Link
-                                          href={`/admin/orders/${order.id}`}
-                                          className="px-4 py-2 bg-va-black text-white text-[11px] font-bold rounded-full uppercase tracking-widest hover:bg-va-black/80 transition-all"
-                                        >
-                                          Volledig Dossier
-                                        </Link>
-                                      </ButtonInstrument>
-                                    </ContainerInstrument>
-                                  </ContainerInstrument>
-                                ) : (
-                                  <TextInstrument className="text-red-500 text-[12px]">Fout bij het laden van data.</TextInstrument>
-                                )}
-                              </ContainerInstrument>
-                            </motion.div>
-                          </td>
-                        </tr>
-                      )}
-                    </AnimatePresence>
-                  </React.Fragment>
+                      </ContainerInstrument>
+                    </td>
+                    <td className="px-8 py-6">
+                      <TextInstrument as="span" className="text-[11px] font-black tracking-widest uppercase text-va-black/40">{order.unit}</TextInstrument>
+                    </td>
+                    <td className="px-8 py-6">
+                      {getStatusBadge(order.status)}
+                    </td>
+                    <td className="px-8 py-6 text-right">
+                      <TextInstrument as="span" className="text-[16px] font-extralight tracking-tighter text-va-black">
+                        {new Intl.NumberFormat('nl-BE', { style: 'currency', currency: order.currency || 'EUR' }).format(order.total)}
+                      </TextInstrument>
+                    </td>
+                    <td className="px-8 py-6 text-right">
+                      <ContainerInstrument className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <ButtonInstrument variant="pure" size="none">
+                          <Link
+                            href={`/admin/orders/${order.id}`}
+                            onClick={(e) => e.stopPropagation()}
+                            className="w-10 h-10 rounded-full bg-white border border-black/5 flex items-center justify-center text-va-black/40 hover:text-primary hover:border-primary/20 transition-all"
+                          >
+                            <ExternalLink size={16} />
+                          </Link>
+                        </ButtonInstrument>
+                      </ContainerInstrument>
+                    </td>
+                  </tr>
                 )) : (
                   <tr>
                     <td colSpan={8} className="px-8 py-20 text-center">
