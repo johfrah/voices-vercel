@@ -346,6 +346,17 @@ export const VoicesMasterControlProvider: React.FC<{
         initialYearsDetail = sanitizeCommercialDetailMap(initialYearsDetail, initialMedia, 1);
       }
 
+      // 🛡️ CHRIS-PROTOCOL: Market Drift Protection (v2.28.25)
+      // If the domain has changed since the last save, force the primary language of the new market.
+      const lastMarketCode = savedState.marketCode;
+      const currentMarketCode = market?.market_code;
+      const marketChanged = lastMarketCode && currentMarketCode && lastMarketCode !== currentMarketCode;
+
+      if (marketChanged) {
+        initialLanguage = market?.primary_language || 'nl-be';
+        initialLanguageId = market?.primary_language_id || 1;
+      }
+
       const newState: MasterControlState = {
         journey,
         journeyId,
@@ -354,8 +365,8 @@ export const VoicesMasterControlProvider: React.FC<{
         filters: {
           language: initialLanguage,
           languageId: initialLanguageId,
-          languages: initialLanguages as string[],
-          languageIds: initialLanguageIds,
+          languages: marketChanged ? [initialLanguage] : (initialLanguages as string[]),
+          languageIds: marketChanged ? (initialLanguageId ? [initialLanguageId] : []) : initialLanguageIds,
           gender: searchParams?.get('gender') || savedState.filters?.gender || null,
           genderId: searchParams?.get('genderId') ? parseInt(searchParams.get('genderId')!) : (savedState.filters?.genderId || null),
           style: searchParams?.get('style') || savedState.filters?.style || null,
@@ -374,6 +385,8 @@ export const VoicesMasterControlProvider: React.FC<{
           liveSession: searchParams?.get('liveSession') === 'true' || savedState.filters?.liveSession || false,
         },
         currentStep: 'voice',
+        // @ts-ignore - internal tracking
+        marketCode: currentMarketCode
       };
 
       setState(newState);

@@ -15,9 +15,7 @@ import { usePathname } from 'next/navigation';
 import React, { useEffect, useMemo, useState } from 'react';
 import { ActorReorderModal } from './ActorReorderModal';
 import { AgencyFilterSheet } from './AgencyFilterSheet';
-import { FlagAR, FlagBE, FlagBR, FlagCN, FlagDE, FlagDK, FlagES, FlagFI, FlagFR, FlagGR, FlagIT, FlagJP, FlagKR, FlagNL, FlagPL, FlagPT, FlagRU, FlagSE, FlagTR, FlagUK, FlagUS } from './LayoutInstruments';
-import { ContainerInstrument, TextInstrument, ButtonInstrument } from './LayoutInstruments';
-import { ContainerInstrumentServer, TextInstrumentServer } from './LayoutInstrumentsServer';
+import { ButtonInstrument, ContainerInstrument, FlagAR, FlagBE, FlagBR, FlagCN, FlagDE, FlagDK, FlagES, FlagFI, FlagFR, FlagGR, FlagIT, FlagJP, FlagKR, FlagNL, FlagPL, FlagPT, FlagRU, FlagSE, FlagTR, FlagUK, FlagUS, TextInstrument } from './LayoutInstruments';
 import { OrderStepsInstrument } from './OrderStepsInstrument';
 import { VoiceglotText } from './VoiceglotText';
 import { VoicesDropdown } from './VoicesDropdown';
@@ -142,8 +140,10 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
     const ids = new Set<number>();
     // 🛡️ CHRIS-PROTOCOL: Global Availability Mandate (v2.15.042)
     // We use the registry as the primary source of truth for ALL languages that have actors.
-    if (MarketManager.languages && (MarketManager.languages || []).length > 0) {
-      (MarketManager.languages || []).forEach(l => ids.add(l.id));
+    const registry = languagesData && languagesData.length > 0 ? languagesData : MarketManager.languages;
+    
+    if (registry && (registry || []).length > 0) {
+      (registry || []).forEach(l => ids.add(l.id));
       return ids;
     }
 
@@ -157,10 +157,17 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
     if (state.filters?.languageId) ids.add(state.filters.languageId);
     
     return ids;
-  }, [actors, state.filters?.languageId]);
+  }, [actors, state.filters?.languageId, languagesData]);
 
   const availableGenderIds = useMemo(() => {
     const ids = new Set<number>();
+    const registry = gendersData && gendersData.length > 0 ? gendersData : (typeof window !== 'undefined' ? (window as any).handshakeGenders : []);
+    
+    if (registry && (registry || []).length > 0) {
+      (registry || []).forEach(g => ids.add(g.id));
+      return ids;
+    }
+
     (actors || []).forEach(a => {
       if (a.gender_id) ids.add(a.gender_id);
     });
@@ -168,12 +175,14 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
     if (state.filters?.genderId) ids.add(state.filters.genderId);
 
     return ids;
-  }, [actors, state.filters?.genderId]);
+  }, [actors, state.filters?.genderId, gendersData]);
 
   const availableCountryIds = useMemo(() => {
     const ids = new Set<number>();
-    if (MarketManager.countries && (MarketManager.countries || []).length > 0) {
-      (MarketManager.countries || []).forEach(c => ids.add(c.id));
+    const registry = countriesData && countriesData.length > 0 ? countriesData : MarketManager.countries;
+    
+    if (registry && (registry || []).length > 0) {
+      (registry || []).forEach(c => ids.add(c.id));
       return ids;
     }
 
@@ -189,7 +198,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
     }
 
     return ids;
-  }, [actors, state.filters?.countryId, state.filters?.countries]);
+  }, [actors, state.filters?.countryId, state.filters?.countries, countriesData]);
 
   const filteredLanguagesData = useMemo(() => {
     // 🛡️ CHRIS-PROTOCOL: Strict Availability Mandate (v2.15.042)

@@ -606,8 +606,8 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
   if (resolved?.routing_type === 'actor' && lookupSlug.includes('/')) {
     // This is a deep actor route, let it handle its own metadata or proceed
   } else if (MarketManager.isAgencySegment(firstSegment)) {
-    const title = await getTranslatedSEO('seo.agency.title', `Voice-over Agency | Vind de perfecte stem | ${market.name}`);
-    const description = await getTranslatedSEO('seo.agency.description', `Ontdek meer dan 500+ professionele voice-over stemmen voor video, commercial en telefonie. Directe prijsberekening en 24u levering bij ${market.name}.`);
+    const title = await getTranslatedSEO('seo.agency.title', market.seo_data?.title || `Voice-over Agency | Vind de perfecte stem | ${market.name}`);
+    const description = await getTranslatedSEO('seo.agency.description', market.seo_data?.description || `Ontdek meer dan 500+ professionele voice-over stemmen voor video, commercial en telefonie. Directe prijsberekening en 24u levering bij ${market.name}.`);
     
     return {
       title,
@@ -615,7 +615,15 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
       alternates: {
         canonical: canonicalUrl,
         languages: alternateLanguages,
-      }
+      },
+      openGraph: {
+        title,
+        description,
+        url: canonicalUrl,
+        siteName: market.name,
+        locale: localeToBcp47(lang),
+        type: 'website',
+      },
     };
   }
 
@@ -726,7 +734,26 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
       }
     } catch (e) {}
 
-    return {};
+    // 🛡️ CHRIS-PROTOCOL: Market-Aware SEO Fallback (v2.28.25)
+    const defaultTitle = await getTranslatedSEO('seo.default.title', market.seo_data?.title || market.name);
+    const defaultDescription = await getTranslatedSEO('seo.default.description', market.seo_data?.description || 'De stem van morgen.');
+
+    return {
+      title: defaultTitle,
+      description: defaultDescription,
+      alternates: {
+        canonical: canonicalUrl,
+        languages: alternateLanguages,
+      },
+      openGraph: {
+        title: defaultTitle,
+        description: defaultDescription,
+        url: canonicalUrl,
+        siteName: market.name,
+        locale: localeToBcp47(lang),
+        type: 'website',
+      },
+    };
 }
 
 export default async function SmartRoutePage({ params }: { params: SmartRouteParams }) {

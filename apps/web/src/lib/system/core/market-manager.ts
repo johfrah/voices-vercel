@@ -252,37 +252,43 @@ export class MarketManager {
       supported_languages: ['nl-be', 'nl-nl', 'fr-be', 'en-gb', 'fr-fr', 'de-de'],
       popular_languages: ['nl-be', 'nl-nl', 'fr-be', 'en-gb', 'fr-fr', 'de-de'],
       name: 'Voices', email: 'johfrah@voices.be', logo_url: VOICES_CONFIG.assets.logos.be,
-      theme: 'voices', has_voicy: true
+      theme: 'voices', has_voicy: true,
+      seo_data: { title: 'Voices | Het Vriendelijkste Stemmenbureau', description: 'Vind de perfecte stem voor elke productie.' }
     },
     'voices.nl': {
       market_code: 'NLNL', language: 'nl', primary_language: 'nl-nl', primary_language_id: 2,
       supported_languages: ['nl-nl', 'nl-be', 'en-gb', 'de-de', 'fr-fr'],
       popular_languages: ['nl-nl', 'nl-be', 'en-gb', 'de-de', 'fr-fr'],
-      name: 'Nederland', logo_url: VOICES_CONFIG.assets.logos.nl, theme: 'voices', has_voicy: true
+      name: 'Nederland', logo_url: VOICES_CONFIG.assets.logos.be, theme: 'voices', has_voicy: true,
+      seo_data: { title: 'Voices Nederland | Stemmenbureau', description: 'De beste Nederlandse stemmen voor uw project.' }
     },
     'voices.fr': {
       market_code: 'FR', language: 'fr', primary_language: 'fr-fr', primary_language_id: 4,
       supported_languages: ['fr-fr', 'fr-be', 'en-gb', 'nl-nl', 'nl-be', 'de-de'],
       popular_languages: ['fr-fr', 'fr-be', 'en-gb', 'nl-nl', 'nl-be', 'de-de'],
-      name: 'France', logo_url: VOICES_CONFIG.assets.logos.fr, theme: 'voices', has_voicy: true
+      name: 'France', logo_url: VOICES_CONFIG.assets.logos.be, theme: 'voices', has_voicy: true,
+      seo_data: { title: 'Voices France | Agence de Voix-off', description: 'Trouvez la voix parfaite pour vos productions.' }
     },
     'voices.es': {
       market_code: 'ES', language: 'es', primary_language: 'es-es', primary_language_id: 8,
       supported_languages: ['es-es', 'en-gb', 'fr-fr', 'pt-pt', 'it-it'],
       popular_languages: ['es-es', 'en-gb', 'pt-pt'],
-      name: 'España', logo_url: VOICES_CONFIG.assets.logos.es, theme: 'voices', has_voicy: true
+      name: 'España', logo_url: VOICES_CONFIG.assets.logos.be, theme: 'voices', has_voicy: true,
+      seo_data: { title: 'Voices España | Agencia de Locutores', description: 'Encuentra la voz perfecta para tus proyectos.' }
     },
     'voices.pt': {
       market_code: 'PT', language: 'pt', primary_language: 'pt-pt', primary_language_id: 12,
       supported_languages: ['pt-pt', 'en-gb', 'es-es', 'fr-fr'],
       popular_languages: ['pt-pt', 'en-gb', 'es-es'],
-      name: 'Portugal', logo_url: VOICES_CONFIG.assets.logos.pt, theme: 'voices', has_voicy: true
+      name: 'Portugal', logo_url: VOICES_CONFIG.assets.logos.be, theme: 'voices', has_voicy: true,
+      seo_data: { title: 'Voices Portugal | Agência de Locutores', description: 'Encontre a voz perfeita para as suas produções.' }
     },
     'voices.eu': {
       market_code: 'EU', language: 'en', primary_language: 'en-gb', primary_language_id: 5,
       supported_languages: ['en-gb', 'de-de', 'nl-be', 'nl-nl', 'fr-be', 'fr-fr'],
       popular_languages: ['en-gb', 'de-de', 'fr-be', 'fr-fr', 'nl-nl', 'nl-be'],
-      name: 'Europe', logo_url: VOICES_CONFIG.assets.logos.eu, theme: 'voices', has_voicy: true
+      name: 'Europe', logo_url: VOICES_CONFIG.assets.logos.be, theme: 'voices', has_voicy: true,
+      seo_data: { title: 'Voices Europe | Voice-over Agency', description: 'Find the perfect voice for any production across Europe.' }
     },
     'voices.academy': {
       market_code: 'ACADEMY', language: 'nl', primary_language: 'nl-BE',
