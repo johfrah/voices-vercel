@@ -68,7 +68,7 @@ interface MenuItem {
 
 interface DataResult {
   type: 'action' | 'article';
-  kind?: 'actor' | 'order' | 'user' | 'article';
+  kind?: 'actor' | 'order' | 'user' | 'article' | 'page';
   title: string;
   subtitle: string;
   href: string;
@@ -352,6 +352,7 @@ export const SpotlightDashboard: React.FC = () => {
                           {(item.kind === 'actor') && <Mic size={18} className="text-purple-500 group-hover:text-white" />}
                           {(item.kind === 'order') && <ShoppingBag size={18} className="text-blue-600 group-hover:text-white" />}
                           {(item.kind === 'user') && <Ghost size={18} className="text-emerald-500 group-hover:text-white" />}
+                          {(item.kind === 'page') && <Home size={18} className="text-va-black/50 group-hover:text-white" />}
                           {item.type === 'article' && <FileText size={18} className="text-orange-500 group-hover:text-white" />}
                         </div>
                         <div className="flex-1 min-w-0">

@@ -3,6 +3,35 @@ import { ilike, or, sql } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth/api-auth';
 
+const NON_ARTICLE_PAGE_SLUGS = new Set([
+  'agency',
+  'about-us',
+  'contact',
+  'faq',
+  'tarieven',
+  'academy',
+  'studio',
+  'privacy',
+  'terms',
+  'cookies',
+  'cookiebeleid',
+  'zo-werkt-het'
+]);
+
+function isKnowledgeArticleSlug(rawSlug: string | null | undefined): boolean {
+  const normalized = String(rawSlug || '').trim().toLowerCase().replace(/^\/+|\/+$/g, '');
+  if (!normalized) return false;
+  if (normalized.endsWith('/contact') || normalized.endsWith('/faq')) return false;
+
+  const leaf = normalized.split('/').filter(Boolean).pop() || normalized;
+  if (NON_ARTICLE_PAGE_SLUGS.has(normalized) || NON_ARTICLE_PAGE_SLUGS.has(leaf)) {
+    return false;
+  }
+
+  const tokenCount = leaf.split('-').filter(Boolean).length;
+  return tokenCount >= 3 || /^\d+-/.test(leaf);
+}
+
 /**
  *  API: GLOBAL ADMIN SEARCH (Spotlight 2.0)
  * 
@@ -111,14 +140,17 @@ export async function GET(request: NextRequest) {
         href: `/admin/users?id=${u.id}`,
         id: u.id
       })),
-      ...foundArticles.map(art => ({
-        type: 'article',
-        kind: 'article',
-        title: art.title,
-        subtitle: `Content • ${art.status}`,
-        href: `/admin/articles?slug=${art.slug}`,
-        id: art.id
-      }))
+      ...foundArticles.map(art => {
+        const isArticle = isKnowledgeArticleSlug(art.slug);
+        return {
+          type: isArticle ? 'article' : 'action',
+          kind: isArticle ? 'article' : 'page',
+          title: art.title,
+          subtitle: `Content • ${art.status}`,
+          href: `/admin/articles?slug=${art.slug}`,
+          id: art.id
+        };
+      })
     ];
 
     return NextResponse.json({ results });
