@@ -106,7 +106,7 @@ export async function GET(request: NextRequest) {
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    if (!isAdmin && email && email !== user.email) {
+    if (!isAdmin && email && email.toLowerCase() !== user.email?.toLowerCase()) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     if (!isAdmin && userId && String(user.id) !== userId) {
@@ -114,7 +114,7 @@ export async function GET(request: NextRequest) {
     }
 
     try {
-    const identifier = userId ? parseInt(userId) : email!;
+    const identifier = userId ? parseInt(userId) : email!.toLowerCase();
     
     // 🛡️ CHRIS-PROTOCOL: Nuclear Caching Layer (SWR)
     // We cachen de 360 data voor 1 minuut om 504 timeouts te voorkomen (v2.14.347)

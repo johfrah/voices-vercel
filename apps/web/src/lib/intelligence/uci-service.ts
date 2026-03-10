@@ -8,7 +8,7 @@ const orderStatuses = getTable('orderStatuses');
 const paymentMethods = getTable('paymentMethods');
 const journeys = getTable('journeys');
 const utmTouchpoints = getTable('utmTouchpoints');
-import { desc, eq, inArray } from 'drizzle-orm';
+import { desc, eq, inArray, sql } from 'drizzle-orm';
 import { createClient } from '@supabase/supabase-js';
 
 //  CHRIS-PROTOCOL: SDK fallback voor als direct-connect faalt
@@ -70,41 +70,46 @@ export class UCIService {
           .where(
             typeof identifier === 'number' 
               ? eq(users.id, identifier) 
-              : eq(users.email, identifier)
+              : sql`lower(${users.email}) = lower(${identifier})`
           )
+          .orderBy(desc(users.lastActive), desc(users.createdAt), desc(users.id))
           .limit(1);
         user = dbUser;
       } catch (dbError) {
         console.warn(' UCI Service Drizzle failed, falling back to SDK');
         const query = supabase.from('users').select('*');
         if (typeof identifier === 'number') query.eq('id', identifier);
-        else query.eq('email', identifier);
+        else query.ilike('email', String(identifier));
         
-        const { data } = await query.single();
-        if (data) {
+        const { data, error } = await query
+          .order('last_active', { ascending: false })
+          .limit(1);
+        
+        if (data && data.length > 0) {
+          const userData = data[0];
           user = {
-            ...data,
-            wpUserId: data.wp_user_id,
-            first_name: data.first_name,
-            last_name: data.last_name,
-            companyName: data.company_name,
-            companySector: data.company_sector,
-            companySize: data.company_size,
-            vatNumber: data.vat_number,
-            customerType: data.customer_type,
-            journeyState: data.journey_state,
-            customerInsights: data.customer_insights,
-            activityLog: data.activity_log,
-            createdAt: data.created_at,
-            lastActive: data.last_active,
-            approvedFlows: data.approved_flows,
-            addressStreet: data.address_street,
-            addressZip: data.address_zip,
-            addressCity: data.address_city,
-            addressCountry: data.address_country,
-            is_manually_edited: data.is_manually_edited,
-            howHeard: data.how_heard,
-            updatedAt: data.updated_at
+            ...userData,
+            wpUserId: userData.wp_user_id,
+            first_name: userData.first_name,
+            last_name: userData.last_name,
+            companyName: userData.company_name,
+            companySector: userData.company_sector,
+            companySize: userData.company_size,
+            vatNumber: userData.vat_number,
+            customerType: userData.customer_type,
+            journeyState: userData.journey_state,
+            customerInsights: userData.customer_insights,
+            activityLog: userData.activity_log,
+            createdAt: userData.created_at,
+            lastActive: userData.last_active,
+            approvedFlows: userData.approved_flows,
+            addressStreet: userData.address_street,
+            addressZip: userData.address_zip,
+            addressCity: userData.address_city,
+            addressCountry: userData.address_country,
+            is_manually_edited: userData.is_manually_edited,
+            howHeard: userData.how_heard,
+            updatedAt: userData.updated_at
           };
         }
       }

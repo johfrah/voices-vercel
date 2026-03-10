@@ -77,7 +77,7 @@ function getJourneyDefaultLinks(journeyKey: string) {
   }
 
   return [
-    { name: 'Onze Stemmen', href: '/agency/', key: 'nav.my_voice' },
+    { name: 'Onze Stemmen', href: '/', key: 'nav.my_voice' },
     { name: 'Gratis Proefopname', href: '/casting/video/', key: 'nav.free_demo' },
     { name: 'Tarieven', href: '/tarieven/', key: 'nav.pricing' },
     { name: 'Contact', href: '/contact/', key: 'nav.contact' }
