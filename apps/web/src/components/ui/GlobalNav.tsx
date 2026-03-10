@@ -1408,7 +1408,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
             isActive={isMobile}
           >
             <ContainerInstrument plain className="p-1 space-y-1">
-              {isMobile && (
+              if (isMobile && !isStudioJourney) (
                 <>
                   <ContainerInstrument plain className="px-4 py-3 border-b border-black/5 mb-1">
                     <TextInstrument className="text-[11px] font-bold text-va-black/40 tracking-[0.2em] uppercase">
@@ -1442,6 +1442,30 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
                   <div className="h-px bg-va-black/10 mx-2 my-1" />
                 </>
               )}
+              {isMobile && isStudioJourney && (
+                <>
+                  <ContainerInstrument plain className="px-4 py-3 border-b border-black/5 mb-1">
+                    <TextInstrument className="text-[11px] font-bold text-va-black/40 tracking-[0.2em] uppercase">
+                      <VoiceglotText translationKey="nav.mobile_menu_label" defaultText="Studio Menu" />
+                    </TextInstrument>
+                  </ContainerInstrument>
+                  <DropdownItem icon={Home} label={<VoiceglotText translationKey="nav.home" defaultText="Home" />} href="/" />
+                  {activeLinks.map((link: any, idx: number) => {
+                    const isContact = link.href?.toLowerCase().replace(/\/$/, '').endsWith('/contact');
+                    return (
+                      <DropdownItem
+                        key={link.name}
+                        icon={ChevronRight}
+                        label={<VoiceglotText translationKey={resolveLinkTranslationKey(link, idx)} defaultText={link.name || ''} />}
+                        href={isContact ? undefined : (link.href !== '#' ? link.href : undefined)}
+                        onClick={isContact ? () => { playClick('soft'); window.dispatchEvent(new CustomEvent('voicy:open', { detail: { tab: 'mail' } })); } : link.onClick}
+                      />
+                    );
+                  })}
+                  <DropdownItem icon={User} label={<VoiceglotText translationKey="nav.account" defaultText={auth.isAuthenticated ? "Mijn Account" : "Inloggen"} />} href="/account/" />
+                  <div className="h-px bg-va-black/10 mx-2 my-1" />
+                </>
+              )}
               
               {!isMobile && activeLinks.map((link: any, idx: number) => {
                 const isContact = link.href?.toLowerCase().replace(/\/$/, '').endsWith('/contact');
@@ -1457,7 +1481,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
               })}
 
               {/* Footer Links Integration (Nuclear Sync) */}
-              {!isSpecialJourney && (
+              {!isSpecialJourney && !isStudioJourney && (
                 <ContainerInstrument plain className="mt-1.5 pt-1.5 border-t border-black/5">
                   {[
                     { name: 'Hoe werkt het', href: '/agency/zo-werkt-het/', icon: Info, key: 'nav.extra.how_it_works' },
@@ -1475,7 +1499,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
               )}
               
               <ContainerInstrument plain className="mt-1 px-1 py-1">
-                {!isSpecialJourney && (
+                {!isSpecialJourney && !isStudioJourney && (
                   <>
                     <div className="px-3 py-3 border-t border-black/5 mb-1">
                       <TextInstrument className="text-[11px] font-bold text-va-black/40 tracking-[0.2em] uppercase">

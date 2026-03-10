@@ -2421,15 +2421,19 @@ function CmsPageContent({ page, slug, extraData = {} }: { page: any, slug: strin
         <LiquidBackground />
       </Suspense>
       <ContainerInstrument className="py-48 relative z-10 max-w-5xl mx-auto px-6">
-        <header className="mb-64 animate-in fade-in slide-in-from-bottom-12 duration-1000">
-          <TextInstrument className="text-[11px] font-bold tracking-[0.4em] text-primary/60 mb-12 block uppercase">
-            Projecttype
-          </TextInstrument>
-          <HeadingInstrument level={1} className="text-[10vw] lg:text-[120px] font-light tracking-tighter mb-20 leading-[0.85] text-va-black" suppressHydrationWarning>
-            <VoiceglotText translationKey={`page.${page.slug}.title`} defaultText={page.title} />
-          </HeadingInstrument>
-          <ContainerInstrument className="w-48 h-1 bg-black/5 rounded-full" />
-        </header>
+        {/* 🛡️ CHRIS-PROTOCOL: Action Page Header Guard (v2.28.73) */}
+        {/* We hide the default header on 'action' pages (e.g. Tarifs) to prevent UI clutter. */}
+        {page.routing_type !== 'action' && (
+          <header className="mb-64 animate-in fade-in slide-in-from-bottom-12 duration-1000">
+            <TextInstrument className="text-[11px] font-bold tracking-[0.4em] text-primary/60 mb-12 block uppercase">
+              Projecttype
+            </TextInstrument>
+            <HeadingInstrument level={1} className="text-[10vw] lg:text-[120px] font-light tracking-tighter mb-20 leading-[0.85] text-va-black" suppressHydrationWarning>
+              <VoiceglotText translationKey={`page.${page.slug}.title`} defaultText={page.title} />
+            </HeadingInstrument>
+            <ContainerInstrument className="w-48 h-1 bg-black/5 rounded-full" />
+          </header>
+        )}
         
         {/* 🛡️ DNA-ROUTING: Render instruments from database if settings exist */}
         <InstrumentRenderer blocks={page.blocks} extraData={extraData} />

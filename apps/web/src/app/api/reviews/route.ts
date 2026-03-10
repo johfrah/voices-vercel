@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
     }
 
     if (worldId) {
-      conditions.push(eq(reviews.worldId, worldId));
+      conditions.push(eq(reviews.worldIdNew, parseInt(worldId)));
     }
 
     if (conditions.length > 0) {
