@@ -103,6 +103,15 @@ No raw `<div>`, `<h1>`, `<p>`, `<section>`, `<main>` in new components.
 - Reuse existing dev server/process state when possible.
 - Avoid running identical commands repeatedly with unchanged context.
 
+### Approval-First Debug Workflow (User Preference)
+
+When the task is a bug investigation or behavior regression:
+- Step A: Identify root cause first (no code edits).
+- Step B: Report exact files and line ranges involved.
+- Step C: Propose a safe patch/diff.
+- Step D: Wait for explicit user approval before applying code changes.
+- Do not apply quick patches, structural HTML changes, or UI-impact changes before approval.
+
 ### Mobile UX Acceptance Checklist (Mandatory for UI Changes)
 
 When a task changes public UI or interaction flows, agents must validate both mobile and desktop behavior with explicit evidence.
