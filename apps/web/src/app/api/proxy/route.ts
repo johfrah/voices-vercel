@@ -336,6 +336,19 @@ export async function GET(request: NextRequest) {
       return new NextResponse(null, { status: 404, statusText: 'Asset not found' });
     }
 
+    // Guard: SmartRouter can return HTML (200) for missing asset paths.
+    // Never forward HTML payloads for asset proxy requests.
+    const isImageRequest = looksLikeImagePath(assetPath || '');
+    const isHtmlPayload = /^text\/html\b/i.test(String(result.contentType || ''));
+    const isAssetsPath = (assetPath || '').toLowerCase().startsWith('/assets/');
+    if (isAssetsPath && isHtmlPayload) {
+      console.warn(`[Proxy Guard] HTML payload detected for asset path: ${assetPath}`);
+      if (isImageRequest) {
+        return createImagePlaceholderResponse();
+      }
+      return new NextResponse(null, { status: 404, statusText: 'Asset not found' });
+    }
+
     return new NextResponse(result.blob, {
       headers: {
         'Content-Type': result.contentType,
