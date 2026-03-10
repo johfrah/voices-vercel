@@ -1,7 +1,7 @@
 {
   "source_files": [
-    "/workspace/apps/web/.next/routes-manifest.json",
-    "/workspace/apps/web/.next/app-path-routes-manifest.json"
+    "/Users/voices/Cursor Project/apps/web/.next/routes-manifest.json",
+    "/Users/voices/Cursor Project/apps/web/.next/app-path-routes-manifest.json"
   ],
   "critical_routes": [
     "/",
