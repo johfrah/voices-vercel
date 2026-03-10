@@ -17,6 +17,19 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 const sdkClient = createSupabaseClient(supabaseUrl, supabaseKey);
 
+function restorePlusInEmail(value: string | null | undefined): string | null {
+  if (!value) return null;
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+  // Query params that are not encoded can turn "+" into spaces. Restore that here.
+  return trimmed.replace(/\s+/g, '+');
+}
+
+function normalizeEmailForCompare(value: string | null | undefined): string | null {
+  const restored = restorePlusInEmail(value);
+  return restored ? restored.toLowerCase() : null;
+}
+
 async function checkIsAdmin(email: string | undefined): Promise<boolean> {
   if (!email) return false;
   const adminEmail = process.env.ADMIN_EMAIL;
@@ -94,9 +107,11 @@ export async function GET(request: NextRequest) {
   const isAdmin = await checkIsAdmin(user?.email);
 
   const { searchParams } = new URL(request.url);
-    const email = searchParams.get('email');
+    const email = restorePlusInEmail(searchParams.get('email'));
+    const emailForCompare = normalizeEmailForCompare(email);
     const userId = searchParams.get('userId');
     const forceRefresh = searchParams.get('forceRefresh') === 'true';
+    const userEmailForCompare = normalizeEmailForCompare(user?.email);
 
     if (!email && !userId) {
       return NextResponse.json({ error: 'Email or userId required' }, { status: 400 });
@@ -106,7 +121,7 @@ export async function GET(request: NextRequest) {
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    if (!isAdmin && email && email !== user.email) {
+    if (!isAdmin && emailForCompare && emailForCompare !== userEmailForCompare) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     if (!isAdmin && userId && String(user.id) !== userId) {

@@ -192,7 +192,8 @@ export default function OrdersPage() {
     setIsLoading(true);
     setErrorMessage(null);
     const forceRefresh = !!highlightedOrderId;
-    fetch(`/api/intelligence/customer-360?email=${user.email}${forceRefresh ? '&forceRefresh=true' : ''}`)
+    const encodedEmail = encodeURIComponent(user.email);
+    fetch(`/api/intelligence/customer-360?email=${encodedEmail}${forceRefresh ? '&forceRefresh=true' : ''}`)
       .then(async (res) => {
         if (!res.ok) {
           throw new Error('orders_fetch_failed');

@@ -109,7 +109,7 @@ export default function AccountDashboardClient() {
     if (isAuthenticated && user?.email) {
       setLoadError(null);
 
-      fetch(`/api/intelligence/customer-360?email=${user.email}`)
+      fetch(`/api/intelligence/customer-360?email=${encodeURIComponent(user.email)}`)
         .then(async (res) => {
           if (!res.ok) {
             throw new Error('dna_fetch_failed');

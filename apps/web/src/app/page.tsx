@@ -138,7 +138,7 @@ function HomeContent({
     if (isAuthenticated && user?.email) {
       const fetchDNA = async () => {
         try {
-          const res = await fetch(`/api/intelligence/customer-360?email=${user.email}`);
+          const res = await fetch(`/api/intelligence/customer-360?email=${encodeURIComponent(user.email)}`);
           if (!res.ok) {
             console.warn(`DNA Fetch failed with status: ${res.status}`);
             return;
