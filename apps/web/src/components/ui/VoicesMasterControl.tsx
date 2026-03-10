@@ -619,7 +619,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                         <VoiceglotText translationKey="filter.mobile_trigger" defaultText="Filters & Zoeken" />
                       </TextInstrument>
                       <TextInstrument className="text-[11px] text-va-black/40 truncate w-full text-left">
-                        {(state.filters.languageId || state.filters.language) ? localizeLanguageLabel(state.filters.languageId || state.filters.language, state.filters.language || null) : t('filter.all_languages', 'Alle talen')} • {state.filters.genderId ? filteredGendersData.find(g => g.id === state.filters.genderId)?.label : t('gender.everyone', 'Iedereen')} • {activeJourneyId === 28 ? ((state.filters.media || []).length || 0) + ' ' + t('common.channels', 'kanalen') : (state.filters.words || 200) + ' ' + t('common.words', 'woorden')}
+                        {(state.filters.languageId || state.filters.language) ? localizeLanguageLabel(state.filters.languageId || state.filters.language, state.filters.language || null) : t('filter.all_languages', 'Alle talen')} • {(state.filters.genderId || state.filters.gender === 'all') ? (state.filters.genderId ? filteredGendersData.find(g => g.id === state.filters.genderId)?.label : t('gender.everyone', 'Iedereen')) : t('gender.everyone', 'Iedereen')} • {activeJourneyId === 28 ? ((state.filters.media || []).length || 0) + ' ' + t('common.channels', 'kanalen') : (state.filters.words || 200) + ' ' + t('common.words', 'woorden')}
                       </TextInstrument>
                     </ContainerInstrument>
                   </ButtonInstrument>
@@ -734,7 +734,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                           <VoicesDropdown 
                             options={filteredGendersData.length > 0 
                               ? [
-                                  { label: t('gender.everyone', 'Iedereen'), value: '', icon: Users },
+                                  { label: t('gender.everyone', 'Iedereen'), value: 'all', icon: Users },
                                   ...filteredGendersData.map(g => ({
                                     label: g.label,
                                     value: g.id, //  CHRIS-PROTOCOL: Use ID for Handshake Truth
@@ -744,8 +744,12 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                                 ]
                               : []
                             }
-                            value={state.filters.genderId || state.filters.gender || ''}
+                            value={state.filters.genderId || state.filters.gender || 'all'}
                             onChange={(val) => {
+                              if (val === 'all') {
+                                updateFilters({ genderId: undefined, gender: 'all' });
+                                return;
+                              }
                               if (typeof val === 'number') {
                                 const optMatch = filteredGendersData.find(g => g.id === val);
                                 updateFilters({ 
