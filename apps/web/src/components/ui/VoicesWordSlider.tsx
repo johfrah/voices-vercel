@@ -11,7 +11,7 @@ import { VoiceglotText } from './VoiceglotText';
 interface VoicesWordSliderProps {
   value: number;
   onChange: (value: number) => void;
-  label?: string;
+  label?: React.ReactNode;
   className?: string;
   min?: number;
   max?: number;

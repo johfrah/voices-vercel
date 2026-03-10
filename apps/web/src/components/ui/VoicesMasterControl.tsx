@@ -720,7 +720,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                               }
                             }}
                             placeholder={t('filter.all_languages', 'Alle talen')}
-                            label={t('filter.which_language', 'Welke taal?')}
+                            label={<VoiceglotText translationKey="filter.which_language" defaultText="Welke taal?" />}
                             className="w-full h-full"
                             required={true}
                             onOrderClick={handleReorderClick}
@@ -760,7 +760,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                               }
                             }}
                             placeholder={t('gender.everyone', 'Iedereen')}
-                            label={t('filter.who', 'Wie?')}
+                            label={<VoiceglotText translationKey="filter.who" defaultText="Wie?" />}
                             className="w-full h-full"
                             required={true}
                           />
@@ -776,7 +776,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                           value={state.filters.words && state.filters.words >= 5 ? state.filters.words : (activeJourneyId === 26 ? 25 : 200)}
                           onChange={(val) => updateFilters({ words: val })}
                           disabled={state.currentStep !== 'voice'}
-                          label={t('filter.quantity', 'Hoeveelheid?')}
+                          label={<VoiceglotText translationKey="filter.quantity" defaultText="Hoeveelheid?" />}
                           className="flex-1 h-full animate-in fade-in slide-in-from-left-4 duration-500"
                         />
                       ) : null}
@@ -899,7 +899,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                               });
                             }}
                             placeholder={t('filter.select_types', 'Kies type(s)')}
-                            label={t('filter.media_type', 'Mediatype?')}
+                            label={<VoiceglotText translationKey="filter.media_type" defaultText="Mediatype?" />}
                             className="h-full animate-in fade-in slide-in-from-left-4 duration-500"
                           />
                         </ContainerInstrument>
@@ -960,7 +960,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                               }
                             }}
                             placeholder={t('filter.select_countries', 'Kies land(en)')}
-                            label={t('filter.broadcast_area', 'Uitzendgebied?')}
+                            label={<VoiceglotText translationKey="filter.broadcast_area" defaultText="Uitzendgebied?" />}
                             className="h-full animate-in fade-in slide-in-from-left-4 duration-500"
                             multiSelect={true}
                           />
@@ -980,7 +980,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                           value={state.filters.sortBy || 'popularity'}
                           onChange={(val) => updateFilters({ sortBy: val as any })}
                           placeholder={t('sort.placeholder', 'Sorteer op')}
-                          label={t('filter.sort', 'Sorteer?')}
+                          label={<VoiceglotText translationKey="filter.sort" defaultText="Sorteer?" />}
                           className="flex-1 h-full"
                         />
                       )}

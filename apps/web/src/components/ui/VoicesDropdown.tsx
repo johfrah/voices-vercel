@@ -87,7 +87,7 @@ interface VoicesDropdownProps {
   onExtraLangToggle?: (lang: string) => void; //  Callback for extra language chips
   selectedExtraLangs?: string[]; //  Currently selected extra languages
   placeholder: string;
-  label?: string;
+  label?: React.ReactNode;
   icon?: string;
   className?: string;
   required?: boolean;
@@ -352,9 +352,9 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
         )}
       >
         {label && (
-          <span className="text-[10px] font-bold tracking-[0.2em] text-va-black/60 uppercase mb-0.5 block">
+          <TextInstrument as="span" className="text-[10px] font-bold tracking-[0.2em] text-va-black/60 uppercase mb-0.5 block">
             {label}
-          </span>
+          </TextInstrument>
         )}
         <div className="flex items-center justify-between gap-2 w-full">
           <div className="flex items-center gap-3 min-w-0">
