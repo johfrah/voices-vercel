@@ -130,4 +130,50 @@ describe('CheckoutPayloadSchema', () => {
     const parsed = CheckoutPayloadSchema.parse(payload);
     expect(parsed.journey).toBe('studio');
   });
+
+  it('accepts null top-level music payloads from configurator drafts', () => {
+    const payload = {
+      pricing: { total: 89 },
+      items: [],
+      email: 'null-music@voices.be',
+      first_name: 'Null',
+      last_name: 'Music',
+      postal_code: '3000',
+      city: 'Leuven',
+      country: 'BE',
+      usage: 'telefonie',
+      payment_method: 'bancontact',
+      music: null,
+      ownMusicFile: null,
+    };
+
+    const parsed = CheckoutPayloadSchema.parse(payload);
+    expect(parsed.music).toBeNull();
+    expect(parsed.ownMusicFile).toBeNull();
+  });
+
+  it('applies safe defaults when music object is present without toggles', () => {
+    const payload = {
+      pricing: { total: 99 },
+      items: [],
+      email: 'music-defaults@voices.be',
+      first_name: 'Music',
+      last_name: 'Defaults',
+      postal_code: '3500',
+      city: 'Hasselt',
+      country: 'BE',
+      usage: 'commercial',
+      payment_method: 'ideal',
+      music: {
+        trackId: null,
+      },
+    };
+
+    const parsed = CheckoutPayloadSchema.parse(payload);
+    expect(parsed.music).toEqual({
+      trackId: null,
+      asBackground: false,
+      asHoldMusic: false,
+    });
+  });
 });
