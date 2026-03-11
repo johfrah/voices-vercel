@@ -2,7 +2,6 @@
 "use client";
 
 import { DonationModal } from "@/components/artist/DonationModal";
-import { BentoCard, BentoGrid } from "@/components/ui/BentoGrid";
 import {
     ButtonInstrument,
     ContainerInstrument,
@@ -14,13 +13,11 @@ import {
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { useTranslation } from "@/contexts/TranslationContext";
 import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
-import { Heart, Instagram, Music, Play, Youtube, ShieldCheck, Loader2, Clock, Lock } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
-import { useState, Suspense } from "react";
 import { cn } from "@/lib/utils";
+import { Heart, Loader2, Lock, Play } from "lucide-react";
 import dynamic from "next/dynamic";
-import React from "react";
+import Image from "next/image";
+import { useState } from "react";
 
 //  NUCLEAR LOADING MANDATE
 const LiquidBackground = dynamic(() => import("@/components/ui/LiquidBackground").then(mod => mod.LiquidBackground), { 

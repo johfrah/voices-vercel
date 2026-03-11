@@ -1,9 +1,8 @@
 import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
-import { MarketDatabaseService } from "@/lib/system/market-manager-db";
 import { getTranslationLocaleCandidates, normalizeLocale } from "@/lib/system/locale-utils";
-import { db, ademingTracks } from "@/lib/system/voices-config";
+import { ademingTracks, db } from "@/lib/system/voices-config";
 import { createClient } from "@supabase/supabase-js";
-import { and, asc, desc, eq, or, sql } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import { unstable_cache } from "next/cache";
 import {
     Actor,

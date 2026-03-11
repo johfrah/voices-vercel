@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { ContainerInstrument, HeadingInstrument, SectionInstrument, TextInstrument, ButtonInstrument } from "@/components/ui/LayoutInstruments";
+import { ButtonInstrument, ContainerInstrument, HeadingInstrument, SectionInstrument, TextInstrument } from "@/components/ui/LayoutInstruments";
 import { VideoPlayer } from "@/components/ui/VideoPlayerInstrument";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
-import { ArrowRight, ShoppingCart } from "lucide-react";
-import { useSonicDNA } from "@/lib/engines/sonic-dna";
 import { useVoicesRouter } from "@/components/ui/VoicesLinkInstrument";
+import { useSonicDNA } from "@/lib/engines/sonic-dna";
+import { ArrowRight, ShoppingCart } from "lucide-react";
+import React from "react";
 
 interface WorkshopHeroIslandProps {
   workshop: any;

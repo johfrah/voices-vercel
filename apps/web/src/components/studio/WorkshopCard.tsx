@@ -6,7 +6,7 @@ import { WorkshopEditModal } from "@/components/ui/WorkshopEditModal";
 import { useAuth } from "@/contexts/AuthContext";
 import { useEditMode } from "@/contexts/EditModeContext";
 import { useSonicDNA } from "@/lib/engines/sonic-dna";
-import { Edit3, Play, Pause, Calendar, ArrowRight } from "lucide-react";
+import { ArrowRight, Calendar, Edit3, Pause, Play } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";

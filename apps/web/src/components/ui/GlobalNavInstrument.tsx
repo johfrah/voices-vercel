@@ -1,61 +1,60 @@
 "use client";
 
-import { useAuth } from '@/contexts/AuthContext';
-import { useTranslation } from '@/contexts/TranslationContext';
-import { useEditMode } from '@/contexts/EditModeContext';
-import { useVoicesState } from '@/contexts/VoicesStateContext';
-import { useCheckout } from '@/contexts/CheckoutContext';
-import { useNotifications } from '@/contexts/NotificationContext';
-import { useSonicDNA } from '@/lib/engines/sonic-dna';
-import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
-import { AGENCY_CATEGORY_LINKS } from '@/lib/system/constants/agency-category-links';
-import { AnimatePresence, motion } from 'framer-motion';
-import { cn } from '@/lib/utils';
-import { formatWorkshopLocationLabel } from '@/lib/utils/workshop-location';
-import { resolveWorkshopImageFromItem } from '@/lib/utils/workshop-image';
-import { 
-  Bell, 
-  Building2, 
-  ChevronRight, 
-  ChevronDown, 
-  Globe, 
-  Heart, 
-  LayoutDashboard, 
-  LogOut, 
-  Mail, 
-  Menu, 
-  Mic2, 
-  Monitor, 
-  Phone, 
-  Radio, 
-  ShoppingBag, 
-  ShoppingCart, 
-  User, 
-  Info, 
-  Settings, 
-  Home, 
-  Euro, 
-  GraduationCap, 
-  Quote, 
-  Users 
-} from 'lucide-react';
-import { VoicesLinkInstrument, useVoicesRouter } from './VoicesLinkInstrument';
 import { StudioWorkshopsMenu } from '@/components/studio/StudioWorkshopsMenu';
-import { 
-  ButtonInstrument, 
-  ContainerInstrument,
-  HeadingInstrument,
-  TextInstrument,
-  InputInstrument
-} from './LayoutInstruments';
-import { VoiceglotImage } from './VoiceglotImage';
-import { VoiceglotText } from './VoiceglotText';
+import { useAuth } from '@/contexts/AuthContext';
+import { useCheckout } from '@/contexts/CheckoutContext';
+import { useEditMode } from '@/contexts/EditModeContext';
+import { useNotifications } from '@/contexts/NotificationContext';
+import { useTranslation } from '@/contexts/TranslationContext';
+import { useVoicesState } from '@/contexts/VoicesStateContext';
+import { useSonicDNA } from '@/lib/engines/sonic-dna';
+import { AGENCY_CATEGORY_LINKS } from '@/lib/system/constants/agency-category-links';
+import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
+import { cn } from '@/lib/utils';
 import { NavConfig } from '@/lib/utils/config-bridge';
-import { Plus, Trash2, Link as LinkIcon, Search as SearchIcon, X, Check, ArrowRight, Loader2 } from 'lucide-react';
+import { resolveWorkshopImageFromItem } from '@/lib/utils/workshop-image';
+import { formatWorkshopLocationLabel } from '@/lib/utils/workshop-location';
+import { AnimatePresence, motion } from 'framer-motion';
+import {
+    ArrowRight,
+    Bell,
+    Check,
+    ChevronDown,
+    ChevronRight,
+    Euro,
+    GraduationCap,
+    Heart,
+    Home,
+    Info,
+    LayoutDashboard,
+    Link as LinkIcon,
+    Loader2,
+    LogOut,
+    Mail,
+    Menu,
+    Mic2,
+    Plus,
+    Quote,
+    Settings,
+    ShoppingBag,
+    ShoppingCart,
+    Trash2,
+    User
+} from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+    ButtonInstrument,
+    ContainerInstrument,
+    HeadingInstrument,
+    InputInstrument,
+    TextInstrument
+} from './LayoutInstruments';
+import { VoiceglotImage } from './VoiceglotImage';
+import { VoiceglotText } from './VoiceglotText';
+import { VoicesLinkInstrument, useVoicesRouter } from './VoicesLinkInstrument';
 
 import { LanguageSwitcher } from './LanguageSwitcher';
 

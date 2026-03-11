@@ -6,7 +6,8 @@ import {
     TextInstrument,
     LabelInstrument,
     InputInstrument,
-    ButtonInstrument
+    ButtonInstrument,
+    DeliveryBadgeInstrument
 } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useCheckout } from '@/contexts/CheckoutContext';
@@ -512,10 +513,7 @@ export const PricingSummary: React.FC<{
                               </span>
                             )}
                             {deliveryLabel && (
-                              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-green-500/5 border border-green-500/15 text-green-700/80">
-                                <Clock3 size={12} strokeWidth={1.8} />
-                                {deliveryLabel}
-                              </span>
+                              <DeliveryBadgeInstrument actor={itemObj.actor} size="sm" />
                             )}
                           </>
                         )}

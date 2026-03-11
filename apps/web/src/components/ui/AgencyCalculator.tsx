@@ -1,39 +1,36 @@
 // @ts-nocheck
 "use client";
 
-import { useTranslation } from "@/contexts/TranslationContext";
-import { 
-  ButtonInstrument, 
-  ContainerInstrument, 
-  HeadingInstrument, 
-  TextInstrument,
-  LabelInstrument
+import {
+    ButtonInstrument,
+    ContainerInstrument,
+    HeadingInstrument,
+    LabelInstrument,
+    TextInstrument
 } from "@/components/ui/LayoutInstruments";
-import Image from "next/image";
 import { VoiceglotImage } from "@/components/ui/VoiceglotImage";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
-import { useEffect, useState, useMemo } from "react";
-import { cn } from "@/lib/utils";
-import { 
-  CheckCircle2, 
-  ArrowRight, 
-  Zap, 
-  Globe, 
-  Music,
-  ShieldCheck, 
-  Phone,
-  Video,
-  Megaphone,
-  Mic2,
-  Tv,
-  Radio,
-  Minus,
-  Plus
-} from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-import { useRouter } from "next/navigation";
+import { useTranslation } from "@/contexts/TranslationContext";
 import { SlimmeKassa } from "@/lib/engines/pricing-engine";
 import { useSonicDNA } from '@/lib/engines/sonic-dna';
+import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
+import {
+    ArrowRight,
+    CheckCircle2,
+    Megaphone,
+    Mic2,
+    Minus,
+    Music,
+    Phone,
+    Plus,
+    Radio,
+    ShieldCheck,
+    Tv,
+    Video
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
 
 interface AgencyCalculatorProps {
   initialJourney?: "telefonie" | "unpaid" | "paid";

@@ -22,6 +22,8 @@ export interface DeliveryInfo {
   isRange: boolean;
   delivery_days_min: number;
   delivery_days_max: number;
+  isToday?: boolean;
+  isTomorrow?: boolean;
 }
 
 /**
@@ -400,9 +402,12 @@ export function calculateDeliveryDate(
   const today = startOfDayNative(new Date(baseDate));
   const tomorrow = addDaysNative(today, 1);
   
-  if (formatDateISO(dateMin) === formatDateISO(today)) {
+  const isToday = formatDateISO(dateMin) === formatDateISO(today);
+  const isTomorrow = formatDateISO(dateMin) === formatDateISO(tomorrow);
+
+  if (isToday) {
     formatted = "vandaag";
-  } else if (formatDateISO(dateMin) === formatDateISO(tomorrow)) {
+  } else if (isTomorrow) {
     formatted = "morgen";
   }
 
@@ -413,6 +418,8 @@ export function calculateDeliveryDate(
     formattedShort: formatted === "vandaag" ? "VANDAAG" : (formatted === "morgen" ? "MORGEN" : formatShortDate(dateMin)),
     isRange: false,
     delivery_days_min: daysMin,
-    delivery_days_max: daysMax
+    delivery_days_max: daysMax,
+    isToday,
+    isTomorrow
   };
 }

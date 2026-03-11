@@ -10,12 +10,12 @@
  */
 
 import { ContainerInstrument, HeadingInstrument, PageWrapperInstrument, TextInstrument } from "@/components/ui/LayoutInstruments";
-import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { VideoPlayer } from "@/components/ui/VideoPlayer";
-import { Metadata } from "next";
-import { Suspense } from "react";
-import nextDynamic from "next/dynamic";
+import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { getStudioWorkshopsData } from "@/lib/services/studio-service";
+import { Metadata } from "next";
+import nextDynamic from "next/dynamic";
+import { Suspense } from "react";
 
 const toStorageUrl = (filePath?: string | null): string | null => {
   if (!filePath) return null;

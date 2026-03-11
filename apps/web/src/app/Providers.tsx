@@ -13,8 +13,8 @@ import { WorldProvider } from '@/contexts/WorldContext';
 import { ClientLogger } from '@/lib/system/client-logger';
 import React, { ReactNode } from 'react';
 
-import { VersionGuard } from '@/components/system/VersionGuard';
 import { PwaBoot } from '@/components/system/PwaBoot';
+import { VersionGuard } from '@/components/system/VersionGuard';
 import { MarketConfig, MarketManager } from '@/lib/system/core/market-manager';
 import { Toaster } from 'react-hot-toast';
 

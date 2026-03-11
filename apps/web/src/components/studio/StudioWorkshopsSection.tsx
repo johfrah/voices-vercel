@@ -1,14 +1,14 @@
 // @ts-nocheck
 "use client";
 
-import React from "react";
-import Image from "next/image";
-import { WorkshopCarousel } from "./WorkshopCarousel";
-import { ReviewGrid, type ReviewItem } from "./ReviewGrid";
 import { ContainerInstrument, HeadingInstrument, TextInstrument } from "@/components/ui/LayoutInstruments";
-import { ChevronDown, ArrowRight, Calendar, MapPin, User, ChevronRight } from "lucide-react";
-import Link from "next/link";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
+import { ChevronRight, MapPin, User } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import React from "react";
+import { ReviewGrid, type ReviewItem } from "./ReviewGrid";
+import { WorkshopCarousel } from "./WorkshopCarousel";
 
 function toPublicMediaUrl(path?: string | null): string | null {
   if (!path) return null;

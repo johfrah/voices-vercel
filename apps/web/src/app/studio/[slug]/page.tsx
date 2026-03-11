@@ -9,12 +9,12 @@
 
 import { ContainerInstrument, HeadingInstrument, PageWrapperInstrument, TextInstrument } from "@/components/ui/LayoutInstruments";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
-import { Metadata } from "next";
-import { notFound } from "next/navigation";
-import { Suspense } from "react";
-import nextDynamic from "next/dynamic";
 import { getStudioWorkshopsData, WorkshopApiResponse } from "@/lib/services/studio-service";
 import { createClient } from "@supabase/supabase-js";
+import { Metadata } from "next";
+import nextDynamic from "next/dynamic";
+import { notFound } from "next/navigation";
+import { Suspense } from "react";
 
 // NUCLEAR ISLANDS (ssr: false)
 const WorkshopHeroIsland = nextDynamic(() => import("@/components/studio/WorkshopHeroIsland").then(mod => mod.WorkshopHeroIsland), { ssr: false });

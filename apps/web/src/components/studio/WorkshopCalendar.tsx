@@ -1,18 +1,18 @@
 "use client";
 
+import {
+    ButtonInstrument,
+    ContainerInstrument,
+    HeadingInstrument,
+    TextInstrument
+} from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { useSonicDNA } from '@/lib/engines/sonic-dna';
-import React from 'react';
-import { 
-  ContainerInstrument, 
-  TextInstrument,
-  ButtonInstrument,
-  HeadingInstrument
-} from '@/components/ui/LayoutInstruments';
 import { cn } from '@/lib/utils';
+import { ChevronLeft, ChevronRight, Clock, Info, MapPin, Users } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Info, ChevronLeft, ChevronRight, Clock, MapPin, Users } from 'lucide-react';
+import React from 'react';
 
 function toPublicMediaUrl(path?: string | null): string | null {
   if (!path) return null;

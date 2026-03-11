@@ -1,5 +1,6 @@
 "use client";
 
+import { useVoicesRouter } from '@/components/ui/VoicesLink';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCheckout } from '@/contexts/CheckoutContext';
 import { useEditMode } from "@/contexts/EditModeContext";
@@ -7,18 +8,17 @@ import { useGlobalAudio } from '@/contexts/GlobalAudioContext';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { useMasterControl } from '@/contexts/VoicesMasterControlContext';
 import { useVoicesState } from '@/contexts/VoicesStateContext';
-import { calculateDeliveryDate } from '@/lib/utils/delivery-logic';
 import { SlimmeKassa } from '@/lib/engines/pricing-engine';
 import { useSonicDNA } from '@/lib/engines/sonic-dna';
-import { cn } from '@/lib/utils';
-import { Actor } from '@/types';
 import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
 import { buildCanonicalActorPath } from "@/lib/system/slug";
-import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, Check, ChevronDown, Clock, Edit3, Globe, MapPin, Mic, Pause, Play, Plus, Search as SearchIcon, Settings, ShieldCheck, Zap, X, Star } from 'lucide-react';
-import { useVoicesRouter } from '@/components/ui/VoicesLink';
+import { cn } from '@/lib/utils';
+import { calculateDeliveryDate } from '@/lib/utils/delivery-logic';
+import { Actor } from '@/types';
+import { AnimatePresence, motion } from 'framer-motion';
+import { Check, ChevronDown, Clock, Edit3, Globe, MapPin, Mic, Pause, Play, Plus, Search as SearchIcon, Settings, Zap } from 'lucide-react';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { ButtonInstrument, ContainerInstrument, FlagAR, FlagBE, FlagBR, FlagCN, FlagDE, FlagDK, FlagES, FlagFI, FlagFR, FlagGR, FlagIT, FlagJP, FlagKR, FlagNL, FlagNO, FlagPL, FlagPT, FlagRU, FlagSE, FlagTR, FlagUK, FlagUS, HeadingInstrument, TextInstrument } from './LayoutInstruments';
+import { ButtonInstrument, DeliveryBadgeInstrument, FlagAR, FlagBE, FlagBR, FlagCN, FlagDE, FlagDK, FlagES, FlagFI, FlagFR, FlagGR, FlagIT, FlagJP, FlagKR, FlagNL, FlagNO, FlagPT, FlagRU, FlagSE, FlagTR, FlagUK, FlagUS, HeadingInstrument } from './LayoutInstruments';
 import { VoiceglotImage } from './VoiceglotImage';
 import { VoiceglotText } from './VoiceglotText';
 
@@ -802,10 +802,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
           </div>
 
           {!compact && (
-            <div className={cn("flex flex-col items-end justify-center px-2 md:px-2.5 py-0.5 md:py-1 rounded-lg md:rounded-xl border transition-colors duration-500", (deliveryInfo as any).isToday || deliveryInfo.delivery_days_max <= 1 ? "bg-green-500/5 border-green-500/10 text-green-600" : "bg-blue-500/5 border-blue-500/10 text-blue-600")}>
-              <span className="text-[7px] md:text-[8px] font-black tracking-[0.1em] uppercase leading-none mb-0.5 md:mb-1 flex items-center gap-1 opacity-40"><Clock size={8} className="md:w-2.5 md:h-2.5" strokeWidth={3} /><VoiceglotText translationKey="common.delivery" defaultText="Levering" /></span>
-              <span className="text-[10px] md:text-[12px] font-bold tracking-tight leading-none"><VoiceglotText translationKey={`actor.${voice.id}.delivery_info`} defaultText={deliveryInfo.formattedShort} /></span>
-            </div>
+            <DeliveryBadgeInstrument actor={voice} size="sm" />
           )}
         </div>
 

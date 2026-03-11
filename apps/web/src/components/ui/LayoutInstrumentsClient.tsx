@@ -265,3 +265,8 @@ export const ClientButtonInstrument = forwardRef<HTMLButtonElement, ButtonInstru
   );
 });
 ClientButtonInstrument.displayName = 'ClientButtonInstrument';
+
+/**
+ * DELIVERY BADGE INSTRUMENT
+ */
+export { DeliveryBadgeInstrument } from './DeliveryBadgeInstrument';

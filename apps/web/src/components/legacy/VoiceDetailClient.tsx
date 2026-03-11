@@ -5,6 +5,7 @@ import {
     ButtonInstrument,
     ContainerInstrument,
     SectionInstrument,
+    DeliveryBadgeInstrument
 } from "@/components/ui/LayoutInstruments";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { useCheckout } from "@/contexts/CheckoutContext";
@@ -183,15 +184,18 @@ export function VoiceDetailClient({
   return (
     <ContainerInstrument className="max-w-[1440px] mx-auto px-4 md:px-6 pt-32 pb-20 relative z-10">
       <div className="mb-12">
-        <Link  
-          href="/agency" 
-          className="inline-flex items-center gap-2 text-[15px] font-light tracking-widest text-va-black/40 hover:text-primary transition-colors group"
-        >
-          <div className="w-8 h-8 rounded-full bg-va-black/5 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all">
-            <ArrowLeft size={14} strokeWidth={1.5} />
+          <div className="flex items-center justify-between gap-4">
+            <Link  
+              href="/agency" 
+              className="inline-flex items-center gap-2 text-[15px] font-light tracking-widest text-va-black/40 hover:text-primary transition-colors group"
+            >
+              <div className="w-8 h-8 rounded-full bg-va-black/5 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all">
+                <ArrowLeft size={14} strokeWidth={1.5} />
+              </div>
+              <VoiceglotText  translationKey="voice.detail.back_to_agency" defaultText="Terug naar alle stemmen" />
+            </Link>
+            <DeliveryBadgeInstrument actor={actor} size="md" />
           </div>
-          <VoiceglotText  translationKey="voice.detail.back_to_agency" defaultText="Terug naar alle stemmen" />
-        </Link>
       </div>
 
       {/*  SUZY'S SCHEMA INJECTION: VoiceActor Knowledge Graph & Breadcrumbs */}

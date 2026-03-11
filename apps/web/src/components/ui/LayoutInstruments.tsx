@@ -18,7 +18,8 @@ export {
   SectionInstrument, 
   ContainerInstrument,
   HeadingInstrument,
-  TextInstrument
+  TextInstrument,
+  DeliveryBadgeInstrument
 } from './LayoutInstrumentsClient';
 
 // Import client hooks for client components

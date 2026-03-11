@@ -1,14 +1,14 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { ContainerInstrument, HeadingInstrument, TextInstrument, ButtonInstrument } from "@/components/ui/LayoutInstruments";
+import { ButtonInstrument, ContainerInstrument, HeadingInstrument, TextInstrument } from "@/components/ui/LayoutInstruments";
 import { VideoPlayer } from "@/components/ui/VideoPlayer";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
-import { ArrowRight, ShoppingCart, Heart } from "lucide-react";
-import { useSonicDNA } from "@/lib/engines/sonic-dna";
 import { useVoicesRouter } from "@/components/ui/VoicesLink";
 import { useCheckout } from "@/contexts/CheckoutContext";
+import { useSonicDNA } from "@/lib/engines/sonic-dna";
 import { buildWorkshopLocationPayload } from "@/lib/utils/workshop-location";
+import { ArrowRight, Heart, ShoppingCart } from "lucide-react";
+import React, { useEffect, useState } from "react";
 import { WorkshopParticipantForm } from "./WorkshopParticipantForm";
 
 interface WorkshopHeroIslandProps {

@@ -1,19 +1,18 @@
 "use client";
 
-import { useSonicDNA } from '@/lib/engines/sonic-dna';
+import { useAuth } from '@/contexts/AuthContext';
 import { useGlobalAudio } from '@/contexts/GlobalAudioContext';
-import { useVoicesState } from '@/contexts/VoicesStateContext';
 import { useMasterControl } from '@/contexts/VoicesMasterControlContext';
-import { usePathname } from 'next/navigation';
+import { useVoicesState } from '@/contexts/VoicesStateContext';
+import { useSonicDNA } from '@/lib/engines/sonic-dna';
+import { AssetManager } from '@/lib/system/core/asset-manager';
 import { cn } from '@/lib/utils';
 import { Demo } from '@/types';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Check, Edit2, Pause, Play, Save, Trash2, Volume2, X } from 'lucide-react';
+import { usePathname } from 'next/navigation';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
-import { AssetManager } from '@/lib/system/core/asset-manager';
 import {
-    ButtonInstrument,
     ContainerInstrument,
     FlagBE,
     FlagDE,

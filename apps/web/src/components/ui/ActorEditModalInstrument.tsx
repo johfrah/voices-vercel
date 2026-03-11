@@ -7,7 +7,8 @@ import {
   ContainerInstrument, 
   HeadingInstrument, 
   TextInstrument, 
-  ButtonInstrument
+  ButtonInstrument,
+  DeliveryBadgeInstrument
 } from './LayoutInstruments';
 import { VoiceglotText } from './VoiceglotText';
 import Image from 'next/image';
@@ -1072,20 +1073,15 @@ export const ActorEditModal: React.FC<ActorEditModalProps> = ({
                     </div>
                     
                     <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl px-6 py-3 flex flex-col items-end">
-                      <span className="text-[10px] font-black text-white/30 uppercase tracking-widest mb-1 flex items-center gap-1.5">
-                        <Clock size={10} /> Levering
-                      </span>
-                      <span className="text-2xl font-light text-primary tracking-tighter">
-                        {(() => {
-                          const preview = calculateDeliveryDate({
-                            ...actor,
-                            ...formData, // Gebruik actuele formData voor live preview
-                            delivery_config: formData.delivery_config
-                          }, new Date(), systemWorkingDays);
-                          const todayStr = new Date().toLocaleDateString('nl-BE');
-                          return preview.formattedShort === todayStr ? "VANDAAG" : preview.formattedShort;
-                        })()}
-                      </span>
+                      <DeliveryBadgeInstrument 
+                        actor={{
+                          ...actor,
+                          ...formData,
+                          delivery_config: formData.delivery_config
+                        }} 
+                        size="lg" 
+                        className="bg-transparent border-none p-0 text-primary"
+                      />
                     </div>
                   </div>
                 </div>
