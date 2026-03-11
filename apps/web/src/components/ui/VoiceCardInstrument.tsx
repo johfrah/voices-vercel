@@ -463,11 +463,27 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
       const date = new Date(deliveryDateMin);
       const today = new Date();
       today.setHours(0, 0, 0, 0);
+      const tomorrow = new Date(today);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      
       const isToday = date.getTime() === today.getTime();
+      const isTomorrow = date.getTime() === tomorrow.getTime();
+      
       const d = String(date.getDate()).padStart(2, '0');
       const m = String(date.getMonth() + 1).padStart(2, '0');
       const y = date.getFullYear();
-      return { delivery_days_min: voice.delivery_days_min || 1, delivery_days_max: voice.delivery_days_max || 1, formattedShort: isToday ? "VANDAAG" : `${d}/${m}/${y}`, isToday };
+      
+      let formattedShort = `${d}/${m}/${y}`;
+      if (isToday) formattedShort = "VANDAAG";
+      else if (isTomorrow) formattedShort = "MORGEN";
+
+      return { 
+        delivery_days_min: voice.delivery_days_min || 1, 
+        delivery_days_max: voice.delivery_days_max || 1, 
+        formattedShort, 
+        isToday,
+        isTomorrow
+      };
     }
     return calculateDeliveryDate({ delivery_days_min: voice.delivery_days_min || 1, delivery_days_max: voice.delivery_days_max || 1, cutoff_time: voice.cutoff_time || '18:00', availability: voice.availability, holidayFrom: (voice as any).holiday_from, holidayTill: (voice as any).holiday_till, delivery_config: (voice as any).delivery_config });
   }, [voice]);
