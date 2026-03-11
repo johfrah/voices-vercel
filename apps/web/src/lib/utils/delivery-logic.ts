@@ -398,15 +398,19 @@ export function calculateDeliveryDate(
   let formatted = formatDutchLong(dateMin);
   
   const today = startOfDayNative(new Date(baseDate));
+  const tomorrow = addDaysNative(today, 1);
+  
   if (formatDateISO(dateMin) === formatDateISO(today)) {
     formatted = "vandaag";
+  } else if (formatDateISO(dateMin) === formatDateISO(tomorrow)) {
+    formatted = "morgen";
   }
 
   return {
     dateMin,
     dateMax,
     formatted,
-    formattedShort: formatShortDate(dateMin),
+    formattedShort: formatted === "vandaag" ? "VANDAAG" : (formatted === "morgen" ? "MORGEN" : formatShortDate(dateMin)),
     isRange: false,
     delivery_days_min: daysMin,
     delivery_days_max: daysMax
