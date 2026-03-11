@@ -13,12 +13,36 @@ export const runtime = 'nodejs';
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const assetPath = searchParams.get('path');
+  const mediaId = searchParams.get('media_id');
   const fallbackPath = searchParams.get('fallback');
   const extensionHint = searchParams.get('ext');
-  console.log(`[Proxy] Request received for path: ${assetPath}${fallbackPath ? ` (fallback: ${fallbackPath})` : ''}${extensionHint ? ` (hint: ${extensionHint})` : ''}`);
+  console.log(`[Proxy] Request received for: ${mediaId ? `media_id: ${mediaId}` : `path: ${assetPath}`}${fallbackPath ? ` (fallback: ${fallbackPath})` : ''}${extensionHint ? ` (hint: ${extensionHint})` : ''}`);
 
-  if (!assetPath) {
-    return new NextResponse('Missing asset path', { status: 400 });
+  if (!assetPath && !mediaId) {
+    return new NextResponse('Missing asset path or media_id', { status: 400 });
+  }
+
+  let effectivePath = assetPath;
+  let effectiveContentType = null;
+
+  // 🛡️ CHRIS-PROTOCOL: ID-First Handshake (v3.0.0)
+  // Als we een media_id hebben, halen we het pad en de content-type direct uit de database.
+  if (mediaId) {
+    try {
+      const { AssetManager } = await import('@/lib/system/core/asset-manager');
+      const metadata = await AssetManager.getMediaMetadata(parseInt(mediaId));
+      if (metadata) {
+        effectivePath = metadata.filePath;
+        effectiveContentType = metadata.fileType;
+        console.log(`[Proxy Handshake] Resolved media_id ${mediaId} to: ${effectivePath} (${effectiveContentType})`);
+      }
+    } catch (e) {
+      console.error(`[Proxy Handshake Error] Failed to resolve media_id ${mediaId}:`, e);
+    }
+  }
+
+  if (!effectivePath) {
+    return new NextResponse('Asset not found via media_id', { status: 404 });
   }
 
   const looksLikeAudioPath = (value: string) => {
@@ -58,7 +82,7 @@ export async function GET(request: NextRequest) {
     });
   };
 
-  const fetchAsset = async (path: string) => {
+  const fetchAsset = async (path: string, forcedContentType?: string) => {
     const logProxyFailure = (
       label: string,
       url: string,
@@ -263,7 +287,7 @@ export async function GET(request: NextRequest) {
       }
 
       const blob = await response.blob();
-      let contentType = response.headers.get('content-type') || 'application/octet-stream';
+      let contentType = forcedContentType || response.headers.get('content-type') || 'application/octet-stream';
 
       // 🛡️ CHRIS-PROTOCOL: MIME-Type Correction (v2.28.103)
       if (contentType === 'application/octet-stream' || contentType === 'text/plain') {
@@ -302,7 +326,7 @@ export async function GET(request: NextRequest) {
       }
 
       const blob = await response.blob();
-      const contentType = response.headers.get('content-type') || 'application/octet-stream';
+      const contentType = forcedContentType || response.headers.get('content-type') || 'application/octet-stream';
       
       return { blob, contentType, source: 'Voices-Core-2026-Direct' };
     }
@@ -323,7 +347,7 @@ export async function GET(request: NextRequest) {
     }
 
     const blob = await response.blob();
-    let contentType = response.headers.get('content-type') || 'application/octet-stream';
+    let contentType = forcedContentType || response.headers.get('content-type') || 'application/octet-stream';
 
     // 🛡️ CHRIS-PROTOCOL: MIME-Type Correction (v2.28.103)
     if (contentType === 'application/octet-stream' || contentType === 'text/plain') {
@@ -335,7 +359,7 @@ export async function GET(request: NextRequest) {
   };
 
   try {
-    let result = await fetchAsset(assetPath);
+    let result = await fetchAsset(effectivePath, effectiveContentType);
     
     //  CHRIS-PROTOCOL: Smart Fallback if primary path fails
     if (!result && fallbackPath) {

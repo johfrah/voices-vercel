@@ -11,6 +11,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { Check, Edit2, Pause, Play, Save, Trash2, Volume2, X } from 'lucide-react';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { AssetManager } from '@/lib/system/core/asset-manager';
 import {
     ButtonInstrument,
     ContainerInstrument,
@@ -117,9 +118,22 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const [audioError, setAudioError] = useState<string | null>(null);
+  const [resolvedAudioUrl, setResolvedAudioUrl] = useState<string>('');
 
   useEffect(() => {
-    if (audioRef.current && (demo.audio_url || demo.id)) {
+    const resolveUrl = async () => {
+      const url = await AssetManager.resolveMediaUrl({
+        mediaId: demo.media_id,
+        demoId: demo.id,
+        fallbackUrl: demo.audio_url
+      });
+      setResolvedAudioUrl(url);
+    };
+    resolveUrl();
+  }, [demo.id, demo.media_id, demo.audio_url]);
+
+  useEffect(() => {
+    if (audioRef.current && resolvedAudioUrl) {
       const audio = audioRef.current;
       setAudioError(null);
       setProgress(0);
@@ -145,7 +159,7 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
       const timer = setTimeout(playAudio, 100);
       return () => clearTimeout(timer);
     }
-  }, [demo.audio_url, demo.id, setIsPlaying]);
+  }, [resolvedAudioUrl, setIsPlaying]);
 
   // Sync audio element with context isPlaying state
   useEffect(() => {
@@ -326,10 +340,8 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
           onError={handleError}
           preload="auto"
           crossOrigin="anonymous"
-        >
-          {demo.audio_url && <source src={demo.audio_url} type="audio/mpeg" />}
-          {demo.id && <source src={`/api/admin/actors/demos/${demo.id}/stream`} type="audio/mpeg" />}
-        </audio>
+          src={resolvedAudioUrl}
+        />
         
         {/*  ACTOR PHOTO */}
         <div className="relative w-14 h-14 rounded-full shrink-0 border-2 border-white/10 shadow-lg z-10 ml-1">
