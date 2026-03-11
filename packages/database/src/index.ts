@@ -1,8 +1,8 @@
-import * as schema from './schema/index';
-import postgres from 'postgres';
-import { drizzle } from 'drizzle-orm/postgres-js';
 import * as dotenv from 'dotenv';
+import { drizzle } from 'drizzle-orm/postgres-js';
 import * as path from 'path';
+import postgres from 'postgres';
+import * as schema from './schema/index';
 
 // Sherlock: We gebruiken een lazy initializer voor de DB client om te voorkomen dat 
 // postgres.js wordt geïnitialiseerd in de Edge runtime (waar het niet werkt).
