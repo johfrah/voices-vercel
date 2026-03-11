@@ -117,10 +117,14 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    if (audioRef.current && demo.audio_url) {
+    if (audioRef.current && (demo.audio_url || demo.id)) {
       const audio = audioRef.current;
+      const audioUrl = demo.audio_url || `/api/admin/actors/demos/${demo.id}/stream`;
+      
       setProgress(0);
       const playAudio = () => {
+        // Force reload source to ensure fresh stream
+        audio.load();
         audio.play()
           .then(() => setIsPlaying(true))
           .catch((err) => {
@@ -131,13 +135,17 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
       const timer = setTimeout(playAudio, 100);
       return () => clearTimeout(timer);
     }
-  }, [demo.audio_url, setIsPlaying]);
+  }, [demo.audio_url, demo.id, setIsPlaying]);
 
   // Sync audio element with context isPlaying state
   useEffect(() => {
     if (audioRef.current) {
       if (isPlaying && audioRef.current.paused) {
-        audioRef.current.play().catch(err => console.error("Sync play failed:", err));
+        audioRef.current.play().catch(err => {
+          if (err.name !== 'NotSupportedError') {
+            console.error("Sync play failed:", err);
+          }
+        });
       } else if (!isPlaying && !audioRef.current.paused) {
         audioRef.current.pause();
       }
@@ -282,11 +290,12 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
 
         <audio 
           ref={audioRef} 
-          src={demo.audio_url || undefined}
+          src={demo.audio_url || (demo.id ? `/api/admin/actors/demos/${demo.id}/stream` : undefined)}
           onTimeUpdate={handleTimeUpdate} 
           onLoadedMetadata={handleLoadedMetadata}
           onEnded={() => setIsPlaying(false)}
           onError={handleError}
+          preload="auto"
         />
         
         {/*  ACTOR PHOTO */}

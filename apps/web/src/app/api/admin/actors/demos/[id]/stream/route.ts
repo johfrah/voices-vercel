@@ -78,7 +78,14 @@ export async function GET(
     const proxyUrl = new URL('/api/proxy', request.url);
     proxyUrl.searchParams.set('path', audioUrl);
     
-    return NextResponse.redirect(proxyUrl);
+    // 🛡️ CHRIS-PROTOCOL: Cache-Control for Streams (v2.28.102)
+    // We gebruiken een 307 Temporary Redirect om te voorkomen dat de browser de redirect permanent cachet.
+    return NextResponse.redirect(proxyUrl, {
+      status: 307,
+      headers: {
+        'Cache-Control': 'no-store, max-age=0',
+      }
+    });
 
   } catch (error: any) {
     console.error('[AudioStream Critical Error]:', error);
