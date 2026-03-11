@@ -174,7 +174,9 @@ export async function GET(request: NextRequest) {
       cleanPath.includes('supabase.co/storage/v1/object/public/voices/') ||
       cleanPath.includes('googleusercontent.com') ||
       cleanPath.endsWith('.mp3') ||
-      cleanPath.endsWith('.wav');
+      cleanPath.endsWith('.wav') ||
+      // 🛡️ CHRIS-PROTOCOL: Allow legacy vertical photo paths (v2.28.92)
+      cleanPath.includes('-photo-vertical-');
 
     if (!isAllowed) {
       throw new Error('Forbidden asset path: ' + cleanPath);
