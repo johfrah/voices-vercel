@@ -23,6 +23,7 @@ import { Providers } from "./Providers";
 import { getTranslationsServer } from "@/lib/services/api-server";
 import { cn } from "@/lib/utils";
 import { SafeErrorGuard } from "@/components/ui/SafeErrorGuard";
+import { ChunkLoadRetry } from "@/components/system/ChunkLoadRetry";
 import { ConfigBridge } from "@/lib/utils/config-bridge";
 import { localeToBcp47, normalizeLocale, stripLocalePrefix, withLocalePrefix } from "@/lib/system/locale-utils";
 import { getServerUser, isAdminUser } from "@/lib/auth/server-auth";
@@ -466,6 +467,7 @@ export default async function RootLayout({
             handshakeContext={handshakeContext}
             handshakeLanguages={handshakeLanguages}
           >
+            <ChunkLoadRetry />
             <SafeErrorGuard>
               <Suspense fallback={isAdeming && isOffline ? null : <LoadingScreenInstrument text={isAdminRoute ? "Beheer laden..." : "Studio laden..."} />}>
                 {children}
@@ -495,6 +497,7 @@ export default async function RootLayout({
             handshakeContext={handshakeContext}
             handshakeLanguages={handshakeLanguages}
           >
+            <ChunkLoadRetry />
             <SafeErrorGuard>
               <Suspense fallback={<LoadingScreenInstrument text="Light modus laden..." />}>
                 <TemporaryLightMode />
@@ -558,6 +561,7 @@ export default async function RootLayout({
           handshakeContext={handshakeContext}
           handshakeLanguages={handshakeLanguages}
         >
+          <ChunkLoadRetry />
           <SafeErrorGuard>
             <PageWrapperInstrument>
               <Suspense fallback={<LoadingScreenInstrument text="Voices laden..." />}>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   ContainerInstrument,
   ButtonInstrument,
@@ -8,11 +8,25 @@ import {
   HeadingInstrument,
 } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
-import { AlertCircle, RefreshCw } from 'lucide-react';
+import { AlertCircle, RefreshCw, Loader2, Wifi, WifiOff } from 'lucide-react';
 
 const TRANSIENT_RESET_BUDGET_KEY = 'voices_transient_reset_budget_v1';
+const CHUNK_RETRY_KEY = 'voices_chunk_retry_v2';
 const TRANSIENT_RESET_WINDOW_MS = 60000;
 const MAX_TRANSIENT_RESETS = 2;
+const MAX_CHUNK_RETRIES = 3;
+const CHUNK_RETRY_COOLDOWN_MS = 15000;
+
+function isChunkLoadError(error: Error & { digest?: string }) {
+  const message = `${error?.message || ''} ${error?.name || ''}`.toLowerCase();
+  return (
+    message.includes('loading chunk') ||
+    message.includes('chunkloaderror') ||
+    message.includes('css_chunk_load_failed') ||
+    message.includes('dynamically imported module') ||
+    error?.name === 'ChunkLoadError'
+  );
+}
 
 function isTransientConnectionError(error: Error & { digest?: string }) {
   const message = `${error?.message || ''} ${error?.name || ''}`.toLowerCase();
@@ -21,6 +35,16 @@ function isTransientConnectionError(error: Error & { digest?: string }) {
     message.includes('failed to fetch') ||
     message.includes('network error') ||
     message.includes('load failed')
+  );
+}
+
+function isHydrationError(error: Error & { digest?: string }) {
+  const message = error?.message || '';
+  return (
+    message.includes('Minified React error #419') ||
+    message.includes('Minified React error #425') ||
+    message.includes('Server Components render') ||
+    message.includes('Hydration')
   );
 }
 
@@ -49,9 +73,58 @@ function consumeTransientResetBudget() {
   return true;
 }
 
+function getChunkRetryState(): { count: number; lastAttempt: number } {
+  if (typeof window === 'undefined') return { count: 0, lastAttempt: 0 };
+  try {
+    const raw = sessionStorage.getItem(CHUNK_RETRY_KEY);
+    return raw ? JSON.parse(raw) : { count: 0, lastAttempt: 0 };
+  } catch {
+    return { count: 0, lastAttempt: 0 };
+  }
+}
+
+function incrementChunkRetry(): number {
+  if (typeof window === 'undefined') return 0;
+  const state = getChunkRetryState();
+  const now = Date.now();
+  
+  if (now - state.lastAttempt > CHUNK_RETRY_COOLDOWN_MS) {
+    state.count = 0;
+  }
+  
+  state.count += 1;
+  state.lastAttempt = now;
+  
+  try {
+    sessionStorage.setItem(CHUNK_RETRY_KEY, JSON.stringify(state));
+  } catch {}
+  
+  return state.count;
+}
+
+function clearChunkRetryState(): void {
+  if (typeof window === 'undefined') return;
+  try {
+    sessionStorage.removeItem(CHUNK_RETRY_KEY);
+  } catch {}
+}
+
+async function clearCachesAndReload(): Promise<void> {
+  if ('caches' in window) {
+    try {
+      const cacheNames = await caches.keys();
+      await Promise.all(cacheNames.map(name => caches.delete(name)));
+    } catch {}
+  }
+  
+  const url = new URL(window.location.href);
+  url.searchParams.set('_r', Date.now().toString());
+  window.location.href = url.toString();
+}
+
 /**
- *  APP ERROR (NUCLEAR 2026)
- * Error boundary voor app-level fouten.
+ * 🛡️ APP ERROR (NUCLEAR 2026 v2.28.96)
+ * Error boundary voor app-level fouten met geavanceerde chunk recovery.
  */
 export default function Error({
   error,
@@ -61,35 +134,65 @@ export default function Error({
   reset: () => void;
 }) {
   const onlineListenerRegistered = useRef(false);
+  const [isRetrying, setIsRetrying] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
+  const [isOffline, setIsOffline] = useState(false);
 
   useEffect(() => {
-    console.error('App error:', error);
+    setIsOffline(!navigator.onLine);
     
-    //  CHRIS-PROTOCOL: Self-Healing for deploy skew / hydration drift.
-    // Bij chunk- en bekende RSC-hydrationfouten doen we één gecontroleerde reload.
-    const message = error.message || '';
-    const shouldSelfHealReload =
-      /Loading chunk|ChunkLoadError|CSS_CHUNK_LOAD_FAILED|dynamically imported module/i.test(message) ||
-      message.includes('Minified React error #419') ||
-      message.includes('Server Components render');
+    const handleOnline = () => setIsOffline(false);
+    const handleOffline = () => setIsOffline(true);
+    
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
 
-    if (shouldSelfHealReload) {
-      console.warn('[Nuclear] Recoverable render/chunk error detected. Triggering self-healing reload...');
+  useEffect(() => {
+    console.error('🚨 App error:', error);
+    
+    const isChunk = isChunkLoadError(error);
+    const isHydration = isHydrationError(error);
+    const isTransient = isTransientConnectionError(error);
+    
+    if (isChunk || isHydration) {
+      const currentRetry = incrementChunkRetry();
+      setRetryCount(currentRetry);
       
-      // Voorkom oneindige reload loops
-      const lastReload = sessionStorage.getItem('voices_last_self_heal_reload');
-      const now = Date.now();
+      console.warn(`🔄 [Nuclear] Recoverable error detected (attempt ${currentRetry}/${MAX_CHUNK_RETRIES}):`, 
+        isChunk ? 'ChunkLoadError' : 'HydrationError'
+      );
       
-      if (!lastReload || (now - parseInt(lastReload, 10)) > 45000) {
-        sessionStorage.setItem('voices_last_self_heal_reload', now.toString());
-        setTimeout(() => {
-          window.location.reload();
-        }, 1000);
-        return;
+      if (currentRetry <= MAX_CHUNK_RETRIES) {
+        setIsRetrying(true);
+        
+        const delay = Math.min(1000 * Math.pow(2, currentRetry - 1), 8000);
+        
+        console.info(`🔄 [Nuclear] Auto-retrying in ${delay}ms...`);
+        
+        const timer = setTimeout(() => {
+          if (currentRetry >= MAX_CHUNK_RETRIES) {
+            console.warn('🔄 [Nuclear] Max retries reached, clearing caches and forcing full reload...');
+            clearChunkRetryState();
+            clearCachesAndReload();
+          } else {
+            window.location.reload();
+          }
+        }, delay);
+        
+        return () => clearTimeout(timer);
+      } else {
+        console.error('❌ [Nuclear] Recovery failed after max retries');
+        clearChunkRetryState();
       }
     }
 
-    if (isTransientConnectionError(error)) {
+    if (isTransient) {
       const attemptReset = () => {
         if (consumeTransientResetBudget()) {
           reset();
@@ -110,7 +213,6 @@ export default function Error({
       }
     }
 
-    //  WATCHDOG NOTIFICATION
     const notifyWatchdog = async () => {
       try {
         await fetch('/api/admin/system/watchdog', {
@@ -121,7 +223,13 @@ export default function Error({
             stack: error.stack,
             component: 'AppErrorBoundary',
             url: window.location.href,
-            level: 'critical'
+            level: isChunk || isHydration ? 'warn' : 'critical',
+            metadata: {
+              isChunkError: isChunk,
+              isHydrationError: isHydration,
+              retryCount,
+              userAgent: navigator.userAgent
+            }
           })
         });
       } catch (e) {
@@ -130,23 +238,67 @@ export default function Error({
     };
 
     notifyWatchdog();
-  }, [error, reset]);
+  }, [error, reset, retryCount]);
+
+  const handleManualRetry = () => {
+    clearChunkRetryState();
+    reset();
+  };
+
+  const handleHardReload = () => {
+    clearChunkRetryState();
+    clearCachesAndReload();
+  };
+
+  const isChunkError = isChunkLoadError(error);
+
+  if (isRetrying) {
+    return (
+      <ContainerInstrument className="min-h-[60vh] flex flex-col items-center justify-center gap-8 py-20 px-6">
+        <ContainerInstrument className="w-20 h-20 bg-primary/10 text-primary rounded-3xl flex items-center justify-center">
+          <Loader2 strokeWidth={1.5} size={40} className="animate-spin" />
+        </ContainerInstrument>
+
+        <ContainerInstrument className="text-center space-y-2">
+          <HeadingInstrument level={1} className="text-4xl font-light tracking-tighter">
+            <VoiceglotText translationKey="error.app.recovering_title" defaultText="Even geduld..." />
+          </HeadingInstrument>
+          <TextInstrument className="text-va-black/40 font-medium max-w-md mx-auto">
+            <VoiceglotText 
+              translationKey="error.app.recovering_text" 
+              defaultText="We herstellen de verbinding automatisch." 
+            />
+          </TextInstrument>
+          <TextInstrument className="text-va-black/20 text-sm">
+            Poging {retryCount} van {MAX_CHUNK_RETRIES}
+          </TextInstrument>
+        </ContainerInstrument>
+      </ContainerInstrument>
+    );
+  }
 
   return (
     <ContainerInstrument className="min-h-[60vh] flex flex-col items-center justify-center gap-8 py-20 px-6">
-      {/*  Diagnostic Error Layer (Visible for debugging) */}
-      <ContainerInstrument className="bg-red-50 p-4 rounded-xl border border-red-100 mb-4 max-w-2xl overflow-auto animate-in fade-in duration-700">
-        <TextInstrument className="text-red-800 font-mono text-[15px] font-bold mb-1">
-          <VoiceglotText translationKey="auto.error.diagnostic_info_.a840d6" defaultText="Diagnostic Info:" />
-        </TextInstrument>
-        <TextInstrument className="text-red-800 font-mono text-[15px]">{error.message || 'Unknown error'}</TextInstrument>
-        {Boolean(error.cause) ? (
-          <TextInstrument className="text-red-600 font-mono text-[15px] mt-2 border-t border-red-100 pt-2">
-            Cause: {String(error.cause)}
+      {isOffline && (
+        <ContainerInstrument className="bg-amber-50 p-4 rounded-xl border border-amber-100 mb-4 max-w-md flex items-center gap-3">
+          <WifiOff className="text-amber-600" size={20} />
+          <TextInstrument className="text-amber-800 text-sm">
+            <VoiceglotText translationKey="error.app.offline" defaultText="Je bent offline. Controleer je internetverbinding." />
           </TextInstrument>
-        ) : null}
-        <TextInstrument className="text-red-400 font-mono text-[15px] mt-2">Digest: {error.digest || 'no-digest'}</TextInstrument>
-      </ContainerInstrument>
+        </ContainerInstrument>
+      )}
+
+      {isChunkError && (
+        <ContainerInstrument className="bg-blue-50 p-4 rounded-xl border border-blue-100 mb-4 max-w-md">
+          <TextInstrument className="text-blue-800 text-sm">
+            <VoiceglotText 
+              translationKey="error.app.chunk_info" 
+              defaultText="Dit kan gebeuren na een update. Een volledige herlaadbeurt lost dit meestal op." 
+            />
+          </TextInstrument>
+        </ContainerInstrument>
+      )}
+
       <ContainerInstrument className="w-20 h-20 bg-primary/10 text-primary rounded-3xl flex items-center justify-center">
         <AlertCircle strokeWidth={1.5} size={40} />
       </ContainerInstrument>
@@ -163,12 +315,24 @@ export default function Error({
         </TextInstrument>
       </ContainerInstrument>
 
-      <ButtonInstrument onClick={reset} className="va-btn-pro !px-12">
-        <RefreshCw strokeWidth={1.5} size={18} />
-        <VoiceglotText translationKey="error.app.cta" defaultText="Opnieuw Proberen" />
-      </ButtonInstrument>
+      <ContainerInstrument className="flex flex-col sm:flex-row gap-4">
+        <ButtonInstrument onClick={handleManualRetry} className="va-btn-pro !px-12">
+          <RefreshCw strokeWidth={1.5} size={18} />
+          <VoiceglotText translationKey="error.app.cta" defaultText="Opnieuw Proberen" />
+        </ButtonInstrument>
+        
+        {isChunkError && (
+          <ButtonInstrument 
+            onClick={handleHardReload} 
+            variant="outline"
+            className="!px-8 !border-va-black/20 !text-va-black/60 hover:!bg-va-black/5"
+          >
+            <Wifi strokeWidth={1.5} size={18} />
+            <VoiceglotText translationKey="error.app.hard_reload" defaultText="Volledige Herlaadbeurt" />
+          </ButtonInstrument>
+        )}
+      </ContainerInstrument>
 
-      {/*  LLM CONTEXT (Compliance) */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
