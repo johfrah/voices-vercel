@@ -78,6 +78,12 @@ export async function GET(
     const proxyUrl = new URL('/api/proxy', request.url);
     proxyUrl.searchParams.set('path', audioUrl);
     
+    // 🛡️ CHRIS-PROTOCOL: MIME-Type Hinting (v2.28.103)
+    // We voegen een extensie toe aan het pad voor de proxy als hint voor het MIME-type.
+    if (!audioUrl.toLowerCase().endsWith('.mp3') && !audioUrl.toLowerCase().endsWith('.wav')) {
+      proxyUrl.searchParams.set('ext', 'mp3');
+    }
+    
     // 🛡️ CHRIS-PROTOCOL: Cache-Control for Streams (v2.28.102)
     // We gebruiken een 307 Temporary Redirect om te voorkomen dat de browser de redirect permanent cachet.
     return NextResponse.redirect(proxyUrl, {

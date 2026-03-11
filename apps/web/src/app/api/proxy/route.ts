@@ -14,11 +14,24 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const assetPath = searchParams.get('path');
   const fallbackPath = searchParams.get('fallback');
-  console.log(`[Proxy] Request received for path: ${assetPath}${fallbackPath ? ` (fallback: ${fallbackPath})` : ''}`);
+  const extensionHint = searchParams.get('ext');
+  console.log(`[Proxy] Request received for path: ${assetPath}${fallbackPath ? ` (fallback: ${fallbackPath})` : ''}${extensionHint ? ` (hint: ${extensionHint})` : ''}`);
 
   if (!assetPath) {
     return new NextResponse('Missing asset path', { status: 400 });
   }
+
+  const looksLikeAudioPath = (value: string) => {
+    const lowerPath = value.toLowerCase();
+    return (
+      lowerPath.endsWith('.mp3') ||
+      lowerPath.endsWith('.wav') ||
+      lowerPath.endsWith('.m4a') ||
+      lowerPath.endsWith('.ogg') ||
+      extensionHint === 'mp3' ||
+      extensionHint === 'wav'
+    );
+  };
 
   const looksLikeImagePath = (value: string) => {
     const lowerPath = value.toLowerCase();
@@ -250,7 +263,13 @@ export async function GET(request: NextRequest) {
       }
 
       const blob = await response.blob();
-      const contentType = response.headers.get('content-type') || 'application/octet-stream';
+      let contentType = response.headers.get('content-type') || 'application/octet-stream';
+
+      // 🛡️ CHRIS-PROTOCOL: MIME-Type Correction (v2.28.103)
+      if (contentType === 'application/octet-stream' || contentType === 'text/plain') {
+        if (cleanPath.toLowerCase().endsWith('.mp3') || extensionHint === 'mp3') contentType = 'audio/mpeg';
+        if (cleanPath.toLowerCase().endsWith('.wav') || extensionHint === 'wav') contentType = 'audio/wav';
+      }
 
       return { blob, contentType, source: response.url.includes('render/image') ? 'Voices-Core-2026-Supabase-Optimized' : 'Voices-Core-2026-Supabase' };
     }
@@ -304,7 +323,13 @@ export async function GET(request: NextRequest) {
     }
 
     const blob = await response.blob();
-    const contentType = response.headers.get('content-type') || 'application/octet-stream';
+    let contentType = response.headers.get('content-type') || 'application/octet-stream';
+
+    // 🛡️ CHRIS-PROTOCOL: MIME-Type Correction (v2.28.103)
+    if (contentType === 'application/octet-stream' || contentType === 'text/plain') {
+      if (normalizedPath.toLowerCase().endsWith('.mp3') || extensionHint === 'mp3') contentType = 'audio/mpeg';
+      if (normalizedPath.toLowerCase().endsWith('.wav') || extensionHint === 'wav') contentType = 'audio/wav';
+    }
 
     return { blob, contentType, source: 'Voices-Core-2026' };
   };
