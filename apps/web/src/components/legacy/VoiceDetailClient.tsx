@@ -80,7 +80,7 @@ export function VoiceDetailClient({
       const params = new URLSearchParams(window.location.search);
       const token = params.get('t');
       
-      if (token) {
+      if (token && token.length > 20) {
         try {
           const res = await fetch(`/api/config/token?t=${token}`);
           if (res.ok) {

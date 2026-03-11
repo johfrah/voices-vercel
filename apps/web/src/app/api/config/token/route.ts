@@ -41,7 +41,19 @@ export async function GET(request: NextRequest) {
 
   try {
     const base64 = token.replace(/-/g, '+').replace(/_/g, '/');
-    const payload = JSON.parse(Buffer.from(base64, 'base64').toString());
+    let decoded;
+    try {
+      decoded = Buffer.from(base64, 'base64').toString();
+    } catch (e) {
+      return NextResponse.json({ error: 'Invalid base64 encoding' }, { status: 400 });
+    }
+
+    let payload;
+    try {
+      payload = JSON.parse(decoded);
+    } catch (e) {
+      return NextResponse.json({ error: 'Invalid JSON payload' }, { status: 400 });
+    }
     
     return NextResponse.json({
       briefing: payload.b,
