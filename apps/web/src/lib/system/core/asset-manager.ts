@@ -57,6 +57,8 @@ export class AssetManager {
       .from('media')
       .select('file_path, file_type')
       .eq('id', mediaId)
+      // SECURITY: public proxy may never resolve private media rows.
+      .eq('is_public', true)
       .single();
 
     if (error || !data) return null;
