@@ -53,8 +53,16 @@ export const VoiceglotImage: React.FC<VoiceglotImageProps> = ({
           return;
         }
       }
+      
+      // 🛡️ CHRIS-PROTOCOL: Fallback to constructed proxy if mediaId is missing but we have a path
       if (src) {
-        setCurrentSrc(src);
+        // If it's already a proxy or local asset, use as is
+        if (src.includes('/api/proxy') || src.startsWith('/assets/')) {
+          setCurrentSrc(src);
+        } else {
+          // Wrap in proxy for stability
+          setCurrentSrc(`/api/proxy/?path=${encodeURIComponent(src)}`);
+        }
       }
     };
     resolveUrl();
