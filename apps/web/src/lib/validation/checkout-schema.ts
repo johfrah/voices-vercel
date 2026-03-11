@@ -119,11 +119,11 @@ export const CheckoutPayloadSchema = z.object({
     trackId: z.string().nullable().optional(),
     asBackground: z.boolean().default(false),
     asHoldMusic: z.boolean().default(false),
-  }).optional(),
+  }).nullable().optional(),
   ownMusicFile: z.object({
     name: z.string(),
     url: z.string(),
-  }).optional(),
+  }).nullable().optional(),
   
   // 5. Metadata
   metadata: z.object({
