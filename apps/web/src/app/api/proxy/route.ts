@@ -105,7 +105,8 @@ export async function GET(request: NextRequest) {
     
     //  FIX: Als het pad al een volledige Supabase URL is, haal dan alleen het pad deel eruit
     // MAAR: Behoud de volledige URL voor Supabase Storage direct fetch
-    let isSupabaseUrl = cleanPath.includes('supabase.co/storage/v1/object/public/voices/');
+    const { AssetManager: AssetManagerServer } = require('@/lib/system/core/asset-manager');
+    let isSupabaseUrl = cleanPath.includes(AssetManagerServer.STORAGE_BASE_URL.replace('https://', ''));
     
     // 🛡️ CHRIS-PROTOCOL: Forensic double-proxy strip (v2.14.408)
     // If the path already contains /api/proxy/, strip it to get the raw path.
@@ -126,7 +127,7 @@ export async function GET(request: NextRequest) {
           cleanPath = cleanPath.split('/api/proxy/')[1];
         }
       }
-      isSupabaseUrl = cleanPath.includes('supabase.co/storage/v1/object/public/voices/');
+      isSupabaseUrl = cleanPath.includes(AssetManagerServer.STORAGE_BASE_URL.replace('https://', ''));
     }
     
     if (cleanPath.startsWith('http') && !isSupabaseUrl) {
@@ -177,12 +178,10 @@ export async function GET(request: NextRequest) {
         cleanPath.startsWith('portfolio/') ||
         cleanPath.startsWith('artists/') ||
         cleanPath.startsWith('ademing/') ||
-        cleanPath.includes('supabase.co/storage/v1/object/public/voices/') ||
+        cleanPath.includes(AssetManagerServer.STORAGE_BASE_URL.replace('https://', '')) ||
         cleanPath.includes('googleusercontent.com') ||
         cleanPath.endsWith('.mp3') ||
-        cleanPath.endsWith('.wav') ||
-        // 🛡️ CHRIS-PROTOCOL: Allow legacy vertical photo paths (v2.28.92)
-        cleanPath.includes('-photo-vertical-');
+        cleanPath.endsWith('.wav');
 
       if (!isAllowed) {
         throw new Error('Forbidden asset path: ' + cleanPath);
@@ -203,9 +202,8 @@ export async function GET(request: NextRequest) {
     let normalizedPath = cleanPath.startsWith('/') ? cleanPath : `/${cleanPath}`;
 
     //  SUPABASE & GOOGLE STORAGE REDIRECT: Als het pad begint met 'agency/', 'active/', 'common/', 'studio/', 'ademing/', 'portfolio/', 'artists/', 'visuals/' of 'reviews/', fetch het dan van Supabase Storage
-    if (cleanPath.startsWith('agency/') || cleanPath.startsWith('active/') || cleanPath.startsWith('common/') || cleanPath.startsWith('studio/') || cleanPath.startsWith('ademing/') || cleanPath.startsWith('portfolio/') || cleanPath.startsWith('artists/') || cleanPath.startsWith('visuals/') || cleanPath.startsWith('reviews/') || cleanPath.startsWith('https://vcbxyyjsxuquytcsskpj.supabase.co') || cleanPath.includes('googleusercontent.com') || cleanPath.startsWith('voices/')) {
-      const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://vcbxyyjsxuquytcsskpj.supabase.co';
-      const SUPABASE_STORAGE_URL = `${SUPABASE_URL.replace(/\/$/, '')}/storage/v1`;
+    if (cleanPath.startsWith('agency/') || cleanPath.startsWith('active/') || cleanPath.startsWith('common/') || cleanPath.startsWith('studio/') || cleanPath.startsWith('ademing/') || cleanPath.startsWith('portfolio/') || cleanPath.startsWith('artists/') || cleanPath.startsWith('visuals/') || cleanPath.startsWith('reviews/') || cleanPath.startsWith(AssetManagerServer.STORAGE_BASE_URL.replace('/object/public/voices', '')) || cleanPath.includes('googleusercontent.com') || cleanPath.startsWith('voices/')) {
+      const SUPABASE_STORAGE_URL = AssetManagerServer.STORAGE_BASE_URL.replace('/object/public/voices', '');
       
       //  FIX: Zorg dat er geen dubbele slashes ontstaan en encodeer het pad segment per segment
       let storagePath = cleanPath;
@@ -238,8 +236,8 @@ export async function GET(request: NextRequest) {
       }
 
       // 🛡️ CHRIS-PROTOCOL: Forensic strip for direct Supabase URLs that leaked into the path
-      if (storagePath.includes('supabase.co/storage/v1/object/public/voices/')) {
-        storagePath = storagePath.split('supabase.co/storage/v1/object/public/voices/')[1];
+      if (storagePath.includes(AssetManagerServer.STORAGE_BASE_URL)) {
+        storagePath = storagePath.split(`${AssetManagerServer.STORAGE_BASE_URL}/`)[1];
       }
 
       const pathSegments = storagePath.split('/').filter(Boolean).map(segment => {
@@ -265,10 +263,10 @@ export async function GET(request: NextRequest) {
       // If it's already a WebP, we fetch raw to avoid redundant transformation latency.
       // If it's NOT an image (e.g. .mp3), we MUST fetch raw from the object storage.
       const optimizedUrl = (isAlreadyWebP || !isImage)
-        ? `${SUPABASE_STORAGE_URL}/object/public/voices/${finalSegments.join('/')}`
+        ? `${AssetManagerServer.STORAGE_BASE_URL}/${finalSegments.join('/')}`
         : `${SUPABASE_STORAGE_URL}/render/image/public/voices/${finalSegments.join('/')}?width=1080&format=webp&quality=75`;
       
-      const rawUrl = `${SUPABASE_STORAGE_URL}/object/public/voices/${finalSegments.join('/')}`;
+      const rawUrl = `${AssetManagerServer.STORAGE_BASE_URL}/${finalSegments.join('/')}`;
       
       let response = await fetch(optimizedUrl, {
         headers: {
@@ -318,7 +316,7 @@ export async function GET(request: NextRequest) {
     }
 
     //  FIX: Als het pad al een volledige Supabase URL is, fetch deze dan direct
-    if (cleanPath.includes('supabase.co/storage/v1/object/public/voices/')) {
+    if (cleanPath.includes(AssetManagerServer.STORAGE_BASE_URL.replace('https://', ''))) {
       console.log(`[Proxy Direct] Supabase URL detected: ${cleanPath}`);
       const url = new URL(cleanPath);
       const response = await fetch(url.toString(), {

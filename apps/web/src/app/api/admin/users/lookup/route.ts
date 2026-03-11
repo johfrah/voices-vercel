@@ -35,6 +35,15 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    // 🛡️ CHRIS-PROTOCOL: Privacy Mandate (v2.28.89)
+    // Een normale klant mag alleen zijn EIGEN data opzoeken.
+    // Alleen een admin mag een lookup doen op een andere email.
+    const isAdmin = authUser.email === process.env.ADMIN_EMAIL || (authUser as any).role === 'admin' || (authUser as any).role === 'superadmin';
+    
+    if (!isAdmin && email.toLowerCase() !== authUser.email?.toLowerCase()) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     // 2. Fetch User from DB
     let user: any = null;
     try {

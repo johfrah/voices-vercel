@@ -64,10 +64,8 @@ export async function GET(request: NextRequest) {
       ? await supabase.from('media').select('id, file_path').in('id', photoIds)
       : { data: [] };
 
-    const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-    const SUPABASE_STORAGE_URL = `${SUPABASE_URL.replace(/\/$/, '')}/storage/v1/object/public/voices`;
-
     // 3. Map to Nuclear 1 Truth Format
+    const { AssetManager } = require('@/lib/system/core/asset-manager');
     const mappedActors = (sdkData || []).map(actor => {
       let photo_url = '';
       
@@ -75,9 +73,7 @@ export async function GET(request: NextRequest) {
       if (actor.photo_id) {
         const mediaItem = (mediaResults || []).find((m: any) => m.id === actor.photo_id);
         if (mediaItem?.file_path) {
-          photo_url = mediaItem.file_path.startsWith('http') 
-            ? mediaItem.file_path 
-            : `${SUPABASE_STORAGE_URL}/${mediaItem.file_path}`;
+          photo_url = AssetManager.constructStorageUrl(mediaItem.file_path);
         }
       } else if (actor.dropbox_url) {
         // Fallback for non-migrated items

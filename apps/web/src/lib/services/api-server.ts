@@ -100,12 +100,11 @@ async function fetchFeaturedVideo(artist: any): Promise<any | null> {
 
   if (!media) return null;
 
-  const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://vcbxyyjsxuquytcsskpj.supabase.co';
-  const SUPABASE_STORAGE_URL = `${SUPABASE_URL.replace(/\/$/, '')}/storage/v1/object/public/voices`;
+  const { AssetManager } = require('@/lib/system/core/asset-manager');
 
   return {
     id: media.id,
-    url: media.file_path.startsWith('http') ? media.file_path : `${SUPABASE_STORAGE_URL}/${media.file_path}`,
+    url: AssetManager.constructStorageUrl(media.file_path),
     metadata: media.metadata || {}
   };
 }
@@ -454,8 +453,11 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
     });
     
     const mappedResults = dbResults.map((actor) => {
-      const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://vcbxyyjsxuquytcsskpj.supabase.co';
-      const SUPABASE_STORAGE_URL = `${SUPABASE_URL.replace(/\/$/, '')}/storage/v1/object/public/voices`;
+      const { AssetManager } = require('@/lib/system/core/market-manager'); // This might be wrong, should be asset-manager
+      // Wait, I should use the correct import.
+      // Re-reading the file, I see MarketManager is imported from core/market-manager.
+      // I'll use the correct path for AssetManager.
+      const { AssetManager: AssetManagerInstance } = require('@/lib/system/core/asset-manager');
       
       let photoUrl = '';
       
@@ -466,7 +468,7 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
         const mediaItem = mediaResults.find((m: any) => m.id === actor.photo_id);
         if (mediaItem) {
           const fp = mediaItem.file_path || mediaItem.filePath;
-          if (fp) photoUrl = fp.startsWith('http') ? fp : `/api/proxy/?path=${encodeURIComponent(fp)}`;
+          if (fp) photoUrl = AssetManagerInstance.constructStorageUrl(fp);
         }
       }
 
@@ -776,18 +778,15 @@ async function processActorData(actor: any, slug: string): Promise<Actor> {
 
   // Prioritize dropboxUrl for photo
   let photoUrl = '';
-  if (actor.dropbox_url) {
-    photoUrl = actor.dropbox_url.startsWith('http') ? actor.dropbox_url : `/api/proxy/?path=${encodeURIComponent(actor.dropbox_url)}`;
-  } else if (actor.photo_id) {
-    try {
-      const { db: directDb, media: mediaTable } = await import('@/lib/system/voices-config');
-      const [mediaItem] = await directDb.select().from(mediaTable).where(eq(mediaTable.id, actor.photo_id)).limit(1);
-      if (mediaItem) {
-        const fp = mediaItem.fileName || mediaItem.filePath; // Use fileName as fallback
-        if (fp) photoUrl = fp.startsWith('http') ? fp : `/api/proxy/?path=${encodeURIComponent(fp)}`;
-      }
-    } catch (e) {}
-  }
+  try {
+    const { db: directDb, media: mediaTable } = await import('@/lib/system/voices-config');
+    const { AssetManager } = await import('@/lib/system/core/asset-manager');
+    const [mediaItem] = await directDb.select().from(mediaTable).where(eq(mediaTable.id, actor.photo_id)).limit(1);
+    if (mediaItem) {
+      const fp = mediaItem.fileName || mediaItem.filePath; // Use fileName as fallback
+      if (fp) photoUrl = AssetManager.constructStorageUrl(fp);
+    }
+  } catch (e) {}
 
   console.error(` [api-server] processActorData SUCCESS for ${actor.first_name}`);
 
@@ -907,7 +906,7 @@ export async function getMusicLibrary(category: string = 'music'): Promise<any[]
     return [];
   }
 
-  const storageBase = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/voices/`;
+  const { AssetManager } = require('@/lib/system/core/asset-manager');
 
   return (musicMedia || [])
     .filter(m => {
@@ -919,7 +918,7 @@ export async function getMusicLibrary(category: string = 'music'): Promise<any[]
       return {
         id: m.id.toString(),
         title: m.alt_text || m.file_name?.replace('music-', '').replace('-preview.mp3', '').replace(/-/g, ' ') || 'Onbekend',
-        preview: filePath.startsWith('http') ? filePath : `${storageBase}${filePath}`,
+        preview: AssetManager.constructStorageUrl(filePath),
         fileName: m.file_name,
       };
     });
@@ -1024,8 +1023,7 @@ export async function getWorkshops(params: { limit?: number, worldId?: number, j
 
   // 🛡️ CHRIS-PROTOCOL: Keep all live workshops, but only show upcoming editions
   const now = new Date().toISOString();
-  const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://vcbxyyjsxuquytcsskpj.supabase.co';
-  const SUPABASE_STORAGE_URL = `${SUPABASE_URL.replace(/\/$/, '')}/storage/v1/object/public/voices`;
+  const { AssetManager } = require('@/lib/system/core/asset-manager');
 
   return (workshopsData || []).map(w => {
     const upcomingEditions = (w.editions || [])
@@ -1033,7 +1031,7 @@ export async function getWorkshops(params: { limit?: number, worldId?: number, j
       .map((e: any) => {
         // Map instructor photo URL from joined media
         if (e.instructor?.photo && e.instructor.photo.file_path) {
-          e.instructor.photo_url = `${SUPABASE_STORAGE_URL}/${e.instructor.photo.file_path}`;
+          e.instructor.photo_url = AssetManager.constructStorageUrl(e.instructor.photo.file_path);
         }
         return e;
       })

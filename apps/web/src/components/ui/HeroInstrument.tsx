@@ -71,12 +71,10 @@ export const HeroInstrument: React.FC = () => {
         setResolvedImages(resolved);
       } catch (e) {
         console.error("[HeroInstrument] Failed to resolve images:", e);
-        // Fallback: map local paths to correct storage URLs if they are not already absolute
-        const storageBase = "https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices";
+        const { AssetManager } = await import('@/lib/system/core/asset-manager');
         const fallback = filteredImages.map(img => {
           if (img.url && !img.url.startsWith('http') && !img.url.startsWith('/')) {
-            const cleanPath = img.url.replace(/^\/+/, '');
-            return { ...img, url: `${storageBase}/${cleanPath}` };
+            return { ...img, url: AssetManager.constructStorageUrl(img.url) };
           }
           return img;
         });

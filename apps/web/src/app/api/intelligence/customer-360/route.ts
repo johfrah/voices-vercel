@@ -106,11 +106,17 @@ export async function GET(request: NextRequest) {
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    if (!isAdmin && email && email.toLowerCase() !== user.email?.toLowerCase()) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-    if (!isAdmin && userId && String(user.id) !== userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    
+    // 🛡️ CHRIS-PROTOCOL: Privacy Mandate (v2.28.89)
+    // Alleen admins mogen lookup doen op andere emails/userIds.
+    // Klanten mogen alleen hun eigen data inzien.
+    if (!isAdmin) {
+      if (email && email.toLowerCase() !== user.email?.toLowerCase()) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      }
+      if (userId && String(user.id) !== userId) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      }
     }
 
     try {

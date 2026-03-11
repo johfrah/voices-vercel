@@ -55,9 +55,8 @@ export const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onUpdate }
         console.error("[WorkshopCard] Failed to resolve media:", e);
         // Fallback to direct storage URL if AssetManager fails
         if (mediaPath) {
-          const cleanPath = mediaPath.replace(/^\/+/, '');
-          const storageUrl = mediaPath.startsWith('http') ? mediaPath : `https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices/${cleanPath}`;
-          setResolvedSrc(storageUrl);
+          const { AssetManager } = await import('@/lib/system/core/asset-manager');
+          setResolvedSrc(AssetManager.constructStorageUrl(mediaPath));
         }
       }
     };

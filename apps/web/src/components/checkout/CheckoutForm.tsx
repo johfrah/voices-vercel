@@ -239,9 +239,34 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
     }
   }, [formData.email, auth.isAuthenticated, playClick, updateCustomer]);
 
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const validateField = (field: string, value: any) => {
+    const requiredFields = ['email', 'first_name', 'last_name', 'postal_code', 'city'];
+    if (requiredFields.includes(field)) {
+      if (!value || (typeof value === 'string' && value.trim() === '')) {
+        setErrors(prev => ({ ...prev, [field]: t('checkout.validation.required', 'Dit veld is verplicht') }));
+        return false;
+      }
+      if (field === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+        setErrors(prev => ({ ...prev, [field]: t('checkout.validation.invalid_email', 'Ongeldig e-mailadres') }));
+        return false;
+      }
+    }
+    setErrors(prev => {
+      const newErrors = { ...prev };
+      delete newErrors[field];
+      return newErrors;
+    });
+    return true;
+  };
+
   const handleChange = (field: string, value: any) => {
     playClick('light');
     const newData = { ...formData, [field]: value };
+    
+    // Real-time validation
+    validateField(field, value);
     
     // Reset verification if VAT number or country changes
     if (field === 'vat_number' || field === 'country') {
@@ -261,36 +286,30 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
     
     //  MONKEYPROOF VALIDATION: Check required fields and scroll to first error
     const requiredFields = ['email', 'first_name', 'last_name', 'postal_code', 'city'];
-    const missingField = requiredFields.find(fieldItem => !formData[fieldItem as keyof typeof formData]);
-    
-    if (missingField) {
+    const newErrors: Record<string, string> = {};
+    let firstErrorField = null;
+
+    requiredFields.forEach(field => {
+      if (!formData[field as keyof typeof formData]) {
+        newErrors[field] = t('checkout.validation.required', 'Dit veld is verplicht');
+        if (!firstErrorField) firstErrorField = field;
+      }
+    });
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
       playClick('error');
       
-      // 🛡️ CHRIS-PROTOCOL: User-friendly validation (v2.14.317)
-      // We scroll to the missing field and show a clear indicator
-      const fieldLabels: Record<string, string> = {
-        email: 'E-mailadres',
-        first_name: 'Voornaam',
-        last_name: 'Achternaam',
-        postal_code: 'Postcode',
-        city: 'Stad'
-      };
-      
-      const element = document.getElementsByName(missingField)[0] || 
-                      document.querySelector(`input[value="${formData[missingField as keyof typeof formData] || ''}"]`) ||
-                      document.querySelector(`[placeholder*="${fieldLabels[missingField] || missingField}"]`);
-      
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        (element as HTMLElement).focus();
-        // Add a temporary shake or highlight effect if possible
-        (element as HTMLElement).classList.add('animate-shake', 'border-red-500');
-        setTimeout(() => {
-          (element as HTMLElement).classList.remove('animate-shake', 'border-red-500');
-        }, 2000);
+      if (firstErrorField) {
+        const element = document.getElementsByName(firstErrorField)[0] || 
+                        document.querySelector(`input[name="${firstErrorField}"]`) ||
+                        document.querySelector(`[data-field="${firstErrorField}"]`);
+        
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          (element as HTMLElement).focus();
+        }
       }
-      
-      alert(t('checkout.validation.missing', `Het veld '${fieldLabels[missingField] || missingField}' is verplicht.`));
       return;
     }
 
@@ -377,7 +396,28 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
           window.location.href = data.checkoutUrl;
         }
       } else {
-        alert(data.message || t('common.error_occurred', 'Er is iets misgegaan.'));
+        // 🛡️ CHRIS-PROTOCOL: Forensic Error Analysis (v2.28.89)
+        // We tonen nu specifieke details bij validatiefouten (Zod)
+        if (data.details && typeof data.details === 'object') {
+          const fieldErrors = data.details;
+          const errorMessages = Object.entries(fieldErrors)
+            .map(([field, error]: [string, any]) => {
+              const msg = error._errors ? error._errors.join(', ') : 'Ongeldig';
+              return `${field}: ${msg}`;
+            })
+            .join('\n');
+          
+          alert(`${t('checkout.error.validation_failed', 'Er zijn fouten in de bestelgegevens:')}\n\n${errorMessages}`);
+          
+          // Sync errors to UI if possible
+          const newErrors: Record<string, string> = {};
+          Object.entries(fieldErrors).forEach(([field, error]: [string, any]) => {
+            newErrors[field] = error._errors ? error._errors[0] : 'Ongeldig';
+          });
+          setErrors(prev => ({ ...prev, ...newErrors }));
+        } else {
+          alert(data.error || data.message || t('common.error_occurred', 'Er is iets misgegaan.'));
+        }
         updateIsSubmitting(false);
       }
     } catch (error) {
@@ -475,11 +515,13 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
           </LabelInstrument>
           <InputInstrument
             type="email"
+            name="email"
             value={formData.email || ''}
             placeholder={t('checkout.form.email_placeholder', "naam@bedrijf.be")}
-            className="w-full !rounded-[10px] !py-5"
+            className={cn("w-full !rounded-[10px] !py-5", errors.email && "border-red-500")}
             onChange={(e) => handleChange('email', e.target.value)}
           />
+          {errors.email && <TextInstrument className="text-red-500 text-[11px] mt-1 ml-1">{errors.email}</TextInstrument>}
         </ContainerInstrument>
 
         <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
@@ -488,22 +530,26 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
               <VoiceglotText  translationKey="checkout.form.first_name" defaultText="Voornaam *" />
             </LabelInstrument>
             <InputInstrument
+              name="first_name"
               value={formData.first_name || ''}
               placeholder={t('checkout.form.first_name_placeholder', "Bijv. Jan")}
-              className="w-full !rounded-[10px]"
+              className={cn("w-full !rounded-[10px]", errors.first_name && "border-red-500")}
               onChange={(e) => handleChange('first_name', e.target.value)}
             />
+            {errors.first_name && <TextInstrument className="text-red-500 text-[11px] mt-1 ml-1">{errors.first_name}</TextInstrument>}
           </ContainerInstrument>
           <ContainerInstrument className="space-y-0.5">
             <LabelInstrument>
               <VoiceglotText  translationKey="checkout.form.last_name" defaultText="Achternaam *" />
             </LabelInstrument>
             <InputInstrument
+              name="last_name"
               value={formData.last_name || ''}
               placeholder={t('checkout.form.last_name_placeholder', "Bijv. Janssen")}
-              className="w-full !rounded-[10px]"
+              className={cn("w-full !rounded-[10px]", errors.last_name && "border-red-500")}
               onChange={(e) => handleChange('last_name', e.target.value)}
             />
+            {errors.last_name && <TextInstrument className="text-red-500 text-[11px] mt-1 ml-1">{errors.last_name}</TextInstrument>}
           </ContainerInstrument>
         </ContainerInstrument>
         
@@ -605,11 +651,13 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
               <VoiceglotText  translationKey="checkout.form.zip" defaultText="Postcode *" />
             </LabelInstrument>
             <InputInstrument
+              name="postal_code"
               value={formData.postal_code || ''}
               placeholder={t('checkout.form.zip_placeholder', "9000")}
-              className="w-full !rounded-[10px]"
+              className={cn("w-full !rounded-[10px]", errors.postal_code && "border-red-500")}
               onChange={(e) => handleChange('postal_code', e.target.value)}
             />
+            {errors.postal_code && <TextInstrument className="text-red-500 text-[11px] mt-1 ml-1">{errors.postal_code}</TextInstrument>}
           </ContainerInstrument>
         </ContainerInstrument>
 
@@ -619,11 +667,13 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
               <VoiceglotText  translationKey="checkout.form.city" defaultText="Stad *" />
             </LabelInstrument>
             <InputInstrument
+              name="city"
               value={formData.city || ''}
               placeholder={t('checkout.form.city_placeholder', "Gent")}
-              className="w-full !rounded-[10px]"
+              className={cn("w-full !rounded-[10px]", errors.city && "border-red-500")}
               onChange={(e) => handleChange('city', e.target.value)}
             />
+            {errors.city && <TextInstrument className="text-red-500 text-[11px] mt-1 ml-1">{errors.city}</TextInstrument>}
           </ContainerInstrument>
           <ContainerInstrument className="space-y-0.5">
             <LabelInstrument>

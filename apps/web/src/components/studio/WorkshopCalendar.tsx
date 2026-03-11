@@ -127,10 +127,10 @@ export const WorkshopCalendar: React.FC<{ workshops: any[] }> = ({ workshops }) 
         setResolvedSessions(resolved);
       } catch (e) {
         console.error("[WorkshopCalendar] Failed to resolve session images:", e);
+        const { AssetManager } = await import('@/lib/system/core/asset-manager');
         setResolvedSessions(upcomingSessions.map(s => {
           const path = s.workshopImagePath;
-          const storageBase = 'https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices';
-          const resolvedPath = path ? (path.startsWith('http') ? path : `${storageBase}/${path.replace(/^\/+/, '')}`) : null;
+          const resolvedPath = path ? AssetManager.constructStorageUrl(path) : null;
           return {
             ...s,
             workshopImagePath: resolvedPath

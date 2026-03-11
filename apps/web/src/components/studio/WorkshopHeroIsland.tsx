@@ -75,9 +75,8 @@ export const WorkshopHeroIsland: React.FC<WorkshopHeroIslandProps> = ({ workshop
       } catch (e) {
         console.error("[WorkshopHeroIsland] Failed to resolve video:", e);
         if (videoPath) {
-          const cleanPath = videoPath.replace(/^\/+/, '');
-          const storageBase = "https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices";
-          setResolvedVideoUrl(`${storageBase}/${cleanPath}`);
+          const { AssetManager } = await import('@/lib/system/core/asset-manager');
+          setResolvedVideoUrl(AssetManager.constructStorageUrl(videoPath));
         }
       }
     };
@@ -136,9 +135,8 @@ export const WorkshopHeroIsland: React.FC<WorkshopHeroIslandProps> = ({ workshop
     } catch (e) {
       console.error("[WorkshopHeroIsland] Failed to resolve participant image:", e);
       if (workshop.featured_image?.file_path) {
-        const cleanPath = workshop.featured_image.file_path.replace(/^\/+/, '');
-        const storageBase = "https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices";
-        imageUrl = `${storageBase}/${cleanPath}`;
+        const { AssetManager } = await import('@/lib/system/core/asset-manager');
+        imageUrl = AssetManager.constructStorageUrl(workshop.featured_image.file_path);
       }
     }
     const locationPayload = buildWorkshopLocationPayload(nextEdition?.location || null);

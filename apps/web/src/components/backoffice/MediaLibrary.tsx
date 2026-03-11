@@ -353,6 +353,7 @@ export const MediaLibrary: React.FC = () => {
     if (!normalizedPath) return '';
     if (normalizedPath.startsWith('http://') || normalizedPath.startsWith('https://')) return normalizedPath;
 
+    const { AssetManager } = require('@/lib/system/core/asset-manager');
     let storagePath = normalizedPath;
     if (storagePath.startsWith('images/workshops/')) {
       storagePath = storagePath.replace('images/workshops/', 'assets/studio/workshops/images/');
@@ -368,7 +369,7 @@ export const MediaLibrary: React.FC = () => {
       .map((segment) => encodeURIComponent(segment))
       .join('/');
 
-    return `${SUPABASE_PUBLIC_STORAGE_BASE}/${encodedPath}`;
+    return `${AssetManager.STORAGE_BASE_URL}/${encodedPath}`;
   };
 
   const formatFileSize = (fileSize?: number | null) => {

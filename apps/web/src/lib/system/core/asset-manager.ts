@@ -14,7 +14,13 @@ export class AssetManager {
   );
 
   /**
-   * 🛡️ CHRIS-PROTOCOL: Resolve Media URL (v3.0.0)
+   * 🛡️ CHRIS-PROTOCOL: Storage Base URL (v3.2.0)
+   * De enige plek waar de fysieke locatie van onze assets is gedefinieerd.
+   */
+  public static readonly STORAGE_BASE_URL = "https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices";
+
+  /**
+   * 🛡️ CHRIS-PROTOCOL: Resolve Media URL (v3.2.0)
    * Zet een media_id of ruwe URL om naar een veilige proxy-URL.
    */
   public static async resolveMediaUrl(params: {
@@ -40,12 +46,35 @@ export class AssetManager {
 
     // 3. Legacy Fallback: Als we alleen een URL hebben, gebruiken we de path-gebaseerde proxy
     if (fallbackUrl) {
+      // Als het al een volledige URL is, check of het onze eigen storage is
+      if (fallbackUrl.startsWith('http')) {
+        if (fallbackUrl.includes(this.STORAGE_BASE_URL)) {
+          // Re-wrap in proxy voor stabiliteit en optimalisatie
+          const pathOnly = fallbackUrl.replace(`${this.STORAGE_BASE_URL}/`, '');
+          const proxyUrl = new URL('/api/proxy', baseUrl || 'https://www.voices.be');
+          proxyUrl.searchParams.set('path', pathOnly);
+          return proxyUrl.toString();
+        }
+        return fallbackUrl;
+      }
+
       const proxyUrl = new URL('/api/proxy', baseUrl || 'https://www.voices.be');
       proxyUrl.searchParams.set('path', fallbackUrl);
       return proxyUrl.toString();
     }
 
     return '';
+  }
+
+  /**
+   * 🛡️ CHRIS-PROTOCOL: Construct Direct Storage URL (v3.2.0)
+   * Gebruik dit alleen voor server-side meta-tags of fallbacks.
+   */
+  public static constructStorageUrl(path: string): string {
+    if (!path) return '';
+    if (path.startsWith('http')) return path;
+    const cleanPath = path.replace(/^\/+/, '');
+    return `${this.STORAGE_BASE_URL}/${cleanPath}`;
   }
 
   /**
