@@ -116,19 +116,29 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
   const [duration, setDuration] = useState(0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
+  const [audioError, setAudioError] = useState<string | null>(null);
+
   useEffect(() => {
     if (audioRef.current && (demo.audio_url || demo.id)) {
       const audio = audioRef.current;
-      const audioUrl = demo.audio_url || `/api/admin/actors/demos/${demo.id}/stream`;
-      
+      setAudioError(null);
       setProgress(0);
+      
       const playAudio = () => {
         // Force reload source to ensure fresh stream
         audio.load();
         audio.play()
-          .then(() => setIsPlaying(true))
+          .then(() => {
+            setIsPlaying(true);
+            setAudioError(null);
+          })
           .catch((err) => {
-            console.error("Autoplay failed:", err);
+            // 🛡️ CHRIS-PROTOCOL: Silent handle for NotSupportedError during autoplay
+            // This happens when the browser hasn't registered a user interaction yet.
+            if (err.name !== 'NotSupportedError') {
+              console.error("Autoplay failed:", err);
+              setAudioError(err.message);
+            }
             setIsPlaying(false);
           });
       };
@@ -158,9 +168,13 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
         audioRef.current.pause();
         setIsPlaying(false);
       } else {
+        setAudioError(null);
         audioRef.current.play()
           .then(() => setIsPlaying(true))
-          .catch(err => console.error("Playback failed:", err));
+          .catch(err => {
+            console.error("Playback failed:", err);
+            setAudioError(err.message);
+          });
       }
     }
   };
@@ -183,11 +197,27 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
   };
 
   const handleError = (e: any) => {
+    const error = e.target.error;
+    let message = "Audio error";
+    
+    // 🛡️ CHRIS-PROTOCOL: Forensic Error Mapping (v2.28.84)
+    if (error) {
+      switch (error.code) {
+        case 1: message = "Aborted"; break;
+        case 2: message = "Network error"; break;
+        case 3: message = "Decoding error"; break;
+        case 4: message = "Source not supported"; break;
+      }
+    }
+
     console.error(" MediaMaster: Audio error", {
-      url: demo.audio_url,
-      error: e.target.error,
-      code: e.target.error?.code
+      url: demo.audio_url || `/api/admin/actors/demos/${demo.id}/stream`,
+      error: error,
+      code: error?.code,
+      message: message
     });
+
+    setAudioError(message);
     setIsPlaying(false);
   };
 
@@ -290,17 +320,23 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
 
         <audio 
           ref={audioRef} 
-          src={demo.audio_url || (demo.id ? `/api/admin/actors/demos/${demo.id}/stream` : undefined)}
           onTimeUpdate={handleTimeUpdate} 
           onLoadedMetadata={handleLoadedMetadata}
           onEnded={() => setIsPlaying(false)}
           onError={handleError}
           preload="auto"
-        />
+          crossOrigin="anonymous"
+        >
+          {demo.audio_url && <source src={demo.audio_url} type="audio/mpeg" />}
+          {demo.id && <source src={`/api/admin/actors/demos/${demo.id}/stream`} type="audio/mpeg" />}
+        </audio>
         
         {/*  ACTOR PHOTO */}
         <div className="relative w-14 h-14 rounded-full shrink-0 border-2 border-white/10 shadow-lg z-10 ml-1">
-          <div className="w-full h-full rounded-full overflow-hidden relative">
+          <div className={cn(
+            "w-full h-full rounded-full overflow-hidden relative transition-opacity duration-500",
+            audioError ? "opacity-20" : "opacity-100"
+          )}>
             {demo.actor_photo ? (
               <VoiceglotImage  
                 src={demo.actor_photo} 
@@ -314,6 +350,22 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
               </div>
             )}
           </div>
+          
+          {/*  ERROR INDICATOR */}
+          <AnimatePresence>
+            {audioError && (
+              <motion.div 
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0, opacity: 0 }}
+                className="absolute inset-0 flex items-center justify-center z-30"
+              >
+                <div className="bg-red-500 rounded-full p-2 shadow-lg animate-pulse">
+                  <X size={20} className="text-white" />
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
           
           {/*  COUNTRY FLAG BADGE */}
           {demo.actor_lang && (
