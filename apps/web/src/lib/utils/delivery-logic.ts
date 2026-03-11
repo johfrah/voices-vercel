@@ -347,8 +347,9 @@ export function calculateDeliveryDate(
   };
 
   //  CHRIS-PROTOCOL: Forceer gebruik van delivery_days_max voor de belofte (v2.28.52)
-  let daysMin = actor.delivery_days_max;
-  let daysMax = actor.delivery_days_max;
+  //  MANDAAT: Minimum dagen maken voor de klant niet uit, alleen de max telt.
+  let daysMax = actor.delivery_days_max || 1;
+  let daysMin = daysMax;
 
   if (config.type === 'sameday') {
     daysMin = 0;
@@ -390,7 +391,8 @@ export function calculateDeliveryDate(
     dateMin.setHours(9, 0, 0, 0); 
   }
 
-  const dateMax = daysMax > daysMin ? calculateDate(daysMax) : null;
+  //  MANDAAT: Geen ranges tonen aan de klant. Alleen de uiterste datum telt.
+  const dateMax = null;
 
   // 3. Formatteren
   let formatted = formatDutchLong(dateMin);
@@ -399,16 +401,13 @@ export function calculateDeliveryDate(
   if (formatDateISO(dateMin) === formatDateISO(today)) {
     formatted = "vandaag";
   }
-  if (dateMax) {
-    formatted = `tussen ${formatDutchLong(dateMin)} en ${formatDutchLong(dateMax)}`;
-  }
 
   return {
     dateMin,
     dateMax,
     formatted,
     formattedShort: formatShortDate(dateMin),
-    isRange: !!dateMax,
+    isRange: false,
     delivery_days_min: daysMin,
     delivery_days_max: daysMax
   };
