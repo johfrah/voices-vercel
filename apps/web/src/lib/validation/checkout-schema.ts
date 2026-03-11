@@ -50,11 +50,11 @@ const CheckoutItemSchema = z.object({
     trackId: z.string().nullable().optional(),
     asBackground: z.boolean().optional(),
     asHoldMusic: z.boolean().optional(),
-  }).optional(),
+  }).nullable().optional(),
   ownMusicFile: z.object({
     name: z.string(),
     url: z.string(),
-  }).optional(),
+  }).nullable().optional(),
   participant_info: z.unknown().optional(),
   pricing: z.object({
     total: z.coerce.number(),
