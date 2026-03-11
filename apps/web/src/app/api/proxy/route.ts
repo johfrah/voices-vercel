@@ -27,6 +27,7 @@ export async function GET(request: NextRequest) {
 
   // 🛡️ CHRIS-PROTOCOL: ID-First Handshake (v3.0.0)
   // Als we een media_id hebben, halen we het pad en de content-type direct uit de database.
+  let isIdFirst = false;
   if (mediaId) {
     try {
       const { AssetManager } = await import('@/lib/system/core/asset-manager');
@@ -34,6 +35,7 @@ export async function GET(request: NextRequest) {
       if (metadata) {
         effectivePath = metadata.filePath;
         effectiveContentType = metadata.fileType;
+        isIdFirst = true;
         console.log(`[Proxy Handshake] Resolved media_id ${mediaId} to: ${effectivePath} (${effectiveContentType})`);
       }
     } catch (e) {
@@ -156,30 +158,35 @@ export async function GET(request: NextRequest) {
       cleanPath = cleanPath.replace(regex, '');
     });
 
-    //  ALLOWED PATHS: /assets/, /wp-content/, or Supabase agency/ and active/ paths
-    const isAllowed = 
-      cleanPath.startsWith('/assets/') || 
-      cleanPath.startsWith('/wp-content/') || 
-      cleanPath.startsWith('/api/') ||
-      cleanPath.startsWith('api/') ||
-      cleanPath.startsWith('agency/') || 
-      cleanPath.startsWith('active/') ||
-      cleanPath.startsWith('common/') || 
-      cleanPath.startsWith('studio/') || 
-      cleanPath.startsWith('visuals/') ||
-      cleanPath.startsWith('reviews/') ||
-      cleanPath.startsWith('portfolio/') ||
-      cleanPath.startsWith('artists/') ||
-      cleanPath.startsWith('ademing/') ||
-      cleanPath.includes('supabase.co/storage/v1/object/public/voices/') ||
-      cleanPath.includes('googleusercontent.com') ||
-      cleanPath.endsWith('.mp3') ||
-      cleanPath.endsWith('.wav') ||
-      // 🛡️ CHRIS-PROTOCOL: Allow legacy vertical photo paths (v2.28.92)
-      cleanPath.includes('-photo-vertical-');
+    // 🛡️ CHRIS-PROTOCOL: ID-First Trust Mandate (v3.1.0)
+    // Als de asset via een media_id komt, vertrouwen we de database en omzeilen we de whitelist.
+    // Dit herstelt de pure handshake zonder handmatige onderhoudslast.
+    if (!isIdFirst) {
+      //  ALLOWED PATHS: /assets/, /wp-content/, or Supabase agency/ and active/ paths
+      const isAllowed = 
+        cleanPath.startsWith('/assets/') || 
+        cleanPath.startsWith('/wp-content/') || 
+        cleanPath.startsWith('/api/') ||
+        cleanPath.startsWith('api/') ||
+        cleanPath.startsWith('agency/') || 
+        cleanPath.startsWith('active/') ||
+        cleanPath.startsWith('common/') || 
+        cleanPath.startsWith('studio/') || 
+        cleanPath.startsWith('visuals/') ||
+        cleanPath.startsWith('reviews/') ||
+        cleanPath.startsWith('portfolio/') ||
+        cleanPath.startsWith('artists/') ||
+        cleanPath.startsWith('ademing/') ||
+        cleanPath.includes('supabase.co/storage/v1/object/public/voices/') ||
+        cleanPath.includes('googleusercontent.com') ||
+        cleanPath.endsWith('.mp3') ||
+        cleanPath.endsWith('.wav') ||
+        // 🛡️ CHRIS-PROTOCOL: Allow legacy vertical photo paths (v2.28.92)
+        cleanPath.includes('-photo-vertical-');
 
-    if (!isAllowed) {
-      throw new Error('Forbidden asset path: ' + cleanPath);
+      if (!isAllowed) {
+        throw new Error('Forbidden asset path: ' + cleanPath);
+      }
     }
 
     // De backend URL (Combell PHP server of Supabase Storage)
