@@ -20,7 +20,7 @@ const supabase = createClient(supabaseUrl, supabaseKey);
  *  API: ADMIN CONFIG (2026)
  * 
  * Beheer van globale systeeminstellingen, bedrijfsinformatie en vakantieregelingen.
- * Nu ook als bridge voor client-side data fetching van server-only resources.
+ * Nu ook als bridge for client-side data fetching van server-only resources.
  * actor/actors/music = publiek (agency). appConfigs = admin only.
  */
 
@@ -183,13 +183,13 @@ export async function GET(request: NextRequest) {
         const config = await dbWithTimeout(db.select().from(appConfigs).where(eq(appConfigs.key, 'general_settings')).limit(1)) as any[];
         return NextResponse.json({
           general_settings: config[0]?.value || {},
-          _version: '2.28.96'
+          _version: '2.28.98'
         });
       } catch (err: any) {
         console.warn(`[Admin Config] General settings fetch failed, returning empty: ${err.message}`);
         return NextResponse.json({
           general_settings: {},
-          _version: '2.28.96'
+          _version: '2.28.98'
         });
       }
     }
@@ -281,7 +281,7 @@ export async function POST(request: NextRequest) {
         }
       });
 
-    return NextResponse.json({ success: true, _version: '2.28.96' });
+    return NextResponse.json({ success: true, _version: '2.28.98' });
   } catch (error) {
     console.error('[Admin Config POST Error]:', error);
     return NextResponse.json({ error: 'Failed to update config' }, { status: 500 });

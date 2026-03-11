@@ -18,7 +18,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, Check, ChevronDown, Clock, Edit3, Globe, MapPin, Mic, Pause, Play, Plus, Search as SearchIcon, Settings, ShieldCheck, Zap, X, Star } from 'lucide-react';
 import { useVoicesRouter } from '@/components/ui/VoicesLinkInstrument';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { ButtonInstrument, ContainerInstrument, DeliveryBadgeInstrument, FlagAR, FlagBE, FlagBR, FlagCN, FlagDE, FlagDK, FlagES, FlagFI, FlagFR, FlagGR, FlagIT, FlagJP, FlagKR, FlagNL, FlagNO, FlagPL, FlagPT, FlagRU, FlagSE, FlagTR, FlagUK, FlagUS, HeadingInstrument, TextInstrument } from './LayoutInstruments';
+import toast from 'react-hot-toast';
+import { ButtonInstrument, ContainerInstrument, FlagAR, FlagBE, FlagBR, FlagCN, FlagDE, FlagDK, FlagES, FlagFI, FlagFR, FlagGR, FlagIT, FlagJP, FlagKR, FlagNL, FlagNO, FlagPL, FlagPT, FlagRU, FlagSE, FlagTR, FlagUK, FlagUS, HeadingInstrument, TextInstrument } from './LayoutInstruments';
 import { VoiceglotImage } from './VoiceglotImage';
 import { VoiceglotText } from './VoiceglotText';
 
@@ -119,6 +120,7 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
   }, [voice.id]);
 
   const [mounted, setMounted] = useState(false);
+  const [isToggling, setIsToggling] = useState(false); // 🛡️ CHRIS-PROTOCOL: 100ms feedback state
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -137,13 +139,42 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
   const handleStudioToggle = (e: React.MouseEvent) => {
     if (!voice) return;
     e.stopPropagation();
+    
+    // 🛡️ CHRIS-PROTOCOL: 100ms Feedback Mandate (v2.28.92)
+    setIsToggling(true);
+    setTimeout(() => setIsToggling(false), 300);
+    
     playClick(isSelected ? 'soft' : 'pro');
     toggleActorSelection(voice);
+    
+    // 🎭 UX: Toast notification for actor selection
+    if (!isSelected) {
+      toast.success(
+        `${voice.display_name || voice.first_name} toegevoegd aan selectie`,
+        {
+          duration: 2000,
+          position: 'bottom-center',
+          style: {
+            background: '#000',
+            color: '#fff',
+            borderRadius: '16px',
+            padding: '12px 20px',
+            fontSize: '14px',
+            fontWeight: '500',
+          },
+          icon: '✓',
+        }
+      );
+    }
   };
 
   const handleMainAction = (e: React.MouseEvent) => {
     if (!voice) return;
     e.stopPropagation();
+    
+    // 🛡️ CHRIS-PROTOCOL: 100ms Feedback Mandate (v2.28.92)
+    setIsToggling(true);
+    setTimeout(() => setIsToggling(false), 300);
     
     if (onSelect) {
       playClick(isSelected ? 'soft' : 'pro');
@@ -151,6 +182,26 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
     } else {
       playClick(isSelected ? 'soft' : 'pro');
       toggleActorSelection(voice);
+      
+      // 🎭 UX: Toast notification for actor selection
+      if (!isSelected) {
+        toast.success(
+          `${voice.display_name || voice.first_name} toegevoegd aan selectie`,
+          {
+            duration: 2000,
+            position: 'bottom-center',
+            style: {
+              background: '#000',
+              color: '#fff',
+              borderRadius: '16px',
+              padding: '12px 20px',
+              fontSize: '14px',
+              fontWeight: '500',
+            },
+            icon: '✓',
+          }
+        );
+      }
     }
   };
 
@@ -463,27 +514,11 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
       const date = new Date(deliveryDateMin);
       const today = new Date();
       today.setHours(0, 0, 0, 0);
-      const tomorrow = new Date(today);
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      
       const isToday = date.getTime() === today.getTime();
-      const isTomorrow = date.getTime() === tomorrow.getTime();
-      
       const d = String(date.getDate()).padStart(2, '0');
       const m = String(date.getMonth() + 1).padStart(2, '0');
       const y = date.getFullYear();
-      
-      let formattedShort = `${d}/${m}/${y}`;
-      if (isToday) formattedShort = "VANDAAG";
-      else if (isTomorrow) formattedShort = "MORGEN";
-
-      return { 
-        delivery_days_min: voice.delivery_days_min || 1, 
-        delivery_days_max: voice.delivery_days_max || 1, 
-        formattedShort, 
-        isToday,
-        isTomorrow
-      };
+      return { delivery_days_min: voice.delivery_days_min || 1, delivery_days_max: voice.delivery_days_max || 1, formattedShort: isToday ? "VANDAAG" : `${d}/${m}/${y}`, isToday };
     }
     return calculateDeliveryDate({ delivery_days_min: voice.delivery_days_min || 1, delivery_days_max: voice.delivery_days_max || 1, cutoff_time: voice.cutoff_time || '18:00', availability: voice.availability, holidayFrom: (voice as any).holiday_from, holidayTill: (voice as any).holiday_till, delivery_config: (voice as any).delivery_config });
   }, [voice]);
@@ -723,9 +758,17 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
               variant="pure"
               size="none"
               onClick={handleStudioToggle} 
-              className={cn("h-8 md:h-10 !rounded-full backdrop-blur-md flex items-center transition-all duration-500 shadow-lg border border-white/10 group/studio overflow-hidden", isSelected ? "bg-primary text-white border-primary px-2 md:px-3 gap-1 md:gap-2" : "bg-va-black/40 hover:bg-va-black/60 text-white px-2 md:px-3 gap-0 group-hover:gap-1 md:group-hover:gap-2 backdrop-blur-md")}
+              className={cn(
+                "h-8 md:h-10 !rounded-full backdrop-blur-md flex items-center shadow-lg border border-white/10 group/studio overflow-hidden",
+                // 🛡️ CHRIS-PROTOCOL: va-bezier 100ms feedback animation
+                "transition-all duration-100 ease-out",
+                isToggling && "scale-90 opacity-80",
+                isSelected 
+                  ? "bg-primary text-white border-primary px-2 md:px-3 gap-1 md:gap-2 animate-in zoom-in-95 duration-200" 
+                  : "bg-va-black/40 hover:bg-va-black/60 text-white px-2 md:px-3 gap-0 group-hover:gap-1 md:group-hover:gap-2 backdrop-blur-md active:scale-95"
+              )}
             >
-              {isSelected ? <Check size={14} className="md:w-4.5 md:h-4.5" strokeWidth={3} /> : <><Plus size={14} className="md:w-4.5 md:h-4.5 shrink-0 transition-transform group-hover/studio:rotate-90 duration-500" /><span className="max-w-0 group-hover:max-w-[180px] opacity-0 group-hover:opacity-100 transition-all duration-500 text-[8px] md:text-[10px] font-black tracking-widest uppercase whitespace-nowrap"><VoiceglotText translationKey="common.free_demo_cta" defaultText="Gratis proefopname" /></span></>}
+              {isSelected ? <Check size={14} className="md:w-4.5 md:h-4.5 animate-in zoom-in duration-150" strokeWidth={3} /> : <><Plus size={14} className="md:w-4.5 md:h-4.5 shrink-0 transition-transform group-hover/studio:rotate-90 duration-500" /><span className="max-w-0 group-hover:max-w-[180px] opacity-0 group-hover:opacity-100 transition-all duration-500 text-[8px] md:text-[10px] font-black tracking-widest uppercase whitespace-nowrap"><VoiceglotText translationKey="common.free_demo_cta" defaultText="Gratis proefopname" /></span></>}
             </ButtonInstrument>
           </div>
         )}
@@ -818,7 +861,10 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
           </div>
 
           {!compact && (
-            <DeliveryBadgeInstrument actor={voice} size="sm" />
+            <div className={cn("flex flex-col items-end justify-center px-2 md:px-2.5 py-0.5 md:py-1 rounded-lg md:rounded-xl border transition-colors duration-500", (deliveryInfo as any).isToday || deliveryInfo.delivery_days_max <= 1 ? "bg-green-500/5 border-green-500/10 text-green-600" : "bg-blue-500/5 border-blue-500/10 text-blue-600")}>
+              <span className="text-[7px] md:text-[8px] font-black tracking-[0.1em] uppercase leading-none mb-0.5 md:mb-1 flex items-center gap-1 opacity-40"><Clock size={8} className="md:w-2.5 md:h-2.5" strokeWidth={3} /><VoiceglotText translationKey="common.delivery" defaultText="Levering" /></span>
+              <span className="text-[10px] md:text-[12px] font-bold tracking-tight leading-none"><VoiceglotText translationKey={`actor.${voice.id}.delivery_info`} defaultText={deliveryInfo.formattedShort} /></span>
+            </div>
           )}
         </div>
 
@@ -916,7 +962,21 @@ export const VoiceCard: React.FC<VoiceCardProps> = ({ voice: initialVoice, onSel
             </div>
 
             {!hideButton && (
-              <ButtonInstrument onClick={handleMainAction} variant={isSelected ? "default" : "outline"} size="sm" className={cn("rounded-lg md:rounded-xl min-h-11 md:min-h-12 font-light tracking-[0.1em] uppercase text-[10px] md:text-[12px] transition-all duration-500 touch-manipulation", isSelected ? "bg-primary text-white border-primary shadow-lg shadow-primary/20 scale-105 px-2 md:px-4 py-2 md:py-4" : "px-3 md:px-5 py-2 md:py-4 hover:bg-va-black hover:text-white hover:border-va-black", ((voice as any).allow_free_trial === false || masterControlState.journey === 'telephony') && !onSelect && "opacity-0 pointer-events-none")}>
+              <ButtonInstrument 
+                onClick={handleMainAction} 
+                variant={isSelected ? "default" : "outline"} 
+                size="sm" 
+                className={cn(
+                  "rounded-lg md:rounded-xl min-h-11 md:min-h-12 font-light tracking-[0.1em] uppercase text-[10px] md:text-[12px] touch-manipulation",
+                  // 🛡️ CHRIS-PROTOCOL: va-bezier 100ms feedback
+                  "transition-all duration-100 ease-out active:scale-95",
+                  isToggling && "scale-95 opacity-80",
+                  isSelected 
+                    ? "bg-primary text-white border-primary shadow-lg shadow-primary/20 scale-105 px-2 md:px-4 py-2 md:py-4" 
+                    : "px-3 md:px-5 py-2 md:py-4 hover:bg-va-black hover:text-white hover:border-va-black", 
+                  ((voice as any).allow_free_trial === false || masterControlState.journey === 'telephony') && !onSelect && "opacity-0 pointer-events-none"
+                )}
+              >
                 {isSelected ? <Check size={14} strokeWidth={3} className="md:w-4.5 md:h-4.5 animate-in zoom-in duration-300" /> : <div className="flex flex-col items-center leading-none gap-0.5 md:gap-1"><VoiceglotText translationKey={onSelect ? "common.choose_voice" : "common.add_to_casting"} defaultText={onSelect ? "Kies stem" : "Proefopname +"} />{!onSelect && <span className="text-[7px] md:text-[8px] font-black tracking-[0.2em] opacity-50"><VoiceglotText translationKey="common.free" defaultText="GRATIS" /></span>}</div>}
               </ButtonInstrument>
             )}

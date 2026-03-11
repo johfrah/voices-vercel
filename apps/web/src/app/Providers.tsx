@@ -13,8 +13,8 @@ import { WorldProvider } from '@/contexts/WorldContext';
 import { ClientLogger } from '@/lib/system/client-logger';
 import React, { ReactNode } from 'react';
 
-import { PwaBoot } from '@/components/system/PwaBoot';
 import { VersionGuard } from '@/components/system/VersionGuard';
+import { PwaBoot } from '@/components/system/PwaBoot';
 import { MarketConfig, MarketManager } from '@/lib/system/core/market-manager';
 import { Toaster } from 'react-hot-toast';
 
@@ -71,7 +71,7 @@ export function Providers({
 
   // 🛡️ CHRIS-PROTOCOL: Version Sync Mandate (v2.27.8)
   // Major Refactor: ID-First Handshake Architecture
-  const currentVersion = '2.28.96';
+  const currentVersion = '2.28.98';
 
   // 🛡️ CHRIS-PROTOCOL: Language is now strictly passed from Server (Source of Truth)
   // to prevent Hydration Mismatch errors (#419, #425).

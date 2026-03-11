@@ -81,7 +81,14 @@ export function VoiceDetailClient({
       const params = new URLSearchParams(window.location.search);
       const token = params.get('t');
       
-      if (token) {
+      // 🛡️ CHRIS-PROTOCOL: Token Validation Guard (v2.28.94)
+      // We checken of het token een geldige Base64-achtige structuur heeft en lang genoeg is.
+      // Dit voorkomt dat timestamps of andere korte parameters als token worden gezien.
+      const isValidTokenFormat = (t: string) => {
+        return t.length > 32 && /^[a-zA-Z0-9_-]+$/.test(t);
+      };
+      
+      if (token && isValidTokenFormat(token)) {
         try {
           const res = await fetch(`/api/config/token?t=${token}`);
           if (res.ok) {
