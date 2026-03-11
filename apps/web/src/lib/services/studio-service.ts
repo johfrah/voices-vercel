@@ -1,20 +1,17 @@
 import { db } from '@/lib/system/voices-config';
 import { sql } from 'drizzle-orm';
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://vcbxyyjsxuquytcsskpj.supabase.co';
-const STORAGE_BASE = `${SUPABASE_URL.replace(/\/$/, '')}/storage/v1/object/public/voices`;
+function toPublicStorageUrl(filePath?: string | null): string | null {
+  if (!filePath) return null;
+  if (/^https?:\/\//i.test(filePath)) return filePath;
+  const { AssetManager } = require('@/lib/system/core/asset-manager');
+  return AssetManager.constructStorageUrl(filePath);
+}
 
 /** Media ID voor Studio hero video (workshop-beginners-aftermovie). Override via env STUDIO_HERO_VIDEO_MEDIA_ID. */
 const STUDIO_HERO_VIDEO_MEDIA_ID = process.env.STUDIO_HERO_VIDEO_MEDIA_ID
   ? parseInt(process.env.STUDIO_HERO_VIDEO_MEDIA_ID, 10)
   : null;
-
-function toPublicStorageUrl(filePath?: string | null): string | null {
-  if (!filePath) return null;
-  if (/^https?:\/\//i.test(filePath)) return filePath;
-  const cleanPath = filePath.replace(/^\/+/, '');
-  return `${STORAGE_BASE}/${cleanPath}`;
-}
 
 function languageLabelFromCode(code?: string | null): string {
   const normalized = (code || '').toLowerCase();

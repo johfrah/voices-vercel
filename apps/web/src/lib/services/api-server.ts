@@ -453,10 +453,6 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
     });
     
     const mappedResults = dbResults.map((actor) => {
-      const { AssetManager } = require('@/lib/system/core/market-manager'); // This might be wrong, should be asset-manager
-      // Wait, I should use the correct import.
-      // Re-reading the file, I see MarketManager is imported from core/market-manager.
-      // I'll use the correct path for AssetManager.
       const { AssetManager: AssetManagerInstance } = require('@/lib/system/core/asset-manager');
       
       let photoUrl = '';
@@ -773,7 +769,8 @@ async function processActorData(actor: any, slug: string): Promise<Actor> {
     console.warn(` [api-server] processActorData: Drizzle relations failed, using empty arrays:`, err.message);
   }
 
-  const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://vcbxyyjsxuquytcsskpj.supabase.co';
+  const { AssetManager } = require('@/lib/system/core/asset-manager');
+  const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || AssetManager.STORAGE_BASE_URL.replace('/storage/v1/object/public/voices', '');
   const SUPABASE_STORAGE_URL = `${SUPABASE_URL.replace(/\/$/, '')}/storage/v1/object/public/voices`;
 
   // Prioritize dropboxUrl for photo

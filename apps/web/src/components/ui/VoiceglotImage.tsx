@@ -149,8 +149,21 @@ export const VoiceglotImage: React.FC<VoiceglotImageProps> = ({
   const isFill = !!props.fill;
   const fillValue = props.fill === true ? true : undefined;
   const isProxied = currentSrc?.includes('/api/proxy');
-  const isLocal = currentSrc?.startsWith('/') && !isProxied && !currentSrc?.startsWith('https://vcbxyyjsxuquytcsskpj.supabase.co');
-  const isSupabase = currentSrc?.startsWith('https://vcbxyyjsxuquytcsskpj.supabase.co') || currentSrc?.includes('supabase.co');
+  
+  // 🛡️ CHRIS-PROTOCOL: ID-First Handshake (v3.2.0)
+  const [isLocal, setIsLocal] = useState(false);
+  const [isSupabase, setIsSupabase] = useState(false);
+
+  useEffect(() => {
+    const checkSource = async () => {
+      const { AssetManager } = await import('@/lib/system/core/asset-manager');
+      const storageBase = AssetManager.STORAGE_BASE_URL;
+      setIsLocal(currentSrc?.startsWith('/') && !isProxied && !currentSrc?.startsWith(storageBase));
+      setIsSupabase(currentSrc?.startsWith(storageBase) || currentSrc?.includes('supabase.co'));
+    };
+    checkSource();
+  }, [currentSrc, isProxied]);
+
   const isGoogle = currentSrc?.includes('googleusercontent.com');
   const isDropbox = currentSrc?.includes('dropbox.com');
 

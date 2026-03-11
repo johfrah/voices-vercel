@@ -1,5 +1,6 @@
 "use client";
 
+import React, { useState, useEffect } from "react";
 import { ContainerInstrument, HeadingInstrument, SectionInstrument, TextInstrument, ButtonInstrument } from "@/components/ui/LayoutInstruments";
 import { VideoPlayer } from "@/components/ui/VideoPlayerInstrument";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
@@ -23,7 +24,19 @@ interface WorkshopHeroIslandProps {
 export const WorkshopHeroIsland: React.FC<WorkshopHeroIslandProps> = ({ workshop }) => {
   const { playClick } = useSonicDNA();
   const router = useVoicesRouter();
+  const [resolvedVideoUrl, setResolvedVideoUrl] = React.useState<string>('');
   const videoPath = workshop.featured_image?.file_path;
+
+  React.useEffect(() => {
+    const resolveVideo = async () => {
+      if (videoPath) {
+        const { AssetManager } = await import('@/lib/system/core/asset-manager');
+        setResolvedVideoUrl(AssetManager.constructStorageUrl(videoPath));
+      }
+    };
+    resolveVideo();
+  }, [videoPath]);
+
   const nextEdition = workshop.upcoming_editions?.[0];
   const price = nextEdition?.price || workshop.price || "0";
 
@@ -53,7 +66,7 @@ export const WorkshopHeroIsland: React.FC<WorkshopHeroIslandProps> = ({ workshop
           <ContainerInstrument className="lg:col-span-7 relative group">
             <ContainerInstrument plain className="absolute -inset-4 bg-primary/10 rounded-[30px] blur-2xl opacity-0 group-hover:opacity-100 transition-all duration-1000" />
             <VideoPlayer 
-              src={`https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices/${videoPath}`}
+              src={resolvedVideoUrl}
               className="w-full aspect-video rounded-[24px] shadow-2xl border border-white/10 relative z-10"
               autoPlay={false}
             />

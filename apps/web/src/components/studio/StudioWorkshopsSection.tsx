@@ -10,12 +10,11 @@ import { ChevronDown, ArrowRight, Calendar, MapPin, User, ChevronRight } from "l
 import Link from "next/link";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
 
-const STORAGE_BASE = 'https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices';
-
 function toPublicMediaUrl(path?: string | null): string | null {
   if (!path) return null;
   if (path.startsWith('http')) return path;
-  return `${STORAGE_BASE}/${path.replace(/^\/+/, '')}`;
+  const { AssetManager } = require('@/lib/system/core/asset-manager');
+  return AssetManager.constructStorageUrl(path);
 }
 
 function resolveSeats(edition: {

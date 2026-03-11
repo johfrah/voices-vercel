@@ -90,11 +90,12 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   if (entry?.routing_type === 'workshop') {
     const workshop = await getWorkshopByEntityId(entry.entity_id);
     if (workshop) {
+      const { AssetManager } = await import('@/lib/system/core/asset-manager');
       return {
         title: `${workshop.title} | Voices Studio`,
         description: workshop.expert_note || workshop.description,
         openGraph: {
-          images: workshop.featured_image ? [`https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices/${workshop.featured_image.file_path}`] : []
+          images: workshop.featured_image ? [AssetManager.constructStorageUrl(workshop.featured_image.file_path)] : []
         }
       };
     }
@@ -187,6 +188,18 @@ export default async function StudioSlugPage({ params }: { params: { slug: strin
 // RENDER FUNCTIONS
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
+async function AftermovieVideo({ videoPath }: { videoPath: string }) {
+  const { AssetManager } = await import('@/lib/system/core/asset-manager');
+  return (
+    <VideoPlayerDynamic
+      src={AssetManager.constructStorageUrl(videoPath)}
+      className="w-full h-full object-cover"
+      autoPlay={false}
+      muted={true}
+    />
+  );
+}
+
 function renderWorkshopDetail(workshop: WorkshopApiResponse['workshops'][number]) {
   const hasUpcomingEdition = Array.isArray(workshop.upcoming_editions) && workshop.upcoming_editions.length > 0;
 
@@ -238,12 +251,7 @@ function renderWorkshopDetail(workshop: WorkshopApiResponse['workshops'][number]
               <ContainerInstrument plain className="lg:col-span-5 flex justify-center">
                 <ContainerInstrument plain className="w-full max-w-[320px] aspect-[9/16] rounded-[24px] overflow-hidden shadow-2xl">
                   <Suspense fallback={<ContainerInstrument className="w-full h-full bg-va-black animate-pulse" />}>
-                    <VideoPlayerDynamic
-                      src={`https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices/${workshop.aftermovie_video.file_path}`}
-                      className="w-full h-full object-cover"
-                      autoPlay={false}
-                      muted={true}
-                    />
+                    <AftermovieVideo videoPath={workshop.aftermovie_video.file_path} />
                   </Suspense>
                 </ContainerInstrument>
               </ContainerInstrument>

@@ -1,5 +1,3 @@
-const SUPABASE_VOICES_PUBLIC_BASE = 'https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices/';
-
 const toCleanString = (value: unknown): string | null => {
   if (typeof value !== 'string') return null;
   const trimmed = value.trim();
@@ -29,7 +27,8 @@ export const normalizeWorkshopImageUrl = (rawSource: unknown): string | null => 
     return source;
   }
 
-  return `${SUPABASE_VOICES_PUBLIC_BASE}${source.replace(/^\/+/, '')}`;
+  const { AssetManager } = require('@/lib/system/core/asset-manager');
+  return AssetManager.constructStorageUrl(source);
 };
 
 export const resolveWorkshopImageFromItem = (

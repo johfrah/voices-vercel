@@ -17,8 +17,7 @@ import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import React, { useEffect, useRef, useState } from 'react';
 
-const VIDEO_TEASER_SRC = 'https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices/studio/workshops/videos/workshop_studio_teaser.mp4';
-const VIDEO_POSTER = 'https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices/assets/visuals/branding/branding-branding-photo-horizontal-1.webp';
+// VIDEO_TEASER_SRC and VIDEO_POSTER removed in favor of AssetManager resolution
 
 const SuccessVideoPlayer = dynamic(
   () => import('@/components/ui/VideoPlayer').then(mod => mod.VideoPlayer),
@@ -38,6 +37,19 @@ export const WorkshopInterestForm: React.FC<WorkshopInterestFormProps> = ({
   preselectedWorkshopId = null,
   hideWorkshopSelection = false
 }) => {
+  // 🛡️ CHRIS-PROTOCOL: ID-First Handshake (v3.2.0)
+  const [resolvedTeaserUrl, setResolvedTeaserUrl] = useState<string>('');
+  const [resolvedPosterUrl, setResolvedPosterUrl] = useState<string>('');
+
+  useEffect(() => {
+    const resolveAssets = async () => {
+      const { AssetManager } = await import('@/lib/system/core/asset-manager');
+      setResolvedTeaserUrl(AssetManager.constructStorageUrl('studio/workshops/videos/workshop_studio_teaser.mp4'));
+      setResolvedPosterUrl(AssetManager.constructStorageUrl('assets/visuals/branding/branding-branding-photo-horizontal-1.webp'));
+    };
+    resolveAssets();
+  }, []);
+
   const { t } = useTranslation();
   const { playClick } = useSonicDNA();
   const prefilledWorkshopId = preselectedWorkshopId != null ? String(preselectedWorkshopId) : null;
@@ -235,8 +247,8 @@ export const WorkshopInterestForm: React.FC<WorkshopInterestFormProps> = ({
           <div className="relative group animate-in fade-in slide-in-from-left-4 duration-500">
             <div className="absolute -inset-2 bg-primary/5 rounded-[24px] blur-xl group-hover:bg-primary/10 transition-all duration-500" />
             <SuccessVideoPlayer
-              src={VIDEO_TEASER_SRC}
-              poster={VIDEO_POSTER}
+              src={resolvedTeaserUrl}
+              poster={resolvedPosterUrl}
               className="w-full aspect-video rounded-[20px] shadow-aura-lg border border-black/5 relative z-10"
               autoPlay={false}
               muted={false}

@@ -14,12 +14,11 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Info, ChevronLeft, ChevronRight, Clock, MapPin, Users } from 'lucide-react';
 
-const STORAGE_BASE = 'https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices';
-
 function toPublicMediaUrl(path?: string | null): string | null {
   if (!path) return null;
   if (path.startsWith('http')) return path;
-  return `${STORAGE_BASE}/${path.replace(/^\/+/, '')}`;
+  const { AssetManager } = require('@/lib/system/core/asset-manager');
+  return AssetManager.constructStorageUrl(path);
 }
 
 function isImagePath(path?: string | null): boolean {

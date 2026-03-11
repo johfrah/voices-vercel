@@ -55,7 +55,7 @@ interface Actor {
   last_name: string;
 }
 
-const SUPABASE_PUBLIC_STORAGE_BASE = `${(process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://vcbxyyjsxuquytcsskpj.supabase.co').replace(/\/$/, '')}/storage/v1/object/public/voices`;
+// SUPABASE_PUBLIC_STORAGE_BASE removed in favor of AssetManager.STORAGE_BASE_URL
 
 export const MediaLibrary: React.FC = () => {
   const [media, setMedia] = useState<MediaItem[]>([]);

@@ -17,8 +17,11 @@ import { Suspense } from "react";
 import nextDynamic from "next/dynamic";
 import { getStudioWorkshopsData } from "@/lib/services/studio-service";
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://vcbxyyjsxuquytcsskpj.supabase.co';
-const STORAGE_BASE = `${SUPABASE_URL.replace(/\/$/, '')}/storage/v1/object/public/voices`;
+const toStorageUrl = (filePath?: string | null): string | null => {
+  if (!filePath) return null;
+  const { AssetManager } = require('@/lib/system/core/asset-manager');
+  return AssetManager.constructStorageUrl(filePath);
+};
 
 async function withTimeoutFallback<T>(executor: () => Promise<T>, timeoutMs: number, fallbackValue: T): Promise<T> {
   let timeoutHandle: ReturnType<typeof setTimeout> | undefined;
@@ -35,12 +38,6 @@ async function withTimeoutFallback<T>(executor: () => Promise<T>, timeoutMs: num
     if (timeoutHandle) clearTimeout(timeoutHandle);
   }
 }
-
-const toStorageUrl = (filePath?: string | null): string | null => {
-  if (!filePath) return null;
-  const cleanPath = filePath.replace(/^\//, '');
-  return `${STORAGE_BASE}/${cleanPath}`;
-};
 
 type SubtitleTrack = { srcLang: string; label: string; src?: string; data?: Array<{ start: number; end: number; text: string }> };
 
