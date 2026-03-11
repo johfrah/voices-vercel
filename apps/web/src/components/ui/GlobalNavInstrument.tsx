@@ -887,13 +887,13 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
                         plain
                         className="flex items-center gap-3 p-2 rounded-xl hover:bg-va-black/5 transition-all group border border-transparent hover:border-black/5"
                       >
-                        <ContainerInstrument plain className="w-10 h-10 rounded-full bg-va-off-white flex items-center justify-center shrink-0 border border-black/5 overflow-hidden relative shadow-sm">
-                          {actor.photo_url ? (
-                            <Image src={actor.photo_url} alt={actor.display_name} fill sizes="40px" className="object-cover" />
-                          ) : (
-                            <User size={16} className="text-va-black/20" />
-                          )}
-                        </ContainerInstrument>
+                      <ContainerInstrument plain className="w-10 h-10 rounded-full bg-va-off-white flex items-center justify-center shrink-0 border border-black/5 overflow-hidden relative shadow-sm">
+                        {actor.photo_url ? (
+                          <VoiceglotImage src={actor.photo_url} mediaId={actor.photo_id} alt={actor.display_name} fill sizes="40px" className="object-cover" />
+                        ) : (
+                          <User size={16} className="text-va-black/20" />
+                        )}
+                      </ContainerInstrument>
                         <ContainerInstrument plain className="flex-1 min-w-0">
                           <TextInstrument className="text-[14px] font-medium text-va-black truncate">
                             {actor.display_name}
@@ -1008,12 +1008,12 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
                       plain
                       className="flex items-center gap-3 p-2 rounded-xl hover:bg-va-black/5 transition-all group border border-transparent hover:border-black/5"
                     >
-                      <ContainerInstrument plain className="w-12 h-12 rounded-xl bg-va-off-white flex items-center justify-center shrink-0 border border-black/5 overflow-hidden relative shadow-sm">
-                        {item.actor?.photo_url && item.actor.photo_url !== 'NULL' ? (
-                          <Image src={item.actor.photo_url} alt={itemTitle || 'item'} fill sizes="48px" className="object-cover" />
-                        ) : workshopImageSrc ? (
-                          <Image src={workshopImageSrc} alt={itemTitle || 'item'} fill sizes="48px" className="object-cover" />
-                        ) : item.type === 'workshop_edition' ? (
+                    <ContainerInstrument plain className="w-12 h-12 rounded-xl bg-va-off-white flex items-center justify-center shrink-0 border border-black/5 overflow-hidden relative shadow-sm">
+                      {item.actor?.photo_url && item.actor.photo_url !== 'NULL' ? (
+                        <VoiceglotImage src={item.actor.photo_url} mediaId={item.actor.photo_id} alt={itemTitle || 'item'} fill sizes="48px" className="object-cover" />
+                      ) : workshopImageSrc ? (
+                        <VoiceglotImage src={workshopImageSrc} mediaId={item.type === 'workshop_edition' ? item.workshop_id : null} alt={itemTitle || 'item'} fill sizes="48px" className="object-cover" />
+                      ) : item.type === 'workshop_edition' ? (
                           <GraduationCap size={18} className="text-primary/40" />
                         ) : (
                           <Mic2 size={18} className="text-va-black/20" />

@@ -108,6 +108,39 @@ export const WorkshopCalendar: React.FC<{ workshops: any[] }> = ({ workshops }) 
       .slice(0, 4);
   }, [workshops]);
   
+  const [resolvedSessions, setResolvedSessions] = React.useState<any[]>([]);
+
+  // 🛡️ CHRIS-PROTOCOL: ID-First Handshake (v3.0.0)
+  React.useEffect(() => {
+    const resolveSessions = async () => {
+      try {
+        const { AssetManager } = await import('@/lib/system/core/asset-manager');
+        const resolved = await Promise.all(upcomingSessions.map(async (session) => {
+          if (session.workshopImagePath) {
+            const url = await AssetManager.resolveMediaUrl({ 
+              fallbackUrl: session.workshopImagePath 
+            });
+            return { ...session, workshopImagePath: url };
+          }
+          return session;
+        }));
+        setResolvedSessions(resolved);
+      } catch (e) {
+        console.error("[WorkshopCalendar] Failed to resolve session images:", e);
+        setResolvedSessions(upcomingSessions.map(s => {
+          const path = s.workshopImagePath;
+          const storageBase = 'https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices';
+          const resolvedPath = path ? (path.startsWith('http') ? path : `${storageBase}/${path.replace(/^\/+/, '')}`) : null;
+          return {
+            ...s,
+            workshopImagePath: resolvedPath
+          };
+        }));
+      }
+    };
+    resolveSessions();
+  }, [upcomingSessions]);
+
   const handleDayClick = (day: number) => {
     playClick('soft');
     // window.location.href = `/studio/book?day=${day}`;
@@ -177,7 +210,7 @@ export const WorkshopCalendar: React.FC<{ workshops: any[] }> = ({ workshops }) 
         <HeadingInstrument level={4} className="text-[15px] font-light tracking-widest text-va-black/40 mb-4 ">
           <VoiceglotText  translationKey="studio.calendar.upcoming" defaultText="Eerstvolgende Sessies" />
         </HeadingInstrument>
-        {upcomingSessions.length === 0 && (
+        {resolvedSessions.length === 0 && (
           <ContainerInstrument plain className="p-4 rounded-[14px] bg-va-off-white/70">
             <TextInstrument className="text-[13px] text-va-black/50 font-light">
               <VoiceglotText translationKey="studio.calendar.empty" defaultText="Momenteel zijn er geen eerstvolgende sessies beschikbaar." />
@@ -185,7 +218,7 @@ export const WorkshopCalendar: React.FC<{ workshops: any[] }> = ({ workshops }) 
           </ContainerInstrument>
         )}
 
-        {upcomingSessions.map((session) => (
+        {resolvedSessions.map((session) => (
           <ButtonInstrument
             key={session.id}
             as={Link}
@@ -197,7 +230,7 @@ export const WorkshopCalendar: React.FC<{ workshops: any[] }> = ({ workshops }) 
               {session.workshopImagePath ? (
                 <ContainerInstrument plain className="relative w-14 h-14 rounded-[12px] overflow-hidden border border-black/5 shrink-0">
                   <Image
-                    src={toPublicMediaUrl(session.workshopImagePath) || ''}
+                    src={session.workshopImagePath}
                     alt={session.workshopImageAlt || session.workshopTitle}
                     fill
                     sizes="56px"

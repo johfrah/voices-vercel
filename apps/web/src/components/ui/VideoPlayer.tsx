@@ -45,7 +45,8 @@ function subtitleDataToVtt(data: SubtitleData[]): string {
 }
 
 interface VideoPlayerProps {
-  src: string;
+  src?: string;
+  mediaId?: number | null;
   poster?: string;
   className?: string;
   aspectRatio?: 'video' | 'square' | 'portrait' | 'auto';
@@ -64,6 +65,7 @@ interface VideoPlayerProps {
  */
 export const VideoPlayer: React.FC<VideoPlayerProps> = ({
   src,
+  mediaId,
   poster,
   className,
   aspectRatio = 'video',
@@ -82,11 +84,26 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
   const [activeSubtitle, setActiveSubtitle] = useState<string | null>(subtitles.length > 0 ? subtitles[0].srcLang : null);
   const [currentSubtitleText, setCurrentSubtitleText] = useState<string>("");
   const [resolvedSubtitles, setResolvedSubtitles] = useState<SubtitleTrack[]>(subtitles);
+  const [resolvedSrc, setResolvedSrc] = useState<string>(src || '');
 
+  // 🛡️ CHRIS-PROTOCOL: ID-First Handshake (v3.0.0)
   useEffect(() => {
-    // Enforce video-first frame policy: never rely on image posters.
+    const resolveUrl = async () => {
+      if (mediaId) {
+        const { AssetManager } = await import('@/lib/system/core/asset-manager');
+        const resolved = await AssetManager.resolveMediaUrl({ mediaId });
+        if (resolved) {
+          setResolvedSrc(resolved);
+          return;
+        }
+      }
+      if (src) {
+        setResolvedSrc(src);
+      }
+    };
+    resolveUrl();
     setIsFrameReady(false);
-  }, [src, poster]);
+  }, [src, mediaId, poster]);
 
   useEffect(() => {
     const generatedObjectUrls: string[] = [];
@@ -218,7 +235,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
     >
       <video
         ref={videoRef}
-        src={src}
+        src={resolvedSrc}
         className={cn(
           "w-full h-full object-cover transition-opacity duration-300",
           isFrameReady ? "opacity-100" : "opacity-0"

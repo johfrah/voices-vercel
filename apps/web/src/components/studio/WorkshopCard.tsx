@@ -33,13 +33,36 @@ export const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onUpdate }
   }, []);
 
   const nextEdition = workshop.editions?.length > 0 ? workshop.editions[0] : null;
+  const mediaId = workshop.media_id || workshop.media?.id;
   const mediaPath = workshop.media?.filePath || workshop.media?.file_path;
   const isVideo = mediaPath && /\.(mp4|webm|mov)$/i.test(mediaPath);
   const videoPath = isVideo ? mediaPath : null;
   const imagePath = !isVideo && mediaPath ? mediaPath : null;
-  const resolvedVideoSrc = videoPath
-    ? (videoPath.startsWith('http') ? videoPath : `https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices/${videoPath.replace(/^\/+/, '')}`)
-    : null;
+
+  const [resolvedMediaSrc, setResolvedSrc] = useState<string | null>(null);
+
+  // 🛡️ CHRIS-PROTOCOL: ID-First Handshake (v3.0.0)
+  useEffect(() => {
+    const resolveMedia = async () => {
+      try {
+        const { AssetManager } = await import('@/lib/system/core/asset-manager');
+        const url = await AssetManager.resolveMediaUrl({ 
+          mediaId: mediaId,
+          fallbackUrl: mediaPath 
+        });
+        setResolvedSrc(url);
+      } catch (e) {
+        console.error("[WorkshopCard] Failed to resolve media:", e);
+        // Fallback to direct storage URL if AssetManager fails
+        if (mediaPath) {
+          const cleanPath = mediaPath.replace(/^\/+/, '');
+          const storageUrl = mediaPath.startsWith('http') ? mediaPath : `https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices/${cleanPath}`;
+          setResolvedSrc(storageUrl);
+        }
+      }
+    };
+    resolveMedia();
+  }, [mediaId, mediaPath]);
 
   //  SMART AVAILABILITY LOGIC
   const getAvailabilityStatus = (edition: any) => {
@@ -199,7 +222,7 @@ export const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onUpdate }
               {shouldLoadVideo ? (
                 <video 
                   ref={videoRef}
-                  src={resolvedVideoSrc || undefined}
+                  src={resolvedMediaSrc || undefined}
                   className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-700"
                   muted
                   loop
@@ -243,9 +266,9 @@ export const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onUpdate }
                 </div>
               )}
             </>
-          ) : imagePath ? (
+            ) : imagePath ? (
             <Image
-              src={imagePath.startsWith('http') ? imagePath : `https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices/${imagePath}`}
+              src={resolvedMediaSrc || ''}
               alt={workshop.title || 'Workshop'}
               fill
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"

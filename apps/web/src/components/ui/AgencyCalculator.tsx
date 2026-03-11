@@ -10,6 +10,7 @@ import {
   LabelInstrument
 } from "@/components/ui/LayoutInstruments";
 import Image from "next/image";
+import { VoiceglotImage } from "@/components/ui/VoiceglotImage";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
 import { useEffect, useState, useMemo } from "react";
 import { cn } from "@/lib/utils";
@@ -565,8 +566,9 @@ export const AgencyCalculator = ({
                               <div className="flex items-center gap-3">
                                 <div className="relative w-10 h-10 rounded-full overflow-hidden bg-va-off-white border border-black/5">
                                   {a.photo_url ? (
-                                    <Image 
-                                      src={a.photo_url.startsWith('http') || a.photo_url.startsWith('/') ? a.photo_url : `/api/proxy/?path=${encodeURIComponent(a.photo_url)}`} 
+                                    <VoiceglotImage 
+                                      src={a.photo_url} 
+                                      mediaId={a.photo_id}
                                       alt={a.display_name} 
                                       fill 
                                       className="object-cover" 

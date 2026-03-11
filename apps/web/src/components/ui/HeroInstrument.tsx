@@ -51,15 +51,52 @@ export const HeroInstrument: React.FC = () => {
     return HERO_IMAGES;
   }, [market.hero_images]);
 
+  const [resolvedImages, setResolvedImages] = React.useState<any[]>([]);
+
+  // 🛡️ CHRIS-PROTOCOL: ID-First Handshake (v3.0.0)
   React.useEffect(() => {
-    if (filteredImages.length <= 1) return;
-    const timer = setInterval(() => {
-      setImageIndex((prev) => (prev + 1) % filteredImages.length);
-    }, 8000);
-    return () => clearInterval(timer);
+    const resolveImages = async () => {
+      try {
+        const { AssetManager } = await import('@/lib/system/core/asset-manager');
+        const resolved = await Promise.all(filteredImages.map(async (img) => {
+          if (img.media_id || img.url) {
+            const url = await AssetManager.resolveMediaUrl({ 
+              mediaId: img.media_id,
+              fallbackUrl: img.url
+            });
+            if (url) return { ...img, url };
+          }
+          return img;
+        }));
+        setResolvedImages(resolved);
+      } catch (e) {
+        console.error("[HeroInstrument] Failed to resolve images:", e);
+        // Fallback: map local paths to correct storage URLs if they are not already absolute
+        const storageBase = "https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices";
+        const fallback = filteredImages.map(img => {
+          if (img.url && !img.url.startsWith('http') && !img.url.startsWith('/')) {
+            const cleanPath = img.url.replace(/^\/+/, '');
+            return { ...img, url: `${storageBase}/${cleanPath}` };
+          }
+          return img;
+        });
+        setResolvedImages(fallback);
+      }
+    };
+    resolveImages();
   }, [filteredImages]);
 
-  const currentActor = filteredImages[imageIndex % filteredImages.length];
+  React.useEffect(() => {
+    if (resolvedImages.length <= 1) return;
+    const timer = setInterval(() => {
+      setImageIndex((prev) => (prev + 1) % resolvedImages.length);
+    }, 8000);
+    return () => clearInterval(timer);
+  }, [resolvedImages]);
+
+  const currentActor = resolvedImages[imageIndex % resolvedImages.length];
+
+  if (!currentActor) return null;
 
   return (
     <div className="va-hero-container relative overflow-hidden py-24 md:py-32">

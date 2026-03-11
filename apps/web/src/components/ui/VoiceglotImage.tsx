@@ -11,8 +11,8 @@ import Image, { ImageProps } from 'next/image';
 import React, { useEffect, useRef, useState, useContext } from 'react';
 
 interface VoiceglotImageProps extends Omit<ImageProps, 'src'> {
-  src: string;
-  mediaId?: number;
+  src?: string;
+  mediaId?: number | null;
   journey?: string;
   category?: string;
   onUpdate?: (newSrc: string, mediaId?: number) => void;
@@ -38,14 +38,28 @@ export const VoiceglotImage: React.FC<VoiceglotImageProps> = ({
   const isMuted = masterControl?.state?.isMuted ?? false;
   const { playClick, playSwell } = useSonicDNA();
   const [isUploading, setIsUploading] = useState(false);
-  const [currentSrc, setCurrentSrc] = useState(src);
+  const [currentSrc, setCurrentSrc] = useState(src || '');
   const [error, setError] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // 🛡️ CHRIS-PROTOCOL: ID-First Handshake (v3.0.0)
   useEffect(() => {
-    setCurrentSrc(src);
+    const resolveUrl = async () => {
+      if (mediaId) {
+        const { AssetManager } = await import('@/lib/system/core/asset-manager');
+        const resolved = await AssetManager.resolveMediaUrl({ mediaId });
+        if (resolved) {
+          setCurrentSrc(resolved);
+          return;
+        }
+      }
+      if (src) {
+        setCurrentSrc(src);
+      }
+    };
+    resolveUrl();
     setError(false);
-  }, [src]);
+  }, [src, mediaId]);
 
   const handleError: React.ReactEventHandler<HTMLImageElement> = (event) => {
     if (error) return; // Prevent infinite loop

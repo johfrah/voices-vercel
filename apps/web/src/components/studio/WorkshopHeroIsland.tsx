@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ContainerInstrument, HeadingInstrument, TextInstrument, ButtonInstrument } from "@/components/ui/LayoutInstruments";
 import { VideoPlayer } from "@/components/ui/VideoPlayer";
 import { VoiceglotText } from "@/components/ui/VoiceglotText";
@@ -56,10 +56,34 @@ export const WorkshopHeroIsland: React.FC<WorkshopHeroIslandProps> = ({ workshop
   const router = useVoicesRouter();
   const { addItem, setJourney, updateCustomer } = useCheckout();
   const [showParticipantForm, setShowParticipantForm] = useState(false);
-  const storageBase = "https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices";
+  const [resolvedVideoUrl, setResolvedVideoUrl] = useState<string | null>(null);
+
+  const videoId = workshop.video?.id;
   const videoPath = workshop.video?.file_path || null;
-  const videoUrl = videoPath ? `${storageBase}/${videoPath}` : null;
-  const hasVideo = Boolean(videoUrl);
+  const hasVideo = Boolean(videoPath || videoId);
+
+  // 🛡️ CHRIS-PROTOCOL: ID-First Handshake (v3.0.0)
+  useEffect(() => {
+    const resolveVideo = async () => {
+      try {
+        const { AssetManager } = await import('@/lib/system/core/asset-manager');
+        const url = await AssetManager.resolveMediaUrl({ 
+          mediaId: videoId,
+          fallbackUrl: videoPath 
+        });
+        setResolvedVideoUrl(url);
+      } catch (e) {
+        console.error("[WorkshopHeroIsland] Failed to resolve video:", e);
+        if (videoPath) {
+          const cleanPath = videoPath.replace(/^\/+/, '');
+          const storageBase = "https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices";
+          setResolvedVideoUrl(`${storageBase}/${cleanPath}`);
+        }
+      }
+    };
+    resolveVideo();
+  }, [videoId, videoPath]);
+
   const nextEdition = workshop.upcoming_editions?.[0];
   const hasEdition = !!nextEdition?.id;
   const price = nextEdition?.price || workshop.price || 0;
@@ -98,13 +122,25 @@ export const WorkshopHeroIsland: React.FC<WorkshopHeroIslandProps> = ({ workshop
     }
   };
 
-  const handleParticipantSubmit = (participantData: {
+  const handleParticipantSubmit = async (participantData: {
     firstName: string; lastName: string; email: string;
     age: string; profession: string; experience: string;
   }) => {
-    const imageUrl = workshop.featured_image?.file_path
-      ? `${storageBase}/${workshop.featured_image.file_path}`
-      : null;
+    let imageUrl = null;
+    try {
+      const { AssetManager } = await import('@/lib/system/core/asset-manager');
+      imageUrl = await AssetManager.resolveMediaUrl({
+        mediaId: workshop.featured_image ? (workshop as any).media_id : null,
+        fallbackUrl: workshop.featured_image?.file_path
+      });
+    } catch (e) {
+      console.error("[WorkshopHeroIsland] Failed to resolve participant image:", e);
+      if (workshop.featured_image?.file_path) {
+        const cleanPath = workshop.featured_image.file_path.replace(/^\/+/, '');
+        const storageBase = "https://vcbxyyjsxuquytcsskpj.supabase.co/storage/v1/object/public/voices";
+        imageUrl = `${storageBase}/${cleanPath}`;
+      }
+    }
     const locationPayload = buildWorkshopLocationPayload(nextEdition?.location || null);
 
     const workshopItem = {
@@ -150,7 +186,7 @@ export const WorkshopHeroIsland: React.FC<WorkshopHeroIslandProps> = ({ workshop
             <ContainerInstrument plain className="relative z-10 w-full max-w-[360px] aspect-[9/16]">
               {hasVideo ? (
                 <VideoPlayer 
-                  src={videoUrl || ''}
+                  src={resolvedVideoUrl || ''}
                   className="w-full h-full object-cover rounded-[24px] shadow-2xl border border-white/10"
                   autoPlay={true}
                   muted={true}
