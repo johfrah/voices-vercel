@@ -168,6 +168,7 @@ export const AgencyFilterSheet: React.FC<{
                         onClick={() => {
                           const usageMap: any = { telephony: 'telefonie', video: 'unpaid', commercial: 'commercial' };
                           onUpdate({ journey: j.id, usage: usageMap[j.id] });
+                          onClose();
                         }}
                         className={cn(
                           "w-full min-h-[52px] px-6 py-4 rounded-2xl flex items-center gap-4 transition-all border-2 touch-manipulation active:scale-[0.99]",

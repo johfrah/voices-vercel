@@ -11,6 +11,7 @@ import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-m
 import { ContainerInstrument, OptionInstrument, SelectInstrument, InputInstrument, ButtonInstrument, TextInstrument } from './LayoutInstruments';
 import { VoiceglotText } from './VoiceglotText';
 import { VoiceglotImage } from './VoiceglotImage';
+import { VoicesDropdown } from './VoicesDropdown';
 import { AgencyFilterSheet } from './AgencyFilterSheet';
 
 interface SearchFilters {
@@ -72,7 +73,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({ filters, params: combinedP
       <ContainerInstrument className="bg-white/80 backdrop-blur-2xl border border-black/5 rounded-[32px] p-2 shadow-aura flex flex-col gap-2">
         
         {/* Top Row: Journey Selector */}
-        <ContainerInstrument plain className="flex items-center justify-center p-1 bg-va-off-white/50 rounded-[26px]">
+        <ContainerInstrument plain className="flex items-center justify-center p-1 bg-va-off-white/50 rounded-[26px] md:flex hidden">
           {journeys.map((j) => {
             const isActive = state.current_journey === j.id;
             const Icon = j.icon;
@@ -95,6 +96,21 @@ export const FilterBar: React.FC<FilterBarProps> = ({ filters, params: combinedP
               </button>
             );
           })}
+        </ContainerInstrument>
+
+        {/* Mobile Journey Selector (Dropdown) */}
+        <ContainerInstrument plain className="md:hidden block w-full px-1">
+          <VoicesDropdown
+            options={journeys.map(j => ({
+              label: t(j.key, j.label),
+              value: j.id,
+              icon: j.icon
+            }))}
+            value={state.current_journey}
+            onChange={(val) => updateJourney(val)}
+            placeholder={t('journey.select', 'Kies project type')}
+            className="bg-va-off-white/50 rounded-[22px] h-14"
+          />
         </ContainerInstrument>
 
         {/* Bottom Row: Search & Filters */}
@@ -134,7 +150,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({ filters, params: combinedP
           </ContainerInstrument>
 
           {/* Gender */}
-          <ContainerInstrument plain className="hidden md:block w-40 relative group/select">
+          <ContainerInstrument plain className="w-full md:w-40 relative group/select">
             <ContainerInstrument className="absolute left-5 top-1/2 -translate-y-1/2 pointer-events-none z-10 text-primary/40">
               <User size={14} strokeWidth={1.5} />
             </ContainerInstrument>
@@ -154,9 +170,12 @@ export const FilterBar: React.FC<FilterBarProps> = ({ filters, params: combinedP
           {/* Advanced / Menu */}
           <ButtonInstrument 
             onClick={() => { setIsSheetOpen(true); }}
-            className="w-14 h-14 rounded-[22px] bg-va-black text-white flex items-center justify-center hover:bg-primary transition-all duration-500 shadow-lg active:scale-95 shrink-0"
+            className="w-full md:w-14 h-14 rounded-[22px] bg-va-black text-white flex items-center justify-center hover:bg-primary transition-all duration-500 shadow-lg active:scale-95 shrink-0"
           >
-            <Filter size={20} strokeWidth={1.5} />
+            <Filter size={20} strokeWidth={1.5} className="mr-2 md:mr-0" />
+            <span className="md:hidden font-bold tracking-widest uppercase text-[13px]">
+              <VoiceglotText translationKey="agency.filter.more_filters" defaultText="Filters & Zoeken" />
+            </span>
           </ButtonInstrument>
         </ContainerInstrument>
       </ContainerInstrument>
