@@ -1896,7 +1896,7 @@ export default function ConfiguratorPageClient({
                       
                       if (!hasLiveRegie) return null;
 
-                      const liveRegiePrice = (state.selectedActor?.price_live_regie && parseFloat(state.selectedActor.price_live_regie) > 0) 
+                      const liveRegiePrice = (state.selectedActor?.price_live_regie && parseFloat(String(state.selectedActor.price_live_regie)) > 0) 
                         ? state.selectedActor.price_live_regie 
                         : (state.pricingConfig?.liveSessionSurcharge / 100 || 50);
 
@@ -1925,7 +1925,7 @@ export default function ConfiguratorPageClient({
                                 </div>
                               </div>
                             </div>
-                            <div className={cn("text-[13px] font-medium transition-colors", state.liveSession ? "text-primary" : "text-va-black/40")}>+ €{liveRegiePrice}</div>
+                            <div className={cn("text-[13px] font-medium transition-colors", state.liveSession ? "text-primary" : "text-va-black/40")}>+ €{String(liveRegiePrice)}</div>
                           </button>
                         </div>
                       );

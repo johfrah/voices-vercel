@@ -115,7 +115,7 @@ export const VoicesMasterControlProvider: React.FC<{
   const pathname = usePathname();
   const { state: voicesState, updateJourney: updateVoicesJourney } = useVoicesState() || { state: { current_journey: 'video' }, updateJourney: () => {} };
   const checkout = useCheckout();
-  const { state: checkoutState, updateUsage, updateMedia, updateSpots, updateYears, updateSpotsDetail, updateYearsDetail, updateLiveSession, setStep: setCheckoutStep } = checkout;
+  const { state: checkoutState, updateUsage, updateMedia, updateSpots, updateYears, updateSpotsDetail, updateYearsDetail, updateLiveSession, updateMusic, setStep: setCheckoutStep } = checkout;
 
   const [state, setState] = useState<MasterControlState>({
     journey: initialJourney || 'video',
