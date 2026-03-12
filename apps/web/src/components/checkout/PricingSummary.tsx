@@ -1142,7 +1142,7 @@ const CTASection: React.FC<any> = ({ handleSubmit, setIsPreviewOpen, setIsTermsO
           onClick={() => state.isQuoteRequest ? setIsPreviewOpen(true) : handleSubmit()}
           disabled={state.isSubmitting || !state.agreedToTerms}
           className={cn(
-            "w-full va-btn-pro !py-6 sm:!py-8 text-base sm:text-lg !rounded-[20px] sm:!rounded-[24px] !bg-va-black !text-white flex items-center justify-center gap-3 group transition-all duration-500 cursor-pointer",
+            "w-full va-btn-pro !py-6 sm:!py-8 text-base sm:text-lg !rounded-[20px] sm:!rounded-[24px] !bg-va-black !text-white flex items-center justify-center gap-3 group transition-all duration-500 cursor-pointer shadow-none",
             (state.isSubmitting || !state.agreedToTerms) ? 'opacity-30 grayscale cursor-not-allowed' : 'hover:shadow-aura-lg hover:scale-[1.01] active:scale-[0.98]'
           )}
         >

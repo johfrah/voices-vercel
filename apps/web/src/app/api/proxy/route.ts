@@ -176,6 +176,7 @@ export async function GET(request: NextRequest) {
         cleanPath.startsWith('visuals/') ||
         cleanPath.startsWith('reviews/') ||
         cleanPath.startsWith('voicecards/') ||
+        cleanPath.startsWith('visuals/active/voicecards/') ||
         cleanPath.startsWith('portfolio/') ||
         cleanPath.startsWith('artists/') ||
         cleanPath.startsWith('ademing/') ||
@@ -203,7 +204,7 @@ export async function GET(request: NextRequest) {
     let normalizedPath = cleanPath.startsWith('/') ? cleanPath : `/${cleanPath}`;
 
     //  SUPABASE & GOOGLE STORAGE REDIRECT: Als het pad begint met 'agency/', 'active/', 'common/', 'studio/', 'ademing/', 'portfolio/', 'artists/', 'visuals/' of 'reviews/', fetch het dan van Supabase Storage
-    if (cleanPath.startsWith('agency/') || cleanPath.startsWith('active/') || cleanPath.startsWith('common/') || cleanPath.startsWith('studio/') || cleanPath.startsWith('ademing/') || cleanPath.startsWith('portfolio/') || cleanPath.startsWith('artists/') || cleanPath.startsWith('visuals/') || cleanPath.startsWith('reviews/') || cleanPath.startsWith('voicecards/') || cleanPath.startsWith(AssetManagerServer.STORAGE_BASE_URL.replace('/object/public/voices', '')) || cleanPath.includes('googleusercontent.com') || cleanPath.startsWith('voices/')) {
+    if (cleanPath.startsWith('agency/') || cleanPath.startsWith('active/') || cleanPath.startsWith('common/') || cleanPath.startsWith('studio/') || cleanPath.startsWith('ademing/') || cleanPath.startsWith('portfolio/') || cleanPath.startsWith('artists/') || cleanPath.startsWith('visuals/') || cleanPath.startsWith('reviews/') || cleanPath.startsWith('voicecards/') || cleanPath.startsWith('visuals/active/voicecards/') || cleanPath.startsWith(AssetManagerServer.STORAGE_BASE_URL.replace('/object/public/voices', '')) || cleanPath.includes('googleusercontent.com') || cleanPath.startsWith('voices/')) {
       const SUPABASE_STORAGE_URL = AssetManagerServer.STORAGE_BASE_URL.replace('/object/public/voices', '');
       
       //  FIX: Zorg dat er geen dubbele slashes ontstaan en encodeer het pad segment per segment

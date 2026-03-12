@@ -487,7 +487,7 @@ export const CheckoutForm: React.FC<{ onNext?: () => void }> = ({ onNext }) => {
 
   return (
     <ContainerInstrument className="space-y-6 sm:space-y-8 w-full max-w-full">
-      <ContainerInstrument className="bg-white p-5 sm:p-7 lg:p-8 rounded-[16px] sm:rounded-[20px] border border-va-black/5 shadow-aura space-y-5 sm:space-y-6 w-full max-w-full">
+      <ContainerInstrument className="bg-white p-5 sm:p-7 lg:p-8 rounded-[16px] sm:rounded-[20px] border border-va-black/5 shadow-aura space-y-5 sm:space-y-6 w-full">
         <ContainerInstrument className="flex items-center gap-3 mb-2">
           <ContainerInstrument className="w-10 h-10 rounded-[10px] bg-primary/5 text-primary flex items-center justify-center">
             <User size={20} strokeWidth={1.5} />
