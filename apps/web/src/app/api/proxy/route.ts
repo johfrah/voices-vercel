@@ -1,5 +1,6 @@
 // @ts-nocheck
 import { NextRequest, NextResponse } from 'next/server';
+import { isAllowedProxyPath, shouldUseSupabaseStorage } from './proxy-path-rules';
 
 export const runtime = 'nodejs';
 
@@ -163,26 +164,7 @@ export async function GET(request: NextRequest) {
     // Als de asset via een media_id komt, vertrouwen we de database en omzeilen we de whitelist.
     // Dit herstelt de pure handshake zonder handmatige onderhoudslast.
     if (!isIdFirst) {
-      //  ALLOWED PATHS: /assets/, /wp-content/, or Supabase agency/ and active/ paths
-      const isAllowed = 
-        cleanPath.startsWith('/assets/') || 
-        cleanPath.startsWith('/wp-content/') || 
-        cleanPath.startsWith('/api/') ||
-        cleanPath.startsWith('api/') ||
-        cleanPath.startsWith('agency/') || 
-        cleanPath.startsWith('active/') ||
-        cleanPath.startsWith('common/') || 
-        cleanPath.startsWith('studio/') || 
-        cleanPath.startsWith('visuals/') ||
-        cleanPath.startsWith('reviews/') ||
-        cleanPath.startsWith('voicecards/') ||
-        cleanPath.startsWith('portfolio/') ||
-        cleanPath.startsWith('artists/') ||
-        cleanPath.startsWith('ademing/') ||
-        cleanPath.includes(AssetManagerServer.STORAGE_BASE_URL.replace('https://', '')) ||
-        cleanPath.includes('googleusercontent.com') ||
-        cleanPath.endsWith('.mp3') ||
-        cleanPath.endsWith('.wav');
+      const isAllowed = isAllowedProxyPath(cleanPath, AssetManagerServer.STORAGE_BASE_URL);
 
       if (!isAllowed) {
         throw new Error('Forbidden asset path: ' + cleanPath);
@@ -203,7 +185,7 @@ export async function GET(request: NextRequest) {
     let normalizedPath = cleanPath.startsWith('/') ? cleanPath : `/${cleanPath}`;
 
     //  SUPABASE & GOOGLE STORAGE REDIRECT: Als het pad begint met 'agency/', 'active/', 'common/', 'studio/', 'ademing/', 'portfolio/', 'artists/', 'visuals/' of 'reviews/', fetch het dan van Supabase Storage
-    if (cleanPath.startsWith('agency/') || cleanPath.startsWith('active/') || cleanPath.startsWith('common/') || cleanPath.startsWith('studio/') || cleanPath.startsWith('ademing/') || cleanPath.startsWith('portfolio/') || cleanPath.startsWith('artists/') || cleanPath.startsWith('visuals/') || cleanPath.startsWith('reviews/') || cleanPath.startsWith('voicecards/') || cleanPath.startsWith(AssetManagerServer.STORAGE_BASE_URL.replace('/object/public/voices', '')) || cleanPath.includes('googleusercontent.com') || cleanPath.startsWith('voices/')) {
+    if (shouldUseSupabaseStorage(cleanPath, AssetManagerServer.STORAGE_BASE_URL)) {
       const SUPABASE_STORAGE_URL = AssetManagerServer.STORAGE_BASE_URL.replace('/object/public/voices', '');
       
       //  FIX: Zorg dat er geen dubbele slashes ontstaan en encodeer het pad segment per segment
