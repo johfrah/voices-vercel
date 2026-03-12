@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextRequest, NextResponse } from 'next/server';
+import { requireAdmin } from '@/lib/auth/api-auth';
 
 export const dynamic = 'force-dynamic';
 
@@ -28,13 +29,22 @@ export async function GET(
     // 1. Haal demo details op
     const { data: demo, error: demoError } = await supabase
       .from('actor_demos')
-      .select('url, media_id')
+      .select('url, media_id, is_public')
       .eq('id', demoId)
       .single();
 
     if (demoError || !demo) {
       console.error(`[AudioStream] Demo not found: ${demoId}`, demoError);
       return new NextResponse('Demo not found', { status: 404 });
+    }
+
+    // Only public demos are streamable without auth.
+    // Non-public demos are restricted to authenticated admins.
+    if (demo.is_public !== true) {
+      const auth = await requireAdmin();
+      if (auth instanceof NextResponse) {
+        return new NextResponse('Demo not found', { status: 404 });
+      }
     }
 
     let audioUrl = demo.url;
