@@ -633,7 +633,7 @@ export default function ConfiguratorPageClient({
     if (state.usage !== 'telefonie' && hasTelephonySigns) {
       insights.push({
         type: 'warning',
-        message: t('configurator.insight.telephony_detected', "Dit lijkt op een telefonie-script. Heb je de juiste journey gekozen?"),
+        message: t('configurator.insight.telephony_detected', "Dit lijkt op een telefonie-script. Heb je het juiste gebruik gekozen?"),
         action: 'switch_telephony'
       });
     }
