@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from 'react';
+import { ButtonInstrument, ContainerInstrument, HeadingInstrument, PageWrapperInstrument, TextInstrument } from '@/components/ui/LayoutInstruments';
 import Image from 'next/image';
-import { PageWrapperInstrument, ContainerInstrument, HeadingInstrument, TextInstrument, ButtonInstrument } from '@/components/ui/LayoutInstruments';
-import ReactCrop, { centerCrop, makeAspectCrop, Crop, PixelCrop } from 'react-image-crop';
+import React, { useEffect, useRef, useState } from 'react';
+import ReactCrop, { centerCrop, Crop, makeAspectCrop, PixelCrop } from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
 
 export default function PhotoCropPage() {
@@ -104,17 +104,17 @@ export default function PhotoCropPage() {
           {/* Sidebar */}
           <div className="col-span-3 h-[80vh] overflow-y-auto bg-va-off-white p-5 rounded-[20px] shadow-aura">
             <TextInstrument className="mb-4 font-bold opacity-50 uppercase tracking-widest text-[10px]">Stemacteurs</TextInstrument>
-            {voices.map((v: any) => (
+            {voices.map((voice: any) => (
               <button 
-                key={v.id}
+                key={voice.id}
                 onClick={() => {
-                    setCurrentVoiceId(v.id);
+                    setCurrentVoiceId(voice.id);
                     setCompletedCrop(undefined);
                 }}
-                className={`w-full text-left p-3 rounded-[10px] mb-2 transition-all ${currentVoiceId === v.id ? 'bg-primary text-white' : 'hover:bg-white'}`}
+                className={`w-full text-left p-3 rounded-[10px] mb-2 transition-all ${currentVoiceId === voice.id ? 'bg-primary text-white' : 'hover:bg-white'}`}
               >
-                <TextInstrument className={currentVoiceId === v.id ? 'text-white' : ''}>
-                  {v.namePart}
+                <TextInstrument className={currentVoiceId === voice.id ? 'text-white' : ''}>
+                  {voice.namePart}
                 </TextInstrument>
               </button>
             ))}

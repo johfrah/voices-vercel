@@ -419,7 +419,7 @@ export const VoicesMasterControlProvider: React.FC<{
     }
 
     if (state.filters.music && JSON.stringify(checkoutState.music) !== JSON.stringify(state.filters.music)) {
-      checkout.updateMusic(state.filters.music);
+      updateMusic?.(state.filters.music);
     }
 
     if (state.filters.liveSession !== undefined && checkoutState.liveSession !== state.filters.liveSession) {
@@ -929,7 +929,7 @@ export const VoicesMasterControlProvider: React.FC<{
       if (newFilters.spotsDetail) updateSpotsDetail(newFilters.spotsDetail);
       if (newFilters.yearsDetail) updateYearsDetail(newFilters.yearsDetail);
       if (newFilters.liveSession !== undefined) updateLiveSession(newFilters.liveSession);
-      if (newFilters.music) checkout.updateMusic(newFilters.music);
+      if (newFilters.music) updateMusic?.(newFilters.music);
 
       return { ...prev, filters: updatedFilters };
     });

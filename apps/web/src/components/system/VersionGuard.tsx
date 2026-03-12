@@ -60,9 +60,9 @@ export function VersionGuard({ currentVersion }: { currentVersion: string }) {
 
         // 🛡️ CHRIS-PROTOCOL: Only reload if server has a NEWER version
         // This prevents loops when server cache is lagging behind browser version.
-        const isNewer = (v1: string, v2: string) => {
-          const parts1 = v1.split('.').map(Number);
-          const parts2 = v2.split('.').map(Number);
+        const isNewer = (version1: string, version2: string) => {
+          const parts1 = version1.split('.').map(Number);
+          const parts2 = version2.split('.').map(Number);
           for (let i = 0; i < 3; i++) {
             if (parts1[i] > parts2[i]) return true;
             if (parts1[i] < parts2[i]) return false;

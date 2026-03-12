@@ -630,7 +630,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                   <ContainerInstrument plain className="flex flex-col">
                     <ContainerInstrument plain className="flex items-center bg-white rounded-full shadow-md border border-black/10 divide-x divide-black/10 h-20">
 
-                      {/* Language Segment - CHRIS-PROTOCOL: Hide in script flow */}
+                      {/* Language Segment - CHRIS-PROTOCOL: Hide in script flow (v2.29.9) */}
                       {state.currentStep === 'voice' ? (
                         <ContainerInstrument plain className="flex-1 h-full flex flex-col justify-center relative group/lang">
                           <VoicesDropdown
@@ -728,7 +728,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                         </ContainerInstrument>
                       ) : null}
 
-                      {/* Gender Segment - CHRIS-PROTOCOL: Hide in script flow */}
+                      {/* Gender Segment - CHRIS-PROTOCOL: Hide in script flow (v2.29.9) */}
                       {state.currentStep === 'voice' ? (
                         <ContainerInstrument plain className="flex-1 h-full flex flex-col justify-center relative group/gender">
                           <VoicesDropdown 
@@ -909,8 +909,8 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                         </ContainerInstrument>
                       )}
 
-                      {/* Country Segment (Commercial only) */}
-                      {activeJourneyId === 28 && (
+                      {/* Country Segment (Commercial only) - CHRIS-PROTOCOL: Hide in script flow (v2.29.9) */}
+                      {activeJourneyId === 28 && state.currentStep === 'voice' && (
                         <ContainerInstrument plain className="flex-1 h-full flex flex-col justify-center relative group/country">
                           <VoicesDropdown
                             searchable
@@ -971,7 +971,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                         </ContainerInstrument>
                       )}
 
-                      {/* Sorting Segment (Airbnb Style) */}
+                      {/* Sorting Segment (Airbnb Style) - CHRIS-PROTOCOL: Hide in script flow (v2.29.9) */}
                       {state.currentStep === 'voice' && (
                         <VoicesDropdown
                           rounding="right"

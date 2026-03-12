@@ -482,14 +482,14 @@ export async function getActors(params: Record<string, string> = {}, lang: strin
         status: d.status || 'approved'
       }));
 
-      const actorVideosList = videosData.filter((v: any) => v.actor_id === actor.id);
-      const proxiedVideos = actorVideosList.map((v: any) => {
-        const videoUrl = v.url?.startsWith('http') ? v.url : `/api/proxy/?path=${encodeURIComponent(v.url)}`;
+      const actorVideosList = videosData.filter((video: any) => video.actor_id === actor.id);
+      const proxiedVideos = actorVideosList.map((video: any) => {
+        const videoUrl = video.url?.startsWith('http') ? video.url : `/api/proxy/?path=${encodeURIComponent(video.url)}`;
         return {
-          id: v.id,
-          name: v.name,
+          id: video.id,
+          name: video.name,
           url: videoUrl,
-          type: v.type || 'portfolio'
+          type: video.type || 'portfolio'
         };
       });
 
@@ -755,13 +755,13 @@ async function processActorData(actor: any, slug: string): Promise<Actor> {
       status: d.status || 'approved'
     }));
 
-    mappedVideos = (videos || []).map((v: any) => {
-      const videoUrl = v.url?.startsWith('http') ? v.url : `/api/proxy/?path=${encodeURIComponent(v.url)}`;
+    mappedVideos = (videos || []).map((video: any) => {
+      const videoUrl = video.url?.startsWith('http') ? video.url : `/api/proxy/?path=${encodeURIComponent(video.url)}`;
       return {
-        id: v.id,
-        name: v.name,
+        id: video.id,
+        name: video.name,
         url: videoUrl,
-        type: v.type || 'portfolio'
+        type: video.type || 'portfolio'
       };
     });
   } catch (err: any) {

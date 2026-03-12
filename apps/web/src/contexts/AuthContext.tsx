@@ -1,10 +1,10 @@
 "use client";
 
+import { ContainerInstrument } from '@/components/ui/LayoutInstruments';
 import { createClient } from '@/utils/supabase/client';
 import { User } from '@supabase/supabase-js';
 import { ShieldCheck } from 'lucide-react';
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
-import { ContainerInstrument } from '@/components/ui/LayoutInstruments';
 
 /** Controleert of een error een AbortError is (auth-js gooit soms zonder reason). */
 function isAbortError(err: unknown): boolean {
@@ -59,8 +59,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const safeSetUser = (u: User | null) => {
       if (mountedRef.current) setUser(u);
     };
-    const safeSetLoading = (v: boolean) => {
-      if (mountedRef.current) setIsLoading(v);
+    const safeSetLoading = (loading: boolean) => {
+      if (mountedRef.current) setIsLoading(loading);
     };
 
     const fetchUserProfile = async (authUser: User) => {
