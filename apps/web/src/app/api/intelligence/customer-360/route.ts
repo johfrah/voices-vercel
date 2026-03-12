@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
 import { UCIService } from '@/lib/intelligence/uci-service';
+import { db, users } from '@/lib/system/voices-config';
 import { createClient as createServerClient } from '@/utils/supabase/server';
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
-import { db, users } from '@/lib/system/voices-config';
-import { sql, desc } from 'drizzle-orm';
+import { desc, sql } from 'drizzle-orm';
+import { NextRequest, NextResponse } from 'next/server';
 
 /**
  *  API: CUSTOMER 360 INSIGHTS

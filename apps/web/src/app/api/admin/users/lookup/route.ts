@@ -1,7 +1,7 @@
 import { db, users } from '@/lib/system/voices-config';
+import { createClient } from '@/utils/supabase/server';
 import { eq } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
-import { createClient } from '@/utils/supabase/server';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';

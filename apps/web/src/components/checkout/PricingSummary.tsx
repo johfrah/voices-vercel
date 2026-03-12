@@ -416,9 +416,9 @@ export const PricingSummary: React.FC<{
   if (!isHydrated) return null;
 
   return (
-    <ContainerInstrument className={cn("space-y-4 sm:space-y-6 w-full max-w-full", className)}>
+    <ContainerInstrument className={cn("space-y-4 sm:space-y-6 w-full", className)}>
       {(!onlyTotals) && (
-        <ContainerInstrument className="space-y-4 w-full max-w-full">
+        <ContainerInstrument className="space-y-4 w-full">
           {/* Cart items list */}
           <ContainerInstrument className="space-y-4">
             {/* 🛡️ CHRIS-PROTOCOL: Defensive guard for items array (v2.15.065) */}

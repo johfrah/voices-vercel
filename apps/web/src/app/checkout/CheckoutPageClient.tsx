@@ -258,7 +258,7 @@ export default function CheckoutPageClient() {
   return (
     <ContainerInstrument plain className="min-h-screen bg-va-off-white pb-24 relative z-10">
       <LiquidBackground />
-      <SectionInstrument className="max-w-7xl mx-auto px-0 sm:px-4 md:px-6 lg:px-8 pt-16 sm:pt-20">
+      <SectionInstrument className="max-w-7xl mx-auto px-4 sm:px-4 md:px-6 lg:px-8 pt-16 sm:pt-20">
         <ContainerInstrument className="mb-10 sm:mb-14 flex flex-col items-center justify-center gap-6 sm:gap-8 text-center">
           <ContainerInstrument className="space-y-4 w-full flex flex-col items-center">
             <OrderStepsInstrument currentStep="checkout" className="opacity-100 mb-4" />
@@ -288,7 +288,7 @@ export default function CheckoutPageClient() {
                 </Link>
               </div>
               {/* Desktop: Show everything | Mobile: Show only items at the top */}
-              <PricingSummary strokeWidth={1.5} onlyItems={true} className="lg:hidden !space-y-4" />
+              <PricingSummary strokeWidth={1.5} onlyItems={true} className="lg:hidden !space-y-4 px-4 sm:px-0" />
               <ContainerInstrument className="hidden lg:block bg-white p-10 rounded-[40px] shadow-aura-lg border border-va-black/5 space-y-8">
                 <ContainerInstrument className="flex justify-between items-center border-b border-va-black/5 pb-6">
                   <HeadingInstrument level={3} className="text-2xl font-light tracking-tighter">
@@ -313,7 +313,7 @@ export default function CheckoutPageClient() {
               strokeWidth={1.5}
               onlyTotals={true}
               showCtaWhenOnlyTotals={true}
-              className="lg:hidden mt-8 !space-y-4"
+              className="lg:hidden mt-8 !space-y-4 px-4 sm:px-0"
             />
           </ContainerInstrument>
         </ContainerInstrument>

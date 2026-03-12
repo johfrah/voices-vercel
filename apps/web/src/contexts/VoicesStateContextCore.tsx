@@ -50,7 +50,7 @@ export const initialState: VoicesState = {
   selected_actors: [],
   reviewStats: {
     averageRating: 4.9,
-    totalCount: 1250
+    totalCount: 393
   },
   campaignMessage: null,
 };
