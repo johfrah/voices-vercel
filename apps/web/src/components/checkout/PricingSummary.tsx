@@ -454,7 +454,7 @@ export const PricingSummary: React.FC<{
                   key={itemObj.id || idx} 
                   onClick={() => !isCartPage && setSelectedItem(itemObj)}
                   className={cn(
-                    "flex items-start gap-3 sm:gap-5 lg:gap-6 p-4 sm:p-6 lg:p-8 bg-white rounded-[20px] sm:rounded-[28px] lg:rounded-[32px] border border-va-black/5 shadow-aura group relative transition-all",
+                    "flex items-start gap-3 sm:gap-5 lg:gap-6 p-4 sm:p-6 lg:p-8 bg-white rounded-none sm:rounded-[28px] lg:rounded-[32px] border-x-0 sm:border border-va-black/5 shadow-none sm:shadow-aura group relative transition-all",
                     !isCartPage && "cursor-pointer hover:border-primary/20 active:scale-[0.98]"
                   )}
                 >
