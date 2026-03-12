@@ -55,7 +55,9 @@ export async function GET(request: NextRequest) {
       lowerPath.endsWith('.m4a') ||
       lowerPath.endsWith('.ogg') ||
       extensionHint === 'mp3' ||
-      extensionHint === 'wav'
+      extensionHint === 'wav' ||
+      extensionHint === 'm4a' ||
+      extensionHint === 'ogg'
     );
   };
 
@@ -306,10 +308,12 @@ export async function GET(request: NextRequest) {
       const blob = await response.blob();
       let contentType = forcedContentType || response.headers.get('content-type') || 'application/octet-stream';
 
-      // 🛡️ CHRIS-PROTOCOL: MIME-Type Correction (v2.28.103)
+      // 🛡️ CHRIS-PROTOCOL: MIME-Type Correction (v3.0.2)
       if (contentType === 'application/octet-stream' || contentType === 'text/plain') {
         if (cleanPath.toLowerCase().endsWith('.mp3') || extensionHint === 'mp3') contentType = 'audio/mpeg';
         if (cleanPath.toLowerCase().endsWith('.wav') || extensionHint === 'wav') contentType = 'audio/wav';
+        if (cleanPath.toLowerCase().endsWith('.m4a') || extensionHint === 'm4a') contentType = 'audio/mp4';
+        if (cleanPath.toLowerCase().endsWith('.ogg') || extensionHint === 'ogg') contentType = 'audio/ogg';
       }
 
       return { blob, contentType, source: response.url.includes('render/image') ? 'Voices-Core-2026-Supabase-Optimized' : 'Voices-Core-2026-Supabase' };
@@ -366,10 +370,12 @@ export async function GET(request: NextRequest) {
     const blob = await response.blob();
     let contentType = forcedContentType || response.headers.get('content-type') || 'application/octet-stream';
 
-    // 🛡️ CHRIS-PROTOCOL: MIME-Type Correction (v2.28.103)
+    // 🛡️ CHRIS-PROTOCOL: MIME-Type Correction (v3.0.2)
     if (contentType === 'application/octet-stream' || contentType === 'text/plain') {
       if (normalizedPath.toLowerCase().endsWith('.mp3') || extensionHint === 'mp3') contentType = 'audio/mpeg';
       if (normalizedPath.toLowerCase().endsWith('.wav') || extensionHint === 'wav') contentType = 'audio/wav';
+      if (normalizedPath.toLowerCase().endsWith('.m4a') || extensionHint === 'm4a') contentType = 'audio/mp4';
+      if (normalizedPath.toLowerCase().endsWith('.ogg') || extensionHint === 'ogg') contentType = 'audio/ogg';
     }
 
     return { blob, contentType, source: 'Voices-Core-2026' };

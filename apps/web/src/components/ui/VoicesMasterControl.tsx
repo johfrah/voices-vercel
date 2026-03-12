@@ -990,7 +990,7 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                       )}
 
                       {/* Extra Options Segment (Script flow only) */}
-                      {state.currentStep !== 'voice' && (
+                      {state.currentStep !== 'voice' && (activeJourneyId === 26 || activeJourneyId === 27 || activeJourneyId === 28) && (
                         <ContainerInstrument plain className="flex-1 h-full flex flex-col justify-center relative group/extras">
                           <VoicesDropdown
                             rounding="right"
@@ -999,13 +999,15 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                                 label: t('common.live_direction', 'Live Regie'), 
                                 value: 'live_session', 
                                 icon: Mic2,
-                                subLabel: t('common.live_direction_desc', 'Sessie volgen via Zoom/Teams')
+                                subLabel: t('common.live_direction_desc', 'Sessie volgen via Zoom/Teams'),
+                                hidden: activeJourneyId !== 27 && activeJourneyId !== 28
                               },
                               { 
                                 label: activeJourneyId === 26 ? t('common.hold_music', 'Wachtmuziek') : t('common.background_music', 'Achtergrondmuziek'), 
                                 value: 'music', 
                                 icon: MusicIcon,
-                                subLabel: activeJourneyId === 26 ? t('common.hold_music_desc', 'Inclusief licentie & mix') : t('common.background_music_desc', 'Inclusief licentie')
+                                subLabel: activeJourneyId === 26 ? t('common.hold_music_desc', 'Inclusief licentie & mix') : t('common.background_music_desc', 'Inclusief licentie'),
+                                hidden: activeJourneyId !== 26
                               },
                             ]}
                             value={(() => {

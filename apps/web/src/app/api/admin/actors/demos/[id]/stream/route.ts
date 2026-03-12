@@ -78,9 +78,16 @@ export async function GET(
     const proxyUrl = new URL('/api/proxy', request.url);
     proxyUrl.searchParams.set('path', audioUrl);
     
-    // 🛡️ CHRIS-PROTOCOL: MIME-Type Hinting (v2.28.103)
+    // 🛡️ CHRIS-PROTOCOL: MIME-Type Hinting (v3.0.1)
     // We voegen een extensie toe aan het pad voor de proxy als hint voor het MIME-type.
-    if (!audioUrl.toLowerCase().endsWith('.mp3') && !audioUrl.toLowerCase().endsWith('.wav')) {
+    // We checken nu ook op .m4a en .ogg die vaak voorkomen in legacy assets.
+    if (audioUrl.toLowerCase().endsWith('.m4a')) {
+      proxyUrl.searchParams.set('ext', 'm4a');
+    } else if (audioUrl.toLowerCase().endsWith('.ogg')) {
+      proxyUrl.searchParams.set('ext', 'ogg');
+    } else if (audioUrl.toLowerCase().endsWith('.wav')) {
+      proxyUrl.searchParams.set('ext', 'wav');
+    } else if (!audioUrl.toLowerCase().endsWith('.mp3')) {
       proxyUrl.searchParams.set('ext', 'mp3');
     }
     
