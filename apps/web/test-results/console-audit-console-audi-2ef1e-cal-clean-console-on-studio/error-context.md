@@ -1,0 +1,232 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - main [ref=e2]:
+    - main [ref=e3]
+  - generic [ref=e11]:
+    - generic [ref=e13]:
+      - button "Audio" [ref=e14] [cursor=pointer]:
+        - img [ref=e15]
+        - paragraph [ref=e19]: Audio
+      - button "Medewerker spreken" [ref=e20] [cursor=pointer]:
+        - paragraph [ref=e22]:
+          - generic [ref=e24]: Medewerker spreken
+      - button "+32 (0)2 793 19 91" [ref=e25] [cursor=pointer]:
+        - img [ref=e26]
+        - paragraph [ref=e28]: +32 (0)2 793 19 91
+      - button "johfrah@voices.be" [ref=e29] [cursor=pointer]:
+        - img [ref=e30]
+        - paragraph [ref=e33]: johfrah@voices.be
+    - navigation [ref=e34]:
+      - link [ref=e36] [cursor=pointer]:
+        - /url: /en/
+        - img [ref=e39]
+      - generic [ref=e55]:
+        - link [ref=e57] [cursor=pointer]:
+          - /url: /en/account/favorites/
+          - img [ref=e58]
+        - link [ref=e61] [cursor=pointer]:
+          - /url: /en/checkout/
+          - img [ref=e62]
+        - button "Choose your language (NL)" [ref=e67] [cursor=pointer]:
+          - img [ref=e68]
+          - generic [ref=e71]: nl
+        - button [ref=e73] [cursor=pointer]:
+          - img [ref=e74]
+        - button [ref=e78] [cursor=pointer]:
+          - img [ref=e79]
+  - alert [ref=e80]
+  - generic [ref=e83] [cursor=pointer]:
+    - img [ref=e84]
+    - generic [ref=e86]: 1 error
+    - button "Hide Errors" [ref=e87]:
+      - img [ref=e88]
+  - generic [ref=e94]:
+    - generic [ref=e95]:
+      - paragraph [ref=e96]:
+        - generic [ref=e98]: Can we make your experience even better?
+      - paragraph [ref=e99]:
+        - generic [ref=e101]: We use cookies to remember your preferences and make your Voices visit easier.
+        - link "The finer details" [ref=e102] [cursor=pointer]:
+          - /url: /en/cookies/
+          - generic [ref=e104]: The finer details
+    - generic [ref=e105]:
+      - button "Yes, that sounds good." [ref=e106] [cursor=pointer]:
+        - generic [ref=e108]: Yes, that sounds good.
+      - button "Your settings" [ref=e109] [cursor=pointer]:
+        - generic [ref=e111]: Your settings
+  - contentinfo [ref=e112]:
+    - generic [ref=e113]:
+      - generic [ref=e114]:
+        - link [ref=e115] [cursor=pointer]:
+          - /url: /en/
+          - img [ref=e116]
+        - generic [ref=e119]:
+          - img [ref=e120]
+          - generic [ref=e124]: Studio
+      - generic [ref=e126]:
+        - generic [ref=e127]:
+          - img [ref=e129]
+          - heading "Found the perfect voice?" [level=3] [ref=e131]:
+            - generic [ref=e133]: Found the perfect voice?
+          - paragraph [ref=e134]:
+            - generic [ref=e136]: Get an instant quote or talk to our experts for personal advice.
+        - link "Get your quote" [ref=e137] [cursor=pointer]:
+          - /url: /en/tarieven/
+          - generic [ref=e139]: Get your quote
+          - img [ref=e140]
+      - generic [ref=e144]:
+        - generic [ref=e145]:
+          - link [ref=e146] [cursor=pointer]:
+            - /url: /en/
+            - img [ref=e149]
+          - link "Google Rating 4.9/5 393 What our clients say" [ref=e165] [cursor=pointer]:
+            - /url: /en/agency/reviews/
+            - generic [ref=e166]:
+              - generic [ref=e167]:
+                - img [ref=e168]
+                - img [ref=e170]
+                - img [ref=e172]
+                - img [ref=e174]
+                - img [ref=e176]
+              - paragraph [ref=e178]:
+                - generic [ref=e180]: Google Rating
+            - generic [ref=e182]:
+              - paragraph [ref=e183]: 4.9/5
+              - paragraph [ref=e184]:
+                - text: "393"
+                - generic [ref=e186]: What our clients say
+          - paragraph [ref=e187]:
+            - generic [ref=e189]: The friendliest voice agency in the Benelux. Order today, ready tomorrow.
+        - generic [ref=e190]:
+          - heading "Book directly" [level=4] [ref=e191]:
+            - generic [ref=e193]: Book directly
+          - list [ref=e194]:
+            - listitem [ref=e195]:
+              - link "Voice actors" [ref=e196] [cursor=pointer]:
+                - /url: /en/agency/stemmen/
+                - img [ref=e197]
+                - generic [ref=e201]: Voice actors
+            - listitem [ref=e202]:
+              - link "How we work" [ref=e203] [cursor=pointer]:
+                - /url: /en/agency/zo-werkt-het/
+                - img [ref=e204]
+                - generic [ref=e207]: How we work
+            - listitem [ref=e208]:
+              - link "Our rates" [ref=e209] [cursor=pointer]:
+                - /url: /en/tarieven/
+                - img [ref=e210]
+                - generic [ref=e213]: Our rates
+            - listitem [ref=e214]:
+              - link "Get in touch" [ref=e215] [cursor=pointer]:
+                - /url: /en/contact/
+                - img [ref=e216]
+                - generic [ref=e220]: Get in touch
+          - generic [ref=e221]:
+            - heading "About Voices" [level=4] [ref=e222]:
+              - generic [ref=e224]: About Voices
+            - list [ref=e225]:
+              - listitem [ref=e226]:
+                - link "How it works" [ref=e227] [cursor=pointer]:
+                  - /url: /en/agency/zo-werkt-het/
+                  - img [ref=e228]
+                  - generic [ref=e231]: How it works
+              - listitem [ref=e232]:
+                - link "Our rates" [ref=e233] [cursor=pointer]:
+                  - /url: /en/tarieven/
+                  - img [ref=e234]
+                  - generic [ref=e237]: Our rates
+              - listitem [ref=e238]:
+                - link "Our story" [ref=e239] [cursor=pointer]:
+                  - /url: /en/agency/over-ons/
+                  - img [ref=e240]
+                  - generic [ref=e244]: Our story
+        - generic [ref=e245]:
+          - heading "Voices by category" [level=4] [ref=e246]:
+            - generic [ref=e248]: Voices by category
+          - list [ref=e249]:
+            - listitem [ref=e250]:
+              - link "TV Commercial" [ref=e251] [cursor=pointer]:
+                - /url: /en/agency/commercial/tv/
+                - img [ref=e252]
+                - generic [ref=e255]: TV Commercial
+            - listitem [ref=e256]:
+              - link "Radio." [ref=e257] [cursor=pointer]:
+                - /url: /en/agency/commercial/radio/
+                - img [ref=e258]
+                - generic [ref=e265]: Radio.
+            - listitem [ref=e266]:
+              - link "Available now" [ref=e267] [cursor=pointer]:
+                - /url: /en/agency/commercial/online/
+                - img [ref=e268]
+                - generic [ref=e272]: Available now
+            - listitem [ref=e273]:
+              - link "Podcast" [ref=e274] [cursor=pointer]:
+                - /url: /en/agency/commercial/podcast/
+                - img [ref=e275]
+                - generic [ref=e279]: Podcast
+            - listitem [ref=e280]:
+              - link "Telefonie" [ref=e281] [cursor=pointer]:
+                - /url: /en/agency/telephony/
+                - img [ref=e282]
+                - generic [ref=e285]: Telefonie
+            - listitem [ref=e286]:
+              - link "Professional business" [ref=e287] [cursor=pointer]:
+                - /url: /en/agency/video/
+                - img [ref=e288]
+                - generic [ref=e293]: Professional business
+          - generic [ref=e294]:
+            - heading "Pay safely and securely" [level=4] [ref=e295]:
+              - generic [ref=e297]: Pay safely and securely
+            - generic [ref=e298]:
+              - img "Bancontact" [ref=e299]
+              - img "iDEAL" [ref=e300]
+              - img "Creditcard" [ref=e301]
+        - generic [ref=e302]:
+          - heading "Get in touch" [level=4] [ref=e303]:
+            - generic [ref=e305]: Get in touch
+          - generic [ref=e306]:
+            - link "Email ons johfrah@voices.be" [ref=e307] [cursor=pointer]:
+              - /url: mailto:johfrah@voices.be
+              - img [ref=e308]
+              - generic [ref=e311]:
+                - paragraph [ref=e312]: Email ons
+                - paragraph [ref=e313]: johfrah@voices.be
+            - link "Bel de studio +32 (0)2 793 19 91" [ref=e314] [cursor=pointer]:
+              - /url: tel:+32(0)27931991
+              - img [ref=e315]
+              - generic [ref=e317]:
+                - paragraph [ref=e318]: Bel de studio
+                - paragraph [ref=e319]: +32 (0)2 793 19 91
+            - link "Need a hand with your casting?" [ref=e320] [cursor=pointer]:
+              - /url: /en/contact/
+              - img [ref=e321]
+              - generic [ref=e324]: Need a hand with your casting?
+          - generic [ref=e325]:
+            - link [ref=e326] [cursor=pointer]:
+              - /url: https://www.instagram.com/voices.be
+              - img [ref=e327]
+            - link [ref=e330] [cursor=pointer]:
+              - /url: https://www.linkedin.com/company/voices-be
+              - img [ref=e331]
+    - generic [ref=e335]:
+      - generic [ref=e336]:
+        - paragraph [ref=e337]: 2026 Voices België.
+        - generic [ref=e338]:
+          - link "Our terms and conditions" [ref=e339] [cursor=pointer]:
+            - /url: /en/agency/voorwaarden/
+            - generic [ref=e341]: Our terms and conditions
+          - link "How we look after your privacy" [ref=e342] [cursor=pointer]:
+            - /url: /en/privacy/
+            - generic [ref=e344]: How we look after your privacy
+        - generic [ref=e345]:
+          - img "Bancontact" [ref=e346]
+          - img "Pay with iDEAL" [ref=e347]
+          - img "Credit card" [ref=e348]
+          - img "Pay with Apple Pay." [ref=e349]
+      - generic [ref=e350]:
+        - button "Toggle theme" [ref=e351] [cursor=pointer]:
+          - img [ref=e352]
+        - generic [ref=e358]: We’re here and ready to help.
+```

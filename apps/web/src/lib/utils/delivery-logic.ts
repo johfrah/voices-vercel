@@ -131,9 +131,9 @@ export function getNextWorkingDay(startDate: Date, holidays: string[], availabil
     const isWorkDay = isWorkingDay(current, holidays, weeklyOn);
     
     // Check acteur beschikbaarheid (vakanties)
-    const isOnHoliday = availability.some(v => {
-      const start = startOfDayNative(new Date(v.start));
-      const end = startOfDayNative(new Date(v.end));
+    const isOnHoliday = availability.some(vacation => {
+      const start = startOfDayNative(new Date(vacation.start));
+      const end = startOfDayNative(new Date(vacation.end));
       const check = startOfDayNative(current);
       return check >= start && check <= end;
     });
@@ -333,9 +333,9 @@ export function calculateDeliveryDate(
     while (remainingDays > 0) {
       date = addDaysNative(date, 1);
       if (isWorkingDay(date, holidays, config.weekly_on)) {
-        const isOnHoliday = effectiveAvailability.some(v => {
-          const start = startOfDayNative(new Date(v.start));
-          const end = startOfDayNative(new Date(v.end));
+        const isOnHoliday = effectiveAvailability.some(vacation => {
+          const start = startOfDayNative(new Date(vacation.start));
+          const end = startOfDayNative(new Date(vacation.end));
           const check = startOfDayNative(date);
           return check >= start && check <= end;
         });

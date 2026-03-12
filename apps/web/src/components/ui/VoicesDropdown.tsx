@@ -169,8 +169,8 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
 
     if (multiSelect) {
       const currentValues = Array.isArray(value) ? value : (value ? [value] : []);
-      if (currentValues.some(v => typeof v === 'string' && typeof itemValue === 'string' ? v.toLowerCase() === itemValue.toLowerCase() : v === itemValue)) {
-        onChange(currentValues.filter(v => typeof v === 'string' && typeof itemValue === 'string' ? v.toLowerCase() !== itemValue.toLowerCase() : v !== itemValue));
+      if (currentValues.some(val => typeof val === 'string' && typeof itemValue === 'string' ? val.toLowerCase() === itemValue.toLowerCase() : val === itemValue)) {
+        onChange(currentValues.filter(val => typeof val === 'string' && typeof itemValue === 'string' ? val.toLowerCase() !== itemValue.toLowerCase() : val !== itemValue));
       } else {
         onChange([...currentValues, itemValue]);
       }
@@ -292,12 +292,12 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
         const val0Id = typeof val0 === 'number' ? val0 : (!isNaN(Number(val0)) ? Number(val0) : null);
 
         const opt = options.find(o => {
-          const v = typeof o === 'string' ? o : o.value;
-          const vId = typeof v === 'number' ? v : (!isNaN(Number(v)) ? Number(v) : null);
+          const itemValue = typeof o === 'string' ? o : o.value;
+          const vId = typeof itemValue === 'number' ? itemValue : (!isNaN(Number(itemValue)) ? Number(itemValue) : null);
           
           if (vId !== null && val0Id !== null) return vId === val0Id;
-          if (typeof v !== 'string' || typeof val0 !== 'string') return v === val0;
-          return v.toLowerCase() === val0.toLowerCase();
+          if (typeof itemValue !== 'string' || typeof val0 !== 'string') return itemValue === val0;
+          return itemValue.toLowerCase() === val0.toLowerCase();
         });
         return typeof opt === 'string' ? opt : opt?.label || value[0];
       }
@@ -305,7 +305,7 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
     }
 
     const opt = options.find(o => {
-      const v = typeof o === 'string' ? o : o.value;
+      const itemValue = typeof o === 'string' ? o : o.value;
       //  CHRIS-PROTOCOL: Antifragile Mapping (v2.14.734)
       // We check the primary value, the langCode, and the label
       // to ensure ISO codes or labels map correctly to human-friendly labels.
@@ -313,12 +313,12 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
       const label = typeof o === 'object' ? o.label : o;
       
       const valStr = String(value || '').toLowerCase();
-      const vStr = String(v || '').toLowerCase();
+      const vStr = String(itemValue || '').toLowerCase();
       const lcStr = String(lc || '').toLowerCase();
       const labelStr = String(label || '').toLowerCase();
 
       // 1. Direct match (ID or String)
-      if (v === value) return true;
+      if (itemValue === value) return true;
       if (vStr === valStr && valStr !== '') return true;
 
       // 2. ISO Code match (e.g. "nl-be")
@@ -328,10 +328,10 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
       if (labelStr === valStr && valStr !== '') return true;
 
       // 4. Numeric string match (e.g. "1" === 1)
-      if (typeof value === 'string' && !isNaN(Number(value)) && String(v) === value) return true;
+      if (typeof value === 'string' && !isNaN(Number(value)) && String(itemValue) === value) return true;
 
       // 5. Array match (if value is an array, check if item is in it)
-      if (Array.isArray(value) && (value as any[]).some(vInArr => String(vInArr).toLowerCase() === String(v).toLowerCase())) return true;
+      if (Array.isArray(value) && (value as any[]).some(vInArr => String(vInArr).toLowerCase() === String(itemValue).toLowerCase())) return true;
 
       return false;
     });
@@ -645,7 +645,7 @@ export const VoicesDropdown: React.FC<VoicesDropdownProps> = ({
 
 
                 const isSelected = Array.isArray(value)
-                  ? value.some(v => typeof v === 'string' && typeof item.value === 'string' ? v.toLowerCase() === item.value.toLowerCase() : v === item.value)
+                  ? value.some(val => typeof val === 'string' && typeof item.value === 'string' ? val.toLowerCase() === item.value.toLowerCase() : val === item.value)
                   : (typeof value === 'string' && typeof item.value === 'string' ? value.toLowerCase() === item.value.toLowerCase() : value === item.value);
                 
                 // 🛡️ CHRIS-PROTOCOL: Handshake Truth Icon Resolution (v2.14.728)
