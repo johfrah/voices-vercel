@@ -1888,7 +1888,7 @@ export default function ConfiguratorPageClient({
                     </div>
                   )}
 
-                  {state.usage !== 'telefonie' && state.selectedActor && (
+                  {(state.usage === 'commercial' || state.usage === 'unpaid') && state.selectedActor && (
                     (() => {
                       const actor = state.selectedActor as any;
                       const hasLiveRegie = actor.price_live_regie > 0 || 

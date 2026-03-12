@@ -82,6 +82,7 @@ interface VoicesDropdownProps {
     subLabel?: string;
     icon?: React.ElementType | string;
     availableExtraLangs?: string[]; //  Support for nested extra language chips
+    hidden?: boolean; //  CHRIS-PROTOCOL: Support for conditional options (v2.29.8)
   })[];
   value: any;
   onChange: (value: any) => void;

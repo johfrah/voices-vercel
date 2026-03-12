@@ -1001,14 +1001,14 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                                 icon: Mic2,
                                 subLabel: t('common.live_direction_desc', 'Sessie volgen via Zoom/Teams'),
                                 hidden: activeJourneyId !== 27 && activeJourneyId !== 28
-                              },
+                              } as any,
                               { 
                                 label: activeJourneyId === 26 ? t('common.hold_music', 'Wachtmuziek') : t('common.background_music', 'Achtergrondmuziek'), 
                                 value: 'music', 
                                 icon: MusicIcon,
                                 subLabel: activeJourneyId === 26 ? t('common.hold_music_desc', 'Inclusief licentie & mix') : t('common.background_music_desc', 'Inclusief licentie'),
                                 hidden: activeJourneyId !== 26
-                              },
+                              } as any,
                             ]}
                             value={(() => {
                               const vals = [];
