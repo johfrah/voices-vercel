@@ -428,6 +428,10 @@ export const PricingSummary: React.FC<{
               const itemImage = isWorkshopItem
                 ? resolveWorkshopImageSrc(itemObj)
                 : (itemObj.actor?.photo_url || VOICES_CONFIG.assets.placeholders.voice);
+              
+              // 🛡️ CHRIS-PROTOCOL: ID-First Handshake for Cart Images (v2.15.066)
+              // We prioritize media_id if available to ensure robust proxy resolution.
+              const itemImageId = itemObj.actor?.photo_id;
               const itemTitle =
                 itemObj.actor?.display_name ||
                 itemObj.actor?.name ||
@@ -461,7 +465,7 @@ export const PricingSummary: React.FC<{
                   {/* Afbeelding links uitgelijnd (LAYA-MANDAAT) */}
                   <ContainerInstrument className="w-14 h-14 sm:w-16 sm:h-16 rounded-[16px] sm:rounded-[20px] overflow-hidden bg-va-off-white relative border border-va-black/5 shrink-0 shadow-sm">
                     <Image  
-                      src={itemImage} 
+                      src={itemImageId ? `/api/proxy?media_id=${itemImageId}` : itemImage} 
                       alt={itemTitle} 
                       fill 
                       sizes="64px"
