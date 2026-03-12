@@ -1,22 +1,20 @@
 "use client";
 
+import { AddToCartEmailModal } from '@/components/checkout/AddToCartEmailModal';
+import { CommercialMediaSelectionModal } from '@/components/checkout/CommercialMediaSelectionModal';
 import { TelephonySmartSuggestions } from '@/components/checkout/TelephonySmartSuggestions';
 import { BriefingSelector } from '@/components/studio/BriefingSelector';
 import { MusicSelector } from '@/components/studio/MusicSelector';
-import { AddToCartEmailModal } from '@/components/checkout/AddToCartEmailModal';
-import { CommercialMediaSelectionModal } from '@/components/checkout/CommercialMediaSelectionModal';
-import { VoicesMasterControl } from '@/components/ui/VoicesMasterControl';
 import {
-    ButtonInstrument,
     ContainerInstrument,
     HeadingInstrument,
     LabelInstrument,
-    SectionInstrument,
-    TextInstrument,
+    TextInstrument
 } from '@/components/ui/LayoutInstruments';
 import { OrderStepsInstrument } from '@/components/ui/OrderStepsInstrument';
 import { VoiceCard } from '@/components/ui/VoiceCard';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
+import { VoicesMasterControl } from '@/components/ui/VoicesMasterControl';
 import { useCheckout } from '@/contexts/CheckoutContext';
 import { useTranslation } from '@/contexts/TranslationContext';
 import { useMasterControl } from '@/contexts/VoicesMasterControlContext';
@@ -34,20 +32,18 @@ import {
     Megaphone,
     Mic,
     Minus,
+    Music as MusicIcon,
     Paperclip,
     Phone,
     Plus,
     Radio,
-    ShoppingBag,
+    ShieldCheck,
     Sparkles,
     Tv,
     Type,
     Upload,
     Video,
-    X,
-    Zap,
-    ShieldCheck,
-    Music as MusicIcon
+    Zap
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
@@ -596,7 +592,7 @@ export default function ConfiguratorPageClient({
     if (state.usage !== 'telefonie' && hasTelephonySigns) {
       insights.push({
         type: 'warning',
-        message: t('configurator.insight.telephony_detected', "Dit lijkt op een telefonie-script. Heb je de juiste journey gekozen?"),
+        message: t('configurator.insight.telephony_detected', "Dit lijkt op een telefonie-script. Heb je het juiste gebruik gekozen?"),
         action: 'switch_telephony'
       });
     }
