@@ -284,8 +284,8 @@ export function VoiceDetailClient({
           <div className="order-1 lg:order-2 lg:col-span-9 w-full">
             <ConfiguratorPageClient 
               isEmbedded={true} 
-              hideMediaSelector={false} 
-              minimalMode={false} 
+              hideMediaSelector={true} 
+              minimalMode={true} 
               hideVoiceCard={true}
               hideUsageSelector={true}
               hidePriceBlock={false}
