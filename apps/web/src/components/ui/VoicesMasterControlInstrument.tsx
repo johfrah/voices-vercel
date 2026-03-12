@@ -531,12 +531,13 @@ export const VoicesMasterControlContext: React.FC<VoicesMasterControlContextProp
         (state.currentStep !== 'voice' && state.journey !== 'commercial' || minimalMode) && "pb-3"
       )}>
 
-        {/* 1. Journey Selector (Top Row) */}
+        {/* 1. Journey Selector (Top Row) - CHRIS-PROTOCOL: Mobile-First Redesign (v2.30.0) */}
         <ContainerInstrument plain className={cn(
           "flex items-center md:justify-center p-1.5 bg-va-off-white/50 rounded-[32px] overflow-x-auto no-scrollbar snap-x snap-mandatory",
           ((state.currentStep === 'voice' || activeJourneyId === 28) && !minimalMode) && "mb-3"
         )}>
-          <ContainerInstrument plain className="flex items-center gap-1.5 min-w-full md:min-w-0">
+          {/* Desktop Journey Selector */}
+          <ContainerInstrument plain className="hidden md:flex items-center gap-1.5 min-w-full md:min-w-0">
             {journeys.map((j) => {
               const isActive = activeJourneyId === j.id;
               const Icon = j.icon;
@@ -583,6 +584,22 @@ export const VoicesMasterControlContext: React.FC<VoicesMasterControlContextProp
               );
             })}
           </ContainerInstrument>
+
+          {/* Mobile Journey Selector (Dropdown) */}
+          <ContainerInstrument plain className="md:hidden block w-full px-1">
+            <VoicesDropdown
+              options={journeys.map(j => ({
+                label: t(j.key, j.label),
+                value: j.id,
+                icon: j.icon,
+                subLabel: j.subLabel
+              }))}
+              value={activeJourneyId}
+              onChange={(val) => handleJourneySwitch(val)}
+              placeholder={t('journey.select', 'Kies project type')}
+              className="bg-va-off-white/50 rounded-[22px] h-14"
+            />
+          </ContainerInstrument>
         </ContainerInstrument>
 
         {/* 2. Primary Filter Pill (Airbnb Style) */}
@@ -597,20 +614,83 @@ export const VoicesMasterControlContext: React.FC<VoicesMasterControlContextProp
                 className="overflow-visible"
               >
                 {/* MOBILE FILTER TRIGGER (Moby-methode) */}
-                <ContainerInstrument plain className="md:hidden p-1.5">
+                <ContainerInstrument plain className="md:hidden p-1.5 space-y-2">
+                  {/* Language Dropdown Mobile */}
+                  {state.currentStep === 'voice' && (
+                    <VoicesDropdown
+                      searchable
+                      options={sortedLanguages}
+                      value={state.filters.languageId || state.filters.language}
+                      displayValueOverride={(state.filters.languageId || state.filters.language) ? localizeLanguageLabel(state.filters.languageId || state.filters.language, state.filters.language || null) : undefined}
+                      onChange={(val) => {
+                        if (typeof val === 'number') {
+                          const optMatch = mappedLanguages.find(langOpt => langOpt.value === val);
+                          updateFilters({
+                            languageId: val,
+                            languageIds: [val],
+                            language: optMatch?.langCode || optMatch?.label || undefined
+                          });
+                        } else {
+                          updateFilters({
+                            language: val || undefined,
+                            languages: val ? [val.toLowerCase()] : undefined
+                          });
+                        }
+                      }}
+                      placeholder={t('filter.all_languages', 'Alle talen')}
+                      className="bg-va-off-white/50 rounded-[22px] h-14"
+                    />
+                  )}
+
+                  {/* Gender Dropdown Mobile */}
+                  {state.currentStep === 'voice' && (
+                    <VoicesDropdown 
+                      options={filteredGendersData.length > 0 
+                        ? [
+                            { label: t('gender.everyone', 'Iedereen'), value: '', icon: Users },
+                            ...filteredGendersData.map(g => ({
+                              label: g.label,
+                              value: g.id,
+                              code: g.code,
+                              icon: User
+                            }))
+                          ]
+                        : []
+                      }
+                      value={state.filters.genderId || state.filters.gender || ''}
+                      onChange={(val) => {
+                        if (typeof val === 'number') {
+                          const optMatch = filteredGendersData.find(g => g.id === val);
+                          updateFilters({ 
+                            genderId: val,
+                            gender: optMatch?.code || undefined 
+                          });
+                        } else {
+                          updateFilters({ 
+                            genderId: undefined,
+                            gender: val || undefined 
+                          });
+                        }
+                      }}
+                      placeholder={t('gender.everyone', 'Iedereen')}
+                      className="bg-va-off-white/50 rounded-[22px] h-14"
+                    />
+                  )}
+
+                  {/* Advanced Filter Trigger Mobile */}
                   <ButtonInstrument
                     onClick={() => setIsSheetOpen(true)}
-                    className="w-full h-16 bg-white rounded-full border border-black/10 shadow-sm flex items-center px-6 gap-4 active:scale-[0.98] transition-all"
+                    className="w-full h-16 bg-va-black text-white rounded-full border border-black/10 shadow-sm flex items-center px-6 gap-4 active:scale-[0.98] transition-all"
                   >
-                    <ContainerInstrument className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0">
+                    <ContainerInstrument className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white shrink-0">
                       <SearchIcon size={18} />
                     </ContainerInstrument>
                     <ContainerInstrument plain className="flex flex-col items-start min-w-0">
-                      <TextInstrument className="text-[13px] font-bold tracking-widest text-va-black uppercase">
+                      <TextInstrument className="text-[13px] font-bold tracking-widest uppercase">
                         <VoiceglotText translationKey="filter.mobile_trigger" defaultText="Filters & Zoeken" />
                       </TextInstrument>
-                      <TextInstrument className="text-[11px] text-va-black/40 truncate w-full text-left">
-                        {(state.filters.languageId || state.filters.language) ? localizeLanguageLabel(state.filters.languageId || state.filters.language, state.filters.language || null) : t('filter.all_languages', 'Alle talen')} • {state.filters.genderId ? filteredGendersData.find(g => g.id === state.filters.genderId)?.label : t('gender.everyone', 'Iedereen')} • {activeJourneyId === 28 ? ((state.filters.media || []).length || 0) + ' ' + t('common.channels', 'kanalen') : (state.filters.words || 200) + ' ' + t('common.words', 'woorden')}
+                      <TextInstrument className="text-[11px] text-white/40 truncate w-full text-left">
+                        {activeJourneyId === 28 ? ((state.filters.media || []).length || 0) + ' ' + t('common.channels', 'kanalen') : (state.filters.words || 200) + ' ' + t('common.words', 'woorden')}
                       </TextInstrument>
                     </ContainerInstrument>
                   </ButtonInstrument>
