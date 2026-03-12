@@ -988,6 +988,52 @@ export const VoicesMasterControl: React.FC<VoicesMasterControlProps> = ({
                           className="flex-1 h-full"
                         />
                       )}
+
+                      {/* Extra Options Segment (Script flow only) */}
+                      {state.currentStep !== 'voice' && (
+                        <ContainerInstrument plain className="flex-1 h-full flex flex-col justify-center relative group/extras">
+                          <VoicesDropdown
+                            rounding="right"
+                            options={[
+                              { 
+                                label: t('common.live_direction', 'Live Regie'), 
+                                value: 'live_session', 
+                                icon: Mic2,
+                                subLabel: t('common.live_direction_desc', 'Sessie volgen via Zoom/Teams')
+                              },
+                              { 
+                                label: activeJourneyId === 26 ? t('common.hold_music', 'Wachtmuziek') : t('common.background_music', 'Achtergrondmuziek'), 
+                                value: 'music', 
+                                icon: MusicIcon,
+                                subLabel: activeJourneyId === 26 ? t('common.hold_music_desc', 'Inclusief licentie & mix') : t('common.background_music_desc', 'Inclusief licentie')
+                              },
+                            ]}
+                            value={(() => {
+                              const vals = [];
+                              if (state.filters.liveSession) vals.push('live_session');
+                              if (state.filters.music?.asBackground || state.filters.music?.asHoldMusic) vals.push('music');
+                              return vals;
+                            })()}
+                            onChange={(val) => {
+                              const vals = Array.isArray(val) ? val : [val];
+                              const hasLive = vals.includes('live_session');
+                              const hasMusic = vals.includes('music');
+                              
+                              updateFilters({ 
+                                liveSession: hasLive,
+                                music: {
+                                  asBackground: hasMusic && activeJourneyId !== 26,
+                                  asHoldMusic: hasMusic && activeJourneyId === 26
+                                }
+                              });
+                            }}
+                            multiSelect={true}
+                            placeholder={t('filter.select_extras', 'Extra opties')}
+                            label={<VoiceglotText translationKey="filter.extras" defaultText="Extra's?" />}
+                            className="w-full h-full"
+                          />
+                        </ContainerInstrument>
+                      )}
                     </ContainerInstrument>
 
                   </ContainerInstrument>

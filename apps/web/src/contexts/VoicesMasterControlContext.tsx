@@ -42,6 +42,10 @@ interface MasterControlState {
     yearsDetail?: Record<string, number>;
     mediaRegion?: Record<string, string>;
     liveSession?: boolean;
+    music?: {
+      asBackground: boolean;
+      asHoldMusic: boolean;
+    };
   };
   currentStep: 'voice' | 'script' | 'checkout';
 }
@@ -136,6 +140,10 @@ export const VoicesMasterControlProvider: React.FC<{
       spots: 1,
       years: 1,
       liveSession: false,
+      music: {
+        asBackground: false,
+        asHoldMusic: false,
+      },
     },
     currentStep: 'voice',
   });
@@ -368,6 +376,10 @@ export const VoicesMasterControlProvider: React.FC<{
           yearsDetail: initialYearsDetail,
           mediaRegion: initialMediaRegion,
           liveSession: searchParams?.get('liveSession') === 'true' || savedState.filters?.liveSession || false,
+          music: savedState.filters?.music || {
+            asBackground: false,
+            asHoldMusic: false,
+          },
         },
         currentStep: 'voice',
         // @ts-ignore - internal tracking
@@ -405,7 +417,15 @@ export const VoicesMasterControlProvider: React.FC<{
     if (state.filters.media && shouldSyncMedia) {
       updateMedia(state.filters.media, state.filters.mediaIds);
     }
-  }, [isClient, isStateInitialized, state.journey, state.journeyId, state.filters.media, state.filters.mediaIds, checkoutState.usage, checkoutState.usageId, checkoutState.media, checkoutState.mediaIds, updateUsage, updateMedia]);
+
+    if (state.filters.music && JSON.stringify(checkoutState.music) !== JSON.stringify(state.filters.music)) {
+      updateMusic(state.filters.music);
+    }
+
+    if (state.filters.liveSession !== undefined && checkoutState.liveSession !== state.filters.liveSession) {
+      updateLiveSession(state.filters.liveSession);
+    }
+  }, [isClient, isStateInitialized, state.journey, state.journeyId, state.filters.media, state.filters.mediaIds, state.filters.music, state.filters.liveSession, checkoutState.usage, checkoutState.usageId, checkoutState.media, checkoutState.mediaIds, checkoutState.music, checkoutState.liveSession, updateUsage, updateMedia, updateMusic, updateLiveSession]);
 
   const detectStateFromUrl = useCallback((url: string) => {
     const localeMatch = url.match(/^\/(nl|fr|en|de|es|it|pt)(\/|$)/i);
@@ -599,7 +619,9 @@ export const VoicesMasterControlProvider: React.FC<{
           media: (urlState as any).media || prev.filters.media,
           spotsDetail: (urlState as any).spotsDetail || prev.filters.spotsDetail,
           yearsDetail: (urlState as any).yearsDetail || prev.filters.yearsDetail,
-          words: (urlState as any).words || prev.filters.words
+          words: (urlState as any).words || prev.filters.words,
+          music: (urlState as any).music || prev.filters.music,
+          liveSession: (urlState as any).liveSession !== undefined ? (urlState as any).liveSession : prev.filters.liveSession
         }
       }));
     };
@@ -638,7 +660,9 @@ export const VoicesMasterControlProvider: React.FC<{
           media: (urlState as any).media || prev.filters.media,
           spotsDetail: (urlState as any).spotsDetail || prev.filters.spotsDetail,
           yearsDetail: (urlState as any).yearsDetail || prev.filters.yearsDetail,
-          words: (urlState as any).words || prev.filters.words
+          words: (urlState as any).words || prev.filters.words,
+          music: (urlState as any).music || prev.filters.music,
+          liveSession: (urlState as any).liveSession !== undefined ? (urlState as any).liveSession : prev.filters.liveSession
         }
       }));
     }
@@ -905,10 +929,11 @@ export const VoicesMasterControlProvider: React.FC<{
       if (newFilters.spotsDetail) updateSpotsDetail(newFilters.spotsDetail);
       if (newFilters.yearsDetail) updateYearsDetail(newFilters.yearsDetail);
       if (newFilters.liveSession !== undefined) updateLiveSession(newFilters.liveSession);
+      if (newFilters.music) updateMusic(newFilters.music);
 
       return { ...prev, filters: updatedFilters };
     });
-  }, [updateMedia, updateSpots, updateYears, updateSpotsDetail, updateYearsDetail, updateLiveSession]);
+  }, [updateMedia, updateSpots, updateYears, updateSpotsDetail, updateYearsDetail, updateLiveSession, updateMusic]);
 
   const updateStep = useCallback((step: MasterControlState['currentStep']) => {
     setState(prev => {
@@ -979,6 +1004,10 @@ export const VoicesMasterControlProvider: React.FC<{
       spots: 1,
       years: 1,
       liveSession: false,
+      music: {
+        asBackground: false,
+        asHoldMusic: false,
+      },
     };
     setState(prev => ({ ...prev, filters: { ...prev.filters, ...defaultFilters } as MasterControlState['filters'] }));
   }, [state.journey]);

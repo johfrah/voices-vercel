@@ -1805,124 +1805,133 @@ export default function ConfiguratorPageClient({
                 </AnimatePresence>
               </div>
 
-              {state.usage === 'telefonie' && (
-                <div className="space-y-4">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <button 
-                      onClick={() => {
-                        const isActive = state.music.asBackground || state.music.asHoldMusic;
-                        if (isActive) {
-                          updateMusic({ asBackground: false, asHoldMusic: false, trackId: null });
-                        } else {
-                          updateMusic({ asBackground: true, trackId: state.music.trackId || 'corporate-growth' });
-                        }
-                      }} 
-                      className={cn(
-                        "w-full flex items-center justify-between p-5 rounded-[20px] border transition-all text-left group", 
-                        (state.music.asBackground || state.music.asHoldMusic) ? "bg-primary/5 border-primary/20 shadow-sm" : "bg-white border-black/[0.03] hover:border-black/10"
-                      )}
-                    >
-                      <div className="flex items-center gap-4">
-                        <div className={cn("w-10 h-10 rounded-full flex items-center justify-center transition-all duration-500", (state.music.asBackground || state.music.asHoldMusic) ? "bg-primary text-white scale-110" : "bg-va-off-white text-va-black/20 group-hover:text-primary")}>
-                          {(state.music.asBackground || state.music.asHoldMusic) ? <Check size={18} strokeWidth={3} /> : <MusicIcon size={18} strokeWidth={1.5} />}
-                        </div>
-                        <div>
-                          <div className={cn("text-[13px] font-bold transition-colors", (state.music.asBackground || state.music.asHoldMusic) ? "text-primary" : "text-va-black")}>
-                            <VoiceglotText translationKey="configurator.music_mixing" defaultText="Muziek & Mixage" />
-                          </div>
-                          <div className="text-[11px] text-va-black/40 font-light">
-                            <VoiceglotText translationKey="configurator.music_mixing_sub" defaultText="Kies muziek als aparte wachtmuziek of laat mixen onder de stem" />
-                          </div>
-                        </div>
-                      </div>
-                      <div className={cn("text-[13px] font-medium transition-colors", (state.music.asBackground || state.music.asHoldMusic) ? "text-primary" : "text-va-black/40")}>+ {SlimmeKassa.format((state.pricingConfig?.musicSurcharge || 5900) / 100)}</div>
-                    </button>
-
-                    <AnimatePresence>
-                      {(state.music.asBackground || state.music.asHoldMusic) && (
-                        <motion.div 
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          exit={{ opacity: 0, x: -20 }}
-                          className="flex gap-2"
-                        >
-                          <button 
-                            onClick={() => updateMusic({ asBackground: !state.music.asBackground })}
-                            disabled={!state.music.asBackground && !state.music.asHoldMusic}
-                            className={cn(
-                              "flex-1 flex flex-col items-center justify-center gap-1 p-3 rounded-xl border transition-all text-[10px] font-bold uppercase tracking-widest",
-                              state.music.asBackground ? "bg-primary text-white border-primary" : "bg-white border-black/5 text-va-black/40 hover:border-black/10 disabled:opacity-30"
-                            )}
-                          >
-                            <div className={cn("w-6 h-6 rounded-full flex items-center justify-center mb-1", state.music.asBackground ? "bg-white/20" : "bg-va-black/5")}>
-                              <Check size={12} strokeWidth={3} className={state.music.asBackground ? "opacity-100" : "opacity-0"} />
-                            </div>
-                            <VoiceglotText translationKey="configurator.mix" defaultText="Mixen" />
-                          </button>
-                          <button 
-                            onClick={() => updateMusic({ asHoldMusic: !state.music.asHoldMusic })}
-                            disabled={!state.music.asBackground && !state.music.asHoldMusic}
-                            className={cn(
-                              "flex-1 flex flex-col items-center justify-center gap-1 p-3 rounded-xl border transition-all text-[10px] font-bold uppercase tracking-widest",
-                              state.music.asHoldMusic ? "bg-primary text-white border-primary" : "bg-white border-black/5 text-va-black/40 hover:border-black/10 disabled:opacity-30"
-                            )}
-                          >
-                            <div className={cn("w-6 h-6 rounded-full flex items-center justify-center mb-1", state.music.asHoldMusic ? "bg-white/20" : "bg-va-black/5")}>
-                              <Check size={12} strokeWidth={3} className={state.music.asHoldMusic ? "opacity-100" : "opacity-0"} />
-                            </div>
-                            <VoiceglotText translationKey="configurator.hold_music" defaultText="Wachtmuziek" />
-                          </button>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
-
-                  <AnimatePresence>
-                    {(state.music.asBackground || state.music.asHoldMusic) && (
-                      <MusicSelector />
-                    )}
-                  </AnimatePresence>
-                </div>
-              )}
-
-              {state.usage !== 'telefonie' && state.selectedActor && (
-                (() => {
-                  const actor = state.selectedActor as any;
-                  const hasLiveRegie = actor.price_live_regie > 0 || 
-                                     (actor.rates_raw && Object.values(actor.rates_raw).some((r: any) => r.live_regie > 0));
-                  
-                  if (!hasLiveRegie) return null;
-
-                  return (
+              {/*  CHRIS-PROTOCOL: Hide redundant extras in minimal mode (Agency SPA) as they are now in MasterControl */}
+              {!minimalMode && (
+                <>
+                  {state.usage === 'telefonie' && (
                     <div className="space-y-4">
-                      <button 
-                        onClick={() => {
-                          updateLiveSession(!state.liveSession);
-                          if (playClick) playClick(!state.liveSession ? 'pro' : 'soft');
-                        }} 
-                        className={cn(
-                          "w-full flex items-center justify-between p-5 rounded-[20px] border transition-all text-left group", 
-                          state.liveSession ? "bg-primary/5 border-primary/20 shadow-sm" : "bg-white border-black/[0.03] hover:border-black/10"
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <button 
+                          onClick={() => {
+                            const isActive = state.music.asBackground || state.music.asHoldMusic;
+                            if (isActive) {
+                              updateMusic({ asBackground: false, asHoldMusic: false, trackId: null });
+                            } else {
+                              updateMusic({ asBackground: true, trackId: state.music.trackId || 'corporate-growth' });
+                            }
+                          }} 
+                          className={cn(
+                            "w-full flex items-center justify-between p-5 rounded-[20px] border transition-all text-left group", 
+                            (state.music.asBackground || state.music.asHoldMusic) ? "bg-primary/5 border-primary/20 shadow-sm" : "bg-white border-black/[0.03] hover:border-black/10"
+                          )}
+                        >
+                          <div className="flex items-center gap-4">
+                            <div className={cn("w-10 h-10 rounded-full flex items-center justify-center transition-all duration-500", (state.music.asBackground || state.music.asHoldMusic) ? "bg-primary text-white scale-110" : "bg-va-off-white text-va-black/20 group-hover:text-primary")}>
+                              {(state.music.asBackground || state.music.asHoldMusic) ? <Check size={18} strokeWidth={3} /> : <MusicIcon size={18} strokeWidth={1.5} />}
+                            </div>
+                            <div>
+                              <div className={cn("text-[13px] font-bold transition-colors", (state.music.asBackground || state.music.asHoldMusic) ? "text-primary" : "text-va-black")}>
+                                <VoiceglotText translationKey="configurator.music_mixing" defaultText="Muziek & Mixage" />
+                              </div>
+                              <div className="text-[11px] text-va-black/40 font-light">
+                                <VoiceglotText translationKey="configurator.music_mixing_sub" defaultText="Kies muziek als aparte wachtmuziek of laat mixen onder de stem" />
+                              </div>
+                            </div>
+                          </div>
+                          <div className={cn("text-[13px] font-medium transition-colors", (state.music.asBackground || state.music.asHoldMusic) ? "text-primary" : "text-va-black/40")}>+ {SlimmeKassa.format((state.pricingConfig?.musicSurcharge || 5900) / 100)}</div>
+                        </button>
+
+                        <AnimatePresence>
+                          {(state.music.asBackground || state.music.asHoldMusic) && (
+                            <motion.div 
+                              initial={{ opacity: 0, x: -20 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              exit={{ opacity: 0, x: -20 }}
+                              className="flex gap-2"
+                            >
+                              <button 
+                                onClick={() => updateMusic({ asBackground: !state.music.asBackground })}
+                                disabled={!state.music.asBackground && !state.music.asHoldMusic}
+                                className={cn(
+                                  "flex-1 flex flex-col items-center justify-center gap-1 p-3 rounded-xl border transition-all text-[10px] font-bold uppercase tracking-widest",
+                                  state.music.asBackground ? "bg-primary text-white border-primary" : "bg-white border-black/5 text-va-black/40 hover:border-black/10 disabled:opacity-30"
+                                )}
+                              >
+                                <div className={cn("w-6 h-6 rounded-full flex items-center justify-center mb-1", state.music.asBackground ? "bg-white/20" : "bg-va-black/5")}>
+                                  <Check size={12} strokeWidth={3} className={state.music.asBackground ? "opacity-100" : "opacity-0"} />
+                                </div>
+                                <VoiceglotText translationKey="configurator.mix" defaultText="Mixen" />
+                              </button>
+                              <button 
+                                onClick={() => updateMusic({ asHoldMusic: !state.music.asHoldMusic })}
+                                disabled={!state.music.asBackground && !state.music.asHoldMusic}
+                                className={cn(
+                                  "flex-1 flex flex-col items-center justify-center gap-1 p-3 rounded-xl border transition-all text-[10px] font-bold uppercase tracking-widest",
+                                  state.music.asHoldMusic ? "bg-primary text-white border-primary" : "bg-white border-black/5 text-va-black/40 hover:border-black/10 disabled:opacity-30"
+                                )}
+                              >
+                                <div className={cn("w-6 h-6 rounded-full flex items-center justify-center mb-1", state.music.asHoldMusic ? "bg-white/20" : "bg-va-black/5")}>
+                                  <Check size={12} strokeWidth={3} className={state.music.asHoldMusic ? "opacity-100" : "opacity-0"} />
+                                </div>
+                                <VoiceglotText translationKey="configurator.hold_music" defaultText="Wachtmuziek" />
+                              </button>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
+
+                      <AnimatePresence>
+                        {(state.music.asBackground || state.music.asHoldMusic) && (
+                          <MusicSelector />
                         )}
-                      >
-                        <div className="flex items-center gap-4">
-                          <div className={cn("w-10 h-10 rounded-full flex items-center justify-center transition-all duration-500", state.liveSession ? "bg-primary text-white scale-110" : "bg-va-off-white text-va-black/20 group-hover:text-primary")}>
-                            {state.liveSession ? <Check size={18} strokeWidth={3} /> : <Zap size={18} strokeWidth={1.5} />}
-                          </div>
-                          <div>
-                            <div className={cn("text-[13px] font-bold transition-colors", state.liveSession ? "text-primary" : "text-va-black")}>
-                              <VoiceglotText translationKey="configurator.live_regie" defaultText="Live Regie (Zoom/Teams)" />
-                            </div>
-                            <div className="text-[11px] text-va-black/40 font-light">
-                              <VoiceglotText translationKey="configurator.live_regie_sub" defaultText="Regisseer de stem live tijdens de opname voor het beste resultaat" />
-                            </div>
-                          </div>
-                        </div>
-                        <div className={cn("text-[13px] font-medium transition-colors", state.liveSession ? "text-primary" : "text-va-black/40")}>+ €{liveRegiePrice}</div>
-                      </button>
+                      </AnimatePresence>
                     </div>
-                  );
-                })()
+                  )}
+
+                  {state.usage !== 'telefonie' && state.selectedActor && (
+                    (() => {
+                      const actor = state.selectedActor as any;
+                      const hasLiveRegie = actor.price_live_regie > 0 || 
+                                         (actor.rates_raw && Object.values(actor.rates_raw).some((r: any) => r.live_regie > 0));
+                      
+                      if (!hasLiveRegie) return null;
+
+                      const liveRegiePrice = (state.selectedActor?.price_live_regie && parseFloat(state.selectedActor.price_live_regie) > 0) 
+                        ? state.selectedActor.price_live_regie 
+                        : (state.pricingConfig?.liveSessionSurcharge / 100 || 50);
+
+                      return (
+                        <div className="space-y-4">
+                          <button 
+                            onClick={() => {
+                              updateLiveSession(!state.liveSession);
+                              if (playClick) playClick(!state.liveSession ? 'pro' : 'soft');
+                            }} 
+                            className={cn(
+                              "w-full flex items-center justify-between p-5 rounded-[20px] border transition-all text-left group", 
+                              state.liveSession ? "bg-primary/5 border-primary/20 shadow-sm" : "bg-white border-black/[0.03] hover:border-black/10"
+                            )}
+                          >
+                            <div className="flex items-center gap-4">
+                              <div className={cn("w-10 h-10 rounded-full flex items-center justify-center transition-all duration-500", state.liveSession ? "bg-primary text-white scale-110" : "bg-va-off-white text-va-black/20 group-hover:text-primary")}>
+                                {state.liveSession ? <Check size={18} strokeWidth={3} /> : <Zap size={18} strokeWidth={1.5} />}
+                              </div>
+                              <div>
+                                <div className={cn("text-[13px] font-bold transition-colors", state.liveSession ? "text-primary" : "text-va-black")}>
+                                  <VoiceglotText translationKey="configurator.live_regie" defaultText="Live Regie (Zoom/Teams)" />
+                                </div>
+                                <div className="text-[11px] text-va-black/40 font-light">
+                                  <VoiceglotText translationKey="configurator.live_regie_sub" defaultText="Regisseer de stem live tijdens de opname voor het beste resultaat" />
+                                </div>
+                              </div>
+                            </div>
+                            <div className={cn("text-[13px] font-medium transition-colors", state.liveSession ? "text-primary" : "text-va-black/40")}>+ €{liveRegiePrice}</div>
+                          </button>
+                        </div>
+                      );
+                    })()
+                  )}
+                </>
               )}
 
               {/*  CHRIS-PROTOCOL: Render Price Block inline for minimal mode (Agency page) */}

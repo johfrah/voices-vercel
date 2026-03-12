@@ -102,6 +102,14 @@ export async function GET(request: NextRequest) {
     };
     // Beveiliging: Alleen lokale assets toestaan (WordPress-vrij)
     let cleanPath = path;
+
+    // 🛡️ CHRIS-PROTOCOL: Auto-Heal Legacy Filenames (v3.2.1)
+    // Als we alleen een bestandsnaam krijgen die overduidelijk een voicecard is, 
+    // herstellen we het pad naar de juiste folder in Supabase.
+    if (cleanPath && !cleanPath.includes('/') && cleanPath.includes('-photo-') && (cleanPath.endsWith('.webp') || cleanPath.endsWith('.jpg'))) {
+      console.log(`[Proxy Auto-Heal] Recovering deep path for voicecard: ${cleanPath}`);
+      cleanPath = `visuals/active/voicecards/${cleanPath}`;
+    }
     
     //  FIX: Als het pad al een volledige Supabase URL is, haal dan alleen het pad deel eruit
     // MAAR: Behoud de volledige URL voor Supabase Storage direct fetch

@@ -779,7 +779,7 @@ async function processActorData(actor: any, slug: string): Promise<Actor> {
     const { AssetManager } = await import('@/lib/system/core/asset-manager');
     const [mediaItem] = await directDb.select().from(mediaTable).where(eq(mediaTable.id, actor.photo_id)).limit(1);
     if (mediaItem) {
-      const fp = mediaItem.fileName || mediaItem.filePath; // Use fileName as fallback
+      const fp = mediaItem.filePath || mediaItem.file_path || mediaItem.fileName || mediaItem.file_name;
       if (fp) photoUrl = AssetManager.constructStorageUrl(fp);
     }
   } catch (e) {}
