@@ -94,7 +94,7 @@ export default function AnalyticsHubPage() {
           <ContainerInstrument className="w-px h-full bg-white/10 mx-4" />
           <ContainerInstrument className="flex flex-col">
             <TextInstrument className="text-[15px] font-light tracking-widest text-white/40">Live Nu</TextInstrument>
-            <TextInstrument className="text-3xl font-light">{visitors.filter(v => new Date(v.lastVisitAt).getTime() > Date.now() - 300000).length}</TextInstrument>
+            <TextInstrument className="text-3xl font-light">{visitors.filter(visitor => new Date(visitor.lastVisitAt).getTime() > Date.now() - 300000).length}</TextInstrument>
           </ContainerInstrument>
         </ContainerInstrument>
       </SectionInstrument>

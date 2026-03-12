@@ -37,8 +37,8 @@ export default function VakantiesPage() {
   }, []);
 
   const now = new Date();
-  const activeVacations = data.filter(v => isBefore(new Date(v.holiday_from), now) && isAfter(new Date(v.holiday_till), now));
-  const upcomingVacations = data.filter(v => isAfter(new Date(v.holiday_from), now));
+  const activeVacations = data.filter(vacation => isBefore(new Date(vacation.holiday_from), now) && isAfter(new Date(vacation.holiday_till), now));
+  const upcomingVacations = data.filter(vacation => isAfter(new Date(vacation.holiday_from), now));
 
   return (
     <PageWrapperInstrument className="min-h-screen bg-va-off-white p-8 pt-24">

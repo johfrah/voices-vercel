@@ -152,8 +152,8 @@ export async function POST(request: NextRequest) {
       const cleaned: Record<string, string> = {};
       const keys = ['microphone', 'preamp', 'interface', 'booth'];
       for (const k of keys) {
-        const v = (studio_specs as Record<string, unknown>)[k];
-        if (v != null && String(v).trim()) cleaned[k] = String(v).trim();
+        const val = (studio_specs as Record<string, unknown>)[k];
+        if (val != null && String(val).trim()) cleaned[k] = String(val).trim();
       }
       if (Object.keys(cleaned).length > 0) {
         insertPayload.studio_specs = cleaned;

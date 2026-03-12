@@ -65,7 +65,7 @@ export default function LiveVisitorDashboard() {
     return () => clearInterval(interval);
   }, []);
 
-  const recentSessions = visitors.filter(v => new Date(v.lastVisitAt).getTime() > Date.now() - 3600000);
+  const recentSessions = visitors.filter(visitor => new Date(visitor.lastVisitAt).getTime() > Date.now() - 3600000);
 
   return (
     <PageWrapperInstrument className="p-12 space-y-12 max-w-[1600px] mx-auto">
@@ -86,7 +86,7 @@ export default function LiveVisitorDashboard() {
         <ContainerInstrument className="flex gap-4 bg-va-black text-white p-6 rounded-[20px] border border-white/5">
           <ContainerInstrument className="flex flex-col">
             <TextInstrument className="text-[15px] font-light tracking-widest text-white/40"><VoiceglotText  translationKey="auto.page.live_radar.71ada0" defaultText="Live Radar" /></TextInstrument>
-            <TextInstrument className="text-3xl font-light text-primary">{visitors.filter(v => new Date(v.lastVisitAt).getTime() > Date.now() - 300000).length}</TextInstrument>
+            <TextInstrument className="text-3xl font-light text-primary">{visitors.filter(visitor => new Date(visitor.lastVisitAt).getTime() > Date.now() - 300000).length}</TextInstrument>
           </ContainerInstrument>
           <ContainerInstrument className="w-px h-full bg-white/10 mx-4" />
           <ContainerInstrument className="flex flex-col">
@@ -141,21 +141,21 @@ export default function LiveVisitorDashboard() {
                   </td>
                 </tr>
               ) : (
-                visitors.map((v) => {
-                  const isLive = new Date(v.lastVisitAt).getTime() > Date.now() - 300000;
+                visitors.map((visitor) => {
+                  const isLive = new Date(visitor.lastVisitAt).getTime() > Date.now() - 300000;
                   return (
-                    <tr key={v.id} className="hover:bg-va-off-white transition-colors group">
+                    <tr key={visitor.id} className="hover:bg-va-off-white transition-colors group">
                       <td className="p-6">
                         <ContainerInstrument className="flex items-center gap-4">
                           <ContainerInstrument className={`w-10 h-10 rounded-xl flex items-center justify-center font-light text-[15px] ${isLive ? "bg-va-black text-white" : "bg-va-black/5 text-va-black/40"}`}>
-                            {v.visitorHash?.substring(0, 2).toUpperCase() || "??"}
+                            {visitor.visitorHash?.substring(0, 2).toUpperCase() || "??"}
                           </ContainerInstrument>
                           <ContainerInstrument>
                             <TextInstrument className="text-[15px] font-light text-va-black">
-                              {v.companyName || 'Anonieme Bezoeker'}
+                              {visitor.companyName || 'Anonieme Bezoeker'}
                             </TextInstrument>
                             <TextInstrument className="text-[15px] text-va-black/40 font-light tracking-widest">
-                              {v.locationCity ? `${v.locationCity}, ${v.locationCountry}` : v.visitorHash}
+                              {visitor.locationCity ? `${visitor.locationCity}, ${visitor.locationCountry}` : visitor.visitorHash}
                             </TextInstrument>
                           </ContainerInstrument>
                         </ContainerInstrument>
@@ -168,30 +168,30 @@ export default function LiveVisitorDashboard() {
                               {isLive ? 'Live' : 'Recent'}
                             </TextInstrument>
                           </ContainerInstrument>
-                          <TextInstrument className="text-[15px] font-light text-va-black/20 tracking-widest ">{v.journeyState}</TextInstrument>
+                          <TextInstrument className="text-[15px] font-light text-va-black/20 tracking-widest ">{visitor.journeyState}</TextInstrument>
                         </ContainerInstrument>
                       </td>
                       <td className="p-6">
                         <ContainerInstrument className="flex items-center gap-2 text-[15px] font-light bg-va-black/5 px-3 py-1.5 rounded-[20px] w-fit max-w-[200px] truncate">
                           <Monitor strokeWidth={1.5} size={12} className="text-va-black/20" />
-                          <TextInstrument>{v.currentPage || '/'}</TextInstrument>
+                          <TextInstrument>{visitor.currentPage || '/'}</TextInstrument>
                         </ContainerInstrument>
                       </td>
                       <td className="p-6">
                         <ContainerInstrument className="flex items-center gap-2 text-[15px] font-light">
                           <Globe strokeWidth={1.5} size={12} className="text-va-black/20" />
-                          <TextInstrument>{v.market}</TextInstrument>
+                          <TextInstrument>{visitor.market}</TextInstrument>
                         </ContainerInstrument>
                       </td>
                       <td className="p-6">
                         <ContainerInstrument className="flex flex-col gap-1">
-                          <TextInstrument className="text-[15px] font-light text-va-black/60">{v.utmSource || 'Direct'}</TextInstrument>
-                          <TextInstrument className="text-[15px] font-light text-va-black/20">{v.utmMedium || '-'}</TextInstrument>
+                          <TextInstrument className="text-[15px] font-light text-va-black/60">{visitor.utmSource || 'Direct'}</TextInstrument>
+                          <TextInstrument className="text-[15px] font-light text-va-black/20">{visitor.utmMedium || '-'}</TextInstrument>
                         </ContainerInstrument>
                       </td>
                       <td className="p-6 text-right">
                         <Link  
-                          href={`/admin/marketing/visitors/${v.visitorHash}`}
+                          href={`/admin/marketing/visitors/${visitor.visitorHash}`}
                           className="inline-flex items-center gap-2 bg-va-black text-white px-4 py-2 rounded-xl text-[15px] font-light tracking-widest hover:bg-primary transition-all group-hover:scale-105"
                         >
                           <Eye strokeWidth={1.5} size={14} />

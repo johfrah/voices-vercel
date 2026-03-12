@@ -620,7 +620,7 @@ export default async function RootLayout({
                 </ContainerInstrument>
               )}
 
-              <ContainerInstrument plain className="fixed top-0 left-0 right-0 z-[200]">
+              <ContainerInstrument plain className="fixed top-0 left-0 right-0 z-[200] pointer-events-none">
                 <SafeErrorGuard name="GlobalNav" fallback={<ContainerInstrument plain className="h-[60px] bg-white/80 backdrop-blur-md border-b border-black/5 flex items-center px-6"><ContainerInstrument plain className="h-8 w-32 bg-va-black/10 animate-pulse rounded-md" /></ContainerInstrument>}>
                   <Suspense fallback={<ContainerInstrument plain className="h-10 bg-va-off-white/50 animate-pulse" />}>
                     {showTopBar && <TopBar />}

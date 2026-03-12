@@ -573,7 +573,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
   //  CHRIS-PROTOCOL: For Youssef Artist Journey, use a simpler nav without TopBar and specific FABs
   if (isArtist) {
     return (
-      <ContainerInstrument as="nav" className="w-full px-4 md:px-6 py-3 flex items-center bg-va-black border-b border-white/5 relative z-[200]">
+      <ContainerInstrument as="nav" className="w-full px-4 md:px-6 py-3 flex items-center bg-va-black border-b border-white/5 relative z-[200] pointer-events-auto">
         <ContainerInstrument plain className="flex-1 flex justify-start">
           <Link href="/" className="flex items-center gap-3 group">
             <Image  
@@ -650,7 +650,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
   const isDev = process.env.NODE_ENV === 'development';
 
   return (
-    <ContainerInstrument as="nav" className={`w-full px-4 md:px-6 py-1 flex items-center bg-va-off-white/80 backdrop-blur-3xl border-b border-black/5 golden-curve relative`}>
+    <ContainerInstrument as="nav" className={`w-full px-4 md:px-6 py-1 flex items-center bg-va-off-white/80 backdrop-blur-3xl border-b border-black/5 golden-curve relative pointer-events-auto`}>
       <ContainerInstrument plain className="flex-1 flex justify-start">
         <ButtonInstrument 
           as={VoicesLinkInstrument}
