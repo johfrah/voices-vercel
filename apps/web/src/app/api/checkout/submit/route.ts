@@ -543,7 +543,17 @@ export async function POST(request: Request) {
     // 🛡️ CHRIS-PROTOCOL: Atomic Rounding Integrity (v2.29.5)
     // We calculate the total amount as the sum of individual item totals to ensure
     // 100% consistency with Mollie line items and prevent 1-cent rounding errors.
-    const amount = validatedItems.reduce((acc, item) => acc + (item.pricing?.total || 0), 0);
+    const amount = validatedItems.reduce((acc, item) => {
+      const itemTotal = Number(item.pricing?.total || 0);
+      return acc + Math.round(itemTotal * 100) / 100;
+    }, 0);
+
+    // 🛡️ CHRIS-PROTOCOL: Atomic Subtotal Integrity
+    // Ensure subtotal is also the sum of individual item subtotals for Yuki consistency.
+    const serverCalculatedSubtotalSum = validatedItems.reduce((acc, item) => {
+      const itemSubtotal = Number(item.pricing?.subtotal || 0);
+      return acc + Math.round(itemSubtotal * 100) / 100;
+    }, 0);
 
     if (!isQuote && amount <= 0) {
       return NextResponse.json({ error: 'Kon geen geldige prijs berekenen voor deze bestelling.' }, { status: 400 });
@@ -617,8 +627,8 @@ export async function POST(request: Request) {
 
     const { data: newOrder, error: orderErr } = await sdkClient.from('orders').insert({
       wp_order_id: uniqueWpId,
-      total: amount.toString(),
-      total_tax: (amount - serverCalculatedSubtotal).toString(),
+      total: amount.toFixed(2),
+      total_tax: (amount - serverCalculatedSubtotalSum).toFixed(2),
       status: isQuote ? 'quote-pending' : 'pending',
       user_id: userId || null,
       world_id: resolvedWorldId,
@@ -858,8 +868,8 @@ export async function POST(request: Request) {
               userName: first_name,
               orderId: newOrder.id,
               total: amount,
-              subtotal: serverCalculatedSubtotal,
-              tax: amount - serverCalculatedSubtotal,
+              subtotal: serverCalculatedSubtotalSum,
+              tax: amount - serverCalculatedSubtotalSum,
               items: buildOrderEmailItems(validatedItems, actorMap, host),
               paymentMethod: payment_method,
               language: normalizedLanguage,
