@@ -50,7 +50,7 @@ export const TopBar = () => {
     <ContainerInstrument 
       as="div" 
       plain 
-      className="hidden md:flex w-full bg-va-off-white/80 backdrop-blur-md border-b border-black/[0.03] py-2 px-4 md:px-6 justify-between items-center gap-6 relative z-[201] pointer-events-auto"
+      className="hidden md:flex w-full bg-va-off-white/80 backdrop-blur-md border-b border-black/[0.03] py-2 px-4 md:px-6 justify-between items-center gap-6 relative z-va-nav pointer-events-auto"
     >
       {/* Linkerkant: Campagne Bericht (Mark's Instrument) */}
       <div className="flex-1">

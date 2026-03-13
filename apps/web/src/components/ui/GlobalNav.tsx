@@ -694,13 +694,13 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
               onUpdate={(newSrc) => {
                 saveNav(links, { ...navConfig.logo, src: newSrc });
               }}
-              className="h-7 md:h-9 w-auto transition-transform duration-500 relative z-50"
+              className="h-7 md:h-9 w-auto transition-transform duration-500 relative z-va-nav"
             />
           </ContainerInstrument>
         ) : isPortfolioMarket ? (
-          <TextInstrument className="text-xl font-light tracking-tighter transition-transform duration-500 group-hover:scale-105 text-va-black whitespace-nowrap relative z-50"><VoiceglotText  translationKey="nav.portfolio_name" defaultText={market.name} noTranslate={true} /></TextInstrument>
+          <TextInstrument className="text-xl font-light tracking-tighter transition-transform duration-500 group-hover:scale-105 text-va-black whitespace-nowrap relative z-va-nav"><VoiceglotText  translationKey="nav.portfolio_name" defaultText={market.name} noTranslate={true} /></TextInstrument>
         ) : market.market_code === 'ARTIST' ? (
-          <TextInstrument className="text-xl font-light tracking-tighter transition-transform duration-500 group-hover:scale-105 text-va-black whitespace-nowrap relative z-50"><VoiceglotText  translationKey="nav.artist_name" defaultText={market.name} noTranslate={true} /></TextInstrument>
+          <TextInstrument className="text-xl font-light tracking-tighter transition-transform duration-500 group-hover:scale-105 text-va-black whitespace-nowrap relative z-va-nav"><VoiceglotText  translationKey="nav.artist_name" defaultText={market.name} noTranslate={true} /></TextInstrument>
         ) : (
         <VoiceglotImage  
           src={market.logo_url} 
@@ -709,13 +709,13 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
           height={80} 
           priority
           sizes="(max-width: 768px) 150px, 200px"
-          className="h-10 md:h-12 w-auto transition-transform duration-500 relative z-50"
+          className="h-10 md:h-12 w-auto transition-transform duration-500 relative z-va-nav"
         />
       )}
       </ButtonInstrument>
     </ContainerInstrument>
 
-    <ContainerInstrument plain className="hidden md:flex gap-8 absolute left-1/2 -translate-x-1/2 items-center z-50">
+    <ContainerInstrument plain className="hidden md:flex gap-8 absolute left-1/2 -translate-x-1/2 items-center z-va-nav">
       {activeLinks.slice(0, 6).map((link: any, idx: number) => {
         const isActive = pathname.startsWith(link.href) && link.href !== '#';
         const hasSubmenu = link.submenu && link.submenu.length > 0;
@@ -869,7 +869,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
       )}
     </ContainerInstrument>
 
-    <ContainerInstrument plain className="flex-1 flex gap-4 items-center justify-end relative z-50">
+    <ContainerInstrument plain className="flex-1 flex gap-4 items-center justify-end relative z-va-nav">
         {/*  PAAS ADMIN TRIGGER (Invisible for visitors) */}
         {showPortfolioAdmin && (
           <HeaderIcon 

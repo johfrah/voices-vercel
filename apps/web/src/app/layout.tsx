@@ -526,6 +526,19 @@ export default async function RootLayout({
   const showVoicy = !isArtistJourney && market.market_code !== 'ADEMING';
   const showTopBar = !isArtistJourney && market.market_code !== 'ADEMING' && market.market_code !== 'PORTFOLIO';
   const showGlobalNav = market.market_code !== 'ADEMING' && market.market_code !== 'PORTFOLIO';
+  
+  // 🛡️ CHRIS-PROTOCOL: Hydration Guard (v2.29.34)
+  // Ensure navigation is only rendered on the client to prevent #419 hydration errors.
+  const NavWrapper = ({ children }: { children: React.ReactNode }) => (
+    <ContainerInstrument plain className="fixed top-0 left-0 right-0 z-va-nav">
+      <SafeErrorGuard name="GlobalNav" fallback={<ContainerInstrument plain className="h-[60px] bg-white/80 backdrop-blur-md border-b border-black/5 flex items-center px-6"><ContainerInstrument plain className="h-8 w-32 bg-va-black/10 animate-pulse rounded-md" /></ContainerInstrument>}>
+        <Suspense fallback={<ContainerInstrument plain className="h-10 bg-va-off-white/50 animate-pulse" />}>
+          {children}
+        </Suspense>
+      </SafeErrorGuard>
+    </ContainerInstrument>
+  );
+
   const schemaLanguages = Array.from(
     new Set((market.supported_languages || [market.primary_language]).map((l: string) => localeToBcp47(l)))
   );
@@ -620,14 +633,12 @@ export default async function RootLayout({
                 </ContainerInstrument>
               )}
 
-              <ContainerInstrument plain className="fixed top-0 left-0 right-0 z-va-nav">
-                <SafeErrorGuard name="GlobalNav" fallback={<ContainerInstrument plain className="h-[60px] bg-white/80 backdrop-blur-md border-b border-black/5 flex items-center px-6"><ContainerInstrument plain className="h-8 w-32 bg-va-black/10 animate-pulse rounded-md" /></ContainerInstrument>}>
-                  <Suspense fallback={<ContainerInstrument plain className="h-10 bg-va-off-white/50 animate-pulse" />}>
-                    {showTopBar && <TopBar />}
-                    {showGlobalNav && <GlobalNav initialNavConfig={navConfig || undefined} />}
-                  </Suspense>
-                </SafeErrorGuard>
-              </ContainerInstrument>
+              {(showTopBar || showGlobalNav) && (
+                <NavWrapper>
+                  {showTopBar && <TopBar />}
+                  {showGlobalNav && <GlobalNav initialNavConfig={navConfig || undefined} />}
+                </NavWrapper>
+              )}
               <CookieBanner />
               <SafeErrorGuard
                 name="Footer"
