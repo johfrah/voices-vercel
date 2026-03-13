@@ -14,7 +14,7 @@ import {
 export function StudioFooter({ market, activeSocials, activePhone, activeEmail, reviewStats }: any) {
   const [workshops, setWorkshops] = useState<StudioWorkshopNavItem[]>([]);
 
-  const studioStats = reviewStats?.worlds?.[2] || { averageRating: "4.9", totalCount: "12" };
+  const studioStats = reviewStats?.worlds?.[2] || { averageRating: 4.9, totalCount: 12 };
   const averageRating = studioStats.averageRating;
   const totalReviews = studioStats.totalCount;
 

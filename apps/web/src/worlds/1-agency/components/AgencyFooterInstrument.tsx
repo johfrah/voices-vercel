@@ -15,7 +15,7 @@ export function AgencyFooter({ market, activeSocials, activePhone, activeEmail, 
   const { t } = useTranslation();
   const { state: voicesState } = useVoicesState();
   
-  const agencyStats = reviewStats?.worlds?.[1] || { averageRating: reviewStats?.averageRating || "5.0", totalCount: reviewStats?.totalCount || "381" };
+  const agencyStats = reviewStats?.worlds?.[1] || { averageRating: 5.0, totalCount: 381 };
   const averageRating = agencyStats.averageRating;
   const totalReviews = agencyStats.totalCount;
 

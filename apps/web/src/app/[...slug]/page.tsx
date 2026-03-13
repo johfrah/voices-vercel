@@ -193,11 +193,11 @@ type ResolvedSlugEntry = {
 };
 
 const ROUTING_TYPE_BY_ENTITY_TYPE_ID: Record<number, string> = {
-  1: 'single_actor',
+  1: 'single_product', // Actor as product
   3: 'single_post',
   4: 'single_artist',
-  5: 'single_workshop',
-  6: 'archive_casting',
+  5: 'single_product', // Workshop as product
+  6: 'archive_product', // Casting list as product archive
 };
 
 function scoreSlugEntry(entry: any, marketCode: string, languageId?: number | null): number {
@@ -690,7 +690,7 @@ export async function generateMetadata({ params }: { params: SmartRouteParams })
   };
 
   // 0. Agency Journey SEO
-  if (resolved?.routing_type === 'actor' && lookupSlug.includes('/')) {
+  if (resolved?.routing_type === 'single_product' && lookupSlug.includes('/')) {
     // This is a deep actor route, let it handle its own metadata or proceed
   } else if (MarketManager.isAgencySegment(firstSegment)) {
     const title = await getTranslatedSEO('seo.agency.title', market.seo_data?.title || `Voice-over Agency | Vind de perfecte stem | ${market.name}`);
@@ -1072,6 +1072,36 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
     }
     
     console.error(` [SmartRouter] Handshake SUCCESS: ${resolved?.routing_type || 'fallback'} (ID: ${resolved?.entity_id}, World: ${worldId})`);
+
+    // 🛡️ CHRIS-PROTOCOL: Intent-Based Routing (v2.29.24)
+    // Map WooCommerce-style types to the correct UI Instruments
+    switch (resolved?.routing_type) {
+      case 'archive_product':
+        // Render Shop/Catalog Archives (Agency, Studio, Casting Lists)
+        if (resolved.slug === 'agency') {
+          const { getActors } = await import('@/lib/services/api-server');
+          const searchResults = await getActors({ market: market.market_code }, lang);
+          return <AgencyContent mappedActors={searchResults.results} filters={searchResults.filters} />;
+        }
+        const articleForArchive = await getArticle(resolved.entity_id.toString(), lang);
+        return <InstrumentRenderer blocks={articleForArchive?.blocks || []} />;
+      case 'archive_world':
+        // Render World Entry Hubs (Academy, Ademing, etc.)
+        const articleForWorld = await getArticle(resolved.entity_id.toString(), lang);
+        return <InstrumentRenderer blocks={articleForWorld?.blocks || []} />;
+      case 'single_page':
+        // Render Functional Pages (Contact, FAQ, etc.)
+        const articleForPage = await getArticle(resolved.entity_id.toString(), lang);
+        return <InstrumentRenderer blocks={articleForPage?.blocks || []} />;
+      case 'single_post':
+        // Render Knowledge/Blog Articles
+        const articleForPost = await getArticle(resolved.entity_id.toString(), lang);
+        return <InstrumentRenderer blocks={articleForPost?.blocks || []} />;
+      case 'single_product':
+        // Render Individual Products (Actors, Workshops)
+        const actor = await getActor(resolved.entity_id.toString(), lang);
+        return <VoiceDetailClient actor={actor} initialJourney={journey} initialMedium={medium} />;
+    }
       
       // Shift journey/medium for actor detail logic if it's a voice-like prefix
       // We detect this by checking if the resolved type is actor and there are more segments
