@@ -67,12 +67,35 @@ export async function GET() {
       }
     })();
 
+    // 🛡️ CHRIS-PROTOCOL: Dynamic Review Stats Calculation (Nuclear Truth)
+    let reviewStats = { averageRating: 5.0, totalCount: 393 };
+    const statsPromise = (async () => {
+      try {
+        const { data: stats, error } = await supabase
+          .from('reviews')
+          .select('rating')
+          .not('rating', 'is', null);
+        
+        if (!error && stats && stats.length > 0) {
+          const totalCount = stats.length;
+          const sum = stats.reduce((acc, curr) => acc + curr.rating, 0);
+          const averageRating = Math.round((sum / totalCount) * 10) / 10;
+          reviewStats = { averageRating, totalCount };
+        }
+      } catch (e) {
+        console.warn(' [Home Config API] Review stats calculation failed, using fallback');
+      }
+    })();
+
     const timeoutPromise = new Promise((_, reject) => 
       setTimeout(() => reject(new Error('Database timeout (2s)')), 2000)
     );
 
     try {
-      await Promise.race([dbPromise, timeoutPromise]);
+      await Promise.all([
+        Promise.race([dbPromise, timeoutPromise]),
+        Promise.race([statsPromise, timeoutPromise])
+      ]);
     } catch (err) {
       console.warn(' [Home Config API] DB Timeout reached, using stale cache or empty state');
       if (cachedHomeConfig) return NextResponse.json(cachedHomeConfig);
@@ -82,10 +105,7 @@ export async function GET() {
       journeyContent: homeConfigValue || null,
       languages: dbLanguages,
       campaignMessage: campaignMessage || null,
-      reviewStats: {
-        averageRating: 5.0,
-        totalCount: 393
-      }
+      reviewStats
     };
 
     // Update cache
