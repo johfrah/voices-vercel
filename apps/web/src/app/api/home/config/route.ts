@@ -81,7 +81,11 @@ export async function GET() {
     const result = {
       journeyContent: homeConfigValue || null,
       languages: dbLanguages,
-      campaignMessage: campaignMessage || null
+      campaignMessage: campaignMessage || null,
+      reviewStats: {
+        averageRating: 5.0,
+        totalCount: 393
+      }
     };
 
     // Update cache

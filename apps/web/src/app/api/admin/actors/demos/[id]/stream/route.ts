@@ -76,7 +76,14 @@ export async function GET(
 
     // 3. Redirect naar de proxy om CORS en auth te handelen
     const proxyUrl = new URL('/api/proxy', request.url);
-    proxyUrl.searchParams.set('path', audioUrl);
+    
+    // 🛡️ CHRIS-PROTOCOL: ID-First Handshake (v3.2.1)
+    // We geven de media_id door aan de proxy als we die hebben voor een pure handshake.
+    if (demo.media_id) {
+      proxyUrl.searchParams.set('media_id', demo.media_id.toString());
+    } else {
+      proxyUrl.searchParams.set('path', audioUrl);
+    }
     
     // 🛡️ CHRIS-PROTOCOL: MIME-Type Hinting (v3.0.1)
     // We voegen een extensie toe aan het pad voor de proxy als hint voor het MIME-type.

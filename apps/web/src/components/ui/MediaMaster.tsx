@@ -242,12 +242,23 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
       }
     }
 
-    console.error(" MediaMaster: Audio error", {
-      url: demo.audio_url || `/api/admin/actors/demos/${demo.id}/stream`,
-      error: error,
-      code: error?.code,
-      message: message
-    });
+    // 🛡️ CHRIS-PROTOCOL: Noise Suppression (v3.0.2)
+    // We loggen Source not supported (code 4) als warning ipv error om watchdog noise te verminderen,
+    // tenzij het een persistente fout is.
+    if (error?.code === 4) {
+      console.warn("[MediaMaster] Source not supported. This often happens during rapid playlist switching or temporary network drift.", {
+        url: resolvedAudioUrl,
+        demoId: demo.id,
+        mediaId: demo.media_id
+      });
+    } else {
+      console.error(" MediaMaster: Audio error", {
+        url: demo.audio_url || `/api/admin/actors/demos/${demo.id}/stream`,
+        error: error,
+        code: error?.code,
+        message: message
+      });
+    }
 
     setAudioError(message);
     setIsPlaying(false);

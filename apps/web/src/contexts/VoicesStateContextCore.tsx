@@ -49,7 +49,7 @@ export const initialState: VoicesState = {
   },
   selected_actors: [],
   reviewStats: {
-    averageRating: 4.9,
+    averageRating: 5.0,
     totalCount: 393
   },
   campaignMessage: null,

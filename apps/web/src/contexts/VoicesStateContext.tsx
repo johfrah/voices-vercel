@@ -50,7 +50,7 @@ export const VoicesStateProvider: React.FC<{ children: React.ReactNode }> = ({ c
     const fetchStats = async () => {
       try {
         //  CHRIS-PROTOCOL: Skip stats fetch on localhost if it causes 500/MIME errors
-        if (window.location.hostname === 'localhost') return;
+        if (typeof window !== 'undefined' && window.location.hostname === 'localhost') return;
 
         //  CHRIS-PROTOCOL: Use a public endpoint for review stats instead of admin-only actors API
         const res = await fetch('/api/home/config');
@@ -73,6 +73,18 @@ export const VoicesStateProvider: React.FC<{ children: React.ReactNode }> = ({ c
               totalCount: data.reviewStats.totalCount || 0
             }
           }));
+        } else {
+          // Fallback to home config review stats if available
+          const homeReviewStats = data.journeyContent?.reviewStats;
+          if (homeReviewStats) {
+            setState(prev => ({ 
+              ...prev, 
+              reviewStats: {
+                averageRating: homeReviewStats.averageRating || 4.9,
+                totalCount: homeReviewStats.totalCount || 0
+              }
+            }));
+          }
         }
       } catch (e) {
         console.warn('[VoicesState] Failed to fetch config', e);

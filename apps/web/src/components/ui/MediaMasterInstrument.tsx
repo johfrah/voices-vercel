@@ -189,11 +189,19 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
   };
 
   const handleError = (e: any) => {
-    console.error(" MediaMaster: Audio error", {
-      url: demo.audio_url,
-      error: e.target.error,
-      code: e.target.error?.code
-    });
+    const error = e.target.error;
+    if (error?.code === 4) {
+      console.warn("[MediaMasterInstrument] Source not supported.", {
+        url: demo.audio_url,
+        demoId: demo.id
+      });
+    } else {
+      console.error(" MediaMaster: Audio error", {
+        url: demo.audio_url,
+        error: error,
+        code: error?.code
+      });
+    }
     setIsPlaying(false);
   };
 
