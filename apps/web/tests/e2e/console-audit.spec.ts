@@ -103,7 +103,8 @@ for (const profile of auditProfiles) {
           }
         });
 
-        await page.goto(route, { waitUntil: 'domcontentloaded', timeout: 60_000 });
+        const url = route.startsWith('http') ? route : `${testInfo.project.use.baseURL || ''}${route}`;
+        await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60_000 });
         await page.waitForLoadState('networkidle', { timeout: 30_000 }).catch(() => {});
         await page.waitForTimeout(1000);
 

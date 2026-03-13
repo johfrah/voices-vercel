@@ -72,7 +72,10 @@ export function isExpectedBrowserNetworkNoise({
     'load failed',
     'networkerror when attempting to fetch resource',
     'the internet connection appears to be offline',
-    'aborterror'
+    'aborterror',
+    'play() request was interrupted',
+    'media_err_src_not_supported',
+    'code:4'
   ];
 
   const hasNetworkSignal = networkSignals.some((signal) => fingerprint.includes(signal));
