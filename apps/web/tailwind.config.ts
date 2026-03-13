@@ -59,6 +59,12 @@ const config: Config = {
           '100%': { backgroundPosition: '200% 0' },
         },
       },
+      boxShadow: {
+        'aura': '0 20px 50px rgba(0, 0, 0, 0.05)',
+        'aura-sm': '0 10px 30px rgba(0, 0, 0, 0.03)',
+        'aura-lg': '0 30px 70px rgba(0, 0, 0, 0.08)',
+        'magic': '0 40px 100px rgba(233, 30, 99, 0.15)',
+      },
       transitionTimingFunction: {
         'va-bezier': 'cubic-bezier(0.165, 0.84, 0.44, 1)',
       },
