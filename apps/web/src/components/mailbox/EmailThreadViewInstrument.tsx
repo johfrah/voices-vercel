@@ -264,7 +264,7 @@ export const EmailThreadViewInstrument = ({ thread, actorId, onClose, onReply }:
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[10000] bg-va-black/90 backdrop-blur-md flex items-center justify-center p-8"
+            className="fixed inset-0 z-va-system bg-va-black/90 backdrop-blur-md flex items-center justify-center p-8"
             onClick={() => setSpotlightFile(null)}
           >
             <button className="absolute top-8 right-8 text-white/50 hover:text-white transition-colors" onClick={() => setSpotlightFile(null)}>

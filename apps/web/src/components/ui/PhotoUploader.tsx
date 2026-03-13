@@ -166,7 +166,7 @@ export const PhotoUploader: React.FC<PhotoUploaderProps> = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[400] flex items-center justify-center p-6 bg-va-black/90 backdrop-blur-xl"
+            className="fixed inset-0 z-va-modal flex items-center justify-center p-6 bg-va-black/90 backdrop-blur-xl"
           >
             <ContainerInstrument plain className="relative w-full max-w-xl bg-white rounded-[40px] overflow-hidden shadow-2xl flex flex-col h-[80vh]">
               <div className="p-8 border-b border-black/5 flex justify-between items-center">

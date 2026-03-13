@@ -187,7 +187,7 @@ const HeaderIcon = ({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
             transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            className="absolute top-full right-0 mt-1 w-[320px] bg-va-off-white rounded-[20px] shadow-aura border border-black/5 overflow-hidden z-[210]"
+            className="absolute top-full right-0 mt-1 w-[320px] bg-va-off-white rounded-[20px] shadow-aura border border-black/5 overflow-hidden z-va-dropdown"
           >
             <ContainerInstrument plain className="p-1">
               {children}
@@ -587,7 +587,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
   //  CHRIS-PROTOCOL: For Youssef Artist Journey, use a simpler nav without TopBar and specific FABs
   if (isArtist) {
     return (
-      <ContainerInstrument as="nav" className="w-full px-4 md:px-6 py-3 flex items-center bg-va-black border-b border-white/5 relative z-[200]">
+      <ContainerInstrument as="nav" className="w-full px-4 md:px-6 py-3 flex items-center bg-va-black border-b border-white/5 relative z-va-nav">
         <ContainerInstrument plain className="flex-1 flex justify-start">
           <Link href="/" className="flex items-center gap-3 group">
             <Image  
@@ -773,7 +773,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
             </ButtonInstrument>
 
             {hasSubmenu && (
-              <ContainerInstrument plain className="absolute top-full left-1/2 -translate-x-1/2 pt-4 opacity-0 translate-y-2 pointer-events-none group-hover/link:opacity-100 group-hover/link:translate-y-0 group-hover/link:pointer-events-auto transition-all duration-500 z-[250]">
+              <ContainerInstrument plain className="absolute top-full left-1/2 -translate-x-1/2 pt-4 opacity-0 translate-y-2 pointer-events-none group-hover/link:opacity-100 group-hover/link:translate-y-0 group-hover/link:pointer-events-auto transition-all duration-500 z-va-dropdown">
                 {isStudioWorkshopsLink ? (
                   <ContainerInstrument plain className="bg-va-off-white rounded-[20px] shadow-aura border border-black/5 w-[480px] overflow-hidden">
                     <StudioWorkshopsMenu />
@@ -825,7 +825,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
                   initial={{ opacity: 0, scale: 0.9, y: 10 }}
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.9, y: 10 }}
-                  className="absolute left-0 top-full mt-2 w-64 bg-va-off-white rounded-xl shadow-2xl border border-black/10 p-3 z-[250]"
+                  className="absolute left-0 top-full mt-2 w-64 bg-va-off-white rounded-xl shadow-2xl border border-black/10 p-3 z-va-dropdown"
                 >
                   <ContainerInstrument plain className="flex flex-col gap-3">
                     <TextInstrument className="text-[11px] font-bold text-va-black/40 tracking-widest">

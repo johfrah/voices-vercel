@@ -79,7 +79,7 @@ export function DonationModal({ artistId, artistName, isOpen, onClose, initialAm
   };
 
   return (
-    <ContainerInstrument className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-va-black/40 backdrop-blur-md">
+    <ContainerInstrument className="fixed inset-0 z-va-modal flex items-center justify-center p-6 bg-va-black/40 backdrop-blur-md">
       <ContainerInstrument className="bg-white w-full max-w-md rounded-[20px] shadow-aura-lg overflow-hidden relative animate-in fade-in zoom-in duration-300">
         <ButtonInstrument 
           onClick={onClose}

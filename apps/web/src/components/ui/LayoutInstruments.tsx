@@ -397,7 +397,7 @@ export const LoadingScreenInstrument = ({
   return (
     <BaseContainerInstrument
       plain
-      className="fixed inset-0 z-[9999] bg-background/96 backdrop-blur-[1.5px]"
+      className="fixed inset-0 z-va-system bg-background/96 backdrop-blur-[1.5px]"
       aria-live="polite"
       aria-busy="true"
     >

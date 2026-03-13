@@ -102,7 +102,7 @@ export const CastingDock = () => {
           animate={{ y: 0, opacity: 1, scale: 1 }}
           exit={{ y: 100, opacity: 0, scale: 0.9 }}
           transition={{ type: "spring", damping: 20, stiffness: 300 }}
-          className="fixed bottom-8 left-0 right-0 z-[150] pointer-events-none flex justify-center px-6"
+          className="fixed bottom-8 left-0 right-0 z-va-dock pointer-events-none flex justify-center px-6"
         >
           <ContainerInstrument 
             plain

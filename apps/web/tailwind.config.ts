@@ -61,6 +61,16 @@ const config: Config = {
       },
       transitionTimingFunction: {
         'va-bezier': 'cubic-bezier(0.165, 0.84, 0.44, 1)',
+      },
+      zIndex: {
+        'va-base': '0',
+        'va-overlap': '40',
+        'va-dock': '100',
+        'va-nav': '500',
+        'va-dropdown': '600',
+        'va-modal': '1000',
+        'va-toast': '2000',
+        'va-system': '10000',
       }
     },
   },

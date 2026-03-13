@@ -284,7 +284,7 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
       initial={{ y: 100, opacity: 0 }}
       animate={{ y: hasCastingDock ? -80 : 0, opacity: 1 }}
       exit={{ y: 100, opacity: 0 }}
-      className="fixed bottom-12 inset-x-0 z-[200] px-6 pointer-events-none"
+      className="fixed bottom-12 inset-x-0 z-va-dock px-6 pointer-events-none"
     >
       <ContainerInstrument 
         plain 
