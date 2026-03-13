@@ -1,6 +1,6 @@
 {
   "name": "voices-experience-layer",
-  "version": "2.29.39",
+  "version": "2.29.40",
   "private": true,
   "scripts": {
     "dev": "PORT=3000 next dev",
@@ -37,6 +37,7 @@
     "@google/generative-ai": "^0.24.1",
     "@octokit/rest": "^22.0.1",
     "@radix-ui/react-dialog": "^1.1.15",
+    "@radix-ui/react-visually-hidden": "^1.2.4",
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.95.3",
     "@types/fluent-ffmpeg": "^2.1.28",

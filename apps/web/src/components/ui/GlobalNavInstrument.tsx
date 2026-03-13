@@ -650,14 +650,14 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
   const isDev = process.env.NODE_ENV === 'development';
 
   return (
-    <ContainerInstrument as="nav" className={`w-full px-4 md:px-6 py-1 flex items-center bg-va-off-white/80 backdrop-blur-3xl border-b border-black/5 golden-curve relative pointer-events-auto`}>
-      <ContainerInstrument plain className="flex-1 flex justify-start">
+    <ContainerInstrument as="nav" className={`w-full px-4 md:px-6 py-1 grid grid-cols-[1fr_auto_1fr] items-center bg-va-off-white/80 backdrop-blur-3xl border-b border-black/5 golden-curve relative pointer-events-auto z-50`}>
+      <ContainerInstrument plain className="flex justify-start pointer-events-none">
         <ButtonInstrument 
           as={VoicesLinkInstrument}
           href="/" 
           variant="plain"
           size="none"
-          className="flex items-center gap-2 md:gap-3 group"
+          className="flex items-center gap-2 md:gap-3 group pointer-events-auto"
           onClick={() => { playClick('soft'); }}
           onMouseEnter={() => { 
             if (!masterState.isMuted) {
@@ -701,7 +701,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
       </ButtonInstrument>
     </ContainerInstrument>
 
-        <ContainerInstrument plain className="hidden md:flex gap-8 absolute left-1/2 -translate-x-1/2 items-center z-50">
+        <ContainerInstrument plain className="hidden md:flex gap-8 items-center justify-center pointer-events-none z-va-nav">
       {activeLinks.slice(0, 6).map((link: any, idx: number) => {
         const isActive = pathname.startsWith(link.href) && link.href !== '#';
         const hasSubmenu = link.submenu && link.submenu.length > 0;
@@ -711,7 +711,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
             String(link?.name || '').toLowerCase().includes('workshop'));
 
         return (
-          <ContainerInstrument plain key={idx} className="relative group/link flex items-center gap-1">
+          <ContainerInstrument plain key={idx} className="relative group/link flex items-center gap-1 pointer-events-auto">
             <ButtonInstrument 
               as={hasSubmenu ? 'div' : VoicesLinkInstrument}
               href={hasSubmenu ? undefined : link.href}
@@ -848,25 +848,28 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
       )}
     </ContainerInstrument>
 
-      <ContainerInstrument plain className="flex-1 flex gap-4 items-center justify-end relative z-50">
+      <ContainerInstrument plain className="flex gap-1 items-center justify-end pointer-events-none z-va-nav">
         {/*  PAAS ADMIN TRIGGER (Invisible for visitors) */}
         {showPortfolioAdmin && (
-          <HeaderIcon 
-            icon={Settings} 
-            alt={t('nav.portfolio_admin_alt', "Portfolio Beheer")}
-            href={getPortfolioHref('/admin')}
-            isActive={pathname.includes('/admin')}
-            badgeText="ADMIN"
-          />
+          <ContainerInstrument plain className="pointer-events-auto">
+            <HeaderIcon 
+              icon={Settings} 
+              alt={t('nav.portfolio_admin_alt', "Portfolio Beheer")}
+              href={getPortfolioHref('/admin')}
+              isActive={pathname.includes('/admin')}
+              badgeText="ADMIN"
+            />
+          </ContainerInstrument>
         )}
 
         {/*  FAVORITES ICON */}
         {showFavorites && (
-          <HeaderIcon icon={Heart} 
-            alt={t('nav.favorites_alt', 'Favorieten')}
-            badge={favoritesCount}
-            href="/account/favorites/"
-          >
+          <ContainerInstrument plain className="pointer-events-auto">
+            <HeaderIcon icon={Heart} 
+              alt={t('nav.favorites_alt', 'Favorieten')}
+              badge={favoritesCount}
+              href="/account/favorites/"
+            >
             <ContainerInstrument plain className="p-1 space-y-1">
               <ContainerInstrument plain className="px-4 py-3 border-b border-black/5 mb-1 flex justify-between items-center">
                 <TextInstrument className="text-[11px] font-bold text-va-black/40 tracking-[0.2em] uppercase">
@@ -953,12 +956,13 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
 
     {/*  CART ICON */}
     {showCart && (
-      <HeaderIcon icon={ShoppingCart} 
-        alt={t('nav.cart_alt', 'Winkelmandje')} 
-        badge={cartCount}
-        href="/checkout/"
-        // CHRIS-PROTOCOL: On checkout page, don't show the dropdown, just link to checkout
-      >
+      <ContainerInstrument plain className="pointer-events-auto">
+        <HeaderIcon icon={ShoppingCart} 
+          alt={t('nav.cart_alt', 'Winkelmandje')} 
+          badge={cartCount}
+          href="/checkout/"
+          // CHRIS-PROTOCOL: On checkout page, don't show the dropdown, just link to checkout
+        >
         {pathname !== '/checkout' && (
           <ContainerInstrument plain className="p-1 space-y-1">
             <ContainerInstrument plain className="px-4 py-3 border-b border-black/5 mb-1 flex justify-between items-center">
