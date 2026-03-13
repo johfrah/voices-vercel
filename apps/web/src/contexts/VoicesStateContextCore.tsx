@@ -19,6 +19,7 @@ export interface VoicesState {
   reviewStats: {
     averageRating: number;
     totalCount: number;
+    worlds?: Record<number, { averageRating: number; totalCount: number }>;
   } | null;
   campaignMessage: string | null;
 }

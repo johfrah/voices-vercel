@@ -4,15 +4,19 @@ import { useEffect, useMemo, useState } from 'react';
 import { ContainerInstrument, HeadingInstrument, TextInstrument } from '@/components/ui/LayoutInstruments';
 import { VoiceglotText } from '@/components/ui/VoiceglotText';
 import { VoicesLinkInstrument } from '@/components/ui/VoicesLinkInstrument';
-import { Phone, Mail, Calendar, BookOpen, GraduationCap } from 'lucide-react';
+import { Phone, Mail, Calendar, BookOpen, GraduationCap, Star } from 'lucide-react';
 import {
   getWorkshopIcon,
   sortWorkshopsByUpcomingThenAlpha,
   type StudioWorkshopNavItem
 } from '@/components/studio/studio-workshop-nav-utils';
 
-export function StudioFooter({ market, activeSocials, activePhone, activeEmail }: any) {
+export function StudioFooter({ market, activeSocials, activePhone, activeEmail, reviewStats }: any) {
   const [workshops, setWorkshops] = useState<StudioWorkshopNavItem[]>([]);
+
+  const studioStats = reviewStats?.worlds?.[2] || { averageRating: "4.9", totalCount: "12" };
+  const averageRating = studioStats.averageRating;
+  const totalReviews = studioStats.totalCount;
 
   useEffect(() => {
     const fetchWorkshops = async () => {
@@ -47,6 +51,29 @@ export function StudioFooter({ market, activeSocials, activePhone, activeEmail }
             Voices <TextInstrument as="span" className="text-primary italic">Studio</TextInstrument>
           </TextInstrument>
         </VoicesLinkInstrument>
+
+        <VoicesLinkInstrument href="/studio/reviews" className="flex items-center gap-4 py-4 px-5 bg-white rounded-[20px] border border-black/5 shadow-aura-sm group/review-widget hover:shadow-aura transition-all duration-500">
+          <ContainerInstrument className="flex flex-col">
+            <ContainerInstrument className="flex gap-0.5 mb-1">
+              {[...Array(5)].map((_, i) => (
+                <Star key={i} size={12} className="text-[#fabc05]" fill="currentColor" />
+              ))}
+            </ContainerInstrument>
+            <TextInstrument className="text-[10px] font-bold text-va-black/20 uppercase tracking-widest">
+              <VoiceglotText translationKey="footer.reviews.studio_label" defaultText="Workshop Rating" />
+            </TextInstrument>
+          </ContainerInstrument>
+          <ContainerInstrument className="w-px h-8 bg-black/5" />
+          <ContainerInstrument className="flex flex-col">
+            <TextInstrument className="text-xl font-light text-va-black leading-none">
+              {averageRating}<TextInstrument as="span" className="text-[13px] text-va-black/20 ml-0.5">/5</TextInstrument>
+            </TextInstrument>
+            <TextInstrument className="text-[10px] font-bold text-va-black/20 uppercase tracking-tighter">
+              {totalReviews} <VoiceglotText translationKey="footer.reviews.count_label" defaultText="reviews" />
+            </TextInstrument>
+          </ContainerInstrument>
+        </VoicesLinkInstrument>
+
         <TextInstrument className="text-va-black/40 text-[15px] font-light leading-relaxed max-w-sm text-left italic">
           <VoiceglotText translationKey="footer.studio.promise" defaultText="&quot;Workshops voor professionele sprekers.&quot;" />
         </TextInstrument>

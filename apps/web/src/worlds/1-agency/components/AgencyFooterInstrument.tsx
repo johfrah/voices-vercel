@@ -15,8 +15,9 @@ export function AgencyFooter({ market, activeSocials, activePhone, activeEmail, 
   const { t } = useTranslation();
   const { state: voicesState } = useVoicesState();
   
-  const averageRating = reviewStats?.averageRating || "4.9";
-  const totalReviews = reviewStats?.totalCount || "390";
+  const agencyStats = reviewStats?.worlds?.[1] || { averageRating: reviewStats?.averageRating || "5.0", totalCount: reviewStats?.totalCount || "381" };
+  const averageRating = agencyStats.averageRating;
+  const totalReviews = agencyStats.totalCount;
 
   // 🛡️ CHRIS-PROTOCOL: Determine current journey for review context
   const currentJourneyId = voicesState.current_journey === 'telephony' ? '3' : null;

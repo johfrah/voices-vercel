@@ -69,8 +69,9 @@ export const VoicesStateProvider: React.FC<{ children: React.ReactNode }> = ({ c
           setState(prev => ({ 
             ...prev, 
             reviewStats: {
-              averageRating: data.reviewStats.averageRating || 4.9,
-              totalCount: data.reviewStats.totalCount || 0
+              averageRating: data.reviewStats.averageRating || 5.0,
+              totalCount: data.reviewStats.totalCount || 0,
+              worlds: data.reviewStats.worlds || {}
             }
           }));
         } else {
@@ -80,8 +81,9 @@ export const VoicesStateProvider: React.FC<{ children: React.ReactNode }> = ({ c
             setState(prev => ({ 
               ...prev, 
               reviewStats: {
-                averageRating: homeReviewStats.averageRating || 4.9,
-                totalCount: homeReviewStats.totalCount || 0
+                averageRating: homeReviewStats.averageRating || 5.0,
+                totalCount: homeReviewStats.totalCount || 0,
+                worlds: homeReviewStats.worlds || {}
               }
             }));
           }

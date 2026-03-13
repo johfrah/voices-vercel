@@ -193,11 +193,11 @@ type ResolvedSlugEntry = {
 };
 
 const ROUTING_TYPE_BY_ENTITY_TYPE_ID: Record<number, string> = {
-  1: 'actor',
-  3: 'article',
-  4: 'artist',
-  5: 'workshop',
-  6: 'casting_list',
+  1: 'single_actor',
+  3: 'single_post',
+  4: 'single_artist',
+  5: 'single_workshop',
+  6: 'archive_casting',
 };
 
 function scoreSlugEntry(entry: any, marketCode: string, languageId?: number | null): number {
@@ -255,7 +255,7 @@ async function resolveSlugFromRegistry(
       const routingType =
         (typeof (entry as any).routing_type === 'string' && (entry as any).routing_type.trim()) ||
         ROUTING_TYPE_BY_ENTITY_TYPE_ID[Number(entry.entity_type_id)] ||
-        'article';
+        'single_post';
       
       return {
         slug: entry.slug,

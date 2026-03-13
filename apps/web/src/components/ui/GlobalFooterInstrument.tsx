@@ -113,6 +113,7 @@ export default function GlobalFooter() {
           activeSocials={activeSocials} 
           activePhone={activePhone} 
           activeEmail={activeEmail} 
+          reviewStats={reviewStats}
         />
       );
     }

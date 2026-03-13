@@ -68,19 +68,39 @@ export async function GET() {
     })();
 
     // 🛡️ CHRIS-PROTOCOL: Dynamic Review Stats Calculation (Nuclear Truth)
-    let reviewStats = { averageRating: 5.0, totalCount: 393 };
+    let reviewStats: any = { averageRating: 5.0, totalCount: 393 };
     const statsPromise = (async () => {
       try {
         const { data: stats, error } = await supabase
           .from('reviews')
-          .select('rating')
+          .select('rating, world_id_new')
           .not('rating', 'is', null);
         
         if (!error && stats && stats.length > 0) {
+          // Global stats
           const totalCount = stats.length;
           const sum = stats.reduce((acc, curr) => acc + curr.rating, 0);
           const averageRating = Math.round((sum / totalCount) * 10) / 10;
-          reviewStats = { averageRating, totalCount };
+          
+          // World-specific stats
+          const agencyStats = stats.filter(s => s.world_id_new === 1);
+          const studioStats = stats.filter(s => s.world_id_new === 2 || s.world_id_new === null); // Null is currently Studio legacy
+          
+          const calcStats = (items: any[]) => {
+            if (items.length === 0) return { averageRating: 5.0, totalCount: 0 };
+            const count = items.length;
+            const s = items.reduce((acc, curr) => acc + curr.rating, 0);
+            return { averageRating: Math.round((s / count) * 10) / 10, totalCount: count };
+          };
+
+          reviewStats = { 
+            averageRating, 
+            totalCount,
+            worlds: {
+              1: calcStats(agencyStats),
+              2: calcStats(studioStats)
+            }
+          };
         }
       } catch (e) {
         console.warn(' [Home Config API] Review stats calculation failed, using fallback');
