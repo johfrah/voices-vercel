@@ -23,10 +23,10 @@ export function AgencyFooter({ market, activeSocials, activePhone, activeEmail, 
   const currentJourneyId = voicesState.current_journey === 'telephony' ? '3' : null;
 
   const popularLanguages = [
-    { name: t('common.lang.nl_be', 'Vlaams'), href: '/stem/nl-be' },
-    { name: t('common.lang.nl_nl', 'Nederlands'), href: '/stem/nl-nl' },
-    { name: t('common.lang.fr_be', 'Frans (België)'), href: '/stem/fr-be' },
-    { name: t('common.lang.en_gb', 'Engels (UK)'), href: '/stem/en-gb' },
+    { name: t('common.lang.vlaams', 'Vlaams'), href: '/stem/vlaams' },
+    { name: t('common.lang.nederlands', 'Nederlands'), href: '/stem/nederlands' },
+    { name: t('common.lang.frans', 'Frans'), href: '/stem/frans' },
+    { name: t('common.lang.engels', 'Engels'), href: '/stem/engels' },
   ];
 
   return (

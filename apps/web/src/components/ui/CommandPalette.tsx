@@ -56,8 +56,6 @@ export const CommandPalette = () => {
     return () => document.removeEventListener('keydown', down);
   }, [isAdmin]);
 
-  if (!isAdmin) return null;
-
   const runCommand = (command: () => void) => {
     command();
     setOpen(false);
