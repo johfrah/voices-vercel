@@ -7,6 +7,8 @@ import {
   TextInstrument, 
   ButtonInstrument 
 } from '@/components/ui/LayoutInstruments';
+import * as Dialog from '@radix-ui/react-dialog';
+import * as VisuallyHidden from '@radix-ui/react-visually-hidden';
 import { Sparkles, Upload, Check, X, Loader2, Music, Globe, FileText, Save } from "lucide-react";
 import { createClient } from "@supabase/supabase-js";
 import toast from "react-hot-toast";
@@ -142,17 +144,21 @@ export const AdemingSmartUpload = ({ open, onOpenChange, onComplete }: SmartUplo
   };
 
   return (
-    <ContainerInstrument plain className="fixed inset-0 z-[200] flex items-center justify-center p-6">
-      <ContainerInstrument plain className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => !uploading && !analyzing && !saving && onOpenChange(false)} />
-      
-      <ContainerInstrument className={`relative bg-white rounded-[32px] shadow-magic w-full transition-all duration-500 overflow-hidden ${step === 'review' ? 'max-w-5xl h-[90vh]' : 'max-w-xl'}`}>
-        <button 
-          onClick={() => onOpenChange(false)}
-          className="absolute top-8 right-8 p-2 hover:bg-va-off-white rounded-full transition-all z-10"
-          disabled={uploading || analyzing || saving}
-        >
-          <X size={20} className="text-va-black/20" />
-        </button>
+    <Dialog.Root open={open} onOpenChange={onOpenChange}>
+      <Dialog.Portal>
+        <Dialog.Overlay className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[200]" />
+        <Dialog.Content className={`fixed inset-0 z-[201] flex items-center justify-center p-6`}>
+          <VisuallyHidden.Root>
+            <Dialog.Title>Smart Upload Meditatie</Dialog.Title>
+          </VisuallyHidden.Root>
+          <ContainerInstrument className={`relative bg-white rounded-[32px] shadow-magic w-full transition-all duration-500 overflow-hidden ${step === 'review' ? 'max-w-5xl h-[90vh]' : 'max-w-xl'}`}>
+            <button 
+              onClick={() => onOpenChange(false)}
+              className="absolute top-8 right-8 p-2 hover:bg-va-off-white rounded-full transition-all z-10"
+              disabled={uploading || analyzing || saving}
+            >
+              <X size={20} className="text-va-black/20" />
+            </button>
 
         {step === 'upload' ? (
           <ContainerInstrument plain className="p-12">
@@ -406,7 +412,9 @@ export const AdemingSmartUpload = ({ open, onOpenChange, onComplete }: SmartUplo
             </ContainerInstrument>
           </ContainerInstrument>
         )}
-      </ContainerInstrument>
-    </ContainerInstrument>
+        </ContainerInstrument>
+      </Dialog.Content>
+    </Dialog.Portal>
+  </Dialog.Root>
   );
 };

@@ -5,6 +5,7 @@ import { useWorld } from '@/contexts/WorldContext';
 import { ContainerInstrument } from '@/components/ui/LayoutInstruments';
 import { Globe, ChevronDown, Check } from 'lucide-react';
 import * as Dialog from '@radix-ui/react-dialog';
+import * as VisuallyHidden from '@radix-ui/react-visually-hidden';
 import { cn } from '@/lib/utils';
 
 /**
@@ -34,6 +35,9 @@ export const WorldSelector = () => {
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 bg-va-black/20 backdrop-blur-sm z-[200] animate-in fade-in duration-300" />
         <Dialog.Content className="fixed top-20 right-8 w-72 bg-white rounded-[24px] shadow-aura border border-black/[0.05] z-[201] p-2 animate-in slide-in-from-top-4 duration-300">
+          <VisuallyHidden.Root>
+            <Dialog.Title>Select World Context</Dialog.Title>
+          </VisuallyHidden.Root>
           <div className="p-4 border-b border-black/[0.03] mb-2">
             <h3 className="text-[10px] font-black tracking-[0.2em] uppercase text-va-black/30">Select World Context</h3>
           </div>

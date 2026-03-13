@@ -578,8 +578,8 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
   //  CHRIS-PROTOCOL: For Youssef Artist Journey, use a simpler nav without TopBar and specific FABs
   if (isArtist) {
     return (
-      <ContainerInstrument as="nav" className="w-full px-4 md:px-6 py-3 flex items-center bg-va-black border-b border-white/5 relative z-va-nav">
-        <ContainerInstrument plain className="flex-1 flex justify-start">
+      <ContainerInstrument as="nav" className="w-full px-4 md:px-6 py-3 grid grid-cols-[1fr_auto_1fr] items-center bg-va-black border-b border-white/5 relative z-va-nav">
+        <ContainerInstrument plain className="flex justify-start">
           <Link href="/" className="flex items-center gap-3 group">
             <Image  
               src={market.logo_url} 
@@ -608,7 +608,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
           ))}
         </ContainerInstrument>
 
-        <ContainerInstrument plain className="flex-1 flex gap-6 items-center justify-end">
+        <ContainerInstrument plain className="flex gap-6 items-center justify-end">
           <LanguageSwitcher className="w-10 h-10 rounded-[10px] bg-white/5 text-white/40 hover:text-[#FFC421] hover:bg-white/10 transition-all flex items-center justify-center" />
           <ButtonInstrument 
             as={Link} 
@@ -655,8 +655,8 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
   const isDev = process.env.NODE_ENV === 'development';
 
   return (
-    <ContainerInstrument as="nav" className={`w-full px-4 md:px-6 py-1 flex items-center bg-va-off-white/80 backdrop-blur-3xl border-b border-black/5 golden-curve relative pointer-events-auto z-50`}>
-      <ContainerInstrument plain className="flex-1 flex justify-start">
+    <ContainerInstrument as="nav" className={`w-full px-4 md:px-6 py-1 grid grid-cols-[1fr_auto_1fr] items-center bg-va-off-white/80 backdrop-blur-3xl border-b border-black/5 golden-curve relative pointer-events-auto z-50`}>
+      <ContainerInstrument plain className="flex justify-start">
         <ButtonInstrument 
           as={VoicesLink}
           href="/" 
@@ -706,7 +706,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
       </ButtonInstrument>
     </ContainerInstrument>
 
-    <ContainerInstrument plain className="hidden md:flex gap-8 absolute left-1/2 -translate-x-1/2 items-center z-va-nav">
+    <ContainerInstrument plain className="hidden md:flex gap-6 items-center justify-center z-va-nav">
       {activeLinks.slice(0, 6).map((link: any, idx: number) => {
         const isActive = pathname.startsWith(link.href) && link.href !== '#';
         const hasSubmenu = link.submenu && link.submenu.length > 0;
@@ -860,7 +860,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
       )}
     </ContainerInstrument>
 
-    <ContainerInstrument plain className="flex-1 flex gap-4 items-center justify-end relative z-va-nav">
+    <ContainerInstrument plain className="flex gap-1 items-center justify-end relative z-va-nav">
         {/*  PAAS ADMIN TRIGGER (Invisible for visitors) */}
         {showPortfolioAdmin && (
           <HeaderIcon 

@@ -2,6 +2,7 @@
 
 import { useAuth } from '@/contexts/AuthContext';
 import { Command } from 'cmdk';
+import * as VisuallyHidden from '@radix-ui/react-visually-hidden';
 import {
     Activity,
     Brain,
@@ -92,6 +93,9 @@ export const CommandPalette = () => {
       label="Command Palette"
       className="fixed inset-0 z-[10001] flex items-center justify-center p-4 bg-va-black/40 backdrop-blur-sm"
     >
+      <VisuallyHidden.Root>
+        <h3>Command Palette</h3>
+      </VisuallyHidden.Root>
       <div className="w-full max-w-2xl bg-white rounded-[20px] shadow-2xl overflow-hidden border border-gray-100 flex flex-col animate-in fade-in zoom-in duration-200">
         <div className="flex items-center px-6 py-4 border-b border-gray-50">
           <SearchIcon strokeWidth={1.5} className="w-5 h-5 text-gray-400 mr-3" />
