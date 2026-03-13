@@ -157,9 +157,9 @@ export default function GlobalFooter() {
   }, [market.market_code, isEditMode]);
 
   return (
-    <footer className="bg-va-off-white text-va-black pt-24 pb-12 overflow-hidden relative border-t border-black/5 !px-0">
+    <ContainerInstrument as="footer" className="bg-va-off-white text-va-black pt-24 pb-12 overflow-hidden relative border-t border-black/5 !px-0">
       {/* Liquid Gradient Background */}
-      <ContainerInstrument className="absolute top-0 left-0 w-full h-full opacity-5 pointer-events-none hmagic" />
+      <ContainerInstrument plain className="absolute top-0 left-0 w-full h-full opacity-5 pointer-events-none hmagic" />
 
       <ContainerInstrument className="max-w-[1140px] mx-auto px-6 relative z-10">
         {!isSpecial && <BreadcrumbsInstrument />}
@@ -221,7 +221,7 @@ export default function GlobalFooter() {
                         <>
                           <VoiceglotText translationKey="footer.status.online" defaultText="Wij staan voor u klaar" />
                           {generalSettings?.opening_hours && (
-                            <span className="ml-2 opacity-50">({formatOpeningHours(generalSettings.opening_hours)})</span>
+                            <ContainerInstrument as="span" className="ml-2 opacity-50">({formatOpeningHours(generalSettings.opening_hours)})</ContainerInstrument>
                           )}
                         </>
                       ) : (
@@ -230,9 +230,9 @@ export default function GlobalFooter() {
                           {(() => {
                             const next = generalSettings?.opening_hours ? getNextOpeningTime(generalSettings.opening_hours) : null;
                             return next ? (
-                              <span className="ml-1 opacity-50">
+                              <ContainerInstrument as="span" className="ml-1 opacity-50">
                                 <VoiceglotText translationKey="footer.status.back_at" defaultText={`vanaf ${next.day} om ${next.time}`} noTranslate={true} />
-                              </span>
+                              </ContainerInstrument>
                             ) : null;
                           })()}
                         </>
@@ -244,6 +244,6 @@ export default function GlobalFooter() {
             </ContainerInstrument>
           </ContainerInstrument>
       </ContainerInstrument>
-    </footer>
+    </ContainerInstrument>
   );
 }

@@ -162,10 +162,10 @@ export function AgencyContent({ mappedActors, filters }: { mappedActors: any[], 
   };
 
   return (
-    <div className={cn("max-w-[1440px] mx-auto px-0 transition-all duration-700", state.currentStep === 'checkout' ? "pt-24" : "pt-0")} id="master-control-anchor">
+    <ContainerInstrument className={cn("max-w-[1440px] mx-auto px-0 transition-all duration-700", state.currentStep === 'checkout' ? "pt-24" : "pt-0")} id="master-control-anchor">
       {/* Filters persistent bovenaan */}
       {state.currentStep !== 'checkout' && (
-        <div className="relative z-50 w-full px-4 md:px-6">
+        <ContainerInstrument className="relative z-50 w-full px-4 md:px-6">
           <VoicesMasterControl 
             actors={mappedActors} 
             filters={filters} 
@@ -176,10 +176,10 @@ export function AgencyContent({ mappedActors, filters }: { mappedActors: any[], 
             countriesData={dynamicConfig?.countries}
           />
           <RecentlyPlayedBar />
-        </div>
+        </ContainerInstrument>
       )}
       
-      <div className={cn("relative min-h-[600px] px-4 md:px-6 transition-all duration-500", state.currentStep === 'checkout' ? "mt-0" : "mt-12")}>
+      <ContainerInstrument className={cn("relative min-h-[600px] px-4 md:px-6 transition-all duration-500", state.currentStep === 'checkout' ? "mt-0" : "mt-12")}>
         <AnimatePresence mode="popLayout">
           {(!mounted || state.currentStep === 'voice') && (
             <motion.div
@@ -191,11 +191,11 @@ export function AgencyContent({ mappedActors, filters }: { mappedActors: any[], 
               transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
             >
               <Suspense fallback={
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5 items-stretch">
+                <ContainerInstrument className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5 items-stretch">
                   {[...Array(10)].map((_, i) => (
-                    <div key={`skeleton-agency-${i}`} className="h-[350px] bg-va-off-white rounded-[20px] animate-pulse border border-black/[0.03]" />
+                    <ContainerInstrument key={`skeleton-agency-${i}`} className="h-[350px] bg-va-off-white rounded-[20px] animate-pulse border border-black/[0.03]" />
                   ))}
-                </div>
+                </ContainerInstrument>
               }>
                 <VoiceGrid 
                   actors={mounted ? filteredActors : mappedActors} 
@@ -214,7 +214,7 @@ export function AgencyContent({ mappedActors, filters }: { mappedActors: any[], 
               exit={{ opacity: 0, scale: 0.98, y: -20 }}
               transition={{ duration: 0.6, ease: [0.23, 1, 0.32, 1] }}
             >
-              <div className="flex flex-col lg:grid lg:grid-cols-12 gap-8 items-start">
+              <ContainerInstrument className="flex flex-col lg:grid lg:grid-cols-12 gap-8 items-start">
                 {/* Script & Prijs (9 kolommen breed) - EERST op mobiel */}
                 <motion.div 
                   initial={{ opacity: 0, x: -20 }}
@@ -232,7 +232,7 @@ export function AgencyContent({ mappedActors, filters }: { mappedActors: any[], 
                 </motion.div>
 
                 {/* VoiceCard (3 kolommen breed) - LATER op mobiel, compact */}
-                <div className="order-2 lg:order-1 lg:col-span-3 w-full">
+                <ContainerInstrument className="order-2 lg:order-1 lg:col-span-3 w-full">
                   {checkoutState.selectedActor && (
                     <motion.div
                       layoutId={`actor-${checkoutState.selectedActor?.id}`}
@@ -253,8 +253,8 @@ export function AgencyContent({ mappedActors, filters }: { mappedActors: any[], 
                       />
                     </motion.div>
                   )}
-                </div>
-              </div>
+                </ContainerInstrument>
+              </ContainerInstrument>
             </motion.div>
           )}
 
@@ -267,22 +267,22 @@ export function AgencyContent({ mappedActors, filters }: { mappedActors: any[], 
               transition={{ duration: 0.6, ease: [0.23, 1, 0.32, 1] }}
               className="bg-white rounded-[40px] shadow-aura p-6 md:p-10 border border-black/[0.03]"
             >
-              <div className="max-w-5xl mx-auto">
-                <div className="mb-8 space-y-4">
+              <ContainerInstrument className="max-w-5xl mx-auto">
+                <ContainerInstrument className="mb-8 space-y-4">
                   <TextInstrument className="text-lg text-va-black/40 font-light">
                     <VoiceglotText translationKey="checkout.subtitle" defaultText="Vul je gegevens in om de bestelling af te ronden." />
                   </TextInstrument>
-                </div>
+                </ContainerInstrument>
 
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-                  <div className="lg:col-span-7">
+                <ContainerInstrument className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+                  <ContainerInstrument className="lg:col-span-7">
                     <CheckoutForm strokeWidth={1.5} />
-                  </div>
-                  <div className="lg:col-span-5 sticky top-10 space-y-6">
+                  </ContainerInstrument>
+                  <ContainerInstrument className="lg:col-span-5 sticky top-10 space-y-6">
                     <PricingSummary strokeWidth={1.5} />
                     <QuoteDownloadButton />
-                  </div>
-                </div>
+                  </ContainerInstrument>
+                </ContainerInstrument>
                 
                 {/* Terug knop voor checkout */}
                 <ContainerInstrument plain className="mt-12 pt-8 border-t border-black/[0.03] flex justify-center">
@@ -292,18 +292,18 @@ export function AgencyContent({ mappedActors, filters }: { mappedActors: any[], 
                     onClick={() => updateStep('script')}
                     className="text-[11px] font-bold tracking-widest text-va-black/20 hover:text-primary uppercase transition-colors flex items-center gap-2"
                   >
-                    <div className="rotate-180">
+                    <ContainerInstrument className="rotate-180">
                       <ChevronRight size={14} />
-                    </div>
+                    </ContainerInstrument>
                     Terug naar script aanpassen
                   </ButtonInstrument>
                 </ContainerInstrument>
-              </div>
+              </ContainerInstrument>
             </motion.div>
           )}
         </AnimatePresence>
-      </div>
-    </div>
+      </ContainerInstrument>
+    </ContainerInstrument>
   );
 }
 
