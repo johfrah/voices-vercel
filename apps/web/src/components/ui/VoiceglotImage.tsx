@@ -73,30 +73,36 @@ export const VoiceglotImage: React.FC<VoiceglotImageProps> = ({
     if (error) return; // Prevent infinite loop
     setError(true);
     
-    //  CHRIS-PROTOCOL: Fallback logic for actor photos
-    // If a path contains 'visuals/active/voicecards' or 'visuals/active/photos' or 'agency/voices' or 'active/voicecards', it might be a missing photo
+    // 🛡️ CHRIS-PROTOCOL: UI Self-Healing (v2.29.37)
+    // If an asset fails to load, we provide contextual placeholders to prevent layout shifts.
+    
+    // 1. Actor Photo Fallback
     if (currentSrc.includes('visuals/active/voicecards') || 
         currentSrc.includes('visuals/active/photos') || 
         currentSrc.includes('agency/voices') ||
         currentSrc.includes('active/voicecards') ||
         currentSrc.includes('/api/proxy')) {
       
-      // If we are in the new structure but it failed, try the ID-based fallback if we can extract it
       const idMatch = currentSrc.match(/(\d+)-/);
       if (idMatch && !currentSrc.includes('placeholder')) {
-        const actorId = idMatch[1];
-        // Try a simpler path or different extension as a last resort before placeholder
         if (currentSrc.endsWith('.jpg')) {
           setCurrentSrc(currentSrc.replace('.jpg', '.webp'));
           return;
         }
       }
 
-      // Final fallback to a generic placeholder for actors
       setCurrentSrc('/assets/common/placeholders/placeholder-voice.jpg');
-    } else {
-      //  CHRIS-PROTOCOL: No Voicy fallback for branding/system assets
-      // We prefer a broken image icon over a confusing avatar
+    } 
+    // 2. Branding/Logo Fallback
+    else if (category === 'branding' || currentSrc.includes('logo') || currentSrc.includes('Voices-LOGO')) {
+      console.warn(`[VoiceglotImage] Branding asset failed: ${currentSrc}. Using emergency logo.`);
+      setCurrentSrc('/assets/common/branding/Voices-LOGO-Animated.svg');
+    }
+    // 3. Workshop Fallback
+    else if (journey === 'studio' || currentSrc.includes('workshop')) {
+      setCurrentSrc('/assets/common/placeholders/placeholder-workshop.jpg');
+    }
+    else {
       console.warn(`[VoiceglotImage] Asset failed to load: ${currentSrc}`);
     }
 
