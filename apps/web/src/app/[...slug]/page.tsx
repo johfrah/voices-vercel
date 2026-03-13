@@ -26,6 +26,7 @@ import { JourneyType } from '@/contexts/VoicesMasterControlContext';
 import { buildCanonicalActorPath, normalizeSlug, stripLanguagePrefix } from '@/lib/system/slug';
 import { localeToBcp47, normalizeLocale, stripLocalePrefix, withLocalePrefix } from '@/lib/system/locale-utils';
 import { normalizeCommercialMediaCode } from '@/lib/system/constants/commercial-media';
+import { normalizeRoutingType } from '@/lib/system/normalize-routing-type';
 import { BentoGrid, BentoCard } from '@/components/ui/BentoGrid';
 import { createClient } from "@supabase/supabase-js";
 
@@ -1071,11 +1072,13 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
       }
     }
     
-    console.error(` [SmartRouter] Handshake SUCCESS: ${resolved?.routing_type || 'fallback'} (ID: ${resolved?.entity_id}, World: ${worldId})`);
+    const normalizedRoutingType = normalizeRoutingType(resolved);
+
+    console.error(` [SmartRouter] Handshake SUCCESS: ${normalizedRoutingType || resolved?.routing_type || 'fallback'} (ID: ${resolved?.entity_id}, World: ${worldId})`);
 
     // 🛡️ CHRIS-PROTOCOL: Intent-Based Routing (v2.29.24)
     // Map WooCommerce-style types to the correct UI Instruments
-    switch (resolved?.routing_type) {
+    switch (normalizedRoutingType) {
       case 'archive_product':
         // Render Shop/Catalog Archives (Agency, Studio, Casting Lists)
         if (resolved.slug === 'agency') {
@@ -1097,15 +1100,11 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
         // Render Knowledge/Blog Articles
         const articleForPost = await getArticle(resolved.entity_id.toString(), lang);
         return <InstrumentRenderer blocks={articleForPost?.blocks || []} />;
-      case 'single_product':
-        // Render Individual Products (Actors, Workshops)
-        const actor = await getActor(resolved.entity_id.toString(), lang);
-        return <VoiceDetailClient actor={actor} initialJourney={journey} initialMedium={medium} />;
     }
       
       // Shift journey/medium for actor detail logic if it's a voice-like prefix
       // We detect this by checking if the resolved type is actor and there are more segments
-      if (resolved.routing_type === 'actor' && cleanSegments.length > 1) {
+      if (normalizedRoutingType === 'actor' && cleanSegments.length > 1) {
         journey = cleanSegments[1];
         medium = cleanSegments[2];
       }
@@ -1126,7 +1125,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
       }
 
       // Route based on type (ID-First Handshake)
-      if (resolved.routing_type === 'action' && (lookupSlug === 'tarieven' || lookupSlug === 'tarifs' || lookupSlug === 'rates' || lookupSlug === 'preise')) {
+      if (normalizedRoutingType === 'action' && (lookupSlug === 'tarieven' || lookupSlug === 'tarifs' || lookupSlug === 'rates' || lookupSlug === 'preise')) {
         const { getActors } = await import('@/lib/services/api-server');
         const searchResults = await getActors({ 
           languageId: String(market.primary_language_id),
@@ -1153,7 +1152,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
         );
       }
 
-      if (resolved.routing_type === 'casting_list') {
+      if (normalizedRoutingType === 'casting_list') {
         const { data: list, error: listError } = await supabase
           .from('casting_lists')
           .select('*, items:casting_list_items(*, actor:actors(*))')
@@ -1239,7 +1238,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
         return notFound();
       }
 
-      if (resolved.routing_type === 'actor') {
+      if (normalizedRoutingType === 'actor') {
         const actor = await getActor(resolved.entity_id.toString(), lang);
         if (actor) {
           const journeyMap: Record<string, JourneyType> = {
@@ -1263,7 +1262,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
         }
       }
 
-      if (resolved.routing_type === 'workshop') {
+      if (normalizedRoutingType === 'workshop') {
         // 🛡️ CHRIS-PROTOCOL: Workshop Data Handshake (v2.16.097)
         // We use the internal API logic directly to ensure full enrichment
         const base = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
@@ -1307,7 +1306,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
         }
       }
 
-      if (resolved.routing_type === 'artist') {
+      if (normalizedRoutingType === 'artist') {
         const artist = await getArtist(resolved.entity_id.toString(), lang);
         if (artist) {
           const isYoussef = resolved.entity_id === 1; // Example ID for Youssef
@@ -1319,7 +1318,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
         }
       }
 
-      if (resolved.routing_type === 'music') {
+      if (normalizedRoutingType === 'music') {
         const trackId = resolved.entity_id > 0 ? resolved.entity_id : null;
         const filters: Record<string, string> = { journey: 'telephony' };
         if (trackId) filters.musicTrackId = trackId.toString();
@@ -1336,7 +1335,7 @@ async function SmartRouteContent({ segments }: { segments: string[] }) {
         );
       }
 
-      if (resolved.routing_type === 'blog' || resolved.routing_type === 'article') {
+      if (normalizedRoutingType === 'blog' || normalizedRoutingType === 'article') {
         const articleLookupSlug = resolved.slug || lookupSlug;
         let article: any = null;
         if (resolved.entity_id) {
