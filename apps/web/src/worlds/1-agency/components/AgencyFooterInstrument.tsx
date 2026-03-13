@@ -53,7 +53,7 @@ export function AgencyFooter({ market, activeSocials, activePhone, activeEmail, 
               ))}
             </ContainerInstrument>
             <TextInstrument className="text-[10px] font-bold text-va-black/20 uppercase tracking-widest">
-              <VoiceglotText translationKey="footer.reviews.rating_label" defaultText={currentJourneyId === '3' || currentJourneyId === '26' ? "Telephony Rating" : "Google Rating"} />
+              <VoiceglotText translationKey="footer.reviews.rating_label" defaultText="Google Rating" />
             </TextInstrument>
           </ContainerInstrument>
           <ContainerInstrument className="w-px h-8 bg-black/5" />
