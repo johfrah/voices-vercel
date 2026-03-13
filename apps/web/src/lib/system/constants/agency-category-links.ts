@@ -16,10 +16,10 @@ export type AgencyCategoryLink = {
 };
 
 export const AGENCY_CATEGORY_LINKS: readonly AgencyCategoryLink[] = [
-  { label: "TV Spot", icon: Monitor, href: "/agency/commercial/tv", key: "category.tv" },
-  { label: "Radio", icon: Radio, href: "/agency/commercial/radio", key: "category.radio" },
-  { label: "Online", icon: Globe, href: "/agency/commercial/online", key: "category.online" },
-  { label: "Podcast", icon: Mic2, href: "/agency/commercial/podcast", key: "category.podcast" },
-  { label: "Telefonie", icon: Phone, href: "/agency/telephony", key: "category.telefoon" },
-  { label: "Corporate", icon: Building2, href: "/agency/video", key: "category.corporate" },
+  { label: "TV Spot", icon: Monitor, href: "/stem/tv", key: "category.tv" },
+  { label: "Radio", icon: Radio, href: "/stem/radio", key: "category.radio" },
+  { label: "Online", icon: Globe, href: "/stem/online", key: "category.online" },
+  { label: "Podcast", icon: Mic2, href: "/stem/podcast", key: "category.podcast" },
+  { label: "Telefonie", icon: Phone, href: "/stem/telephony", key: "category.telefoon" },
+  { label: "Corporate", icon: Building2, href: "/stem/video", key: "category.corporate" },
 ] as const;

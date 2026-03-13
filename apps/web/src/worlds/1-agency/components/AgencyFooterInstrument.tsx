@@ -23,10 +23,10 @@ export function AgencyFooter({ market, activeSocials, activePhone, activeEmail, 
   const currentJourneyId = voicesState.current_journey === 'telephony' ? '3' : null;
 
   const popularLanguages = [
-    { name: t('common.lang.nl_be', 'Vlaams'), href: '/agency/stemmen/vlaams' },
-    { name: t('common.lang.nl_nl', 'Nederlands'), href: '/agency/stemmen/nederlands' },
-    { name: t('common.lang.fr_be', 'Frans (België)'), href: '/agency/stemmen/frans-belgie' },
-    { name: t('common.lang.en_gb', 'Engels (UK)'), href: '/agency/stemmen/engels-uk' },
+    { name: t('common.lang.nl_be', 'Vlaams'), href: '/stem/nl-be' },
+    { name: t('common.lang.nl_nl', 'Nederlands'), href: '/stem/nl-nl' },
+    { name: t('common.lang.fr_be', 'Frans (België)'), href: '/stem/fr-be' },
+    { name: t('common.lang.en_gb', 'Engels (UK)'), href: '/stem/en-gb' },
   ];
 
   return (
@@ -79,21 +79,21 @@ export function AgencyFooter({ market, activeSocials, activePhone, activeEmail, 
         </HeadingInstrument>
         <ul className="space-y-3">
           <li>
-            <VoicesLinkInstrument href="/agency/stemmen" className="flex items-center gap-2 text-[15px] font-light text-va-black/60 hover:text-primary transition-colors group">
+            <VoicesLinkInstrument href="/agency" className="flex items-center gap-2 text-[15px] font-light text-va-black/60 hover:text-primary transition-colors group">
               <Mic2 size={16} strokeWidth={1.5} className="text-primary/40 group-hover:text-primary" />
-              <VoiceglotText translationKey="footer.link.listen_voices" defaultText="Stemmen" />
+              <VoiceglotText translationKey="nav.link.voices" defaultText="Stemmen" />
             </VoicesLinkInstrument>
           </li>
           <li>
             <VoicesLinkInstrument href="/agency/zo-werkt-het" className="flex items-center gap-2 text-[15px] font-light text-va-black/60 hover:text-primary transition-colors group">
               <Info size={16} strokeWidth={1.5} className="text-primary/40 group-hover:text-primary" />
-              <VoiceglotText translationKey="footer.link.how_it_works" defaultText="Hoe het werkt" />
+              <VoiceglotText translationKey="nav.link.how_it_works" defaultText="Hoe het werkt" />
             </VoicesLinkInstrument>
           </li>
           <li>
             <VoicesLinkInstrument href="/tarieven" className="flex items-center gap-2 text-[15px] font-light text-va-black/60 hover:text-primary transition-colors group">
               <Euro size={16} strokeWidth={1.5} className="text-primary/40 group-hover:text-primary" />
-              <VoiceglotText translationKey="footer.link.rates" defaultText="Tarieven" />
+              <VoiceglotText translationKey="nav.link.rates" defaultText="Tarieven" />
             </VoicesLinkInstrument>
           </li>
           <li>

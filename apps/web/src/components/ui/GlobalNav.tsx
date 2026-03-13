@@ -81,7 +81,7 @@ function getJourneyDefaultLinks(journeyKey: string) {
   }
 
   return [
-    { name: 'Onze Stemmen', href: '/', key: 'nav.my_voice' },
+    { name: 'Onze Stemmen', href: '/agency', key: 'nav.my_voice' },
     { name: 'Gratis Proefopname', href: '/casting/video/', key: 'nav.free_demo' },
     { name: 'Tarieven', href: '/tarieven/', key: 'nav.pricing' },
     { name: 'Contact', href: '/contact/', key: 'nav.contact' }
@@ -715,7 +715,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
       </ButtonInstrument>
     </ContainerInstrument>
 
-        <ContainerInstrument plain className="hidden md:flex gap-8 absolute left-1/2 -translate-x-1/2 items-center z-50">
+    <ContainerInstrument plain className="hidden md:flex gap-8 absolute left-1/2 -translate-x-1/2 items-center z-50">
       {activeLinks.slice(0, 6).map((link: any, idx: number) => {
         const isActive = pathname.startsWith(link.href) && link.href !== '#';
         const hasSubmenu = link.submenu && link.submenu.length > 0;
@@ -869,7 +869,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
       )}
     </ContainerInstrument>
 
-      <ContainerInstrument plain className="flex-1 flex gap-4 items-center justify-end relative z-50">
+    <ContainerInstrument plain className="flex-1 flex gap-4 items-center justify-end relative z-50">
         {/*  PAAS ADMIN TRIGGER (Invisible for visitors) */}
         {showPortfolioAdmin && (
           <HeaderIcon 
@@ -1521,7 +1521,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
                     <div className="mt-4 px-1">
                       <ButtonInstrument 
                         as={VoicesLink}
-                        href="/"
+                        href="/agency"
                         variant="default"
                         className="flex items-center justify-center gap-2 w-full py-4 bg-va-black text-white rounded-xl text-[15px] font-light tracking-widest hover:bg-primary transition-all shadow-lg"
                       >
