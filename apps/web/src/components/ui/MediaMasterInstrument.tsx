@@ -109,12 +109,19 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
       setProgress(0);
       
       const playAudio = () => {
-        audio.play()
-          .then(() => setIsPlaying(true))
-          .catch((err) => {
-            console.error("Autoplay failed:", err);
-            setIsPlaying(false);
-          });
+        const playPromise = audio.play();
+        if (playPromise !== undefined) {
+          playPromise
+            .then(() => setIsPlaying(true))
+            .catch((err) => {
+              if (err.name === 'AbortError') {
+                console.warn("[MediaMasterInstrument] Autoplay aborted.");
+              } else {
+                console.error("Autoplay failed:", err);
+              }
+              setIsPlaying(false);
+            });
+        }
       };
 
       const timer = setTimeout(playAudio, 100);
@@ -126,7 +133,16 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
   useEffect(() => {
     if (audioRef.current) {
       if (isPlaying && audioRef.current.paused) {
-        audioRef.current.play().catch(err => console.error("Sync play failed:", err));
+        const playPromise = audioRef.current.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(err => {
+            if (err.name === 'AbortError') {
+              console.warn("[MediaMasterInstrument] Playback aborted.");
+            } else {
+              console.error("Sync play failed:", err);
+            }
+          });
+        }
       } else if (!isPlaying && !audioRef.current.paused) {
         audioRef.current.pause();
       }
@@ -139,9 +155,18 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
         audioRef.current.pause();
         setIsPlaying(false);
       } else {
-        audioRef.current.play()
-          .then(() => setIsPlaying(true))
-          .catch(err => console.error("Playback failed:", err));
+        const playPromise = audioRef.current.play();
+        if (playPromise !== undefined) {
+          playPromise
+            .then(() => setIsPlaying(true))
+            .catch(err => {
+              if (err.name === 'AbortError') {
+                console.warn("[MediaMasterInstrument] Manual play aborted.");
+              } else {
+                console.error("Playback failed:", err);
+              }
+            });
+        }
       }
     }
   };
