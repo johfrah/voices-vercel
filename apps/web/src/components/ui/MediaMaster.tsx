@@ -118,6 +118,7 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
 
   const [audioError, setAudioError] = useState<string | null>(null);
   const [resolvedAudioUrl, setResolvedAudioUrl] = useState<string>('');
+  const playLockRef = useRef(false);
 
   useEffect(() => {
     const resolveUrl = async () => {
@@ -137,27 +138,26 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
       setAudioError(null);
       setProgress(0);
       
-      const playAudio = () => {
-        // Force reload source to ensure fresh stream
-        audio.load();
-        const playPromise = audio.play();
-        if (playPromise !== undefined) {
-          playPromise
-            .then(() => {
-              setIsPlaying(true);
-              setAudioError(null);
-            })
-            .catch((err) => {
-              // 🛡️ CHRIS-PROTOCOL: Silent handle for NotSupportedError during autoplay
-              // This happens when the browser hasn't registered a user interaction yet.
-              if (err.name === 'AbortError') {
-                console.warn("[MediaMaster] Autoplay aborted.");
-              } else if (err.name !== 'NotSupportedError') {
-                console.error("Autoplay failed:", err);
-                setAudioError(err.message);
-              }
-              setIsPlaying(false);
-            });
+      const playAudio = async () => {
+        if (playLockRef.current) return;
+        playLockRef.current = true;
+
+        try {
+          // Force reload source to ensure fresh stream
+          audio.load();
+          await audio.play();
+          setIsPlaying(true);
+          setAudioError(null);
+        } catch (err: any) {
+          if (err.name === 'AbortError') {
+            console.warn("[MediaMaster] Autoplay interrupted - this is fine.");
+          } else if (err.name !== 'NotSupportedError') {
+            console.error("Autoplay failed:", err);
+            setAudioError(err.message);
+          }
+          setIsPlaying(false);
+        } finally {
+          playLockRef.current = false;
         }
       };
       const timer = setTimeout(playAudio, 100);
@@ -167,46 +167,52 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
 
   // Sync audio element with context isPlaying state
   useEffect(() => {
-    if (audioRef.current) {
+    const syncPlayback = async () => {
+      if (!audioRef.current || playLockRef.current) return;
+
       if (isPlaying && audioRef.current.paused) {
-        // 🛡️ CHRIS-PROTOCOL: Atomic Play Mandate (v3.0.1)
-        // Prevent AbortError by checking if the resource is ready and not already loading
-        const playPromise = audioRef.current.play();
-        if (playPromise !== undefined) {
-          playPromise.catch(err => {
-            if (err.name === 'AbortError') {
-              console.warn("[MediaMaster] Playback aborted by system/user. This is expected during rapid navigation.");
-            } else if (err.name !== 'NotSupportedError') {
-              console.error("Sync play failed:", err);
-            }
-          });
+        playLockRef.current = true;
+        try {
+          await audioRef.current.play();
+        } catch (err: any) {
+          if (err.name === 'AbortError') {
+            // Expected during rapid state changes
+          } else if (err.name !== 'NotSupportedError') {
+            console.error("Sync play failed:", err);
+          }
+        } finally {
+          playLockRef.current = false;
         }
       } else if (!isPlaying && !audioRef.current.paused) {
         audioRef.current.pause();
       }
-    }
+    };
+
+    syncPlayback();
   }, [isPlaying]);
 
-  const togglePlay = () => {
-    if (audioRef.current) {
-      if (isPlaying) {
-        audioRef.current.pause();
-        setIsPlaying(false);
-      } else {
-        setAudioError(null);
-        const playPromise = audioRef.current.play();
-        if (playPromise !== undefined) {
-          playPromise
-            .then(() => setIsPlaying(true))
-            .catch(err => {
-              if (err.name === 'AbortError') {
-                console.warn("[MediaMaster] Manual play aborted.");
-              } else {
-                console.error("Playback failed:", err);
-                setAudioError(err.message);
-              }
-            });
+  const togglePlay = async () => {
+    if (!audioRef.current || playLockRef.current) return;
+
+    if (isPlaying) {
+      audioRef.current.pause();
+      setIsPlaying(false);
+    } else {
+      setAudioError(null);
+      playLockRef.current = true;
+      try {
+        await audioRef.current.play();
+        setIsPlaying(true);
+      } catch (err: any) {
+        if (err.name === 'AbortError') {
+          console.warn("[MediaMaster] Playback interrupted.");
+        } else {
+          console.error("Playback failed:", err);
+          setAudioError(err.message);
         }
+        setIsPlaying(false);
+      } finally {
+        playLockRef.current = false;
       }
     }
   };

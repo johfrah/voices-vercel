@@ -101,6 +101,7 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
   const [progress, setProgress] = useState(0);
   const [duration, setDuration] = useState(0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const playLockRef = useRef(false);
 
   useEffect(() => {
     if (audioRef.current) {
@@ -108,19 +109,21 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
       // Don't reset isPlaying here, let the context handle it
       setProgress(0);
       
-      const playAudio = () => {
-        const playPromise = audio.play();
-        if (playPromise !== undefined) {
-          playPromise
-            .then(() => setIsPlaying(true))
-            .catch((err) => {
-              if (err.name === 'AbortError') {
-                console.warn("[MediaMasterInstrument] Autoplay aborted.");
-              } else {
-                console.error("Autoplay failed:", err);
-              }
-              setIsPlaying(false);
-            });
+      const playAudio = async () => {
+        if (playLockRef.current) return;
+        playLockRef.current = true;
+        try {
+          await audio.play();
+          setIsPlaying(true);
+        } catch (err: any) {
+          if (err.name === 'AbortError') {
+            console.warn("[MediaMasterInstrument] Autoplay aborted.");
+          } else {
+            console.error("Autoplay failed:", err);
+          }
+          setIsPlaying(false);
+        } finally {
+          playLockRef.current = false;
         }
       };
 
@@ -131,42 +134,49 @@ export const MediaMaster: React.FC<MediaMasterProps> = ({ demo, onClose }) => {
 
   // Sync audio element with context isPlaying state
   useEffect(() => {
-    if (audioRef.current) {
+    const syncPlayback = async () => {
+      if (!audioRef.current || playLockRef.current) return;
+
       if (isPlaying && audioRef.current.paused) {
-        const playPromise = audioRef.current.play();
-        if (playPromise !== undefined) {
-          playPromise.catch(err => {
-            if (err.name === 'AbortError') {
-              console.warn("[MediaMasterInstrument] Playback aborted.");
-            } else {
-              console.error("Sync play failed:", err);
-            }
-          });
+        playLockRef.current = true;
+        try {
+          await audioRef.current.play();
+        } catch (err: any) {
+          if (err.name === 'AbortError') {
+            // Expected
+          } else {
+            console.error("Sync play failed:", err);
+          }
+        } finally {
+          playLockRef.current = false;
         }
       } else if (!isPlaying && !audioRef.current.paused) {
         audioRef.current.pause();
       }
-    }
+    };
+
+    syncPlayback();
   }, [isPlaying]);
 
-  const togglePlay = () => {
-    if (audioRef.current) {
-      if (isPlaying) {
-        audioRef.current.pause();
-        setIsPlaying(false);
-      } else {
-        const playPromise = audioRef.current.play();
-        if (playPromise !== undefined) {
-          playPromise
-            .then(() => setIsPlaying(true))
-            .catch(err => {
-              if (err.name === 'AbortError') {
-                console.warn("[MediaMasterInstrument] Manual play aborted.");
-              } else {
-                console.error("Playback failed:", err);
-              }
-            });
+  const togglePlay = async () => {
+    if (!audioRef.current || playLockRef.current) return;
+
+    if (isPlaying) {
+      audioRef.current.pause();
+      setIsPlaying(false);
+    } else {
+      playLockRef.current = true;
+      try {
+        await audioRef.current.play();
+        setIsPlaying(true);
+      } catch (err: any) {
+        if (err.name === 'AbortError') {
+          console.warn("[MediaMasterInstrument] Manual play aborted.");
+        } else {
+          console.error("Playback failed:", err);
         }
+      } finally {
+        playLockRef.current = false;
       }
     }
   };
