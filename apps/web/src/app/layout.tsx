@@ -527,12 +527,36 @@ export default async function RootLayout({
   const showTopBar = !isArtistJourney && market.market_code !== 'ADEMING' && market.market_code !== 'PORTFOLIO';
   const showGlobalNav = market.market_code !== 'ADEMING' && market.market_code !== 'PORTFOLIO';
   
-  // 🛡️ CHRIS-PROTOCOL: Hydration Guard (v2.29.34)
+  // 🛡️ CHRIS-PROTOCOL: Hydration Guard (v2.29.38)
   // Ensure navigation is only rendered on the client to prevent #419 hydration errors.
-  const NavWrapper = ({ children }: { children: React.ReactNode }) => (
+  // Skeleton DNA: Provide a stable visual placeholder to prevent layout shifts.
+  const NavWrapper = ({ children, showTopBar, showGlobalNav }: { children: React.ReactNode, showTopBar: boolean, showGlobalNav: boolean }) => (
     <ContainerInstrument plain className="fixed top-0 left-0 right-0 z-va-nav">
       <SafeErrorGuard name="GlobalNav" fallback={<ContainerInstrument plain className="h-[60px] bg-white/80 backdrop-blur-md border-b border-black/5 flex items-center px-6"><ContainerInstrument plain className="h-8 w-32 bg-va-black/10 animate-pulse rounded-md" /></ContainerInstrument>}>
-        <Suspense fallback={<ContainerInstrument plain className="h-10 bg-va-off-white/50 animate-pulse" />}>
+        <Suspense fallback={
+          <ContainerInstrument plain className="w-full flex flex-col">
+            {showTopBar && (
+              <ContainerInstrument plain className="hidden md:flex h-[36px] w-full bg-va-off-white/80 backdrop-blur-md border-b border-black/[0.03] items-center px-6 justify-between">
+                <ContainerInstrument plain className="h-3 w-32 bg-va-black/5 animate-pulse rounded-full" />
+                <ContainerInstrument plain className="flex gap-6">
+                  <ContainerInstrument plain className="h-3 w-16 bg-va-black/5 animate-pulse rounded-full" />
+                  <ContainerInstrument plain className="h-3 w-24 bg-va-black/5 animate-pulse rounded-full" />
+                </ContainerInstrument>
+              </ContainerInstrument>
+            )}
+            {showGlobalNav && (
+              <ContainerInstrument plain className="h-[60px] md:h-[70px] w-full bg-va-off-white/80 backdrop-blur-3xl border-b border-black/5 flex items-center px-6 justify-between">
+                <ContainerInstrument plain className="h-8 w-32 bg-va-black/10 animate-pulse rounded-md" />
+                <ContainerInstrument plain className="hidden md:flex gap-8">
+                  <ContainerInstrument plain className="h-3 w-16 bg-va-black/5 animate-pulse rounded-full" />
+                  <ContainerInstrument plain className="h-3 w-16 bg-va-black/5 animate-pulse rounded-full" />
+                  <ContainerInstrument plain className="h-3 w-16 bg-va-black/5 animate-pulse rounded-full" />
+                </ContainerInstrument>
+                <ContainerInstrument plain className="h-8 w-8 bg-va-black/5 animate-pulse rounded-full" />
+              </ContainerInstrument>
+            )}
+          </ContainerInstrument>
+        }>
           {children}
         </Suspense>
       </SafeErrorGuard>
@@ -634,7 +658,7 @@ export default async function RootLayout({
               )}
 
               {(showTopBar || showGlobalNav) && (
-                <NavWrapper>
+                <NavWrapper showTopBar={showTopBar} showGlobalNav={showGlobalNav}>
                   {showTopBar && <TopBar />}
                   {showGlobalNav && <GlobalNav initialNavConfig={navConfig || undefined} />}
                 </NavWrapper>
