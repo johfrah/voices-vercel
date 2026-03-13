@@ -21,6 +21,8 @@ interface WorldContextType {
   allWorlds: World[];
   setWorld: (worldCode: string) => void;
   isLoading: boolean;
+  /** 🛡️ CHRIS-PROTOCOL: World-Aware ID (v3.0.0) */
+  currentWorldId: number;
 }
 
 const WorldContext = createContext<WorldContextType | undefined>(undefined);
@@ -37,8 +39,21 @@ export const WorldProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [activeWorld, setActiveWorld] = useState<World | null>(null);
   const [allWorlds, setAllWorlds] = useState<World[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [currentWorldId, setCurrentWorldId] = useState<number>(1); // Default to Agency
 
   useEffect(() => {
+    // 🛡️ CHRIS-PROTOCOL: Sync currentWorldId from handshake or URL
+    if (typeof window !== 'undefined') {
+      const g = window as any;
+      if (g.handshakeContext?.worldId) {
+        setCurrentWorldId(g.handshakeContext.worldId);
+      } else {
+        const { MarketManagerServer } = require('@/lib/system/core/market-manager');
+        const context = MarketManagerServer.resolveContext(window.location.host, window.location.pathname);
+        setCurrentWorldId(context.worldId);
+      }
+    }
+
     const fetchWorlds = async () => {
       try {
         const res = await fetch('/api/admin/config?type=worlds');
@@ -78,7 +93,7 @@ export const WorldProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   return (
-    <WorldContext.Provider value={{ activeWorld, allWorlds, setWorld, isLoading }}>
+    <WorldContext.Provider value={{ activeWorld, allWorlds, setWorld, isLoading, currentWorldId }}>
       {children}
     </WorldContext.Provider>
   );

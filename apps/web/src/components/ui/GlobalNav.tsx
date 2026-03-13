@@ -65,6 +65,8 @@ import { LanguageSwitcher } from './LanguageSwitcher';
 
 import { useMasterControl } from '@/contexts/VoicesMasterControlContext';
 
+import { useWorld } from '@/contexts/WorldContext';
+
 function getJourneyDefaultLinks(journeyKey: string) {
   if (journeyKey === 'studio') {
     return [
@@ -315,10 +317,11 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
   const { notifications: customerNotifications, unreadCount: customerUnreadCount, markAsRead: markCustomerAsRead, markAllAsRead: markAllCustomerAsRead } = useNotifications();
   const auth = useAuth();
   const isAdmin = auth.isAdmin;
+  const { currentWorldId } = useWorld();
   
   // 🛡️ CHRIS-PROTOCOL: ID-First Context Handshake (v3.0.0)
   const handshake = typeof window !== 'undefined' ? (window as any).handshakeContext : null;
-  const worldId = handshake?.worldId;
+  const worldId = currentWorldId || handshake?.worldId;
   const languageId = handshake?.languageId;
   
   const market = MarketManager.getCurrentMarket(undefined, pathname); 
@@ -360,18 +363,8 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
   const popoverRef = useRef<HTMLDivElement>(null);
 
   const getJourneyKey = useCallback(() => {
-    // 🛡️ CHRIS-PROTOCOL: URL-First Journey Detection (v2.29)
-    // Pathname takes priority over worldId because worldId may reflect
-    // the domain's default world (e.g. voices.be = World 1/Agency),
-    // not the actual page context (e.g. /studio/ = World 2/Studio).
-    if (pathname.startsWith('/studio') || pathname.includes('/studio')) return 'studio';
-    if (pathname.startsWith('/academy') || pathname.includes('/academy')) return 'academy';
-    if (pathname.startsWith('/ademing')) return 'ademing';
-    if (pathname.startsWith('/johfrai')) return 'johfrai';
-    if (pathname.startsWith('/freelance')) return 'freelance';
-    if (pathname.startsWith('/partner')) return 'partner';
-
-    // ID-based detection for dedicated domains (ademing.be, johfrah.be, etc.)
+    // 🧬 CHRIS-PROTOCOL: World-Aware ID Detection (v3.0.0)
+    // Use currentWorldId as primary source of truth
     if (worldId === 2) return 'studio';
     if (worldId === 3) return 'academy';
     if (worldId === 6) return 'ademing';
@@ -380,19 +373,17 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
     if (worldId === 10) return 'johfrai';
     if (worldId === 7) return 'freelance';
     if (worldId === 8) return 'partner';
+
+    // Pathname fallback for hybrid routes on same domain
+    if (pathname.startsWith('/studio') || pathname.includes('/studio')) return 'studio';
+    if (pathname.startsWith('/academy') || pathname.includes('/academy')) return 'academy';
+    if (pathname.startsWith('/ademing')) return 'ademing';
+    if (pathname.startsWith('/johfrai')) return 'johfrai';
+    if (pathname.startsWith('/freelance')) return 'freelance';
+    if (pathname.startsWith('/partner')) return 'partner';
     
-    switch (market.market_code) {
-      case 'ADEMING': return 'ademing';
-      case 'PORTFOLIO': return 'portfolio';
-      case 'ARTIST': return 'artist';
-      case 'STUDIO': return 'studio';
-      case 'ACADEMY': return 'academy';
-      case 'JOHFRAI': return 'johfrai';
-      case 'FREELANCE': return 'freelance';
-      case 'PARTNER': return 'partner';
-      default: return 'agency';
-    }
-  }, [market.market_code, pathname, worldId]);
+    return 'agency';
+  }, [pathname, worldId]);
 
   const normalizedNavLogoSrc = useMemo(() => {
     const rawSrc = navConfig?.logo?.src;

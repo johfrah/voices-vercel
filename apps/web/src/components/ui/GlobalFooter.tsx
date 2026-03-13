@@ -30,6 +30,8 @@ import { AcademyFooter } from './footers/AcademyFooter';
 import { PortfolioFooter } from './footers/PortfolioFooter';
 import { ArtistFooter } from './footers/ArtistFooter';
 
+import { useWorld } from '@/contexts/WorldContext';
+
 /**
  *  GLOBAL FOOTER (NUCLEAR 2026)
  * 
@@ -45,6 +47,7 @@ export default function GlobalFooter() {
   const { state: masterControlState } = useMasterControl();
   const { isEditMode } = useEditMode();
   const { state: checkoutState } = useCheckout();
+  const { currentWorldId } = useWorld();
   const market = MarketManager.getCurrentMarket();
 
   const actor = checkoutState.selectedActor;
@@ -56,11 +59,13 @@ export default function GlobalFooter() {
   const [generalSettings, setGeneralSettings] = useState<any>(null);
   const popoverRef = useRef<HTMLDivElement>(null);
 
-  const isPortfolio = market.market_code === 'PORTFOLIO';
-  const isArtist = market.market_code === 'ARTIST';
-  const isAdeming = market.market_code === 'ADEMING';
-  const isStudio = market.market_code === 'STUDIO';
-  const isAcademy = market.market_code === 'ACADEMY';
+  // 🧬 CHRIS-PROTOCOL: World-Aware logic (v3.0.0)
+  // Use currentWorldId from registry instead of hardcoded market codes
+  const isPortfolio = currentWorldId === 5;
+  const isArtist = currentWorldId === 25;
+  const isAdeming = currentWorldId === 6;
+  const isStudio = currentWorldId === 2;
+  const isAcademy = currentWorldId === 3;
   const isSpecial = isPortfolio || isArtist || isAdeming || isStudio || isAcademy;
 
   const activeSocials: Record<string, string> = marketConfig?.socialLinks || market.social_links || {};
