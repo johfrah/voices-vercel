@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { exec } from 'child_process';
 import path from 'path';
+import { requireAdmin } from '@/lib/auth/api-auth';
 
 //  SECURITY: Only allow specific agents
 const ALLOWED_AGENTS: Record<string, string> = {
@@ -16,8 +17,11 @@ const ALLOWED_AGENTS: Record<string, string> = {
 
 export async function POST(req: NextRequest) {
   try {
-    // 1. Verify Admin (Basic check, assumes middleware handles auth)
-    // In a real scenario, check session/cookies here.
+    // Enforce server-side admin auth; middleware does not protect /api routes.
+    const auth = await requireAdmin();
+    if (auth instanceof NextResponse) {
+      return auth;
+    }
     
     const body = await req.json();
     const { agent } = body;
