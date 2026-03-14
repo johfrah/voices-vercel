@@ -66,6 +66,7 @@ import { LanguageSwitcher } from './LanguageSwitcher';
 import { useMasterControl } from '@/contexts/VoicesMasterControlContext';
 
 import { useWorld } from '@/contexts/WorldContext';
+import { resolveGlobalNavJourneyKey } from './global-nav-journey';
 
 function getJourneyDefaultLinks(journeyKey: string) {
   if (journeyKey === 'studio') {
@@ -363,26 +364,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
   const popoverRef = useRef<HTMLDivElement>(null);
 
   const getJourneyKey = useCallback(() => {
-    // 🧬 CHRIS-PROTOCOL: World-Aware ID Detection (v3.0.0)
-    // Use currentWorldId as primary source of truth
-    if (worldId === 2) return 'studio';
-    if (worldId === 3) return 'academy';
-    if (worldId === 6) return 'ademing';
-    if (worldId === 5) return 'portfolio';
-    if (worldId === 25) return 'artist';
-    if (worldId === 10) return 'johfrai';
-    if (worldId === 7) return 'freelance';
-    if (worldId === 8) return 'partner';
-
-    // Pathname fallback for hybrid routes on same domain
-    if (pathname.startsWith('/studio') || pathname.includes('/studio')) return 'studio';
-    if (pathname.startsWith('/academy') || pathname.includes('/academy')) return 'academy';
-    if (pathname.startsWith('/ademing')) return 'ademing';
-    if (pathname.startsWith('/johfrai')) return 'johfrai';
-    if (pathname.startsWith('/freelance')) return 'freelance';
-    if (pathname.startsWith('/partner')) return 'partner';
-    
-    return 'agency';
+    return resolveGlobalNavJourneyKey(worldId, pathname);
   }, [pathname, worldId]);
 
   const normalizedNavLogoSrc = useMemo(() => {
