@@ -3,7 +3,7 @@
 import { UsageType, SlimmeKassa } from '@/lib/engines/pricing-engine';
 import { MarketManagerServer as MarketManager } from "@/lib/system/core/market-manager";
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
-import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { useCheckout } from './CheckoutContext';
 import { useVoicesState } from './VoicesStateContext';
 import { normalizeLocale } from '@/lib/system/locale-utils';
@@ -150,6 +150,7 @@ export const VoicesMasterControlProvider: React.FC<{
 
   const [isClient, setIsClient] = useState(false);
   const [isStateInitialized, setIsStateInitialized] = useState(false);
+  const hasHydratedSavedState = useRef(false);
 
   // 🛡️ CHRIS-PROTOCOL: Initialize state from URL/LocalStorage ONLY on client-side
   // to prevent Hydration Mismatch errors (#419).
@@ -553,6 +554,10 @@ export const VoicesMasterControlProvider: React.FC<{
   }, []);
 
   useEffect(() => {
+    if (!isClient || !isStateInitialized) return;
+    if (hasHydratedSavedState.current) return;
+    hasHydratedSavedState.current = true;
+
     const saved = localStorage.getItem('voices_master_control');
     if (saved) {
       try {
@@ -597,7 +602,7 @@ export const VoicesMasterControlProvider: React.FC<{
         });
       } catch (e) {}
     }
-  }, [searchParams, detectStateFromUrl]);
+  }, [isClient, isStateInitialized, searchParams, detectStateFromUrl]);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
