@@ -130,4 +130,65 @@ describe('CheckoutPayloadSchema', () => {
     const parsed = CheckoutPayloadSchema.parse(payload);
     expect(parsed.journey).toBe('studio');
   });
+
+  it('accepts null music objects for both payload and item level', () => {
+    const payload = {
+      pricing: { total: 89 },
+      items: [
+        {
+          id: 'voice-3',
+          type: 'voice_over',
+          actor: { id: 11 },
+          pricing: { total: 89 },
+          music: null,
+          ownMusicFile: null,
+        },
+      ],
+      email: 'null-music@voices.be',
+      first_name: 'Null',
+      last_name: 'Music',
+      postal_code: '3000',
+      city: 'Leuven',
+      country: 'BE',
+      usage: 'commercial',
+      payment_method: 'bancontact',
+      music: null,
+      ownMusicFile: null,
+    };
+
+    const parsed = CheckoutPayloadSchema.parse(payload);
+    const [item] = parsed.items;
+
+    expect(parsed.music).toBeNull();
+    expect(parsed.ownMusicFile).toBeNull();
+    expect(item.music).toBeNull();
+    expect(item.ownMusicFile).toBeNull();
+  });
+
+  it('rejects non-string music track identifiers', () => {
+    const payload = {
+      pricing: { total: 120 },
+      items: [
+        {
+          id: 'voice-4',
+          type: 'voice_over',
+          actor: { id: 19 },
+          pricing: { total: 120 },
+        },
+      ],
+      email: 'invalid-track@voices.be',
+      first_name: 'Invalid',
+      last_name: 'Track',
+      postal_code: '3500',
+      city: 'Hasselt',
+      country: 'BE',
+      usage: 'commercial',
+      payment_method: 'bancontact',
+      music: {
+        trackId: 123,
+      },
+    };
+
+    expect(() => CheckoutPayloadSchema.parse(payload)).toThrow();
+  });
 });
