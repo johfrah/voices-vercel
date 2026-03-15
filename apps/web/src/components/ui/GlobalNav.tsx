@@ -1145,6 +1145,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
 
         {/*  NOTIFICATIONS ICON */}
         {showNotifications && (
+          <ContainerInstrument plain className="pointer-events-auto">
           <HeaderIcon 
             icon={Bell} 
             alt={t('nav.notifications_alt', 'Notificaties')}

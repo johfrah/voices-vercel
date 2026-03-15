@@ -29,6 +29,7 @@ const appDir = path.resolve(repoRoot, 'apps/web');
 const nextDir = path.resolve(appDir, '.next');
 const routesManifestPath = path.resolve(nextDir, 'routes-manifest.json');
 const appPathRoutesManifestPath = path.resolve(nextDir, 'app-path-routes-manifest.json');
+const appPathsManifestPath = path.resolve(nextDir, 'server/app-paths-manifest.json');
 const outputPath = path.resolve(appDir, 'tests/e2e/route-inventory.json');
 
 const CRITICAL_ROUTES = [
@@ -96,27 +97,56 @@ async function readJsonFile<T>(filePath: string): Promise<T> {
   return JSON.parse(raw) as T;
 }
 
-async function main() {
-  const [routesManifest, appPathRoutesManifest] = await Promise.all([
-    readJsonFile<NextRoutesManifest>(routesManifestPath),
-    readJsonFile<Record<string, string>>(appPathRoutesManifestPath),
-  ]).catch((error) => {
-    throw new Error(
-      `Route inventory requires Next build manifests. Run npm run check:pre-vercel first. Cause: ${
-        (error as Error)?.message || String(error)
-      }`
-    );
-  });
+async function readJsonFileIfExists<T>(filePath: string): Promise<T | null> {
+  try {
+    return await readJsonFile<T>(filePath);
+  } catch {
+    return null;
+  }
+}
 
-  const staticFromRoutesManifest = (routesManifest.staticRoutes || []).map((route) => route.page);
-  const staticFromAppManifest = Object.values(appPathRoutesManifest || {});
+function normalizeAppPathManifestKey(route: string): string {
+  if (!route || route === '/page') return '/';
+  if (route.endsWith('/page')) {
+    const withoutSuffix = route.slice(0, -'/page'.length);
+    return withoutSuffix || '/';
+  }
+  if (route.endsWith('/route')) {
+    const withoutSuffix = route.slice(0, -'/route'.length);
+    return withoutSuffix || '/';
+  }
+  return route;
+}
+
+async function main() {
+  const [routesManifest, appPathRoutesManifest, appPathsManifest] = await Promise.all([
+    readJsonFileIfExists<NextRoutesManifest>(routesManifestPath),
+    readJsonFileIfExists<Record<string, string>>(appPathRoutesManifestPath),
+    readJsonFileIfExists<Record<string, string>>(appPathsManifestPath),
+  ]);
+
+  if (!routesManifest && !appPathRoutesManifest && !appPathsManifest) {
+    throw new Error(
+      `Route inventory requires Next build manifests. Run npm run check:pre-vercel first. Missing: ${routesManifestPath}, ${appPathRoutesManifestPath}, ${appPathsManifestPath}`
+    );
+  }
+
+  const appManifestKeys = [
+    ...Object.keys(appPathRoutesManifest || {}),
+    ...Object.keys(appPathsManifest || {}),
+  ].map(normalizeAppPathManifestKey);
+
+  const staticFromRoutesManifest = (routesManifest?.staticRoutes || []).map((route) => route.page);
+  const staticFromAppManifest = appManifestKeys;
   const publicStaticRoutes = uniqSorted(
     [...staticFromRoutesManifest, ...staticFromAppManifest].filter(isPublicPageCandidate)
   );
 
   const dynamicTemplates = uniqSorted(
-    (routesManifest.dynamicRoutes || [])
-      .map((route) => route.page)
+    [
+      ...(routesManifest?.dynamicRoutes || []).map((route) => route.page),
+      ...appManifestKeys.filter((route) => route.includes('[') || route.includes(']')),
+    ]
       .filter((route) => !route.startsWith('/api') && !route.startsWith('/admin'))
   );
 
@@ -132,7 +162,11 @@ async function main() {
   const extendedRoutes = uniqSorted([...publicStaticRoutes, ...generatedDynamicRoutes, ...criticalRoutes]);
 
   const inventory: RouteInventory = {
-    source_files: [routesManifestPath, appPathRoutesManifestPath],
+    source_files: [
+      routesManifest ? routesManifestPath : `${routesManifestPath} (missing)`,
+      appPathRoutesManifest ? appPathRoutesManifestPath : `${appPathRoutesManifestPath} (missing)`,
+      appPathsManifest ? appPathsManifestPath : `${appPathsManifestPath} (missing)`,
+    ],
     critical_routes: criticalRoutes,
     extended_routes: extendedRoutes,
     dynamic_templates: dynamicTemplates,

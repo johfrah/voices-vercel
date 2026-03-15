@@ -3,7 +3,7 @@
 import React, { useMemo } from 'react';
 import { Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { ContainerInstrument, TextInstrument } from './LayoutInstruments';
+import { ContainerInstrument, TextInstrument } from './LayoutInstrumentsClient';
 import { VoiceglotText } from './VoiceglotText';
 import { calculateDeliveryDate } from '@/lib/utils/delivery-logic';
 
