@@ -38,31 +38,35 @@ export const VoiceglotImage: React.FC<VoiceglotImageProps> = ({
   const isMuted = masterControl?.state?.isMuted ?? false;
   const { playClick, playSwell } = useSonicDNA();
   const [isUploading, setIsUploading] = useState(false);
-  const [currentSrc, setCurrentSrc] = useState(src || '');
+  const [currentSrc, setCurrentSrc] = useState(() => {
+    if (!src) return '';
+    if (src.includes('/api/proxy') || src.startsWith('/assets/')) return src;
+    return `/api/proxy/?path=${encodeURIComponent(src)}`;
+  });
   const [error, setError] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // 🛡️ CHRIS-PROTOCOL: ID-First Handshake (v3.0.0)
   useEffect(() => {
     const resolveUrl = async () => {
+      const ensureProxyPath = (url: string) => {
+        if (!url) return url;
+        if (url.includes('/api/proxy') || url.startsWith('/assets/')) return url;
+        return `/api/proxy/?path=${encodeURIComponent(url)}`;
+      };
+
       if (mediaId) {
         const { AssetManager } = await import('@/lib/system/core/asset-manager');
         const resolved = await AssetManager.resolveMediaUrl({ mediaId });
         if (resolved) {
-          setCurrentSrc(resolved);
+          setCurrentSrc(ensureProxyPath(resolved));
           return;
         }
       }
       
       // 🛡️ CHRIS-PROTOCOL: Fallback to constructed proxy if mediaId is missing but we have a path
       if (src) {
-        // If it's already a proxy or local asset, use as is
-        if (src.includes('/api/proxy') || src.startsWith('/assets/')) {
-          setCurrentSrc(src);
-        } else {
-          // Wrap in proxy for stability
-          setCurrentSrc(`/api/proxy/?path=${encodeURIComponent(src)}`);
-        }
+        setCurrentSrc(ensureProxyPath(src));
       }
     };
     resolveUrl();

@@ -1,6 +1,6 @@
 "use client";
 
-import { ContainerInstrument } from '@/components/ui/LayoutInstruments';
+import { ContainerInstrument } from '@/components/ui/LayoutInstrumentsClient';
 import { createClient } from '@/utils/supabase/client';
 import { User } from '@supabase/supabase-js';
 import { ShieldCheck } from 'lucide-react';

@@ -419,7 +419,11 @@ export const VoicesMasterControlProvider: React.FC<{
       updateMedia(state.filters.media, state.filters.mediaIds);
     }
 
-    if (state.filters.music && JSON.stringify(checkoutState.music) !== JSON.stringify(state.filters.music)) {
+    const shouldSyncMusic = !!state.filters.music && (
+      checkoutState.music?.asBackground !== state.filters.music.asBackground ||
+      checkoutState.music?.asHoldMusic !== state.filters.music.asHoldMusic
+    );
+    if (shouldSyncMusic) {
       updateMusic?.(state.filters.music);
     }
 
