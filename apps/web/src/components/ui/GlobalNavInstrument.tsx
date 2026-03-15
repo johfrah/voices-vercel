@@ -952,6 +952,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
               )}
             </ContainerInstrument>
           </HeaderIcon>
+          </ContainerInstrument>
         )}
 
     {/*  CART ICON */}
@@ -1126,6 +1127,7 @@ export default function GlobalNav({ initialNavConfig }: { initialNavConfig?: Nav
           </ContainerInstrument>
         )}
       </HeaderIcon>
+      </ContainerInstrument>
     )}
 
         {/*  NOTIFICATIONS ICON */}
